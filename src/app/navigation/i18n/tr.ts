@@ -1,11 +1,11 @@
 export const locale = {
     lang: 'tr',
     data: {
-        'NAV': {
-            'APPLICATIONS': 'Programlar',
-            'SAMPLE'        : {
-                'TITLE': 'Örnek',
-                'BADGE': '15'
+        NAV: {
+            APPLICATIONS: 'Programlar',
+            DASHBOARD: {
+                TITLE: 'Örnek',
+                BADGE: '15'
             }
         }
     }

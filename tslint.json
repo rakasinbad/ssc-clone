@@ -4,37 +4,20 @@
         "array-type": false,
         "arrow-parens": false,
         "deprecation": {
-      "severity": "warning"
+            "severity": "warning"
         },
         "component-class-suffix": true,
         "contextual-lifecycle": true,
         "directive-class-suffix": true,
-        "directive-selector": [
-            true,
-            "attribute",
-            [
-                "fuse",
-                ""
-            ],
-            "camelCase"
-        ],
+        "directive-selector": [true, "attribute", ["fuse", ""], "camelCase"],
         "component-selector": [
             true,
             "element",
             "attribute",
-            [
-                "fuse",
-                ""
-            ],
-            [
-                "kebab-case",
-                "camelCase"
-            ]
+            ["fuse", ""],
+            ["kebab-case", "camelCase"]
         ],
-        "import-blacklist": [
-            true,
-            "rxjs/Rx"
-        ],
+        "import-blacklist": [true, "rxjs/Rx"],
         "interface-name": false,
         "max-classes-per-file": false,
         "max-line-length": [
@@ -48,28 +31,13 @@
         "member-ordering": [
             true,
             {
-                "order": [
-                    "static-field",
-                    "instance-field",
-                    "static-method",
-                    "instance-method"
-                ]
+                "order": ["static-field", "instance-field", "static-method", "instance-method"]
             }
         ],
         "no-consecutive-blank-lines": false,
-        "no-console": [
-            true,
-            "debug",
-            "info",
-            "time",
-            "timeEnd",
-            "trace"
-        ],
+        "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
         "no-empty": false,
-        "no-inferrable-types": [
-            true,
-            "ignore-params"
-        ],
+        "no-inferrable-types": [true, "ignore-params"],
         "no-non-null-assertion": true,
         "no-string-literal": false,
         "no-switch-case-fall-through": true,
@@ -79,15 +47,8 @@
         "object-literal-sort-keys": false,
         "one-line": false,
         "ordered-imports": false,
-        "quotemark": [
-            true,
-            "single"
-        ],
-        "typedef": [
-            true,
-            "call-signature",
-            "property-declaration"
-        ],
+        "quotemark": [true, "single"],
+        "typedef": [true, "call-signature", "property-declaration"],
         "trailing-comma": false,
         "no-conflicting-lifecycle": true,
         "no-host-metadata-property": true,
@@ -109,7 +70,5 @@
             "allow-leading-underscore"
         ]
     },
-    "rulesDirectory": [
-        "codelyzer"
-    ]
+    "rulesDirectory": ["codelyzer"]
 }

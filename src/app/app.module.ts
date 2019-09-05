@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,28 +12,19 @@ import { FuseModule } from '@fuse/fuse.module';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { FuseProgressBarModule, FuseSidebarModule, FuseThemeOptionsModule } from '@fuse/components';
 
-import { fuseConfig } from 'app/fuse-config';
+import { fuseConfig } from './fuse-config';
 
-import { AppComponent } from 'app/app.component';
-import { LayoutModule } from 'app/layout/layout.module';
-import { SampleModule } from 'app/main/sample/sample.module';
-
-const appRoutes: Routes = [
-    {
-        path      : '**',
-        redirectTo: 'sample'
-    }
-];
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { LayoutModule } from './layout/layout.module';
 
 @NgModule({
-    declarations: [
-        AppComponent
-    ],
-    imports     : [
+    declarations: [AppComponent],
+    imports: [
         BrowserModule,
         BrowserAnimationsModule,
         HttpClientModule,
-        RouterModule.forRoot(appRoutes),
+        AppRoutingModule,
 
         TranslateModule.forRoot(),
 
@@ -53,13 +43,8 @@ const appRoutes: Routes = [
         FuseThemeOptionsModule,
 
         // App modules
-        LayoutModule,
-        SampleModule
+        LayoutModule
     ],
-    bootstrap   : [
-        AppComponent
-    ]
+    bootstrap: [AppComponent]
 })
-export class AppModule
-{
-}
+export class AppModule {}
