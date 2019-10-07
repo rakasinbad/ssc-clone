@@ -1,0 +1,84 @@
+<div id="orders" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
+
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button mat-flat-button color="accent">
+                    EXPORT
+                </button>
+
+                <button mat-stroked-button color="accent" class="sinbad">
+                    IMPORT
+                </button>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter placeholder="Search for a order" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+
+                <button mat-flat-button class="grey-600">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter Lists
+                </button>
+
+                <button mat-flat-button class="grey-600">
+                    Group By
+                </button>
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <mat-card class="mb-24">
+            <div fxLayout="column" fxLayoutGap="10px">
+                <small>
+                    Filter & Group By
+                </small>
+
+                <div>
+                    <mat-chip-list aria-label="Filter">
+                        <mat-chip>
+                            Status: Diterima
+
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+
+                        <mat-chip>
+                            Geo Coverage
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
+        </mat-card>
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT TOOLBAR -->
+            <div class="toolbar px-24 py-8">
+                <span>Content toolbar</span>
+            </div>
+            <!-- / CONTENT TOOLBAR -->
+
+            <!-- CONTENT -->
+            <div class="content p-24"></div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

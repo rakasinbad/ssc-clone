@@ -1,5 +1,61 @@
 // Import Fuse core library
-@import "@fuse/scss/core";
+@import '@fuse/scss/core';
 
 // Import app.theme.scss
-@import "app/app.theme";
+@import 'app/app.theme';
+
+.loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.panel-error {
+    color: #d8000c !important;
+    background-color: rgba(255, 210, 210, 0.9) !important;
+}
+
+.panel-success {
+    color: #4f8a10 !important;
+    background-color: rgba(223, 242, 191, 0.9) !important;
+}
+
+.panel-warning {
+    color: #856404 !important;
+    background-color: rgba(255, 243, 205, 0.9) !important;
+}
+
+body.theme-sinbad-light {
+    .mat-stroked-button.sinbad:not([disabled]),
+    .mat-stroked-button.sinbad {
+        border-color: #f0444c;
+    }
+
+    .page-layout.carded.fullwidth > .center > .header.sinbad {
+        height: 80px !important;
+        min-height: 80px !important;
+    }
+
+    /* navbar-horizontal-custom-style-1 {
+        .nav {
+            &.horizontal {
+                > .nav-item {
+                    > .nav-link {
+                        height: 40px;
+                    }
+                }
+            }
+        }
+    } */
+}
+
+.mat-btn-medium {
+    width: 300px;
+}

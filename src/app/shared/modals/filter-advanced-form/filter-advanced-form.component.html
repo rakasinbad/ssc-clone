@@ -1,0 +1,62 @@
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
+
+<mat-dialog-content class="mat-typography" fusePerfectScrollbar>
+    <form [formGroup]="filterForm">
+        <div
+            formArrayName="filters"
+            *ngFor="let filterField of filterControls; index as idx"
+            class="p-12"
+            style="border-radius: 2px"
+            [ngClass]="idx % 2 === 0 ? 'grey-200-bg' : ''"
+            fxLayout="column"
+        >
+            <!-- <div [formGroupName]="idx" fxLayout="column"> -->
+            <ng-container [formGroupName]="idx">
+                <mat-form-field>
+                    <mat-select formControlName="column" placeholder="Choose column...">
+                        <mat-option>Choose column...</mat-option>
+                        <mat-option
+                            *ngFor="let filterColumn of data.filterColumn"
+                            [value]="filterColumn?.name"
+                        >
+                            {{ filterColumn?.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-select
+                        #operator
+                        formControlName="operator"
+                        placeholder="Choose operator..."
+                    >
+                        <mat-option>Choose operator...</mat-option>
+                        <mat-option
+                            *ngFor="let filterOperator of data.filterConfig"
+                            [value]="filterOperator"
+                        >
+                            {{ filterOperator?.label }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="checkOperatorConfig(operator.value)">
+                    <input matInput formControlName="value" placeholder="Value" />
+                </mat-form-field>
+
+                <button mat-icon-button>
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </ng-container>
+            <!--  </div> -->
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button (click)="addFilter()">Add Conditions</button>
+    <button mat-button [mat-dialog-close]="data?.body" cdkFocusInitial>Apply</button>
+</mat-dialog-actions>

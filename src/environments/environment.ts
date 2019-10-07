@@ -4,7 +4,9 @@
 
 export const environment = {
     production: false,
-    hmr       : false
+    staging: false,
+    hmr: false,
+    host: 'https://kong-dev.sinbad.web.id'
 };
 
 /*

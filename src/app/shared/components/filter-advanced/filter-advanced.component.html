@@ -1,0 +1,23 @@
+<ng-container [ngSwitch]="btnType">
+    <ng-container *ngSwitchCase="'toggle'">
+        <mat-button-toggle value="left" aria-label="Text align left">
+            <mat-icon>filter_list</mat-icon>
+        </mat-button-toggle>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault>
+        <button mat-flat-button class="grey-600" (click)="onOpenFilter()">
+            <mat-icon>filter_list</mat-icon>
+
+            Filter Lists
+        </button>
+    </ng-container>
+</ng-container>
+
+<!-- <button mat-flat-button class="grey-600" (click)="onOpenFilter()">
+    <mat-icon>filter_list</mat-icon>
+
+    Filter Lists
+</button> -->
+
+<!-- <ng-template appContent></ng-template> -->

@@ -1,0 +1,10 @@
+{
+    "/ping": {
+        "target": "https://www.google.com",
+        "secure": true,
+        "pathRewrite": {
+            "^/ping": ""
+        },
+        "changeOrigin": true
+    }
+}

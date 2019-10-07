@@ -2,39 +2,53 @@
     <div id="login-form-wrapper" fxLayout="column" fxLayoutAlign="center center">
         <div id="login-form" [@animate]="{ value: '*', params: { duration: '300ms', y: '100px' } }">
             <div class="logo">
-                <img src="assets/images/logos/fuse.svg" />
+                <img src="assets/images/logos/sinbad.svg" />
             </div>
 
-            <div class="title">LOGIN TO YOUR ACCOUNT</div>
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
 
-            <form name="loginForm" [formGroup]="loginForm" novalidate>
+            <!-- <div class="title">LOGIN TO YOUR ACCOUNT</div> -->
+
+            <form
+                name="loginForm"
+                [formGroup]="form"
+                (ngSubmit)="onLogin(f)"
+                #f="ngForm"
+                novalidate
+            >
                 <mat-form-field appearance="outline">
-                    <mat-label>Email</mat-label>
-                    <input matInput formControlName="email" />
+                    <mat-label>Email *</mat-label>
+                    <input matInput formControlName="username" />
                     <mat-icon matSuffix class="secondary-text">mail</mat-icon>
-                    <mat-error *ngIf="loginForm.get('email').hasError('required')">
-                        Email is required
-                    </mat-error>
+
                     <mat-error
                         *ngIf="
-                            !loginForm.get('email').hasError('required') &&
-                            loginForm.get('email').hasError('email')
+                            form.get('username').errors &&
+                            (form.get('username').dirty || form.get('username').touched)
                         "
                     >
-                        Please enter a valid email address
+                        {{ getErrorMessage('username') }}
                     </mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Password</mat-label>
+                    <mat-label>Password *</mat-label>
                     <input matInput type="password" formControlName="password" />
                     <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
-                    <mat-error>
-                        Password is required
+
+                    <mat-error
+                        *ngIf="
+                            form.get('password').errors &&
+                            (form.get('password').dirty || form.get('password').touched)
+                        "
+                    >
+                        {{ getErrorMessage('password') }}
                     </mat-error>
                 </mat-form-field>
 
-                <div
+                <!-- <div
                     class="remember-forgot-password"
                     fxLayout="row"
                     fxLayout.xs="column"
@@ -47,20 +61,21 @@
                     <a class="forgot-password" [routerLink]="'/pages/auth/forgot-password'">
                         Forgot Password?
                     </a>
-                </div>
+                </div> -->
 
                 <button
                     mat-raised-button
                     color="accent"
                     class="submit-button"
                     aria-label="LOG IN"
-                    [disabled]="loginForm.invalid"
+                    type="submit"
+                    [disabled]="form.invalid || (isLoading$ | async)"
                 >
                     LOGIN
                 </button>
             </form>
 
-            <div class="separator">
+            <!-- <div class="separator">
                 <span class="text">OR</span>
             </div>
 
@@ -75,7 +90,7 @@
             <div class="register" fxLayout="column" fxLayoutAlign="center center">
                 <span class="text">Don't have an account?</span>
                 <a class="link" [routerLink]="'/pages/auth/register'">Create an account</a>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>

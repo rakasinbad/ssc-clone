@@ -6,17 +6,17 @@ import { FuseNavigationItem } from '@fuse/types';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 
 @Component({
-    selector   : 'fuse-nav-vertical-item',
+    selector: 'fuse-nav-vertical-item',
     templateUrl: './item.component.html',
-    styleUrls  : ['./item.component.scss']
+    styleUrls: ['./item.component.scss']
 })
-export class FuseNavVerticalItemComponent implements OnInit, OnDestroy
-{
+export class FuseNavVerticalItemComponent implements OnInit, OnDestroy {
     @HostBinding('class')
     classes = 'nav-item';
 
     @Input()
-    item: FuseNavigationItem;
+    item: any;
+    // item: FuseNavigationItem;
 
     // Private
     private _unsubscribeAll: Subject<any>;
@@ -33,8 +33,7 @@ export class FuseNavVerticalItemComponent implements OnInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _fuseNavigationService: FuseNavigationService
-    )
-    {
+    ) {
         // Set the private defaults
         this._unsubscribeAll = new Subject();
     }
@@ -46,26 +45,24 @@ export class FuseNavVerticalItemComponent implements OnInit, OnDestroy
     /**
      * On init
      */
-    ngOnInit(): void
-    {
+    ngOnInit(): void {
         // Subscribe to navigation item
         merge(
             this._fuseNavigationService.onNavigationItemAdded,
             this._fuseNavigationService.onNavigationItemUpdated,
             this._fuseNavigationService.onNavigationItemRemoved
-        ).pipe(takeUntil(this._unsubscribeAll))
-         .subscribe(() => {
-
-             // Mark for check
-             this._changeDetectorRef.markForCheck();
-         });
+        )
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe(() => {
+                // Mark for check
+                this._changeDetectorRef.markForCheck();
+            });
     }
 
     /**
      * On destroy
      */
-    ngOnDestroy(): void
-    {
+    ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
         this._unsubscribeAll.next();
         this._unsubscribeAll.complete();

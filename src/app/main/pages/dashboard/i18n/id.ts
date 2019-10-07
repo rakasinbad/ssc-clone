@@ -1,5 +1,5 @@
 export const locale = {
-    lang: 'tr',
+    lang: 'id',
     data: {
         DASHBOARD: {
             HELLO: 'Merhaba Dünya!'

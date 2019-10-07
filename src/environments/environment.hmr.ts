@@ -1,4 +1,6 @@
 export const environment = {
     production: false,
-    hmr       : true
+    staging: false,
+    hmr: true,
+    host: 'https://kong-dev.sinbad.web.id'
 };

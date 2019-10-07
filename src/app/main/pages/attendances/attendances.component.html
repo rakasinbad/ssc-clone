@@ -1,0 +1,213 @@
+<div id="attendances" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div
+            class="header accent"
+            fxLayout="column"
+            fxLayoutAlign="center center"
+            fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center"
+        >
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon
+                    class="logo-icon s-32 mr-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    event_available
+                </mat-icon>
+                <span
+                    class="logo-text h1"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Attendances
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter placeholder="Search for a attendance" />
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
+                <mat-button-toggle value="left" aria-label="Filter">
+                    <mat-icon>filter_list</mat-icon>
+                </mat-button-toggle>
+
+                <mat-button-toggle
+                    value="center"
+                    aria-label="Add New Attendance"
+                    [routerLink]="['/pages/attendances/new']"
+                >
+                    <mat-icon>add</mat-icon>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <!-- <button
+                mat-raised-button
+                [routerLink]="['/pages/attendances/new']"
+                class="add-product-button fuse-white mt-24 mt-md-0"
+            >
+                <span>ADD NEW ATTENDANCE</span>
+            </button> -->
+            <!-- / ADD BUTTON -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table
+                class="attendances-table"
+                #table
+                [dataSource]="dataSource$ | async"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row.id }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Image Column -->
+                <ng-container matColumnDef="image">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <img
+                            class="attendance-image"
+                            *ngIf="row?.user?.image"
+                            [alt]="row?.user?.fullname"
+                            [src]="row?.user?.image"
+                        />
+
+                        <img
+                            class="attendance-image"
+                            *ngIf="!row?.user?.image"
+                            [src]="'assets/images/avatars/profile.jpg'"
+                        />
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.user?.fullname }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Check In Column -->
+                <ng-container matColumnDef="checkin">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Check In
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        {{ row?.checkIn | date: 'MMM dd, yyyy HH:mm:ss' }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Check Out Column -->
+                <ng-container matColumnDef="checkout">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Check Out
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        {{ row?.checkOut | date: 'MMM dd, yyyy HH:mm:ss' }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Date
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        {{ row?.checkDate | date: 'mediumDate' }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Working Hours Column -->
+                <ng-container matColumnDef="workinghours">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Working Hours
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        {{ this.getDiffTime(row?.checkIn, row?.checkOut, 'hours', false) }}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button mat-menu-item aria-label="edit" [routerLink]="[row?.id]">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button mat-menu-item aria-label="remove" disabled>
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Remove</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="attendance"
+                    matRipple
+                    [routerLink]="['/pages/attendances/' + row.id + '/detail']"
+                >
+                </mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [length]="totalDataSource$ | async"
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,260 @@
+<div id="accounts" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div
+            class="header accent"
+            fxLayout="column"
+            fxLayoutAlign="center center"
+            fxLayout.gt-sm="row"
+            fxLayoutAlign.gt-sm="space-between center"
+        >
+            <!-- APP TITLE -->
+            <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon
+                    class="logo-icon s-32 mr-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    people
+                </mat-icon>
+                <span
+                    class="logo-text h1"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Accounts
+                </span>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- SEARCH -->
+            <div class="search-wrapper mx-32 mx-md-0">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                    <mat-icon>search</mat-icon>
+                    <input #filter placeholder="Search for a account" />
+                </div>
+            </div>
+            <!-- / SEARCH -->
+
+            <!-- ADD BUTTON -->
+            <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
+                <mat-button-toggle value="left" aria-label="Filter">
+                    <mat-icon>filter_list</mat-icon>
+                </mat-button-toggle>
+                <!-- <app-filter-advanced [btnType]="'toggle'"></app-filter-advanced> -->
+
+                <mat-button-toggle
+                    value="center"
+                    aria-label="Add New Account"
+                    [routerLink]="['/pages/accounts/new']"
+                >
+                    <mat-icon>person_add</mat-icon>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+            <!-- <button mat-icon-button class="add-product-button fuse-white mt-24 mt-md-0">
+                <mat-icon>filter_list</mat-icon>
+            </button>
+            <button
+                mat-raised-button
+                [routerLink]="['/pages/accounts/new']"
+                class="add-product-button fuse-white mt-24 mt-md-0"
+            >
+                <span>ADD NEW ACCOUNT</span>
+            </button> -->
+            <!-- / ADD BUTTON -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table
+                class="accounts-table"
+                #table
+                [dataSource]="dataSource$ | async"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            [(ngModel)]="hasSelected"
+                            (click)="$event.stopPropagation()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row.id }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Image Column -->
+                <ng-container matColumnDef="image">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <img
+                            class="account-image"
+                            *ngIf="row.image"
+                            [alt]="row.fullname"
+                            [src]="row.image"
+                        />
+
+                        <img
+                            class="account-image"
+                            *ngIf="!row.image"
+                            [src]="'assets/images/avatars/profile.jpg'"
+                        />
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Account Name Column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Account Name
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row.fullName }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Mobile Phone Column -->
+                <ng-container matColumnDef="phone">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Mobile Phone
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <p class="text-truncate">
+                            {{ row.mobilePhoneNo }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="store">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Store Name
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <p class="text-truncate">
+                            {{ (row?.userStores)[0]?.store?.name }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Roles Column -->
+                <ng-container matColumnDef="roles">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Roles
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <p class="text-truncate" [innerHTML]="joinRoles(row.roles)"></p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Odoo ID Column -->
+                <ng-container matColumnDef="odooid">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>User Odoo</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row.userOdooId }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Active Column -->
+                <!-- <ng-container matColumnDef="active">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Active
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <mat-icon *ngIf="row.active" class="active-icon green-600 s-16">
+                            check
+                        </mat-icon>
+
+                        <mat-icon *ngIf="!row.active" class="active-icon red-500 s-16">
+                            close
+                        </mat-icon>
+                    </mat-cell>
+                </ng-container> -->
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        <button mat-icon-button *ngIf="hasSelected">
+                            <mat-icon class="secondary-text">delete</mat-icon>
+                        </button>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button mat-menu-item aria-label="edit" [routerLink]="[row?.id]">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    aria-label="remove"
+                                    (click)="onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Remove</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="account"
+                    matRipple
+                    [routerLink]="['/pages/accounts/' + row.id + '/detail']"
+                >
+                </mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [length]="totalDataSource$ | async"
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

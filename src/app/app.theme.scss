@@ -48,11 +48,41 @@ $fuse-navy: (
     )
 );
 
+$sinbad-accent: (
+    50: #fde9ea,
+    100: #fbc7c9,
+    200: #f8a2a6,
+    300: #f57c82,
+    400: #f26067,
+    500: #f0444c,
+    600: #ee3e45,
+    700: #ec353c,
+    800: #e92d33,
+    900: #e51f24,
+    contrast: (
+        50: $dark-primary-text,
+        100: $dark-primary-text,
+        200: $dark-primary-text,
+        300: $light-primary-text,
+        400: $light-primary-text,
+        500: $light-primary-text,
+        600: $light-primary-text,
+        700: $light-primary-text,
+        800: $light-primary-text,
+        900: $light-primary-text,
+        A100: $dark-primary-text,
+        A200: $light-primary-text,
+        A400: $light-primary-text,
+        A700: $light-primary-text
+    )
+);
+
 // Generate Fuse color classes for custom palettes
 $custom_palettes: (
     fuse-white: $fuse-white,
     fuse-black: $fuse-black,
-    fuse-navy: $fuse-navy
+    fuse-navy: $fuse-navy,
+    sinbad-accent: $sinbad-accent
 );
 
 @include fuse-color-classes($custom_palettes);
@@ -84,6 +114,14 @@ $typography: mat-typography-config(
 @import 'src/app/layout/components/toolbar/toolbar.theme';
 
 @import 'src/app/main/pages/core/auth/login/login.theme';
+@import 'src/app/main/pages/accounts/accounts.theme';
+@import 'src/app/main/pages/attendances/attendances.theme';
+@import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
+@import 'src/app/main/pages/orders/orders.theme';
+
+// Plugin https://github.com/coachcare/npm-datepicker#installation
+// @import '~@coachcare/datepicker/theming';
+@import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
 
 // Define a mixin for easier access
 @mixin components-theme($theme) {
@@ -91,7 +129,17 @@ $typography: mat-typography-config(
     @include chat-panel-theme($theme);
     @include toolbar-theme($theme);
 
+    // Pages
     @include login-theme($theme);
+    @include accounts-theme($theme);
+    @include attendances-theme($theme);
+    @include in-store-inventories-theme($theme);
+    @include orders-theme($theme);
+
+    // Plugin
+    // @include mat-datepicker-theme($theme);
+    // Using the $theme variable from the pre-built theme you can call the theming function
+    @include mat-datetimepicker-theme($theme);
 }
 
 // -----------------------------------------------------------------------------------------------------
@@ -237,6 +285,44 @@ body.theme-pink-dark {
         primary: $pink-dark-theme-primary-palette,
         accent: $pink-dark-theme-accent-palette,
         warn: $pink-dark-theme-warn-palette
+    );
+
+    @include fuse-color-classes($palettes);
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Define a sinbad light theme
+// -----------------------------------------------------------------------------------------------------
+
+// Define the primary, accent and warn palettes
+$sinbad-light-theme-primary-palette: mat-palette($fuse-navy);
+$sinbad-light-theme-accent-palette: mat-palette($sinbad-accent);
+$sinbad-light-theme-warn-palette: mat-palette($mat-red);
+
+// Create the Material theme object
+$sinbad-light-theme: mat-light-theme(
+    $sinbad-light-theme-primary-palette,
+    $sinbad-light-theme-accent-palette,
+    $sinbad-light-theme-warn-palette
+);
+
+// Add ".theme-sinbad-light" class to the body to activate this theme.
+// Class name must start with "theme-" !!!
+body.theme-sinbad-light {
+    // Generate the Angular Material theme
+    @include angular-material-theme($sinbad-light-theme);
+
+    // Apply the theme to the Fuse Core
+    @include fuse-core-theme($sinbad-light-theme);
+
+    // Apply the theme to the user components
+    @include components-theme($sinbad-light-theme);
+
+    // Generate Fuse color classes for primary, accent and warn colors
+    $palettes: (
+        primary: $sinbad-light-theme-primary-palette,
+        accent: $sinbad-light-theme-accent-palette,
+        warn: $sinbad-light-theme-warn-palette
     );
 
     @include fuse-color-classes($palettes);

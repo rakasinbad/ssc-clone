@@ -1,0 +1,257 @@
+<div id="account" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                class="text-truncate"
+                style="max-width: 50% !important"
+            >
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/accounts']">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="account-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img *ngIf="(account$ | async)?.image" [src]="(account$ | async)?.image" />
+                    <img
+                        *ngIf="!(account$ | async)?.image"
+                        [src]="'assets/images/avatars/profile.jpg'"
+                    />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2" *ngIf="pageType === 'edit'">
+                        {{
+                            form?.value?.fullName
+                                ? form?.value?.fullName
+                                : (account$ | async)?.fullname
+                        }}
+                    </div>
+
+                    <div class="h2" *ngIf="pageType === 'new'">
+                        {{ form?.value?.fullName ? form?.value?.fullName : 'New Account' }}
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span>Account Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <button
+                mat-raised-button
+                type="submit"
+                class="save-product-button"
+                [disabled]="form.invalid"
+                form="account-form"
+                *ngIf="pageType === 'new'"
+            >
+                <span>ADD</span>
+            </button>
+
+            <button
+                mat-raised-button
+                type="submit"
+                class="save-product-button"
+                [disabled]="form.invalid || form.pristine"
+                *ngIf="pageType === 'edit'"
+                form="account-form"
+            >
+                <span>SAVE</span>
+            </button>
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <form
+                    id="account-form"
+                    name="accountForm"
+                    class="account w-100-p"
+                    [formGroup]="form"
+                    (ngSubmit)="onSubmit(pageType)"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
+                    <mat-tab-group>
+                        <mat-tab label="Basic Info">
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayout="column">
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+                                    <mat-form-field
+                                        class="mb-12"
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="30"
+                                    >
+                                        <mat-label>FullName *</mat-label>
+
+                                        <input
+                                            matInput
+                                            placeholder="FullName"
+                                            name="fullName"
+                                            formControlName="fullName"
+                                            maxlength="30"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('fullName').errors &&
+                                                (form.get('fullName').dirty ||
+                                                    form.get('fullName').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('fullName') }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="30"
+                                    >
+                                        <mat-label>Email</mat-label>
+
+                                        <input
+                                            matInput
+                                            type="email"
+                                            placeholder="Email"
+                                            name="email"
+                                            formControlName="email"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('email').errors &&
+                                                (form.get('email').dirty ||
+                                                    form.get('email').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('email') }}
+                                        </mat-error>
+                                    </mat-form-field>
+
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="30"
+                                    >
+                                        <mat-label>Mobile Phone *</mat-label>
+
+                                        <input
+                                            matInput
+                                            type="tel"
+                                            placeholder="Mobile Phone"
+                                            name="mobilePhone"
+                                            formControlName="mobilePhone"
+                                            pattern="^08[0-9]{8,12}$"
+                                            maxlength="13"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('mobilePhone').errors &&
+                                                (form.get('mobilePhone').dirty ||
+                                                    form.get('mobilePhone').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('mobilePhone') }}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="space-between">
+                                    <mat-form-field
+                                        appearance="outline"
+                                        floatLabel="always"
+                                        fxFlex="30"
+                                    >
+                                        <mat-label>Phone</mat-label>
+
+                                        <input
+                                            matInput
+                                            type="tel"
+                                            placeholder="Phone"
+                                            name="phone"
+                                            formControlName="phone"
+                                        />
+
+                                        <mat-error
+                                            *ngIf="
+                                                form.get('phone').errors &&
+                                                (form.get('phone').dirty ||
+                                                    form.get('phone').touched)
+                                            "
+                                        >
+                                            {{ getErrorMessage('phone') }}
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                        </mat-tab>
+
+                        <mat-tab label="Roles">
+                            <div class="tab-content p-24" fusePerfectScrollbar fxLayout="column">
+                                <ng-container *ngIf="roles$ | async as roles">
+                                    <mat-accordion>
+                                        <mat-expansion-panel
+                                            *ngFor="let role of roles; let i = index"
+                                        >
+                                            <mat-expansion-panel-header>
+                                                <mat-panel-title>
+                                                    <mat-checkbox
+                                                        [checked]="
+                                                            onCheckedRoleValidate(
+                                                                (account$ | async)?.roles,
+                                                                role?.id
+                                                            )
+                                                        "
+                                                        [value]="role?.id"
+                                                        (click)="$event.stopPropagation()"
+                                                        (change)="onCheckRole($event)"
+                                                    >
+                                                        {{ role?.role }}
+                                                    </mat-checkbox>
+                                                </mat-panel-title>
+                                            </mat-expansion-panel-header>
+
+                                            {{ role?.description }}
+
+                                            <!-- <mat-action-row>
+                                            <button mat-button>Click me</button>
+                                        </mat-action-row> -->
+                                        </mat-expansion-panel>
+                                    </mat-accordion>
+                                </ng-container>
+                            </div>
+                        </mat-tab>
+                    </mat-tab-group>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

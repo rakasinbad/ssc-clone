@@ -1,0 +1,33 @@
+import { globalEnLang } from 'app/lang/i18n/en';
+
+export const locale = {
+    lang: 'en',
+    data: {
+        ...globalEnLang,
+        STATUS: {
+            ORDER: {
+                ALL: {
+                    TITLE: 'All'
+                },
+                COMPLETED: {
+                    TITLE: 'Completed'
+                },
+                NEW_ORDER: {
+                    TITLE: 'New Order'
+                },
+                PACKING: {
+                    TITLE: 'Packing'
+                },
+                RECEIVED: {
+                    TITLE: 'Received'
+                },
+                SHIPPED: {
+                    TITLE: 'Shipped'
+                },
+                TO_BE_SHIPPED: {
+                    TITLE: 'To be shipped'
+                }
+            }
+        }
+    }
+};

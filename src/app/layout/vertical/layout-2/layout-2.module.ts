@@ -1,22 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-
 import { FuseSidebarModule } from '@fuse/components';
 import { FuseSharedModule } from '@fuse/shared.module';
-
 import { ContentModule } from 'app/layout/components/content/content.module';
 import { FooterModule } from 'app/layout/components/footer/footer.module';
 import { NavbarModule } from 'app/layout/components/navbar/navbar.module';
 import { QuickPanelModule } from 'app/layout/components/quick-panel/quick-panel.module';
 import { ToolbarModule } from 'app/layout/components/toolbar/toolbar.module';
-
 import { VerticalLayout2Component } from 'app/layout/vertical/layout-2/layout-2.component';
+import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account-detail/account-merchant-quick-panel/account-merchant-quick-panel.module';
 
 @NgModule({
-    declarations: [
-        VerticalLayout2Component
-    ],
-    imports     : [
+    declarations: [VerticalLayout2Component],
+    imports: [
         RouterModule,
 
         FuseSharedModule,
@@ -26,12 +22,10 @@ import { VerticalLayout2Component } from 'app/layout/vertical/layout-2/layout-2.
         FooterModule,
         NavbarModule,
         QuickPanelModule,
-        ToolbarModule
+        ToolbarModule,
+
+        AccountMerchantQuickPanelModule
     ],
-    exports     : [
-        VerticalLayout2Component
-    ]
+    exports: [VerticalLayout2Component]
 })
-export class VerticalLayout2Module
-{
-}
+export class VerticalLayout2Module {}
