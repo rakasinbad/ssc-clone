@@ -60,7 +60,7 @@ app-orders {
             min-height: 64px;
         }
 
-        .account {
+        .order {
             position: relative;
             cursor: pointer;
             height: 84px;
@@ -97,6 +97,10 @@ app-orders {
 
         .mat-column-roles {
             flex: 0 1 160px;
+        }
+
+        .mat-column-totalProduct {
+            flex: 0 1 80px;
         }
 
         .mat-column-odooid {

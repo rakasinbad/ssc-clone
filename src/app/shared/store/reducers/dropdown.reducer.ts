@@ -16,7 +16,7 @@ interface SearchState {
 
 export interface State {
     search: SearchState | undefined;
-    roles: Role[] | undefined;
+    roles: Role[];
     errors: ErrorState;
 }
 const adapterAccount = createEntityAdapter<Account>();

@@ -43,6 +43,225 @@ body.theme-sinbad-light {
         min-height: 80px !important;
     }
 
+    .header.sinbad {
+        .active {
+            color: #f0444c;
+        }
+    }
+
+    .custom-field {
+        label {
+            font-weight: 600;
+            position: relative;
+            top: -0.78em;
+        }
+
+        .mat-form-field-prefix {
+            top: -0.2em;
+        }
+
+        .mat-form-field-infix {
+            padding: 0.5em 0 !important;
+            top: -0.25em;
+        }
+
+        &.sinbad-textarea {
+            label {
+                top: -3em;
+            }
+        }
+
+        &.sinbad-button {
+            label {
+                top: 0;
+            }
+        }
+    }
+
+    .custom-field-right {
+        label {
+            font-weight: 600;
+            position: relative;
+            top: -0.78em;
+            text-align: right;
+            padding-right: 2em;
+            // padding-right: 10px;
+        }
+
+        .mat-form-field-prefix {
+            top: -0.2em;
+        }
+
+        .mat-form-field-infix {
+            padding: 0.5em 0 !important;
+            top: -0.25em;
+        }
+
+        &.sinbad-textarea {
+            label {
+                top: -3em;
+            }
+        }
+
+        &.sinbad-button {
+            label {
+                top: 0;
+            }
+        }
+    }
+
+    .form-box {
+        .mat-subheading-2 {
+            font-weight: 600;
+        }
+    }
+
+    .sinbad-file-field {
+        + button {
+            position: relative;
+            top: -0.78em;
+            left: -0.8em;
+            height: 42px;
+        }
+    }
+
+    .custom-file {
+        display: none;
+    }
+
+    navbar-horizontal-custom-style-1 {
+        // .nav {
+        //     &.horizontal {
+        //         > .nav-item {
+        //             > .nav-link {
+        //                 height: 40px;
+        //             }
+        //         }
+        //     }
+        // }
+
+        @include mat-elevation(1);
+    }
+
+    .sinbad-mat-menu-item {
+        line-height: 24px;
+        height: 36px;
+
+        span {
+            display: inline-block;
+        }
+    }
+
+    // Sinbad tab
+    .sinbad-tab {
+        a:hover,
+        a:visited,
+        a:link,
+        a:active {
+            text-decoration: none !important;
+        }
+
+        .mat-tab-link {
+            min-width: 120px;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.04);
+            }
+        }
+
+        .mat-ink-bar {
+            visibility: hidden !important;
+        }
+
+        .mat-tab-link:focus:not(.mat-tab-disabled) {
+            opacity: 1;
+
+            .label {
+                color: #f0444c;
+            }
+        }
+
+        .mat-tab-label-active {
+            opacity: 1;
+
+            .label {
+                color: #f0444c;
+            }
+        }
+
+        .indicator {
+            border-bottom: 2px solid #f0444c;
+            width: 70%;
+        }
+    }
+
+    .sinbad-progress-bar {
+        border-radius: 50px;
+
+        .mat-progress-bar-fill {
+            &::after {
+                border-radius: 50px;
+                background-color: #f0444c;
+            }
+        }
+    }
+
+    .credit-box-action {
+        border: 2px dashed black;
+        border-radius: 10px;
+        width: 20em;
+        min-height: 180px;
+        max-height: 180px;
+
+        button {
+            mat-icon {
+                color: #2dc3ab;
+                font-size: 36px;
+                height: 36px;
+                width: 36px;
+                line-height: 36px;
+            }
+        }
+    }
+
+    .credit-box-action-fill {
+        background-color: white;
+        // border: 2px dashed black;
+        border-radius: 10px;
+        width: 20em;
+        min-height: 180px;
+        max-height: 180px;
+
+        mat-icon {
+            color: #2dc3ab;
+        }
+
+        .background-box {
+            .top {
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+            }
+
+            .content {
+                .content-top {
+                    .top-image {
+                        img {
+                            border-radius: 4px;
+                        }
+                    }
+
+                    .top-content {
+                        div {
+                            span {
+                                color: #2dc3ab;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /* navbar-horizontal-custom-style-1 {
         .nav {
             &.horizontal {

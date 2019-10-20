@@ -2,67 +2,96 @@ import { FuseNavigation } from '@fuse/types';
 
 export const navigation: FuseNavigation[] = [
     {
-        id: 'applications',
-        title: 'Applications',
-        translate: 'NAV.APPLICATIONS',
-        type: 'group',
+        id: 'dashboard',
+        title: 'Dashboard',
+        translate: 'NAV.DASHBOARD.TITLE',
+        type: 'item',
+        icon: 'dashboard',
+        url: '/pages/dashboard'
+    },
+    {
+        id: 'accounts',
+        title: 'Accounts',
+        translate: 'NAV.ACCOUNTS.TITLE',
+        type: 'collapsable',
+        icon: 'people',
         children: [
             {
-                id: 'dashboard',
-                title: 'Dashboard',
-                translate: 'NAV.DASHBOARD.TITLE',
+                id: 'accountsStore',
+                title: 'Store',
+                translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
-                icon: 'dashboard',
-                url: '/pages/dashboard'
+                url: '/pages/account/stores'
             },
             {
-                id: 'accounts',
-                title: 'Accounts',
-                translate: 'NAV.ACCOUNTS.TITLE',
+                id: 'accountsInternal',
+                title: 'Internal',
+                translate: 'NAV.ACCOUNTS_INTERNAL.TITLE',
                 type: 'item',
-                icon: 'people',
-                url: '/pages/accounts'
+                url: '/pages/account/internal'
+            }
+        ]
+    },
+    {
+        id: 'attendances',
+        title: 'Attendances',
+        translate: 'NAV.ATTENDANCES.TITLE',
+        type: 'item',
+        icon: 'event_available',
+        url: '/pages/attendances'
+    },
+    {
+        id: 'finances',
+        title: 'Finances',
+        translate: 'NAV.FINANCES.TITLE',
+        type: 'collapsable',
+        icon: 'monetization_on',
+        children: [
+            {
+                id: 'creditLimitBalance',
+                title: 'Credit Limit/Balance',
+                translate: 'NAV.CREDIT_LIMIT_BALANCE.TITLE',
+                type: 'item',
+                url: '/pages/finances/credit-limit-balance'
             },
             {
-                id: 'attendances',
-                title: 'Attendances',
-                translate: 'NAV.ATTENDANCES.TITLE',
+                id: 'banks',
+                title: 'Set Bank',
+                translate: 'NAV.SET_BANK.TITLE',
                 type: 'item',
-                icon: 'event_available',
-                url: '/pages/attendances'
+                url: '/pages/finances/banks'
             },
             {
-                id: 'finances',
-                title: 'Finances',
-                translate: 'NAV.FINANCES.TITLE',
+                id: 'paymentStatus',
+                title: 'Payment Status',
+                translate: 'NAV.PAYMENT_STATUS.TITLE',
                 type: 'item',
-                icon: 'monetization_on',
-                url: '/pages/finances'
-            },
+                url: '/pages/finances/payment-status'
+            }
+        ]
+    },
+    {
+        id: 'orderManagements',
+        title: 'Order Managements',
+        translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
+        type: 'item',
+        icon: 'shopping_cart',
+        url: '/pages/orders'
+    },
+    {
+        id: 'inventories',
+        title: 'Inventories',
+        translate: 'NAV.INVENTORIES.TITLE',
+        type: 'collapsable',
+        icon: 'layers',
+        children: [
             {
-                id: 'orders',
-                title: 'Orders',
-                translate: 'NAV.ORDERS.TITLE',
+                id: 'instore',
+                title: 'In Store',
+                translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
                 type: 'item',
-                icon: 'shopping_cart',
-                url: '/pages/orders'
-            },
-            {
-                id: 'inventories',
-                title: 'Inventories',
-                translate: 'NAV.INVENTORIES.TITLE',
-                type: 'collapsable',
-                icon: 'layers',
-                children: [
-                    {
-                        id: 'instore',
-                        title: 'In Store',
-                        translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
-                        type: 'item',
-                        url: '/pages/in-store-inventories',
-                        exactMatch: true
-                    }
-                ]
+                url: '/pages/in-store-inventories',
+                exactMatch: true
             }
         ]
     }

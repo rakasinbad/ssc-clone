@@ -15,7 +15,9 @@ import {
     map,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
+    mergeMap,
+    retry
 } from 'rxjs/operators';
 
 import { AuthService } from '../../auth.service';
@@ -23,9 +25,12 @@ import { Auth } from '../../models';
 import { AuthActions } from '../actions';
 // import { fromAuth } from '../reducers';
 import * as fromRoot from 'app/store/app.reducer';
+import { Network } from '@ngx-pwa/offline';
 
 @Injectable()
 export class AuthEffects {
+    private _isOnline = this.network.online;
+
     authAutoLogin$ = createEffect(() => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
         this.actions$.pipe(
             ofType(AuthActions.authAutoLogin),
@@ -113,18 +118,18 @@ export class AuthEffects {
                 ofType(AuthActions.authLoginRequest),
                 debounceTime(debounce, scheduler),
                 map(action => action.payload),
-                concatMap(payload =>
-                    of(payload).pipe(
-                        tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
-                    )
-                ),
-                withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
-                exhaustMap(([payload, isOnline]) => {
-                    if (isOnline) {
+                // concatMap(payload =>
+                //     of(payload).pipe(
+                //         tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
+                //     )
+                // ),
+                // withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
+                exhaustMap(payload => {
+                    if (this._isOnline) {
                         this._$log.generateGroup('[LOGIN REQUEST] ONLINE', {
                             online: {
                                 type: 'log',
-                                value: isOnline
+                                value: this._isOnline
                             },
                             payload: {
                                 type: 'log',
@@ -133,6 +138,7 @@ export class AuthEffects {
                         });
 
                         return this._$auth.login(payload.username, payload.password).pipe(
+                            retry(3),
                             map(resp => {
                                 const { user, token } = resp;
 
@@ -158,7 +164,7 @@ export class AuthEffects {
                     this._$log.generateGroup('[LOGIN REQUEST] OFFLINE', {
                         online: {
                             type: 'log',
-                            value: isOnline
+                            value: this._isOnline
                         },
                         payload: {
                             type: 'log',
@@ -293,6 +299,7 @@ export class AuthEffects {
         private actions$: Actions,
         private route: ActivatedRoute,
         private router: Router,
+        protected network: Network,
         private store: Store<fromRoot.State>,
         private storage: StorageMap,
         private _$auth: AuthService,

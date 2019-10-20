@@ -24,7 +24,7 @@ const routes: Routes = [
                 canLoad: [AuthGuard]
             },
             {
-                path: 'accounts',
+                path: 'account',
                 loadChildren: () =>
                     import('./main/pages/accounts/accounts.module').then(m => m.AccountsModule),
                 canLoad: [AuthGuard]
@@ -35,6 +35,27 @@ const routes: Routes = [
                     import('./main/pages/attendances/attendances.module').then(
                         m => m.AttendancesModule
                     ),
+                canLoad: [AuthGuard]
+            },
+            {
+                path: 'finances',
+                // children: [
+                //     {
+                //         path: '',
+                //         redirectTo: 'credit-limit-balance',
+                //         pathMatch: 'full'
+                //     },
+                //     {
+                //         path: 'credit-limit-balance',
+                //         loadChildren: () =>
+                //             import(
+                //                 './main/pages/finances/credit-limit-balance/credit-limit-balance.module'
+                //             ).then(m => m.CreditLimitBalanceModule),
+                //         canLoad: [AuthGuard]
+                //     }
+                // ]
+                loadChildren: () =>
+                    import('./main/pages/finances/finances.module').then(m => m.FinancesModule),
                 canLoad: [AuthGuard]
             },
             {

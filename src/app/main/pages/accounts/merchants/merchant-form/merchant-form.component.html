@@ -1,0 +1,965 @@
+<div id="merchants" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form
+            id="merchant-form"
+            name="merchantForm"
+            class="merchant pt-24 w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            novalidate
+        >
+            <mat-card class="mb-24" formGroupName="profileInfo">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        Profile Information
+                    </span>
+
+                    <div>
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('profileInfo.username').errors &&
+                                    !form.get('profileInfo.username').untouched &&
+                                    (form.get('profileInfo.username').dirty ||
+                                        form.get('profileInfo.username').touched)
+                                "
+                                >*Username</label
+                            >
+
+                            <mat-form-field appearance="outline" fxFlex="100">
+                                <input
+                                    matInput
+                                    name="username"
+                                    formControlName="username"
+                                    maxlength="30"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('profileInfo.username').errors &&
+                                        (form.get('profileInfo.username').dirty ||
+                                            form.get('profileInfo.username').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('profileInfo.username') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('profileInfo.phoneNumber').errors &&
+                                    !form.get('profileInfo.phoneNumber').untouched &&
+                                    (form.get('profileInfo.phoneNumber').dirty ||
+                                        form.get('profileInfo.phoneNumber').touched)
+                                "
+                            >
+                                *Phone Number
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="100">
+                                <input
+                                    matInput
+                                    type="tel"
+                                    name="phoneNumber"
+                                    formControlName="phoneNumber"
+                                    maxlength="30"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('profileInfo.phoneNumber').errors &&
+                                        (form.get('profileInfo.phoneNumber').dirty ||
+                                            form.get('profileInfo.phoneNumber').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('profileInfo.phoneNumber') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('profileInfo.photos').errors &&
+                                    !form.get('profileInfo.photos').untouched &&
+                                    (form.get('profileInfo.photos').dirty ||
+                                        form.get('profileInfo.photos').touched)
+                                "
+                            >
+                                *Photo
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                >
+                                    <input type="file" class="custom-file" />
+                                    <input
+                                        matInput
+                                        name="photos"
+                                        formControlName="photos"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('profileInfo.photos').errors &&
+                                            (form.get('profileInfo.photos').dirty ||
+                                                form.get('profileInfo.photos').touched)
+                                        "
+                                    >
+                                        {{ getErrorMessage('profileInfo.photos') }}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                    Upload your file
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('profileInfo.npwpId').errors &&
+                                    !form.get('profileInfo.npwpId').untouched &&
+                                    (form.get('profileInfo.npwpId').dirty ||
+                                        form.get('profileInfo.npwpId').touched)
+                                "
+                            >
+                                *NPWP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="100">
+                                <input
+                                    matInput
+                                    name="npwpId"
+                                    formControlName="npwpId"
+                                    maxlength="30"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('profileInfo.npwpId').errors &&
+                                        (form.get('profileInfo.npwpId').dirty ||
+                                            form.get('profileInfo.npwpId').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('profileInfo.npwpId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24" formGroupName="storeInfo">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        Store Information
+                    </span>
+
+                    <div class="form-box" formGroupName="storeId">
+                        <span class="mat-subheading-2">Store ID</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeId.id').errors &&
+                                    !form.get('storeInfo.storeId.id').untouched &&
+                                    (form.get('storeInfo.storeId.id').dirty ||
+                                        form.get('storeInfo.storeId.id').touched)
+                                "
+                            >
+                                *ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="id" formControlName="id" />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeId.id').errors &&
+                                        (form.get('storeInfo.storeId.id').dirty ||
+                                            form.get('storeInfo.storeId.id').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.storeId.id') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeId.storeName').errors &&
+                                    !form.get('storeInfo.storeId.storeName').untouched &&
+                                    (form.get('storeInfo.storeId.storeName').dirty ||
+                                        form.get('storeInfo.storeId.storeName').touched)
+                                "
+                            >
+                                *Nama Toko
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="storeName" formControlName="storeName" />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeId.storeName').errors &&
+                                        (form.get('storeInfo.storeId.storeName').dirty ||
+                                            form.get('storeInfo.storeId.storeName').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.storeId.storeName') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="form-box" formGroupName="address">
+                        <span class="mat-subheading-2">Address</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.province').errors &&
+                                    !form.get('storeInfo.address.province').untouched &&
+                                    (form.get('storeInfo.address.province').dirty ||
+                                        form.get('storeInfo.address.province').touched)
+                                "
+                            >
+                                *Province
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="province"
+                                    placeholder="Choose province..."
+                                >
+                                    <mat-option>DKI Jakarta</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.province').errors &&
+                                        (form.get('storeInfo.address.province').dirty ||
+                                            form.get('storeInfo.address.province').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.province') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.city').errors &&
+                                    !form.get('storeInfo.address.city').untouched &&
+                                    (form.get('storeInfo.address.city').dirty ||
+                                        form.get('storeInfo.address.city').touched)
+                                "
+                            >
+                                *City
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select formControlName="city" placeholder="Choose city...">
+                                    <mat-option>Jakarta Selatan</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.city').errors &&
+                                        (form.get('storeInfo.address.city').dirty ||
+                                            form.get('storeInfo.address.city').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.city') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.district').errors &&
+                                    !form.get('storeInfo.address.district').untouched &&
+                                    (form.get('storeInfo.address.district').dirty ||
+                                        form.get('storeInfo.address.district').touched)
+                                "
+                            >
+                                *Kecamatan
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="district"
+                                    placeholder="Choose district..."
+                                >
+                                    <mat-option>Cilandak</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.district').errors &&
+                                        (form.get('storeInfo.address.district').dirty ||
+                                            form.get('storeInfo.address.district').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.district') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.urban').errors &&
+                                    !form.get('storeInfo.address.urban').untouched &&
+                                    (form.get('storeInfo.address.urban').dirty ||
+                                        form.get('storeInfo.address.urban').touched)
+                                "
+                            >
+                                *Kelurahan
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select formControlName="urban" placeholder="Choose urban...">
+                                    <mat-option>Lebak Bulus</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.urban').errors &&
+                                        (form.get('storeInfo.address.urban').dirty ||
+                                            form.get('storeInfo.address.urban').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.urban') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.postcode').errors &&
+                                    !form.get('storeInfo.address.postcode').untouched &&
+                                    (form.get('storeInfo.address.postcode').dirty ||
+                                        form.get('storeInfo.address.postcode').touched)
+                                "
+                            >
+                                *Kode Pos
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="postcode"
+                                    placeholder="Choose postcode..."
+                                >
+                                    <mat-option>12440</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.postcode').errors &&
+                                        (form.get('storeInfo.address.postcode').dirty ||
+                                            form.get('storeInfo.address.postcode').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.postcode') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field-right sinbad-textarea"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.notes').errors &&
+                                    !form.get('storeInfo.address.notes').untouched &&
+                                    (form.get('storeInfo.address.notes').dirty ||
+                                        form.get('storeInfo.address.notes').touched)
+                                "
+                            >
+                                *Notes
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea matInput formControlName="notes" rows="5"></textarea>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.notes').errors &&
+                                        (form.get('storeInfo.address.notes').dirty ||
+                                            form.get('storeInfo.address.notes').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.notes') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field-right sinbad-button"
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.address.geolocation').errors &&
+                                    !form.get('storeInfo.address.geolocation').untouched &&
+                                    (form.get('storeInfo.address.geolocation').dirty ||
+                                        form.get('storeInfo.address.geolocation').touched)
+                                "
+                            >
+                                *Geolocation
+                            </label>
+
+                            <button mat-flat-button color="accent">Set GeoLoc</button>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea matInput formControlName="notes" rows="5"></textarea>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.address.geolocation').errors &&
+                                        (form.get('storeInfo.address.geolocation').dirty ||
+                                            form.get('storeInfo.address.geolocation').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.address.geolocation') }}
+                                </mat-error>
+                            </mat-form-field> -->
+                        </div>
+                    </div>
+
+                    <div class="form-box mt-16" formGroupName="legalInfo">
+                        <span class="mat-subheading-2">Legal Information</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.legalInfo.identityId').errors &&
+                                    !form.get('storeInfo.legalInfo.identityId').untouched &&
+                                    (form.get('storeInfo.legalInfo.identityId').dirty ||
+                                        form.get('storeInfo.legalInfo.identityId').touched)
+                                "
+                            >
+                                *KTP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="identityId" formControlName="identityId" />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.legalInfo.identityId').errors &&
+                                        (form.get('storeInfo.legalInfo.identityId').dirty ||
+                                            form.get('storeInfo.legalInfo.identityId').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.legalInfo.identityId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field-right"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.legalInfo.identityPhoto').errors &&
+                                    !form.get('storeInfo.legalInfo.identityPhoto').untouched &&
+                                    (form.get('storeInfo.legalInfo.identityPhoto').dirty ||
+                                        form.get('storeInfo.legalInfo.identityPhoto').touched)
+                                "
+                            >
+                                *KTP Photo
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                >
+                                    <input type="file" class="custom-file" />
+                                    <input
+                                        matInput
+                                        name="identityPhoto"
+                                        formControlName="identityPhoto"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('storeInfo.legalInfo.identityPhoto').errors &&
+                                            (form.get('storeInfo.legalInfo.identityPhoto').dirty ||
+                                                form.get('storeInfo.legalInfo.identityPhoto')
+                                                    .touched)
+                                        "
+                                    >
+                                        {{ getErrorMessage('storeInfo.legalInfo.identityPhoto') }}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                    Upload your file
+                                </button>
+                            </div>
+                        </div>
+
+                        <div
+                            class="custom-field-right"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.legalInfo.identityPhotoSelfie').errors &&
+                                    !form.get('storeInfo.legalInfo.identityPhotoSelfie')
+                                        .untouched &&
+                                    (form.get('storeInfo.legalInfo.identityPhotoSelfie').dirty ||
+                                        form.get('storeInfo.legalInfo.identityPhotoSelfie').touched)
+                                "
+                            >
+                                *KTP Photo + Selfie
+                            </label>
+
+                            <div fxLayout="row" fxFlex="100">
+                                <mat-form-field
+                                    class="sinbad-file-field"
+                                    appearance="outline"
+                                    fxFlex="40"
+                                >
+                                    <input type="file" class="custom-file" />
+                                    <input
+                                        matInput
+                                        name="identityPhotoSelfie"
+                                        formControlName="identityPhotoSelfie"
+                                        placeholder="No file choose"
+                                    />
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('storeInfo.legalInfo.identityPhotoSelfie')
+                                                .errors &&
+                                            (form.get('storeInfo.legalInfo.identityPhotoSelfie')
+                                                .dirty ||
+                                                form.get('storeInfo.legalInfo.identityPhotoSelfie')
+                                                    .touched)
+                                        "
+                                    >
+                                        {{
+                                            getErrorMessage(
+                                                'storeInfo.legalInfo.identityPhotoSelfie'
+                                            )
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                    Upload your file
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.legalInfo.npwpId').errors &&
+                                    !form.get('storeInfo.legalInfo.npwpId').untouched &&
+                                    (form.get('storeInfo.legalInfo.npwpId').dirty ||
+                                        form.get('storeInfo.legalInfo.npwpId').touched)
+                                "
+                            >
+                                *NPWP ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="npwpId" formControlName="npwpId" />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.legalInfo.npwpId').errors &&
+                                        (form.get('storeInfo.legalInfo.npwpId').dirty ||
+                                            form.get('storeInfo.legalInfo.npwpId').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.legalInfo.npwpId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="form-box" formGroupName="physicalStoreInfo">
+                        <span class="mat-subheading-2">Physical Store Information</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                        .errors &&
+                                    !form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                        .untouched &&
+                                    (form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                        .dirty ||
+                                        form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                            .touched)
+                                "
+                            >
+                                Physical Store Information
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="physicalStoreInfo"
+                                    formControlName="physicalStoreInfo"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                            .errors &&
+                                        (form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                            .dirty ||
+                                            form.get(
+                                                'storeInfo.physicalStoreInfo.physicalStoreInfo'
+                                            ).touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.physicalStoreInfo.physicalStoreInfo'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                        .errors &&
+                                    !form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                        .untouched &&
+                                    (form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                        .dirty ||
+                                        form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                            .touched)
+                                "
+                            >
+                                Number of Employee
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="numberOfEmployee"
+                                    placeholder="Choose number of employee..."
+                                >
+                                    <mat-option>< 10</mat-option>
+                                    <mat-option>10 - 20</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                            .errors &&
+                                        (form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                            .dirty ||
+                                            form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.physicalStoreInfo.numberOfEmployee'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.physicalStoreInfo.vehicleAddress').errors &&
+                                    !form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                        .untouched &&
+                                    (form.get('storeInfo.physicalStoreInfo.vehicleAddress').dirty ||
+                                        form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                            .touched)
+                                "
+                            >
+                                Vehicle Address
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="vehicleAddress"
+                                    placeholder="Choose vehicle address..."
+                                >
+                                    <mat-option>-</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                            .errors &&
+                                        (form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                            .dirty ||
+                                            form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.physicalStoreInfo.vehicleAddress'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div class="form-box" formGroupName="storeClassification">
+                        <span class="mat-subheading-2">Store Classification</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeType').errors &&
+                                    !form.get('storeInfo.storeClassification.storeType')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeType').dirty ||
+                                        form.get('storeInfo.storeClassification.storeType')
+                                            .touched)
+                                "
+                            >
+                                *Store Type
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="storeType"
+                                    placeholder="Choose store type..."
+                                >
+                                    <mat-option>-</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeType')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeType')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeType')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeType'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeGroup').errors &&
+                                    !form.get('storeInfo.storeClassification.storeGroup')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeGroup').dirty ||
+                                        form.get('storeInfo.storeClassification.storeGroup')
+                                            .touched)
+                                "
+                            >
+                                *Store Group
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="storeGroup"
+                                    placeholder="Choose store group..."
+                                >
+                                    <mat-option>-</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeGroup')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeGroup')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeGroup')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeGroup'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeCluster').errors &&
+                                    !form.get('storeInfo.storeClassification.storeCluster')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeCluster').dirty ||
+                                        form.get('storeInfo.storeClassification.storeCluster')
+                                            .touched)
+                                "
+                            >
+                                *Store Cluster
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="storeCluster"
+                                    placeholder="Choose store cluster..."
+                                >
+                                    <mat-option>-</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeCluster')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeCluster')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeCluster')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeCluster'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeSegment').errors &&
+                                    !form.get('storeInfo.storeClassification.storeSegment')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeSegment').dirty ||
+                                        form.get('storeInfo.storeClassification.storeSegment')
+                                            .touched)
+                                "
+                            >
+                                *Store Segment
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select
+                                    formControlName="storeSegment"
+                                    placeholder="Choose store segment..."
+                                >
+                                    <mat-option>-</mat-option>
+                                </mat-select>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeSegment')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeSegment')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeSegment')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeSegment'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+</div>

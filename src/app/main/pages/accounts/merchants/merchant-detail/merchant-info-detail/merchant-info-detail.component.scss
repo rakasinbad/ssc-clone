@@ -1,0 +1,55 @@
+@import 'src/@fuse/scss/fuse';
+
+app-merchant-info-detail {
+    .order-box {
+        // border: 1px solid black;
+
+        header {
+            border-bottom: 1px solid #dfdfdf;
+
+            .title {
+                // font-size: 17px;
+                font-weight: bold;
+            }
+        }
+
+        .content {
+            font-size: 13px;
+
+            td {
+                padding-bottom: 5px;
+            }
+
+            tr {
+                &:last-child {
+                    td {
+                        padding-bottom: 0;
+                    }
+                }
+            }
+
+            .info-title {
+                // font-weight: bold;
+
+                + td {
+                    padding-left: 15px;
+                }
+            }
+
+            .info-group-1 {
+                .info-title {
+                    width: 80px;
+                }
+            }
+
+            .info-group-2 {
+                .info-title {
+                    width: 100px;
+                }
+            }
+        }
+
+        &.info-box {
+        }
+    }
+}

@@ -4,6 +4,9 @@ export const locale = {
     lang: 'en',
     data: {
         ...globalEnLang,
+        ORDER_DOCUMENT: 'Document Order',
+        ORDER_LINES: 'Order Lines',
+        ORDER_STATUS: 'Order Status',
         STATUS: {
             ORDER: {
                 ALL: {

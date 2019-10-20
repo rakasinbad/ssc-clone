@@ -10,6 +10,8 @@ import { ToolbarModule } from 'app/layout/components/toolbar/toolbar.module';
 import { VerticalLayout1Component } from 'app/layout/vertical/layout-1/layout-1.component';
 import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account-detail/account-merchant-quick-panel/account-merchant-quick-panel.module';
 
+import { FooterActionModule } from './../../components/footer-action/footer-action.module';
+
 @NgModule({
     declarations: [VerticalLayout1Component],
     imports: [
@@ -24,6 +26,7 @@ import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account
         QuickPanelModule,
         ToolbarModule,
 
+        FooterActionModule,
         AccountMerchantQuickPanelModule
     ],
     exports: [VerticalLayout1Component]

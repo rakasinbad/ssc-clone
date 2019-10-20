@@ -8,11 +8,13 @@ navbar-horizontal-custom-style-1 {
                     height: 42px;
                 }
 
+                > .nav-link.sinbad,
                 > .nav-link.active.accent {
                     background-color: transparent !important;
                     color: #f0444c !important;
 
-                    > .nav-link-title {
+                    > .nav-link-title,
+                    > .nav-link-title.sinbad {
                         border-bottom: 2px solid #f0444c;
                         line-height: 25px;
                     }

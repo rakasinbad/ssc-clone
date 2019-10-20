@@ -19,6 +19,47 @@
                 </div>
             </div>
 
+            <div
+                class="px-8 px-md-16"
+                *ngIf="breadcrumbs$ | async as breadcrumbs; else noBreadcrumb"
+            >
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <ng-container *ngFor="let breadcrumb of breadcrumbs; last as isLast">
+                        <span
+                            [class.secondary-text]="!breadcrumb?.active"
+                            *ngIf="!breadcrumb?.url; else breadWithUrl"
+                        >
+                            {{
+                                breadcrumb?.translate
+                                    ? (breadcrumb?.translate | translate | titlecase)
+                                    : (breadcrumb?.title | titlecase)
+                            }}
+                        </span>
+                        <ng-template #breadWithUrl>
+                            <a href>
+                                <span [class.secondary]="!breadcrumb?.active">
+                                    {{ breadcrumb?.title | titlecase }}
+                                </span>
+                            </a>
+                        </ng-template>
+                        <mat-icon class="secondary-text s-16" *ngIf="!isLast">
+                            chevron_right
+                        </mat-icon>
+                    </ng-container>
+                    <!-- <span class="secondary-text">Beranda</span>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <span class="secondary-text">Documentation</span>
+                        <mat-icon class="secondary-text s-16">chevron_right</mat-icon>
+                        <a href="">
+                            <span>
+                                {{ 'new components' | titlecase }}
+                            </span>
+                        </a> -->
+                </div>
+            </div>
+
+            <ng-template #noBreadcrumb></ng-template>
+
             <!-- <div class="px-8 px-md-16">
                 <fuse-shortcuts [navigation]="navigation"></fuse-shortcuts>
             </div> -->

@@ -1,0 +1,125 @@
+<div id="internal-employee" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/account/internal']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <!-- <img
+                        *ngIf="(account$ | async)?.imageUrl"
+                        [src]="(account$ | async)?.imageUrl"
+                    />
+                    <img
+                        *ngIf="!(account$ | async)?.imageUrl"
+                        [src]="'assets/images/avatars/profile.jpg'"
+                    /> -->
+
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        Anwar Sahid
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span>Account Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card sinbad">
+            <!-- CONTENT -->
+            <div class="content px-24 py-8" fxLayout="column">
+                <span class="mat-title">Detail User</span>
+
+                <form
+                    id="internal-form"
+                    name="internalForm"
+                    class="internal w-100-p"
+                    [formGroup]="form"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12">Nama</label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input matInput name="fullName" formControlName="fullName" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12">Role</label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input matInput name="role" formControlName="role" />
+                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+                        </mat-form-field>
+
+                        <!-- <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select
+                                formControlName="roles"
+                                placeholder="Choose role..."
+                                multiple
+                            >
+                                <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
+                                    {{ role?.role }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field> -->
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12">Email</label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input matInput name="email" formControlName="email" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label fxFlexAlign="center" fxFlex="12">*Phone Number</label>
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input
+                                matInput
+                                type="tel"
+                                name="phoneNumber"
+                                formControlName="phoneNumber"
+                            />
+                        </mat-form-field>
+                    </div>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

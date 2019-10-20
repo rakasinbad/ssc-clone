@@ -1,0 +1,174 @@
+<div id="merchant-employee" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/accounts']">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <!-- <img
+                        *ngIf="(account$ | async)?.imageUrl"
+                        [src]="(account$ | async)?.imageUrl"
+                    />
+                    <img
+                        *ngIf="!(account$ | async)?.imageUrl"
+                        [src]="'assets/images/avatars/profile.jpg'"
+                    /> -->
+
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        Anwar Sahid
+                    </div>
+
+                    <div class="subtitle secondary-text">
+                        <span>Account Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card sinbad">
+            <!-- CONTENT TOOLBAR -->
+            <!-- <div class="toolbar px-24 py-8">
+                <span>Basic Information</span>
+            </div> -->
+            <!-- / CONTENT TOOLBAR -->
+
+            <!-- CONTENT -->
+            <div class="content px-24 py-8" fxLayout="column">
+                <span class="mat-title">Basic Information</span>
+
+                <form
+                    id="account-form"
+                    name="accountForm"
+                    class="account w-100-p"
+                    [formGroup]="form"
+                    fxLayout="column"
+                    fxFlex
+                    novalidate
+                >
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('fullName').errors &&
+                                !form.get('fullName').untouched &&
+                                (form.get('fullName').dirty || form.get('fullName').touched)
+                            "
+                            >*Nama</label
+                        >
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input
+                                matInput
+                                name="fullName"
+                                formControlName="fullName"
+                                maxlength="30"
+                            />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('fullName').errors &&
+                                    (form.get('fullName').dirty || form.get('fullName').touched)
+                                "
+                            >
+                                {{ getErrorMessage('fullName') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('roles').errors &&
+                                !form.get('roles').untouched &&
+                                (form.get('roles').dirty || form.get('roles').touched)
+                            "
+                            >*Role</label
+                        >
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select
+                                formControlName="roles"
+                                placeholder="Choose role..."
+                                multiple
+                            >
+                                <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
+                                    {{ role?.role }}
+                                </mat-option>
+                            </mat-select>
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('roles').errors &&
+                                    (form.get('roles').dirty || form.get('roles').touched)
+                                "
+                            >
+                                {{ getErrorMessage('roles') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('phoneNumber').errors &&
+                                !form.get('phoneNumber').untouched &&
+                                (form.get('phoneNumber').dirty || form.get('phoneNumber').touched)
+                            "
+                            >*Phone Number</label
+                        >
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <input
+                                matInput
+                                type="tel"
+                                name="phoneNumber"
+                                formControlName="phoneNumber"
+                            />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('phoneNumber').errors &&
+                                    (form.get('phoneNumber').dirty ||
+                                        form.get('phoneNumber').touched)
+                                "
+                            >
+                                {{ getErrorMessage('phoneNumber') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </form>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

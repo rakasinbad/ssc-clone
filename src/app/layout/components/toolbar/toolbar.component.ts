@@ -3,14 +3,16 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthActions } from 'app/main/pages/core/auth/store/actions';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { navigation } from 'app/navigation/navigation';
+import { IBreadcrumbs } from 'app/shared/models';
+import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import * as _ from 'lodash';
-import { Subject, Observable } from 'rxjs';
-import { takeUntil, startWith } from 'rxjs/operators';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { Observable, Subject } from 'rxjs';
+import { startWith, takeUntil } from 'rxjs/operators';
 
 /**
  *
@@ -83,6 +85,8 @@ export class ToolbarComponent implements OnInit, OnDestroy {
      */
     userStatusOptions: any[];
 
+    breadcrumbs$: Observable<IBreadcrumbs[]>;
+
     /**
      *
      *
@@ -103,16 +107,16 @@ export class ToolbarComponent implements OnInit, OnDestroy {
     /**
      * Creates an instance of ToolbarComponent.
      * @param {Store<fromRoot.State>} store
-     * @param {TranslateService} translateService
      * @param {FuseConfigService} _fuseConfigService
      * @param {FuseSidebarService} _fuseSidebarService
+     * @param {TranslateService} translate
      * @memberof ToolbarComponent
      */
     constructor(
         private store: Store<fromRoot.State>,
-        private translateService: TranslateService,
         private _fuseConfigService: FuseConfigService,
-        private _fuseSidebarService: FuseSidebarService
+        private _fuseSidebarService: FuseSidebarService,
+        public translate: TranslateService
     ) {
         // Set the defaults
         this.userStatusOptions = [
@@ -150,9 +154,9 @@ export class ToolbarComponent implements OnInit, OnDestroy {
                 flag: 'us'
             },
             {
-                id: 'tr',
-                title: 'Turkish',
-                flag: 'tr'
+                id: 'id',
+                title: 'Indonesian',
+                flag: 'id'
             }
         ];
 
@@ -180,14 +184,14 @@ export class ToolbarComponent implements OnInit, OnDestroy {
             this.horizontalNavbar = settings.layout.navbar.position === 'top';
             this.rightNavbar = settings.layout.navbar.position === 'right';
             this.hiddenNavbar = settings.layout.navbar.hidden === true;
-
-            console.log('Toolbar config', settings.layout.navbar);
         });
 
         // Set the selected language from default languages
         this.selectedLanguage = _.find(this.languages, {
-            id: this.translateService.currentLang
+            id: this.translate.currentLang
         });
+
+        this.breadcrumbs$ = this.store.select(UiSelectors.getBreadcrumbs);
 
         this.user$ = this.store
             .select(AuthSelectors.getUserState)
@@ -244,7 +248,7 @@ export class ToolbarComponent implements OnInit, OnDestroy {
         this.selectedLanguage = lang;
 
         // Use the selected language for translations
-        this.translateService.use(lang.id);
+        this.translate.use(lang.id);
     }
 
     /**

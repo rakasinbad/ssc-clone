@@ -1,0 +1,208 @@
+<div>Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
+
+<!-- CONTENT HEADER -->
+<div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <button mat-flat-button color="accent">
+            EXPORT
+        </button>
+
+        <button mat-stroked-button color="accent" class="sinbad">
+            IMPORT
+        </button>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <!-- SEARCH -->
+        <div class="search-wrapper mx-12">
+            <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <mat-icon>search</mat-icon>
+                <input #filter placeholder="Search for a store" />
+            </div>
+        </div>
+        <!-- / SEARCH -->
+
+        <button mat-flat-button class="grey-600">
+            <mat-icon>filter_list</mat-icon>
+            Filter Lists
+        </button>
+
+        <button mat-flat-button class="grey-600">
+            Group By
+        </button>
+    </div>
+</div>
+<!-- / CONTENT HEADER -->
+
+<mat-card>
+    <mat-table
+        class="stores-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
+    >
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                ID
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row?.id }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Store Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.name }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Credit Limit Column -->
+        <ng-container matColumnDef="limit">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Credit Limit
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.limit }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Balance Column -->
+        <ng-container matColumnDef="balance">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                Balance
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                {{ row?.balance }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Account Receivable Column -->
+        <ng-container matColumnDef="receivable">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Account Receivable
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.receivable }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Credit Limit Group Column -->
+        <ng-container matColumnDef="limit-group">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Credit Limit Group
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.limitGroup }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Segment Column -->
+        <ng-container matColumnDef="segment">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Segment
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.segment }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- ToP Column -->
+        <ng-container matColumnDef="top">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                ToP
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.top }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Last Update Column -->
+        <ng-container matColumnDef="last-update">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Last Update
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.lastUpdate | date: 'dd MMMM yyyy' }}
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+                Action
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+                <div fxFlex="row" fxLayoutAlign="end center">
+                    <button
+                        mat-icon-button
+                        [matMenuTriggerFor]="moreMenu"
+                        aria-label="More"
+                        (click)="$event.stopPropagation()"
+                    >
+                        <mat-icon class="secondary-text">more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #moreMenu="matMenu">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="edit"
+                            (click)="onEdit(row)"
+                        >
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="remove"
+                            (click)="onDelete(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Freeze Balance</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="store"
+            matRipple
+            [routerLink]="['/pages/account/stores/' + row?.id + '/employee']"
+        >
+        </mat-row>
+    </mat-table>
+
+    <mat-paginator
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onChangePage($event)"
+        showFirstLastButtons
+    >
+    </mat-paginator>
+
+    <!-- <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
+</mat-card>

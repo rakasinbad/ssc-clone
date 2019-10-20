@@ -1,0 +1,194 @@
+<div id="internals" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button mat-flat-button color="accent">
+                    EXPORT
+                </button>
+
+                <button mat-stroked-button color="accent" class="sinbad">
+                    IMPORT
+                </button>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter placeholder="Search for a employee" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+
+                <button mat-flat-button class="grey-600">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter Lists
+                </button>
+
+                <button mat-flat-button class="grey-600">
+                    Group By
+                </button>
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <mat-card class="mb-24">
+            <div fxLayout="column" fxLayoutGap="10px">
+                <small>
+                    Filter & Group By
+                </small>
+
+                <div>
+                    <mat-chip-list aria-label="Filter">
+                        <mat-chip>
+                            Status: Diterima
+
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+
+                        <mat-chip>
+                            Geo Coverage
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
+        </mat-card>
+
+        <mat-card>
+            <mat-table
+                class="internals-table"
+                #table
+                [dataSource]="dataSource"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.id }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- User Column -->
+                <ng-container matColumnDef="user">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        User
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.user }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Email
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.email }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Access Right Column -->
+                <ng-container matColumnDef="accessRight">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Access Right
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <p class="text-truncate price">
+                            {{ row?.role }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="edit"
+                                    [routerLink]="[row?.id]"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="remove"
+                                    (click)="onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Remove</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="archive"
+                                >
+                                    <mat-icon>archive</mat-icon>
+                                    <span>Archive</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="internal"
+                    matRipple
+                    [routerLink]="['/pages/account/internal/' + row.id + '/detail']"
+                >
+                </mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+        </mat-card>
+
+        <!-- CONTENT CARD -->
+        <!-- <div class="content-card"></div> -->
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -1,0 +1,84 @@
+<div fxLayout="row" fxLayoutGap="15px">
+    <div class="credit-box-action" fxLayout="column" fxLayoutAlign="center center">
+        <button mat-icon-button><mat-icon>add_circle</mat-icon></button>
+        <div>Tambah Credit Limit</div>
+    </div>
+
+    <div class="credit-box-action-fill" fxLayout="column" fxLayoutAlign="start stretch">
+        <!-- <mat-icon>add_circle</mat-icon>
+        <div>Tambah Credit Limit</div> -->
+
+        <div class="background-box" fxFill fxLayout="column" fxLayoutAlign="stretch">
+            <div class="top" style="background:#666666" fxFlex="35">
+                <div fxLayout="row" fxLayoutAlign="end stretch" fxFlex>
+                    <span style="color:#757575;font-size:48px">CL01</span>
+                </div>
+            </div>
+
+            <div
+                class="content p-16"
+                style="position: relative;top:-2.8em"
+                fxLayout="column"
+                fxLayoutGap="10px"
+            >
+                <div
+                    class="content-top"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="top-image">
+                        <img [src]="'assets/images/avatars/profile.jpg'" style="height: 45px;" />
+                    </div>
+
+                    <div class="top-content" fxLayout="column">
+                        <div style="color:white">Credit Limit 01</div>
+
+                        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="7px">
+                            <mat-icon>monetization_on</mat-icon>
+
+                            <span>Rp 5.000.000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-bottom">
+                    <div>
+                        <span>Segment:</span>
+                        <span>MTI</span>
+                    </div>
+
+                    <div>
+                        <span>Days:</span>
+                        <span>2 Days</span>
+                    </div>
+
+                    <div>
+                        <span>Geograph:</span>
+                        <span>Jawa Tengah</span>
+                    </div>
+                    <!-- <table>
+                            <tr>
+                                <td>Segment:</td>
+                                <td>MTI</td>
+                            </tr>
+
+                            <tr>
+                                <td>Days:</td>
+                                <td>2 Days</td>
+                            </tr>
+
+                            <tr>
+                                <td>Geograph:</td>
+                                <td>Jawa Tengah</td>
+                            </tr>
+                        </table> -->
+                </div>
+            </div>
+
+            <!-- <div class="bottom" style="background:white;border:1px solid black" fxFlex>
+
+            </div> -->
+        </div>
+    </div>
+</div>

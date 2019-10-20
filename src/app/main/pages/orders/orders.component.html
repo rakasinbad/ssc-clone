@@ -69,14 +69,265 @@
         <!-- CONTENT CARD -->
         <div class="content-card">
             <!-- CONTENT TOOLBAR -->
-            <div class="toolbar px-24 py-8">
+            <!-- <div class="toolbar px-24 py-8">
                 <span>Content toolbar</span>
-            </div>
+            </div> -->
             <!-- / CONTENT TOOLBAR -->
 
             <!-- CONTENT -->
-            <div class="content p-24"></div>
+            <!-- <div class="content p-24"></div> -->
             <!-- / CONTENT -->
+
+            <mat-table
+                class="orders-table"
+                #table
+                [dataSource]="dataSource"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            [(ngModel)]="hasSelected"
+                            (click)="$event.stopPropagation()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Origins Column -->
+                <ng-container matColumnDef="origins">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Origins
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.origins }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.id }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Order Date Column -->
+                <ng-container matColumnDef="orderDate">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Order Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.orderDate | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="storeName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Store Name
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.storeName }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Trx Amount Column -->
+                <ng-container matColumnDef="trxAmount">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Trx Amount
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <p class="text-truncate price">
+                            {{ row?.trxAmount | currency: 'IDR':'symbol':'4.2-2' | price }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Payment Method Column -->
+                <ng-container matColumnDef="paymentMethod">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Payment Method/TOP
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <p class="text-truncate">
+                            {{ row?.paymentMethod }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Total Product Column -->
+                <ng-container matColumnDef="totalProduct">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Jumlah Produk
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.totalProduct }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.status }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Delivered On Column -->
+                <ng-container matColumnDef="deliveredOn">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Delivered On
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.deliveredOn | date: 'dd/MM/yyyy' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actual Amt Delivered Column -->
+                <ng-container matColumnDef="actualAmountDelivered">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Actual Amt Delivered
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate price">
+                            {{
+                                row?.actualAmountDelivered
+                                    | currency: 'IDR':'symbol':'4.2-2'
+                                    | price
+                            }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Active Column -->
+                <!-- <ng-container matColumnDef="active">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Active
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <mat-icon *ngIf="row.active" class="active-icon green-600 s-16">
+                            check
+                        </mat-icon>
+
+                        <mat-icon *ngIf="!row.active" class="active-icon red-500 s-16">
+                            close
+                        </mat-icon>
+                    </mat-cell>
+                </ng-container> -->
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        <button mat-icon-button *ngIf="hasSelected">
+                            <mat-icon class="secondary-text">delete</mat-icon>
+                        </button>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="send"
+                                >
+                                    <mat-icon>send</mat-icon>
+                                    <span>
+                                        {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }}
+                                    </span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="edit"
+                                    [routerLink]="[row?.id]"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="remove"
+                                    (click)="onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Remove</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="archive"
+                                >
+                                    <mat-icon>archive</mat-icon>
+                                    <span>Archive</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="print"
+                                >
+                                    <mat-icon>print</mat-icon>
+                                    <span>{{ 'ACTION.PRINT' | translate }}</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="order"
+                    matRipple
+                    [routerLink]="['/pages/orders/' + row.id + '/detail']"
+                >
+                </mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+
+            <!-- <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
         </div>
         <!-- / CONTENT CARD -->
     </div>

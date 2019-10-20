@@ -56,6 +56,10 @@
                 <!-- / FOOTER: Below static -->
             </div>
 
+            <!-- FOOTER ACTION: Below fixed -->
+            <ng-container *ngTemplateOutlet="footerAction"></ng-container>
+            <!-- / FOOTER ACTION: Below fixed -->
+
             <!-- FOOTER: Below fixed -->
             <ng-container *ngIf="fuseConfig.layout.footer.position === 'below-fixed'">
                 <ng-container *ngTemplateOutlet="footer"></ng-container>
@@ -129,6 +133,19 @@
     ></footer>
 </ng-template>
 <!-- / FOOTER -->
+
+<!-- FOOTER ACTION -->
+<ng-template #footerAction>
+    <footer-action
+        *ngIf="isShowFooterAction$ | async"
+        [ngClass]="
+            fuseConfig.layout.footer.customBackgroundColor === true
+                ? fuseConfig.layout.footer.position + ' ' + fuseConfig.layout.footer.background
+                : fuseConfig.layout.footer.position
+        "
+    ></footer-action>
+</ng-template>
+<!-- / FOOTER ACTION -->
 
 <!-- TOP CUSTOM NAVBAR -->
 <ng-template #topCustomNavbar>

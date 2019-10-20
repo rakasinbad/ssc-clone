@@ -1,4 +1,31 @@
 export const globalEnLang = {
+    ACTION: {
+        ACTIVE: 'Active',
+        ARCHIVE: 'Archive',
+        INACTIVE: 'Inactive',
+        PRINT: 'Print',
+        EDIT: 'Edit',
+        REMOVE: 'Remove'
+    },
+    BREADCRUMBS: {
+        ACCOUNTS: 'Accounts',
+        ACCOUNT: 'Account',
+        ADD_STORE: 'Add Store',
+        CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
+        DETAIL: 'Detail',
+        EDIT: 'Edit',
+        EDIT_STORE: 'Edit Store',
+        EDIT_USER: 'Edit User',
+        FINANCE: 'Finance',
+        HOME: 'Beranda',
+        INTERNAL: 'Internal',
+        MERCHANTS: 'Merchants',
+        MERCHANT: 'Merchant',
+        ORDER_DETAILS: 'Order Details',
+        ORDER_MANAGEMENTS: 'Order Managements',
+        STORES: 'Stores',
+        STORE: 'Store'
+    },
     FORM: {
         ACCOUNT: 'Account',
         CHECK_IN: 'Check In',
@@ -13,8 +40,19 @@ export const globalEnLang = {
         NAME: 'Name',
         PASSWORD: 'Password',
         PHONE: 'Phone',
+        PHONE_NUMBER: 'Phone Number',
+        ROLE: 'Role',
         STATUS: 'Status',
         USERNAME: 'Username'
+    },
+    GLOBAL_STATUS: {
+        ALL: 'All',
+        COMPLETED: 'Completed',
+        NEW_ORDER: 'New Order',
+        PACKING: 'Packing',
+        RECEIVED: 'Received',
+        SHIPPED: 'Shipped',
+        TO_BE_SHIPPED: 'To be shipped'
     },
     ERROR: {
         ALPHA_PATTERN: '{{ fieldName }} field must alphabets.',

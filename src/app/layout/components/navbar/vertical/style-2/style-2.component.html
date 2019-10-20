@@ -1,7 +1,7 @@
 <div class="navbar-header" [ngClass]="fuseConfig.layout.navbar.secondaryBackground">
     <div class="logo">
         <img class="logo-icon" src="assets/images/logos/sinbad.svg" />
-        <span class="logo-text">Admin Portal</span>
+        <span class="logo-text">Seller Center</span>
     </div>
 
     <button
@@ -29,5 +29,5 @@
     [fusePerfectScrollbarOptions]="{ suppressScrollX: true }"
     [ngClass]="fuseConfig.layout.navbar.primaryBackground"
 >
-    <fuse-navigation layout="vertical"></fuse-navigation>
+    <fuse-navigation [navigation]="navigation" layout="vertical"></fuse-navigation>
 </div>

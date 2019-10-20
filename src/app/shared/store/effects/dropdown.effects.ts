@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
-import { catchOffline } from '@ngx-pwa/offline';
+import { Store } from '@ngrx/store';
+import { catchOffline, Network } from '@ngx-pwa/offline';
 import { Account } from 'app/main/pages/accounts/models';
 import { AccountApiService } from 'app/main/pages/accounts/services';
 import { RoleApiService } from 'app/main/pages/roles/role-api.service';
@@ -9,13 +9,15 @@ import { Role } from 'app/main/pages/roles/role.model';
 import { LogService } from 'app/shared/helpers';
 import * as fromRoot from 'app/store/app.reducer';
 import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, concatMap, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { DropdownActions, NetworkActions } from '../actions';
 import { NetworkSelectors } from '../selectors';
 
 @Injectable()
 export class DropdownEffects {
+    private _isOnline = this.network.online;
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods
     // -----------------------------------------------------------------------------------------------------
@@ -23,24 +25,25 @@ export class DropdownEffects {
     fetchRoleDropdownRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownRoleRequest),
-            concatMap(payload =>
-                of(payload).pipe(
-                    tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
-                )
-            ),
-            withLatestFrom(this.store.select(NetworkSelectors.isNetworkConnected)),
-            switchMap(([_, isOnline]) => {
-                if (isOnline) {
+            // concatMap(payload =>
+            //     of(payload).pipe(
+            //         tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
+            //     )
+            // ),
+            // withLatestFrom(this.store.select(NetworkSelectors.isNetworkConnected)),
+            switchMap(_ => {
+                if (this._isOnline) {
                     this._$log.generateGroup('[FETCH DROPDOWN ROLE REQUEST] ONLINE', {
                         online: {
                             type: 'log',
-                            value: isOnline
+                            value: this._isOnline
                         }
                     });
                 }
 
                 return this._$roleApi.findAll({ paginate: false }).pipe(
                     catchOffline(),
+                    retry(3),
                     map(resp => (!resp['data'] ? (resp as Role[]) : null)),
                     map(resp => {
                         this._$log.generateGroup('[FETCH RESPONSE DROPDOWN ROLE] ONLINE', {
@@ -63,6 +66,46 @@ export class DropdownEffects {
                         )
                     )
                 );
+            })
+        )
+    );
+
+    fetchRoleDropdownByTypeRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownRoleByTypeRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$roleApi
+                    .findByRoleType(payload, {
+                        paginate: false
+                    })
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map(resp => {
+                            this._$log.generateGroup(
+                                '[FETCH RESPONSE DROPDOWN ROLE BY TYPE] ONLINE',
+                                {
+                                    response: {
+                                        type: 'log',
+                                        value: resp
+                                    }
+                                }
+                            );
+
+                            return DropdownActions.fetchDropdownRoleSuccess({ payload: resp });
+                        }),
+                        catchError(err =>
+                            of(
+                                DropdownActions.fetchDropdownRoleFailure({
+                                    payload: {
+                                        id: 'fetchDropdownRoleByTypeFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
             })
         )
     );
@@ -175,6 +218,7 @@ export class DropdownEffects {
     constructor(
         private actions$: Actions,
         private store: Store<fromRoot.State>,
+        protected network: Network,
         private _$accountApi: AccountApiService,
         private _$log: LogService,
         private _$roleApi: RoleApiService

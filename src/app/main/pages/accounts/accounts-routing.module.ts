@@ -15,6 +15,16 @@ const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+        path: 'stores',
+        loadChildren: () => import('./merchants/merchants.module').then(m => m.MerchantsModule),
+        canLoad: [AuthGuard]
+    },
+    {
+        path: 'internal',
+        loadChildren: () => import('./internal/internal.module').then(m => m.InternalModule),
+        canLoad: [AuthGuard]
+    },
+    {
         path: ':id',
         component: AccountFormComponent,
         canActivate: [AuthGuard],

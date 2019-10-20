@@ -16,12 +16,12 @@ export const fuseConfig: FuseConfig = {
         style: 'vertical-layout-1',
         width: 'fullwidth',
         navbar: {
-            primaryBackground: 'fuse-navy-100', // 'fuse-navy-700',
+            primaryBackground: 'grey-100', // 'fuse-navy-100' 'fuse-navy-700',
             secondaryBackground: 'fuse-navy-50', // 'fuse-navy-900',
             folded: false,
             hidden: false,
             position: 'left',
-            variant: 'vertical-style-1' // 'vertical-style-2'
+            variant: 'vertical-style-2' // 'vertical-style-1'
         },
         toolbar: {
             customBackgroundColor: true, // false,
@@ -31,7 +31,7 @@ export const fuseConfig: FuseConfig = {
         },
         footer: {
             customBackgroundColor: true,
-            background: 'fuse-navy-900',
+            background: 'fuse-white-500', // 'fuse-navy-900'
             hidden: true,
             position: 'below-fixed'
         },

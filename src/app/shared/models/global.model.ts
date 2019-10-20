@@ -5,6 +5,17 @@ enum Status {
 
 type StatusString = keyof typeof Status;
 
+enum StatusOrderDemo {
+    packing,
+    shipped,
+    received,
+    newOrder,
+    completed,
+    toBeShipped
+}
+
+type StatusOrderDemoString = keyof typeof StatusOrderDemo;
+
 enum Source {
     cache,
     fetch
@@ -50,6 +61,14 @@ export type TSort = SortString;
 export type TSource = SourceString;
 export type TStatus = StatusString;
 export type TStatusError = StatusErrorString;
+export type TStatusOrderDemo = StatusOrderDemoString;
+
+export interface IBreadcrumbs {
+    title: string;
+    translate?: string;
+    url?: string;
+    active?: boolean;
+}
 
 export interface IResponsePaginate {
     total: number;
@@ -66,5 +85,35 @@ export interface ILog {
     [key: string]: {
         type: LogTypeString;
         value: any;
+    };
+}
+
+export interface IFooterActionConfig {
+    progress: {
+        title: {
+            label: string;
+            translate?: string;
+            active: boolean;
+        };
+        value: {
+            active: boolean;
+        };
+    };
+    action: {
+        save: {
+            label: string;
+            translate?: string;
+            active: boolean;
+        };
+        draft: {
+            label: string;
+            translate?: string;
+            active: boolean;
+        };
+        cancel: {
+            label: string;
+            translate?: string;
+            active: boolean;
+        };
     };
 }

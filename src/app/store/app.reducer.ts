@@ -7,7 +7,7 @@ import {
     createSelector,
     MetaReducer
 } from '@ngrx/store';
-import { fromDropdown, fromNetwork, fromUi } from 'app/shared/store/reducers';
+import { fromDropdown, fromForm, fromNetwork, fromUi } from 'app/shared/store/reducers';
 import { environment } from 'environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
 
@@ -16,6 +16,7 @@ import * as fromAuth from '../main/pages/core/auth/store/reducers/auth.reducer';
 export interface State {
     router: RouterReducerState;
     [fromDropdown.FEATURE_KEY]: fromDropdown.State;
+    [fromForm.FEATURE_KEY]: fromForm.State;
     [fromNetwork.FEATURE_KEY]: fromNetwork.State;
     [fromUi.FEAUTURE_KEY]: fromUi.State;
     [fromAuth.FEATURE_KEY]: fromAuth.State;
@@ -25,6 +26,7 @@ export const appReducer = new InjectionToken<ActionReducerMap<State>>('Root Redu
     factory: () => ({
         router: routerReducer,
         [fromDropdown.FEATURE_KEY]: fromDropdown.reducer,
+        [fromForm.FEATURE_KEY]: fromForm.reducer,
         [fromNetwork.FEATURE_KEY]: fromNetwork.reducer,
         [fromUi.FEAUTURE_KEY]: fromUi.reducer,
         [fromAuth.FEATURE_KEY]: fromAuth.reducer

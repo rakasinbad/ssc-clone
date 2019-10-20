@@ -1,0 +1,39 @@
+app-internal-form {
+    #internal-employee {
+        .header {
+            .employee-image {
+                overflow: hidden;
+                width: 56px;
+                min-width: 56px;
+                max-width: 56px;
+                height: 56px;
+                min-height: 56px;
+                max-height: 56px;
+                border-radius: 4px;
+
+                img {
+                    height: 100%;
+                    width: auto;
+                    max-width: none;
+                }
+            }
+
+            .subtitle {
+                margin: 6px 0 0 0;
+            }
+        }
+
+        .content-card.sinbad {
+            max-height: 70%;
+            border-radius: 8px !important;
+        }
+
+        .content {
+            // Temporary prefix alignment fix
+            .mat-form-field-appearance-outline .mat-form-field-prefix,
+            .mat-form-field-appearance-outline .mat-form-field-suffix {
+                top: 0;
+            }
+        }
+    }
+}

@@ -1,16 +1,11 @@
 import { DOCUMENT } from '@angular/common';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { IQueryParams } from '../models/query.model';
-import {
-    HttpParams,
-    HttpClient,
-    HttpHeaders,
-    HttpHeaderResponse,
-    HttpEventType
-} from '@angular/common/http';
-import { map, catchError } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { IQueryParams } from '../models/query.model';
 
 @Injectable({
     providedIn: 'root'
@@ -120,7 +115,7 @@ export class HelperService {
 
     isReachable(): Observable<boolean> {
         return this.http
-            .head<boolean>('/ping', {
+            .head<boolean>('https://id.yahoo.com', {
                 // headers: new HttpHeaders({
                 //     Accept: '*/*'
                 // }),

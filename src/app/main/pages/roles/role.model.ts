@@ -21,6 +21,7 @@ export class Role extends Timestamp {
     role: string;
     description: string;
     status: TStatus;
+    roleTypeId: string;
     privileges: Privilege[];
 
     constructor(
@@ -28,6 +29,7 @@ export class Role extends Timestamp {
         role: string,
         description: string,
         status: TStatus,
+        roleTypeId: string,
         privileges: Privilege[],
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
@@ -39,6 +41,7 @@ export class Role extends Timestamp {
         this.role = role;
         this.description = description;
         this.status = status;
+        this.roleTypeId = roleTypeId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

@@ -1,0 +1,93 @@
+<mat-toolbar>
+    <!-- <div fxLayout="column">
+
+    </div> -->
+    <div
+        fxLayout="row"
+        fxLayoutAlign="center center"
+        fxLayoutAlign.gt-xs="space-between center"
+        fxFlex
+    >
+        <!-- <a
+            href="https://1.envato.market/c/1257954/275988/4415?u=https%3A%2F%2Fthemeforest.net%2Fitem%2Ffuse-angularjs-material-design-admin-template%2F12931855"
+            target="_blank"
+            mat-button
+            class="pink"
+            fxFlex="0 0 auto"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+        >
+            <mat-icon class="s-16 mr-sm-4">shopping_cart</mat-icon>
+            <span>Point</span>
+        </a> -->
+
+        <div fxLayout="column" fxFlex="50">
+            <!-- <span class="mat-body-2">Skor edit karyawan</span>
+
+            <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+                <mat-progress-bar
+                    class="sinbad-progress-bar"
+                    mode="determinate"
+                    [value]="45"
+                ></mat-progress-bar>
+
+                <span class="mat-caption">45/100</span>
+            </div> -->
+
+            <ng-container *ngTemplateOutlet="progressContent"></ng-container>
+        </div>
+
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="20px" fxHide fxShow.gt-xs>
+            <!-- <a mat-button routerLink="/documentation/getting-started/introduction">Documentation</a>
+            <span>&bull;</span>
+            <a mat-button routerLink="/documentation/changelog">Changelog</a> -->
+
+            <ng-container *ngTemplateOutlet="cancelAction"></ng-container>
+            <!-- <ng-container *ngTemplateOutlet="draftAction"></ng-container> -->
+            <ng-container *ngTemplateOutlet="saveAction"></ng-container>
+        </div>
+    </div>
+</mat-toolbar>
+
+<ng-template #cancelAction>
+    <button mat-stroked-button *ngIf="(config$ | async)?.action?.cancel?.active">
+        {{ (config$ | async)?.action?.cancel?.label }}
+    </button>
+</ng-template>
+
+<!-- <ng-template #draftAction>
+    <button
+        mat-stroked-button
+        *ngIf="(config$ | async)?.action?.draft?.active"
+    >
+        {{ (config$ | async)?.action?.draft?.label }}
+    </button>
+</ng-template> -->
+
+<ng-template #saveAction>
+    <button
+        mat-flat-button
+        color="accent"
+        *ngIf="(config$ | async)?.action?.save?.active"
+        [disabled]="!(isShowSaveButton$ | async)"
+        (click)="onSave()"
+    >
+        {{ (config$ | async)?.action?.save?.label }}
+    </button>
+</ng-template>
+
+<ng-template #progressContent>
+    <span class="mat-body-2" *ngIf="(config$ | async)?.progress?.title?.active">
+        {{ (config$ | async)?.progress?.title?.label }}
+    </span>
+
+    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+        <mat-progress-bar
+            class="sinbad-progress-bar"
+            mode="determinate"
+            [value]="45"
+        ></mat-progress-bar>
+
+        <span class="mat-caption" *ngIf="(config$ | async)?.progress?.value?.active">45/100</span>
+    </div>
+</ng-template>

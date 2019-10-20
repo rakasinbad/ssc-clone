@@ -4,6 +4,10 @@ import { Role } from 'app/main/pages/roles/role.model';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
 export const fetchDropdownRoleRequest = createAction('[Helper Dropdown] Fetch Role Request');
+export const fetchDropdownRoleByTypeRequest = createAction(
+    '[Helper Dropdown] Fetch Role By Type Request',
+    props<{ payload: string }>()
+);
 
 export const fetchDropdownRoleFailure = createAction(
     '[Helper Dropdown] Fetch Role Failure',

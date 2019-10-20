@@ -1,4 +1,31 @@
 export const globalIdLang = {
+    ACTION: {
+        ACTIVE: 'Active',
+        ARCHIVE: 'Archive',
+        INACTIVE: 'Inactive',
+        PRINT: 'Cetak',
+        EDIT: 'Edit',
+        REMOVE: 'Remove'
+    },
+    BREADCRUMBS: {
+        ACCOUNTS: 'Account',
+        ACCOUNT: 'Account',
+        ADD_STORE: 'Add Toko',
+        CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
+        DETAIL: 'Detail',
+        EDIT: 'Edit',
+        EDIT_STORE: 'Edit Toko',
+        EDIT_USER: 'Edit User',
+        FINANCE: 'Finance',
+        HOME: 'Beranda',
+        INTERNAL: 'Internal',
+        MERCHANTS: 'Merchants',
+        MERCHANT: 'Merchant',
+        ORDER_DETAILS: 'Rincian Order',
+        ORDER_MANAGEMENTS: 'Order Management',
+        STORES: 'Stores',
+        STORE: 'Store'
+    },
     FORM: {
         ACCOUNT: 'Akun',
         CHECK_IN: 'Check In',
@@ -13,8 +40,19 @@ export const globalIdLang = {
         NAME: 'Nama',
         PASSWORD: 'Password',
         PHONE: 'Phone',
+        PHONE_NUMBER: 'Phone Number',
+        ROLE: 'Role',
         STATUS: 'Status',
         USERNAME: 'Username'
+    },
+    GLOBAL_STATUS: {
+        ALL: 'Semua',
+        COMPLETED: 'Selesai',
+        NEW_ORDER: 'Order Baru',
+        PACKING: 'Dikemas',
+        RECEIVED: 'Diterima',
+        SHIPPED: 'Dikirim',
+        TO_BE_SHIPPED: 'Siap Dikirim'
     },
     ERROR: {
         ALPHA_PATTERN: '{{ fieldName }} field must alphabets.',

@@ -1,6 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as _ from 'lodash';
-import * as fromDropdown from '../reducers/dropdown.reducer';
+
+import { fromDropdown } from '../reducers';
 
 export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDropdown.FEATURE_KEY);
 
@@ -26,3 +27,11 @@ export const getRoleDropdownState = createSelector(
         return state.roles.length ? _.sortBy(state.roles, ['role'], ['asc']) : state.roles;
     }
 );
+
+export const getRoleDropdownStateByType = (typeId: string) =>
+    createSelector(
+        getRoleDropdownState,
+        roles => {
+            return roles.length ? roles.filter(role => role.roleTypeId === typeId) : roles;
+        }
+    );

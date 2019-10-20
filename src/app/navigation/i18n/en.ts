@@ -10,8 +10,17 @@ export const locale = {
             ACCOUNTS: {
                 TITLE: 'Accounts'
             },
+            ACCOUNTS_STORE: {
+                TITLE: 'Store'
+            },
+            ACCOUNTS_INTERNAL: {
+                TITLE: 'Internal'
+            },
             ATTENDANCES: {
                 TITLE: 'Attendances'
+            },
+            CREDIT_LIMIT_BALANCE: {
+                TITLE: 'Credit Limit/Balance'
             },
             FINANCES: {
                 TITLE: 'Finances'
@@ -22,59 +31,15 @@ export const locale = {
             INVENTORIES: {
                 TITLE: 'Inventories'
             },
-            ORDERS: {
-                TITLE: 'Orders'
+            ORDER_MANAGEMENTS: {
+                TITLE: 'OMS'
+            },
+            PAYMENT_STATUS: {
+                TITLE: 'Payment Status'
+            },
+            SET_BANK: {
+                TITLE: 'Set Bank'
             }
-            // STATUS: {
-            //     ORDER: {
-            //         ALL: {
-            //             TITLE: 'All'
-            //         },
-            //         COMPLETED: {
-            //             TITLE: 'Completed'
-            //         },
-            //         NEW_ORDER: {
-            //             TITLE: 'New Order'
-            //         },
-            //         PACKING: {
-            //             TITLE: 'Packing'
-            //         },
-            //         RECEIVED: {
-            //             TITLE: 'Received'
-            //         },
-            //         SHIPPED: {
-            //             TITLE: 'Shipped'
-            //         },
-            //         TO_BE_SHIPPED: {
-            //             TITLE: 'To be shipped'
-            //         }
-            //     }
-            // }
         }
-        // STATUS: {
-        //     ORDER: {
-        //         ALL: {
-        //             TITLE: 'All'
-        //         },
-        //         COMPLETED: {
-        //             TITLE: 'Completed'
-        //         },
-        //         NEW_ORDER: {
-        //             TITLE: 'New Order'
-        //         },
-        //         PACKING: {
-        //             TITLE: 'Packing'
-        //         },
-        //         RECEIVED: {
-        //             TITLE: 'Received'
-        //         },
-        //         SHIPPED: {
-        //             TITLE: 'Shipped'
-        //         },
-        //         TO_BE_SHIPPED: {
-        //             TITLE: 'To be shipped'
-        //         }
-        //     }
-        // }
     }
 };

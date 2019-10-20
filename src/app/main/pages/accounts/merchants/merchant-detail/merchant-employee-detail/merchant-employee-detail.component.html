@@ -1,0 +1,136 @@
+<mat-card class="inner-scroll">
+    <mat-table
+        class="merchant-employees-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
+    >
+        <!-- No Column -->
+        <ng-container matColumnDef="no">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>No</mat-header-cell>
+            <mat-cell *matCellDef="let row; let i = index">
+                {{ i + 1 + this.paginator.pageIndex * this.paginator.pageSize }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.name }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Role
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.role }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Phone Number Column -->
+        <ng-container matColumnDef="phoneNumber">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                Phone Number
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                {{ row?.phoneNumber }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Last Check In Column -->
+        <ng-container matColumnDef="lastCheckIn">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Last Checked-in
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.lastCheckIn | date: 'dd/MM/yyyy HH:mm:ss' }}
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef>
+                Action
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+                <div fxFlex="row" fxLayoutAlign="end center">
+                    <button
+                        mat-icon-button
+                        [matMenuTriggerFor]="moreMenu"
+                        aria-label="More"
+                        (click)="$event.stopPropagation()"
+                    >
+                        <mat-icon class="secondary-text">more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #moreMenu="matMenu">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="edit"
+                            [routerLink]="[row?.id]"
+                        >
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="remove"
+                            (click)="onDelete(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Remove</span>
+                        </button>
+
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="archive"
+                        >
+                            <mat-icon>archive</mat-icon>
+                            <span>Archive</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="merchant-employee"
+            matRipple
+            [routerLink]="['/pages/account/stores/' + row?.id + '/employee']"
+        >
+        </mat-row>
+    </mat-table>
+
+    <mat-paginator
+        [pageSize]="5"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onChangePage($event)"
+        showFirstLastButtons
+    >
+    </mat-paginator>
+
+    <!-- <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
+</mat-card>

@@ -49,6 +49,14 @@ export class VerticalLayout1Component implements OnInit, OnDestroy {
     /**
      *
      *
+     * @type {Observable<boolean>}
+     * @memberof VerticalLayout1Component
+     */
+    isShowFooterAction$: Observable<boolean>;
+
+    /**
+     *
+     *
      * @private
      * @type {Subject<any>}
      * @memberof VerticalLayout1Component
@@ -91,6 +99,7 @@ export class VerticalLayout1Component implements OnInit, OnDestroy {
         });
 
         this.isShowCustomToolbar$ = this.store.select(UiSelectors.getIsShowCustomToolbar);
+        this.isShowFooterAction$ = this.store.select(UiSelectors.getIsShowFooterAction);
     }
 
     /**

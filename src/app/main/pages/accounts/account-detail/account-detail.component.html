@@ -17,7 +17,10 @@
                     class="account-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <img *ngIf="(account$ | async)?.imageUrl" [src]="(account$ | async)?.imageUrl" />
+                    <img
+                        *ngIf="(account$ | async)?.imageUrl"
+                        [src]="(account$ | async)?.imageUrl"
+                    />
                     <img
                         *ngIf="!(account$ | async)?.imageUrl"
                         [src]="'assets/images/avatars/profile.jpg'"
@@ -30,7 +33,7 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        {{ (account$ | async)?.fullname }}
+                        {{ (account$ | async)?.fullName }}
                     </div>
 
                     <div class="subtitle secondary-text">
@@ -80,11 +83,7 @@
                                         >
                                             <mat-label>Email</mat-label>
 
-                                            <input
-                                                matInput
-                                                name="email"
-                                                formControlName="email"
-                                            />
+                                            <input matInput name="email" formControlName="email" />
                                         </mat-form-field>
 
                                         <mat-form-field
@@ -110,11 +109,7 @@
                                         >
                                             <mat-label>Phone</mat-label>
 
-                                            <input
-                                                matInput
-                                                name="phone"
-                                                formControlName="phone"
-                                            />
+                                            <input matInput name="phone" formControlName="phone" />
                                         </mat-form-field>
 
                                         <!-- <mat-form-field

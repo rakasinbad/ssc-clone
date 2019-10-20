@@ -4,77 +4,42 @@ export const locale = {
         NAV: {
             APPLICATIONS: 'Aplikasi',
             DASHBOARD: {
-                TITLE: 'Dasbor',
+                TITLE: 'Dashboard',
                 BADGE: '15'
             },
             ACCOUNTS: {
-                TITLE: 'Akun'
+                TITLE: 'Account'
+            },
+            ACCOUNTS_STORE: {
+                TITLE: 'Store'
+            },
+            ACCOUNTS_INTERNAL: {
+                TITLE: 'Internal'
             },
             ATTENDANCES: {
-                TITLE: 'Kehadiran'
+                TITLE: 'Attendances'
+            },
+            CREDIT_LIMIT_BALANCE: {
+                TITLE: 'Credit Limit/Balance'
             },
             FINANCES: {
-                TITLE: 'Keuangan'
+                TITLE: 'Finance'
             },
             IN_STORE_INVENTORIES: {
-                TITLE: 'Dalam Persediaan Toko'
+                TITLE: 'In Store Inventories'
             },
             INVENTORIES: {
-                TITLE: 'Persediaan'
+                TITLE: 'Inventories'
             },
-            ORDERS: {
-                TITLE: 'Order'
+            ORDER_MANAGEMENTS: {
+                TITLE: 'OMS'
+            },
+            PAYMENT_STATUS: {
+                TITLE: 'Payment Status'
+            },
+            SET_BANK: {
+                TITLE: 'Set Bank'
             }
-            // STATUS: {
-            //     ORDER: {
-            //         ALL: {
-            //             TITLE: 'Semua'
-            //         },
-            //         COMPLETED: {
-            //             TITLE: 'Selesai'
-            //         },
-            //         NEW_ORDER: {
-            //             TITLE: 'Order Baru'
-            //         },
-            //         PACKING: {
-            //             TITLE: 'Dikemas'
-            //         },
-            //         RECEIVED: {
-            //             TITLE: 'Diterima'
-            //         },
-            //         SHIPPED: {
-            //             TITLE: 'Dikirim'
-            //         },
-            //         TO_BE_SHIPPED: {
-            //             TITLE: 'Siap Dikirim'
-            //         }
-            //     }
-            // }
         }
-        // STATUS: {
-        //     ORDER: {
-        //         ALL: {
-        //             TITLE: 'Semua'
-        //         },
-        //         COMPLETED: {
-        //             TITLE: 'Selesai'
-        //         },
-        //         NEW_ORDER: {
-        //             TITLE: 'Order Baru'
-        //         },
-        //         PACKING: {
-        //             TITLE: 'Dikemas'
-        //         },
-        //         RECEIVED: {
-        //             TITLE: 'Diterima'
-        //         },
-        //         SHIPPED: {
-        //             TITLE: 'Dikirim'
-        //         },
-        //         TO_BE_SHIPPED: {
-        //             TITLE: 'Siap Dikirim'
-        //         }
-        //     }
-        // }
     }
 };

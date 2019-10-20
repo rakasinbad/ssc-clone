@@ -1,0 +1,42 @@
+<div
+    id="merchant-detail"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+    fusePerfectScrollbar
+>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="column" fxLayoutAlign="center stretch">
+            <nav
+                mat-tab-nav-bar
+                class="mat-elevation-z1 sinbad-tab"
+                [ngClass]="(fuseConfig$ | async)?.layout?.toolbar?.background"
+            >
+                <a
+                    mat-tab-link
+                    *ngFor="let link of links"
+                    [routerLink]="[{ outlets: { 'store-detail': [link?.path] } }]"
+                    routerLinkActive
+                    #rla="routerLinkActive"
+                    [active]="rla?.isActive"
+                    skipLocationChange
+                >
+                    <div fxLayout="column" fxLayoutAlign="center center">
+                        <span class="label">{{ link?.label }}</span>
+                        <span class="indicator" fxFlex="70" *ngIf="rla?.isActive"></span>
+                    </div>
+                </a>
+            </nav>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- CONTENT CARD -->
+        <router-outlet name="store-detail" *ngIf="true"></router-outlet>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

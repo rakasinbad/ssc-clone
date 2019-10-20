@@ -19,6 +19,7 @@ import { AuthActions } from '../store/actions';
 import { fromAuth } from '../store/reducers';
 import { AuthSelectors } from '../store/selectors';
 import { locale as english } from './i18n/en';
+import { locale as indonesian } from './i18n/id';
 
 @Component({
     selector: 'app-login',
@@ -60,7 +61,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             }
         };
 
-        this._fuseTranslationLoaderService.loadTranslations(english);
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -84,13 +85,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                 [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('email', 'required')
+                    }),
+                    RxwebValidators.email({
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'email',
+                            'email_pattern'
+                        )
                     })
-                    // RxwebValidators.email({
-                    //     message: this.errorMessageSvc.getErrorMessageNonState(
-                    //         'email',
-                    //         'email_pattern'
-                    //     )
-                    // })
                 ]
             ],
             password: [
@@ -106,10 +107,8 @@ export class LoginComponent implements OnInit, OnDestroy {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        if (this._unSubs$) {
-            this._unSubs$.next();
-            this._unSubs$.complete();
-        }
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 
     // -----------------------------------------------------------------------------------------------------

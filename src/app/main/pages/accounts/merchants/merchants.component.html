@@ -1,0 +1,267 @@
+<div id="merchants" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
+
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
+                    <mat-icon>add</mat-icon>
+
+                    TAMBAH TOKO
+                </button>
+
+                <button mat-stroked-button color="accent" class="sinbad">
+                    IMPORT
+                </button>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter placeholder="Search for a store" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+
+                <button mat-flat-button class="grey-600">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter Lists
+                </button>
+
+                <button mat-flat-button class="grey-600">
+                    Group By
+                </button>
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <mat-card class="mb-24">
+            <div fxLayout="column" fxLayoutGap="10px">
+                <small>
+                    Filter & Group By
+                </small>
+
+                <div>
+                    <mat-chip-list aria-label="Filter">
+                        <mat-chip>
+                            Status: Diterima
+
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+
+                        <mat-chip>
+                            Geo Coverage
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
+        </mat-card>
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table
+                class="merchants-table"
+                #table
+                [dataSource]="dataSource"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- ID Column -->
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.id }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="storeName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Store Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.storeName }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Address Column -->
+                <ng-container matColumnDef="address">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Address
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.address }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Owner Phone Number Column -->
+                <ng-container matColumnDef="ownerPhoneNumber">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        Owner Phone Number
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <p class="text-truncate price">
+                            {{ row?.ownerPhoneNumber }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Segment Column -->
+                <ng-container matColumnDef="storeSegment">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Store Segment
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <p class="text-truncate">
+                            {{ row?.storeSegment }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Type Column -->
+                <ng-container matColumnDef="storeType">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Store Type
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.storeType }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Customer Hierarchy Column -->
+                <ng-container matColumnDef="customerHierarchy">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Customer Hierarchy
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.customerHierarchy }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Delivered On
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.status }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="edit"
+                                    [routerLink]="[row?.id]"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="remove"
+                                    (click)="onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Remove</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="archive"
+                                >
+                                    <mat-icon>archive</mat-icon>
+                                    <span>Archive</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    [attr.aria-label]="
+                                        row?.status === 'Active' ? 'inactive' : 'active'
+                                    "
+                                >
+                                    <mat-icon>{{
+                                        row?.status === 'Active'
+                                            ? 'remove_circle_outline'
+                                            : 'check_circle_outline'
+                                    }}</mat-icon>
+                                    <span>{{
+                                        (row?.status === 'Active'
+                                            ? 'ACTION.INACTIVE'
+                                            : 'ACTION.ACTIVE') | translate
+                                    }}</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="merchant"
+                    matRipple
+                    [routerLink]="['/pages/account/stores/' + row.id + '/detail']"
+                >
+                </mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [pageSize]="5"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+
+            <!-- <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div> -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>
