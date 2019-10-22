@@ -1,0 +1,25 @@
+app-credit-limit-group-form {
+    mat-dialog-content {
+        .form-box {
+            .custom-field {
+                &:first-of-type {
+                    margin-top: 10px;
+                }
+            }
+        }
+
+        .form-box.dynamic {
+            .custom-field {
+                &:first-of-type {
+                    margin-top: 20px;
+                }
+            }
+
+            .custom-field.dynamic {
+                &:not(:first-of-type) {
+                    margin-top: 10px;
+                }
+            }
+        }
+    }
+}

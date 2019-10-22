@@ -31,8 +31,9 @@
                                     (form.get('profileInfo.username').dirty ||
                                         form.get('profileInfo.username').touched)
                                 "
-                                >*Username</label
                             >
+                                *Username
+                            </label>
 
                             <mat-form-field appearance="outline" fxFlex="100">
                                 <input
@@ -794,8 +795,7 @@
                                     !form.get('storeInfo.storeClassification.storeType')
                                         .untouched &&
                                     (form.get('storeInfo.storeClassification.storeType').dirty ||
-                                        form.get('storeInfo.storeClassification.storeType')
-                                            .touched)
+                                        form.get('storeInfo.storeClassification.storeType').touched)
                                 "
                             >
                                 *Store Type
@@ -819,11 +819,7 @@
                                                 .touched)
                                     "
                                 >
-                                    {{
-                                        getErrorMessage(
-                                            'storeInfo.storeClassification.storeType'
-                                        )
-                                    }}
+                                    {{ getErrorMessage('storeInfo.storeClassification.storeType') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -863,9 +859,7 @@
                                     "
                                 >
                                     {{
-                                        getErrorMessage(
-                                            'storeInfo.storeClassification.storeGroup'
-                                        )
+                                        getErrorMessage('storeInfo.storeClassification.storeGroup')
                                     }}
                                 </mat-error>
                             </mat-form-field>

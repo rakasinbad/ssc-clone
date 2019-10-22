@@ -119,6 +119,8 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/accounts/internal/internal.theme';
 @import 'src/app/main/pages/attendances/attendances.theme';
 @import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
+@import 'src/app/main/pages/finances/banks/banks.theme';
+@import 'src/app/main/pages/finances/payment-status/payment-status.theme';
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
 @import 'src/app/main/pages/orders/orders.theme';
 
@@ -136,10 +138,12 @@ $typography: mat-typography-config(
     @include login-theme($theme);
     @include accounts-theme($theme);
     @include attendances-theme($theme);
+    @include banks-theme($theme);
     @include credit-limit-balance-theme($theme);
     @include in-store-inventories-theme($theme);
     @include merchants-theme($theme);
     @include orders-theme($theme);
+    @include payment-status-theme($theme);
     @include internals-theme($theme);
 
     // Plugin

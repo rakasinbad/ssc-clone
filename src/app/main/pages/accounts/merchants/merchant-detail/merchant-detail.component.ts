@@ -1,18 +1,21 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    OnDestroy
+    ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { FuseConfig } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable } from 'rxjs';
 
+import { locale as english } from '../i18n/en';
+import { locale as indonesian } from '../i18n/id';
 import { fromMerchant } from '../store/reducers';
 
 @Component({
@@ -45,9 +48,11 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
-        private _fuseConfigService: FuseConfigService
+        private _fuseConfigService: FuseConfigService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this.fuseConfig$ = this._fuseConfigService.config;
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------

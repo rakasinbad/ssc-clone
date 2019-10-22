@@ -23,6 +23,7 @@ export const globalIdLang = {
         MERCHANT: 'Merchant',
         ORDER_DETAILS: 'Rincian Order',
         ORDER_MANAGEMENTS: 'Order Management',
+        SET_BANK: 'Set Bank',
         STORES: 'Stores',
         STORE: 'Store'
     },

@@ -30,11 +30,12 @@ import { CreditLimitBalanceSelectors } from '../store/selectors';
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     dataSource: MatTableDataSource<any>; // Need for demo
     displayedColumns = [
-        'id',
+        'order',
         'name',
         'limit',
-        'balance',
         'receivable',
+        'balance',
+        'avg-monthly',
         'limit-group',
         'segment',
         'top',

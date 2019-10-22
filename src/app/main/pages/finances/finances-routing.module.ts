@@ -12,6 +12,17 @@ const routes: Routes = [
                 m => m.CreditLimitBalanceModule
             ),
         canLoad: [AuthGuard]
+    },
+    {
+        path: 'banks',
+        loadChildren: () => import('./banks/banks.module').then(m => m.BanksModule),
+        canLoad: [AuthGuard]
+    },
+    {
+        path: 'payment-status',
+        loadChildren: () =>
+            import('./payment-status/payment-status.module').then(m => m.PaymentStatusModule),
+        canLoad: [AuthGuard]
     }
 ];
 

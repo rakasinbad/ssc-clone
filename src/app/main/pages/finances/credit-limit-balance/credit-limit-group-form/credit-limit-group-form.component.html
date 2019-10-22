@@ -1,1 +1,388 @@
-<p>credit-limit-group-form works!</p>
+<h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
+
+<mat-dialog-content class="mat-typography" style="min-width: 50em;">
+    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+        <div class="form-box">
+            <span class="mat-subheading-2">
+                Credit Limit & Balance
+            </span>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('groupName').errors &&
+                        !form.get('groupName').untouched &&
+                        (form.get('groupName').dirty || form.get('groupName').touched)
+                    "
+                >
+                    Credit Limit Group Name
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <input
+                        matInput
+                        name="groupName"
+                        formControlName="groupName"
+                        placeholder="Input credit limit group name"
+                    />
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('groupName').errors &&
+                                        (form.get('groupName').dirty ||
+                                            form.get('groupName').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('groupName') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('creditAmount').errors &&
+                        !form.get('creditAmount').untouched &&
+                        (form.get('creditAmount').dirty || form.get('creditAmount').touched)
+                    "
+                >
+                    Credit Limit Amount
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <input
+                        matInput
+                        name="creditAmount"
+                        formControlName="creditAmount"
+                        mask="separator"
+                        thousandSeparator="."
+                        prefix="Rp "
+                        placeholder="Rp"
+                    />
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('creditAmount').errors &&
+                                        (form.get('creditAmount').dirty ||
+                                            form.get('creditAmount').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('creditAmount') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('startingBalance').errors &&
+                        !form.get('startingBalance').untouched &&
+                        (form.get('startingBalance').dirty || form.get('startingBalance').touched)
+                    "
+                >
+                    Set Starting Balance
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <input
+                        matInput
+                        name="startingBalance"
+                        formControlName="startingBalance"
+                        mask="separator"
+                        thousandSeparator="."
+                        prefix="Rp "
+                        placeholder="Rp"
+                    />
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('startingBalance').errors &&
+                                        (form.get('startingBalance').dirty ||
+                                            form.get('startingBalance').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('startingBalance') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('segment').errors &&
+                        !form.get('segment').untouched &&
+                        (form.get('segment').dirty || form.get('segment').touched)
+                    "
+                >
+                    Segment
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <mat-select formControlName="segment" placeholder="Choose segment...">
+                        <mat-option>GT</mat-option>
+                    </mat-select>
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('segment').errors &&
+                                        (form.get('segment').dirty ||
+                                            form.get('segment').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('segment') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('customerHierarchy').errors &&
+                        !form.get('customerHierarchy').untouched &&
+                        (form.get('customerHierarchy').dirty ||
+                            form.get('customerHierarchy').touched)
+                    "
+                >
+                    Customer Hierarchy
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <mat-select
+                        formControlName="customerHierarchy"
+                        placeholder="Choose customer hierarchy..."
+                    >
+                        <mat-option>GT</mat-option>
+                    </mat-select>
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('customerHierarchy').errors &&
+                                        (form.get('customerHierarchy').dirty ||
+                                            form.get('customerHierarchy').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('customerHierarchy') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('termOfPayment').errors &&
+                        !form.get('termOfPayment').untouched &&
+                        (form.get('termOfPayment').dirty || form.get('termOfPayment').touched)
+                    "
+                >
+                    Term of Payment
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <!-- <span matPrefix>Rp &nbsp;</span> -->
+                    <input
+                        matInput
+                        name="termOfPayment"
+                        formControlName="termOfPayment"
+                        suffix=" days"
+                        mask="0*"
+                        placeholder="In days"
+                    />
+
+                    <!-- <mat-error
+                                    *ngIf="
+                                        form.get('termOfPayment').errors &&
+                                        (form.get('termOfPayment').dirty ||
+                                            form.get('termOfPayment').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('termOfPayment') }}
+                                </mat-error> -->
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="form-box dynamic">
+            <span class="mat-subheading-2">
+                Geographic
+            </span>
+
+            <div
+                class="custom-field dynamic"
+                fxLayout="row"
+                fxLayoutAlign="space-between stretch"
+                formArrayName="geo"
+                *ngFor="let geo of geoControls; index as i"
+            >
+                <ng-container [formGroupName]="i">
+                    <label
+                        fxFlex="15"
+                        [class.mat-error]="
+                            formGeographics.controls[i].get('geoUnit').errors &&
+                            !formGeographics.controls[i].get('geoUnit').untouched &&
+                            (formGeographics.controls[i].get('geoUnit').dirty ||
+                                formGeographics.controls[i].get('geoUnit').touched)
+                        "
+                    >
+                        Geographic {{ i + 1 }}
+                    </label>
+
+                    <div
+                        class="bg-f9f9f9 pt-24 px-4"
+                        fxLayout="column"
+                        fxLayoutAlign="center stretch"
+                        fxFlex="70"
+                    >
+                        <div
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                            fxFlex="70"
+                        >
+                            <label fxFlexAlign="center" fxFlex="15">
+                                Set Unit
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="70">
+                                <mat-select
+                                    formControlName="geoUnit"
+                                    placeholder="Pick your parameter..."
+                                >
+                                    <mat-option>Kota/Kabupaten</mat-option>
+                                </mat-select>
+
+                                <!-- <mat-error
+                                    *ngIf="
+                                        form.get('groupName').errors &&
+                                        (form.get('groupName').dirty ||
+                                            form.get('groupName').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('groupName') }}
+                                </mat-error> -->
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            fxLayout="row"
+                            fxLayoutAlign="start center"
+                            fxLayoutGap="15px"
+                            fxFlex="70"
+                        >
+                            <label fxFlexAlign="center" fxFlex="15">
+                                Set Value
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="70">
+                                <mat-select
+                                    formControlName="geoValue"
+                                    placeholder="Pick your parameter..."
+                                >
+                                    <mat-option>Ciamis</mat-option>
+                                </mat-select>
+
+                                <!-- <mat-error
+                                    *ngIf="
+                                        form.get('groupName').errors &&
+                                        (form.get('groupName').dirty ||
+                                            form.get('groupName').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('groupName') }}
+                                </mat-error> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="form-box mb-4">
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <div fxFlex="15"></div>
+
+                <div
+                    class="btn-sinbad-outline py-8"
+                    fxLayout="row"
+                    fxLayoutAlign="center center"
+                    fxLayoutGap="10px"
+                    fxFlex="70"
+                    (click)="onAddGeograph()"
+                >
+                    <mat-icon>add_circle</mat-icon>
+                    <span>Add</span>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- <p [innerHTML]="data?.message"></p>
+    <form [formGroup]="form">
+        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p date-form" *ngIf="!(data?.range)">
+            <mat-label>Date</mat-label>
+
+            <input matInput [matDatepicker]="dpFilterDate" formControlName="filterDate" />
+
+            <mat-datepicker-toggle matSuffix [for]="dpFilterDate"></mat-datepicker-toggle>
+            <mat-datepicker touchUi #dpFilterDate disabled="false"></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p date-form" *ngIf="data?.range">
+            <mat-label>Start Date</mat-label>
+
+            <input matInput
+                   [matDatepicker]="dpStartDate"
+                   [min]="minStartDate"
+                   [max]="maxStartDate"
+                   (dateChange)="onChangeStartDate($event)"
+                   (dateInput)="onInputStartDate($event)"
+                   formControlName="startDate" />
+
+            <mat-datepicker-toggle matSuffix [for]="dpStartDate"></mat-datepicker-toggle>
+            <mat-datepicker touchUi #dpStartDate disabled="false"></mat-datepicker>
+
+            <mat-error *ngIf="form.get('startDate').invalid && (form.get('startDate').dirty || form.get('startDate').touched)">
+                {{getErrorMessage('startDate', 'start_date')}}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" floatLabel="always" class="w-100-p date-form" *ngIf="data?.range">
+            <mat-label>End Date</mat-label>
+
+            <input matInput
+                   [matDatepicker]="dpEndDate"
+                   [min]="minEndDate"
+                   [max]="maxEndDate"
+                   formControlName="endDate" />
+
+            <mat-datepicker-toggle matSuffix [for]="dpEndDate"></mat-datepicker-toggle>
+            <mat-datepicker touchUi #dpEndDate [disabled]="!form.get('startDate').value"></mat-datepicker>
+
+            <mat-error *ngIf="form.get('endDate').invalid && (form.get('endDate').dirty || form.get('endDate').touched)">
+                {{getErrorMessage('endDate', 'end_date')}}
+            </mat-error>
+        </mat-form-field>
+    </form> -->
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <span fxLayout="row" fxLayoutGap="10px">
+        <button mat-flat-button color="accent" cdkFocusInitial>Simpan</button>
+        <button mat-stroked-button mat-dialog-close>Tutup</button>
+    </span>
+</mat-dialog-actions>

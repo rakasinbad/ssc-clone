@@ -13,6 +13,10 @@ export class GeneratorService {
         }).map(() => {
             return Object.keys(schema).reduce((entity, key) => {
                 switch (schema[key]) {
+                    case 'aging.day':
+                        entity[key] = faker.random.arrayElement(['-', '0', '1', '2', '3']);
+                        break;
+
                     case 'customer.hierarchy':
                         entity[key] = `TRUSTED LV${faker.random.number({ min: 0, max: 3 })}`;
                         break;
@@ -33,12 +37,31 @@ export class GeneratorService {
                         ]);
                         break;
 
+                    case 'finance.orderRef':
+                        entity[key] = faker.random.arrayElement([
+                            'SNB 1',
+                            'SNB 2',
+                            'SNB 3',
+                            'SNB 4',
+                            'SNB 5',
+                            'SNB 6'
+                        ]);
+                        break;
+
                     case 'finance.limit.group':
                         entity[key] = faker.random.arrayElement(['CL1', 'CL2', 'CL3', '-']);
                         break;
 
                     case 'finance.segment':
                         entity[key] = faker.random.arrayElement(['GT', 'MTI']);
+                        break;
+
+                    case 'finance.status':
+                        entity[key] = faker.random.arrayElement([
+                            'Temp Paid',
+                            'Waiting for Payment',
+                            'Paid'
+                        ]);
                         break;
 
                     case 'finance.top':
@@ -94,6 +117,14 @@ export class GeneratorService {
                             'Selesai',
                             'Siap Dikirim'
                         ]);
+                        break;
+
+                    case 'payment.method':
+                        entity[key] = faker.random.arrayElement(['Bank Transfer', 'COD']);
+                        break;
+
+                    case 'payment.type':
+                        entity[key] = faker.random.arrayElement(['Pay Later', 'Pay Now']);
                         break;
 
                     case 'store.segment':
@@ -152,6 +183,23 @@ export class GeneratorService {
             email: '{{internet.email}}',
             role: 'employee.accessRight',
             phoneNumber: '{{phone.phoneNumber}}'
+        };
+    }
+
+    static get financePaymentStatusSchema(): any {
+        return {
+            orderRef: 'finance.orderRef',
+            store: '{{company.companyName}}',
+            receivable: '{{finance.amount}}',
+            status: 'finance.status',
+            paymentType: 'payment.type',
+            paymentMethod: 'payment.method',
+            dateOrder: '{{date.recent}}',
+            dueDate: '{{date.recent}}',
+            paidOn: '{{date.recent}}',
+            agingDay: 'aging.day',
+            d: 'aging.day',
+            proofOfPayment: ''
         };
     }
 

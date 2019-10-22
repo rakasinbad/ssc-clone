@@ -50,7 +50,6 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
-        console.log('CONSTRUCT');
         this.fuseConfig$ = this._fuseConfigService.config;
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }

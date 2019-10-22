@@ -43,10 +43,10 @@
         [@animateStagger]="{ value: '50' }"
         fusePerfectScrollbar
     >
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
+        <!-- Order Column -->
+        <ng-container matColumnDef="order">
             <mat-header-cell *matHeaderCellDef mat-sort-header>
-                ID
+                Order
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 {{ row?.id }}
@@ -74,6 +74,17 @@
             </mat-cell>
         </ng-container>
 
+        <!-- Account Receivable Column -->
+        <ng-container matColumnDef="receivable">
+            <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                Account Receivable
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                {{ row?.receivable }}
+            </mat-cell>
+        </ng-container>
+
         <!-- Balance Column -->
         <ng-container matColumnDef="balance">
             <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
@@ -85,14 +96,14 @@
             </mat-cell>
         </ng-container>
 
-        <!-- Account Receivable Column -->
-        <ng-container matColumnDef="receivable">
+        <!-- Average Monthly Order Column -->
+        <ng-container matColumnDef="avg-monthly">
             <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
-                Account Receivable
+                Average Monthly Order
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                {{ row?.receivable }}
+                {{ row?.balance }}
             </mat-cell>
         </ng-container>
 
@@ -164,7 +175,7 @@
                             aria-label="edit"
                             (click)="onEdit(row)"
                         >
-                            <mat-icon>edit</mat-icon>
+                            <!-- <mat-icon>edit</mat-icon> -->
                             <span>Edit</span>
                         </button>
 
@@ -175,7 +186,7 @@
                             aria-label="remove"
                             (click)="onDelete(row)"
                         >
-                            <mat-icon>delete</mat-icon>
+                            <!-- <mat-icon>ac_unit</mat-icon> -->
                             <span>Freeze Balance</span>
                         </button>
                     </mat-menu>
