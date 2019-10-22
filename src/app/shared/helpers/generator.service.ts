@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as faker from 'faker/locale/id_ID';
+import { date } from '@rxweb/reactive-form-validators';
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +14,22 @@ export class GeneratorService {
         }).map(() => {
             return Object.keys(schema).reduce((entity, key) => {
                 switch (schema[key]) {
+                    case 'catalogue.block.reason':
+                        entity[key] = 'Produk dimasukkan ke dalam kategori yang salah.';
+                        break;
+                    
+                    case 'catalogue.block.suggest':
+                        entity[key] = 'Produk Anda diblokir karena diunggah pada kategori yang salah.';
+                        break;
+
+                    case 'catalogue.block.type':
+                        entity[key] = 'Spam';
+                        break;
+
+                    case 'catalogue.isArchived':
+                        entity[key] = faker.random.boolean();
+                        break;
+
                     case 'customer.hierarchy':
                         entity[key] = `TRUSTED LV${faker.random.number({ min: 0, max: 3 })}`;
                         break;
@@ -96,6 +113,10 @@ export class GeneratorService {
                         ]);
                         break;
 
+                    case 'random.sku':
+                        entity[key] = faker.random.number({ min: 1000000, max: 9999999 });
+                        break;
+
                     case 'store.segment':
                         entity[key] = faker.random.arrayElement(['GT', 'MT']);
                         break;
@@ -152,6 +173,25 @@ export class GeneratorService {
             email: '{{internet.email}}',
             role: 'employee.accessRight',
             phoneNumber: '{{phone.phoneNumber}}'
+        };
+    }
+
+    static get cataloguesSchema(): any {
+        return {
+            id: '{{random.number}}',
+            sku: 'random.sku',
+            parentSku: 'random.sku',
+            name: '{{commerce.productName}}',
+            variant: '-',
+            price: '{{commerce.price}}',
+            stock: '{{random.number}}',
+            sale: '{{random.number}}',
+            isArchived: 'catalogue.isArchived',
+            lastUpdate: '{{date.recent}}',
+            timeLimit: '-',
+            blockType: 'catalogue.block.type',
+            blockReason: 'catalogue.block.reason',
+            blockSuggest: 'catalogue.block.suggest'
         };
     }
 
