@@ -1,6 +1,4 @@
-import { Store } from '@ngrx/store';
 import { FuseNavigation } from '@fuse/types';
-import { fromOrder } from './store/reducers';
 import { UiActions } from 'app/shared/store/actions';
 
 export const statusOrder: FuseNavigation[] = [

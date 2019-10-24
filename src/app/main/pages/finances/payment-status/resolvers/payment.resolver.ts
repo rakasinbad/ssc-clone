@@ -5,33 +5,34 @@ import { GeneratorService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { filter, first, tap } from 'rxjs/operators';
 
-import { OrderActions } from '../store/actions';
-import { fromOrder } from '../store/reducers';
-import { OrderSelectors } from '../store/selectors';
+import { PaymentStatusActions } from '../store/actions';
+import { fromPaymentStatus } from '../store/reducers';
+import { PaymentStatusSelectors } from '../store/selectors';
 
 @Injectable({
     providedIn: 'root'
 })
-export class OrderResolver implements Resolve<any> {
+export class PaymentResolver implements Resolve<any> {
     constructor(
-        private store: Store<fromOrder.FeatureState>,
+        private store: Store<fromPaymentStatus.FeatureState>,
         private _$generator: GeneratorService
     ) {}
 
     resolve(route: ActivatedRouteSnapshot): Observable<any> | Promise<any> | any {
-        return this.store.select(OrderSelectors.getTotalOrderEntity).pipe(
+        return this.store.select(PaymentStatusSelectors.getTotalPaymentStatusEntity).pipe(
             tap(total => {
+                console.log('PAYMENT 1', total);
                 if (!total) {
                     const generator = this._$generator.generator(
-                        GeneratorService.orderSchema,
+                        GeneratorService.financePaymentStatusSchema,
                         50,
                         200
                     );
 
+                    console.log('PAYMENT 2', generator);
+
                     this.store.dispatch(
-                        OrderActions.generateOrdersDemo({
-                            payload: generator
-                        })
+                        PaymentStatusActions.generatePaymentsDemo({ payload: generator })
                     );
                 }
             }),

@@ -1,10 +1,11 @@
-import { createReducer, Action } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
+import { createReducer, Action, on } from '@ngrx/store';
+import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { IErrorHandler } from 'app/shared/models';
 import { TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { IPaymentStatusDemo } from './../../models';
+import { PaymentStatusActions } from '../actions';
 
 export const FEATURE_KEY = 'paymentStatus';
 
@@ -27,7 +28,7 @@ export interface FeatureState extends fromRoot.State {
 }
 
 const adapterPaymentStatus = createEntityAdapter<IPaymentStatusDemo>({
-    selectId: paymentStatus => paymentStatus.orderRef
+    selectId: paymentStatus => paymentStatus.id
 });
 const initialPaymentStatus = adapterPaymentStatus.getInitialState({ total: 0 });
 
@@ -42,7 +43,13 @@ export const initialState: State = {
     errors: initialErrorState
 };
 
-const paymentStatusReducer = createReducer(initialState);
+const paymentStatusReducer = createReducer(
+    initialState,
+    on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({
+        ...state,
+        paymentStatus: adapterPaymentStatus.addAll(payload, state.paymentStatus)
+    }))
+);
 
 export function reducer(state: State | undefined, action: Action): State {
     return paymentStatusReducer(state, action);
@@ -51,8 +58,8 @@ export function reducer(state: State | undefined, action: Action): State {
 const getListPaymentStatusState = (state: State) => state.paymentStatus;
 
 export const {
-    selectAll,
-    selectEntities,
-    selectIds,
-    selectTotal
+    selectAll: selectAllPaymentStatus,
+    selectEntities: selectPaymentStatusEntities,
+    selectIds: selectPaymentStatusIds,
+    selectTotal: selectPaymentStatusTotal
 } = adapterPaymentStatus.getSelectors(getListPaymentStatusState);

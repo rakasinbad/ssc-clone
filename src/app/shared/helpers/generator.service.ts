@@ -56,6 +56,10 @@ export class GeneratorService {
                         entity[key] = faker.random.arrayElement(['GT', 'MTI']);
                         break;
 
+                    case 'finance.source':
+                        entity[key] = faker.random.arrayElement(['Sinbad', 'Non Sinbad']);
+                        break;
+
                     case 'finance.status':
                         entity[key] = faker.random.arrayElement([
                             'Temp Paid',
@@ -188,18 +192,20 @@ export class GeneratorService {
 
     static get financePaymentStatusSchema(): any {
         return {
+            id: '{{random.number}}',
             orderRef: 'finance.orderRef',
             store: '{{company.companyName}}',
             receivable: '{{finance.amount}}',
             status: 'finance.status',
+            source: 'finance.source',
             paymentType: 'payment.type',
             paymentMethod: 'payment.method',
-            dateOrder: '{{date.recent}}',
+            orderDate: '{{date.recent}}',
             dueDate: '{{date.recent}}',
             paidOn: '{{date.recent}}',
             agingDay: 'aging.day',
             d: 'aging.day',
-            proofOfPayment: ''
+            proofOfPaymentStatus: '{{random.boolean}}'
         };
     }
 

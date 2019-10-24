@@ -16,6 +16,7 @@ import { StorageModule } from '@ngx-pwa/local-storage';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxMaskModule } from 'ngx-mask';
 import { MomentModule } from 'ngx-moment';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -75,6 +76,7 @@ registerLocaleData(localId, 'id');
         }),
 
         MomentModule,
+        NgxImageZoomModule.forRoot(),
         NgxMaskModule.forRoot(),
         NgIdleKeepaliveModule.forRoot(),
         NgxPermissionsModule.forRoot(),

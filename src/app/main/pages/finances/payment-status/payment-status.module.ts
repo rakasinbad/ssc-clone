@@ -5,10 +5,13 @@ import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
+import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
+import { PaymentStatusFormComponent } from './payment-status-form/payment-status-form.component';
 import { PaymentStatusRoutingModule } from './payment-status-routing.module';
 import { PaymentStatusComponent } from './payment-status.component';
+import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
 import { fromPaymentStatus } from './store/reducers';
 
 /**
@@ -18,7 +21,7 @@ import { fromPaymentStatus } from './store/reducers';
  * @class PaymentStatusModule
  */
 @NgModule({
-    declarations: [PaymentStatusComponent],
+    declarations: [PaymentStatusComponent, PaymentStatusFormComponent, ProofOfPaymentFormComponent],
     imports: [
         PaymentStatusRoutingModule,
 
@@ -27,10 +30,12 @@ import { fromPaymentStatus } from './store/reducers';
 
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
+        NgxImageZoomModule.forRoot(),
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromPaymentStatus.FEATURE_KEY, fromPaymentStatus.reducer),
         EffectsModule.forFeature([])
-    ]
+    ],
+    entryComponents: [PaymentStatusFormComponent, ProofOfPaymentFormComponent]
 })
 export class PaymentStatusModule {}

@@ -23,6 +23,7 @@ export const globalEnLang = {
         MERCHANT: 'Merchant',
         ORDER_DETAILS: 'Order Details',
         ORDER_MANAGEMENTS: 'Order Managements',
+        PAYMENT_STATUS: 'Payment Status',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
         STORE: 'Store'
