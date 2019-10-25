@@ -43,7 +43,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'archived',
         title: 'Archived',
-        translate: 'STATUS.ORDER.ARCHIVED.TITLE',
+        translate: 'STATUS.CATALOGUE.ARCHIVED.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'archived' }));
