@@ -10,9 +10,12 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { CataloguesRoutingModule } from './catalogues-routing.module';
 import { CataloguesComponent } from './catalogues.component';
 import { fromCatalogue } from './store/reducers';
+import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
+import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
+import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
 
 @NgModule({
-  declarations: [CataloguesComponent],
+  declarations: [CataloguesComponent, CataloguesImportComponent, CataloguesAddNewProductComponent, CataloguesFormComponent],
   imports: [
     CataloguesRoutingModule,
 

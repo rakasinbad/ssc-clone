@@ -1,23 +1,37 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
+interface ICatalogueTitleParameter {
+    allCount: number;
+    liveCount: number;
+    emptyCount: number;
+    blockedCount: number;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class CatalogueService {
     constructor(private translate: TranslateService) {}
 
-    // getCatalogueStatus() {
-    //     const STATUS_CATALOGUES_KEYS = [
-    //         'STATUS.CATALOGUE.ALL_PARAM.TITLE',
-    //         'STATUS.CATALOGUE.LIVE_PARAM.TITLE',
-    //         'STATUS.CATALOGUE.EMPTY_PARAM.TITLE',
-    //         'STATUS.CATALOGUE.BLOCKED_PARAM.TITLE',
-    //         'STATUS.CATALOGUE.ARCHIVED.TITLE'
-    //     ];
+    getCatalogueStatus(data: ICatalogueTitleParameter) {
+        const {
+            allCount,
+            liveCount,
+            emptyCount,
+            blockedCount
+        } = data;
 
-    //     return this.translate.instant(STATUS_CATALOGUES_KEYS);
-    // }
+        const STATUS_CATALOGUES_KEYS = [
+            'STATUS.CATALOGUE.ALL_PARAM.TITLE',
+            'STATUS.CATALOGUE.LIVE_PARAM.TITLE',
+            'STATUS.CATALOGUE.EMPTY_PARAM.TITLE',
+            'STATUS.CATALOGUE.BLOCKED_PARAM.TITLE',
+            'STATUS.CATALOGUE.ARCHIVED.TITLE'
+        ];
+
+        return this.translate.instant(STATUS_CATALOGUES_KEYS, { allCount, liveCount, emptyCount, blockedCount });
+    }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {
     //     const labelName = this.translate.instant(`FORM.${field.toUpperCase()}`);

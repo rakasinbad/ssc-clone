@@ -41,16 +41,12 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     dataSource: MatTableDataSource<ICatalogueDemo>; // Need for demo
     displayedColumns = [
         'checkbox',
-        'origins',
-        'id',
-        'orderDate',
-        'storeName',
-        'trxAmount',
-        'paymentMethod',
-        'totalProduct',
-        'status',
-        'deliveredOn',
-        'actualAmountDelivered',
+        'name',
+        'sku',
+        'variant',
+        'price',
+        'stock',
+        'sales',
         'actions'
     ];
     hasSelected: boolean;
@@ -129,6 +125,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(source => {
                 this.dataSource = new MatTableDataSource(source);
             });
+
+        // this.store.select([
+        //     CatalogueSelectors.getAllCatalogues,
+        //     CatalogueSelectors.getBlockedCatalogues,
+        //     CatalogueSelectors.getEmptyStockCatalogues,
+        //     CatalogueSelectors.getLiveCatalogues
+        // ]).pipe(takeUntil(this._unSubs$));
 
         // this.dataSource$ = this.store.select(OrderSelectors.getAllOrder);
         // this.paginator.pageSize = 5;
