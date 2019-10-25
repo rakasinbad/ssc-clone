@@ -1,5 +1,6 @@
 import { AgmCoreModule } from '@agm/core';
 import { NgModule } from '@angular/core';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
@@ -16,6 +17,7 @@ import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
 import { MerchantsRoutingModule } from './merchants-routing.module';
 import { MerchantsComponent } from './merchants.component';
+import { MerchantEffects } from './store/effects';
 import { fromMerchant } from './store/reducers';
 
 /**
@@ -41,12 +43,13 @@ import { fromMerchant } from './store/reducers';
         MaterialModule,
 
         AgmCoreModule,
+        LeafletModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([MerchantEffects])
     ]
 })
 export class MerchantsModule {}

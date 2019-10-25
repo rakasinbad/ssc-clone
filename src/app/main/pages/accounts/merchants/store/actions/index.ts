@@ -1,3 +1,3 @@
-import * as StoreActions from './merchant.actions';
+import * as BrandStoreActions from './merchant.actions';
 
-export { StoreActions };
+export { BrandStoreActions };

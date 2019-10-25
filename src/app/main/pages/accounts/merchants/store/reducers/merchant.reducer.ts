@@ -3,12 +3,12 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { IMerchantDemo, IStoreEmployeeDemo } from '../../models';
-import { StoreActions } from '../actions';
+import { BrandStore, IStoreEmployeeDemo } from '../../models';
+import { BrandStoreActions } from '../actions';
 
-export const FEATURE_KEY = 'stores';
+export const FEATURE_KEY = 'brandStores';
 
-interface StoreState extends EntityState<IMerchantDemo> {
+interface BrandStoreState extends EntityState<BrandStore> {
     total: number;
 }
 
@@ -19,18 +19,23 @@ interface StoreEmployeeState extends EntityState<IStoreEmployeeDemo> {
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
+    isDeleting: boolean | undefined;
     isLoading: boolean;
-    selectedStoreId: string | number;
+    selectedBrandStoreId: string | number;
     source: TSource;
-    stores: StoreState;
+    brandStores: BrandStoreState;
     employees: StoreEmployeeState;
     errors: ErrorState;
 }
 
-const adapterStore = createEntityAdapter<IMerchantDemo>({
-    selectId: store => store.id
+export interface FeatureState extends fromRoot.State {
+    [FEATURE_KEY]: State | undefined;
+}
+
+const adapterBrandStore = createEntityAdapter<BrandStore>({
+    selectId: brandStore => brandStore.id
 });
-const initialStoreState = adapterStore.getInitialState({ total: 0 });
+const initialBrandStoreState = adapterBrandStore.getInitialState({ total: 0 });
 
 const adapterStoreEmployee = createEntityAdapter<IStoreEmployeeDemo>({
     selectId: employee => employee.id
@@ -41,47 +46,52 @@ const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
+    isDeleting: undefined,
     isLoading: false,
-    selectedStoreId: null,
+    selectedBrandStoreId: null,
     source: 'fetch',
-    stores: initialStoreState,
+    brandStores: initialBrandStoreState,
     employees: initialStoreEmployeeState,
     errors: initialErrorState
 };
 
-const storeReducer = createReducer(
+const brandStoreReducer = createReducer(
     initialState,
-    on(StoreActions.generateStoresDemo, (state, { payload }) => ({
+    on(BrandStoreActions.fetchBrandStoresRequest, state => ({
         ...state,
-        stores: adapterStore.addAll(payload, state.stores)
+        isLoading: true
     })),
-    on(StoreActions.getStoreDemoDetail, (state, { payload }) => ({
+    on(BrandStoreActions.fetchBrandStoresFailure, (state, { payload }) => ({
         ...state,
-        selectedStoreId: payload
+        isLoading: false,
+        isDeleting: undefined,
+        errors: adapterError.upsertOne(payload, state.errors)
     })),
-    on(StoreActions.generateStoreEmployeesDemo, (state, { payload }) => ({
+    on(BrandStoreActions.fetchBrandStoresSuccess, (state, { payload }) => ({
         ...state,
-        employees: adapterStoreEmployee.addAll(payload, state.employees)
+        isLoading: false,
+        isDeleting: undefined,
+        brandStores: adapterBrandStore.addAll(payload.brandStores, {
+            ...state.brandStores,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchBrandStoresFailure', state.errors)
     }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {
-    return storeReducer(state, action);
+    return brandStoreReducer(state, action);
 }
 
-export interface FeatureState extends fromRoot.State {
-    [FEATURE_KEY]: State | undefined;
-}
-
-const getListStoreState = (state: State) => state.stores;
+const getListBrandStoreState = (state: State) => state.brandStores;
 const getListStoreEmployeeState = (state: State) => state.employees;
 
 export const {
-    selectAll: selectAllStores,
-    selectEntities: selectStoreEntities,
-    selectIds: selectStoreIds,
-    selectTotal: selectStoresTotal
-} = adapterStore.getSelectors(getListStoreState);
+    selectAll: selectAllBrandStores,
+    selectEntities: selectBrandStoreEntities,
+    selectIds: selectBrandStoreIds,
+    selectTotal: selectBrandStoresTotal
+} = adapterBrandStore.getSelectors(getListBrandStoreState);
 
 export const {
     selectAll: selectAllStoreEmployees,

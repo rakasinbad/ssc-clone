@@ -157,6 +157,24 @@ export class GeneratorService {
         });
     }
 
+    initGenerator(schema, min: number = 1, max: number): any {
+        max = max || min;
+
+        return Array.from({
+            length: faker.random.number({ min, max })
+        }).map(() => {
+            return Object.keys(schema).reduce((entity, key) => {
+                switch (schema[key]) {
+                    default:
+                        entity[key] = schema[key];
+                        break;
+                }
+
+                return entity;
+            }, {});
+        });
+    }
+
     static get accountsStoreSchema(): any {
         return {
             id: '{{random.number}}',

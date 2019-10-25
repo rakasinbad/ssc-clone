@@ -16,10 +16,10 @@ const routes: Routes = [
     {
         path: '',
         component: MerchantsComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            merchants: MerchantResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     merchants: MerchantResolver
+        // }
     },
     {
         path: ':id',

@@ -1,9 +1,13 @@
 import { JSONSchema } from '@ngx-pwa/local-storage';
-import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
-import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import {
+    BrandAssocUser,
+    IResponsePaginate,
+    ITimestamp,
+    Timestamp,
+    TNullable
+} from 'app/shared/models';
 import * as _ from 'lodash';
 
-import { AttendanceAssocUser } from '../../attendances/models/attendance.model';
 import { Role } from '../../roles/role.model';
 import { StoreAssocUser } from '../../stores/models/store.model';
 import { Urban } from '../../urbans/models';
@@ -24,13 +28,17 @@ export interface IAccount extends ITimestamp {
     email?: TNullable<string>;
     phoneNo?: TNullable<string>;
     mobilePhoneNo: string;
+    idNo: string;
+    taxNo: string;
     status: TAccountStatus;
     imageUrl?: TNullable<string>;
+    taxImageUrl?: TNullable<string>;
+    idImageUrl?: TNullable<string>;
+    selfieImageUrl?: TNullable<string>;
     urbanId?: string;
-    userOdooId?: string;
     userStores?: StoreAssocUser[];
+    userBrands?: BrandAssocUser[];
     roles?: Role[];
-    attendances?: AttendanceAssocUser[];
     urban: Urban;
 }
 
@@ -156,13 +164,17 @@ export class Account extends Timestamp {
     email?: TNullable<string>;
     phoneNo?: TNullable<string>;
     mobilePhoneNo: string;
+    idNo: string;
+    taxNo: string;
     status: TAccountStatus;
     imageUrl: TNullable<string>;
+    taxImageUrl?: TNullable<string>;
+    idImageUrl?: TNullable<string>;
+    selfieImageUrl?: TNullable<string>;
     urbanId?: string;
-    userOdooId?: string;
     userStores?: StoreAssocUser[];
+    userBrands?: BrandAssocUser[];
     roles?: Role[];
-    attendances?: AttendanceAssocUser[];
     urban: Urban;
 
     constructor(
@@ -171,13 +183,17 @@ export class Account extends Timestamp {
         email: TNullable<string>,
         phoneNo: TNullable<string>,
         mobilePhoneNo: string,
+        idNo: string,
+        taxNo: string,
         status: TAccountStatus,
         imageUrl: TNullable<string>,
+        taxImageUrl: TNullable<string>,
+        idImageUrl: TNullable<string>,
+        selfieImageUrl: TNullable<string>,
         urbanId: string,
-        userOdooId: string,
         userStores: StoreAssocUser[],
+        userBrands: BrandAssocUser[],
         roles: Role[],
-        attendances: AttendanceAssocUser[],
         urban: Urban,
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
@@ -186,14 +202,20 @@ export class Account extends Timestamp {
         super(createdAt, updatedAt, deletedAt);
 
         this.id = id || undefined;
-        this.fullName = fullName;
-        this.email = email;
-        this.phoneNo = phoneNo;
-        this.mobilePhoneNo = mobilePhoneNo;
+        this.fullName = fullName ? fullName.trim() : fullName;
+        this.email = email ? email.trim() : email;
+        this.phoneNo = phoneNo ? phoneNo.trim() : phoneNo;
+        this.mobilePhoneNo = mobilePhoneNo ? mobilePhoneNo.trim() : mobilePhoneNo;
+        this.idNo = idNo ? idNo.trim() : idNo;
+        this.taxNo = taxNo ? taxNo.trim() : taxNo;
         this.status = status;
-        this.imageUrl = imageUrl || 'assets/images/avatars/profile.jpg';
+        this.imageUrl =
+            (imageUrl ? imageUrl.trim() : imageUrl) || 'assets/images/avatars/profile.jpg';
+        this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : taxImageUrl;
+        this.idImageUrl = idImageUrl ? idImageUrl.trim() : idImageUrl;
+        this.selfieImageUrl = selfieImageUrl ? selfieImageUrl.trim() : selfieImageUrl;
         this.urbanId = urbanId;
-        this.userOdooId = userOdooId;
+
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -216,6 +238,27 @@ export class Account extends Timestamp {
             this.userStores = _.orderBy(userStores, item => item.store.name, 'asc');
         } else {
             this.userStores = [];
+        }
+
+        if (userBrands && userBrands.length > 0) {
+            userBrands = [
+                ...userBrands.map(userBrand => {
+                    return {
+                        ...new BrandAssocUser(
+                            userBrand.id,
+                            userBrand.brandId,
+                            userBrand.status,
+                            userBrand.brand,
+                            userBrand.createdAt,
+                            userBrand.updatedAt,
+                            userBrand.deletedAt
+                        )
+                    };
+                })
+            ];
+            this.userBrands = _.orderBy(userBrands, item => item.brand.name, 'asc');
+        } else {
+            this.userBrands = [];
         }
 
         if (roles && roles.length > 0) {
@@ -241,28 +284,28 @@ export class Account extends Timestamp {
             this.roles = [];
         }
 
-        if (attendances && attendances.length > 0) {
-            attendances = [
-                ...attendances.map(attendance => {
-                    return {
-                        ...new AttendanceAssocUser(
-                            attendance.id,
-                            attendance.checkDate,
-                            attendance.longitude,
-                            attendance.latitude,
-                            attendance.checkIn,
-                            attendance.checkOut,
-                            attendance.createdAt,
-                            attendance.updatedAt,
-                            attendance.deletedAt
-                        )
-                    };
-                })
-            ];
-            this.attendances = _.orderBy(attendances, item => item.checkIn, 'desc');
-        } else {
-            this.attendances = [];
-        }
+        //    if (attendances && attendances.length > 0) {
+        //        attendances = [
+        //            ...attendances.map(attendance => {
+        //                return {
+        //                    ...new AttendanceAssocUser(
+        //                        attendance.id,
+        //                        attendance.checkDate,
+        //                        attendance.longitude,
+        //                        attendance.latitude,
+        //                        attendance.checkIn,
+        //                        attendance.checkOut,
+        //                        attendance.createdAt,
+        //                        attendance.updatedAt,
+        //                        attendance.deletedAt
+        //                    )
+        //                };
+        //            })
+        //        ];
+        //        this.attendances = _.orderBy(attendances, item => item.checkIn, 'desc');
+        //    } else {
+        //        this.attendances = [];
+        //    }
 
         if (urban) {
             this.urban = {

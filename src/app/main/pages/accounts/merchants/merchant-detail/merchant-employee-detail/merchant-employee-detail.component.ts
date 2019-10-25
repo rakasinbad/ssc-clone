@@ -16,7 +16,7 @@ import { merge, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { fromMerchant } from '../../store/reducers';
-import { MerchantSelectors } from '../../store/selectors';
+import { BrandStoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-merchant-employee-detail',
@@ -61,7 +61,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
 
         // Need for demo
         this.store
-            .select(MerchantSelectors.getAllStoreEmployee)
+            .select(BrandStoreSelectors.getAllStoreEmployee)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(source => {
                 this.dataSource = new MatTableDataSource(source);

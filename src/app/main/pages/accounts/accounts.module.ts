@@ -32,10 +32,10 @@ import * as fromAccount from './store/reducers/account.reducer';
         AgmCoreModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
-        NgxPermissionsModule.forChild(),
+        NgxPermissionsModule.forChild()
 
-        StoreModule.forFeature(fromAccount.FEATURE_KEY, fromAccount.reducer),
-        EffectsModule.forFeature([AccountEffects])
+        // StoreModule.forFeature(fromAccount.FEATURE_KEY, fromAccount.reducer),
+        // EffectsModule.forFeature([AccountEffects])
     ]
 })
 export class AccountsModule {}

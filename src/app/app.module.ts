@@ -8,6 +8,7 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { FuseProgressBarModule, FuseSidebarModule, FuseThemeOptionsModule } from '@fuse/components';
 import { FuseModule } from '@fuse/fuse.module';
 import { FuseSharedModule } from '@fuse/shared.module';
@@ -69,6 +70,7 @@ registerLocaleData(localId, 'id');
             // apiKey: 'AIzaSyAYbXdwC3U-zzUFkSVNIq7-xEO_ika4B98'
             apiKey: 'AIzaSyCJOq7jyP66ozbV2hXxLaTE_B9sx_y06vg'
         }),
+        LeafletModule.forRoot(),
         RxReactiveFormsModule.forRoot(),
 
         StorageModule.forRoot({

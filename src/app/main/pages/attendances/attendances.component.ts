@@ -19,7 +19,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { locale as english } from './i18n/en';
 import { IQueryParams } from 'app/shared/models';
 import { AttendanceActions } from './store/actions';
-import { tap, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
 import { Attendance } from './models';
 import { AttendanceSelectors } from './store/selectors';
 @Component({
@@ -36,7 +36,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         'id',
         'image',
         'name',
-        'checkin',
+        'check-in',
         'checkout',
         'date',
         'workinghours',
@@ -76,11 +76,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this.store.pipe(
-            select(AttendanceSelectors.getAllAttendance),
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+        this.dataSource$ = this.store.select(AttendanceSelectors.getAllAttendance);
         this.totalDataSource$ = this.store.pipe(
             select(AttendanceSelectors.getTotalAttendance),
             distinctUntilChanged(),
@@ -101,9 +97,15 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
+        // merge(this.sort.sortChange, this.paginator.page)
+        //     .pipe(tap(() => this.initTable()))
+        //     .subscribe();
+
         merge(this.sort.sortChange, this.paginator.page)
-            .pipe(tap(() => this.initTable()))
-            .subscribe();
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(_ => {
+                this.initTable();
+            });
     }
 
     ngOnDestroy(): void {

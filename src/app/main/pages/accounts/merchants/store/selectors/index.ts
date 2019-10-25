@@ -1,3 +1,3 @@
-import * as MerchantSelectors from './merchant.selectors';
+import * as BrandStoreSelectors from './merchant.selectors';
 
-export { MerchantSelectors };
+export { BrandStoreSelectors };

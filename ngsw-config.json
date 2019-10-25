@@ -37,6 +37,20 @@
                 "timeout": "10s",
                 "strategy": "freshness"
             }
+        },
+        {
+            "name": "api.account-brand-stores",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/brand-stores",
+                "https://medea-stg.sinbad.web.id/brand-stores",
+                "https://medea.sinbad.web.id/brand-stores"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            }
         }
     ]
 }

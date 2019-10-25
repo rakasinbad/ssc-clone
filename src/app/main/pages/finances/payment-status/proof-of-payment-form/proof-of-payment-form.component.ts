@@ -58,12 +58,20 @@ export class ProofOfPaymentFormComponent implements OnInit {
         const h = glass.offsetHeight / 2;
 
         // execute a function when someone moves the magnifier glass over the image:
-        glass.addEventListener('mousemove', $event => this.moveMagnifier($event, glass, img, zoom));
-        img.addEventListener('mousemove', moveMagnifier);
+        glass.addEventListener('mousemove', $event =>
+            this.moveMagnifier($event, glass, img, h, w, bw, zoom)
+        );
+        img.addEventListener('mousemove', $event =>
+            this.moveMagnifier($event, glass, img, h, w, bw, zoom)
+        );
 
         // and also for touch screens:
-        glass.addEventListener('touchmove', moveMagnifier);
-        img.addEventListener('touchmove', moveMagnifier);
+        glass.addEventListener('touchmove', $event =>
+            this.moveMagnifier($event, glass, img, h, w, bw, zoom)
+        );
+        img.addEventListener('touchmove', $event =>
+            this.moveMagnifier($event, glass, img, h, w, bw, zoom)
+        );
 
         // var img, glass, w, h, bw;
         // img = document.getElementById(imgID);
@@ -134,12 +142,20 @@ export class ProofOfPaymentFormComponent implements OnInit {
         // }
     }
 
-    private moveMagnifier(e: any, glass: any, img: any, zoom: number) {
+    private moveMagnifier(
+        e: any,
+        glass: any,
+        img: any,
+        h: any,
+        w: any,
+        bw: any,
+        zoom: number
+    ): void {
         e.preventDefault();
 
         const pos = this.getCursorPos(e, img);
-        const x = pos.x;
-        const y = pos.y;
+        let x = pos.x;
+        let y = pos.y;
 
         if (x > img.width - w / zoom) {
             x = img.width - w / zoom;
@@ -156,6 +172,14 @@ export class ProofOfPaymentFormComponent implements OnInit {
         if (y < h / zoom) {
             y = h / zoom;
         }
+
+        // set the position of the magnifier glass:
+        glass.style.left = x - w + 'px';
+        glass.style.top = y - h + 'px';
+
+        // display what the magnifier glass "sees":
+        glass.style.backgroundPosition =
+            '-' + (x * zoom - w + bw) + 'px -' + (y * zoom - h + bw) + 'px';
     }
 
     private getCursorPos(e: any, img: any): any {

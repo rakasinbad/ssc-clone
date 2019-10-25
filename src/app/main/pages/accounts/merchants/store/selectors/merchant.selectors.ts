@@ -2,50 +2,118 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { fromMerchant } from '../reducers';
 
-export const getStoreState = createFeatureSelector<fromMerchant.State>(fromMerchant.FEATURE_KEY);
+export const getBrandStoreState = createFeatureSelector<fromMerchant.State>(
+    fromMerchant.FEATURE_KEY
+);
 
-export const getAllStore = createSelector(
-    getStoreState,
-    fromMerchant.selectAllStores
+export const getAllBrandStore = createSelector(
+    getBrandStoreState,
+    fromMerchant.selectAllBrandStores
 );
 
 export const getAllStoreEmployee = createSelector(
-    getStoreState,
+    getBrandStoreState,
     fromMerchant.selectAllStoreEmployees
 );
 
-export const getStoreEntities = createSelector(
-    getStoreState,
-    fromMerchant.selectStoreEntities
+export const getBrandStoreEntities = createSelector(
+    getBrandStoreState,
+    fromMerchant.selectBrandStoreEntities
 );
 
 export const getStoreEmployeeEntities = createSelector(
-    getStoreState,
+    getBrandStoreState,
     fromMerchant.selectStoreEmployeeEntities
 );
 
-export const getTotalStoreEntity = createSelector(
-    getStoreState,
-    fromMerchant.selectStoresTotal
+export const getTotalBrandStoreEntity = createSelector(
+    getBrandStoreState,
+    fromMerchant.selectBrandStoresTotal
 );
 
 export const getTotalStoreEmployeeEntity = createSelector(
-    getStoreState,
+    getBrandStoreState,
     fromMerchant.selectStoreEmployeesTotal
 );
 
-export const getTotalStore = createSelector(
-    getStoreState,
-    state => state.stores.total
+export const getTotalBrandStore = createSelector(
+    getBrandStoreState,
+    state => state.brandStores.total
 );
 
-export const getSelectedStoreId = createSelector(
-    getStoreState,
-    state => state.selectedStoreId
+export const getSelectedBrandStoreId = createSelector(
+    getBrandStoreState,
+    state => state.selectedBrandStoreId
 );
 
-export const getSelectedStore = createSelector(
-    getStoreEntities,
-    getSelectedStoreId,
-    (storeEntities, storeId) => storeEntities[storeId]
+export const getSelectedBrandStore = createSelector(
+    getBrandStoreEntities,
+    getSelectedBrandStoreId,
+    (brandStoreEntities, brandStoreId) => brandStoreEntities[brandStoreId]
+);
+
+export const getIsDeleting = createSelector(
+    getBrandStoreState,
+    state => state.isLoading
+);
+
+export const getIsLoading = createSelector(
+    getBrandStoreState,
+    state => state.isLoading
+);
+
+export const getDefaultAllBrandStore = createSelector(
+    getBrandStoreState,
+    state => [
+        {
+            brandId: null,
+            createdAt: null,
+            deletedAt: null,
+            id: null,
+            status: null,
+            store: null,
+            storeId: null,
+            updatedAt: null
+        },
+        {
+            brandId: null,
+            createdAt: null,
+            deletedAt: null,
+            id: null,
+            status: null,
+            store: null,
+            storeId: null,
+            updatedAt: null
+        },
+        {
+            brandId: null,
+            createdAt: null,
+            deletedAt: null,
+            id: null,
+            status: null,
+            store: null,
+            storeId: null,
+            updatedAt: null
+        },
+        {
+            brandId: null,
+            createdAt: null,
+            deletedAt: null,
+            id: null,
+            status: null,
+            store: null,
+            storeId: null,
+            updatedAt: null
+        },
+        {
+            brandId: null,
+            createdAt: null,
+            deletedAt: null,
+            id: null,
+            status: null,
+            store: null,
+            storeId: null,
+            updatedAt: null
+        }
+    ]
 );

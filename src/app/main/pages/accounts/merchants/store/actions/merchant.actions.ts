@@ -1,6 +1,26 @@
 import { createAction, props } from '@ngrx/store';
+import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
-import { IMerchantDemo, IStoreEmployeeDemo } from '../../models';
+import { BrandStore, IMerchantDemo, IStoreEmployeeDemo } from '../../models';
+
+export const fetchBrandStoresRequest = createAction(
+    '[Brand Stores API] Fetch Brand Stores Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchBrandStoresFailure = createAction(
+    '[Brand Stores API] Fetch Brand Stores Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchBrandStoresSuccess = createAction(
+    '[Brand Stores API] Fetch Brand Stores Success',
+    props<{ payload: { brandStores: BrandStore[]; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// For Demo
+// -----------------------------------------------------------------------------------------------------
 
 export const generateStoresDemo = createAction(
     '[Stores Page] Generate Stores Demo',

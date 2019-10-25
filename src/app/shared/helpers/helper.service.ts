@@ -31,7 +31,7 @@ export class HelperService {
         return `${HelperService._host}${endpoint}`;
     }
 
-    handleParams(url: string, params: IQueryParams): HttpParams {
+    handleParams(url: string, params: IQueryParams, ...args): HttpParams {
         let newParams = new HttpParams();
 
         if (params.paginate) {
@@ -81,6 +81,14 @@ export class HelperService {
                     }
                 }
             }
+        }
+
+        if (args && args.length > 0) {
+            args.forEach((arg, i) => {
+                if (arg[i].key && arg[i].value) {
+                    newParams = newParams.append(arg[i].key, arg[i].value);
+                }
+            });
         }
 
         console.log(params);
