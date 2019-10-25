@@ -33,6 +33,29 @@ export const navigation: FuseNavigation[] = [
         ]
     },
     {
+        id: 'catalogues',
+        title: 'Catalogues',
+        translate: 'NAV.CATALOGUES.TITLE',
+        type: 'collapsable',
+        icon: 'people',
+        children: [
+            {
+                id: 'addProduct',
+                title: 'Add Product',
+                translate: 'NAV.ADD_PRODUCT.TITLE',
+                type: 'item',
+                url: '/pages/catalogues/add'
+            },
+            {
+                id: 'manageProduct',
+                title: 'Manage Product',
+                translate: 'NAV.MANAGE_PRODUCT.TITLE',
+                type: 'item',
+                url: '/pages/catalogues'
+            }
+        ]
+    },
+    {
         id: 'attendances',
         title: 'Attendances',
         translate: 'NAV.ATTENDANCES.TITLE',
