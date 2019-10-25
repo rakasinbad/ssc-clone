@@ -10,6 +10,7 @@ export const globalEnLang = {
     BREADCRUMBS: {
         ACCOUNTS: 'Accounts',
         ACCOUNT: 'Account',
+        ADD_PRODUCT: 'Add Product',
         ADD_STORE: 'Add Store',
         CATALOGUE: 'Catalogue',
         CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
@@ -49,7 +50,10 @@ export const globalEnLang = {
     },
     GLOBAL_STATUS: {
         ALL: 'All',
+        ARCHIVED: 'Archived',
+        BLOCKED: 'Blocked',
         COMPLETED: 'Completed',
+        EMPTY: 'Empty',
         NEW_ORDER: 'New Order',
         PACKING: 'Packing',
         RECEIVED: 'Received',

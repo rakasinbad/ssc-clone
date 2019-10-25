@@ -10,6 +10,7 @@ export const globalIdLang = {
     BREADCRUMBS: {
         ACCOUNTS: 'Account',
         ACCOUNT: 'Account',
+        ADD_PRODUCT: 'Tambah Produk',
         ADD_STORE: 'Add Toko',
         CATALOGUE: 'Catalogue',
         CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
@@ -49,7 +50,10 @@ export const globalIdLang = {
     },
     GLOBAL_STATUS: {
         ALL: 'Semua',
+        ARCHIVED: 'Diarsip',
+        BLOCKED: 'Blocked',
         COMPLETED: 'Selesai',
+        EMPTY: 'Habis',
         NEW_ORDER: 'Order Baru',
         PACKING: 'Dikemas',
         RECEIVED: 'Diterima',
