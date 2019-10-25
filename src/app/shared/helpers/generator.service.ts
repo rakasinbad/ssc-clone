@@ -182,6 +182,7 @@ export class GeneratorService {
             sku: 'random.sku',
             parentSku: 'random.sku',
             name: '{{commerce.productName}}',
+            image: '{{image.food}}',
             variant: '-',
             price: '{{commerce.price}}',
             stock: '{{random.number}}',

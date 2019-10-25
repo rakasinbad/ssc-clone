@@ -5,6 +5,7 @@ export interface ICatalogueDemo {
     sku: number;
     parentSku: number;
     name: string;
+    image: string;
     variant: string;
     price: number;
     stock: number;
