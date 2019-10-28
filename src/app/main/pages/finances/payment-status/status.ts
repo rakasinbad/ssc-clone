@@ -66,12 +66,12 @@ export const statusPayment: FuseNavigation[] = [
         }
     },
     {
-        id: 'd-1',
-        title: 'D-1',
-        translate: 'STATUS.PAYMENT.D_1.TITLE',
+        id: 'd-0',
+        title: 'D-0',
+        translate: 'STATUS.PAYMENT.D_0.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'd-1' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'd-0' }));
         }
     }
 ];

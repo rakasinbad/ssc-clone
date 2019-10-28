@@ -17,6 +17,7 @@ import { StorageModule } from '@ngx-pwa/local-storage';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { intersectionObserverPreset, LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxMaskModule } from 'ngx-mask';
 import { MomentModule } from 'ngx-moment';
@@ -78,6 +79,7 @@ registerLocaleData(localId, 'id');
         }),
 
         MomentModule,
+        LazyLoadImageModule.forRoot({ preset: intersectionObserverPreset }),
         NgxImageZoomModule.forRoot(),
         NgxMaskModule.forRoot(),
         NgIdleKeepaliveModule.forRoot(),

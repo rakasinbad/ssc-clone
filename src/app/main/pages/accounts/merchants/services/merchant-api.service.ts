@@ -4,7 +4,7 @@ import { GeneratorService, HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { BrandStore, IBrandStoreResponse } from '../models';
+import { BrandStore, IBrandStore, IBrandStoreResponse } from '../models';
 
 /**
  *
@@ -67,6 +67,17 @@ export class MerchantApiService {
         const newParams = this._$helper.handleParams(this._url, params, newArg);
 
         return this.http.get<IBrandStoreResponse>(this._url, { params: newParams });
+    }
+
+    /**
+     *
+     *
+     * @param {string} id
+     * @returns {Observable<IBrandStore>}
+     * @memberof MerchantApiService
+     */
+    findById(id: string): Observable<IBrandStore> {
+        return this.http.get<IBrandStore>(`${this._url}/${id}`);
     }
 
     /**

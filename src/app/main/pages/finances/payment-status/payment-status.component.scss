@@ -118,6 +118,11 @@ app-payment-status {
             flex: 0 1 160px;
         }
 
+        .mat-column-aging-day {
+            flex: 0 1 50px;
+            // justify-content: flex-end;
+        }
+
         .mat-column-totalProduct {
             flex: 0 1 80px;
         }

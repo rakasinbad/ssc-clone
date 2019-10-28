@@ -1,0 +1,27 @@
+<span mat-dialog-title class="h5">
+    <ng-container *ngIf="data?.title">
+        {{ data?.title }}
+    </ng-container>
+
+    <ngx-skeleton-loader *ngIf="!data?.title" [theme]="{ width: '100px' }"></ngx-skeleton-loader>
+</span>
+
+<mat-dialog-content class="mat-typography" fusePerfectScrollbar>
+    <img
+        *ngIf="data?.url"
+        [defaultImage]="'assets/images/avatars/profile.jpg'"
+        [useSrcset]="true"
+        [lazyLoad]="data?.url"
+        [errorImage]="'assets/images/avatars/profile.jpg'"
+    />
+
+    <ngx-skeleton-loader
+        *ngIf="!data?.url"
+        appearance="circle"
+        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"
+    ></ngx-skeleton-loader>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

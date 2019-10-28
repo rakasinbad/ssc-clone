@@ -52,6 +52,11 @@ export const getSelectedBrandStore = createSelector(
     (brandStoreEntities, brandStoreId) => brandStoreEntities[brandStoreId]
 );
 
+export const getSelectedBrandStoreInfo = createSelector(
+    getBrandStoreState,
+    state => state.brandStore
+);
+
 export const getIsDeleting = createSelector(
     getBrandStoreState,
     state => state.isLoading

@@ -1,14 +1,76 @@
 <mat-card>
-    <div fxLayout="column">
-        <span class="mat-headline">
-            Toko Abadi Jaya
-        </span>
+    <div fxLayout="column" fxLayoutGap="15px">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <div
+                    *ngIf="(brandStore$ | async)?.store?.imageUrl || !(isLoading$ | async)"
+                    class="store-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img
+                        [defaultImage]="'assets/images/avatars/profile.jpg'"
+                        [useSrcset]="true"
+                        [lazyLoad]="(brandStore$ | async)?.store?.imageUrl"
+                        [errorImage]="'assets/images/avatars/profile.jpg'"
+                    />
+                </div>
+
+                <div
+                    *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                    class="mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <ngx-skeleton-loader
+                        appearance="circle"
+                        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"
+                    ></ngx-skeleton-loader>
+                </div>
+
+                <span
+                    class="mat-headline m-0"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <ng-container
+                        *ngIf="(brandStore$ | async)?.store?.name || !(isLoading$ | async)"
+                    >
+                        {{ safeValue((brandStore$ | async)?.store?.name) }}
+                    </ng-container>
+                    <ngx-skeleton-loader
+                        *ngIf="!(brandStore$ | async)?.store?.name && (isLoading$ | async)"
+                        [theme]="{ width: '150px', height: '25px', 'margin-top': '15px' }"
+                    ></ngx-skeleton-loader>
+                </span>
+            </div>
+
+            <button
+                mat-flat-button
+                color="accent"
+                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+            >
+                Edit
+            </button>
+
+            <ngx-skeleton-loader
+                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                [theme]="{ width: '70px', height: '30px', margin: 0 }"
+            ></ngx-skeleton-loader>
+        </div>
 
         <div fxLayout="row wrap" fxLayoutAlign="start stretch" fxLayoutGap="40px">
             <div fxLayout="column" fxLayoutAlign="space-between start" fxLayoutGap="10px">
                 <div class="order-box info-box" fxFlex="30">
                     <header>
-                        <div class="title">Profile Information</div>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Profile Information
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
                     </header>
 
                     <div class="content">
@@ -19,8 +81,38 @@
                             </tr> -->
 
                             <tr>
-                                <td class="info-title">Phone Number</td>
-                                <td>081312345678</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Phone Number
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.phoneNo ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.phoneNo) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.phoneNo &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <!-- <tr>
@@ -29,8 +121,38 @@
                             </tr> -->
 
                             <tr>
-                                <td class="info-title">NPWP ID</td>
-                                <td>91919192121212121</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        NPWP ID
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.taxNo ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.taxNo) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.taxNo &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -38,19 +160,87 @@
 
                 <div class="order-box info-box" fxFlex="30">
                     <header>
-                        <div class="title">Store ID</div>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Store ID
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
                     </header>
 
                     <div class="content">
                         <table class="info-group-1">
                             <tr>
-                                <td class="info-title">Nama Toko</td>
-                                <td>Toko Abadi Jaya</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        ID Toko
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="!(brandStore$ | async)?.store"
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.storeCode ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.storeCode) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.storeCode &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <tr>
-                                <td class="info-title">Address</td>
-                                <td>Jl. Palm Blok T</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Nama Toko
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.name ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.name) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.name &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -60,34 +250,662 @@
             <div fxLayout="column" fxLayoutGap="10px">
                 <div class="order-box info-box">
                     <header>
-                        <div class="title">Physical Store Information</div>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Address
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
                     </header>
 
                     <div class="content">
                         <table class="info-group-2">
                             <tr>
-                                <td class="info-title">Physical Store Size</td>
-                                <td>10 x 10</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Province
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.urban?.province?.name ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.urban?.province?.name
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.urban?.province?.name &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <tr>
-                                <td class="info-title">Number of Employee</td>
-                                <td>100</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        City
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="!(brandStore$ | async)?.store"
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.urban?.city ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.urban?.city) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.urban?.city &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <tr>
-                                <td class="info-title">Top Brand Selling</td>
-                                <td>ABC</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Kecamatan
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.urban?.district ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue((brandStore$ | async)?.store?.urban?.district)
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.urban?.district &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <tr>
-                                <td class="info-title">Wanted Brand</td>
-                                <td>ABC</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Kelurahan
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.urban?.urban ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{ safeValue((brandStore$ | async)?.store?.urban?.urban) }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.urban?.urban &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
 
                             <tr>
-                                <td class="info-title">Vehicle Address</td>
-                                <td>Motorbike</td>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Kode Pos
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.urban?.zipCode ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue((brandStore$ | async)?.store?.urban?.zipCode)
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.urban?.zipCode &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Notes
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Geo Loc
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.longitude ||
+                                            (brandStore$ | async)?.store?.latitude ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(brandStore$ | async)?.store?.longitude +
+                                                ', ' +
+                                                safeValue((brandStore$ | async)?.store?.latitude)
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.longitude &&
+                                            !(brandStore$ | async)?.store?.latitude &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div fxLayout="column" fxLayoutAlign="space-between start" fxLayoutGap="10px">
+                <div class="order-box info-box" fxFlex="30">
+                    <header>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Legal Information
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
+                    </header>
+
+                    <div class="content">
+                        <table class="info-group-1">
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        KTP ID
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.legalInfo?.idNo ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue((brandStore$ | async)?.store?.legalInfo?.idNo)
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.legalInfo?.idNo &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        KTP Photo
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.legalInfo?.idImageUrl
+                                            ) !== '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        <!-- <a href="#">View</a> -->
+                                        <!-- <input #idImageUrl type="hidden" [value]="(brandStore$ | async)?.store?.legalInfo?.idImageUrl"> -->
+                                        <button
+                                            *ngIf="brandStore$ | async as brandStore"
+                                            mat-button
+                                            color="accent"
+                                            class="btn-sinbad-link"
+                                            (click)="
+                                                onShowImage(
+                                                    brandStore?.store?.legalInfo?.idImageUrl, 'KTP Photo'
+                                                )
+                                            "
+                                        >
+                                            View
+                                        </button>
+                                    </ng-container>
+
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.legalInfo?.idImageUrl
+                                            ) === '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.legalInfo?.idImageUrl &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        KTP Photo + Selfie
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.legalInfo
+                                                    ?.selfieImageUrl
+                                            ) !== '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        <button
+                                            *ngIf="brandStore$ | async as brandStore"
+                                            mat-button
+                                            color="accent"
+                                            class="btn-sinbad-link"
+                                            (click)="
+                                                onShowImage(
+                                                    brandStore?.store?.legalInfo?.selfieImageUrl, 'KTP Photo + Selfie'
+                                                )
+                                            "
+                                        >
+                                            View
+                                        </button>
+                                    </ng-container>
+
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.legalInfo
+                                                    ?.selfieImageUrl
+                                            ) === '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.legalInfo
+                                                ?.selfieImageUrl && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        NPWP ID
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.legalInfo?.taxNo ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.legalInfo?.taxNo
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.legalInfo?.taxNo &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="order-box info-box">
+                    <header>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Store Classification
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
+                    </header>
+
+                    <div class="content">
+                        <table>
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Store Type
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.storeType?.name ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue((brandStore$ | async)?.store?.storeType?.name)
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.storeType?.name &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Store Group
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.storeGroup?.name ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.storeGroup?.name
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.storeGroup?.name &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Store Classification
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Store Segment
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.storeSegment?.name ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.storeSegment?.name
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.storeSegment?.name &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -95,6 +913,267 @@
             </div>
 
             <div fxLayout="column" fxLayoutGap="10px">
+                <div class="order-box info-box">
+                    <header>
+                        <div class="title">
+                            <ng-container
+                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                            >
+                                Physical Store Information
+                            </ng-container>
+                            <ngx-skeleton-loader
+                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                [theme]="{ width: '150px', margin: 0 }"
+                            ></ngx-skeleton-loader>
+                        </div>
+                    </header>
+
+                    <div class="content">
+                        <table class="info-group-2">
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Physical Store Size
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.largeArea ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue((brandStore$ | async)?.store?.largeArea) ===
+                                            '-'
+                                                ? safeValue((brandStore$ | async)?.store?.largeArea)
+                                                : safeValue(
+                                                      (brandStore$ | async)?.store?.largeArea
+                                                  ) + ' m'
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.largeArea &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Number of Employee
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.numberOfEmployee ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.numberOfEmployee
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.numberOfEmployee &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Top Brand Selling
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Wanted Brand
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Vehicle Accessibility
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store?.vehicleAccessibility ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            safeValue(
+                                                (brandStore$ | async)?.store?.vehicleAccessibility
+                                            )
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.vehicleAccessibility &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="
+                                            (brandStore$ | async)?.store || !(isLoading$ | async)
+                                        "
+                                    >
+                                        Store Photo
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue((brandStore$ | async)?.store?.imageUrl) !==
+                                                '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        <button
+                                            *ngIf="brandStore$ | async as brandStore"
+                                            mat-button
+                                            color="accent"
+                                            class="btn-sinbad-link"
+                                            (click)="onShowImage(brandStore?.store?.imageUrl, 'Store Photo')"
+                                        >
+                                            View
+                                        </button>
+                                    </ng-container>
+
+                                    <ng-container
+                                        *ngIf="
+                                            safeValue((brandStore$ | async)?.store?.imageUrl) ===
+                                                '-' && !(isLoading$ | async)
+                                        "
+                                    >
+                                        -
+                                    </ng-container>
+
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(brandStore$ | async)?.store?.imageUrl &&
+                                            (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div fxLayout="column" fxLayoutGap="10px">
                 <div class="order-box info-box">
                     <header>
                         <div class="title">Store Classification</div>
@@ -114,7 +1193,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </mat-card>

@@ -23,6 +23,7 @@ export interface State {
     isLoading: boolean;
     selectedBrandStoreId: string | number;
     source: TSource;
+    brandStore: BrandStore | undefined;
     brandStores: BrandStoreState;
     employees: StoreEmployeeState;
     errors: ErrorState;
@@ -50,6 +51,7 @@ export const initialState: State = {
     isLoading: false,
     selectedBrandStoreId: null,
     source: 'fetch',
+    brandStore: undefined,
     brandStores: initialBrandStoreState,
     employees: initialStoreEmployeeState,
     errors: initialErrorState
@@ -57,16 +59,24 @@ export const initialState: State = {
 
 const brandStoreReducer = createReducer(
     initialState,
-    on(BrandStoreActions.fetchBrandStoresRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(BrandStoreActions.fetchBrandStoresFailure, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        isDeleting: undefined,
-        errors: adapterError.upsertOne(payload, state.errors)
-    })),
+    on(
+        BrandStoreActions.fetchBrandStoreRequest,
+        BrandStoreActions.fetchBrandStoresRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        BrandStoreActions.fetchBrandStoreFailure,
+        BrandStoreActions.fetchBrandStoresFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(BrandStoreActions.fetchBrandStoresSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -76,6 +86,17 @@ const brandStoreReducer = createReducer(
             total: payload.total
         }),
         errors: adapterError.removeOne('fetchBrandStoresFailure', state.errors)
+    })),
+    on(BrandStoreActions.fetchBrandStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        brandStore: payload.brandStore,
+        errors: adapterError.removeOne('fetchBrandStoreFailure', state.errors)
+    })),
+    on(BrandStoreActions.resetBrandStore, state => ({
+        ...state,
+        brandStore: initialState.brandStore,
+        errors: adapterError.removeOne('fetchBrandStoreFailure', state.errors)
     }))
 );
 

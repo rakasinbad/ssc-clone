@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams } from 'app/shared/models';
+import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
 
 import { BrandStore, IMerchantDemo, IStoreEmployeeDemo } from '../../models';
 
@@ -17,6 +17,23 @@ export const fetchBrandStoresSuccess = createAction(
     '[Brand Stores API] Fetch Brand Stores Success',
     props<{ payload: { brandStores: BrandStore[]; total: number } }>()
 );
+
+export const fetchBrandStoreRequest = createAction(
+    '[Brand Store API] Fetch Brand Store Request',
+    props<{ payload: string }>()
+);
+
+export const fetchBrandStoreFailure = createAction(
+    '[Brand Store API] Fetch Brand Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchBrandStoreSuccess = createAction(
+    '[Brand Store API] Fetch Brand Store Success',
+    props<{ payload: { brandStore?: BrandStore; source: TSource } }>()
+);
+
+export const resetBrandStore = createAction('[Brand Stores Page] Reset Brand Store State');
 
 // -----------------------------------------------------------------------------------------------------
 // For Demo

@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Network, catchOffline } from '@ngx-pwa/offline';
-
-import { MerchantApiService } from '../../services';
-import { fromMerchant } from '../reducers';
-import { BrandStoreActions } from '../actions';
-import { map, withLatestFrom, switchMap, catchError } from 'rxjs/operators';
+import { catchOffline, Network } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of } from 'rxjs';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
+
 import { BrandStore } from '../../models';
+import { MerchantApiService } from '../../services';
+import { BrandStoreActions } from '../actions';
+import { fromMerchant } from '../reducers';
 
 @Injectable()
 export class MerchantEffects {
@@ -76,6 +76,47 @@ export class MerchantEffects {
                             )
                         )
                     );
+            })
+        )
+    );
+
+    fetchBrandStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(BrandStoreActions.fetchBrandStoreRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$merchantApi.findById(id).pipe(
+                    catchOffline(),
+                    map(resp =>
+                        BrandStoreActions.fetchBrandStoreSuccess({
+                            payload: {
+                                brandStore: {
+                                    ...new BrandStore(
+                                        resp.id,
+                                        resp.brandId,
+                                        resp.storeId,
+                                        resp.status,
+                                        resp.store,
+                                        resp.createdAt,
+                                        resp.updatedAt,
+                                        resp.deletedAt
+                                    )
+                                },
+                                source: 'fetch'
+                            }
+                        })
+                    ),
+                    catchError(err =>
+                        of(
+                            BrandStoreActions.fetchBrandStoreFailure({
+                                payload: {
+                                    id: 'fetchBrandStoreFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
             })
         )
     );

@@ -52,6 +52,10 @@ export class GeneratorService {
                         entity[key] = faker.random.arrayElement(['CL1', 'CL2', 'CL3', '-']);
                         break;
 
+                    case 'finance.payment.method':
+                        entity[key] = faker.random.arrayElement(['Bank Transfer', 'COD']);
+                        break;
+
                     case 'finance.segment':
                         entity[key] = faker.random.arrayElement(['GT', 'MTI']);
                         break;
@@ -121,10 +125,6 @@ export class GeneratorService {
                             'Selesai',
                             'Siap Dikirim'
                         ]);
-                        break;
-
-                    case 'payment.method':
-                        entity[key] = faker.random.arrayElement(['Bank Transfer', 'COD']);
                         break;
 
                     case 'payment.type':
@@ -217,7 +217,7 @@ export class GeneratorService {
             status: 'finance.status',
             source: 'finance.source',
             paymentType: 'payment.type',
-            paymentMethod: 'payment.method',
+            paymentMethod: 'finance.payment.method',
             orderDate: '{{date.recent}}',
             dueDate: '{{date.recent}}',
             paidOn: '{{date.recent}}',

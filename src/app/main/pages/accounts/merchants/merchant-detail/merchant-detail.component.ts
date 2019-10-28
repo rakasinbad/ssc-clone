@@ -17,6 +17,7 @@ import { Observable } from 'rxjs';
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { fromMerchant } from '../store/reducers';
+import { BrandStoreSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-merchant-detail',
@@ -43,6 +44,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
     ];
 
     fuseConfig$: Observable<FuseConfig>;
+    isLoading$: Observable<boolean>;
 
     constructor(
         private route: ActivatedRoute,
@@ -86,6 +88,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
             relativeTo: this.route,
             skipLocationChange: true
         });
+        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
     }
 
     ngOnDestroy(): void {

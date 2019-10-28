@@ -1,4 +1,4 @@
-import { Timestamp, TNullable } from 'app/shared/models';
+import { Province, Timestamp, TNullable } from 'app/shared/models';
 
 export class Urban extends Timestamp {
     id: string;
@@ -7,7 +7,7 @@ export class Urban extends Timestamp {
     district: string;
     urban: string;
     provinceId: string;
-    province: any;
+    province: Province;
 
     constructor(
         id: string,
@@ -16,7 +16,7 @@ export class Urban extends Timestamp {
         district: string,
         urban: string,
         provinceId: string,
-        province: any,
+        province: Province,
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
         deletedAt: TNullable<string>
@@ -29,7 +29,17 @@ export class Urban extends Timestamp {
         this.district = district;
         this.urban = urban;
         this.provinceId = provinceId;
-        this.province = province;
+        this.province = province
+            ? {
+                  ...new Province(
+                      province.id,
+                      province.name,
+                      province.createdAt,
+                      province.updatedAt,
+                      province.deletedAt
+                  )
+              }
+            : null;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

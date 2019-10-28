@@ -2,7 +2,9 @@ import { TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxMaskModule } from 'ngx-mask';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 import { FilterAdvancedModule } from './components/filter-advanced/filter-advanced.module';
 import { FiltersModule } from './components/filters/filters.module';
@@ -12,6 +14,7 @@ import { WarningNoticeComponent } from './components/notices/warning-notice/warn
 import { CheckboxValidatorDirective, ContentDirective } from './directives';
 import { MaterialModule } from './material.module';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
+import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe } from './pipes';
 
 /**
@@ -28,6 +31,7 @@ import { HighlightPipe, PricePipe } from './pipes';
         CheckboxValidatorDirective,
         FilterAdvancedFormComponent,
         ErrorNoticeComponent,
+        ShowImageComponent,
         SuccessNoticeComponent,
         WarningNoticeComponent
     ],
@@ -36,7 +40,9 @@ import { HighlightPipe, PricePipe } from './pipes';
         FiltersModule,
         FilterAdvancedModule,
         TranslateModule.forChild({}),
+        LazyLoadImageModule,
         NgxMaskModule,
+        NgxSkeletonLoaderModule,
         FuseSharedModule
     ],
     exports: [
@@ -47,7 +53,10 @@ import { HighlightPipe, PricePipe } from './pipes';
         ContentDirective,
         CheckboxValidatorDirective,
         TranslateModule,
+        LazyLoadImageModule,
         NgxMaskModule,
+        NgxSkeletonLoaderModule,
+        ShowImageComponent,
         FuseSharedModule
     ],
     providers: [TitleCasePipe],
@@ -55,7 +64,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         FilterAdvancedFormComponent,
         ErrorNoticeComponent,
         SuccessNoticeComponent,
-        WarningNoticeComponent
+        WarningNoticeComponent,
+        ShowImageComponent
     ]
 })
 export class SharedModule {}

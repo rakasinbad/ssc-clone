@@ -1,8 +1,9 @@
-import { UrbanAssoc } from 'app/main/pages/urbans/models';
+import { Urban } from 'app/main/pages/urbans/models';
 import {
     CustomerHierarchyAssoc,
     IResponsePaginate,
     ITimestamp,
+    Legal,
     Timestamp,
     TNullable,
     TStatus
@@ -14,6 +15,38 @@ export interface IBrandStore extends ITimestamp {
     storeId: string;
     status: TStatus;
     store: Store;
+}
+
+export interface IStore extends ITimestamp {
+    id: string;
+    storeCode: string;
+    name: string;
+    address: string;
+    taxNo: TNullable<string>;
+    longitude: TNullable<number>;
+    latitude: TNullable<number>;
+    largeArea: TNullable<number>;
+    phoneNo: TNullable<string>;
+    imageUrl: TNullable<string>;
+    taxImageUrl: TNullable<string>;
+    status: TStatus;
+    reason: string;
+    parent: boolean;
+    parentId: string;
+    numberOfEmployee: TNullable<number>;
+    vehicleAccessibility: TNullable<string>;
+    externalId: string;
+    storeTypeId: string;
+    storeGroupId: string;
+    storeSegmentId: string;
+    urbanId: string;
+    warehouseId: string;
+    urban: Urban;
+    customerHierarchies: CustomerHierarchyAssoc[];
+    storeType: StoreType;
+    storeSegment: StoreSegment;
+    storeGroup: StoreGroup;
+    legalInfo: Legal;
 }
 
 export interface IBrandStoreResponse extends IResponsePaginate {
@@ -61,6 +94,8 @@ export class BrandStore extends Timestamp {
                       store.reason,
                       store.parent,
                       store.parentId,
+                      store.numberOfEmployee,
+                      store.vehicleAccessibility,
                       store.externalId,
                       store.storeTypeId,
                       store.storeGroupId,
@@ -71,6 +106,8 @@ export class BrandStore extends Timestamp {
                       store.customerHierarchies,
                       store.storeType,
                       store.storeSegment,
+                      store.storeGroup,
+                      store.legalInfo,
                       store.createdAt,
                       store.updatedAt,
                       store.deletedAt
@@ -99,16 +136,20 @@ export class Store extends Timestamp {
     reason: string;
     parent: boolean;
     parentId: string;
+    numberOfEmployee: TNullable<number>;
+    vehicleAccessibility: TNullable<string>;
     externalId: string;
     storeTypeId: string;
     storeGroupId: string;
     storeSegmentId: string;
     urbanId: string;
     warehouseId: string;
-    urban: UrbanAssoc;
+    urban: Urban;
     customerHierarchies: CustomerHierarchyAssoc[];
     storeType: StoreType;
     storeSegment: StoreSegment;
+    storeGroup: StoreGroup;
+    legalInfo: Legal;
 
     constructor(
         id: string,
@@ -126,16 +167,20 @@ export class Store extends Timestamp {
         reason: string,
         parent: boolean,
         parentId: string,
+        numberOfEmployee: TNullable<number>,
+        vehicleAccessibility: TNullable<string>,
         externalId: string,
         storeTypeId: string,
         storeGroupId: string,
         storeSegmentId: string,
         urbanId: string,
         warehouseId: string,
-        urban: UrbanAssoc,
+        urban: Urban,
         customerHierarchies: CustomerHierarchyAssoc[],
         storeType: StoreType,
         storeSegment: StoreSegment,
+        storeGroup: StoreGroup,
+        legalInfo: Legal,
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
         deletedAt: TNullable<string>
@@ -157,6 +202,8 @@ export class Store extends Timestamp {
         this.reason = reason;
         this.parent = parent;
         this.parentId = parentId;
+        this.numberOfEmployee = numberOfEmployee;
+        this.vehicleAccessibility = vehicleAccessibility;
         this.externalId = externalId;
         this.storeTypeId = storeTypeId;
         this.storeGroupId = storeGroupId;
@@ -169,13 +216,14 @@ export class Store extends Timestamp {
 
         this.urban = urban
             ? {
-                  ...new UrbanAssoc(
+                  ...new Urban(
                       urban.id,
                       urban.zipCode,
                       urban.city,
                       urban.district,
                       urban.urban,
                       urban.provinceId,
+                      urban.province,
                       urban.createdAt,
                       urban.updatedAt,
                       urban.deletedAt
@@ -207,6 +255,41 @@ export class Store extends Timestamp {
               }
             : null;
 
+        this.storeGroup = storeGroup
+            ? {
+                  ...new StoreGroup(
+                      storeGroup.id,
+                      storeGroup.name,
+                      storeGroup.createdAt,
+                      storeGroup.updatedAt,
+                      storeGroup.deletedAt
+                  )
+              }
+            : null;
+
+        this.legalInfo = legalInfo
+            ? {
+                  ...new Legal(
+                      legalInfo.id,
+                      legalInfo.fullName,
+                      legalInfo.email,
+                      legalInfo.phoneNo,
+                      legalInfo.mobilePhoneNo,
+                      legalInfo.idNo,
+                      legalInfo.taxNo,
+                      legalInfo.status,
+                      legalInfo.imageUrl,
+                      legalInfo.taxImageUrl,
+                      legalInfo.idImageUrl,
+                      legalInfo.selfieImageUrl,
+                      legalInfo.urbanId,
+                      legalInfo.createdAt,
+                      legalInfo.updatedAt,
+                      legalInfo.deletedAt
+                  )
+              }
+            : null;
+
         if (customerHierarchies && customerHierarchies.length > 0) {
             customerHierarchies = [
                 ...customerHierarchies.map(customerHierarchy => {
@@ -228,6 +311,27 @@ export class Store extends Timestamp {
         } else {
             this.customerHierarchies = [];
         }
+    }
+}
+
+export class StoreGroup extends Timestamp {
+    id: string;
+    name: string;
+
+    constructor(
+        id: string,
+        name: string,
+        createdAt: TNullable<string>,
+        updatedAt: TNullable<string>,
+        deletedAt: TNullable<string>
+    ) {
+        super(createdAt, updatedAt, deletedAt);
+
+        this.id = id || undefined;
+        this.name = name ? name.trim() : name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 }
 

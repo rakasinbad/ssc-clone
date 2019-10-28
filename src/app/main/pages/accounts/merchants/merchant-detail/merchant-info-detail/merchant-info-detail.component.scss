@@ -1,6 +1,23 @@
 @import 'src/@fuse/scss/fuse';
 
 app-merchant-info-detail {
+    .store-image {
+        overflow: hidden;
+        width: 56px;
+        min-width: 56px;
+        max-width: 56px;
+        height: 56px;
+        min-height: 56px;
+        max-height: 56px;
+        border-radius: 4px;
+
+        img {
+            height: 100%;
+            width: auto;
+            max-width: none;
+        }
+    }
+
     .order-box {
         // border: 1px solid black;
 

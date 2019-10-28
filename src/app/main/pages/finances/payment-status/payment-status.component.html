@@ -1,4 +1,3 @@
-
 <div id="payment-status" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
@@ -53,7 +52,7 @@
                 <div>
                     <mat-chip-list aria-label="Filter">
                         <mat-chip>
-                            Status: Diterima
+                            Status: Paid
 
                             <mat-icon matChipRemove>cancel</mat-icon>
                         </mat-chip>
@@ -210,7 +209,12 @@
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                        {{ row?.proofOfPaymentStatus }}
+                        <ng-container *ngIf="row?.proofOfPaymentStatus">
+                            <a href="#">Checked</a>
+                        </ng-container>
+                        <ng-container *ngIf="!row?.proofOfPaymentStatus">
+                            <a href="#">To be Checked</a>
+                        </ng-container>
                     </mat-cell>
                 </ng-container>
 

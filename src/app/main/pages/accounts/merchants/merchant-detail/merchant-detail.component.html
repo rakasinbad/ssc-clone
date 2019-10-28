@@ -36,6 +36,10 @@
 
         <!-- CONTENT CARD -->
         <router-outlet name="store-detail" *ngIf="true"></router-outlet>
+
+        <div class="loader" *ngIf="isLoading$ | async">
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->

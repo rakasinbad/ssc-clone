@@ -61,6 +61,23 @@
     cursor: pointer;
 }
 
+.btn-sinbad-link {
+    line-height: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.btn-sinbad-link.mat-button.mat-primary .mat-button-focus-overlay,
+.btn-sinbad-link.mat-button.mat-accent .mat-button-focus-overlay,
+.btn-sinbad-link.mat-button.mat-warn .mat-button-focus-overlay {
+    background-color: transparent !important;
+}
+
 body.theme-sinbad-light {
     .mat-stroked-button.sinbad:not([disabled]),
     .mat-stroked-button.sinbad {
