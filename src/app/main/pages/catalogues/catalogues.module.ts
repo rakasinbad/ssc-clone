@@ -28,6 +28,7 @@ import { CataloguesFormComponent } from './catalogues-form/catalogues-form.compo
 
     StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
     EffectsModule.forFeature([])
-  ]
+  ],
+  entryComponents: [CataloguesImportComponent]
 })
 export class CataloguesModule { }

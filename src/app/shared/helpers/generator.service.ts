@@ -15,15 +15,25 @@ export class GeneratorService {
             return Object.keys(schema).reduce((entity, key) => {
                 switch (schema[key]) {
                     case 'catalogue.block.reason':
-                        entity[key] = 'Produk dimasukkan ke dalam kategori yang salah.';
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Produk dimasukkan ke dalam kategori yang salah.'
+                        ]);
+
                         break;
                     
                     case 'catalogue.block.suggest':
-                        entity[key] = 'Produk Anda diblokir karena diunggah pada kategori yang salah.';
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Produk Anda diblokir karena diunggah pada kategori yang salah.'
+                        ]);
                         break;
 
                     case 'catalogue.block.type':
-                        entity[key] = 'Spam';
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Spam'
+                        ]);
                         break;
 
                     case 'catalogue.isArchived':

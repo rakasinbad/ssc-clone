@@ -1,1 +1,853 @@
-<p>catalogues-form works!</p>
+<div id="catalogues-form" class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="25px">
+        <!-- CONTENT HEADER -->
+        <!-- <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"></div> -->
+        <!-- / CONTENT HEADER -->
+
+        <!-- CONTENT CARD (INFORMASI PRODUK) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="h1">Informasi Produk</div>
+            </div>
+        
+            <div class="p-16 pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                    <!-- PRODUCT ID -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.id').errors &&
+                                !form.get('productInfo.id').untouched &&
+                                (form.get('productInfo.id').dirty || form.get('productInfo.id').touched)
+                            "
+                        >
+                            *Produk ID
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="id"
+                                formControlName="id"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / PRODUCT ID -->
+                    <!-- NAMA PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.name').errors &&
+                                !form.get('productInfo.name').untouched &&
+                                (form.get('productInfo.name').dirty || form.get('productInfo.name').touched)
+                            "
+                        >
+                            *Nama Produk
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="name"
+                                formControlName="name"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / NAMA PRODUK -->
+                    <!-- DESKRIPSI PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.description').errors &&
+                                !form.get('productInfo.description').untouched &&
+                                (form.get('productInfo.description').dirty || form.get('productInfo.description').touched)
+                            "
+                        >
+                            Deskripsi Produk
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <textarea
+                                matInput
+                                name="description"
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field>
+                    </div>
+                    <!-- / DESKRIPSI PRODUK -->
+                    <!-- VARIAN PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.variant').errors &&
+                                !form.get('productInfo.variant').untouched &&
+                                (form.get('productInfo.variant').dirty || form.get('productInfo.variant').touched)
+                            "
+                        >
+                            *Variant
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="variant"
+                                formControlName="variant"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / VARIAN PRODUK -->
+                    <!-- BRAND PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.brand').errors &&
+                                !form.get('productInfo.brand').untouched &&
+                                (form.get('productInfo.brand').dirty || form.get('productInfo.brand').touched)
+                            "
+                        >
+                            *Brand
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="brand"
+                                formControlName="brand"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / BRAND PRODUK -->
+                    <!-- KATEGORI PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between none"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.category').errors &&
+                                !form.get('productInfo.category').untouched &&
+                                (form.get('productInfo.category').dirty || form.get('productInfo.category').touched)
+                            "
+                        >
+                            *Kategori
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="category"
+                                formControlName="category"
+                                [disabled]="true"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / KATEGORI PRODUK -->
+                    <!-- PRODUK STOK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.stock').errors &&
+                                !form.get('productInfo.stock').untouched &&
+                                (form.get('productInfo.stock').dirty || form.get('productInfo.stock').touched)
+                            "
+                        >
+                            Product Stock
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="stock"
+                                formControlName="stock"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / PRODUK STOK -->
+                    <!-- UOM -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.uom').errors &&
+                                !form.get('productInfo.uom').untouched &&
+                                (form.get('productInfo.uom').dirty || form.get('productInfo.uom').touched)
+                            "
+                        >
+                            UOM 
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="uom"
+                                formControlName="uom"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / UOM -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+
+        <!-- CONTENT CARD (INFORMASI PENJUALAN) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="h1">Informasi Penjualan</div>
+            </div>
+        
+            <div class="p-16 pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                    <!-- HARGA PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productSale.price').errors &&
+                                !form.get('productSale.price').untouched &&
+                                (form.get('productSale.price').dirty || form.get('productSale.price').touched)
+                            "
+                        >
+                            *Harga
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="price"
+                                formControlName="price"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / HARGA PRODUK -->
+                    <!-- TAG PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productSale.tags').errors &&
+                                !form.get('productSale.tags').untouched &&
+                                (form.get('productSale.tags').dirty || form.get('productSale.tags').touched)
+                            "
+                        >
+                            *Product Tag
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <mat-chip-list #chipList aria-label="Tags">
+                                <mat-chip *ngFor="let tag of (form.get('productSale.tags').value)"
+                                            selectable="true"
+                                            removable="true"
+                                            (removed)="onRemoveTag(tag)">
+                                    {{ tag }}
+                                    <mat-icon matChipRemove>cancel</mat-icon>
+                                </mat-chip>
+                                <input
+                                    [matChipInputFor]="chipList"
+                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                    [matChipInputAddOnBlur]="true"
+                                    (matChipInputTokenEnd)="onAddTag($event)"
+                                    >
+                            </mat-chip-list>
+                        </mat-form-field>
+                    </div>
+                    <!-- / TAG PRODUK -->
+                    <!-- VARIASI PRODUK (NO VARIANT) -->
+                    <!-- <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productSale"
+                        *ngIf="productVariantControls.length === 0; else hasVariants;"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productSale.variants').errors &&
+                                !form.get('productSale.variants').untouched &&
+                                (form.get('productSale.variants').dirty || form.get('productSale.variants').touched)
+                            "
+                        >
+                            <p>Variasi</p>
+                        </label>
+                
+                        <div
+                            appearance="outline"
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            fxFlex="80"
+                        >
+                            <button
+                                mat-stroked-button
+                                style="border-style: dashed; width: 100%;"
+                                class="green--fg"
+                                (click)="onAddVariant()"
+                            >
+                                <mat-icon>add_circle</mat-icon>
+                                Aktifkan Variasi
+                            </button>
+                        </div>
+                    </div> -->
+                    <!-- / VARIASI PRODUK (NO VARIANT) -->
+                    <!-- VARIASI PRODUK (HAS VARIANTS) -->
+                    <ng-template
+                        #hasVariants
+                    >
+                        <div
+                            class="custom-field"
+                            fxLayout="column"
+                            fxLayoutAlign="space-between stretch"
+                            formGroupName="productSale"
+                        >
+                            <div
+                                *ngFor="let variant of productVariantControls; index as $index;"
+                                fxLayout="row"
+                                fxLayoutAlign="space-between start"
+                            >
+                                <!-- VARIATION LABEL -->
+                                <label
+                                    fxFlex="20"
+                                    style="margin-top: 45px;"
+                                >
+                                    Variasi {{ $index + 1 }}
+                                </label>
+                                <!-- / VARIATION LABEL -->
+                                <!-- PRODUCT VARIATION -->
+                                <div
+                                    fxFlex="80"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-around start"
+                                    class="grey-100-bg"
+                                    style="border-radius: 10px; padding: 20px 10px;"
+                                    [style.margin-top]="$index > 0 ? '20px' : '0px'"
+                                    [style.margin-bottom]="$index === productVariantControls.length - 1 ? '20px' : '0px'"
+                                >
+                                    <!-- LABEL FOR VARIANT SELECTIONS -->
+                                    <label
+                                        fxFlex="15"
+                                        style="margin-top: 25px;"
+                                    >
+                                        Nama Pilihan
+                                    </label>
+                                    <!-- / LABEL FOR VARIANT SELECTIONS -->
+                                    <!-- INPUT FOR VARIANT SELECTION -->
+                                    <div
+                                        fxFlex="70"
+                                        fxLayout="column"
+                                        fxLayoutAlign="space-between stretch"
+                                    >
+                                        <ng-container
+                                            *ngFor="let variantSelection of productVariantControls[$index].controls; index as $indexSelection; last as $lastSelection;"
+                                        >
+                                            <div
+                                                fxLayout="row"
+                                                fxLayoutAlign="space-between stretch"
+                                            >
+                                                <mat-form-field
+                                                    fxFlex="90"
+                                                    appearance="outline"
+                                                >
+                                                    <input
+                                                        matInput
+                                                        placeholder="Masukkan Nama Variasi, contoh: warna, dll."
+                                                        [formControl]="variantSelection"
+                                                    />
+                                                </mat-form-field>
+                                                <!-- DELETE FOR VARIANT SELECTION -->
+                                                <button
+                                                    mat-button
+                                                    fxFlex
+                                                    style="margin-bottom: 20px;"
+                                                    (click)="onRemoveVariantSelection($event, $index, $indexSelection)"
+                                                >
+                                                    <mat-icon>delete</mat-icon>
+                                                </button>
+                                                <!-- / DELETE FOR VARIANT SELECTION -->
+                                            </div>
+                                            <button
+                                                mat-stroked-button
+                                                style="border-style: dashed; width: 100%;"
+                                                (click)="onAddVariantSelection($event, $index)"
+                                                *ngIf="$lastSelection"
+                                            >
+                                                <mat-icon>add_circle</mat-icon>
+                                                Tambah Pilihan ({{ productVariantControls[$index].controls.length }} / 20)
+                                            </button>
+                                        </ng-container>
+                                    </div>
+                                    <!-- / INPUT FOR VARIANT SELECTION -->
+                                </div>
+                                <!-- / PRODUCT VARIATION -->
+                            </div>
+                            <!-- BUTTON ADD VARIATION -->
+                            <div
+                                fxFlex
+                                fxLayout="row"
+                                fxLayoutAlign="space-between start"
+                                style="margin-bottom: 15px;">
+                                <button
+                                    fxFlex="80"
+                                    fxFlexOffset="20"
+                                    mat-stroked-button
+                                    style="border-style: dashed; width: 100%;"
+                                    class="green--fg"
+                                    (click)="onAddVariant()"
+                                >
+                                    <mat-icon>add_circle</mat-icon>
+                                    Tambah Variasi
+                                </button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <!-- / VARIASI PRODUK (HAs VARIANTS) -->
+                    <!-- INFORMASI VARIASI PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="column"
+                        fxLayoutGap="10px"
+                        fxLayoutAlign="space-between stretch"
+                        *ngIf="productVariantControls?.length > 0"
+                    >
+                        <ng-container
+                            *ngFor="let variant of productVariantFormControls; index as $index; first as $first;"
+                        >
+                            <form
+                                [formGroup]="variantForm"
+                                fxLayout="row"
+                                fxFlex novalidate
+                                style="margin-top: 20px;"
+                            >
+                                <!-- LABEL -->
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="20"
+                                >
+                                    <p>Daftar Variasi {{ $index + 1 }}</p>
+                                </label>
+                                <!-- / LABEL -->
+                                <div fxFlex="80"
+                                    fxLayout="row"
+                                    fxLayoutGap="5px"
+                                    fxLayoutAlign="space-between start"
+                                >
+                                    <!-- PRICE -->
+                                    <mat-form-field
+                                        fxFlex="20"
+                                        appearance="outline"
+                                    >
+                                        <input
+                                            matInput
+                                            placeholder="Harga"
+                                            [formControl]="variant.get('price')"
+                                        />
+                                    </mat-form-field>
+                                    <!-- / PRICE -->
+                                    <!-- STOCK -->
+                                    <mat-form-field
+                                        fxFlex="20"
+                                        appearance="outline"
+                                    >
+                                        <label
+                                            
+                                        >
+                                        </label>
+                                        <input
+                                            matInput
+                                            placeholder="Stock"
+                                            [formControl]="variant.get('stock')"
+                                        />
+                                    </mat-form-field>
+                                    <!-- / STOCK -->
+                                    <!-- SKU -->
+                                    <mat-form-field
+                                        fxFlex="20"
+                                        appearance="outline"
+                                    >
+                                        <input
+                                            matInput
+                                            placeholder="SKU"
+                                            [formControl]="variant.get('sku')"
+                                        />
+                                    </mat-form-field>
+                                    <!-- / SKU -->
+                                    <!-- APPLY BUTTON -->
+                                    <button
+                                        fxFlex
+                                        mat-raised-button
+                                        style="margin-top: 5px; width: 100%; height: 60%;"
+                                        color="accent"
+                                    >
+                                        Terapkan ke Semua
+                                    </button>
+                                    <!-- / APPLY BUTTON -->
+                                </div>
+                            </form>
+                            <div
+                                fxLayout="row"
+                                fxLayoutAlign="space-between stretch"
+                            >
+                                <label
+                                    fxFlex="20"
+                                    style="margin-top: 30px;"
+                                >
+                                    Informasi Variasi {{ $index + 1 }}
+                                    <!-- {{ printLog(productVariantControls[$index]) }}
+                                    {{ printLog(productVariantControls[$index]) }} -->
+                                </label>
+                                <table mat-table fxFlex="80" [dataSource]="productVariantSelectionData[$index]" class="mat-elevation-z8">
+                                    <ng-container matColumnDef="name">
+                                        <th mat-header-cell *matHeaderCellDef> Nama </th>
+                                        <td mat-cell *matCellDef="let element; let $i = index;"
+                                        >
+                                            <ng-container
+                                                *ngIf="productVariantControls[$index].controls[$i].value.length === 0; else hasVariantInput;"
+                                            >
+                                                Pilihan {{ $i + 1 }}
+                                            </ng-container>
+                                            <ng-template
+                                                #hasVariantInput
+                                            >
+                                                {{ productVariantControls[$index].controls[$i].value }}
+                                            </ng-template>
+                                        </td>
+                                    </ng-container>
+                                    
+                                    <ng-container matColumnDef="price">
+                                        <th mat-header-cell *matHeaderCellDef> Harga </th>
+                                        <td mat-cell *matCellDef="let element"> {{ variant.get('price').value }} </td>
+                                    </ng-container>
+                                    
+                                    <ng-container matColumnDef="stock">
+                                        <th mat-header-cell *matHeaderCellDef> Stock </th>
+                                        <td mat-cell *matCellDef="let element"> {{ variant.get('stock').value }} </td>
+                                    </ng-container>
+                                    
+                                    <ng-container matColumnDef="sku">
+                                        <th mat-header-cell *matHeaderCellDef> SKU </th>
+                                        <td mat-cell *matCellDef="let element"> {{ variant.get('sku').value }} </td>
+                                    </ng-container>
+                                    
+                                    <tr mat-header-row *matHeaderRowDef="variantListColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: variantListColumns;"></tr>
+                                </table>
+                            </div>
+                        </ng-container>
+                    </div>
+                    <!-- / INFORMASI VARIASI PRODUK -->
+                    <!-- DAFTAR VARIASI PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="column"
+                        fxLayoutGap="10px"
+                        fxLayoutAlign="space-between stretch"
+                        *ngIf="productVariantControls?.length > 0"
+                    >
+                        <!-- <ng-container
+                            *ngFor="let variant of productVariantFormControls; index as $index;"
+                        >
+                            
+                        </ng-container> -->
+                    </div>
+                    <!-- / DAFTAR VARIASI PRODUK -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (INFORMASI PENJUALAN) -->
+
+        <!-- CONTENT CARD (MEDIA PRODUK) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="h1">Pengaturan Media</div>
+            </div>
+        
+            <div class="p-16 pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                    <!-- HARGA PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productMedia"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            *ngIf="form.get('productMedia.photos').errors"
+                            [class.mat-error]="
+                                form.get('productMedia.photos').errors &&
+                                !form.get('productMedia.photos').untouched &&
+                                (form.get('productMedia.photos').dirty || form.get('productMedia.photos').touched)
+                            "
+                        >
+                            
+                        </label>
+
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            *ngIf="!form.get('productMedia.photos').errors"
+                        >
+                            Foto Produk
+                        </label>
+                                        
+                        <div appearance="outline"
+                            fxFlex="80"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            *ngFor="let photo of productPhotos.controls; let i = index;"
+                        >
+                            <div
+                                fxFill
+                                fxLayout="column"
+                                fxLayoutAlign="space-around center"
+                            >
+                                <button mat-stroked-button style="border-style: dashed; width: 100%; min-height: 130px;" class="red--fg">
+                                    <mat-icon>add_circle</mat-icon>
+                                </button>
+                                <p *ngIf="i === 0; else optionalPhoto">*Foto Utama</p>
+                                <ng-template #optionalPhoto>
+                                    <p>Foto {{ i }}</p>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- / HARGA PRODUK -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (MEDIA PRODUK) -->
+
+        <!-- CONTENT CARD (PENGIRIMAN PRODUK) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="h1">Pengiriman</div>
+            </div>
+        
+            <div class="p-16 pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                    <!-- BERAT PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productShipment.weight').errors &&
+                                !form.get('productShipment.weight').untouched &&
+                                (form.get('productShipment.weight').dirty || form.get('productSale.price').touched)
+                            "
+                        >
+                            Berat
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="weight"
+                                formControlName="weight"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / HARGA PRODUK -->
+                    <!-- UKURAN PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSize"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productSize.length').errors &&
+                                form.get('productSize.width').errors &&
+                                form.get('productSize.height').errors &&
+                                !form.get('productSize.length').untouched &&
+                                !form.get('productSize.width').untouched &&
+                                !form.get('productSize.height').untouched &&
+                                (form.get('productSize.length').dirty || form.get('productSize.length').touched) &&
+                                (form.get('productSize.width').dirty || form.get('productSize.width').touched) &&
+                                (form.get('productSize.height').dirty || form.get('productSize.height').touched)
+                            "
+                        >
+                            Ukuran Paket
+                        </label>
+
+                        <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <mat-form-field appearance="outline">
+                                <input matInput
+                                    name="width"
+                                    formControlName="width"
+                                    placeholder="L"
+                                />
+                                <p matSuffix>cm</p>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <input matInput
+                                    name="height"
+                                    formControlName="height"
+                                    placeholder="P"
+                                />
+                                <p matSuffix>cm</p>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <input matInput
+                                    name="width"
+                                    formControlName="width"
+                                    placeholder="T"
+                                />
+                                <p matSuffix>cm</p>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <!-- / TAG PRODUK -->
+                    <!-- VARIASI PRODUK -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productShipment"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productShipment.isDangerous').errors &&
+                                !form.get('productShipment.isDangerous').untouched &&
+                                (form.get('productShipment.isDangerous').dirty || form.get('productShipment.isDangerous').touched)
+                            "
+                        >
+                            Barang berbahaya
+                        </label>
+
+                        <mat-checkbox
+                            name="isDangerous"
+                            appearance="outline" fxFlex="80"
+                            formControlName="isDangerous"
+                        >Text</mat-checkbox>
+                    </div>
+                    <!-- / VARIASI PRODUK -->
+                    <!-- SERVICE PENGIRIMAN -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productShipment"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productShipment.couriers').errors &&
+                                !form.get('productShipment.couriers').untouched &&
+                                (form.get('productShipment.couriers').dirty || form.get('productShipment.couriers').touched)
+                            "
+                        >
+                            Service Pengiriman
+                        </label>
+
+                        <div 
+                            style="border: 1px solid dimgray;"
+                            fxLayout="column"
+                            fxLayoutAlign="none"
+                            fxFlex="80"
+                            formArrayName="couriers"
+                            >
+                                <div
+                                    appearance="outline"
+                                    fxLayout="row"
+                                    fxLayoutGap="5px"
+                                    fxLayoutAlign="space-between end"
+                                    style="padding: 0 10px;"
+                                    *ngFor="let courier of productCourierControls; index as idx;"
+                                >
+                                    <p>{{ courier?.value?.name }}</p>
+                                    <mat-slide-toggle [formControl]="courier?.value?.disabled"></mat-slide-toggle>        
+                                </div>
+                        </div>
+                    </div>
+                    <!-- / SERVICE PENGIRIMAN -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (PENGIRIMAN PRODUK) -->
+    </div>
+    <!-- / CENTER -->
+</div>

@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core/auth/auth.guard';
 import { CataloguesComponent } from './catalogues.component';
 import { CatalogueResolver, CatalogueStatusResolver } from './resolvers';
+import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 
 const routes: Routes = [
@@ -19,13 +20,13 @@ const routes: Routes = [
     },
     {
         path: 'add',
-        component: CataloguesAddNewProductComponent,
+        component: CataloguesFormComponent,
         canActivate: [AuthGuard],
         resolve: {
             catalogues: CatalogueResolver,
             status: CatalogueStatusResolver
         },
-        // children: []
+        children: []
     }
 ];
 

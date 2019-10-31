@@ -8,6 +8,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
@@ -27,6 +28,8 @@ import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 import { ICatalogueDemo } from './models';
 import { MatTableDataSource } from '@angular/material';
+
+import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 
 @Component({
   selector: 'app-catalogues',
@@ -71,7 +74,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _fuseNavigationService: FuseNavigationService,
     private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     private _$generate: GeneratorService,
-    public translate: TranslateService
+    private matDialog: MatDialog,
+    public translate: TranslateService,
   ) {
     this.dataSource = new MatTableDataSource(); // Need for demo
     this.store.dispatch(
@@ -177,6 +181,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!item) {
             return;
         }
+    }
+
+    onImportProduct() {
+        this.matDialog.open(CataloguesImportComponent, {
+            data: {
+                title: 'Import'
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -18,9 +18,9 @@
                     Tambah Produk
                 </button>
 
-                <button mat-stroked-button color="accent" class="sinbad">
+                <!-- <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
                     IMPORT
-                </button>
+                </button> -->
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -89,8 +89,16 @@
                                         SKU Induk:
                                     </p>
                                     <mat-chip-list aria-label="Catalogue status">
-                                        <mat-chip class="orange-bg" selected>Archived</mat-chip>
-                                        <mat-chip color="accent" selected>Diblokir</mat-chip>
+                                        <mat-chip
+                                            *ngIf="row?.isArchived"
+                                            class="orange-bg"
+                                            selected
+                                        >Archived</mat-chip>
+                                        <mat-chip
+                                            *ngIf="row?.blockType"
+                                            color="accent"
+                                            selected
+                                        >Diblokir</mat-chip>
                                     </mat-chip-list>
                                 </div>
                             </div>
