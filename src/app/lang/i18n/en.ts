@@ -32,6 +32,7 @@ export const globalEnLang = {
         ACCOUNT: 'Account',
         CHECK_IN: 'Check In',
         CHECK_OUT: 'Check Out',
+        DEFAULT: 'This',
         EMAIL: 'E-mail',
         FULL_NAME: 'Full Name',
         LAT: 'Latitude',

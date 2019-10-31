@@ -8,13 +8,22 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { merge, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Role } from 'app/main/pages/roles/role.model';
+import { IQueryParams } from 'app/shared/models';
+import { merge, Observable, Subject } from 'rxjs';
+import { delay, filter, startWith, takeUntil } from 'rxjs/operators';
 
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { StoreEmployee } from '../../models';
+import { MerchantApiService } from '../../services';
+import { BrandStoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { BrandStoreSelectors } from '../../store/selectors';
 
@@ -31,8 +40,12 @@ import { BrandStoreSelectors } from '../../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-    dataSource: MatTableDataSource<any>;
-    displayedColumns = ['no', 'name', 'role', 'phoneNumber', 'lastCheckIn', 'actions'];
+    // dataSource: MatTableDataSource<any>; // Need for demo
+    displayedColumns = ['no', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
+
+    dataSource$: Observable<StoreEmployee[]>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -45,8 +58,14 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
 
     private _unSubs$: Subject<void>;
 
-    constructor(private store: Store<fromMerchant.FeatureState>) {
-        this.dataSource = new MatTableDataSource();
+    constructor(
+        private route: ActivatedRoute,
+        private store: Store<fromMerchant.FeatureState>,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$merchantApi: MerchantApiService
+    ) {
+        // this.dataSource = new MatTableDataSource(); // Need for demo
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -58,14 +77,25 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.paginator.pageSize = 5;
+
+        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllStoreEmployee).pipe(
+            filter(source => source.length > 0),
+            delay(1000),
+            startWith(this._$merchantApi.initStoreEmployee())
+        );
+        this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
+        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+
+        this.initTable();
 
         // Need for demo
-        this.store
-            .select(BrandStoreSelectors.getAllStoreEmployee)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(source => {
-                this.dataSource = new MatTableDataSource(source);
-            });
+        // this.store
+        //     .select(BrandStoreSelectors.getAllStoreEmployee)
+        //     .pipe(takeUntil(this._unSubs$))
+        //     .subscribe(source => {
+        //         this.dataSource = new MatTableDataSource(source);
+        //     });
     }
 
     ngAfterViewInit(): void {
@@ -73,8 +103,8 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Add 'implements AfterViewInit' to the class.
 
         // Need for demo
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
@@ -89,6 +119,8 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
+        this.store.dispatch(BrandStoreActions.resetStoreEmployees());
+
         this._unSubs$.next();
         this._unSubs$.complete();
     }
@@ -96,6 +128,14 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    joinRoles(roles: Role[]): string {
+        if (roles.length > 0) {
+            return roles.map(i => i.role).join(',<br>');
+        }
+
+        return '-';
+    }
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
@@ -107,9 +147,40 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         }
     }
 
+    safeValue(item: any): any {
+        return item ? item : '-';
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private initTable(): void {}
+    private onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+    }
+
+    private initTable(): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            data['sortBy'] = this.sort.active;
+        }
+
+        const { id } = this.route.parent.snapshot.params;
+
+        this.store.dispatch(
+            BrandStoreActions.fetchStoreEmployeesRequest({
+                payload: {
+                    params: data,
+                    storeId: id
+                }
+            })
+        );
+    }
 }

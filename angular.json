@@ -147,8 +147,17 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.app.json",
                         "aot": true,
-                        "assets": ["src/favicon.ico", "src/assets", "src/manifest.webmanifest"],
-                        "styles": ["src/styles.scss"],
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            "src/manifest.webmanifest",
+                            {
+                                "glob": "**/*",
+                                "input": "./node_modules/leaflet/dist/images",
+                                "output": "leaflet/"
+                            }
+                        ],
+                        "styles": ["src/styles.scss", "./node_modules/leaflet/dist/leaflet.css"],
                         "scripts": [],
                         "showCircularDependencies": false
                     },
@@ -235,7 +244,16 @@
                         "polyfills": "src/polyfills.ts",
                         "tsConfig": "tsconfig.spec.json",
                         "karmaConfig": "karma.conf.js",
-                        "assets": ["src/favicon.ico", "src/assets", "src/manifest.webmanifest"],
+                        "assets": [
+                            "src/favicon.ico",
+                            "src/assets",
+                            "src/manifest.webmanifest",
+                            {
+                                "glob": "**/*",
+                                "input": "./node_modules/leaflet/dist/images",
+                                "output": "leaflet/"
+                            }
+                        ],
                         "styles": ["src/styles.scss", "./node_modules/leaflet/dist/leaflet.css"],
                         "scripts": []
                     }

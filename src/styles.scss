@@ -78,6 +78,27 @@
     background-color: transparent !important;
 }
 
+// .leaflet-tile-container {
+//     display: none;
+// }
+
+.leaflet-control-container {
+    .leaflet-control-zoom {
+        a {
+            &:hover {
+                text-decoration: none !important;
+            }
+        }
+    }
+
+    .leaflet-control-attribution {
+        display: none;
+        // a {
+        //     display: none;
+        // }
+    }
+}
+
 body.theme-sinbad-light {
     .mat-stroked-button.sinbad:not([disabled]),
     .mat-stroked-button.sinbad {

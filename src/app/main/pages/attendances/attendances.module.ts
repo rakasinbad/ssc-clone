@@ -27,7 +27,7 @@ import { fromAttendance } from './store/reducers';
         SharedModule,
         MaterialModule,
 
-        AgmCoreModule,
+        // AgmCoreModule,
         RxReactiveFormsModule,
 
         StoreModule.forFeature(fromAttendance.FEATURE_KEY, fromAttendance.reducer),

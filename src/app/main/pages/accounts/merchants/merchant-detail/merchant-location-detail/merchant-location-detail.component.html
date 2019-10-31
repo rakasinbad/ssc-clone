@@ -1,15 +1,41 @@
 <mat-card>
     <div fxLayout="column">
-        <span class="mat-headline">
+        <span class="mat-headline" *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)">
             Lokasi Toko
         </span>
 
-        <div class="address h4">
-            377 E South Omaha Bridge Rd, Council Bluffs, IA 51501, USA
+        <ngx-skeleton-loader
+            *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+            [theme]="{ width: '150px', height: '40px' }"
+        ></ngx-skeleton-loader>
+
+        <div
+            class="address h4"
+            *ngIf="(brandStore$ | async)?.store?.address && !(isLoading$ | async)"
+        >
+            {{ (brandStore$ | async)?.store?.address }}
         </div>
 
-        <agm-map class="w-100-p h-400" [zoom]="5" [latitude]="-0.714516" [longitude]="113.745663">
-            <!-- <agm-marker
+        <ngx-skeleton-loader
+            *ngIf="!(brandStore$ | async)?.store?.address && (isLoading$ | async)"
+            [theme]="{ width: '100px' }"
+        ></ngx-skeleton-loader>
+
+        <div
+            class="map w-100-p h-400"
+            leaflet
+            [leafletOptions]="options"
+            (leafletMapReady)="onMapReady($event)"
+            *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+        ></div>
+
+        <ngx-skeleton-loader
+            *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+            [theme]="{ width: '100%', height: '400px' }"
+        ></ngx-skeleton-loader>
+
+        <!-- <agm-map class="w-100-p h-400" [zoom]="5" [latitude]="-0.714516" [longitude]="113.745663">
+            <agm-marker
                 *ngFor="let dataStore of (account$ | async)?.userStores; let i = index"
                 (markerClick)="onClickMarker(dataStore.store, i)"
                 [latitude]="dataStore.store.latitude"
@@ -18,7 +44,7 @@
                     url: 'assets/images/marker.png',
                     scaledSize: { height: 30, width: 18 }
                 }"
-            ></agm-marker> -->
-        </agm-map>
+            ></agm-marker>
+        </agm-map> -->
     </div>
 </mat-card>

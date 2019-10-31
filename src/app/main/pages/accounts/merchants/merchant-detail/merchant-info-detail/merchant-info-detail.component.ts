@@ -35,6 +35,10 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
         private store: Store<fromMerchant.FeatureState>
     ) {}
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
@@ -52,6 +56,10 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(BrandStoreActions.resetBrandStore());
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
 
     safeValue(item: any): any {
         return item ? item : '-';

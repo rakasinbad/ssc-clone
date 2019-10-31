@@ -236,7 +236,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="account"
                     matRipple
-                    [routerLink]="['/pages/accounts/' + row.id + '/detail']"
+                    [routerLink]="['/pages/account', row?.id, 'detail']"
                 >
                 </mat-row>
             </mat-table>

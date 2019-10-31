@@ -52,7 +52,7 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
     toAccountHighlight: string;
     pageType: string;
 
-    attendance$: Observable<Attendance>;
+    attendance$: Observable<any>;
     filteredAccounts$: Observable<Account[]>;
     isLoading$: Observable<boolean>;
 
@@ -529,8 +529,8 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
                         userId: selectedAttendance.userId,
                         checkIn: selectedAttendance.checkIn,
                         checkOut: selectedAttendance.checkOut,
-                        latitude: selectedAttendance.latitude,
-                        longitude: selectedAttendance.longitude
+                        latitude: null,
+                        longitude: null
                     });
                 }
             });

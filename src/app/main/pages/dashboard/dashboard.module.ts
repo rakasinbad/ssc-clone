@@ -28,9 +28,9 @@ import { SharedModule } from 'app/shared/shared.module';
         MaterialModule,
         // TranslateModule.forChild(),
 
-        AgmCoreModule.forRoot({
-            apiKey: 'AIzaSyAYbXdwC3U-zzUFkSVNIq7-xEO_ika4B98'
-        }),
+        // AgmCoreModule.forRoot({
+        //     apiKey: 'AIzaSyAYbXdwC3U-zzUFkSVNIq7-xEO_ika4B98'
+        // }),
 
         ChartsModule,
         NgxChartsModule,

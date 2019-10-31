@@ -8,23 +8,32 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { merge, Observable, Subject } from 'rxjs';
-import { map, takeUntil, startWith, tap, delay, filter, withLatestFrom } from 'rxjs/operators';
+import {
+    delay,
+    filter,
+    startWith,
+    takeUntil,
+    distinctUntilChanged,
+    debounceTime
+} from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { BrandStore } from './models';
+import { MerchantApiService } from './services';
 import { BrandStoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { BrandStoreSelectors } from './store/selectors';
-import { MerchantApiService } from './services';
 
 @Component({
     selector: 'app-merchants',
@@ -36,6 +45,7 @@ import { MerchantApiService } from './services';
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // dataSource: MatTableDataSource<any>; // Need for demo
+    search: FormControl;
     total: number;
     displayedColumns = [
         'id',
@@ -66,6 +76,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
+        private router: Router,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$merchantApi: MerchantApiService,
@@ -103,6 +114,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.search = new FormControl('');
         this.paginator.pageSize = 5;
 
         this.dataSource$ = this.store.select(BrandStoreSelectors.getAllBrandStore).pipe(
@@ -114,6 +126,16 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
 
         this.initTable();
+
+        this.search.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000)
+            )
+            .subscribe(v => {
+                localStorage.setItem('filterBrandStore', v);
+                this.onRefreshTable();
+            });
 
         // Need for demo
         // this.store
@@ -163,12 +185,22 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    goStoreInfoPage(storeId: string): void {
+        if (!storeId) {
+            return;
+        }
+
+        this.store.dispatch(BrandStoreActions.goPage({ payload: 'info' }));
+        this.router.navigate(['/pages/account/stores', storeId, 'detail']);
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+        this.initTable();
     }
 
     private initTable(): void {
@@ -183,6 +215,19 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
             data['sortBy'] = this.sort.active;
         }
+
+        if (this.search.value) {
+            const query = this.search.value;
+
+            data['search'] = [
+                {
+                    fieldName: 'store',
+                    keyword: query
+                }
+            ];
+        }
+
+        console.log('SEARCH', this.search.value);
 
         this.store.dispatch(
             BrandStoreActions.fetchBrandStoresRequest({

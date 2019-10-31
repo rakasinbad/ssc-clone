@@ -5,8 +5,10 @@ import { AccountAssocAttendance } from '../../accounts/models/account.model';
 export interface IAttendance extends ITimestamp {
     id: string;
     checkDate: string;
-    longitude: TNullable<number>;
-    latitude: TNullable<number>;
+    longitudeCheckIn: TNullable<number>;
+    latitudeCheckIn: TNullable<number>;
+    longitudeCheckOut: TNullable<number>;
+    latitudeCheckOut: TNullable<number>;
     checkIn: TNullable<string>;
     checkOut: TNullable<string>;
     userId?: TNullable<string>;
@@ -20,18 +22,22 @@ export interface IAttendanceResponse extends IResponsePaginate {
 export class Attendance extends Timestamp {
     id: string;
     checkDate: string;
-    longitude: TNullable<number>;
-    latitude: TNullable<number>;
+    longitudeCheckIn: TNullable<number>;
+    latitudeCheckIn: TNullable<number>;
+    longitudeCheckOut: TNullable<number>;
+    latitudeCheckOut: TNullable<number>;
     checkIn: TNullable<string>;
     checkOut: TNullable<string>;
-    userId?: TNullable<string>;
-    user?: AccountAssocAttendance;
+    userId: TNullable<string>;
+    user: AccountAssocAttendance;
 
     constructor(
         id: string,
         checkDate: string,
-        longitude: TNullable<number>,
-        latitude: TNullable<number>,
+        longitudeCheckIn: TNullable<number>,
+        latitudeCheckIn: TNullable<number>,
+        longitudeCheckOut: TNullable<number>,
+        latitudeCheckOut: TNullable<number>,
         checkIn: TNullable<string>,
         checkOut: TNullable<string>,
         userId: TNullable<string>,
@@ -44,8 +50,10 @@ export class Attendance extends Timestamp {
 
         this.id = id || undefined;
         this.checkDate = checkDate;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.longitudeCheckIn = longitudeCheckIn;
+        this.latitudeCheckIn = latitudeCheckIn;
+        this.longitudeCheckOut = longitudeCheckOut;
+        this.latitudeCheckOut = latitudeCheckOut;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
 
@@ -81,16 +89,20 @@ export class Attendance extends Timestamp {
 export class AttendanceAssocUser extends Timestamp {
     id: string;
     checkDate: string;
-    longitude: TNullable<number>;
-    latitude: TNullable<number>;
+    longitudeCheckIn: TNullable<number>;
+    latitudeCheckIn: TNullable<number>;
+    longitudeCheckOut: TNullable<number>;
+    latitudeCheckOut: TNullable<number>;
     checkIn: TNullable<string>;
     checkOut: TNullable<string>;
 
     constructor(
         id: string,
         checkDate: string,
-        longitude: TNullable<number>,
-        latitude: TNullable<number>,
+        longitudeCheckIn: TNullable<number>,
+        latitudeCheckIn: TNullable<number>,
+        longitudeCheckOut: TNullable<number>,
+        latitudeCheckOut: TNullable<number>,
         checkIn: TNullable<string>,
         checkOut: TNullable<string>,
         createdAt: TNullable<string>,
@@ -101,8 +113,10 @@ export class AttendanceAssocUser extends Timestamp {
 
         this.id = id || undefined;
         this.checkDate = checkDate;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.longitudeCheckIn = longitudeCheckIn;
+        this.latitudeCheckIn = latitudeCheckIn;
+        this.longitudeCheckOut = longitudeCheckOut;
+        this.latitudeCheckOut = latitudeCheckOut;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
         this.createdAt = createdAt;

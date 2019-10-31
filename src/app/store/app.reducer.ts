@@ -1,3 +1,4 @@
+import { state } from '@angular/animations';
 import { InjectionToken } from '@angular/core';
 import { getSelectors, routerReducer, RouterReducerState } from '@ngrx/router-store';
 import {
@@ -12,9 +13,10 @@ import { environment } from 'environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
 
 import * as fromAuth from '../main/pages/core/auth/store/reducers/auth.reducer';
+import { RouterStateUrl } from './custom-serializer';
 
 export interface State {
-    router: RouterReducerState;
+    router: RouterReducerState<RouterStateUrl>;
     [fromDropdown.FEATURE_KEY]: fromDropdown.State;
     [fromForm.FEATURE_KEY]: fromForm.State;
     [fromNetwork.FEATURE_KEY]: fromNetwork.State;
@@ -51,7 +53,7 @@ export const metaReducers: MetaReducer<State>[] = !environment.production
     ? [logger, storeFreeze]
     : [];
 
-export const getRouterState = createFeatureSelector<RouterReducerState>('router');
+export const getRouterState = createFeatureSelector<RouterReducerState<RouterStateUrl>>('router');
 export const {
     selectQueryParams,
     selectRouteParams,
@@ -63,4 +65,9 @@ export const {
 export const getCurrentUrl = createSelector(
     getRouterState,
     state => state && state.state && state.state.url
+);
+
+export const getParams = createSelector(
+    getRouterState,
+    state => state && state.state && state.state.params
 );

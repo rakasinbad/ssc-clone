@@ -42,7 +42,7 @@ import { fromMerchant } from './store/reducers';
         SharedModule,
         MaterialModule,
 
-        AgmCoreModule,
+        // AgmCoreModule,
         LeafletModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,

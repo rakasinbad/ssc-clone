@@ -4,10 +4,12 @@ import {
     IResponsePaginate,
     ITimestamp,
     Timestamp,
-    TNullable
+    TNullable,
+    TStatus
 } from 'app/shared/models';
 import * as _ from 'lodash';
 
+import { AttendanceAssocUser } from '../../attendances/models';
 import { Role } from '../../roles/role.model';
 import { StoreAssocUser } from '../../stores/models/store.model';
 import { Urban } from '../../urbans/models';
@@ -161,20 +163,20 @@ export const accountSchema: JSONSchema = {
 export class Account extends Timestamp {
     id: string;
     fullName: string;
-    email?: TNullable<string>;
-    phoneNo?: TNullable<string>;
+    email: TNullable<string>;
+    phoneNo: TNullable<string>;
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
     status: TAccountStatus;
     imageUrl: TNullable<string>;
-    taxImageUrl?: TNullable<string>;
-    idImageUrl?: TNullable<string>;
-    selfieImageUrl?: TNullable<string>;
-    urbanId?: string;
-    userStores?: StoreAssocUser[];
-    userBrands?: BrandAssocUser[];
-    roles?: Role[];
+    taxImageUrl: TNullable<string>;
+    idImageUrl: TNullable<string>;
+    selfieImageUrl: TNullable<string>;
+    urbanId: string;
+    userStores: StoreAssocUser[];
+    userBrands: BrandAssocUser[];
+    roles: Role[];
     urban: Urban;
 
     constructor(
@@ -445,6 +447,113 @@ export class AccountAssocAttendance extends Timestamp {
             this.roles = _.sortBy(roles, ['role'], ['asc']);
         } else {
             this.roles = [];
+        }
+    }
+}
+
+export class AccountAssocStore extends Timestamp {
+    id: string;
+    fullName: string;
+    email: string;
+    phoneNo: TNullable<string>;
+    mobilePhoneNo: string;
+    idNo: string;
+    taxNo: string;
+    status: TAccountStatus;
+    imageUrl: TNullable<string>;
+    taxImageUrl: TNullable<string>;
+    idImageUrl: TNullable<string>;
+    selfieImageUrl: TNullable<string>;
+    urbanId: string;
+    roles: Role[];
+    attendances: AttendanceAssocUser[];
+
+    constructor(
+        id: string,
+        fullName: string,
+        email: string,
+        phoneNo: TNullable<string>,
+        mobilePhoneNo: string,
+        idNo: string,
+        taxNo: string,
+        status: TAccountStatus,
+        imageUrl: TNullable<string>,
+        taxImageUrl: TNullable<string>,
+        idImageUrl: TNullable<string>,
+        selfieImageUrl: TNullable<string>,
+        urbanId: string,
+        roles: Role[],
+        attendances: AttendanceAssocUser[],
+        createdAt: TNullable<string>,
+        updatedAt: TNullable<string>,
+        deletedAt: TNullable<string>
+    ) {
+        super(createdAt, updatedAt, deletedAt);
+
+        this.id = id || undefined;
+        this.fullName = fullName ? fullName.trim() : fullName;
+        this.email = email ? email.trim() : email;
+        this.phoneNo = phoneNo ? phoneNo.trim() : phoneNo;
+        this.mobilePhoneNo = mobilePhoneNo ? mobilePhoneNo.trim() : mobilePhoneNo;
+        this.idNo = idNo;
+        this.taxNo = taxNo;
+        this.status = status;
+        this.imageUrl = imageUrl;
+        this.taxImageUrl = taxImageUrl;
+        this.idImageUrl = idImageUrl;
+        this.selfieImageUrl = selfieImageUrl;
+        this.urbanId = urbanId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+
+        if (roles && roles.length > 0) {
+            roles = [
+                ...roles.map(role => {
+                    return {
+                        ...new Role(
+                            role.id,
+                            role.role,
+                            role.description,
+                            role.status,
+                            role.roleTypeId,
+                            role.privileges,
+                            role.createdAt,
+                            role.updatedAt,
+                            role.deletedAt
+                        )
+                    };
+                })
+            ];
+            this.roles = _.sortBy(roles, ['role'], ['asc']);
+        } else {
+            this.roles = [];
+        }
+
+        if (attendances && attendances.length > 0) {
+            attendances = [
+                ...attendances.map(attendance => {
+                    return {
+                        ...new AttendanceAssocUser(
+                            attendance.id,
+                            attendance.checkDate,
+                            attendance.longitudeCheckIn,
+                            attendance.latitudeCheckIn,
+                            attendance.longitudeCheckOut,
+                            attendance.latitudeCheckOut,
+                            attendance.checkIn,
+                            attendance.checkOut,
+                            attendance.createdAt,
+                            attendance.updatedAt,
+                            attendance.deletedAt
+                        )
+                    };
+                })
+            ];
+
+            this.attendances = attendances;
+        } else {
+            this.attendances = [];
         }
     }
 }

@@ -2,69 +2,113 @@
     <mat-table
         class="merchant-employees-table"
         #table
-        [dataSource]="dataSource"
+        [dataSource]="dataSource$ | async"
         matSort
         [@animateStagger]="{ value: '50' }"
         fusePerfectScrollbar
     >
         <!-- No Column -->
         <ng-container matColumnDef="no">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>No</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>
+                <span class="text-left">No</span>
+            </mat-header-cell>
             <mat-cell *matCellDef="let row; let i = index">
-                {{ i + 1 + this.paginator.pageIndex * this.paginator.pageSize }}
+                <p *ngIf="row?.id" style="word-break: break-word;">
+                    {{ i + 1 + paginator.pageIndex * paginator.pageSize }}
+                </p>
+                <div *ngIf="!row?.id || (isLoading$ | async)" fxFlex>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
+                </div>
             </mat-cell>
         </ng-container>
 
         <!-- Name Column -->
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef mat-sort-header>
-                Name
+                <span class="text-left">Name</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p>{{ row?.name }}</p>
+                <p *ngIf="row?.user" style="word-break: break-word;">
+                    {{ safeValue(row?.user?.fullName) }}
+                </p>
+                <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
+                </div>
             </mat-cell>
         </ng-container>
 
         <!-- Role Column -->
         <ng-container matColumnDef="role">
             <mat-header-cell *matHeaderCellDef mat-sort-header>
-                Role
+                <span class="text-left">Role</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row">
-                <p>{{ row?.role }}</p>
+                <p
+                    *ngIf="row?.user"
+                    style="word-break: break-word;"
+                    [innerHTML]="joinRoles(row?.user?.roles)"
+                ></p>
+                <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
+                </div>
             </mat-cell>
         </ng-container>
 
         <!-- Phone Number Column -->
-        <ng-container matColumnDef="phoneNumber">
+        <ng-container matColumnDef="phone-no">
             <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                Phone Number
+                <span class="text-left">Phone Number</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                {{ row?.phoneNumber }}
+                <p *ngIf="row?.user" style="word-break: break-word;">
+                    {{ row?.user?.mobilePhoneNo }}
+                </p>
+
+                <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
+                </div>
             </mat-cell>
         </ng-container>
 
         <!-- Last Check In Column -->
-        <ng-container matColumnDef="lastCheckIn">
+        <ng-container matColumnDef="last-check-in">
             <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
-                Last Checked-in
+                <span class="text-left">Last Checked-in</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                {{ row?.lastCheckIn | date: 'dd/MM/yyyy HH:mm:ss' }}
+                <p *ngIf="row?.user" style="word-break: break-word;">
+                    {{
+                        safeValue((row?.user?.attendances)[0]?.checkIn) !== '-'
+                            ? ((row?.user?.attendances)[0]?.checkIn | date: 'dd/MM/yyyy HH:mm:ss')
+                            : safeValue((row?.user?.attendances)[0]?.checkIn)
+                    }}
+                </p>
+                <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '100%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
+                </div>
             </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef>
-                Action
+                <span class="text-left">Action</span>
             </mat-header-cell>
 
             <mat-cell *matCellDef="let row">
-                <div fxFlex="row" fxLayoutAlign="end center">
+                <div fxFlex="row" fxLayoutAlign="end center" *ngIf="row?.user">
                     <button
                         mat-icon-button
                         [matMenuTriggerFor]="moreMenu"
@@ -79,8 +123,13 @@
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
-                            aria-label="edit"
-                            [routerLink]="[row?.id]"
+                            aria-label="Edit"
+                            [routerLink]="[
+                                '/pages/account/stores',
+                                row?.storeId,
+                                row?.userId,
+                                'employee'
+                            ]"
                         >
                             <mat-icon>edit</mat-icon>
                             <span>Edit</span>
@@ -90,7 +139,7 @@
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
-                            aria-label="remove"
+                            aria-label="Remove"
                             (click)="onDelete(row)"
                         >
                             <mat-icon>delete</mat-icon>
@@ -101,12 +150,22 @@
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
-                            aria-label="archive"
+                            aria-label="Deactivate"
                         >
                             <mat-icon>archive</mat-icon>
-                            <span>Archive</span>
+                            <span>Deactivate</span>
                         </button>
                     </mat-menu>
+                </div>
+
+                <div
+                    *ngIf="!row?.user || (isLoading$ | async)"
+                    style="text-align: right; margin-right: 15px;"
+                    fxFlex
+                >
+                    <ngx-skeleton-loader
+                        [theme]="{ width: '50%', 'margin-top': '10px' }"
+                    ></ngx-skeleton-loader>
                 </div>
             </mat-cell>
         </ng-container>
@@ -117,12 +176,13 @@
             *matRowDef="let row; columns: displayedColumns"
             class="merchant-employee"
             matRipple
-            [routerLink]="['/pages/account/stores/' + row?.id + '/employee']"
+            [routerLink]="['/pages/account/stores', row?.storeId, row?.userId, 'employee']"
         >
         </mat-row>
     </mat-table>
 
     <mat-paginator
+        [length]="totalDataSource$ | async"
         [pageSize]="5"
         [pageSizeOptions]="[5, 10, 25, 100]"
         (page)="onChangePage($event)"

@@ -1,4 +1,3 @@
-import { AgmCoreModule } from '@agm/core';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -29,13 +28,13 @@ import * as fromAccount from './store/reducers/account.reducer';
         SharedModule,
         MaterialModule,
 
-        AgmCoreModule,
+        // AgmCoreModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
-        NgxPermissionsModule.forChild()
+        NgxPermissionsModule.forChild(),
 
-        // StoreModule.forFeature(fromAccount.FEATURE_KEY, fromAccount.reducer),
-        // EffectsModule.forFeature([AccountEffects])
+        StoreModule.forFeature(fromAccount.FEATURE_KEY, fromAccount.reducer),
+        EffectsModule.forFeature([AccountEffects])
     ]
 })
 export class AccountsModule {}

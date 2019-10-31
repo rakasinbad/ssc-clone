@@ -41,6 +41,11 @@ export const getTotalBrandStore = createSelector(
     state => state.brandStores.total
 );
 
+export const getTotalStoreEmployee = createSelector(
+    getBrandStoreState,
+    state => state.employees.total
+);
+
 export const getSelectedBrandStoreId = createSelector(
     getBrandStoreState,
     state => state.selectedBrandStoreId
@@ -55,6 +60,16 @@ export const getSelectedBrandStore = createSelector(
 export const getSelectedBrandStoreInfo = createSelector(
     getBrandStoreState,
     state => state.brandStore
+);
+
+export const getSelectedStoreEmployeeInfo = createSelector(
+    getBrandStoreState,
+    state => state.employee
+);
+
+export const getGoPage = createSelector(
+    getBrandStoreState,
+    state => state.goPage
 );
 
 export const getIsDeleting = createSelector(

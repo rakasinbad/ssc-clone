@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DropdownRolesResolver } from 'app/shared/resolvers';
 
 import { AuthGuard } from '../../core/auth/auth.guard';
 import { MerchantDetailComponent } from './merchant-detail/merchant-detail.component';
@@ -10,7 +9,6 @@ import { MerchantLocationDetailComponent } from './merchant-detail/merchant-loca
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
 import { MerchantsComponent } from './merchants.component';
-import { MerchantEmployeeResolver, MerchantResolver } from './resolvers';
 
 const routes: Routes = [
     {
@@ -46,10 +44,10 @@ const routes: Routes = [
                 path: 'employee',
                 component: MerchantEmployeeDetailComponent,
                 canActivate: [AuthGuard],
-                outlet: 'store-detail',
-                resolve: {
-                    employees: MerchantEmployeeResolver
-                }
+                outlet: 'store-detail'
+                // resolve: {
+                //     employees: MerchantEmployeeResolver
+                // }
             },
             {
                 path: 'location',
@@ -60,12 +58,12 @@ const routes: Routes = [
         ]
     },
     {
-        path: ':id/employee',
+        path: ':storeId/:id/employee',
         component: MerchantEmployeeComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            roles: DropdownRolesResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     roles: DropdownRolesResolver
+        // }
     }
 ];
 

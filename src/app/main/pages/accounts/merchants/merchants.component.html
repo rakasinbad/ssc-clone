@@ -28,7 +28,7 @@
                 <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Cari Disini" />
+                        <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -329,7 +329,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="merchant"
                     matRipple
-                    [routerLink]="['/pages/account/stores/' + row.id + '/detail']"
+                    (click)="goStoreInfoPage(row?.storeId)"
                 >
                 </mat-row>
             </mat-table>

@@ -185,7 +185,7 @@
                                         ID Toko
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="!(brandStore$ | async)?.store"
+                                        *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -314,7 +314,7 @@
                                         City
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="!(brandStore$ | async)?.store"
+                                        *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>

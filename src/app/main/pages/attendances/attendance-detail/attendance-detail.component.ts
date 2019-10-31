@@ -41,7 +41,7 @@ import { AttendanceSelectors } from '../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AttendanceDetailComponent implements OnInit, OnDestroy {
-    attendance: Attendance;
+    attendance: any;
     form: FormGroup;
     // locale: LocaleConfig = {
     //     daysOfWeek: moment.weekdaysMin(),
@@ -57,7 +57,7 @@ export class AttendanceDetailComponent implements OnInit, OnDestroy {
     toAccountHighlight: string;
     pageType: string;
 
-    attendance$: Observable<Attendance>;
+    attendance$: Observable<any>;
     filteredAccounts$: Observable<Account[]>;
     isLoading$: Observable<boolean>;
 
@@ -392,8 +392,8 @@ export class AttendanceDetailComponent implements OnInit, OnDestroy {
                     userId: selectedAttendance.userId,
                     checkIn: selectedAttendance.checkIn,
                     checkOut: selectedAttendance.checkOut,
-                    latitude: selectedAttendance.latitude,
-                    longitude: selectedAttendance.longitude
+                    latitude: null,
+                    longitude: null
                 });
 
                 // if (selectedAttendance) {

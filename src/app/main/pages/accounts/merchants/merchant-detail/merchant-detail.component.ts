@@ -12,10 +12,12 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseConfig } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil, filter } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { BrandStoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { BrandStoreSelectors } from '../store/selectors';
 
@@ -46,6 +48,8 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
     fuseConfig$: Observable<FuseConfig>;
     isLoading$: Observable<boolean>;
 
+    private _unSubs$: Subject<void>;
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -54,6 +58,27 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this.fuseConfig$ = this._fuseConfigService.config;
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Account',
+                        translate: 'BREADCRUMBS.ACCOUNT',
+                        url: '/pages/account/stores'
+                    },
+                    {
+                        title: 'Store',
+                        translate: 'BREADCRUMBS.STORE',
+                        active: true
+                    }
+                ]
+            })
+        );
+
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
@@ -65,29 +90,24 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Account',
-                        translate: 'BREADCRUMBS.ACCOUNT'
-                    },
-                    {
-                        title: 'Store',
-                        translate: 'BREADCRUMBS.STORE',
-                        active: true
-                    }
-                ]
-            })
-        );
-        this.router.navigate([{ outlets: { 'store-detail': 'info' } }], {
-            relativeTo: this.route,
-            skipLocationChange: true
-        });
+        this._unSubs$ = new Subject<void>();
+
+        this.store
+            .select(BrandStoreSelectors.getGoPage)
+            .pipe(
+                filter(page => !!page),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(page => {
+                console.log('GO PAGE', page);
+
+                if (page) {
+                    this.router.navigate([{ outlets: { 'store-detail': page } }], {
+                        relativeTo: this.route,
+                        skipLocationChange: true
+                    });
+                }
+            });
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
     }
 
@@ -96,5 +116,9 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        // this.store.dispatch(BrandStoreActions.resetGoPage());
+
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 }

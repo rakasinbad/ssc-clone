@@ -6,7 +6,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
+    ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -117,7 +117,7 @@ export class AccountDetailComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    get account$(): Observable<IAccount> {
+    get account$(): Observable<any> {
         return this.store.select(AccountSelectors.getSelectedAccount).pipe(
             distinctUntilChanged(),
             takeUntil(this._unSubs$)

@@ -36,7 +36,7 @@
                             }}
                         </span>
                         <ng-template #breadWithUrl>
-                            <a href>
+                            <a [routerLink]="[breadcrumb?.url]">
                                 <span [class.secondary]="!breadcrumb?.active">
                                     {{ breadcrumb?.title | titlecase }}
                                 </span>

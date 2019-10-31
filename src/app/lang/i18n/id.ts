@@ -32,6 +32,7 @@ export const globalIdLang = {
         ACCOUNT: 'Akun',
         CHECK_IN: 'Check In',
         CHECK_OUT: 'Check Out',
+        DEFAULT: 'This',
         EMAIL: 'E-mail',
         FULL_NAME: 'Nama Lengkap',
         LAT: 'Latitude',
