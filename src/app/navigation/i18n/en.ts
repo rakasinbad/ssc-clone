@@ -2,6 +2,9 @@ export const locale = {
     lang: 'en',
     data: {
         NAV: {
+            ADD_PRODUCT: {
+                TITLE: 'Add Product'
+            },
             APPLICATIONS: 'Applications',
             DASHBOARD: {
                 TITLE: 'Dashboard',
@@ -19,6 +22,9 @@ export const locale = {
             ATTENDANCES: {
                 TITLE: 'Attendances'
             },
+            CATALOGUES: {
+                TITLE: 'Catalogues'
+            },
             CREDIT_LIMIT_BALANCE: {
                 TITLE: 'Credit Limit/Balance'
             },
@@ -31,6 +37,9 @@ export const locale = {
             INVENTORIES: {
                 TITLE: 'Inventories'
             },
+            MANAGE_PRODUCT: {
+                TITLE: 'Manage Product'
+            },
             ORDER_MANAGEMENTS: {
                 TITLE: 'OMS'
             },
@@ -39,6 +48,9 @@ export const locale = {
             },
             SET_BANK: {
                 TITLE: 'Set Bank'
+            },
+            ARCHIVED: {
+                TITLE: 'Archived'
             }
         }
     }

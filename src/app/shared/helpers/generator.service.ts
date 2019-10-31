@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as faker from 'faker/locale/id_ID';
+import { date } from '@rxweb/reactive-form-validators';
 
 @Injectable({
     providedIn: 'root'
@@ -15,6 +16,31 @@ export class GeneratorService {
                 switch (schema[key]) {
                     case 'aging.day':
                         entity[key] = faker.random.arrayElement(['-', '0', '1', '2', '3']);
+                        break;
+                    case 'catalogue.block.reason':
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Produk dimasukkan ke dalam kategori yang salah.'
+                        ]);
+
+                        break;
+                    
+                    case 'catalogue.block.suggest':
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Produk Anda diblokir karena diunggah pada kategori yang salah.'
+                        ]);
+                        break;
+
+                    case 'catalogue.block.type':
+                        entity[key] = faker.random.arrayElement([
+                            null,
+                            'Spam'
+                        ]);
+                        break;
+
+                    case 'catalogue.isArchived':
+                        entity[key] = faker.random.boolean();
                         break;
 
                     case 'customer.hierarchy':
@@ -130,6 +156,9 @@ export class GeneratorService {
                     case 'payment.type':
                         entity[key] = faker.random.arrayElement(['Pay Later', 'Pay Now']);
                         break;
+                    case 'random.sku':
+                        entity[key] = faker.random.number({ min: 1000000, max: 9999999 });
+                        break;
 
                     case 'store.segment':
                         entity[key] = faker.random.arrayElement(['GT', 'MT']);
@@ -224,6 +253,26 @@ export class GeneratorService {
             agingDay: 'aging.day',
             d: 'aging.day',
             proofOfPaymentStatus: '{{random.boolean}}'
+        };
+    }
+    
+    static get cataloguesSchema(): any {
+        return {
+            id: '{{random.number}}',
+            sku: 'random.sku',
+            parentSku: 'random.sku',
+            name: '{{commerce.productName}}',
+            image: '{{image.food}}',
+            variant: '-',
+            price: '{{commerce.price}}',
+            stock: '{{random.number}}',
+            sale: '{{random.number}}',
+            isArchived: 'catalogue.isArchived',
+            lastUpdate: '{{date.recent}}',
+            timeLimit: '-',
+            blockType: 'catalogue.block.type',
+            blockReason: 'catalogue.block.reason',
+            blockSuggest: 'catalogue.block.suggest'
         };
     }
 

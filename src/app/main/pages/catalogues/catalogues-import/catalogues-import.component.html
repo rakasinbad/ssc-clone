@@ -1,0 +1,46 @@
+<h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
+
+<mat-dialog-content class="mat-typography" style="min-width: 50em;">
+    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+        <div class="custom-field" fxLayoutAlign="space-between stretch">
+            <label
+                fxFlexAlign="start"
+                [class.mat-error]="
+                    form.get('file').errors &&
+                    !form.get('file').untouched &&
+                    (form.get('file').dirty || form.get('file').touched)
+                "
+            >
+                Select a CSV or Excel file to import.
+            </label>
+
+        </div>
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <mat-form-field appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                <input
+                    hidden
+                    #file
+                    [disabled]="true"
+                    type="file"
+                    name="file"
+                    formControlName="file"
+                />
+                <input
+                    matInput
+                    type="text"
+                    name="fileName"
+                    fxFlex="80"
+                    formControlName="fileName"
+                    [disabled]="true"
+                />
+                <button 
+                    mat-flat-button
+                    color="accent"
+                    (click)="file.click()"
+                    fxFlex="20">
+                    Pilih File
+                </button>
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>

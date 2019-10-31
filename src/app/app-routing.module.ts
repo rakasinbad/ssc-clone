@@ -65,6 +65,12 @@ const routes: Routes = [
                 canLoad: [AuthGuard]
             },
             {
+                path: 'catalogues',
+                loadChildren: () =>
+                    import('./main/pages/catalogues/catalogues.module').then(m => m.CataloguesModule),
+                    canLoad: [AuthGuard]
+            },
+            {
                 path: 'in-store-inventories',
                 loadChildren: () =>
                     import('./main/pages/in-store-inventories/in-store-inventories.module').then(
