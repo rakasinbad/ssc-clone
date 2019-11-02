@@ -117,11 +117,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.search = new FormControl('');
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllBrandStore).pipe(
-            filter(source => source.length > 0),
-            delay(1000),
-            startWith(this._$merchantApi.initBrandStore())
-        );
+        localStorage.removeItem('filterBrandStore');
+
+        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllBrandStore);
+        // .pipe(
+        //     filter(source => source.length > 0),
+        //     delay(1000),
+        //     startWith(this._$merchantApi.initBrandStore())
+        // );
         this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalBrandStore);
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
 
@@ -133,7 +136,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 debounceTime(1000)
             )
             .subscribe(v => {
-                localStorage.setItem('filterBrandStore', v);
+                if (v) {
+                    localStorage.setItem('filterBrandStore', v);
+                }
+
                 this.onRefreshTable();
             });
 
@@ -175,6 +181,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    get searchBrandStore(): string {
+        return localStorage.getItem('filterBrandStore') || '';
+    }
+
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
     }
@@ -183,6 +193,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!item) {
             return;
         }
+    }
+
+    onRemoveSearchBrandStore(): void {
+        localStorage.removeItem('filterBrandStore');
+        this.search.reset();
     }
 
     goStoreInfoPage(storeId: string): void {
@@ -221,7 +236,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
             data['search'] = [
                 {
-                    fieldName: 'store',
+                    fieldName: 'keyword',
                     keyword: query
                 }
             ];

@@ -8,13 +8,13 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent">
+                <!-- <button mat-flat-button color="accent">
                     EXPORT
                 </button>
 
                 <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
-                </button>
+                </button> -->
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -22,19 +22,19 @@
                 <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Search for a employee" />
+                        <input [formControl]="search" placeholder="Search for a employee" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
 
-                <button mat-flat-button class="grey-600">
+                <!-- <button mat-flat-button class="grey-600">
                     <mat-icon>filter_list</mat-icon>
                     Filter Lists
                 </button>
 
                 <button mat-flat-button class="grey-600">
                     Group By
-                </button>
+                </button> -->
             </div>
         </div>
         <!-- / CONTENT HEADER -->
@@ -62,11 +62,14 @@
             </div>
         </mat-card>
 
-        <mat-card>
+        <!-- CONTENT CARD -->
+        <!-- <div class="content-card"></div> -->
+
+        <div class="sinbad-content mat-elevation-z1">
             <mat-table
                 class="internals-table"
                 #table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
@@ -85,7 +88,7 @@
                         User
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.user }}</p>
+                        <p>{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -96,14 +99,14 @@
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.email }}</p>
+                        <p>{{ row?.user?.email }}</p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Access Right Column -->
-                <ng-container matColumnDef="accessRight">
+                <!-- Role Column -->
+                <ng-container matColumnDef="role">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                        Access Right
+                        Role
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
@@ -178,16 +181,18 @@
             </mat-table>
 
             <mat-paginator
+                [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons
             >
             </mat-paginator>
-        </mat-card>
 
-        <!-- CONTENT CARD -->
-        <!-- <div class="content-card"></div> -->
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->

@@ -21,7 +21,7 @@
                     </span>
 
                     <div>
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
@@ -53,7 +53,7 @@
                                     {{ getErrorMessage('profileInfo.username') }}
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
 
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label
@@ -110,11 +110,16 @@
                                     appearance="outline"
                                     fxFlex="40"
                                 >
-                                    <input type="file" class="custom-file" />
+                                    <input
+                                        type="file"
+                                        #photoPicker
+                                        class="custom-file"
+                                        (change)="onFileBrowse($event, 'photo')"
+                                    />
                                     <input
                                         matInput
                                         name="photos"
-                                        formControlName="photos"
+                                        [formControl]="tmpPhoto"
                                         placeholder="No file choose"
                                     />
 
@@ -129,7 +134,13 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                <button
+                                    mat-flat-button
+                                    color="accent"
+                                    type="button"
+                                    (click)="photoPicker.click()"
+                                    fxFlexAlign="center"
+                                >
                                     Upload your file
                                 </button>
                             </div>
@@ -154,7 +165,8 @@
                                     matInput
                                     name="npwpId"
                                     formControlName="npwpId"
-                                    maxlength="30"
+                                    mask="00.000.000.0-000.000"
+                                    [validation]="false"
                                 />
 
                                 <mat-error
@@ -260,9 +272,15 @@
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <mat-select
                                     formControlName="province"
-                                    placeholder="Choose province..."
+                                    placeholder="Choose Province"
+                                    (selectionChange)="onSelectProvince($event)"
                                 >
-                                    <mat-option>DKI Jakarta</mat-option>
+                                    <mat-option
+                                        *ngFor="let row of provinces$ | async"
+                                        [value]="row?.id"
+                                    >
+                                        {{ row?.name }}
+                                    </mat-option>
                                 </mat-select>
 
                                 <mat-error
@@ -292,9 +310,23 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select formControlName="city" placeholder="Choose city...">
-                                    <mat-option>Jakarta Selatan</mat-option>
-                                </mat-select>
+                                <ng-container *ngIf="cities$ | async as cities; else noCities">
+                                    <mat-select
+                                        formControlName="city"
+                                        placeholder="Choose City"
+                                        (selectionChange)="onSelectCity($event)"
+                                    >
+                                        <mat-option *ngFor="let row of cities" [value]="row?.city">
+                                            {{ row?.city }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noCities>
+                                    <mat-select formControlName="city" placeholder="Choose City">
+                                        <mat-option>City not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -323,12 +355,31 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="district"
-                                    placeholder="Choose district..."
+                                <ng-container
+                                    *ngIf="districts$ | async as districts; else noDistricts"
                                 >
-                                    <mat-option>Cilandak</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="district"
+                                        placeholder="Choose District"
+                                        (selectionChange)="onSelectDistrict($event)"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of districts"
+                                            [value]="row?.district"
+                                        >
+                                            {{ row?.district }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noDistricts>
+                                    <mat-select
+                                        formControlName="district"
+                                        placeholder="Choose District"
+                                    >
+                                        <mat-option>District not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -357,9 +408,23 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select formControlName="urban" placeholder="Choose urban...">
-                                    <mat-option>Lebak Bulus</mat-option>
-                                </mat-select>
+                                <ng-container *ngIf="urbans$ | async as urbans; else noUrbans">
+                                    <mat-select
+                                        formControlName="urban"
+                                        placeholder="Choose Urban"
+                                        (selectionChange)="onSelectUrban($event)"
+                                    >
+                                        <mat-option *ngFor="let row of urbans" [value]="row?.urban">
+                                            {{ row?.urban }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noUrbans>
+                                    <mat-select formControlName="urban" placeholder="Choose Urban">
+                                        <mat-option>Urban not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -388,12 +453,19 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
+                                <input
+                                    matInput
+                                    formControlName="postcode"
+                                    mask="00000"
+                                    [validation]="false"
+                                />
+
+                                <!-- <mat-select
                                     formControlName="postcode"
                                     placeholder="Choose postcode..."
                                 >
                                     <mat-option>12440</mat-option>
-                                </mat-select>
+                                </mat-select> -->
 
                                 <mat-error
                                     *ngIf="
@@ -440,7 +512,7 @@
                             </mat-form-field>
                         </div>
 
-                        <div
+                        <!-- <div
                             class="custom-field-right sinbad-button"
                             fxLayout="row"
                             fxLayoutAlign="start center"
@@ -460,7 +532,7 @@
 
                             <button mat-flat-button color="accent">Set GeoLoc</button>
 
-                            <!-- <mat-form-field appearance="outline" fxFlex="50">
+                            <mat-form-field appearance="outline" fxFlex="50">
                                 <textarea matInput formControlName="notes" rows="5"></textarea>
 
                                 <mat-error
@@ -472,12 +544,41 @@
                                 >
                                     {{ getErrorMessage('storeInfo.address.geolocation') }}
                                 </mat-error>
-                            </mat-form-field> -->
-                        </div>
+                            </mat-form-field>
+                        </div> -->
                     </div>
 
                     <div class="form-box mt-16" formGroupName="legalInfo">
                         <span class="mat-subheading-2">Legal Information</span>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.legalInfo.name').errors &&
+                                    !form.get('storeInfo.legalInfo.name').untouched &&
+                                    (form.get('storeInfo.legalInfo.name').dirty ||
+                                        form.get('storeInfo.legalInfo.name').touched)
+                                "
+                            >
+                                *Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="name" formControlName="name" />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.legalInfo.name').errors &&
+                                        (form.get('storeInfo.legalInfo.name').dirty ||
+                                            form.get('storeInfo.legalInfo.name').touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.legalInfo.name') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
@@ -494,7 +595,12 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="identityId" formControlName="identityId" />
+                                <input
+                                    matInput
+                                    name="identityId"
+                                    formControlName="identityId"
+                                    mask="0000000000000000"
+                                />
 
                                 <mat-error
                                     *ngIf="
@@ -574,7 +680,7 @@
                                         form.get('storeInfo.legalInfo.identityPhotoSelfie').touched)
                                 "
                             >
-                                *KTP Photo + Selfie
+                                KTP Photo + Selfie
                             </label>
 
                             <div fxLayout="row" fxFlex="100">
@@ -630,7 +736,13 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="npwpId" formControlName="npwpId" />
+                                <input
+                                    matInput
+                                    name="npwpId"
+                                    formControlName="npwpId"
+                                    mask="00.000.000.0-000.000"
+                                    [validation]="false"
+                                />
 
                                 <mat-error
                                     *ngIf="
@@ -802,12 +914,30 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="storeType"
-                                    placeholder="Choose store type..."
+                                <ng-container
+                                    *ngIf="storeTypes$ | async as storeTypes; else noStoreTypes"
                                 >
-                                    <mat-option>-</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="storeType"
+                                        placeholder="Choose Store Type"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeTypes"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | titlecase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreTypes>
+                                    <mat-select
+                                        formControlName="storeType"
+                                        placeholder="Choose Store Type"
+                                    >
+                                        <mat-option>Store Type not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -841,12 +971,30 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="storeGroup"
-                                    placeholder="Choose store group..."
+                                <ng-container
+                                    *ngIf="storeGroups$ | async as storeGroups; else noStoreGroups"
                                 >
-                                    <mat-option>-</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="storeGroup"
+                                        placeholder="Choose Store Group"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeGroups"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | titlecase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreGroups>
+                                    <mat-select
+                                        formControlName="storeGroup"
+                                        placeholder="Choose Store Group"
+                                    >
+                                        <mat-option>Store Group not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -882,12 +1030,33 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="storeCluster"
-                                    placeholder="Choose store cluster..."
+                                <ng-container
+                                    *ngIf="
+                                        storeClusters$ | async as storeClusters;
+                                        else noStoreClusters
+                                    "
                                 >
-                                    <mat-option>-</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="storeCluster"
+                                        placeholder="Choose Store Cluster"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeClusters"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreClusters>
+                                    <mat-select
+                                        formControlName="storeCluster"
+                                        placeholder="Choose Store Cluster"
+                                    >
+                                        <mat-option>Store Cluster not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -925,12 +1094,33 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="storeSegment"
-                                    placeholder="Choose store segment..."
+                                <ng-container
+                                    *ngIf="
+                                        storeSegments$ | async as storeSegments;
+                                        else noStoreSegments
+                                    "
                                 >
-                                    <mat-option>-</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="storeSegment"
+                                        placeholder="Choose Store Segment"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeSegments"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | uppercase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreSegments>
+                                    <mat-select
+                                        formControlName="storeSegment"
+                                        placeholder="Choose Store Segment"
+                                    >
+                                        <mat-option>Store Segment not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="

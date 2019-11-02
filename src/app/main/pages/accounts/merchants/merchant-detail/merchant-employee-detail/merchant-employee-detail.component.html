@@ -175,6 +175,7 @@
         <mat-row
             *matRowDef="let row; columns: displayedColumns"
             class="merchant-employee"
+            [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.userId }"
             matRipple
             [routerLink]="['/pages/account/stores', row?.storeId, row?.userId, 'employee']"
         >

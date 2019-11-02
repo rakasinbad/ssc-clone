@@ -5,16 +5,15 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 import { InternalDetailComponent } from './internal-detail/internal-detail.component';
 import { InternalFormComponent } from './internal-form/internal-form.component';
 import { InternalComponent } from './internal.component';
-import { InternalDetailResolver, InternalResolver } from './resolvers';
 
 const routes: Routes = [
     {
         path: '',
         component: InternalComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            internals: InternalResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     internals: InternalResolver
+        // }
     },
     {
         path: ':id',
@@ -24,10 +23,10 @@ const routes: Routes = [
     {
         path: ':id/detail',
         component: InternalDetailComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            internal: InternalDetailResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     internal: InternalDetailResolver
+        // }
     }
 ];
 

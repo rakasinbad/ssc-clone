@@ -74,7 +74,7 @@ export const getGoPage = createSelector(
 
 export const getIsDeleting = createSelector(
     getBrandStoreState,
-    state => state.isLoading
+    state => state.isDeleting
 );
 
 export const getIsLoading = createSelector(

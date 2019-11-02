@@ -98,6 +98,7 @@ export interface IFooterActionConfig {
         value: {
             active: boolean;
         };
+        active?: boolean;
     };
     action: {
         save: {

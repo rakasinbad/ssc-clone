@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { IFooterActionConfig } from 'app/shared/models';
+import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors, UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import { Observable } from 'rxjs';
@@ -13,7 +14,9 @@ import { Observable } from 'rxjs';
 })
 export class FooterActionComponent implements OnInit {
     config$: Observable<IFooterActionConfig>;
+    cancelButtonAction$: Observable<string>;
     isShowSaveButton$: Observable<boolean>;
+    isValidForm$: Observable<boolean>;
 
     constructor(private store: Store<fromRoot.State>) {}
 
@@ -22,8 +25,27 @@ export class FooterActionComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this.config$ = this.store.select(UiSelectors.getFooterActionConfig);
+        this.cancelButtonAction$ = this.store.select(FormSelectors.getCancelButtonAction);
         this.isShowSaveButton$ = this.store.select(FormSelectors.getIsShowSaveButton);
+        this.isValidForm$ = this.store.select(FormSelectors.getIsValidForm);
     }
 
-    onSave(): void {}
+    onCancel(action?: string): void {
+        console.log('ACTION FOOTER CANCEL', action);
+
+        if (action) {
+            switch (action) {
+                case 'RESET':
+                    this.store.dispatch(FormActions.clickResetButton());
+                    break;
+
+                default:
+                    return;
+            }
+        }
+    }
+
+    onSave(): void {
+        this.store.dispatch(FormActions.clickSaveButton());
+    }
 }

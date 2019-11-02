@@ -11,6 +11,7 @@ import { InternalDetailComponent } from './internal-detail/internal-detail.compo
 import { InternalFormComponent } from './internal-form/internal-form.component';
 import { InternalRoutingModule } from './internal-routing.module';
 import { InternalComponent } from './internal.component';
+import { InternalEffects } from './store/effects';
 import { fromInternal } from './store/reducers';
 
 /**
@@ -32,7 +33,7 @@ import { fromInternal } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromInternal.FEATURE_KEY, fromInternal.reducer),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([InternalEffects])
     ]
 })
 export class InternalModule {}

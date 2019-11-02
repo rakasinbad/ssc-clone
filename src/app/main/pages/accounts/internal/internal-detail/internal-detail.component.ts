@@ -70,16 +70,16 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
         });
 
         this.store
-            .select(InternalSelectors.getSelectedInternal)
+            .select(InternalSelectors.getSelectedInternalEmployee)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(selectedInternal => {
                 console.log('Selected internal', selectedInternal);
                 if (selectedInternal) {
                     this.form.patchValue({
                         fullName: selectedInternal.user,
-                        role: selectedInternal.role,
-                        email: selectedInternal.email,
-                        phoneNumber: selectedInternal.phoneNumber
+                        role: null,
+                        email: null,
+                        phoneNumber: null
                     });
                 }
             });

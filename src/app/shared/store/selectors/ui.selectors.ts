@@ -33,3 +33,8 @@ export const getIsShowFooterAction = createSelector(
     getUiState,
     state => state.isShowFooterAction
 );
+
+export const getSelectedRowIndex = createSelector(
+    getUiState,
+    state => state.selectedRowIndex
+);

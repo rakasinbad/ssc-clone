@@ -5,4 +5,8 @@ export * from './global.model';
 export * from './legal.model';
 export * from './province.model';
 export * from './query.model';
+export * from './store-cluster.model';
+export * from './store-group.model';
+export * from './store-segment.model';
+export * from './store-type.model';
 export * from './timestamp.model';

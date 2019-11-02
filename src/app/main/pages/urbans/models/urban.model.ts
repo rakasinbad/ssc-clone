@@ -34,6 +34,7 @@ export class Urban extends Timestamp {
                   ...new Province(
                       province.id,
                       province.name,
+                      province.urbans ? province.urbans : null,
                       province.createdAt,
                       province.updatedAt,
                       province.deletedAt

@@ -45,6 +45,7 @@
             <button
                 mat-flat-button
                 color="accent"
+                [routerLink]="['/pages/account/stores', (brandStore$ | async)?.storeId]"
                 *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
             >
                 Edit

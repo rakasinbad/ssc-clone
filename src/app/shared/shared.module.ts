@@ -13,6 +13,7 @@ import { SuccessNoticeComponent } from './components/notices/success-notice/succ
 import { WarningNoticeComponent } from './components/notices/warning-notice/warning-notice.component';
 import { CheckboxValidatorDirective, ContentDirective } from './directives';
 import { MaterialModule } from './material.module';
+import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe } from './pipes';
@@ -33,7 +34,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         ErrorNoticeComponent,
         ShowImageComponent,
         SuccessNoticeComponent,
-        WarningNoticeComponent
+        WarningNoticeComponent,
+        DeleteConfirmationComponent
     ],
     imports: [
         MaterialModule,
@@ -57,7 +59,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         NgxMaskModule,
         NgxSkeletonLoaderModule,
         ShowImageComponent,
-        FuseSharedModule
+        FuseSharedModule,
+        DeleteConfirmationComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -65,7 +68,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         ErrorNoticeComponent,
         SuccessNoticeComponent,
         WarningNoticeComponent,
-        ShowImageComponent
+        ShowImageComponent,
+        DeleteConfirmationComponent
     ]
 })
 export class SharedModule {}

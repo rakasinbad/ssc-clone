@@ -16,8 +16,10 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { Role } from 'app/main/pages/roles/role.model';
 import { IQueryParams } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { delay, filter, startWith, takeUntil } from 'rxjs/operators';
+import { delay, distinctUntilChanged, filter, startWith, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
@@ -44,6 +46,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     displayedColumns = ['no', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
     dataSource$: Observable<StoreEmployee[]>;
+    selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -85,9 +88,23 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             startWith(this._$merchantApi.initStoreEmployee())
         );
         this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
 
         this.initTable();
+
+        this.store
+            .select(BrandStoreSelectors.getIsDeleting)
+            .pipe(
+                distinctUntilChanged(),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isTryDelete => {
+                console.log('TRY DELETE', isTryDelete);
+                if (isTryDelete) {
+                    this.onRefreshTable();
+                }
+            });
 
         // Need for demo
         // this.store
@@ -141,10 +158,17 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         console.log('Change page', ev);
     }
 
-    onDelete(item): void {
-        if (!item) {
+    onDelete(item: StoreEmployee): void {
+        console.log('DELETE', item);
+
+        if (!item || !item.userId) {
             return;
         }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.userId }));
+        this.store.dispatch(BrandStoreActions.confirmDeleteStoreEmployee({ payload: item }));
+
+        return;
     }
 
     safeValue(item: any): any {
@@ -157,6 +181,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+        this.initTable();
     }
 
     private initTable(): void {

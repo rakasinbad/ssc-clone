@@ -1,9 +1,17 @@
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { Role } from 'app/main/pages/roles/role.model';
-import * as DropdownActions from '../actions/dropdown.actions';
-import { IErrorHandler } from 'app/shared/models';
 import { Account } from 'app/main/pages/accounts/models';
+import { Role } from 'app/main/pages/roles/role.model';
+import {
+    IErrorHandler,
+    Province,
+    StoreCluster,
+    StoreGroup,
+    StoreSegment,
+    StoreType
+} from 'app/shared/models';
+
+import { DropdownActions } from '../actions';
 
 export const FEATURE_KEY = 'dropdowns';
 
@@ -11,12 +19,17 @@ interface AccountState extends EntityState<Account> {}
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 interface SearchState {
-    accounts: AccountState | undefined;
+    accounts: AccountState;
 }
 
 export interface State {
-    search: SearchState | undefined;
+    search: SearchState;
     roles: Role[];
+    provinces?: Province[];
+    storeClusters?: StoreCluster[];
+    storeGroups?: StoreGroup[];
+    storeSegments?: StoreSegment[];
+    storeTypes?: StoreType[];
     errors: ErrorState;
 }
 const adapterAccount = createEntityAdapter<Account>();
@@ -30,6 +43,7 @@ export const initialState: State = {
         accounts: initialAccountState
     },
     roles: [],
+    // provinces: [],
     errors: initialErrorState
 };
 
@@ -39,6 +53,10 @@ const dropdownReducer = createReducer(
         ...state,
         roles: [...payload]
     })),
+    on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
+        ...state,
+        provinces: payload && payload.length > 0 ? [...payload] : payload
+    })),
     on(DropdownActions.fetchSearchAccountSuccess, (state, { payload }) => ({
         ...state,
         search: {
@@ -47,15 +65,46 @@ const dropdownReducer = createReducer(
         },
         errors: adapterError.removeOne('fetchAccountSearchFailure', state.errors)
     })),
-    on(DropdownActions.fetchSearchAccountFailure, (state, { payload }) => ({
+    on(
+        DropdownActions.fetchDropdownProvinceFailure,
+        DropdownActions.fetchDropdownRoleFailure,
+        DropdownActions.fetchDropdownStoreClusterFailure,
+        DropdownActions.fetchDropdownStoreGroupFailure,
+        DropdownActions.fetchDropdownStoreSegmentFailure,
+        DropdownActions.fetchDropdownStoreTypeFailure,
+        DropdownActions.fetchSearchAccountFailure,
+        (state, { payload }) => ({
+            ...state,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(DropdownActions.fetchDropdownStoreClusterSuccess, (state, { payload }) => ({
         ...state,
-        errors: adapterError.upsertOne(payload, state.errors)
+        storeClusters: payload && payload.length > 0 ? [...payload] : payload,
+        errors: adapterError.removeOne('fetchDropdownStoreClusterFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownStoreGroupSuccess, (state, { payload }) => ({
+        ...state,
+        storeGroups: payload && payload.length > 0 ? [...payload] : payload,
+        errors: adapterError.removeOne('fetchDropdownStoreGroupFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownStoreSegmentSuccess, (state, { payload }) => ({
+        ...state,
+        storeSegments: payload && payload.length > 0 ? [...payload] : payload,
+        errors: adapterError.removeOne('fetchDropdownStoreSegmentFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownStoreTypeSuccess, (state, { payload }) => ({
+        ...state,
+        storeTypes: payload && payload.length > 0 ? [...payload] : payload,
+        errors: adapterError.removeOne('fetchDropdownStoreTypeFailure', state.errors)
     }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {
     return dropdownReducer(state, action);
 }
+
+export const selectProvincesState = (state: State) => state.provinces;
 
 const getListSearchAccountState = (state: State) => state.search.accounts;
 

@@ -5,18 +5,30 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatSelectChange } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
+import {
+    Province,
+    StoreCluster,
+    StoreGroup,
+    StoreSegment,
+    StoreType,
+    Urban
+} from 'app/shared/models';
+import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
+import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { fromMerchant } from '../store/reducers';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 @Component({
     selector: 'app-merchant-form',
@@ -28,7 +40,20 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 })
 export class MerchantFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
+    tmpPhoto: FormControl;
     pageType: string;
+
+    provinces$: Observable<Province[]>;
+    cities$: Observable<Urban[]>;
+    districts$: Observable<Urban[]>;
+    urbans$: Observable<Urban[]>;
+    postcode$: Observable<string>;
+    storeClusters$: Observable<StoreCluster[]>;
+    storeGroups$: Observable<StoreGroup[]>;
+    storeSegments$: Observable<StoreSegment[]>;
+    storeTypes$: Observable<StoreType[]>;
+
+    private _unSubs$: Subject<void>;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -48,7 +73,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         },
                         value: {
                             active: true
-                        }
+                        },
+                        active: false
                     },
                     action: {
                         save: {
@@ -67,11 +93,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }
             })
         );
+
         this.store.dispatch(UiActions.showFooterAction());
 
         const { id } = this.route.snapshot.params;
-
-        this.initForm();
 
         if (id === 'new') {
             this.store.dispatch(
@@ -125,6 +150,73 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this._unSubs$ = new Subject<void>();
+        this.initForm();
+
+        this.provinces$ = this.store.select(DropdownSelectors.getProvinceDropdownState);
+        this.store.dispatch(DropdownActions.fetchDropdownProvinceRequest());
+
+        this.storeTypes$ = this.store.select(DropdownSelectors.getStoreTypeDropdownState);
+        this.store.dispatch(DropdownActions.fetchDropdownStoreTypeRequest());
+
+        this.storeGroups$ = this.store.select(DropdownSelectors.getStoreGroupDropdownState);
+        this.store.dispatch(DropdownActions.fetchDropdownStoreGroupRequest());
+
+        this.storeClusters$ = this.store.select(DropdownSelectors.getStoreClusterDropdownState);
+        this.store.dispatch(DropdownActions.fetchDropdownStoreClusterRequest());
+
+        this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
+        this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
+
+        this.store.dispatch(FormActions.resetFormStatus());
+        this.form.statusChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000)
+            )
+            .subscribe(status => {
+                console.log('FORM STATUS 1', status);
+                console.log('FORM STATUS 2', this.form);
+
+                if (status === 'VALID' && this.addressValid()) {
+                    this.store.dispatch(FormActions.setFormStatusValid());
+                }
+
+                if (status === 'INVALID' || !this.addressValid()) {
+                    this.store.dispatch(FormActions.setFormStatusInvalid());
+                }
+            });
+
+        this.store
+            .select(FormSelectors.getIsClickResetButton)
+            .pipe(
+                filter(isClick => !!isClick),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isClick => {
+                console.log('CLICK RESET', isClick);
+
+                if (isClick) {
+                    this.form.reset();
+                    this.tmpPhoto.reset();
+                    this.store.dispatch(FormActions.resetClickResetButton());
+                }
+            });
+
+        this.store
+            .select(FormSelectors.getIsClickSaveButton)
+            .pipe(
+                filter(isClick => !!isClick),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isClick => {
+                console.log('CLICK SUBMIT', isClick);
+
+                if (isClick) {
+                    this.onSubmit();
+                }
+            });
     }
 
     ngOnDestroy(): void {
@@ -133,6 +225,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(FormActions.resetFormStatus());
+
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -153,50 +249,430 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'photo':
+                        const photoField = this.form.get('profileInfo.photos');
+
+                        const fileReader = new FileReader();
+                        fileReader.onload = () => {
+                            photoField.patchValue(fileReader.result);
+                            this.tmpPhoto.patchValue(file.name);
+                        };
+
+                        fileReader.readAsDataURL(file);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return;
+    }
+
+    onSelectProvince(ev: MatSelectChange): void {
+        this.form.get('storeInfo.address.city').reset();
+        this.form.get('storeInfo.address.district').reset();
+        this.form.get('storeInfo.address.urban').reset();
+        this.form.get('storeInfo.address.postcode').reset();
+
+        if (!ev.value) {
+            return;
+        }
+
+        console.log('SELECT PROVINCE', ev);
+
+        this.cities$ = this.store
+            .select(DropdownSelectors.getCityDropdownState, {
+                provinceId: ev.value
+            })
+            .pipe(
+                tap(hasCity => {
+                    console.log('LIST CITIES', hasCity);
+                    if (hasCity && hasCity.length > 0) {
+                        this.form.get('storeInfo.address.city').enable();
+                    }
+                })
+            );
+    }
+
+    onSelectCity(ev: MatSelectChange): void {
+        this.form.get('storeInfo.address.district').reset();
+        this.form.get('storeInfo.address.urban').reset();
+        this.form.get('storeInfo.address.postcode').reset();
+
+        const provinceId = this.form.get('storeInfo.address.province').value;
+
+        if (!ev.value || !provinceId) {
+            return;
+        }
+
+        console.log('SELECT CITY', ev, provinceId);
+
+        this.districts$ = this.store
+            .select(DropdownSelectors.getDistrictDropdownState, {
+                provinceId: provinceId,
+                city: ev.value
+            })
+            .pipe(
+                tap(hasDistrict => {
+                    if (hasDistrict && hasDistrict.length > 0) {
+                        console.log('LIST DISTRICTS', hasDistrict);
+                        this.form.get('storeInfo.address.district').enable();
+                    }
+                })
+            );
+    }
+
+    onSelectDistrict(ev: MatSelectChange): void {
+        this.form.get('storeInfo.address.urban').reset();
+        this.form.get('storeInfo.address.postcode').reset();
+
+        const provinceId = this.form.get('storeInfo.address.province').value;
+        const city = this.form.get('storeInfo.address.city').value;
+
+        if (!ev.value || !provinceId || !city) {
+            return;
+        }
+
+        console.log('SELECT DISTRICT', ev, provinceId, city);
+
+        this.urbans$ = this.store
+            .select(DropdownSelectors.getUrbanDropdownState, {
+                provinceId: provinceId,
+                city: city,
+                district: ev.value
+            })
+            .pipe(
+                tap(hasUrban => {
+                    if (hasUrban && hasUrban.length > 0) {
+                        console.log('LIST URBANS', hasUrban);
+                        this.form.get('storeInfo.address.urban').enable();
+                    }
+                })
+            );
+    }
+
+    onSelectUrban(ev: MatSelectChange): void {
+        this.form.get('storeInfo.address.postcode').reset();
+
+        const provinceId = this.form.get('storeInfo.address.province').value;
+        const city = this.form.get('storeInfo.address.city').value;
+        const district = this.form.get('storeInfo.address.district').value;
+
+        if (!ev.value || !provinceId || !city || !district) {
+            return;
+        }
+
+        console.log('SELECT URBAN', ev, provinceId, city, district);
+
+        this.store
+            .select(DropdownSelectors.getPostcodeDropdownState, {
+                provinceId: provinceId,
+                city: city,
+                district: district,
+                urban: ev.value
+            })
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(postcode => {
+                if (postcode) {
+                    console.log('POST CODE', postcode);
+                    // this.form.get('storeInfo.address.postcode').enable();
+                    this.form.get('storeInfo.address.postcode').patchValue(postcode);
+                }
+            });
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
     private initForm(): void {
+        this.tmpPhoto = new FormControl({ value: '', disabled: true });
+
         this.form = this.formBuilder.group({
             profileInfo: this.formBuilder.group({
-                username: [
+                // username: [
+                //     '',
+                //     [
+                //         RxwebValidators.required({
+                //             message: this._$errorMessage.getErrorMessageNonState(
+                //                 'username',
+                //                 'required'
+                //             )
+                //         })
+                //     ]
+                // ],
+                phoneNumber: [
                     '',
                     [
                         RxwebValidators.required({
                             message: this._$errorMessage.getErrorMessageNonState(
-                                'username',
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.pattern({
+                            expression: {
+                                mobilePhone: /^08[0-9]{8,12}$/
+                            },
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'mobile_phone_pattern',
+                                '08'
+                            )
+                        })
+                    ]
+                ],
+                photos: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
                                 'required'
                             )
                         })
                     ]
                 ],
-                phoneNumber: [''],
-                photos: [''],
-                npwpId: ['']
+                npwpId: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            )
+                        }),
+                        RxwebValidators.maxLength({
+                            value: 15,
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'pattern'
+                            )
+                        })
+                    ]
+                ]
             }),
             storeInfo: this.formBuilder.group({
                 storeId: this.formBuilder.group({
-                    id: [''],
-                    storeName: ['']
+                    id: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    storeName: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ]
                 }),
                 address: this.formBuilder.group({
-                    province: [''],
-                    city: [''],
-                    district: [''],
-                    urban: [''],
-                    postcode: [''],
-                    notes: [''],
-                    geolocation: this.formBuilder.group({
-                        lng: [''],
-                        lat: ['']
-                    })
+                    province: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    city: [
+                        { value: '', disabled: true },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    district: [
+                        { value: '', disabled: true },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    urban: [
+                        { value: '', disabled: true },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    postcode: [
+                        { value: '', disabled: true },
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.digit({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            }),
+                            RxwebValidators.minLength({
+                                value: 5,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            }),
+                            RxwebValidators.maxLength({
+                                value: 5,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            })
+                        ]
+                    ],
+                    notes: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ]
+                    // geolocation: this.formBuilder.group({
+                    //     lng: [''],
+                    //     lat: ['']
+                    // })
                 }),
                 legalInfo: this.formBuilder.group({
-                    identityId: [''],
-                    identityPhoto: [''],
+                    name: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.alpha({
+                                allowWhiteSpace: true,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            })
+                        ]
+                    ],
+                    identityId: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.digit({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            }),
+                            RxwebValidators.minLength({
+                                value: 16,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            }),
+                            RxwebValidators.maxLength({
+                                value: 16,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            })
+                        ]
+                    ],
+                    identityPhoto: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
                     identityPhotoSelfie: [''],
-                    npwpId: ['']
+                    npwpId: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.minLength({
+                                value: 15,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            }),
+                            RxwebValidators.maxLength({
+                                value: 15,
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'pattern'
+                                )
+                            })
+                        ]
+                    ]
                 }),
                 physicalStoreInfo: this.formBuilder.group({
                     physicalStoreInfo: [''],
@@ -204,12 +680,75 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     vehicleAddress: ['']
                 }),
                 storeClassification: this.formBuilder.group({
-                    storeType: [''],
-                    storeGroup: [''],
-                    storeCluster: [''],
-                    storeSegment: ['']
+                    storeType: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    storeGroup: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    storeCluster: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ],
+                    storeSegment: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ]
+                    ]
                 })
             })
         });
+    }
+
+    private onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        console.log(this.form.value);
+    }
+
+    private addressValid(): boolean {
+        return (
+            this.form.get('storeInfo.address.province').value &&
+            this.form.get('storeInfo.address.city').value &&
+            this.form.get('storeInfo.address.district').value &&
+            this.form.get('storeInfo.address.urban').value &&
+            this.form.get('storeInfo.address.postcode').value &&
+            this.form.get('storeInfo.address.province').valid &&
+            this.form.get('storeInfo.address.city').valid &&
+            this.form.get('storeInfo.address.district').valid &&
+            this.form.get('storeInfo.address.urban').valid &&
+            this.form.get('storeInfo.address.postcode').valid
+        );
     }
 }

@@ -104,6 +104,26 @@ export const updateStoreEmployeeSuccess = createAction(
     props<{ payload: StoreEmployeeDetail }>()
 );
 
+export const confirmDeleteStoreEmployee = createAction(
+    '[Store Employees Page] Confirm Delete Store Employee',
+    props<{ payload: StoreEmployee }>()
+);
+
+export const deleteStoreEmployeeRequest = createAction(
+    '[Store Employee API] Delete Store Employee Request',
+    props<{ payload: string }>()
+);
+
+export const deleteStoreEmployeeFailure = createAction(
+    '[Store Employee API] Delete Store Employee Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const deleteStoreEmployeeSuccess = createAction(
+    '[Store Employee API] Delete Store Employee Success',
+    props<{ payload: string }>()
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------

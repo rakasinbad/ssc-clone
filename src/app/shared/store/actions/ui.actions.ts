@@ -27,3 +27,6 @@ export const setFooterActionConfig = createAction(
     '[UI] Set Footer Action Config',
     props<{ payload: IFooterActionConfig }>()
 );
+
+export const setHighlightRow = createAction('[UI] Set Highlight Row', props<{ payload: string }>());
+export const resetHighlightRow = createAction('[UI] Reset Highlight Row');

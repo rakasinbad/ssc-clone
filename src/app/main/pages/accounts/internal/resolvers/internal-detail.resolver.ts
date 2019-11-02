@@ -21,7 +21,7 @@ export class InternalDetailResolver implements Resolve<any> {
             return of(null);
         }
 
-        return this.store.select(InternalSelectors.getSelectedInternal).pipe(
+        return this.store.select(InternalSelectors.getSelectedInternalEmployee).pipe(
             tap(internal => {
                 if (!internal) {
                     this.store.dispatch(InternalActions.getInternalDemoDetail({ payload: id }));

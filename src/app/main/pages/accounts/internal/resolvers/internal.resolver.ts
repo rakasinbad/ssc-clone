@@ -19,7 +19,7 @@ export class InternalResolver implements Resolve<any> {
     ) {}
 
     resolve(route: ActivatedRouteSnapshot): Observable<any> | Promise<any> | any {
-        return this.store.select(InternalSelectors.getTotalInternalEntity).pipe(
+        return this.store.select(InternalSelectors.getTotalInternalEmployeeEntity).pipe(
             tap(total => {
                 if (!total) {
                     const generator = this._$generator.generator(

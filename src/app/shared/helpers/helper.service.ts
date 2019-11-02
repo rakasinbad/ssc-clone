@@ -73,7 +73,9 @@ export class HelperService {
         if (params.search) {
             if (params.search.length) {
                 for (const search of params.search) {
-                    if (search.fieldName && search.fieldName !== 'id') {
+                    if (search.fieldName && search.fieldName === 'keyword') {
+                        newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
+                    } else if (search.fieldName && search.fieldName !== 'id') {
                         newParams = newParams.append(
                             `search[${search.fieldName}]`,
                             `${search.keyword}`

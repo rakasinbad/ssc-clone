@@ -17,6 +17,10 @@
     justify-content: center;
 }
 
+.highlight-row {
+    background-color: #e5e5e5 !important;
+}
+
 .panel-error {
     color: #d8000c !important;
     background-color: rgba(255, 210, 210, 0.9) !important;
@@ -97,6 +101,15 @@
         //     display: none;
         // }
     }
+}
+
+.no-records {
+    display: flex;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
 }
 
 body.theme-sinbad-light {

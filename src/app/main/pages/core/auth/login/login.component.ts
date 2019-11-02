@@ -120,11 +120,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                 '',
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('email', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     }),
                     RxwebValidators.email({
                         message: this._$errorMessage.getErrorMessageNonState(
-                            'email',
+                            'default',
                             'email_pattern'
                         )
                     })
@@ -133,7 +133,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             password: [
                 '',
                 RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('password', 'required')
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                 })
             ]
         });

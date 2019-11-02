@@ -50,9 +50,15 @@
 </mat-toolbar>
 
 <ng-template #cancelAction>
-    <button mat-stroked-button *ngIf="(config$ | async)?.action?.cancel?.active">
-        {{ (config$ | async)?.action?.cancel?.label }}
-    </button>
+    <ng-container *ngIf="cancelButtonAction$ | async as cancelButtonAction">
+        <button
+            mat-stroked-button
+            *ngIf="(config$ | async)?.action?.cancel?.active"
+            (click)="onCancel(cancelButtonAction)"
+        >
+            {{ (config$ | async)?.action?.cancel?.label }}
+        </button>
+    </ng-container>
 </ng-template>
 
 <!-- <ng-template #draftAction>
@@ -69,7 +75,7 @@
         mat-flat-button
         color="accent"
         *ngIf="(config$ | async)?.action?.save?.active"
-        [disabled]="!(isShowSaveButton$ | async)"
+        [disabled]="!(isValidForm$ | async)"
         (click)="onSave()"
     >
         {{ (config$ | async)?.action?.save?.label }}
@@ -77,17 +83,21 @@
 </ng-template>
 
 <ng-template #progressContent>
-    <span class="mat-body-2" *ngIf="(config$ | async)?.progress?.title?.active">
-        {{ (config$ | async)?.progress?.title?.label }}
-    </span>
+    <ng-container *ngIf="(config$ | async)?.progress?.active">
+        <span class="mat-body-2" *ngIf="(config$ | async)?.progress?.title?.active">
+            {{ (config$ | async)?.progress?.title?.label }}
+        </span>
 
-    <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
-        <mat-progress-bar
-            class="sinbad-progress-bar"
-            mode="determinate"
-            [value]="45"
-        ></mat-progress-bar>
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+            <mat-progress-bar
+                class="sinbad-progress-bar"
+                mode="determinate"
+                [value]="45"
+            ></mat-progress-bar>
 
-        <span class="mat-caption" *ngIf="(config$ | async)?.progress?.value?.active">45/100</span>
-    </div>
+            <span class="mat-caption" *ngIf="(config$ | async)?.progress?.value?.active"
+                >45/100</span
+            >
+        </div>
+    </ng-container>
 </ng-template>

@@ -82,6 +82,11 @@ const brandStoreReducer = createReducer(
             isLoading: true
         })
     ),
+    on(BrandStoreActions.deleteStoreEmployeeRequest, state => ({
+        ...state,
+        isLoading: true,
+        isDeleting: false
+    })),
     on(
         BrandStoreActions.updateStoreEmployeeFailure,
         BrandStoreActions.fetchBrandStoreFailure,
@@ -95,10 +100,23 @@ const brandStoreReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
+    on(BrandStoreActions.deleteStoreEmployeeFailure, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isDeleting: true,
+        errors: adapterError.upsertOne(payload, state.errors)
+    })),
     on(BrandStoreActions.updateStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         errors: adapterError.removeOne('updateStoreEmployeeFailure', state.errors)
+    })),
+    on(BrandStoreActions.deleteStoreEmployeeSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isDeleting: true,
+        employees: adapterStoreEmployee.removeOne(payload, state.employees),
+        errors: adapterError.removeOne('deleteStoreEmployeeFailure', state.errors)
     })),
     on(BrandStoreActions.fetchBrandStoresSuccess, (state, { payload }) => ({
         ...state,
