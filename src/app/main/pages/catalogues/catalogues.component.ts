@@ -26,7 +26,7 @@ import { locale as indonesian } from './i18n/id';
 import { statusCatalogue } from './status';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
-import { ICatalogueDemo } from './models';
+import { ICatalogue } from './models';
 import { MatTableDataSource } from '@angular/material';
 
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
@@ -41,7 +41,7 @@ import { CataloguesImportComponent } from './catalogues-import/catalogues-import
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
-    dataSource: MatTableDataSource<ICatalogueDemo>; // Need for demo
+    dataSource: MatTableDataSource<ICatalogue>; // Need for demo
     displayedColumns = [
         'checkbox',
         'name',
@@ -55,7 +55,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     hasSelected: boolean;
     statusCatalogue: any;
 
-    dataSource$: Observable<ICatalogueDemo[]>;
+    dataSource$: Observable<ICatalogue[]>;
     isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
