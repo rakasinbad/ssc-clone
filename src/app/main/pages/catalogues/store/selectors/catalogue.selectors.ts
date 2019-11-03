@@ -16,17 +16,17 @@ export const getTotalCatalogueEntity = createSelector(
 
 export const getArchivedCatalogues = createSelector(
     getAllCatalogues,
-    catalogues => catalogues.filter(catalogue => catalogue.isArchived)
+    catalogues => catalogues.filter(catalogue => catalogue.status === 'inactive')
 );
 
 export const getBlockedCatalogues = createSelector(
     getAllCatalogues,
-    catalogues => catalogues.filter(catalogue => catalogue.blockType)
+    catalogues => catalogues.filter(catalogue => catalogue.status === 'banned')
 );
 
 export const getEmptyStockCatalogues = createSelector(
     getAllCatalogues,
-    catalogues => catalogues.filter(catalogue => !catalogue.stock)
+    catalogues => catalogues.filter(catalogue => !catalogue.stock || catalogue.stock <= 0)
 );
 
 export const getLiveCatalogues = createSelector(

@@ -3,55 +3,132 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { ICatalogueDemo } from '../../models';
+import { ICatalogue } from '../../models';
 import { CatalogueActions } from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
 
-interface CatalogueState extends EntityState<ICatalogueDemo> {
+export interface FeatureState extends fromRoot.State {
+    [FEATURE_KEY]: State | undefined;
+}
+
+interface CatalogueState extends EntityState<ICatalogue> {
     total: number;
 }
 
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
+    isDeleting?: boolean;
     isLoading: boolean;
     selectedCatalogueId: string | number;
     source: TSource;
+    catalogue?: ICatalogue;
     catalogues: CatalogueState;
     errors: ErrorState;
 }
 
-const adapterCatalogue: EntityAdapter<ICatalogueDemo> = createEntityAdapter<ICatalogueDemo>({
+/**
+ * CATALOGUE STATE
+ */
+const adapterCatalogue: EntityAdapter<ICatalogue> = createEntityAdapter<ICatalogue>({
     selectId: catalogue => catalogue.id
 });
-const initialOrderState = adapterCatalogue.getInitialState({ total: 0 });
+const initialCatalogueState = adapterCatalogue.getInitialState({ total: 0 });
 
+/**
+ * ERROR STATE
+ */
 const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
 
 const initialState: State = {
+    isDeleting: false,
     isLoading: false,
     selectedCatalogueId: null,
     source: 'fetch',
-    catalogues: initialOrderState,
+    catalogues: initialCatalogueState,
     errors: initialErrorState
 };
 
 const catalogueReducer = createReducer(
+    /** 
+     *  ===================================================================
+     *  INITIAL STATE
+     *  ===================================================================
+     */ 
     initialState,
-    on(CatalogueActions.generateCataloguesDemo, (state, { payload }) => ({
-        ...state,
-        catalogues: adapterCatalogue.addAll(payload, state.catalogues)
-    }))
+    /** 
+     *  ===================================================================
+     *  REQUESTS
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.fetchCatalogueRequest,
+        CatalogueActions.fetchCataloguesRequest,
+        (state) => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    /** 
+     *  ===================================================================
+     *  FAILURES
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.fetchCatalogueFailure,
+        CatalogueActions.fetchCataloguesFailure,
+        (state, { payload }) => ({
+            ...state,
+            isDeleting: initialState.isDeleting,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    /** 
+     *  ===================================================================
+     *  SUCCESSES
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.fetchCataloguesSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: initialState.isDeleting,
+            catalogues: adapterCatalogue.addAll(payload.catalogues, {
+                ...state.catalogues,
+                total: payload.total
+            }),
+            errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+        })
+    ),
+    /** 
+     *  ===================================================================
+     *  ERRORS
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.resetCatalogue,
+        state => ({
+            ...state,
+            catalogue: initialState.catalogue,
+            errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.resetCatalogues,
+        state => ({
+            ...state,
+            catalogues: initialState.catalogues,
+            errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+        })
+    )
 );
 
 export function reducer(state: State | undefined, action: Action): State {
     return catalogueReducer(state, action);
-}
-
-export interface FeatureState extends fromRoot.State {
-    [FEATURE_KEY]: State | undefined;
 }
 
 const getListCatalogueState = (state: State) => state.catalogues;

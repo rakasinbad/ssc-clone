@@ -1,5 +1,12 @@
+import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+
+import { IQueryParams } from 'app/shared/models';
+import { GeneratorService, HelperService } from 'app/shared/helpers';
+
+import { ICatalogue, ICatalogueResponse } from '../models';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -11,8 +18,36 @@ interface ICatalogueTitleParameter {
 @Injectable({
     providedIn: 'root'
 })
-export class CatalogueService {
-    constructor(private translate: TranslateService) {}
+export class CataloguesService {
+    /**
+     *
+     *
+     * @private
+     * @type {string}
+     * @memberof MerchantApiService
+     */
+    private _url: string;
+
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
+    private readonly _endpoint = '/catalogues';
+
+    /**
+     * Creates an instance of MerchantApiService.
+     * @param {HttpClient} http
+     * @param {HelperService} _$helper
+     * @memberof MerchantApiService
+     */
+    constructor(
+        private http: HttpClient,
+        private _$generator: GeneratorService,
+        private _$helper: HelperService,
+        private translate: TranslateService
+    ) {}
 
     getCatalogueStatus(data: ICatalogueTitleParameter) {
         const {
@@ -31,6 +66,20 @@ export class CatalogueService {
         ];
 
         return this.translate.instant(STATUS_CATALOGUES_KEYS, { allCount, liveCount, emptyCount, blockedCount });
+    }
+
+    /**
+     *
+     *
+     * @param {IQueryParams} params
+     * @returns {Observable<ICatalogueResponse>}
+     * @memberof CataloguesService
+     */
+    findAll(params: IQueryParams): Observable<ICatalogueResponse> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        const newParams = this._$helper.handleParams(this._url, params, null);
+
+        return this.http.get<ICatalogueResponse>(this._url, { params: newParams });
     }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {
