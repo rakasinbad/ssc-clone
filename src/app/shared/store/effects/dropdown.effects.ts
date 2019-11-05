@@ -12,9 +12,17 @@ import {
     StoreClusterApiService,
     StoreGroupApiService,
     StoreSegmentApiService,
-    StoreTypeApiService
+    StoreTypeApiService,
+    VehicleAccessibilityApiService
 } from 'app/shared/helpers';
-import { Province, StoreCluster, StoreGroup, StoreSegment, StoreType } from 'app/shared/models';
+import {
+    Province,
+    StoreCluster,
+    StoreGroup,
+    StoreSegment,
+    StoreType,
+    VehicleAccessibility
+} from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 import { of } from 'rxjs';
 import { catchError, concatMap, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -333,6 +341,51 @@ export class DropdownEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Vehicle Accessibility]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchVehicleAccessibilityDropdownRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownVehicleAccessibilityRequest),
+            switchMap(() =>
+                this._$vehicleAccessibilityApi.findAllDropdown({ paginate: false }).pipe(
+                    catchOffline(),
+                    map(resp =>
+                        DropdownActions.fetchDropdownVehicleAccessibilitySuccess({
+                            payload:
+                                resp && resp.length > 0
+                                    ? [
+                                          ...resp.map(row => {
+                                              return {
+                                                  ...new VehicleAccessibility(
+                                                      row.name,
+                                                      row.createdAt,
+                                                      row.updatedAt,
+                                                      row.deletedAt,
+                                                      row.id
+                                                  )
+                                              };
+                                          })
+                                      ]
+                                    : resp
+                        })
+                    ),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownVehicleAccessibilityFailure({
+                                payload: {
+                                    id: 'fetchDropdownVehicleAccessibilityFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                )
+            )
+        )
+    );
+
+    // -----------------------------------------------------------------------------------------------------
     // @ FETCH search methods
     // -----------------------------------------------------------------------------------------------------
 
@@ -452,6 +505,7 @@ export class DropdownEffects {
         private _$storeClusterApi: StoreClusterApiService,
         private _$storeGroupApi: StoreGroupApiService,
         private _$storeSegmentApi: StoreSegmentApiService,
-        private _$storeTypeApi: StoreTypeApiService
+        private _$storeTypeApi: StoreTypeApiService,
+        private _$vehicleAccessibilityApi: VehicleAccessibilityApiService
     ) {}
 }

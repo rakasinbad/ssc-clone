@@ -9,3 +9,4 @@ export * from './store-group-api.service';
 export * from './store-segment-api.service';
 export * from './store-type-api.service';
 export * from './notice.service';
+export * from './vehicle-accessibility-api.service';

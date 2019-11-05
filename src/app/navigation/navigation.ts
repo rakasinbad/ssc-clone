@@ -10,8 +10,8 @@ export const navigation: FuseNavigation[] = [
         url: '/pages/dashboard'
     },
     {
-        id: 'accounts',
-        title: 'Accounts',
+        id: 'account',
+        title: 'Account',
         translate: 'NAV.ACCOUNTS.TITLE',
         type: 'collapsable',
         icon: 'people',
@@ -33,8 +33,8 @@ export const navigation: FuseNavigation[] = [
         ]
     },
     {
-        id: 'catalogues',
-        title: 'Catalogues',
+        id: 'catalogue',
+        title: 'Catalogue',
         translate: 'NAV.CATALOGUES.TITLE',
         type: 'collapsable',
         icon: 'people',
@@ -56,16 +56,16 @@ export const navigation: FuseNavigation[] = [
         ]
     },
     {
-        id: 'attendances',
-        title: 'Attendances',
+        id: 'attendance',
+        title: 'Attendance',
         translate: 'NAV.ATTENDANCES.TITLE',
         type: 'item',
         icon: 'event_available',
         url: '/pages/attendances'
     },
     {
-        id: 'finances',
-        title: 'Finances',
+        id: 'finance',
+        title: 'Finance',
         translate: 'NAV.FINANCES.TITLE',
         type: 'collapsable',
         icon: 'monetization_on',
@@ -94,16 +94,16 @@ export const navigation: FuseNavigation[] = [
         ]
     },
     {
-        id: 'orderManagements',
-        title: 'Order Managements',
+        id: 'orderManagement',
+        title: 'Order Management',
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
         icon: 'shopping_cart',
         url: '/pages/orders'
     },
     {
-        id: 'inventories',
-        title: 'Inventories',
+        id: 'inventory',
+        title: 'Inventory',
         translate: 'NAV.INVENTORIES.TITLE',
         type: 'collapsable',
         icon: 'layers',

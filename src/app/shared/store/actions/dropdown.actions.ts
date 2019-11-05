@@ -8,7 +8,8 @@ import {
     StoreCluster,
     StoreGroup,
     StoreSegment,
-    StoreType
+    StoreType,
+    VehicleAccessibility
 } from 'app/shared/models';
 
 // -----------------------------------------------------------------------------------------------------
@@ -119,6 +120,24 @@ export const fetchDropdownStoreTypeFailure = createAction(
 export const fetchDropdownStoreTypeSuccess = createAction(
     '[Helper Dropdown] Fetch Store Type Success',
     props<{ payload: StoreType[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Vehicle Accessibility
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownVehicleAccessibilityRequest = createAction(
+    '[Helper Dropdown] Fetch Vehicle Accessibility Request'
+);
+
+export const fetchDropdownVehicleAccessibilityFailure = createAction(
+    '[Helper Dropdown] Fetch Vehicle Accessibility Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownVehicleAccessibilitySuccess = createAction(
+    '[Helper Dropdown] Fetch Vehicle Accessibility Success',
+    props<{ payload: VehicleAccessibility[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

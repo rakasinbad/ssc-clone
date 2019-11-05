@@ -8,7 +8,8 @@ import {
     StoreCluster,
     StoreGroup,
     StoreSegment,
-    StoreType
+    StoreType,
+    VehicleAccessibility
 } from 'app/shared/models';
 
 import { DropdownActions } from '../actions';
@@ -30,6 +31,7 @@ export interface State {
     storeGroups?: StoreGroup[];
     storeSegments?: StoreSegment[];
     storeTypes?: StoreType[];
+    vehicleAccessibilities?: VehicleAccessibility[];
     errors: ErrorState;
 }
 const adapterAccount = createEntityAdapter<Account>();
@@ -72,6 +74,7 @@ const dropdownReducer = createReducer(
         DropdownActions.fetchDropdownStoreGroupFailure,
         DropdownActions.fetchDropdownStoreSegmentFailure,
         DropdownActions.fetchDropdownStoreTypeFailure,
+        DropdownActions.fetchDropdownVehicleAccessibilityFailure,
         DropdownActions.fetchSearchAccountFailure,
         (state, { payload }) => ({
             ...state,
@@ -97,6 +100,11 @@ const dropdownReducer = createReducer(
         ...state,
         storeTypes: payload && payload.length > 0 ? [...payload] : payload,
         errors: adapterError.removeOne('fetchDropdownStoreTypeFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownVehicleAccessibilitySuccess, (state, { payload }) => ({
+        ...state,
+        vehicleAccessibilities: payload && payload.length > 0 ? [...payload] : payload,
+        errors: adapterError.removeOne('fetchDropdownVehicleAccessibilityFailure', state.errors)
     }))
 );
 

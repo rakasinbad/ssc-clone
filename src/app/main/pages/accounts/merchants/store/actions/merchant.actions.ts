@@ -3,6 +3,7 @@ import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
 
 import {
     BrandStore,
+    CreateStore,
     IMerchantDemo,
     IStoreEmployeeDemo,
     StoreEmployee,
@@ -88,6 +89,21 @@ export const fetchStoreEmployeeSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 // CRUD Actions
 // -----------------------------------------------------------------------------------------------------
+
+export const createStoreRequest = createAction(
+    '[Brand Stores API] Create Store Request',
+    props<{ paload: CreateStore }>()
+);
+
+export const createStoreFailure = createAction(
+    '[Brand Stores API] Create Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const createStoreSuccess = createAction(
+    '[Brand Stores API] Create Store Success',
+    props<{ payload: CreateStore }>()
+);
 
 export const updateStoreEmployeeRequest = createAction(
     '[Store Employee API] Update Store Employee Request',

@@ -12,14 +12,15 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import {
     Province,
     StoreCluster,
     StoreGroup,
     StoreSegment,
     StoreType,
-    Urban
+    Urban,
+    VehicleAccessibility
 } from 'app/shared/models';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
@@ -29,6 +30,7 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { fromMerchant } from '../store/reducers';
+import { CreateStore, CreateUser, CreateCluster } from '../models';
 
 @Component({
     selector: 'app-merchant-form',
@@ -41,7 +43,10 @@ import { fromMerchant } from '../store/reducers';
 export class MerchantFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     tmpPhoto: FormControl;
+    tmpIdentityPhoto: FormControl;
+    tmpIdentityPhotoSelfie: FormControl;
     pageType: string;
+    numberOfEmployees: { id: string; label: string }[];
 
     provinces$: Observable<Province[]>;
     cities$: Observable<Urban[]>;
@@ -52,6 +57,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     storeGroups$: Observable<StoreGroup[]>;
     storeSegments$: Observable<StoreSegment[]>;
     storeTypes$: Observable<StoreType[]>;
+    vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
 
     private _unSubs$: Subject<void>;
 
@@ -60,7 +66,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$helper: HelperService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.store.dispatch(
@@ -169,6 +176,13 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
         this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
 
+        this.vehicleAccessibilities$ = this.store.select(
+            DropdownSelectors.getVehicleAccessibilityDropdownState
+        );
+        this.store.dispatch(DropdownActions.fetchDropdownVehicleAccessibilityRequest());
+
+        this.numberOfEmployees = this._$helper.numberOfEmployee();
+
         this.store.dispatch(FormActions.resetFormStatus());
         this.form.statusChanges
             .pipe(
@@ -258,15 +272,47 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             if (file) {
                 switch (type) {
                     case 'photo':
-                        const photoField = this.form.get('profileInfo.photos');
+                        {
+                            const photoField = this.form.get('profileInfo.photos');
 
-                        const fileReader = new FileReader();
-                        fileReader.onload = () => {
-                            photoField.patchValue(fileReader.result);
-                            this.tmpPhoto.patchValue(file.name);
-                        };
+                            const fileReader = new FileReader();
+                            fileReader.onload = () => {
+                                photoField.patchValue(fileReader.result);
+                                this.tmpPhoto.patchValue(file.name);
+                            };
 
-                        fileReader.readAsDataURL(file);
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    case 'identityPhoto':
+                        {
+                            const photoField = this.form.get('storeInfo.legalInfo.identityPhoto');
+
+                            const fileReader = new FileReader();
+                            fileReader.onload = () => {
+                                photoField.patchValue(fileReader.result);
+                                this.tmpIdentityPhoto.patchValue(file.name);
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    case 'identityPhotoSelfie':
+                        {
+                            const photoField = this.form.get(
+                                'storeInfo.legalInfo.identityPhotoSelfie'
+                            );
+
+                            const fileReader = new FileReader();
+                            fileReader.onload = () => {
+                                photoField.patchValue(fileReader.result);
+                                this.tmpIdentityPhotoSelfie.patchValue(file.name);
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
                         break;
 
                     default:
@@ -379,7 +425,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 provinceId: provinceId,
                 city: city,
                 district: district,
-                urban: ev.value
+                urbanId: ev.value
             })
             .pipe(takeUntil(this._unSubs$))
             .subscribe(postcode => {
@@ -397,6 +443,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
     private initForm(): void {
         this.tmpPhoto = new FormControl({ value: '', disabled: true });
+        this.tmpIdentityPhoto = new FormControl({ value: '', disabled: true });
+        this.tmpIdentityPhotoSelfie = new FormControl({ value: '', disabled: true });
 
         this.form = this.formBuilder.group({
             profileInfo: this.formBuilder.group({
@@ -677,7 +725,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 physicalStoreInfo: this.formBuilder.group({
                     physicalStoreInfo: [''],
                     numberOfEmployee: [''],
-                    vehicleAddress: ['']
+                    vehicleAccessibility: ['']
                 }),
                 storeClassification: this.formBuilder.group({
                     storeType: [
@@ -734,6 +782,42 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const body = this.form.value;
+
+        if (this.pageType === 'new') {
+            const createUser = new CreateUser(
+                body.storeInfo.legalInfo.name,
+                body.storeInfo.legalInfo.identityPhoto,
+                body.storeInfo.legalInfo.identityPhotoSelfie,
+                body.profileInfo.phoneNumber,
+                'active',
+                ['1']
+            );
+
+            const createCluser = new CreateCluster(body.storeInfo.storeClassification.storeCluster);
+
+            console.log('SUBMIT CREATE 1', body);
+            console.log(
+                'SUBMIT CREATE 2',
+                new CreateStore(
+                    body.storeInfo.storeId.storeName,
+                    body.profileInfo.photos,
+                    body.storeInfo.address.notes,
+                    body.profileInfo.phoneNumber,
+                    'active',
+                    body.storeInfo.storeClassification.storeType,
+                    body.storeInfo.storeClassification.storeGroup,
+                    body.storeInfo.storeClassification.storeSegment,
+                    body.storeInfo.address.urban,
+                    createUser,
+                    createCluser,
+                    body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                    body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                    body.storeInfo.physicalStoreInfo.vehicleAccessibility
+                )
+            );
+        }
+
         console.log(this.form.value);
     }
 
@@ -744,11 +828,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             this.form.get('storeInfo.address.district').value &&
             this.form.get('storeInfo.address.urban').value &&
             this.form.get('storeInfo.address.postcode').value &&
-            this.form.get('storeInfo.address.province').valid &&
-            this.form.get('storeInfo.address.city').valid &&
-            this.form.get('storeInfo.address.district').valid &&
-            this.form.get('storeInfo.address.urban').valid &&
-            this.form.get('storeInfo.address.postcode').valid
+            this.form.get('storeInfo.address').valid
         );
     }
 }

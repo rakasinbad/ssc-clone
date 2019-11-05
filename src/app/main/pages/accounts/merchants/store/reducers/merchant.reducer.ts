@@ -72,6 +72,7 @@ const brandStoreReducer = createReducer(
     //     isLoading: false
     // })),
     on(
+        BrandStoreActions.createStoreRequest,
         BrandStoreActions.updateStoreEmployeeRequest,
         BrandStoreActions.fetchBrandStoreRequest,
         BrandStoreActions.fetchBrandStoresRequest,
@@ -88,6 +89,7 @@ const brandStoreReducer = createReducer(
         isDeleting: false
     })),
     on(
+        BrandStoreActions.createStoreFailure,
         BrandStoreActions.updateStoreEmployeeFailure,
         BrandStoreActions.fetchBrandStoreFailure,
         BrandStoreActions.fetchBrandStoresFailure,
@@ -105,6 +107,11 @@ const brandStoreReducer = createReducer(
         isLoading: false,
         isDeleting: true,
         errors: adapterError.upsertOne(payload, state.errors)
+    })),
+    on(BrandStoreActions.createStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        errors: adapterError.removeOne('createStoreFailure', state.errors)
     })),
     on(BrandStoreActions.updateStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,

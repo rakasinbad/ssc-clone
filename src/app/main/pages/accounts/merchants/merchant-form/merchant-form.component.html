@@ -414,7 +414,7 @@
                                         placeholder="Choose Urban"
                                         (selectionChange)="onSelectUrban($event)"
                                     >
-                                        <mat-option *ngFor="let row of urbans" [value]="row?.urban">
+                                        <mat-option *ngFor="let row of urbans" [value]="row?.id">
                                             {{ row?.urban }}
                                         </mat-option>
                                     </mat-select>
@@ -638,11 +638,16 @@
                                     appearance="outline"
                                     fxFlex="40"
                                 >
-                                    <input type="file" class="custom-file" />
+                                    <input
+                                        type="file"
+                                        #identityPhotoPicker
+                                        class="custom-file"
+                                        (change)="onFileBrowse($event, 'identityPhoto')"
+                                    />
                                     <input
                                         matInput
                                         name="identityPhoto"
-                                        formControlName="identityPhoto"
+                                        [formControl]="tmpIdentityPhoto"
                                         placeholder="No file choose"
                                     />
 
@@ -658,7 +663,13 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                <button
+                                    mat-flat-button
+                                    color="accent"
+                                    type="button"
+                                    (click)="identityPhotoPicker.click()"
+                                    fxFlexAlign="center"
+                                >
                                     Upload your file
                                 </button>
                             </div>
@@ -689,11 +700,16 @@
                                     appearance="outline"
                                     fxFlex="40"
                                 >
-                                    <input type="file" class="custom-file" />
+                                    <input
+                                        type="file"
+                                        #identityPhotoSelfiePicker
+                                        class="custom-file"
+                                        (change)="onFileBrowse($event, 'identityPhotoSelfie')"
+                                    />
                                     <input
                                         matInput
                                         name="identityPhotoSelfie"
-                                        formControlName="identityPhotoSelfie"
+                                        [formControl]="tmpIdentityPhotoSelfie"
                                         placeholder="No file choose"
                                     />
 
@@ -715,7 +731,13 @@
                                     </mat-error>
                                 </mat-form-field>
 
-                                <button mat-flat-button color="accent" fxFlexAlign="center">
+                                <button
+                                    mat-flat-button
+                                    color="accent"
+                                    type="button"
+                                    (click)="identityPhotoSelfiePicker.click()"
+                                    fxFlexAlign="center"
+                                >
                                     Upload your file
                                 </button>
                             </div>
@@ -824,13 +846,28 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="numberOfEmployee"
-                                    placeholder="Choose number of employee..."
-                                >
-                                    <mat-option>< 10</mat-option>
-                                    <mat-option>10 - 20</mat-option>
-                                </mat-select>
+                                <ng-container *ngIf="numberOfEmployees; else noNumberOfEmployees">
+                                    <mat-select
+                                        formControlName="numberOfEmployee"
+                                        placeholder="Choose Number of Employees"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of numberOfEmployees"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noNumberOfEmployees>
+                                    <mat-select
+                                        formControlName="numberOfEmployee"
+                                        placeholder="Choose Number of Employees"
+                                    >
+                                        <mat-option>Number of Employee not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -856,38 +893,63 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.physicalStoreInfo.vehicleAddress').errors &&
-                                    !form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                    form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
+                                        .errors &&
+                                    !form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                         .untouched &&
-                                    (form.get('storeInfo.physicalStoreInfo.vehicleAddress').dirty ||
-                                        form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                    (form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
+                                        .dirty ||
+                                        form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                             .touched)
                                 "
                             >
-                                Vehicle Address
+                                Vehicle Accessibility
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="vehicleAddress"
-                                    placeholder="Choose vehicle address..."
+                                <ng-container
+                                    *ngIf="
+                                        vehicleAccessibilities$ | async as vehicleAccessibilities;
+                                        else noVehicleAccessibilities
+                                    "
                                 >
-                                    <mat-option>-</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="vehicleAccessibility"
+                                        placeholder="Choose Vehicle Accessibility"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of vehicleAccessibilities"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noVehicleAccessibilities>
+                                    <mat-select
+                                        formControlName="vehicleAccessibility"
+                                        placeholder="Choose Vehicle Accessibility"
+                                    >
+                                        <mat-option>Vehicle Accessibility not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.physicalStoreInfo.vehicleAddress')
+                                        form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                             .errors &&
-                                        (form.get('storeInfo.physicalStoreInfo.vehicleAddress')
-                                            .dirty ||
-                                            form.get('storeInfo.physicalStoreInfo.vehicleAddress')
-                                                .touched)
+                                        (form.get(
+                                            'storeInfo.physicalStoreInfo.vehicleAccessibility'
+                                        ).dirty ||
+                                            form.get(
+                                                'storeInfo.physicalStoreInfo.vehicleAccessibility'
+                                            ).touched)
                                     "
                                 >
                                     {{
                                         getErrorMessage(
-                                            'storeInfo.physicalStoreInfo.vehicleAddress'
+                                            'storeInfo.physicalStoreInfo.vehicleAccessibility'
                                         )
                                     }}
                                 </mat-error>

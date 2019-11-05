@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 
 import {
     BrandStore,
+    CreateStore,
     IBrandStore,
     IBrandStoreResponse,
     IStoreEmployeeDetail,
@@ -56,6 +57,8 @@ export class MerchantApiService {
      * @memberof MerchantApiService
      */
     private readonly _endpointEmployeeDetail = '/users';
+
+    private readonly _endpointStore = '/stores';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -140,6 +143,11 @@ export class MerchantApiService {
     findStoreEmployeeById(id: string): Observable<IStoreEmployeeDetail> {
         this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
         return this.http.get<IStoreEmployeeDetail>(`${this._url}/${id}`);
+    }
+
+    createStore(body: CreateStore): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointStore);
+        return this.http.post<any>(this._url, body);
     }
 
     updatePatchEmployee(body: StoreEmployeeDetail, id: string): Observable<IStoreEmployeeDetail> {

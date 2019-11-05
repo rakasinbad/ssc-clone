@@ -78,13 +78,13 @@ export const getUrbanDropdownState = createSelector(
 
 export const getPostcodeDropdownState = createSelector(
     getDropdownState,
-    (state: fromDropdown.State, { provinceId, city, district, urban }) => {
+    (state: fromDropdown.State, { provinceId, city, district, urbanId }) => {
         const idx = state.provinces.findIndex(row => row.id === provinceId);
 
         if (idx !== -1) {
             const selectedProv = state.provinces[idx];
             const urbanIdx = selectedProv.urbans.findIndex(
-                row => row.city === city && row.district === district && row.urban === urban
+                row => row.city === city && row.district === district && row.id === urbanId
             );
 
             if (urbanIdx !== -1) {
@@ -124,6 +124,14 @@ export const getStoreTypeDropdownState = createSelector(
         state.storeTypes && state.storeTypes.length > 0
             ? _.sortBy(state.storeTypes, ['name'], ['asc'])
             : state.storeTypes
+);
+
+export const getVehicleAccessibilityDropdownState = createSelector(
+    getDropdownState,
+    state =>
+        state.vehicleAccessibilities && state.vehicleAccessibilities.length > 0
+            ? _.sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
+            : state.vehicleAccessibilities
 );
 
 /* export const getCityDropdownState = (provinceId: string) =>

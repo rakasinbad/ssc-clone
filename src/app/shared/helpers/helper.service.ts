@@ -136,4 +136,25 @@ export class HelperService {
                 catchError(err => of(false))
             );
     }
+
+    numberOfEmployee(): { id: string; label: string }[] {
+        return [
+            {
+                id: '1',
+                label: '1 Orang'
+            },
+            {
+                id: '2-10',
+                label: '2-10 Orang'
+            },
+            {
+                id: '11-20',
+                label: '11-20 Orang'
+            },
+            {
+                id: '>50',
+                label: '> 50 Orang'
+            }
+        ];
+    }
 }

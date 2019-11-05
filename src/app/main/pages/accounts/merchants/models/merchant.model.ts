@@ -5,9 +5,13 @@ import {
     IResponsePaginate,
     ITimestamp,
     Legal,
+    StoreGroup,
+    StoreSegment,
+    StoreType,
     Timestamp,
     TNullable,
     TStatus,
+    VehicleAccessibility
 } from 'app/shared/models';
 import * as _ from 'lodash';
 
@@ -98,8 +102,8 @@ export class BrandStore extends Timestamp {
         storeId: string,
         status: TStatus,
         store: Store,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -127,13 +131,13 @@ export class BrandStore extends Timestamp {
                       store.parent,
                       store.parentId,
                       store.numberOfEmployee,
-                      store.vehicleAccessibility,
                       store.externalId,
                       store.storeTypeId,
                       store.storeGroupId,
                       store.storeSegmentId,
                       store.urbanId,
                       store.warehouseId,
+                      store.vehicleAccessibility,
                       store.urban,
                       store.customerHierarchies,
                       store.storeType,
@@ -169,13 +173,13 @@ export class Store extends Timestamp {
     parent: boolean;
     parentId: string;
     numberOfEmployee: TNullable<number>;
-    vehicleAccessibility: TNullable<string>;
     externalId: string;
     storeTypeId: string;
     storeGroupId: string;
     storeSegmentId: string;
     urbanId: string;
     warehouseId: string;
+    vehicleAccessibility: VehicleAccessibility;
     urban: Urban;
     customerHierarchies: CustomerHierarchyAssoc[];
     storeType: StoreType;
@@ -200,21 +204,21 @@ export class Store extends Timestamp {
         parent: boolean,
         parentId: string,
         numberOfEmployee: TNullable<number>,
-        vehicleAccessibility: TNullable<string>,
         externalId: string,
         storeTypeId: string,
         storeGroupId: string,
         storeSegmentId: string,
         urbanId: string,
         warehouseId: string,
+        vehicleAccessibility: VehicleAccessibility,
         urban: Urban,
         customerHierarchies: CustomerHierarchyAssoc[],
         storeType: StoreType,
         storeSegment: StoreSegment,
         storeGroup: StoreGroup,
         legalInfo: Legal,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -235,7 +239,6 @@ export class Store extends Timestamp {
         this.parent = parent;
         this.parentId = parentId;
         this.numberOfEmployee = numberOfEmployee;
-        this.vehicleAccessibility = vehicleAccessibility;
         this.externalId = externalId;
         this.storeTypeId = storeTypeId;
         this.storeGroupId = storeGroupId;
@@ -245,6 +248,18 @@ export class Store extends Timestamp {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+
+        this.vehicleAccessibility = vehicleAccessibility
+            ? {
+                  ...new VehicleAccessibility(
+                      vehicleAccessibility.name,
+                      vehicleAccessibility.createdAt,
+                      vehicleAccessibility.updatedAt,
+                      vehicleAccessibility.deletedAt,
+                      vehicleAccessibility.id
+                  )
+              }
+            : null;
 
         this.urban = urban
             ? {
@@ -359,8 +374,8 @@ export class StoreEmployee extends Timestamp {
         storeId: string,
         status: TStatus,
         user: AccountAssocStore,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -429,8 +444,8 @@ export class StoreEmployeeDetail extends Timestamp {
         idImageUrl: TNullable<string>,
         selfieImageUrl: TNullable<string>,
         roles: Role[],
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -473,6 +488,125 @@ export class StoreEmployeeDetail extends Timestamp {
     }
 }
 
+export class CreateStore {
+    name: string;
+    image: string;
+    address: string;
+    longitude?: TNullable<number>;
+    latitude?: TNullable<number>;
+    phoneNo: string;
+    status: string;
+    storeTypeId: string;
+    storeGroupId: string;
+    storeSegmentId: string;
+    largeArea?: string;
+    numberOfEmployee?: string;
+    vehicleAccessibilityId?: string;
+    urbanId: string;
+    user: CreateUser;
+    cluster: CreateCluster;
+
+    constructor(
+        name: string,
+        image: string,
+        address: string,
+        phoneNo: string,
+        status: string,
+        storeTypeId: string,
+        storeGroupId: string,
+        storeSegmentId: string,
+        urbanId: string,
+        user: CreateUser,
+        cluster: CreateCluster,
+        largeAre?: string,
+        numberOfEmployee?: string,
+        vehicleAccessibilityId?: string
+    ) {
+        this.name = name ? name.trim() : name;
+        this.image = image;
+        this.address = address ? address.trim() : address;
+        this.phoneNo = phoneNo ? phoneNo.trim() : phoneNo;
+        this.status = status ? status.trim() : 'active';
+        this.storeTypeId = storeTypeId;
+        this.storeGroupId = storeGroupId;
+        this.storeSegmentId = storeSegmentId;
+        this.urbanId = urbanId;
+        this.user = user
+            ? {
+                  ...new CreateUser(
+                      user.fullName,
+                      user.idImage,
+                      user.selfieImage,
+                      user.phone,
+                      user.status,
+                      user.roles,
+                      user.email,
+                      user.password
+                  )
+              }
+            : null;
+
+        this.cluster = cluster ? { ...new CreateCluster(cluster.clusterId) } : null;
+
+        if (largeAre) {
+            this.largeArea = largeAre;
+        }
+
+        if (numberOfEmployee) {
+            this.numberOfEmployee = numberOfEmployee;
+        }
+
+        if (vehicleAccessibilityId) {
+            this.vehicleAccessibilityId = vehicleAccessibilityId;
+        }
+    }
+}
+
+export class CreateUser {
+    fullName: string;
+    idImage: string;
+    selfieImage: string;
+    phone: string;
+    email?: string;
+    password?: string;
+    status: string;
+    roles: string[];
+
+    constructor(
+        fullName: string,
+        idImage: string,
+        selfieImage: string,
+        phone: string,
+        status: string,
+        roles: string[],
+        email?: string,
+        password?: string
+    ) {
+        this.fullName = fullName ? fullName.trim() : fullName;
+        this.idImage = idImage;
+        this.selfieImage = selfieImage;
+        this.phone = phone ? phone.trim() : phone;
+        this.status = status ? status.trim() : 'active';
+        this.roles = roles ? roles : ['1'];
+
+        if (email) {
+            this.email = email.trim();
+        }
+
+        if (password) {
+            this.password = password.trim();
+        }
+    }
+}
+
+export class CreateCluster {
+    clusterId: string;
+
+    constructor(clusterId: string) {
+        this.clusterId = clusterId;
+    }
+}
+
 class UserStores extends Timestamp {
     id: string;
     userId: string;
@@ -486,8 +620,8 @@ class UserStores extends Timestamp {
         storeId: string,
         status: TAccountStatus,
         store: StoreAssocUserStores,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -583,8 +717,8 @@ class StoreAssocUserStores extends Timestamp {
         urbanId: string,
         warehouseId: string,
         owner: Owner[],
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -680,8 +814,8 @@ class Owner extends Timestamp {
         selfieImageUrl: TNullable<string>,
         urbanId: string,
         roles: OwnerRole[],
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -740,8 +874,8 @@ class OwnerRole extends Timestamp {
         description: string,
         status: TStatus,
         roleTypeId: string,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -757,15 +891,15 @@ class OwnerRole extends Timestamp {
     }
 }
 
-export class StoreGroup extends Timestamp {
+/* export class StoreGroup extends Timestamp {
     id: string;
     name: string;
 
     constructor(
         id: string,
         name: string,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -785,8 +919,8 @@ export class StoreSegment extends Timestamp {
     constructor(
         id: string,
         name: string,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -806,8 +940,8 @@ export class StoreType extends Timestamp {
     constructor(
         id: string,
         name: string,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string>,
+        updatedAt: string>,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -818,7 +952,7 @@ export class StoreType extends Timestamp {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
-}
+} */
 
 // -----------------------------------------------------------------------------------------------------
 // For Demo

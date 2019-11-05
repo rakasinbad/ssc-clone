@@ -20,10 +20,10 @@ export const locale = {
                 TITLE: 'Internal'
             },
             ATTENDANCES: {
-                TITLE: 'Attendances'
+                TITLE: 'Attendance'
             },
             CATALOGUES: {
-                TITLE: 'Catalogues'
+                TITLE: 'Catalogue'
             },
             CREDIT_LIMIT_BALANCE: {
                 TITLE: 'Credit Limit/Balance'
@@ -32,10 +32,10 @@ export const locale = {
                 TITLE: 'Finance'
             },
             IN_STORE_INVENTORIES: {
-                TITLE: 'In Store Inventories'
+                TITLE: 'In Store Inventory'
             },
             INVENTORIES: {
-                TITLE: 'Inventories'
+                TITLE: 'Inventory'
             },
             MANAGE_PRODUCT: {
                 TITLE: 'Manage Product'
