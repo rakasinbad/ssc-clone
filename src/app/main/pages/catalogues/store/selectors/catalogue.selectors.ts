@@ -9,6 +9,11 @@ export const getAllCatalogues = createSelector(
     fromCatalogue.selectAllCatalogues
 );
 
+export const getTotalCatalogue = createSelector(
+    getCatalogueState,
+    state => state.catalogues.total
+);
+
 export const getTotalCatalogueEntity = createSelector(
     getCatalogueState,
     fromCatalogue.selectCataloguesTotal
@@ -32,4 +37,9 @@ export const getEmptyStockCatalogues = createSelector(
 export const getLiveCatalogues = createSelector(
     getAllCatalogues,
     catalogues => catalogues.filter(catalogue => catalogue.stock)
+);
+
+export const getIsLoading = createSelector(
+    getCatalogueState,
+    state => state.isLoading
 );

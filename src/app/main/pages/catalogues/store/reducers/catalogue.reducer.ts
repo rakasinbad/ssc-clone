@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { ICatalogue } from '../../models';
+import { Catalogue } from '../../models';
 import { CatalogueActions } from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
@@ -12,7 +12,7 @@ export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
 }
 
-interface CatalogueState extends EntityState<ICatalogue> {
+interface CatalogueState extends EntityState<Catalogue> {
     total: number;
 }
 
@@ -23,7 +23,7 @@ export interface State {
     isLoading: boolean;
     selectedCatalogueId: string | number;
     source: TSource;
-    catalogue?: ICatalogue;
+    catalogue?: Catalogue;
     catalogues: CatalogueState;
     errors: ErrorState;
 }
@@ -31,10 +31,10 @@ export interface State {
 /**
  * CATALOGUE STATE
  */
-const adapterCatalogue: EntityAdapter<ICatalogue> = createEntityAdapter<ICatalogue>({
+const adapterCatalogue: EntityAdapter<Catalogue> = createEntityAdapter<Catalogue>({
     selectId: catalogue => catalogue.id
 });
-const initialCatalogueState = adapterCatalogue.getInitialState({ total: 0 });
+const initialCatalogueState = adapterCatalogue.getInitialState({ total: 0, limit: 10, skip: 0, data: [] });
 
 /**
  * ERROR STATE
@@ -71,6 +71,22 @@ const catalogueReducer = createReducer(
             isLoading: true
         })
     ),
+    on(
+        CatalogueActions.setCatalogueToActiveRequest,
+        CatalogueActions.setCatalogueToInactiveRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+        })
+    ),
+    on(
+        CatalogueActions.removeCatalogueRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+            isDeleting: true
+        })
+    ),
     /** 
      *  ===================================================================
      *  FAILURES
@@ -83,6 +99,24 @@ const catalogueReducer = createReducer(
             ...state,
             isDeleting: initialState.isDeleting,
             isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.setCatalogueToActiveFailure,
+        CatalogueActions.setCatalogueToInactiveFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.removeCatalogueFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: initialState.isDeleting,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
@@ -102,6 +136,26 @@ const catalogueReducer = createReducer(
                 total: payload.total
             }),
             errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.setCatalogueToActiveSuccess,
+        CatalogueActions.setCatalogueToInactiveSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false, 
+            errors: adapterError.removeOne('removeCatalogueFailure', state.errors),
+            catalogues: adapterCatalogue.updateOne(payload, state.catalogues),
+        })
+    ),
+    on(
+        CatalogueActions.removeCatalogueSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: true,
+            catalogues: adapterCatalogue.removeOne(payload.id, state.catalogues),
+            errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
         })
     ),
     /** 

@@ -96,6 +96,39 @@ export class CataloguesFormComponent implements OnInit {
             indonesian,
             english
         );
+
+        this.store.dispatch(
+            UiActions.setFooterActionConfig({
+                payload: {
+                    progress: {
+                        title: {
+                            label: 'Skor Konten Produk',
+                            active: true
+                        },
+                        value: {
+                            active: false
+                        },
+                        active: true
+                    },
+                    action: {
+                        save: {
+                            label: 'Simpan',
+                            active: true
+                        },
+                        draft: {
+                            label: 'Save Draft',
+                            active: false
+                        },
+                        cancel: {
+                            label: 'Batal',
+                            active: true
+                        }
+                    }
+                }
+            })
+        );
+
+        this.store.dispatch(UiActions.showFooterAction());
     }
 
     ngOnInit() {

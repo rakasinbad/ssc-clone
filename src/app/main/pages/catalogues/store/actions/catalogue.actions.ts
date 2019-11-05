@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
+import { Update } from '@ngrx/entity';
 import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-import { ICatalogue as Catalogues, ICatalogueDemo } from '../../models';
+import { Catalogue, ICatalogue, ICatalogueDemo } from '../../models';
 
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
@@ -23,7 +24,7 @@ export const filterArchivedCatalogues = createAction('[Catalogues Page] Filter A
 
 export const fetchCatalogueRequest = createAction(
     '[Catalogues API] Fetch Catalogue Request',
-    props<{ payload: IQueryParams }>()
+    props<{ payload: string }>()
 );
 
 export const fetchCatalogueFailure = createAction(
@@ -33,7 +34,7 @@ export const fetchCatalogueFailure = createAction(
 
 export const fetchCatalogueSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Success',
-    props<{ payload: { catalogue?: Catalogues; total: number } }>()
+    props<{ payload: { catalogue?: Catalogue; source: TSource } }>()
 );
 
 /**
@@ -52,7 +53,75 @@ export const fetchCataloguesFailure = createAction(
 
 export const fetchCataloguesSuccess = createAction(
     '[Catalogues API] Fetch Catalogues Success',
-    props<{ payload: { catalogues: Catalogues[]; total: number } }>()
+    props<{ payload: { catalogues: Array<Catalogue>; total: number } }>()
+);
+
+/**
+ * CONFIRMATION
+ */
+
+export const confirmSetCatalogueToActive = createAction(
+    '[Catalogues Page] Confirm Set Catalogue to Active',
+    props<{ payload: Catalogue }>()
+);
+
+export const confirmSetCatalogueToInactive = createAction(
+    '[Catalogues Page] Confirm Set Catalogue to Inactive',
+    props<{ payload: Catalogue }>()
+);
+
+export const confirmRemoveCatalogue = createAction(
+    '[Catalogues Page] Confirm Remove Catalogue',
+    props<{ payload: Catalogue }>()
+);
+
+/**
+ * SET STATUS
+ */
+
+export const setCatalogueToActiveRequest = createAction(
+    '[Catalogues API] Set Catalogue to Active Request',
+    props<{ payload: string }>()
+);
+
+export const setCatalogueToActiveSuccess = createAction(
+    '[Catalogues API] Set Catalogue to Active Success',
+    props<{ payload: Update<Catalogue> }>()
+);
+
+export const setCatalogueToActiveFailure = createAction(
+    '[Catalogues API] Set Catalogue to Active Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const setCatalogueToInactiveRequest = createAction(
+    '[Catalogues API] Set Catalogue to Inactive Request',
+    props<{ payload: string }>()
+);
+
+export const setCatalogueToInactiveSuccess = createAction(
+    '[Catalogues API] Set Catalogue to Inactive Success',
+    props<{ payload: Update<Catalogue> }>()
+);
+
+export const setCatalogueToInactiveFailure = createAction(
+    '[Catalogues API] Set Catalogue to Inactive Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const removeCatalogueRequest = createAction(
+    '[Catalogues API Remove Catalogue Request',
+    props<{ payload: string }>()
+);
+
+export const removeCatalogueSuccess = createAction(
+    '[Catalogues API Remove Catalogue Success',
+    props<{ payload: Catalogue }>()
+);
+
+export const removeCatalogueFailure = createAction(
+    '[Catalogues API] Remove Catalogue Failure',
+    props<{ payload: IErrorHandler }>()
 );
 
 /**

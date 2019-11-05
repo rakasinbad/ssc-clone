@@ -1,32 +1,54 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+// import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
-import { getParams } from 'app/store/app.reducer';
+import { UiActions } from 'app/shared/store/actions';
+// import { getParams } from 'app/store/app.reducer';
+import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { of } from 'rxjs';
-import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    catchError,
+    exhaustMap,
+    finalize,
+    map,
+    switchMap,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
-import { Catalogue, ICatalogue } from '../../models';
+import { Catalogue } from '../../models';
 import { CataloguesService } from '../../services';
 import { CatalogueActions } from '../actions';
 import { fromCatalogue } from '../reducers';
+import { state } from '@angular/animations';
 
 @Injectable()
 export class CatalogueEffects {
-    // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods
-    // -----------------------------------------------------------------------------------------------------
-
-    fetchBrandStoresRequest$ = createEffect(() =>
+    /*
+     _______                                                       __              
+    /       \                                                     /  |             
+    $$$$$$$  |  ______    ______   __    __   ______    _______  _$$ |_    _______ 
+    $$ |__$$ | /      \  /      \ /  |  /  | /      \  /       |/ $$   |  /       |
+    $$    $$< /$$$$$$  |/$$$$$$  |$$ |  $$ |/$$$$$$  |/$$$$$$$/ $$$$$$/  /$$$$$$$/ 
+    $$$$$$$  |$$    $$ |$$ |  $$ |$$ |  $$ |$$    $$ |$$      \   $$ | __$$      \ 
+    $$ |  $$ |$$$$$$$$/ $$ \__$$ |$$ \__$$ |$$$$$$$$/  $$$$$$  |  $$ |/  |$$$$$$  |
+    $$ |  $$ |$$       |$$    $$ |$$    $$/ $$       |/     $$/   $$  $$//     $$/ 
+    $$/   $$/  $$$$$$$/  $$$$$$$ | $$$$$$/   $$$$$$$/ $$$$$$$/     $$$$/ $$$$$$$/  
+                              $$ |                                                 
+                              $$ |                                                 
+                              $$/                                                  
+    */
+    fetchCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguesRequest),
             map(action => action.payload),
             switchMap(payload => {
                 return this._$catalogueApi
-                    .findAll({})
+                    .findAll(payload)
                     .pipe(
                         catchOffline(),
                         map(resp => {
@@ -39,17 +61,52 @@ export class CatalogueEffects {
                                 newResp = {
                                     total: resp.total,
                                     data: [
-                                        ...resp.data.map(brandStore => {
+                                        ...resp.data.map(catalogue => {
                                             return {
-                                                ...new BrandStore(
-                                                    brandStore.id,
-                                                    brandStore.brandId,
-                                                    brandStore.storeId,
-                                                    brandStore.status,
-                                                    brandStore.store,
-                                                    brandStore.createdAt,
-                                                    brandStore.updatedAt,
-                                                    brandStore.deletedAt
+                                                ...new Catalogue(
+                                                    catalogue.id,
+                                                    catalogue.name,
+                                                    catalogue.barcode,
+                                                    catalogue.information,
+                                                    catalogue.description,
+                                                    catalogue.detail,
+                                                    catalogue.color,
+                                                    catalogue.weight,
+                                                    catalogue.dimension,
+                                                    catalogue.sku,
+                                                    catalogue.skuRef,
+                                                    catalogue.productPrice,
+                                                    catalogue.suggestRetailPrice,
+                                                    catalogue.minQty,
+                                                    catalogue.packagedQty,
+                                                    catalogue.multipleQty,
+                                                    catalogue.displayStock,
+                                                    catalogue.stock,
+                                                    catalogue.hazardLevel,
+                                                    catalogue.forSale,
+                                                    catalogue.unitOfMeasureId,
+                                                    catalogue.purchaseUnitOfMeasure,
+                                                    catalogue.status,
+                                                    catalogue.principalId,
+                                                    catalogue.catalogueTaxId,
+                                                    catalogue.catalogueVariantId,
+                                                    catalogue.brandId,
+                                                    catalogue.firstCatalogueCategoryId,
+                                                    catalogue.lastCatalogueCategoryId,
+                                                    catalogue.catalogueTypeId,
+                                                    catalogue.createdAt,
+                                                    catalogue.updatedAt,
+                                                    catalogue.deletedAt,
+                                                    catalogue.catalogueCategoryId,
+                                                    catalogue.catalogueUnitId,
+                                                    catalogue.catalogueImages,
+                                                    catalogue.catalogueTax,
+                                                    catalogue.firstCatalogueCategory,
+                                                    catalogue.lastCatalogueCategory,
+                                                    catalogue.catalogueKeywordCatalogues,
+                                                    catalogue.catalogueType,
+                                                    catalogue.catalogueUnit,
+                                                    catalogue.catalogueVariant
                                                 )
                                             };
                                         })
@@ -57,14 +114,14 @@ export class CatalogueEffects {
                                 };
                             }
 
-                            return BrandStoreActions.fetchBrandStoresSuccess({
-                                payload: { brandStores: newResp.data, total: newResp.total }
+                            return CatalogueActions.fetchCataloguesSuccess({
+                                payload: { catalogues: newResp.data, total: newResp.total }
                             });
                         }),
                         catchError(err =>
                             of(
-                                BrandStoreActions.fetchBrandStoresFailure({
-                                    payload: { id: 'fetchBrandStoresFailure', errors: err }
+                                CatalogueActions.fetchCataloguesFailure({
+                                    payload: { id: 'fetchCataloguesFailure', errors: err }
                                 })
                             )
                         )
@@ -73,26 +130,61 @@ export class CatalogueEffects {
         )
     );
 
-    fetchBrandStoreRequest$ = createEffect(() =>
+    fetchCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(BrandStoreActions.fetchBrandStoreRequest),
+            ofType(CatalogueActions.fetchCatalogueRequest),
             map(action => action.payload),
             switchMap(id => {
-                return this._$merchantApi.findById(id).pipe(
+                return this._$catalogueApi.findById(id).pipe(
                     catchOffline(),
                     map(resp =>
-                        BrandStoreActions.fetchBrandStoreSuccess({
+                        CatalogueActions.fetchCatalogueSuccess({
                             payload: {
-                                brandStore: {
-                                    ...new BrandStore(
+                                catalogue: {
+                                    ...new Catalogue(
                                         resp.id,
-                                        resp.brandId,
-                                        resp.storeId,
+                                        resp.name,
+                                        resp.barcode,
+                                        resp.information,
+                                        resp.description,
+                                        resp.detail,
+                                        resp.color,
+                                        resp.weight,
+                                        resp.dimension,
+                                        resp.sku,
+                                        resp.skuRef,
+                                        resp.productPrice,
+                                        resp.suggestRetailPrice,
+                                        resp.minQty,
+                                        resp.packagedQty,
+                                        resp.multipleQty,
+                                        resp.displayStock,
+                                        resp.stock,
+                                        resp.hazardLevel,
+                                        resp.forSale,
+                                        resp.unitOfMeasureId,
+                                        resp.purchaseUnitOfMeasure,
                                         resp.status,
-                                        resp.store,
+                                        resp.principalId,
+                                        resp.catalogueTaxId,
+                                        resp.catalogueVariantId,
+                                        resp.brandId,
+                                        resp.firstCatalogueCategoryId,
+                                        resp.lastCatalogueCategoryId,
+                                        resp.catalogueTypeId,
                                         resp.createdAt,
                                         resp.updatedAt,
-                                        resp.deletedAt
+                                        resp.deletedAt,
+                                        resp.catalogueCategoryId,
+                                        resp.catalogueUnitId,
+                                        resp.catalogueImages,
+                                        resp.catalogueTax,
+                                        resp.firstCatalogueCategory,
+                                        resp.lastCatalogueCategory,
+                                        resp.catalogueKeywordCatalogues,
+                                        resp.catalogueType,
+                                        resp.catalogueUnit,
+                                        resp.catalogueVariant
                                     )
                                 },
                                 source: 'fetch'
@@ -101,9 +193,9 @@ export class CatalogueEffects {
                     ),
                     catchError(err =>
                         of(
-                            BrandStoreActions.fetchBrandStoreFailure({
+                            CatalogueActions.fetchCatalogueFailure({
                                 payload: {
-                                    id: 'fetchBrandStoreFailure',
+                                    id: 'fetchCatalogueFailure',
                                     errors: err
                                 }
                             })
@@ -114,120 +206,211 @@ export class CatalogueEffects {
         )
     );
 
-    fetchStoreEmployeesRequest$ = createEffect(() =>
+    deleteCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(BrandStoreActions.fetchStoreEmployeesRequest),
-            map(action => action.payload),
-            switchMap(payload => {
-                if (!payload.storeId) {
-                    return of(
-                        BrandStoreActions.fetchStoreEmployeesFailure({
-                            payload: { id: 'fetchStoreEmployeesFailure', errors: 'Not Found!' }
-                        })
-                    );
-                }
-
-                return this._$merchantApi
-                    .findAllEmployeeByStoreId(payload.params, payload.storeId)
-                    .pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
-
-                            if (resp.total > 0) {
-                                newResp = {
-                                    total: resp.total,
-                                    data: [
-                                        ...resp.data.map(storeEmployee => {
-                                            return {
-                                                ...new StoreEmployee(
-                                                    storeEmployee.id,
-                                                    storeEmployee.userId,
-                                                    storeEmployee.storeId,
-                                                    storeEmployee.status,
-                                                    storeEmployee.user,
-                                                    storeEmployee.createdAt,
-                                                    storeEmployee.updatedAt,
-                                                    storeEmployee.deletedAt
-                                                )
-                                            };
-                                        })
-                                    ]
-                                };
-                            }
-
-                            return BrandStoreActions.fetchStoreEmployeesSuccess({
-                                payload: { employees: newResp.data, total: newResp.total }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                BrandStoreActions.fetchStoreEmployeesFailure({
-                                    payload: {
-                                        id: 'fetchStoreEmployeesFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
-                        )
-                    );
-            })
-        )
-    );
-
-    fetchStoreEmployeeRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(BrandStoreActions.fetchStoreEmployeeRequest),
+            ofType(CatalogueActions.removeCatalogueRequest),
             map(action => action.payload),
             switchMap(id => {
-                return this._$merchantApi.findStoreEmployeeById(id).pipe(
-                    catchOffline(),
-                    map(resp =>
-                        BrandStoreActions.fetchStoreEmployeeSuccess({
-                            payload: {
-                                employee: {
-                                    ...new StoreEmployeeDetail(
-                                        resp.id,
-                                        resp.fullName,
-                                        resp.email,
-                                        resp.phoneNo,
-                                        resp.mobilePhoneNo,
-                                        resp.idNo,
-                                        resp.taxNo,
-                                        resp.status,
-                                        resp.imageUrl,
-                                        resp.taxImageUrl,
-                                        resp.idImageUrl,
-                                        resp.selfieImageUrl,
-                                        resp.roles,
-                                        resp.createdAt,
-                                        resp.updatedAt,
-                                        resp.deletedAt
-                                    )
-                                },
-                                source: 'fetch'
-                            }
-                        })
-                    ),
-                    catchError(err =>
+                return this._$catalogueApi.removeCatalogue(id).pipe(
+                    map(response => {
+                        console.log('RESPONSE', response);
+
+                        return CatalogueActions.removeCatalogueSuccess({ payload: response });
+                    }),
+                    catchError(err => 
                         of(
-                            BrandStoreActions.fetchStoreEmployeeFailure({
-                                payload: { id: 'fetchStoreEmployeeFailure', errors: err }
+                            CatalogueActions.removeCatalogueFailure({
+                                payload: { id: 'removeCatalogueFailure', errors: err }
                             })
                         )
-                    )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
                 );
             })
         )
     );
 
-    fetchStoreEmployeeFailure$ = createEffect(
+    setCatalogueToActive$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToActiveRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$catalogueApi.setCatalogueToActive(id).pipe(
+                    map(response => {
+                        console.log('RESPONSE', response);
+
+                        return CatalogueActions.setCatalogueToActiveSuccess({ payload: {
+                            id: response.id,
+                            changes: {
+                                ...response
+                            }
+                        } });
+                    }),
+                    catchError(err => 
+                        of(
+                            CatalogueActions.setCatalogueToActiveFailure({
+                                payload: { id: 'setCatalogueToActiveFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    setCatalogueToInactive$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToInactiveRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$catalogueApi.setCatalogueToInactive(id).pipe(
+                    map(response => {
+                        console.log('RESPONSE', response);
+
+                        return CatalogueActions.setCatalogueToInactiveSuccess({ payload: {
+                            id: response.id,
+                            changes: {
+                                ...response
+                            }
+                        } });
+                    }),
+                    catchError(err => 
+                        of(
+                            CatalogueActions.setCatalogueToInactiveFailure({
+                                payload: { id: 'setCatalogueToInactiveFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /*
+      ______                        ______   __                         
+     /      \                      /      \ /  |                        
+    /$$$$$$  |  ______   _______  /$$$$$$  |$$/   ______   _____  ____  
+    $$ |  $$/  /      \ /       \ $$ |_ $$/ /  | /      \ /     \/    \ 
+    $$ |      /$$$$$$  |$$$$$$$  |$$   |    $$ |/$$$$$$  |$$$$$$ $$$$  |
+    $$ |   __ $$ |  $$ |$$ |  $$ |$$$$/     $$ |$$ |  $$/ $$ | $$ | $$ |
+    $$ \__/  |$$ \__$$ |$$ |  $$ |$$ |      $$ |$$ |      $$ | $$ | $$ |
+    $$    $$/ $$    $$/ $$ |  $$ |$$ |      $$ |$$ |      $$ | $$ | $$ |
+     $$$$$$/   $$$$$$/  $$/   $$/ $$/       $$/ $$/       $$/  $$/  $$/                                                         
+    */
+
+    confirmRemoveCatalogue$ = createEffect(
+        () =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.confirmRemoveCatalogue),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: 'Delete',
+                        message: `Are you sure want to delete product <strong>${ params.name }</strong>?`,
+                        id: params.id
+                    }, disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(response => {
+                console.log('CONFIRM DELETE', response);
+                
+                if (response) {
+                    this.store.dispatch(
+                        CatalogueActions.removeCatalogueRequest({ payload: response })
+                    );
+                } else {
+                    this.store.dispatch(UiActions.resetHighlightRow());
+                }
+            })
+        ), { dispatch: false }
+    );
+
+    confirmSetCatalogueToActive$ = createEffect(
+        () =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.confirmSetCatalogueToActive),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: 'Set Product to Active',
+                        message: `Are you sure want to set product <strong>${ params.name }</strong> to <strong>Active</strong>?`,
+                        id: params.id
+                    }, disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(response => {
+                console.log('CONFIRM SET TO ACTIVE', response);
+                
+                if (response) {
+                    this.store.dispatch(
+                        CatalogueActions.setCatalogueToActiveRequest({ payload: response })
+                    );
+                } else {
+                    this.store.dispatch(UiActions.resetHighlightRow());
+                }
+            })
+        ), { dispatch: false }
+    );
+
+    confirmSetCatalogueToInactive$ = createEffect(
+        () =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.confirmSetCatalogueToInactive),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: 'Set Product to Inactive',
+                        message: `Are you sure want to set product <strong>${ params.name }</strong> to <strong>Inactive</strong>?`,
+                        id: params.id
+                    }, disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(response => {
+                console.log('CONFIRM SET TO INACTIVE', response);
+                
+                if (response) {
+                    this.store.dispatch(
+                        CatalogueActions.setCatalogueToInactiveRequest({ payload: response })
+                    );
+                } else {
+                    this.store.dispatch(UiActions.resetHighlightRow());
+                }
+            })
+        ), { dispatch: false }
+    );
+
+    /*
+     ________         __  __                                         
+    /        |       /  |/  |                                        
+    $$$$$$$$/______  $$/ $$ | __    __   ______    ______    _______ 
+    $$ |__  /      \ /  |$$ |/  |  /  | /      \  /      \  /       |
+    $$    | $$$$$$  |$$ |$$ |$$ |  $$ |/$$$$$$  |/$$$$$$  |/$$$$$$$/ 
+    $$$$$/  /    $$ |$$ |$$ |$$ |  $$ |$$ |  $$/ $$    $$ |$$      \ 
+    $$ |   /$$$$$$$ |$$ |$$ |$$ \__$$ |$$ |      $$$$$$$$/  $$$$$$  |
+    $$ |   $$    $$ |$$ |$$ |$$    $$/ $$ |      $$       |/     $$/ 
+    $$/     $$$$$$$/ $$/ $$/  $$$$$$/  $$/        $$$$$$$/ $$$$$$$/                                                           
+    */
+    fetchCatalogueFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(BrandStoreActions.fetchStoreEmployeeFailure),
+                ofType(CatalogueActions.fetchCatalogueFailure),
                 map(action => action.payload),
                 tap(resp => {
                     this._$notice.open(resp.errors.error.message, 'error', {
@@ -239,8 +422,108 @@ export class CatalogueEffects {
         { dispatch: false }
     );
 
+    removeCatalogueFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.removeCatalogueFailure),
+            map(action => action.payload),
+            tap(response => {
+                console.log('GAGAL', response);
+
+                this._$notice.open('Produk gagal dihapus', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
+    setCatalogueToActiveFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToActiveFailure),
+            map(action => action.payload),
+            tap(response => {
+                console.log('GAGAL', response);
+
+                this._$notice.open('Status produk gagal diubah menjadi aktif', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
+    setCatalogueToInactiveFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToInactiveFailure),
+            map(action => action.payload),
+            tap(response => {
+                console.log('GAGAL', response);
+
+                this._$notice.open('Status produk gagal diubah menjadi tidak aktif', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
+    /*
+      ______                                                             
+    /      \                                                            
+    /$$$$$$  | __    __   _______   _______   ______    _______  _______ 
+    $$ \__$$/ /  |  /  | /       | /       | /      \  /       |/       |
+    $$      \ $$ |  $$ |/$$$$$$$/ /$$$$$$$/ /$$$$$$  |/$$$$$$$//$$$$$$$/ 
+     $$$$$$  |$$ |  $$ |$$ |      $$ |      $$    $$ |$$      \$$      \ 
+    /  \__$$ |$$ \__$$ |$$ \_____ $$ \_____ $$$$$$$$/  $$$$$$  |$$$$$$  |
+    $$    $$/ $$    $$/ $$       |$$       |$$       |/     $$//     $$/ 
+    $$$$$$/   $$$$$$/   $$$$$$$/  $$$$$$$/  $$$$$$$/ $$$$$$$/ $$$$$$$/  
+    */
+
+    removeCatalogueSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.removeCatalogueSuccess),
+            map(action => action.payload),
+            tap(response => {
+                console.log('SUKSES', response);
+                this._$notice.open('Produk berhasil dihapus', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
+    setCatalogueToActiveSucess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToActiveSuccess),
+            map(action => action.payload),
+            tap(response => {
+                console.log('SUKSES', response);
+                this._$notice.open('Status produk berhasil diubah menjadi aktif', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
+    setCatalogueToInactiveSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.setCatalogueToInactiveSuccess),
+            map(action => action.payload),
+            tap(response => {
+                console.log('SUKSES', response);
+                this._$notice.open('Status produk berhasil diubah menjadi tidak aktif', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ), { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
+        private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
         protected network: Network,

@@ -148,8 +148,8 @@ export interface ICatalogue {
     catalogueVariant: ICatalogueVariant;
 }
 
-export interface ICatalogueResponse extends IResponsePaginate {
-    data: Array<ICatalogue>;
+export interface ICataloguesResponse extends IResponsePaginate {
+    data: Array<Catalogue>;
 }
 
 export interface ICatalogueDemo {

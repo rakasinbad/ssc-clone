@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { IQueryParams } from 'app/shared/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
 
-import { ICatalogue, ICatalogueResponse } from '../models';
+import { Catalogue, ICatalogue, ICataloguesResponse } from '../models';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -75,11 +75,38 @@ export class CataloguesService {
      * @returns {Observable<ICatalogueResponse>}
      * @memberof CataloguesService
      */
-    findAll(params: IQueryParams): Observable<ICatalogueResponse> {
+    findAll(params: IQueryParams): Observable<ICataloguesResponse> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params, null);
+        const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<ICatalogueResponse>(this._url, { params: newParams });
+        return this.http.get<ICataloguesResponse>(this._url, { params: newParams });
+    }
+
+    /**
+     *
+     *
+     * @param {string} id
+     * @returns {Observable<ICtalogue>}
+     * @memberof CataloguesService
+     */
+    findById(id: string): Observable<ICatalogue> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.get<ICatalogue>(`${this._url}/${id}`);
+    }
+
+    removeCatalogue(id: string | number): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.delete<any>(`${this._url}/${id}`);
+    }
+
+    setCatalogueToActive(id: string | number): Observable<Catalogue> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<Catalogue>(`${this._url}/${id}`, { status: 'active' });
+    }
+
+    setCatalogueToInactive(id: string | number): Observable<Catalogue> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<Catalogue>(`${this._url}/${id}`, { status: 'inactive' });
     }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {

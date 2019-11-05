@@ -1,1 +1,1 @@
-export * from './catalogue.effectss';
+export * from './catalogue.effects';
