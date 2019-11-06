@@ -28,7 +28,6 @@ import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { statusCatalogue } from './status';
 
-
 import { Catalogue } from './models';
 
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
