@@ -24,6 +24,9 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Packages - VSCode
+.VSCodeCounter
+
 # misc
 /.sass-cache
 /connect.lock
