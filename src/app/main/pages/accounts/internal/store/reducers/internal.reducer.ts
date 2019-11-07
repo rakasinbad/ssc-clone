@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { InternalEmployee } from '../../models';
+import { InternalEmployee, InternalEmployeeDetail } from '../../models';
 import { InternalActions } from '../actions';
 
 export const FEATURE_KEY = 'internals';
@@ -15,10 +15,11 @@ interface InternalEmployeeState extends EntityState<InternalEmployee> {
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
-    isDeleting: boolean | undefined;
+    isRefresh?: boolean;
     isLoading: boolean;
     selectedInternalEmployeeId: string | number;
     source: TSource;
+    internalEmployee?: InternalEmployeeDetail;
     internalEmployees: InternalEmployeeState;
     errors: ErrorState;
 }
@@ -36,7 +37,7 @@ const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
-    isDeleting: undefined,
+    //    isRefresh: undefined,
     isLoading: false,
     selectedInternalEmployeeId: null,
     source: 'fetch',
@@ -46,25 +47,85 @@ export const initialState: State = {
 
 const internalReducer = createReducer(
     initialState,
-    on(InternalActions.fetchInternalEmployeesRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(InternalActions.fetchInternalEmployeesFailure, (state, { payload }) => ({
+    on(
+        InternalActions.fetchInternalEmployeeRequest,
+        InternalActions.fetchInternalEmployeesRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        InternalActions.updateStatusInternalEmployeeRequest,
+        InternalActions.deleteInternalEmployeeRequest,
+        state => ({
+            ...state,
+            isLoading: true,
+            isRefresh: false
+        })
+    ),
+    on(
+        InternalActions.fetchInternalEmployeeFailure,
+        InternalActions.fetchInternalEmployeesFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(
+        InternalActions.updateStatusInternalEmployeeFailure,
+        InternalActions.deleteInternalEmployeeFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: true,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(InternalActions.updateStatusInternalEmployeeSuccess, state => ({
         ...state,
         isLoading: false,
-        isDeleting: initialState.isDeleting,
-        errors: adapterError.upsertOne(payload, state.errors)
+        isRefresh: true,
+        errors: adapterError.removeOne('updateStatusInternalEmployeeFailure', state.errors)
+    })),
+    on(InternalActions.deleteInternalEmployeeSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        internalEmployees: adapterInternalEmployee.removeOne(payload, {
+            ...state.internalEmployees,
+            total: state.internalEmployees.total - 1
+        }),
+        errors: adapterError.removeOne('deleteInternalEmployeeFailure', state.errors)
     })),
     on(InternalActions.fetchInternalEmployeesSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isDeleting: initialState.isDeleting,
+        isRefresh: initialState.isRefresh,
         internalEmployees: adapterInternalEmployee.addAll(payload.internalEmployees, {
             ...state.internalEmployees,
             total: payload.total
         }),
         errors: adapterError.removeOne('fetchInternalEmployeesFailure', state.errors)
+    })),
+    on(InternalActions.fetchInternalEmployeeSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: undefined,
+        internalEmployee: payload.internalEmployee,
+        errors: adapterError.removeOne('fetchInternalEmployeeFailure', state.errors)
+    })),
+    on(InternalActions.resetInternalEmployees, state => ({
+        ...state,
+        internalEmployees: initialState.internalEmployees,
+        errors: adapterError.removeOne('fetchInternalEmployeesFailure', state.errors)
+    })),
+    on(InternalActions.resetInternalEmployee, state => ({
+        ...state,
+        internalEmployee: undefined,
+        errors: adapterError.removeOne('fetchInternalEmployeeFailure', state.errors)
     }))
     // on(InternalActions.generateInternalDemo, (state, { payload }) => ({
     //     ...state,

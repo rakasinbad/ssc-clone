@@ -6,9 +6,14 @@ import { Observable } from 'rxjs';
 
 import {
     BrandStore,
-    CreateStore,
+    FormStore,
+    FormStoreEdit,
     IBrandStore,
+    IBrandStoreDeleteResponse,
     IBrandStoreResponse,
+    IStoreCreateResponse,
+    IStoreEdit,
+    IStoreEditResponse,
     IStoreEmployeeDetail,
     IStoreEmployeeResponse,
     StoreEmployee,
@@ -58,6 +63,12 @@ export class MerchantApiService {
      */
     private readonly _endpointEmployeeDetail = '/users';
 
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantApiService
+     */
     private readonly _endpointStore = '/stores';
 
     /**
@@ -110,6 +121,18 @@ export class MerchantApiService {
     /**
      *
      *
+     * @param {string} id
+     * @returns {Observable<IStoreEdit>}
+     * @memberof MerchantApiService
+     */
+    findStoreById(id: string): Observable<IStoreEdit> {
+        this._url = this._$helper.handleApiRouter(this._endpointStore);
+        return this.http.get<IStoreEdit>(`${this._url}/${id}`);
+    }
+
+    /**
+     *
+     *
      * @param {IQueryParams} params
      * @param {string} [storeId]
      * @returns {Observable<IStoreEmployeeResponse>}
@@ -145,9 +168,39 @@ export class MerchantApiService {
         return this.http.get<IStoreEmployeeDetail>(`${this._url}/${id}`);
     }
 
-    createStore(body: CreateStore): Observable<any> {
+    /**
+     *
+     *
+     * @param {FormStore} body
+     * @returns {Observable<IStoreCreateResponse>}
+     * @memberof MerchantApiService
+     */
+    createStore(body: FormStore): Observable<IStoreCreateResponse> {
         this._url = this._$helper.handleApiRouter(this._endpointStore);
-        return this.http.post<any>(this._url, body);
+        return this.http.post<IStoreCreateResponse>(this._url, body);
+    }
+
+    /**
+     *
+     *
+     * @param {FormStoreEdit} body
+     * @param {string} id
+     * @returns {Observable<IStoreEditResponse>}
+     * @memberof MerchantApiService
+     */
+    updatePatchStore(body: FormStoreEdit, id: string): Observable<IStoreEditResponse> {
+        this._url = this._$helper.handleApiRouter(this._endpointStore);
+        return this.http.patch<IStoreEditResponse>(`${this._url}/${id}`, body);
+    }
+
+    updatePatchStatusStore(body: { status: string }, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
+    deleteStore(id: string): Observable<IBrandStoreDeleteResponse> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.delete<IBrandStoreDeleteResponse>(`${this._url}/${id}`);
     }
 
     updatePatchEmployee(body: StoreEmployeeDetail, id: string): Observable<IStoreEmployeeDetail> {
@@ -156,7 +209,7 @@ export class MerchantApiService {
     }
 
     deleteEmployee(id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+        this._url = this._$helper.handleApiRouter(this._endpointEmployee);
         return this.http.delete<any>(`${this._url}/${id}`);
     }
 

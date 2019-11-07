@@ -18,19 +18,27 @@
                 </button>
 
                 <div
+                    *ngIf="employee$ | async"
                     class="employee-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <!-- <img
-                        *ngIf="(account$ | async)?.imageUrl"
-                        [src]="(account$ | async)?.imageUrl"
-                    />
                     <img
-                        *ngIf="!(account$ | async)?.imageUrl"
-                        [src]="'assets/images/avatars/profile.jpg'"
-                    /> -->
+                        [defaultImage]="'assets/images/avatars/profile.jpg'"
+                        [useSrcset]="true"
+                        [lazyLoad]="(employee$ | async)?.imageUrl"
+                        [errorImage]="'assets/images/avatars/profile.jpg'"
+                    />
+                </div>
 
-                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                <div
+                    *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                    class="mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <ngx-skeleton-loader
+                        appearance="circle"
+                        [theme]="{ width: '70px', height: '70px', 'border-radius': '4px' }"
+                    ></ngx-skeleton-loader>
                 </div>
 
                 <div
@@ -38,16 +46,50 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2">
-                        Anwar Sahid
+                    <div class="h2" *ngIf="employee$ | async">
+                        {{
+                            form?.value?.fullName
+                                ? form?.value?.fullName
+                                : (employee$ | async)?.fullName
+                        }}
                     </div>
 
+                    <ngx-skeleton-loader
+                        *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                        [theme]="{ width: '150px', height: '25px', margin: 0 }"
+                    ></ngx-skeleton-loader>
+
                     <div class="subtitle secondary-text">
-                        <span>Account Detail</span>
+                        <span *ngIf="!(isLoading$ | async)">Account Detail</span>
+                        <ngx-skeleton-loader
+                            *ngIf="(isLoading$ | async) && !isEdit"
+                            [theme]="{ width: '70px', margin: 0 }"
+                        ></ngx-skeleton-loader>
                     </div>
                 </div>
             </div>
             <!-- / APP TITLE -->
+
+            <ngx-skeleton-loader
+                *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                [theme]="{ width: '70px', height: '30px', margin: 0 }"
+            ></ngx-skeleton-loader>
+
+            <ng-container *ngIf="employee$ | async">
+                <button mat-raised-button type="button" (click)="onEdit(isEdit)" *ngIf="!isEdit">
+                    <span>EDIT</span>
+                </button>
+
+                <button
+                    mat-raised-button
+                    type="submit"
+                    [disabled]="form.invalid || form.pristine"
+                    form="internal-form"
+                    *ngIf="isEdit"
+                >
+                    <span>SAVE</span>
+                </button>
+            </ng-container>
         </div>
         <!-- / HEADER -->
 
@@ -62,15 +104,31 @@
                     name="internalForm"
                     class="internal w-100-p"
                     [formGroup]="form"
+                    (ngSubmit)="onSubmit()"
                     fxLayout="column"
                     fxFlex
                     novalidate
                 >
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Nama</label>
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('fullName').errors &&
+                                !form.get('fullName').untouched &&
+                                (form.get('fullName').dirty || form.get('fullName').touched)
+                            "
+                        >
+                            *Nama
+                        </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="fullName" formControlName="fullName" />
+                            <input
+                                matInput
+                                name="fullName"
+                                formControlName="fullName"
+                                maxlength="30"
+                            />
 
                             <mat-error
                                 *ngIf="
@@ -84,24 +142,39 @@
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">Role</label>
-
-                        <mat-form-field appearance="outline" fxFlex="30">
-                            <input matInput name="role" formControlName="role" />
-                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
-                        </mat-form-field>
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('roles').errors &&
+                                !form.get('roles').untouched &&
+                                (form.get('roles').dirty || form.get('roles').touched)
+                            "
+                        >
+                            *Role
+                        </label>
 
                         <!-- <mat-form-field appearance="outline" fxFlex="30">
-                            <mat-select
-                                formControlName="roles"
-                                placeholder="Choose role..."
-                                multiple
-                            >
+                            <input matInput name="role" formControlName="role" />
+                            <mat-icon matSuffix>arrow_drop_down</mat-icon>
+                        </mat-form-field> -->
+
+                        <mat-form-field appearance="outline" fxFlex="30">
+                            <mat-select formControlName="roles" placeholder="Choose Role" multiple>
                                 <mat-option *ngFor="let role of roles$ | async" [value]="role?.id">
                                     {{ role?.role }}
                                 </mat-option>
                             </mat-select>
-                        </mat-form-field> -->
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('roles').errors &&
+                                    (form.get('roles').dirty || form.get('roles').touched)
+                                "
+                            >
+                                {{ getErrorMessage('roles') }}
+                            </mat-error>
+                        </mat-form-field>
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">

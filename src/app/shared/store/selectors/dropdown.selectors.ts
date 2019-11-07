@@ -23,7 +23,6 @@ export const getAllSearchAccount = createSelector(
 export const getRoleDropdownState = createSelector(
     getDropdownState,
     state => {
-        console.log('DROPDOWN SELECTORS', state);
         return state.roles.length ? _.sortBy(state.roles, ['role'], ['asc']) : state.roles;
     }
 );

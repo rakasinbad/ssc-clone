@@ -12,6 +12,7 @@ import { PaymentStatusFormComponent } from './payment-status-form/payment-status
 import { PaymentStatusRoutingModule } from './payment-status-routing.module';
 import { PaymentStatusComponent } from './payment-status.component';
 import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
+import { PaymentEffects } from './store/effects';
 import { fromPaymentStatus } from './store/reducers';
 
 /**
@@ -34,7 +35,7 @@ import { fromPaymentStatus } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromPaymentStatus.FEATURE_KEY, fromPaymentStatus.reducer),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([PaymentEffects])
     ],
     entryComponents: [PaymentStatusFormComponent, ProofOfPaymentFormComponent]
 })

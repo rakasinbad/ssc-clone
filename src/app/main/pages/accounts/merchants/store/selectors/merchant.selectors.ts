@@ -62,6 +62,11 @@ export const getSelectedBrandStoreInfo = createSelector(
     state => state.brandStore
 );
 
+export const getEditBrandStore = createSelector(
+    getBrandStoreState,
+    state => state.editBrandStore
+);
+
 export const getSelectedStoreEmployeeInfo = createSelector(
     getBrandStoreState,
     state => state.employee
@@ -72,68 +77,12 @@ export const getGoPage = createSelector(
     state => state.goPage
 );
 
-export const getIsDeleting = createSelector(
+export const getIsRefresh = createSelector(
     getBrandStoreState,
-    state => state.isDeleting
+    state => state.isRefresh
 );
 
 export const getIsLoading = createSelector(
     getBrandStoreState,
     state => state.isLoading
-);
-
-export const getDefaultAllBrandStore = createSelector(
-    getBrandStoreState,
-    state => [
-        {
-            brandId: null,
-            createdAt: null,
-            deletedAt: null,
-            id: null,
-            status: null,
-            store: null,
-            storeId: null,
-            updatedAt: null
-        },
-        {
-            brandId: null,
-            createdAt: null,
-            deletedAt: null,
-            id: null,
-            status: null,
-            store: null,
-            storeId: null,
-            updatedAt: null
-        },
-        {
-            brandId: null,
-            createdAt: null,
-            deletedAt: null,
-            id: null,
-            status: null,
-            store: null,
-            storeId: null,
-            updatedAt: null
-        },
-        {
-            brandId: null,
-            createdAt: null,
-            deletedAt: null,
-            id: null,
-            status: null,
-            store: null,
-            storeId: null,
-            updatedAt: null
-        },
-        {
-            brandId: null,
-            createdAt: null,
-            deletedAt: null,
-            id: null,
-            status: null,
-            store: null,
-            storeId: null,
-            updatedAt: null
-        }
-    ]
 );

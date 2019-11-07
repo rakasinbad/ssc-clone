@@ -14,13 +14,13 @@ import { CustomSerializer } from './store/custom-serializer';
 @NgModule({
     imports: [
         StoreModule.forRoot(fromRoot.appReducer, {
-            metaReducers: fromRoot.metaReducers,
-            runtimeChecks: {
-                strictStateImmutability: true,
-                strictActionImmutability: true,
-                strictStateSerializability: true,
-                strictActionSerializability: true
-            }
+            metaReducers: fromRoot.metaReducers
+            // runtimeChecks: {
+            //     strictStateImmutability: true,
+            //     strictActionImmutability: true,
+            //     strictStateSerializability: true,
+            //     strictActionSerializability: true
+            // }
         }),
         EffectsModule.forRoot([AuthEffects, NetworkEffects, DropdownEffects]),
         environment.production
@@ -31,8 +31,8 @@ import { CustomSerializer } from './store/custom-serializer';
               }),
         StoreRouterConnectingModule.forRoot({
             stateKey: 'router',
-            serializer: CustomSerializer,
-            routerState: RouterState.Minimal
+            serializer: CustomSerializer
+            // routerState: RouterState.Minimal
         })
     ]
 })

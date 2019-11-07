@@ -18,11 +18,11 @@
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <div class="search-wrapper mx-12">
+                <!-- SEARCH mx-12 -->
+                <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Search for a employee" />
+                        <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -39,7 +39,7 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24">
+        <mat-card class="mb-24" *ngIf="search.value">
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -47,15 +47,12 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <mat-chip>
-                            Status: Diterima
+                        <mat-chip *ngIf="searchInternalEmployee || search.value">
+                            {{ searchInternalEmployee || search.value }}
 
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-
-                        <mat-chip>
-                            Geo Coverage
-                            <mat-icon matChipRemove>cancel</mat-icon>
+                            <mat-icon matChipRemove (click)="onRemoveSearchInternalEmployee()">
+                                cancel
+                            </mat-icon>
                         </mat-chip>
                     </mat-chip-list>
                 </div>
@@ -70,55 +67,65 @@
                 class="internals-table"
                 #table
                 [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>
+                        <span class="text-left">ID</span>
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.id }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.id) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- User Column -->
                 <ng-container matColumnDef="user">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        User
+                    <mat-header-cell *matHeaderCellDef>
+                        <span class="text-left">User</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.user?.fullName }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.user?.fullName) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Email Column -->
                 <ng-container matColumnDef="email">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        Email
+                    <mat-header-cell *matHeaderCellDef>
+                        <span class="text-left">Email</span>
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.user?.email }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.user?.email) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Role Column -->
                 <ng-container matColumnDef="role">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                        Role
+                    <mat-header-cell *matHeaderCellDef>
+                        <span class="text-left">Role</span>
                     </mat-header-cell>
 
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                        <p class="text-truncate price">
-                            {{ row?.role }}
-                        </p>
+                    <mat-cell *matCellDef="let row">
+                        <p
+                            style="word-break: break-word;"
+                            [innerHTML]="joinRoles(row?.user?.roles)"
+                        ></p>
                     </mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        <span class="text-left">Action</span>
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -137,8 +144,8 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="edit"
-                                    [routerLink]="[row?.id]"
+                                    aria-label="Edit"
+                                    [routerLink]="[row?.userId]"
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
@@ -148,7 +155,7 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="remove"
+                                    aria-label="Delete"
                                     (click)="onDelete(row)"
                                 >
                                     <mat-icon>delete</mat-icon>
@@ -159,10 +166,21 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="archive"
+                                    [attr.aria-label]="
+                                        row?.status === 'active' ? 'inactive' : 'active'
+                                    "
+                                    (click)="onChangeStatus(row)"
                                 >
-                                    <mat-icon>archive</mat-icon>
-                                    <span>Archive</span>
+                                    <mat-icon>{{
+                                        row?.status === 'active'
+                                            ? 'archive'
+                                            : 'check_circle_outline'
+                                    }}</mat-icon>
+                                    <span>{{
+                                        (row?.status === 'active'
+                                            ? 'ACTION.INACTIVE'
+                                            : 'ACTION.ACTIVE') | translate
+                                    }}</span>
                                 </button>
                             </mat-menu>
                         </div>
@@ -174,13 +192,29 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="internal"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     matRipple
-                    [routerLink]="['/pages/account/internal/' + row.id + '/detail']"
+                    [routerLink]="['/pages/account/internal', row?.id, 'detail']"
                 >
                 </mat-row>
             </mat-table>
 
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
                 [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"
@@ -189,7 +223,7 @@
             >
             </mat-paginator>
 
-            <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

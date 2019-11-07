@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -44,8 +44,10 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
             label: 'Location'
         }
     ];
+    urlActive: boolean;
 
     fuseConfig$: Observable<FuseConfig>;
+    totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
@@ -91,6 +93,16 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.urlActive = false;
+        this.router.events
+            .pipe(
+                filter(ev => ev instanceof NavigationEnd),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(ev => {
+                console.log('EVVV 1', ev);
+                this.urlActive = this.router.url.endsWith('(store-detail:employee)');
+            });
 
         this.store
             .select(BrandStoreSelectors.getGoPage)
@@ -108,6 +120,8 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                     });
                 }
             });
+
+        this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
     }
 

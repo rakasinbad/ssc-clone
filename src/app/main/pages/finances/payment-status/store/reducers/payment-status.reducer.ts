@@ -1,21 +1,21 @@
-import { createReducer, Action, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler } from 'app/shared/models';
 import { TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { IPaymentStatusDemo } from './../../models';
 import { PaymentStatusActions } from '../actions';
 
 export const FEATURE_KEY = 'paymentStatus';
 
-interface PaymentStatusState extends EntityState<IPaymentStatusDemo> {
+interface PaymentStatusState extends EntityState<any> {
     total: number;
 }
 
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
+    isRefresh?: boolean;
     isLoading: boolean;
     selectedPaymentStatusId: string | number;
     source: TSource;
@@ -27,7 +27,7 @@ export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
 }
 
-const adapterPaymentStatus = createEntityAdapter<IPaymentStatusDemo>({
+const adapterPaymentStatus = createEntityAdapter<any>({
     selectId: paymentStatus => paymentStatus.id
 });
 const initialPaymentStatus = adapterPaymentStatus.getInitialState({ total: 0 });
@@ -45,10 +45,29 @@ export const initialState: State = {
 
 const paymentStatusReducer = createReducer(
     initialState,
-    on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({
+    on(PaymentStatusActions.fetchPaymentStatusRequest, state => ({
         ...state,
-        paymentStatus: adapterPaymentStatus.addAll(payload, state.paymentStatus)
+        isLoading: true
+    })),
+    on(PaymentStatusActions.fetchPaymentStatusFailure, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: undefined,
+        errors: adapterError.upsertOne(payload, state.errors)
+    })),
+    on(PaymentStatusActions.fetchPaymentStatusSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        paymentStatus: adapterPaymentStatus.addAll(payload.paymentStatus, {
+            ...state.paymentStatus,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchPaymentFailure', state.errors)
     }))
+    // on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({
+    //     ...state,
+    //     paymentStatus: adapterPaymentStatus.addAll(payload, state.paymentStatus)
+    // }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

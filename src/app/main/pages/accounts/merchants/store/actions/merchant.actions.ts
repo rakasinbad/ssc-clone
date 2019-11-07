@@ -3,9 +3,13 @@ import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
 
 import {
     BrandStore,
-    CreateStore,
+    FormStore,
+    FormStoreEdit,
     IMerchantDemo,
+    IStoreCreateResponse,
+    IStoreEditResponse,
     IStoreEmployeeDemo,
+    StoreEdit,
     StoreEmployee,
     StoreEmployeeDetail
 } from '../../models';
@@ -27,6 +31,25 @@ export const fetchBrandStoresFailure = createAction(
 export const fetchBrandStoresSuccess = createAction(
     '[Brand Stores API] Fetch Brand Stores Success',
     props<{ payload: { brandStores: BrandStore[]; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Brand Store Edit
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchBrandStoreEditRequest = createAction(
+    '[Brand Store API] Fetch Brand Store Edit Request',
+    props<{ payload: string }>()
+);
+
+export const fetchBrandStoreEditFailure = createAction(
+    '[Brand Store API] Fetch Brand Store Edit Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchBrandStoreEditSuccess = createAction(
+    '[Brand Store API] Fetch Brand Store Edit Success',
+    props<{ payload: { brandStore?: StoreEdit; source: TSource } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -87,12 +110,12 @@ export const fetchStoreEmployeeSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
-// CRUD Actions
+// CRUD Store Actions
 // -----------------------------------------------------------------------------------------------------
 
 export const createStoreRequest = createAction(
     '[Brand Stores API] Create Store Request',
-    props<{ paload: CreateStore }>()
+    props<{ payload: FormStore }>()
 );
 
 export const createStoreFailure = createAction(
@@ -102,8 +125,67 @@ export const createStoreFailure = createAction(
 
 export const createStoreSuccess = createAction(
     '[Brand Stores API] Create Store Success',
-    props<{ payload: CreateStore }>()
+    props<{ payload: IStoreCreateResponse }>()
 );
+
+export const updateStoreRequest = createAction(
+    '[Brand Stores API] Update Store Request',
+    props<{ payload: { body: FormStoreEdit; id: string } }>()
+);
+
+export const updateStoreFailure = createAction(
+    '[Brand Stores API] Update Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStoreSuccess = createAction(
+    '[Brand Stores API] Update Store Success',
+    props<{ payload: IStoreEditResponse }>()
+);
+
+export const confirmDeleteStore = createAction(
+    '[Brand Stores Page] Confirm Delete Store',
+    props<{ payload: BrandStore }>()
+);
+
+export const deleteStoreRequest = createAction(
+    '[Brand Stores API] Delete Store Request',
+    props<{ payload: string }>()
+);
+
+export const deleteStoreFailure = createAction(
+    '[Brand Stores API] Delete Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const deleteStoreSuccess = createAction(
+    '[Brand Stores API] Delete Store Success',
+    props<{ payload: string }>()
+);
+
+export const confirmChangeStatusStore = createAction(
+    '[Brand Stores Page] Confirm Change Status Store',
+    props<{ payload: BrandStore }>()
+);
+
+export const updateStatusStoreRequest = createAction(
+    '[Brand Stores API] Update Status Store Request',
+    props<{ payload: { body: string; id: string } }>()
+);
+
+export const updateStatusStoreFailure = createAction(
+    '[Brand Stores API] Update Status Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStatusStoreSuccess = createAction(
+    '[Brand Stores API] Update Status Store Success',
+    props<{ payload: FormStore }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// CRUD Store Employee Actions
+// -----------------------------------------------------------------------------------------------------
 
 export const updateStoreEmployeeRequest = createAction(
     '[Store Employee API] Update Store Employee Request',
@@ -143,6 +225,8 @@ export const deleteStoreEmployeeSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------
+
+export const resetBrandStores = createAction('[Brand Stores Page] Reset Brand Stores State');
 
 export const resetBrandStore = createAction('[Brand Stores Page] Reset Brand Store State');
 

@@ -12,6 +12,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import {
     Province,
@@ -29,8 +30,10 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { FormBrand, FormCluster, FormStore, FormStoreEdit, FormUser, StoreEdit } from '../models';
+import { BrandStoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
-import { CreateStore, CreateUser, CreateCluster } from '../models';
+import { BrandStoreSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-merchant-form',
@@ -48,6 +51,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
 
+    stores$: Observable<StoreEdit>;
     provinces$: Observable<Province[]>;
     cities$: Observable<Urban[]>;
     districts$: Observable<Urban[]>;
@@ -58,6 +62,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     storeSegments$: Observable<StoreSegment[]>;
     storeTypes$: Observable<StoreType[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
+
+    isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
 
@@ -159,6 +165,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+
+        if (this.pageType === 'edit') {
+            const { id } = this.route.snapshot.params;
+
+            this.stores$ = this.store.select(BrandStoreSelectors.getEditBrandStore);
+            this.store.dispatch(BrandStoreActions.fetchBrandStoreEditRequest({ payload: id }));
+        }
+
         this.initForm();
 
         this.provinces$ = this.store.select(DropdownSelectors.getProvinceDropdownState);
@@ -180,6 +194,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             DropdownSelectors.getVehicleAccessibilityDropdownState
         );
         this.store.dispatch(DropdownActions.fetchDropdownVehicleAccessibilityRequest());
+
+        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
 
         this.numberOfEmployees = this._$helper.numberOfEmployee();
 
@@ -231,11 +247,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     this.onSubmit();
                 }
             });
+
+        console.log('INIT STORE FORM');
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+
+        console.log('DESTROY STORE FORM');
 
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
@@ -446,80 +466,42 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.tmpIdentityPhoto = new FormControl({ value: '', disabled: true });
         this.tmpIdentityPhotoSelfie = new FormControl({ value: '', disabled: true });
 
-        this.form = this.formBuilder.group({
-            profileInfo: this.formBuilder.group({
-                // username: [
-                //     '',
-                //     [
-                //         RxwebValidators.required({
-                //             message: this._$errorMessage.getErrorMessageNonState(
-                //                 'username',
-                //                 'required'
-                //             )
-                //         })
-                //     ]
-                // ],
-                phoneNumber: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        }),
-                        RxwebValidators.pattern({
-                            expression: {
-                                mobilePhone: /^08[0-9]{8,12}$/
-                            },
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'mobile_phone_pattern',
-                                '08'
-                            )
-                        })
-                    ]
-                ],
-                photos: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        })
-                    ]
-                ],
-                npwpId: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        }),
-                        RxwebValidators.minLength({
-                            value: 15,
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        }),
-                        RxwebValidators.maxLength({
-                            value: 15,
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        })
-                    ]
-                ]
-            }),
-            storeInfo: this.formBuilder.group({
-                storeId: this.formBuilder.group({
-                    id: [
+        if (this.pageType === 'new') {
+            this.form = this.formBuilder.group({
+                profileInfo: this.formBuilder.group({
+                    // username: [
+                    //     '',
+                    //     [
+                    //         RxwebValidators.required({
+                    //             message: this._$errorMessage.getErrorMessageNonState(
+                    //                 'username',
+                    //                 'required'
+                    //             )
+                    //         })
+                    //     ]
+                    // ],
+                    phoneNumber: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.pattern({
+                                expression: {
+                                    mobilePhone: /^08[0-9]{8,12}$/
+                                },
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'mobile_phone_pattern',
+                                    '08'
+                                )
+                            })
+                        ]
+                    ],
+                    photos: [
                         '',
                         [
                             RxwebValidators.required({
@@ -530,172 +512,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             })
                         ]
                     ],
-                    storeName: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ]
-                }),
-                address: this.formBuilder.group({
-                    province: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ],
-                    city: [
-                        { value: '', disabled: true },
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ],
-                    district: [
-                        { value: '', disabled: true },
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ],
-                    urban: [
-                        { value: '', disabled: true },
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ],
-                    postcode: [
-                        { value: '', disabled: true },
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            }),
-                            RxwebValidators.digit({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            }),
-                            RxwebValidators.minLength({
-                                value: 5,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            }),
-                            RxwebValidators.maxLength({
-                                value: 5,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            })
-                        ]
-                    ],
-                    notes: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ]
-                    // geolocation: this.formBuilder.group({
-                    //     lng: [''],
-                    //     lat: ['']
-                    // })
-                }),
-                legalInfo: this.formBuilder.group({
-                    name: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            }),
-                            RxwebValidators.alpha({
-                                allowWhiteSpace: true,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            })
-                        ]
-                    ],
-                    identityId: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            }),
-                            RxwebValidators.digit({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            }),
-                            RxwebValidators.minLength({
-                                value: 16,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            }),
-                            RxwebValidators.maxLength({
-                                value: 16,
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'pattern'
-                                )
-                            })
-                        ]
-                    ],
-                    identityPhoto: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
-                    ],
-                    identityPhotoSelfie: [''],
                     npwpId: [
                         '',
                         [
@@ -722,13 +538,300 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     ]
                 }),
-                physicalStoreInfo: this.formBuilder.group({
-                    physicalStoreInfo: [''],
-                    numberOfEmployee: [''],
-                    vehicleAccessibility: ['']
-                }),
-                storeClassification: this.formBuilder.group({
-                    storeType: [
+                storeInfo: this.formBuilder.group({
+                    storeId: this.formBuilder.group({
+                        id: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeName: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                    }),
+                    address: this.formBuilder.group({
+                        province: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        city: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        district: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        urban: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        postcode: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.digit({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.minLength({
+                                    value: 5,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 5,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        notes: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                        // geolocation: this.formBuilder.group({
+                        //     lng: [''],
+                        //     lat: ['']
+                        // })
+                    }),
+                    legalInfo: this.formBuilder.group({
+                        name: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.alpha({
+                                    allowWhiteSpace: true,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        identityId: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.digit({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.minLength({
+                                    value: 16,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 16,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        identityPhoto: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        identityPhotoSelfie: [''],
+                        npwpId: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.minLength({
+                                    value: 15,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 15,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ]
+                    }),
+                    physicalStoreInfo: this.formBuilder.group({
+                        physicalStoreInfo: [''],
+                        numberOfEmployee: [''],
+                        vehicleAccessibility: ['']
+                    }),
+                    storeClassification: this.formBuilder.group({
+                        storeType: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeGroup: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeCluster: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeSegment: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                    })
+                })
+            });
+        } else {
+            this.form = this.formBuilder.group({
+                profileInfo: this.formBuilder.group({
+                    // username: [
+                    //     '',
+                    //     [
+                    //         RxwebValidators.required({
+                    //             message: this._$errorMessage.getErrorMessageNonState(
+                    //                 'username',
+                    //                 'required'
+                    //             )
+                    //         })
+                    //     ]
+                    // ],
+                    phoneNumber: [
+                        '',
+                        [
+                            RxwebValidators.required({
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.pattern({
+                                expression: {
+                                    mobilePhone: /^08[0-9]{8,12}$/
+                                },
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'mobile_phone_pattern',
+                                    '08'
+                                )
+                            })
+                        ]
+                    ],
+                    photos: [
                         '',
                         [
                             RxwebValidators.required({
@@ -739,7 +842,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             })
                         ]
                     ],
-                    storeGroup: [
+                    npwpId: [
                         '',
                         [
                             RxwebValidators.required({
@@ -747,34 +850,297 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                     'default',
                                     'required'
                                 )
-                            })
-                        ]
-                    ],
-                    storeCluster: [
-                        '',
-                        [
-                            RxwebValidators.required({
+                            }),
+                            RxwebValidators.minLength({
+                                value: 15,
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
-                                    'required'
+                                    'pattern'
                                 )
-                            })
-                        ]
-                    ],
-                    storeSegment: [
-                        '',
-                        [
-                            RxwebValidators.required({
+                            }),
+                            RxwebValidators.maxLength({
+                                value: 15,
                                 message: this._$errorMessage.getErrorMessageNonState(
                                     'default',
-                                    'required'
+                                    'pattern'
                                 )
                             })
                         ]
                     ]
+                }),
+                storeInfo: this.formBuilder.group({
+                    storeId: this.formBuilder.group({
+                        id: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeName: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                    }),
+                    address: this.formBuilder.group({
+                        province: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        city: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        district: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        urban: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        postcode: [
+                            { value: '', disabled: true },
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.digit({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.minLength({
+                                    value: 5,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 5,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        notes: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                    }),
+                    physicalStoreInfo: this.formBuilder.group({
+                        physicalStoreInfo: [''],
+                        numberOfEmployee: [''],
+                        vehicleAccessibility: ['']
+                    }),
+                    storeClassification: this.formBuilder.group({
+                        storeType: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeGroup: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeCluster: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ],
+                        storeSegment: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                })
+                            ]
+                        ]
+                    })
                 })
-            })
-        });
+            });
+
+            this.store
+                .select(BrandStoreSelectors.getEditBrandStore)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(data => {
+                    if (data) {
+                        if (data.phoneNo) {
+                            this.form.get('profileInfo.phoneNumber').patchValue(data.phoneNo);
+                            this.form.get('profileInfo.phoneNumber').markAsTouched();
+                        }
+
+                        if (data.imageUrl) {
+                            this.form.get('profileInfo.photos').clearValidators();
+                            this.form.get('profileInfo.photos').updateValueAndValidity();
+                        }
+
+                        if (data.taxNo) {
+                            this.form.get('profileInfo.npwpId').patchValue(data.taxNo);
+                        }
+
+                        if (data.storeCode) {
+                            this.form.get('storeInfo.storeId.id').patchValue(data.storeCode);
+                        }
+
+                        if (data.name) {
+                            this.form.get('storeInfo.storeId.storeName').patchValue(data.name);
+                        }
+
+                        if (data.urban) {
+                            if (data.urban.province) {
+                                const provinceId = data.urban.province.id;
+                                const city = data.urban.city;
+                                const district = data.urban.district;
+                                const urbanId = data.urban.id;
+                                const zipCode = data.urban.zipCode;
+
+                                if (provinceId) {
+                                    this.form
+                                        .get('storeInfo.address.province')
+                                        .patchValue(provinceId);
+
+                                    this.store
+                                        .select(DropdownSelectors.getProvinceDropdownState)
+                                        .pipe(takeUntil(this._unSubs$))
+                                        .subscribe(hasProvinces => {
+                                            if (hasProvinces && hasProvinces.length > 0) {
+                                                this.populateCity(
+                                                    provinceId,
+                                                    city,
+                                                    district,
+                                                    urbanId,
+                                                    zipCode
+                                                );
+                                            }
+                                        });
+                                }
+                            }
+                        }
+
+                        if (data.address) {
+                            this.form.get('storeInfo.address.notes').patchValue(data.address);
+                        }
+
+                        if (data.largeArea) {
+                            this.form
+                                .get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                                .patchValue(data.largeArea);
+                        }
+
+                        if (data.numberOfEmployee) {
+                            this.form
+                                .get('storeInfo.physicalStoreInfo.numberOfEmployee')
+                                .patchValue(data.numberOfEmployee);
+                        }
+
+                        if (data.vehicleAccessibilityId) {
+                            this.form
+                                .get('storeInfo.physicalStoreInfo.vehicleAccessibility')
+                                .patchValue(data.vehicleAccessibilityId);
+                        }
+
+                        if (data.storeType && data.storeType.id) {
+                            this.form
+                                .get('storeInfo.storeClassification.storeType')
+                                .patchValue(data.storeType.id);
+                        }
+
+                        if (data.storeGroup && data.storeGroup.id) {
+                            this.form
+                                .get('storeInfo.storeClassification.storeGroup')
+                                .patchValue(data.storeGroup.id);
+                        }
+
+                        if (data.storeClusters && data.storeClusters.length > 0) {
+                            this.form
+                                .get('storeInfo.storeClassification.storeCluster')
+                                .patchValue(data.storeClusters[0].id);
+                        }
+
+                        if (data.storeSegment && data.storeSegment.id) {
+                            this.form
+                                .get('storeInfo.storeClassification.storeSegment')
+                                .patchValue(data.storeSegment.id);
+                        }
+                    }
+                });
+        }
     }
 
     private onSubmit(): void {
@@ -785,36 +1151,96 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         const body = this.form.value;
 
         if (this.pageType === 'new') {
-            const createUser = new CreateUser(
-                body.storeInfo.legalInfo.name,
-                body.storeInfo.legalInfo.identityPhoto,
-                body.storeInfo.legalInfo.identityPhotoSelfie,
+            this.store
+                .select(AuthSelectors.getUserState)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(user => {
+                    console.log('AUTH SELECTORS', user);
+
+                    if (user && user.data && user.data.urbanId) {
+                        const createUser = new FormUser(
+                            body.storeInfo.legalInfo.name,
+                            body.storeInfo.legalInfo.npwpId,
+                            body.storeInfo.legalInfo.identityPhoto,
+                            body.storeInfo.legalInfo.identityPhotoSelfie,
+                            body.profileInfo.phoneNumber,
+                            'active',
+                            ['1']
+                        );
+
+                        const createCluser = new FormCluster(
+                            body.storeInfo.storeClassification.storeCluster
+                        );
+
+                        const createBrand = new FormBrand(user.data.urbanId);
+
+                        const payload = new FormStore(
+                            body.storeInfo.storeId.id,
+                            body.storeInfo.storeId.storeName,
+                            body.profileInfo.photos,
+                            body.profileInfo.npwpId,
+                            body.storeInfo.address.notes,
+                            body.profileInfo.phoneNumber,
+                            'active',
+                            body.storeInfo.storeClassification.storeType,
+                            body.storeInfo.storeClassification.storeGroup,
+                            body.storeInfo.storeClassification.storeSegment,
+                            body.storeInfo.address.urban,
+                            createUser,
+                            createCluser,
+                            createBrand,
+                            body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                            body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                            body.storeInfo.physicalStoreInfo.vehicleAccessibility
+                        );
+
+                        console.log('SUBMIT CREATE 1', body);
+                        console.log('SUBMIT CREATE 2', payload);
+
+                        this.store.dispatch(
+                            BrandStoreActions.createStoreRequest({ payload: payload })
+                        );
+                    }
+                });
+        }
+
+        if (this.pageType === 'edit') {
+            /* this.store
+                .select(BrandStoreSelectors.getEditBrandStore)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(data => {
+                    if (data) {
+
+                    } else {
+
+                    }
+                }); */
+            const { id } = this.route.snapshot.params;
+
+            const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
+
+            const payload = new FormStoreEdit(
+                body.storeInfo.storeId.id,
+                body.storeInfo.storeId.storeName,
+                body.profileInfo.photos,
+                body.profileInfo.npwpId,
+                body.storeInfo.address.notes,
                 body.profileInfo.phoneNumber,
-                'active',
-                ['1']
+                body.storeInfo.storeClassification.storeType,
+                body.storeInfo.storeClassification.storeGroup,
+                body.storeInfo.storeClassification.storeSegment,
+                body.storeInfo.address.urban,
+                createCluser,
+                body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                body.storeInfo.physicalStoreInfo.vehicleAccessibility
             );
 
-            const createCluser = new CreateCluster(body.storeInfo.storeClassification.storeCluster);
+            console.log('SUBMIT UPDATE 1', body);
+            console.log('SUBMIT UPDATE 2', payload);
 
-            console.log('SUBMIT CREATE 1', body);
-            console.log(
-                'SUBMIT CREATE 2',
-                new CreateStore(
-                    body.storeInfo.storeId.storeName,
-                    body.profileInfo.photos,
-                    body.storeInfo.address.notes,
-                    body.profileInfo.phoneNumber,
-                    'active',
-                    body.storeInfo.storeClassification.storeType,
-                    body.storeInfo.storeClassification.storeGroup,
-                    body.storeInfo.storeClassification.storeSegment,
-                    body.storeInfo.address.urban,
-                    createUser,
-                    createCluser,
-                    body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-                    body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                    body.storeInfo.physicalStoreInfo.vehicleAccessibility
-                )
+            this.store.dispatch(
+                BrandStoreActions.updateStoreRequest({ payload: { body: payload, id: id } })
             );
         }
 
@@ -830,5 +1256,128 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             this.form.get('storeInfo.address.postcode').value &&
             this.form.get('storeInfo.address').valid
         );
+    }
+
+    private populateCity(
+        provinceId: string,
+        currentCity?: string,
+        currentDistrict?: string,
+        currentUrban?: string,
+        currentPostcode?: string
+    ): void {
+        this.cities$ = this.store
+            .select(DropdownSelectors.getCityDropdownState, {
+                provinceId: provinceId
+            })
+            .pipe(
+                tap(hasCity => {
+                    if (hasCity && hasCity.length > 0) {
+                        this.form.get('storeInfo.address.city').enable();
+
+                        if (currentCity) {
+                            this.form.get('storeInfo.address.city').patchValue(currentCity);
+
+                            this.populateDistrict(
+                                provinceId,
+                                currentCity,
+                                currentDistrict,
+                                currentUrban,
+                                currentPostcode
+                            );
+                        }
+                    }
+                })
+            );
+    }
+
+    private populateDistrict(
+        provinceId: string,
+        city: string,
+        currentDistrict?: string,
+        currentUrban?: string,
+        currentPostcode?: string
+    ): void {
+        this.districts$ = this.store
+            .select(DropdownSelectors.getDistrictDropdownState, {
+                provinceId: provinceId,
+                city: city
+            })
+            .pipe(
+                tap(hasDistrict => {
+                    if (hasDistrict && hasDistrict.length > 0) {
+                        this.form.get('storeInfo.address.district').enable();
+
+                        if (currentDistrict) {
+                            this.form.get('storeInfo.address.district').patchValue(currentDistrict);
+
+                            this.populateUrban(
+                                provinceId,
+                                city,
+                                currentDistrict,
+                                currentUrban,
+                                currentPostcode
+                            );
+                        }
+                    }
+                })
+            );
+    }
+
+    private populateUrban(
+        provinceId: string,
+        city: string,
+        district: string,
+        currentUrban?: string,
+        currentPostcode?: string
+    ): void {
+        this.urbans$ = this.store
+            .select(DropdownSelectors.getUrbanDropdownState, {
+                provinceId: provinceId,
+                city: city,
+                district: district
+            })
+            .pipe(
+                tap(hasUrban => {
+                    if (hasUrban && hasUrban.length > 0) {
+                        this.form.get('storeInfo.address.urban').enable();
+
+                        if (currentUrban) {
+                            this.form.get('storeInfo.address.urban').patchValue(currentUrban);
+
+                            this.populatePostcode(
+                                provinceId,
+                                city,
+                                district,
+                                currentUrban,
+                                currentPostcode
+                            );
+                        }
+                    }
+                })
+            );
+    }
+
+    private populatePostcode(
+        provinceId: string,
+        city: string,
+        district: string,
+        urbanId: string,
+        currentPostcode?: string
+    ): void {
+        this.store
+            .select(DropdownSelectors.getPostcodeDropdownState, {
+                provinceId: provinceId,
+                city: city,
+                district: district,
+                urbanId: urbanId
+            })
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(postcode => {
+                if (currentPostcode) {
+                    this.form.get('storeInfo.address.postcode').patchValue(currentPostcode);
+                } else if (postcode) {
+                    this.form.get('storeInfo.address.postcode').patchValue(postcode);
+                }
+            });
     }
 }

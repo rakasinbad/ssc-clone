@@ -104,7 +104,7 @@
                                 *Photo
                             </label>
 
-                            <div fxLayout="row" fxFlex="100">
+                            <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
                                 <mat-form-field
                                     class="sinbad-file-field"
                                     appearance="outline"
@@ -143,6 +143,12 @@
                                 >
                                     Upload your file
                                 </button>
+
+                                <ng-container *ngIf="pageType === 'edit' && (stores$ | async) as stores">
+                                    <a [href]="stores?.imageUrl" target="_blank" *ngIf="stores?.imageUrl" style="position: relative;top: -0.78em">
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -548,7 +554,11 @@
                         </div> -->
                     </div>
 
-                    <div class="form-box mt-16" formGroupName="legalInfo">
+                    <div
+                        class="form-box mt-16"
+                        formGroupName="legalInfo"
+                        *ngIf="pageType === 'new'"
+                    >
                         <span class="mat-subheading-2">Legal Information</span>
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
@@ -1206,6 +1216,10 @@
                 </div>
             </mat-card>
         </form>
+
+        <div class="loader" *ngIf="isLoading$ | async">
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
     </div>
     <!-- / CENTER -->
 </div>

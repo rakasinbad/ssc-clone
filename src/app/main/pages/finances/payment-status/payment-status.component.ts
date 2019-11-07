@@ -8,25 +8,29 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { MatDialog, MatPaginator, MatSort, MatTableDataSource, PageEvent } from '@angular/material';
+import { FormControl } from '@angular/forms';
+import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { GeneratorService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
+import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { IPaymentStatusDemo } from './models/payment-status.model';
 import { PaymentStatusFormComponent } from './payment-status-form/payment-status-form.component';
+import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
 import { statusPayment } from './status';
+import { PaymentStatusActions } from './store/actions';
 import { fromPaymentStatus } from './store/reducers';
 import { PaymentStatusSelectors } from './store/selectors';
-import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
 
 @Component({
     selector: 'app-payment-status',
@@ -37,13 +41,15 @@ import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-pa
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
-    dataSource: MatTableDataSource<IPaymentStatusDemo>; // Need for demo
+    // dataSource: MatTableDataSource<IPaymentStatusDemo>; // Need for demo
+    search: FormControl;
+    total: number;
     displayedColumns = [
         'order-reference',
         'store',
         'account-receivable',
         'status',
-        'source',
+        // 'source',
         'payment-type',
         'payment-method',
         'order-date',
@@ -51,13 +57,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         'paid-on',
         'aging-day',
         'd',
-        'proof-of-payment-status',
+        // 'proof-of-payment-status',
         'actions'
     ];
     hasSelected: boolean;
     statusPayment: any;
     today = new Date();
 
+    dataSource$: Observable<any>;
+    selectedRowIndex$: Observable<string>;
+    totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
@@ -79,7 +88,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         private _$generate: GeneratorService,
         public translate: TranslateService
     ) {
-        this.dataSource = new MatTableDataSource(); // Need for demo
+        // this.dataSource = new MatTableDataSource(); // Need for demo
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -105,7 +115,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
 
         this._fuseNavigationService.register('customNavigation', this.statusPayment);
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -117,13 +126,22 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.search = new FormControl('');
         this.hasSelected = false;
+        this.paginator.pageSize = 5;
+
+        this.dataSource$ = this.store.select(PaymentStatusSelectors.getAllPaymentStatus);
+        this.totalDataSource$ = this.store.select(PaymentStatusSelectors.getTotalPaymentStatus);
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+        this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
+
+        this.initTable();
 
         // Need for demo
-        this.store
-            .select(PaymentStatusSelectors.getAllPaymentStatus)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
+        // this.store
+        //     .select(PaymentStatusSelectors.getAllPaymentStatus)
+        //     .pipe(takeUntil(this._unSubs$))
+        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
@@ -131,8 +149,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Add 'implements AfterViewInit' to the class.
 
         // Need for demo
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
@@ -157,6 +175,22 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    agingDate(date): number {
+        const dueDate = moment(date);
+        const dateNow = moment();
+        const diffDate = dateNow.diff(dueDate, 'days');
+
+        return diffDate <= 0 ? 0 : diffDate;
+    }
+
+    countDownDueDate(date): any {
+        const dueDate = moment(date);
+        const dateNow = moment();
+        const diffDate = dueDate.diff(dateNow, 'days');
+
+        return diffDate <= 0 ? '-' : diffDate;
+    }
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
@@ -190,5 +224,35 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private initTable(): void {}
+    private onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this.initTable();
+    }
+
+    private initTable(): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            data['sortBy'] = this.sort.active;
+        }
+
+        if (this.search.value) {
+            const query = this.search.value;
+
+            data['search'] = [
+                {
+                    fieldName: 'keyword',
+                    keyword: query
+                }
+            ];
+        }
+
+        this.store.dispatch(PaymentStatusActions.fetchPaymentStatusRequest({ payload: data }));
+    }
 }

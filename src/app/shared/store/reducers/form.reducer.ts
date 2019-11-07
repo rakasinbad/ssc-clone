@@ -54,6 +54,10 @@ const formReducer = createReducer(
         ...state,
         isClickResetButton: initialState.isClickResetButton
     })),
+    on(FormActions.resetClickSaveButton, state => ({
+        ...state,
+        isClickSaveButton: false
+    })),
     on(FormActions.setCancelButtonAction, (state, { payload }) => ({
         ...state,
         cancelButtonAction: payload ? payload.trim().toUpperCase() : payload

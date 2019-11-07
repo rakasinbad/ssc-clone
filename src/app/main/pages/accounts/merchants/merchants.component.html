@@ -79,13 +79,14 @@
                 class="merchants-table"
                 #table
                 [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">ID</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -103,7 +104,7 @@
 
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Store Name</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -121,7 +122,7 @@
 
                 <!-- City Column -->
                 <ng-container matColumnDef="city">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">City</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -139,7 +140,7 @@
 
                 <!-- Address Column -->
                 <ng-container matColumnDef="address">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Address</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -157,10 +158,10 @@
 
                 <!-- Owner Phone Number Column -->
                 <ng-container matColumnDef="owner-phone-no">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Owner Phone Number</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                    <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.store?.phoneNo }}
                         </p>
@@ -175,10 +176,10 @@
 
                 <!-- Store Segment Column -->
                 <ng-container matColumnDef="store-segment">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Store Segment</span>
                     </mat-header-cell>
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                    <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.store?.storeSegment?.name }}
                         </p>
@@ -193,7 +194,7 @@
 
                 <!-- Store Type Column -->
                 <ng-container matColumnDef="store-type">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Store Type</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -211,12 +212,12 @@
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Status</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.status | uppercase }}
+                            {{ row?.status | uppercase }}
                         </p>
                         <!-- <div *ngIf="!row?.store?.status" fxFlex>
                             <ngx-skeleton-loader
@@ -229,7 +230,7 @@
 
                 <!-- Reason Column -->
                 <ng-container matColumnDef="reason">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Reason</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -266,8 +267,8 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="edit"
-                                    [routerLink]="[row?.id]"
+                                    aria-label="Edit"
+                                    [routerLink]="[row?.storeId]"
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
@@ -277,38 +278,39 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="remove"
+                                    aria-label="Delete"
                                     (click)="onDelete(row)"
                                 >
                                     <mat-icon>delete</mat-icon>
-                                    <span>Remove</span>
+                                    <span>Delete</span>
                                 </button>
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="deactive"
+                                    aria-label="Deactivate"
                                 >
                                     <mat-icon>archive</mat-icon>
-                                    <span>Deactive</span>
-                                </button>
+                                    <span>Deactivate</span>
+                                </button> -->
 
                                 <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     [attr.aria-label]="
-                                        row?.store?.status === 'active' ? 'inactive' : 'active'
+                                        row?.status === 'active' ? 'inactive' : 'active'
                                     "
+                                    (click)="onChangeStatus(row)"
                                 >
                                     <mat-icon>{{
-                                        row?.store?.status === 'active'
-                                            ? 'remove_circle_outline'
+                                        row?.status === 'active'
+                                            ? 'archive'
                                             : 'check_circle_outline'
                                     }}</mat-icon>
                                     <span>{{
-                                        (row?.store?.status === 'active'
+                                        (row?.status === 'active'
                                             ? 'ACTION.INACTIVE'
                                             : 'ACTION.ACTIVE') | translate
                                     }}</span>
@@ -333,8 +335,9 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="merchant"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     matRipple
-                    (click)="goStoreInfoPage(row?.storeId)"
+                    (click)="goStoreInfoPage(row?.id)"
                 >
                 </mat-row>
             </mat-table>
@@ -343,8 +346,18 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
-                [fxHide]="(isLoading$ | async) && !(totalDataSource$ | async)"
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
                 [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"

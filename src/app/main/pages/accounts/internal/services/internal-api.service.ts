@@ -4,7 +4,12 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { IInternalEmployee, IInternalEmployeeResponse } from '../models';
+import {
+    IInternalEmployee,
+    IInternalEmployeeDetail,
+    IInternalEmployeeResponse,
+    InternalEmployeeDetail
+} from '../models';
 
 /**
  *
@@ -32,6 +37,8 @@ export class InternalApiService {
      * @memberof InternalApiService
      */
     private readonly _endpoint = '/user-brands';
+
+    private readonly _endpointEmployeeDetail = '/users';
 
     /**
      * Creates an instance of InternalApiService.
@@ -63,5 +70,25 @@ export class InternalApiService {
         const newParams = this._$helper.handleParams(this._url, params, newArg);
 
         return this.http.get<IInternalEmployeeResponse>(this._url, { params: newParams });
+    }
+
+    findById(userId: string): Observable<IInternalEmployeeDetail> {
+        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+        return this.http.get<IInternalEmployeeDetail>(`${this._url}/${userId}`);
+    }
+
+    updatePatch(body: InternalEmployeeDetail, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+        return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
+    updatePatchStatusInternalEmployee(body: { status: string }, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
+    delete(id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.delete<any>(`${this._url}/${id}`);
     }
 }

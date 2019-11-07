@@ -12,33 +12,33 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent">
+                <!-- <button mat-flat-button color="accent">
                     EXPORT
                 </button>
 
                 <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
-                </button>
+                </button> -->
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <div class="search-wrapper mx-12">
+                <!-- SEARCH mx-12 -->
+                <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Cari Disini" />
+                        <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
 
-                <button mat-flat-button class="grey-600">
+                <!-- <button mat-flat-button class="grey-600">
                     <mat-icon>filter_list</mat-icon>
                     Filter Lists
                 </button>
 
                 <button mat-flat-button class="grey-600">
                     Group By
-                </button>
+                </button> -->
             </div>
         </div>
         <!-- / CONTENT HEADER -->
@@ -75,135 +75,160 @@
             <mat-table
                 class="payments-table"
                 #table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
                 <!-- Order Reference Column -->
                 <ng-container matColumnDef="order-reference">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="text-left">Order Reference</span>
+                    <mat-header-cell *matHeaderCellDef>
+                        <span class="text-left">
+                            Order Reference
+                        </span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.orderRef }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.orderRef }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Store Column -->
                 <ng-container matColumnDef="store">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text=left">Store</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.store }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.store?.name }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Account Receivable Column -->
                 <ng-container matColumnDef="account-receivable">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Account Receivable</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.receivable }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.totalPrice }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Status</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.status }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.statusPayment }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Source Column -->
-                <ng-container matColumnDef="source">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <!-- <ng-container matColumnDef="source">
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Source</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        {{ row?.source }}
+                       <p style="word-break: break-word;">
+                            {{ row?.source }}
+                        </p>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <!-- Payment Type Column -->
                 <ng-container matColumnDef="payment-type">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Payment Type</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        {{ row?.paymentType }}
+                        <p style="word-break: break-word;">
+                            {{ row?.paymentTypeBrandMethod?.paymentTypeBrand?.paymentType?.name }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Payment Method Column -->
                 <ng-container matColumnDef="payment-method">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Payment Method</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        {{ row?.paymentMethod }}
+                        <p style="word-break: break-word;">
+                            {{ row?.paymentTypeBrandMethod?.paymentMethod?.name }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Order Date Column -->
                 <ng-container matColumnDef="order-date">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Date Order</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.orderDate | date: 'dd MMM yyyy' }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.createdAt | date: 'dd MMM yyyy' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Due Date Column -->
                 <ng-container matColumnDef="due-date">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Due Date</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.dueDate | date: 'dd MMM yyyy' }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.dueDate | date: 'dd MMM yyyy' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Paid On Column -->
                 <ng-container matColumnDef="paid-on">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Paid On</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.paidOn | date: 'dd MMM yyyy' }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.paidTime | date: 'dd MMM yyyy' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Aging Day Column -->
                 <ng-container matColumnDef="aging-day">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">Aging Day</span>
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.agingDay }}</p>
+                        <p style="word-break: break-word;">
+                            {{ agingDate(row?.dueDate) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- D Column -->
                 <ng-container matColumnDef="d">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                    <mat-header-cell *matHeaderCellDef>
                         <span class="text-left">D-</span>
                     </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                        {{ row?.d }}
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ countDownDueDate(row?.dueDate) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Proof of Payment Status Column -->
-                <ng-container matColumnDef="proof-of-payment-status">
+                <!-- <ng-container matColumnDef="proof-of-payment-status">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
                         <span class="text-left">Proof of Payment Status</span>
                     </mat-header-cell>
@@ -216,7 +241,7 @@
                             <a href="#">To be Checked</a>
                         </ng-container>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <ng-container matColumnDef="actions">
                     <!-- <mat-header-cell *matHeaderCellDef>
@@ -276,7 +301,23 @@
                 </mat-row>
             </mat-table>
 
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
@@ -284,9 +325,9 @@
             >
             </mat-paginator>
 
-            <!-- <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
-            </div> -->
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

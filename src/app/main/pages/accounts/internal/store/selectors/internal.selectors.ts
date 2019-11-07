@@ -37,9 +37,14 @@ export const getSelectedInternalEmployee = createSelector(
     (internalEmployeeEntities, internalEmployeeId) => internalEmployeeEntities[internalEmployeeId]
 );
 
-export const getIsDeleting = createSelector(
+export const getSelectedInternalEmployeeInfo = createSelector(
     getInternalEmployeeState,
-    state => state.isDeleting
+    state => state.internalEmployee
+);
+
+export const getIsRefresh = createSelector(
+    getInternalEmployeeState,
+    state => state.isRefresh
 );
 
 export const getIsLoading = createSelector(

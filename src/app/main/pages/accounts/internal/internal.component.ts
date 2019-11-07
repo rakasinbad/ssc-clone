@@ -15,9 +15,11 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
+import { Role } from '../../roles/role.model';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { InternalEmployee } from './models';
@@ -40,6 +42,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     displayedColumns = ['id', 'user', 'email', 'role', 'actions'];
 
     dataSource$: Observable<InternalEmployee[]>;
+    selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -93,11 +96,39 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.search = new FormControl('');
         this.paginator.pageSize = 5;
 
+        localStorage.removeItem('filterInternalEmployee');
+
         this.dataSource$ = this.store.select(InternalSelectors.getAllInternalEmployee);
         this.totalDataSource$ = this.store.select(InternalSelectors.getTotalInternalEmployee);
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
 
         this.initTable();
+
+        this.search.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000)
+            )
+            .subscribe(v => {
+                if (v) {
+                    localStorage.setItem('filterInternalEmployee', v);
+                }
+
+                this.onRefreshTable();
+            });
+
+        this.store
+            .select(InternalSelectors.getIsRefresh)
+            .pipe(
+                distinctUntilChanged(),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isRefresh => {
+                if (isRefresh) {
+                    this.onRefreshTable();
+                }
+            });
 
         // Need for demo
         // this.store
@@ -128,6 +159,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(InternalActions.resetInternalEmployees());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -136,20 +168,65 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+    get searchInternalEmployee(): string {
+        return localStorage.getItem('filterInternalEmployee') || '';
+    }
+
+    joinRoles(roles: Role[]): string {
+        if (roles.length > 0) {
+            return roles.map(i => i.role).join(',<br>');
+        }
+
+        return '-';
+    }
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
     }
 
-    onDelete(item): void {
-        if (!item) {
+    onChangeStatus(item: InternalEmployee): void {
+        if (!item || !item.id) {
             return;
         }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(InternalActions.confirmChangeStatusInternalEmployee({ payload: item }));
+
+        return;
+    }
+
+    onDelete(item: InternalEmployee): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(InternalActions.confirmDeleteInternalEmployee({ payload: item }));
+
+        return;
+    }
+
+    onRemoveSearchInternalEmployee(): void {
+        localStorage.removeItem('filterInternalEmployee');
+        this.search.reset();
+    }
+
+    onTrackBy(index: number, item: InternalEmployee): string {
+        return !item ? null : item.id;
+    }
+
+    safeValue(item: any): any {
+        return item ? item : '-';
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this.initTable();
+    }
 
     private initTable(): void {
         const data: IQueryParams = {

@@ -15,6 +15,7 @@
         "lint": "ng lint",
         "e2e": "ng e2e",
         "node-start-hmr": "node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng serve --proxy-config ./proxy.conf.json --configuration hmr --source-map=false --hmr-warning=false",
+        "node-start-hmr-sourcemaps": "node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng serve --proxy-config ./proxy.conf.json --configuration hmr --source-map=true --hmr-warning=false",
         "start-hmr-network": "ng serve --host 192.168.2.22 --proxy-config ./proxy.conf.json --configuration hmr --source-map=false --hmr-warning=false",
         "install-pwa": "node --max_old_space_size=6144 ./node_modules/@angular/cli/bin/ng add @angular/pwa",
         "start-staging": "ng serve --host 192.168.2.22 --configuration staging",

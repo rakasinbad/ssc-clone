@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { BrandStore, StoreEmployee, StoreEmployeeDetail } from '../../models';
+import { BrandStore, StoreEdit, StoreEmployee, StoreEmployeeDetail } from '../../models';
 import { BrandStoreActions } from '../actions';
 
 export const FEATURE_KEY = 'brandStores';
@@ -19,14 +19,15 @@ interface StoreEmployeeState extends EntityState<StoreEmployee> {
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
-    isDeleting: boolean | undefined;
+    isRefresh?: boolean;
     isLoading: boolean;
     goPage: string;
     selectedBrandStoreId: string | number;
     source: TSource;
-    brandStore: BrandStore | undefined;
+    brandStore?: BrandStore;
     brandStores: BrandStoreState;
-    employee: StoreEmployeeDetail | undefined;
+    editBrandStore?: StoreEdit;
+    employee?: StoreEmployeeDetail;
     employees: StoreEmployeeState;
     errors: ErrorState;
 }
@@ -49,14 +50,14 @@ const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
-    isDeleting: undefined,
+    //    isRefresh: undefined,
     isLoading: false,
     goPage: 'info',
     selectedBrandStoreId: null,
     source: 'fetch',
-    brandStore: undefined,
+    // brandStore: undefined,
     brandStores: initialBrandStoreState,
-    employee: undefined,
+    // employee: undefined,
     employees: initialStoreEmployeeState,
     errors: initialErrorState
 };
@@ -73,8 +74,10 @@ const brandStoreReducer = createReducer(
     // })),
     on(
         BrandStoreActions.createStoreRequest,
+        BrandStoreActions.updateStoreRequest,
         BrandStoreActions.updateStoreEmployeeRequest,
         BrandStoreActions.fetchBrandStoreRequest,
+        BrandStoreActions.fetchBrandStoreEditRequest,
         BrandStoreActions.fetchBrandStoresRequest,
         BrandStoreActions.fetchStoreEmployeeRequest,
         BrandStoreActions.fetchStoreEmployeesRequest,
@@ -83,35 +86,68 @@ const brandStoreReducer = createReducer(
             isLoading: true
         })
     ),
-    on(BrandStoreActions.deleteStoreEmployeeRequest, state => ({
-        ...state,
-        isLoading: true,
-        isDeleting: false
-    })),
+    on(
+        BrandStoreActions.updateStatusStoreRequest,
+        BrandStoreActions.deleteStoreRequest,
+        BrandStoreActions.deleteStoreEmployeeRequest,
+        state => ({
+            ...state,
+            isLoading: true,
+            isRefresh: false
+        })
+    ),
     on(
         BrandStoreActions.createStoreFailure,
+        BrandStoreActions.updateStoreFailure,
         BrandStoreActions.updateStoreEmployeeFailure,
         BrandStoreActions.fetchBrandStoreFailure,
+        BrandStoreActions.fetchBrandStoreEditFailure,
         BrandStoreActions.fetchBrandStoresFailure,
         BrandStoreActions.fetchStoreEmployeeFailure,
         BrandStoreActions.fetchStoreEmployeesFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            isDeleting: initialState.isDeleting,
+            isRefresh: undefined,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
-    on(BrandStoreActions.deleteStoreEmployeeFailure, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        isDeleting: true,
-        errors: adapterError.upsertOne(payload, state.errors)
-    })),
+    on(
+        BrandStoreActions.updateStatusStoreFailure,
+        BrandStoreActions.deleteStoreFailure,
+        BrandStoreActions.deleteStoreEmployeeFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: true,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(BrandStoreActions.createStoreSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         errors: adapterError.removeOne('createStoreFailure', state.errors)
+    })),
+    on(BrandStoreActions.updateStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        errors: adapterError.removeOne('updateStoreFailure', state.errors)
+    })),
+    on(BrandStoreActions.updateStatusStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        errors: adapterError.removeOne('updateStatusStoreFailure', state.errors)
+    })),
+    on(BrandStoreActions.deleteStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        brandStores: adapterBrandStore.removeOne(payload, {
+            ...state.brandStores,
+            total: state.brandStores.total - 1
+        }),
+        errors: adapterError.removeOne('deleteStoreFailure', state.errors)
     })),
     on(BrandStoreActions.updateStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,
@@ -121,14 +157,17 @@ const brandStoreReducer = createReducer(
     on(BrandStoreActions.deleteStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isDeleting: true,
-        employees: adapterStoreEmployee.removeOne(payload, state.employees),
+        isRefresh: true,
+        employees: adapterStoreEmployee.removeOne(payload, {
+            ...state.employees,
+            total: state.employees.total - 1
+        }),
         errors: adapterError.removeOne('deleteStoreEmployeeFailure', state.errors)
     })),
     on(BrandStoreActions.fetchBrandStoresSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isDeleting: initialState.isDeleting,
+        isRefresh: undefined,
         brandStores: adapterBrandStore.addAll(payload.brandStores, {
             ...state.brandStores,
             total: payload.total
@@ -141,10 +180,16 @@ const brandStoreReducer = createReducer(
         brandStore: payload.brandStore,
         errors: adapterError.removeOne('fetchBrandStoreFailure', state.errors)
     })),
+    on(BrandStoreActions.fetchBrandStoreEditSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        editBrandStore: payload.brandStore,
+        errors: adapterError.removeOne('fetchBrandStoreEditFailure', state.errors)
+    })),
     on(BrandStoreActions.fetchStoreEmployeesSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isDeleting: initialState.isDeleting,
+        isRefresh: undefined,
         employees: adapterStoreEmployee.addAll(payload.employees, {
             ...state.employees,
             total: payload.total
@@ -154,9 +199,14 @@ const brandStoreReducer = createReducer(
     on(BrandStoreActions.fetchStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        isDeleting: initialState.isDeleting,
+        isRefresh: undefined,
         employee: payload.employee,
         errors: adapterError.removeOne('fetchStoreEmployeeFailure', state.errors)
+    })),
+    on(BrandStoreActions.resetBrandStores, state => ({
+        ...state,
+        brandStores: initialBrandStoreState,
+        errors: adapterError.removeOne('fetchBrandStoresFailure', state.errors)
     })),
     on(BrandStoreActions.resetBrandStore, state => ({
         ...state,

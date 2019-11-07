@@ -19,7 +19,7 @@ import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { delay, distinctUntilChanged, filter, startWith, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
@@ -82,11 +82,12 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllStoreEmployee).pipe(
+        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllStoreEmployee);
+        /* .pipe(
             filter(source => source.length > 0),
             delay(1000),
             startWith(this._$merchantApi.initStoreEmployee())
-        );
+        ); */
         this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
@@ -94,14 +95,14 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         this.initTable();
 
         this.store
-            .select(BrandStoreSelectors.getIsDeleting)
+            .select(BrandStoreSelectors.getIsRefresh)
             .pipe(
                 distinctUntilChanged(),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(isTryDelete => {
-                console.log('TRY DELETE', isTryDelete);
-                if (isTryDelete) {
+            .subscribe(isRefresh => {
+                console.log('TRY Refresh', isRefresh);
+                if (isRefresh) {
                     this.onRefreshTable();
                 }
             });
@@ -159,16 +160,18 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     }
 
     onDelete(item: StoreEmployee): void {
-        console.log('DELETE', item);
-
-        if (!item || !item.userId) {
+        if (!item || !item.id) {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.userId }));
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
         this.store.dispatch(BrandStoreActions.confirmDeleteStoreEmployee({ payload: item }));
 
         return;
+    }
+
+    onTrackBy(index: number, item: StoreEmployee): string {
+        return !item ? null : item.id;
     }
 
     safeValue(item: any): any {

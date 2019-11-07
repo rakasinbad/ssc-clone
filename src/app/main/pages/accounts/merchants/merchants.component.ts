@@ -17,15 +17,9 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import {
-    delay,
-    filter,
-    startWith,
-    takeUntil,
-    distinctUntilChanged,
-    debounceTime
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -61,6 +55,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
 
     dataSource$: Observable<BrandStore[]>;
+    selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -126,6 +121,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         //     startWith(this._$merchantApi.initBrandStore())
         // );
         this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalBrandStore);
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
 
         this.initTable();
@@ -141,6 +137,18 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.onRefreshTable();
+            });
+
+        this.store
+            .select(BrandStoreSelectors.getIsRefresh)
+            .pipe(
+                distinctUntilChanged(),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isRefresh => {
+                if (isRefresh) {
+                    this.onRefreshTable();
+                }
             });
 
         // Need for demo
@@ -172,6 +180,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(BrandStoreActions.resetBrandStores());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -189,15 +198,35 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('Change page', ev);
     }
 
-    onDelete(item): void {
-        if (!item) {
+    onChangeStatus(item: BrandStore): void {
+        if (!item || !item.id) {
             return;
         }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(BrandStoreActions.confirmChangeStatusStore({ payload: item }));
+
+        return;
+    }
+
+    onDelete(item: BrandStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(BrandStoreActions.confirmDeleteStore({ payload: item }));
+
+        return;
     }
 
     onRemoveSearchBrandStore(): void {
         localStorage.removeItem('filterBrandStore');
         this.search.reset();
+    }
+
+    onTrackBy(index: number, item: BrandStore): string {
+        return !item ? null : item.id;
     }
 
     goStoreInfoPage(storeId: string): void {

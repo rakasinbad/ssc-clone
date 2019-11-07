@@ -1,0 +1,14 @@
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
+
+<mat-dialog-content class="mat-typography">
+    <p [innerHTML]="data?.message"></p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="{ id: data?.id, change: data?.change }" cdkFocusInitial>
+        Yes, confirm.
+    </button>
+</mat-dialog-actions>

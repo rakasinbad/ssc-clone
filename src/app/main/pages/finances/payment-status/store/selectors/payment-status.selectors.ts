@@ -36,3 +36,13 @@ export const getSelectedPaymentStatus = createSelector(
     getSelectedPaymentStatusId,
     (paymentStatusEntities, paymentStatusId) => paymentStatusEntities[paymentStatusId]
 );
+
+export const getIsRefresh = createSelector(
+    getPaymentStatusState,
+    state => state.isRefresh
+);
+
+export const getIsLoading = createSelector(
+    getPaymentStatusState,
+    state => state.isLoading
+);
