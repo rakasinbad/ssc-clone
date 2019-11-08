@@ -28,19 +28,19 @@
                             fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
-                                form.get('productInfo.id').errors &&
-                                !form.get('productInfo.id').untouched &&
-                                (form.get('productInfo.id').dirty || form.get('productInfo.id').touched)
+                                form.get('productInfo.sku').errors &&
+                                !form.get('productInfo.sku').untouched &&
+                                (form.get('productInfo.sku').dirty || form.get('productInfo.sku').touched)
                             "
                         >
-                            *Produk ID
+                            *Produk SKU
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
                                 matInput
-                                name="id"
-                                formControlName="id"
+                                name="sku"
+                                formControlName="sku"
                             />
                         </mat-form-field>
                     </div>
@@ -102,7 +102,7 @@
                     </div>
                     <!-- / DESKRIPSI PRODUK -->
                     <!-- VARIAN PRODUK -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -127,7 +127,7 @@
                                 formControlName="variant"
                             />
                         </mat-form-field>
-                    </div>
+                    </div> -->
                     <!-- / VARIAN PRODUK -->
                     <!-- BRAND PRODUK -->
                     <div
@@ -140,9 +140,9 @@
                             fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
-                                form.get('productInfo.brand').errors &&
-                                !form.get('productInfo.brand').untouched &&
-                                (form.get('productInfo.brand').dirty || form.get('productInfo.brand').touched)
+                                form.get('productInfo.brandId').errors &&
+                                !form.get('productInfo.brandId').untouched &&
+                                (form.get('productInfo.brandId').dirty || form.get('productInfo.brandId').touched)
                             "
                         >
                             *Brand
@@ -150,9 +150,16 @@
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
+                                hidden
                                 matInput
-                                name="brand"
-                                formControlName="brand"
+                                name="brandId"
+                                formControlName="brandId"
+                            />
+                            <input
+                                disabled
+                                matInput
+                                name="brandName"
+                                formControlName="brandName"
                             />
                         </mat-form-field>
                     </div>
@@ -161,12 +168,12 @@
                     <div
                         class="custom-field"
                         fxLayout="row"
-                        fxLayoutAlign="space-between none"
+                        fxLayoutAlign="start center"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="20"
                             [class.mat-error]="
                                 form.get('productInfo.category').errors &&
                                 !form.get('productInfo.category').untouched &&
@@ -176,14 +183,9 @@
                             *Kategori
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="category"
-                                formControlName="category"
-                                [disabled]="true"
-                            />
-                        </mat-form-field>
+                        <label>
+                            <strong fxFlexAlign="center">{{ productCategory$ }}</strong>
+                        </label>
                     </div>
                     <!-- / KATEGORI PRODUK -->
                     <!-- PRODUK STOK -->
@@ -234,11 +236,17 @@
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
+                            <mat-select
                                 name="uom"
                                 formControlName="uom"
-                            />
+                            >
+                                <mat-option
+                                    *ngFor="let unit of catalogueUnits$ | async"
+                                    [value]="unit.id"
+                                >
+                                    {{ unit.unit }}
+                                </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <!-- / UOM -->
@@ -266,23 +274,51 @@
                             fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
-                                form.get('productSale.price').errors &&
-                                !form.get('productSale.price').untouched &&
-                                (form.get('productSale.price').dirty || form.get('productSale.price').touched)
+                                form.get('productSale.productPrice').errors &&
+                                !form.get('productSale.productPrice').untouched &&
+                                (form.get('productSale.productPrice').dirty || form.get('productSale.productPrice').touched)
                             "
                         >
-                            *Harga
+                            *Harga Produk
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
                                 matInput
                                 name="price"
-                                formControlName="price"
+                                formControlName="productPrice"
                             />
                         </mat-form-field>
                     </div>
                     <!-- / HARGA PRODUK -->
+                    <!-- HARGA RETAIL -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productSale.retailPrice').errors &&
+                                !form.get('productSale.retailPrice').untouched &&
+                                (form.get('productSale.retailPrice').dirty || form.get('productSale.retailPrice').touched)
+                            "
+                        >
+                            *Harga Retail
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="price"
+                                formControlName="retailPrice"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / HARGA RETAIL -->
                     <!-- TAG PRODUK -->
                     <div
                         class="custom-field"
@@ -671,9 +707,18 @@
                                 fxLayout="column"
                                 fxLayoutAlign="space-around center"
                             >
-                                <button mat-stroked-button style="border-style: dashed; width: 100%; min-height: 130px;" class="red--fg">
+                                <input
+                                    hidden
+                                    #photos
+                                    type="file"
+                                    (change)="onFileBrowse($event, i)"
+                                />
+                                <button *ngIf="!photo.value; else hasPhoto;" (click)="photos.click()" mat-stroked-button style="border-style: dashed; width: 100%; min-height: 130px;" class="red--fg">
                                     <mat-icon>add_circle</mat-icon>
                                 </button>
+                                <ng-template #hasPhoto>
+                                    <img [src]="photo.value"/>
+                                </ng-template>
                                 <p *ngIf="i === 0; else optionalPhoto">*Foto Utama</p>
                                 <ng-template #optionalPhoto>
                                     <p>Foto {{ i }}</p>
@@ -779,7 +824,7 @@
                     </div>
                     <!-- / TAG PRODUK -->
                     <!-- VARIASI PRODUK -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -802,10 +847,10 @@
                             appearance="outline" fxFlex="80"
                             formControlName="isDangerous"
                         >Text</mat-checkbox>
-                    </div>
+                    </div> -->
                     <!-- / VARIASI PRODUK -->
                     <!-- SERVICE PENGIRIMAN -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -842,7 +887,7 @@
                                     <mat-slide-toggle [formControl]="courier?.value?.disabled"></mat-slide-toggle>        
                                 </div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- / SERVICE PENGIRIMAN -->
                 </form>
             </div>

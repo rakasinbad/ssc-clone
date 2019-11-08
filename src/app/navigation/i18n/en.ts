@@ -23,7 +23,7 @@ export const locale = {
                 TITLE: 'Attendances'
             },
             CATALOGUES: {
-                TITLE: 'Catalogues'
+                TITLE: 'Catalogue'
             },
             CREDIT_LIMIT_BALANCE: {
                 TITLE: 'Credit Limit/Balance'

@@ -26,6 +26,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTreeModule } from '@angular/material/tree';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MAT_DATETIME_FORMATS, MatDatetimepickerModule } from '@mat-datetimepicker/core';
@@ -78,6 +79,7 @@ const matModule = [
     MatStepperModule,
     MatTableModule,
     MatTabsModule,
+    MatTreeModule,
     MatToolbarModule,
     MatTooltipModule,
     MatDatetimepickerModule,

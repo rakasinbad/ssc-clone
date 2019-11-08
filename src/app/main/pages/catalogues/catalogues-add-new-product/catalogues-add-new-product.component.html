@@ -1,16 +1,12 @@
-<div id="catalogues-add" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="catalogues-add" class="page-layout carded fullwidth" fusePerfectScrollbar>
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center">
-        <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"></div>
-        <!-- / CONTENT HEADER -->
-
         <!-- CONTENT CARD -->
-        <div class="content-card">
+        <div class="content-card" style="margin-top: 30px;">
             <!-- CONTENT TOOLBAR -->
             <!-- <div class="toolbar px-24 py-8">
                 <span>Content toolbar</span>
@@ -26,10 +22,212 @@
             </div>
         
             <div class="p-16 pt-0 line-height-1.75">
-                Cards provide context and an entry point to more robust information and views, and
-                their content and quantity can vary greatly.
+                <!-- NAMA PRODUK -->
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between start"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                        [class.mat-error]="
+                            productName.errors &&
+                            productName.untouched &&
+                            (productName.dirty || productName.touched)
+                        "
+                    >
+                        Nama Produk 
+                    </label>
+            
+                    <mat-form-field appearance="outline" fxFlex="80">
+                        <input
+                            matInput
+                            name="product-name"
+                            [formControl]="productName"
+                        />
+                    </mat-form-field>
+                </div>
+                <!-- / NAMA PRODUK -->
             </div>
             
+            <div class="p-16 pt-0 line-height-1.75"
+                class="grey-400"
+                fxLayout="column"
+                fxLayoutGap="30px"
+                fxLayoutAlign="space-around start"
+                style="margin: 0px 16px 30px; padding: 30px;"
+            >
+                <!-- SEARCH -->
+                <!-- <div class="search-wrapper">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Cari Di sini" />
+                    </div>
+                </div> -->
+                <!-- / SEARCH -->
+                <!-- CATEGORIES -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start start"
+                    fxLayoutGap="1px"
+                >
+                    <mat-tree [dataSource]="dataSource[0]" [treeControl]="treeControl">
+                        <mat-tree-node
+                            *matTreeNodeDef="let node"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level, false)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                disabled 
+                                mat-icon-button
+                            >
+                            </button>
+                        </mat-tree-node>
+                        <mat-tree-node
+                            *matTreeNodeDef="let node; when: hasChild;"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level, hasChild)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level, hasChild)"
+                            >
+                                <mat-icon class="mat-icon-rtl-mirror">
+                                    chevron_right
+                                </mat-icon>
+                            </button>
+                        </mat-tree-node>
+                    </mat-tree>
+
+                    <mat-tree [dataSource]="dataSource[1]" [treeControl]="treeControl">
+                        <mat-tree-node
+                            *matTreeNodeDef="let node"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 1, false)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                disabled 
+                                mat-icon-button
+                            >
+                            </button>
+                        </mat-tree-node>
+                        <mat-tree-node
+                            *matTreeNodeDef="let node; when: hasChild;"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 1, hasChild)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 1, hasChild)"
+                            >
+                                <mat-icon class="mat-icon-rtl-mirror">
+                                    chevron_right
+                                </mat-icon>
+                            </button>
+                        </mat-tree-node>
+                    </mat-tree>
+
+                    <mat-tree [dataSource]="dataSource[2]" [treeControl]="treeControl">
+                        <mat-tree-node
+                            *matTreeNodeDef="let node"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 2, false)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                disabled 
+                                mat-icon-button
+                            >
+                            </button>
+                        </mat-tree-node>
+                        <mat-tree-node
+                            *matTreeNodeDef="let node; when: hasChild;"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between stretch"
+                            matTreeNodePadding
+                        >
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 2, hasChild)"
+                            >
+                                {{ node.name }}
+                            </button>
+                            <button
+                                mat-button
+                                [disableRipple]="true"
+                                (click)="onSelectCategory($event, node.id, node.data, node.name, node.level + 2, hasChild)"
+                            >
+                                <mat-icon class="mat-icon-rtl-mirror">
+                                    chevron_right
+                                </mat-icon>
+                            </button>
+                        </mat-tree-node>
+                    </mat-tree>
+                </div>
+                <!-- / CATEGORIES -->
+            </div>
+            <div
+                fxLayout="column"
+                fxLayoutGap="30px"
+                fxLayoutAlign="center start"
+                style="margin: 0px 16px;"
+            >
+                <!-- SELECTED CATEGORIES -->
+                <strong>Dipilih: <span class="warn-900-fg">{{ selectedCategories$ | async }}</span></strong>
+                <!-- / SELECTED CATEGORIES -->
+                <!-- CONTINUE BUTTON -->
+                <button
+                    mat-raised-button
+                    class="warn-900"
+                    (click)="addNewCatalogue()"
+                >
+                    Lanjut
+                </button>
+                <!-- / CONTINUE BUTTON -->
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

@@ -28,7 +28,7 @@
                 <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Cari Pesanan/Order" />
+                        <input #filter [formControl]="search" placeholder="Cari Pesanan/Order" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -51,7 +51,7 @@
             <mat-table
                 class="catalogues-table"
                 #table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
@@ -76,13 +76,13 @@
                         Nama Produk
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxLayout="row" fxLayoutAlign="start center">
+                        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
                             <div fxLayout="row" fxFlex="20" fxLayoutAlign="center">
-                                <img [src]="row?.image"/>
+                                <img [src]="row?.catalogueImages[0]?.imageUrl"/>
                             </div>
                             <div fxLayout="row" fxFlex="80" fxLayoutAlign="center">
-                                <div fxLayout="column" fxLayoutGap="5px">
-                                    <p class="text-truncate">
+                                <div fxLayout="column" fxLayoutGap="2px">
+                                    <p>
                                         {{ row?.name }}
                                     </p>
                                     <p class="text-truncate" style="color: grey">
@@ -90,15 +90,17 @@
                                     </p>
                                     <mat-chip-list aria-label="Catalogue status">
                                         <mat-chip
-                                            *ngIf="row?.isArchived"
+                                            *ngIf="row?.status === 'inactive'"
                                             class="orange-bg"
-                                            selected
-                                        >Archived</mat-chip>
+                                        >Inactive</mat-chip>
                                         <mat-chip
-                                            *ngIf="row?.blockType"
-                                            color="accent"
-                                            selected
+                                            *ngIf="row?.status === 'banned'"
+                                            class="warn"
                                         >Diblokir</mat-chip>
+                                        <mat-chip
+                                            *ngIf="row?.stock <= 0"
+                                            class="fuse-black"
+                                        >Habis</mat-chip>
                                     </mat-chip-list>
                                 </div>
                             </div>
@@ -126,7 +128,7 @@
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Harga</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.price }}</p>
+                        <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -142,7 +144,7 @@
                 <ng-container matColumnDef="sales">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Penjualan</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.sale }}</p>
+                        <p class="text-truncate">{{ !row?.sale ? 0 : row?.sale }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -244,26 +246,43 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="archive"
+                                    (click)="setInactive(row)"
+                                    *ngIf="row?.status === 'active'"
                                 >
                                     <mat-icon>archive</mat-icon>
-                                    <span>Archive</span>
+                                    <span>Inactive</span>
                                 </button>
 
                                 <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
+                                    aria-label="archive"
+                                    (click)="setActive(row)"
+                                    *ngIf="row?.status === 'inactive'"
+                                >
+                                    <mat-icon>unarchive</mat-icon>
+                                    <span>Active</span>
+                                </button>
+
+                                <!-- <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
                                     aria-label="block"
+                                    (click)="onBlock(row)"
+                                    *ngIf="row?.status !== 'banned'"
                                 >
                                     <mat-icon>_</mat-icon>
                                     <span>Blokir</span>
-                                </button>
+                                </button> -->
 
                                 <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="export"
+                                    *ngIf="row?.status !== 'banned'"
                                 >
                                     <mat-icon>_</mat-icon>
                                     <span>Export</span>
@@ -284,6 +303,7 @@
             </mat-table>
 
             <mat-paginator
+                [length]="totalDataSource$ | async"
                 [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
@@ -291,9 +311,9 @@
             >
             </mat-paginator>
 
-            <!-- <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="isLoading$ | async">
                 <mat-spinner color="accent"></mat-spinner>
-            </div> -->
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

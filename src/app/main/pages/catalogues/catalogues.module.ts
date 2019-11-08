@@ -9,13 +9,27 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { CataloguesRoutingModule } from './catalogues-routing.module';
 import { CataloguesComponent } from './catalogues.component';
-import { fromCatalogue } from './store/reducers';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
+import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
+import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
+
+import { CatalogueEffects } from './store/effects';
+
+import { fromCatalogue } from './store/reducers';
+import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 
 @NgModule({
-  declarations: [CataloguesComponent, CataloguesImportComponent, CataloguesAddNewProductComponent, CataloguesFormComponent],
+  declarations: [
+      CataloguesComponent,
+      CataloguesImportComponent,
+      CataloguesAddNewProductComponent,
+      CataloguesFormComponent,
+      CataloguesBlockComponent,
+      CataloguesRemoveComponent,
+      CataloguesActiveInactiveComponent
+  ],
   imports: [
     CataloguesRoutingModule,
 
@@ -27,8 +41,14 @@ import { CataloguesFormComponent } from './catalogues-form/catalogues-form.compo
     NgxPermissionsModule.forChild(),
 
     StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
-    EffectsModule.forFeature([])
+    EffectsModule.forFeature([ CatalogueEffects ])
   ],
-  entryComponents: [CataloguesImportComponent]
+  entryComponents: [
+    CataloguesImportComponent,
+    CataloguesAddNewProductComponent,
+    CataloguesBlockComponent,
+    CataloguesRemoveComponent,
+    CataloguesActiveInactiveComponent
+  ]
 })
 export class CataloguesModule { }
