@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { Catalogue } from '../../models';
+import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CatalogueActions } from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
@@ -22,6 +22,10 @@ export interface State {
     isDeleting?: boolean;
     isLoading: boolean;
     selectedCatalogueId: string | number;
+    selectedCategories: Array<{ id: string; name: string; }>;
+    productName: string;
+    categories: Array<CatalogueCategory>;
+    units?: Array<CatalogueUnit>;
     source: TSource;
     catalogue?: Catalogue;
     catalogues: CatalogueState;
@@ -46,7 +50,11 @@ const initialState: State = {
     isDeleting: false,
     isLoading: false,
     selectedCatalogueId: null,
+    selectedCategories: [],
+    productName: '',
+    categories: [],
     source: 'fetch',
+    units: [],
     catalogues: initialCatalogueState,
     errors: initialErrorState
 };
@@ -60,12 +68,32 @@ const catalogueReducer = createReducer(
     initialState,
     /** 
      *  ===================================================================
+     *  GETTERS & SETTERS
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.setSelectedCategories,
+        (state, { payload }) => ({
+            ...state,
+            selectedCategories: payload
+        })
+    ),
+    on(
+        CatalogueActions.setProductName,
+        (state, { payload }) => ({
+            ...state,
+            productName: payload
+        })
+    ),
+    /** 
+     *  ===================================================================
      *  REQUESTS
      *  ===================================================================
      */ 
     on(
         CatalogueActions.fetchCatalogueRequest,
         CatalogueActions.fetchCataloguesRequest,
+        CatalogueActions.fetchCatalogueUnitRequest,
         (state) => ({
             ...state,
             isLoading: true
@@ -80,6 +108,13 @@ const catalogueReducer = createReducer(
         })
     ),
     on(
+        CatalogueActions.fetchCategoryTreeRequest,
+        (state) => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
         CatalogueActions.removeCatalogueRequest,
         (state) => ({
             ...state,
@@ -91,7 +126,16 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      *  FAILURES
      *  ===================================================================
-     */ 
+     */
+    on(
+        CatalogueActions.fetchCategoryTreeFailure,
+        CatalogueActions.fetchCatalogueUnitFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(
         CatalogueActions.fetchCatalogueFailure,
         CatalogueActions.fetchCataloguesFailure,
@@ -126,6 +170,15 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      */ 
     on(
+        CatalogueActions.fetchCategoryTreeSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            categories: payload.categories,
+            errors: adapterError.removeOne('fetchCatalogueCategoriesFailure', state.errors)
+        })
+    ),
+    on(
         CatalogueActions.fetchCataloguesSuccess,
         (state, { payload }) => ({
             ...state,
@@ -155,6 +208,15 @@ const catalogueReducer = createReducer(
             isLoading: false,
             isDeleting: true,
             catalogues: adapterCatalogue.removeOne(payload.id, state.catalogues),
+            errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.fetchCatalogueUnitSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            units: payload.units,
             errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
         })
     ),

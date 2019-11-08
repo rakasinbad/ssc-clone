@@ -16,6 +16,7 @@ import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.co
 import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 
 import { CatalogueEffects } from './store/effects';
+
 import { fromCatalogue } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 
@@ -40,7 +41,7 @@ import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/
     NgxPermissionsModule.forChild(),
 
     StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
-    EffectsModule.forFeature([CatalogueEffects])
+    EffectsModule.forFeature([ CatalogueEffects ])
   ],
   entryComponents: [
     CataloguesImportComponent,

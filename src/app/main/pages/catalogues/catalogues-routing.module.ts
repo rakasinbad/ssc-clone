@@ -20,13 +20,31 @@ const routes: Routes = [
     },
     {
         path: 'add',
+        component: CataloguesAddNewProductComponent,
+        canActivate: [AuthGuard],
+        // resolve: {
+        //     catalogues: CatalogueResolver,
+        //     status: CatalogueStatusResolver
+        // },
+    },
+    {
+        path: 'add/new',
         component: CataloguesFormComponent,
         canActivate: [AuthGuard],
-        resolve: {
-            catalogues: CatalogueResolver,
-            status: CatalogueStatusResolver
-        },
-        children: []
+        // resolve: {
+        //     catalogues: CatalogueResolver,
+        //     status: CatalogueStatusResolver
+        // },
+    },
+    {
+        path: 'edit',
+        children: [
+            {
+                path: ':id',
+                component: CataloguesFormComponent,
+                canActivate: [AuthGuard]
+            }
+        ]
     }
 ];
 

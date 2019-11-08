@@ -20,7 +20,7 @@ import {
     withLatestFrom
 } from 'rxjs/operators';
 
-import { Catalogue } from '../../models';
+import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CataloguesService } from '../../services';
 import { CatalogueActions } from '../actions';
 import { fromCatalogue } from '../reducers';
@@ -42,6 +42,110 @@ export class CatalogueEffects {
                               $$ |                                                 
                               $$/                                                  
     */
+    addNewCatalogueRequest$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.addNewCatalogueRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$catalogueApi
+                    .addNewCatalogue(payload)
+                    .pipe(
+                        map<Catalogue, any>(catalogue => {
+                            return CatalogueActions.addNewCatalogueSuccess({
+                                payload: catalogue
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.addNewCatalogueFailure({
+                                    payload: { id: 'addNewCatalogueFailure', errors: err }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
+    fetchCatalogueUnitRequest$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCatalogueUnitRequest),
+            switchMap(_ => {
+                return this._$catalogueApi
+                    .getCatalogueUnitOfMeasurement({ limit: 10, skip: 0, sort: 'desc', sortBy: 'id' })
+                    .pipe(
+                        catchOffline(),
+                        map<Array<CatalogueUnit>, any>(units => {
+                            return CatalogueActions.fetchCatalogueUnitSuccess({
+                                payload: {
+                                    units: [
+                                        ...units.map(unit => ({
+                                            ...new CatalogueUnit(
+                                                unit.id,
+                                                unit.unit,
+                                                unit.status,
+                                                unit.createdAt,
+                                                unit.updatedAt,
+                                                unit.deletedAt
+                                            )
+                                        }))
+                                    ],
+                                    source: 'fetch'
+                                }
+                            });
+                        })
+                    );
+            })
+        )
+    );
+
+   fetchCatalogueCategoriesRequest$ = createEffect(() =>
+   this.actions$.pipe(
+       ofType(CatalogueActions.fetchCategoryTreeRequest),
+       switchMap(_ => {
+           return this._$catalogueApi
+               .getCategoryTree()
+               .pipe(
+                   catchOffline(),
+                   map<Array<CatalogueCategory>, any>(categories => {
+                       if (categories.length > 0) {
+                           return CatalogueActions.fetchCategoryTreeSuccess({
+                               payload: {
+                                   categories: [
+                                       ...categories.map(category => ({
+                                           ...new CatalogueCategory(
+                                               category.id,
+                                               category.parentId,
+                                               category.category,
+                                               category.iconHome,
+                                               category.iconTree,
+                                               category.sequence,
+                                               category.hasChild,
+                                               category.status,
+                                               category.createdAt,
+                                               category.updatedAt,
+                                               category.deletedAt,
+                                               category.children
+                                           )
+                                       }))
+                                   ],
+                                   source: 'fetch'
+                               }
+                           });
+                       }
+                   }),
+                   catchError(err =>
+                       of(
+                           CatalogueActions.fetchCategoryTreeFailure({
+                               payload: { id: 'fetchCategoryTreeFailure', errors: err }
+                           })
+                       )
+                   )
+               );
+            })
+        )
+    );
+
     fetchCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguesRequest),
@@ -407,10 +511,40 @@ export class CatalogueEffects {
     $$ |   $$    $$ |$$ |$$ |$$    $$/ $$ |      $$       |/     $$/ 
     $$/     $$$$$$$/ $$/ $$/  $$$$$$/  $$/        $$$$$$$/ $$$$$$$/                                                           
     */
+   fetchCatalogueCategoriesFailure$ = createEffect(
+    () =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCategoryTreeFailure),
+            map(action => action.payload),
+            tap(resp => {
+                this._$notice.open(resp.errors.error.message, 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            })
+        ),
+        { dispatch: false }
+    );
+
     fetchCatalogueFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.fetchCatalogueFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open(resp.errors.error.message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    addNewCatalogueFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.addNewCatalogueFailure),
                 map(action => action.payload),
                 tap(resp => {
                     this._$notice.open(resp.errors.error.message, 'error', {
@@ -489,6 +623,21 @@ export class CatalogueEffects {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
+            })
+        ), { dispatch: false }
+    );
+
+    addNewCatalogueSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.addNewCatalogueSuccess),
+            map(action => action.payload),
+            tap(response => {
+                console.log('SUKSES', response);
+                this._$notice.open('Berhasil menambah produk baru', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+                this.router.navigate(['pages', 'catalogues']);
             })
         ), { dispatch: false }
     );

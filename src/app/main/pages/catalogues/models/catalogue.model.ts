@@ -148,6 +148,10 @@ export interface ICatalogue {
     catalogueVariant: ICatalogueVariant;
 }
 
+export interface ICatalogueUnitResponse extends IResponsePaginate {
+    data: Array<CatalogueUnit>;
+}
+
 export interface ICataloguesResponse extends IResponsePaginate {
     data: Array<Catalogue>;
 }
@@ -194,6 +198,7 @@ export class CatalogueCategory extends Timestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    children?: Array<CatalogueCategory>;
 
     constructor(
         id: string,
@@ -206,7 +211,8 @@ export class CatalogueCategory extends Timestamp {
         status: 'active' | 'inactive',
         createdAt: string,
         updatedAt: string,
-        deletedAt: TNullable<string>
+        deletedAt: TNullable<string>,
+        children?: Array<CatalogueCategory>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
@@ -221,6 +227,25 @@ export class CatalogueCategory extends Timestamp {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.children = !Array.isArray(children) ? [] : children.length === 0 ? []
+        : [
+            ...children.map(child => ({
+                ...new CatalogueCategory(
+                    child.id,
+                    child.parentId,
+                    child.category,
+                    child.iconHome,
+                    child.iconTree,
+                    child.sequence,
+                    child.hasChild,
+                    child.status,
+                    child.createdAt,
+                    child.updatedAt,
+                    child.deletedAt,
+                    child.children
+                )
+            }))
+        ];
     }
 }
 

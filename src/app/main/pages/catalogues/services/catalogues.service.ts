@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { IQueryParams } from 'app/shared/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
 
-import { Catalogue, ICatalogue, ICataloguesResponse } from '../models';
+import { Catalogue, CatalogueCategory, ICatalogueUnitResponse, ICatalogue, ICataloguesResponse } from '../models';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -35,6 +35,7 @@ export class CataloguesService {
      * @memberof MerchantApiService
      */
     private readonly _endpoint = '/catalogues';
+    private readonly _categoryTreeEndpoint = '/categories-tree';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -107,6 +108,22 @@ export class CataloguesService {
     setCatalogueToInactive(id: string | number): Observable<Catalogue> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch<Catalogue>(`${this._url}/${id}`, { status: 'inactive' });
+    }
+
+    getCategoryTree(): Observable<Array<CatalogueCategory>> {
+        this._url = this._$helper.handleApiRouter(this._categoryTreeEndpoint);
+        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, { params: { source: 'sc' } });
+    }
+
+    getCatalogueUnitOfMeasurement(params: IQueryParams): Observable<Array<ICatalogueUnitResponse>> {
+        this._url = this._$helper.handleApiRouter('/catalogue-units');
+        const newParams = this._$helper.handleParams(this._url, params);
+        return this.http.get<Array<ICatalogueUnitResponse>>(`${this._url}`, { params: newParams });
+    }
+
+    addNewCatalogue(data: any): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.post<Catalogue>(this._url, data);
     }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {

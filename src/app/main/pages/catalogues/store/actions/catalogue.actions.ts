@@ -1,7 +1,13 @@
 import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-import { Catalogue, ICatalogue, ICatalogueDemo } from '../../models';
+import {
+    Catalogue,
+    CatalogueUnit,
+    // ICatalogue,
+    ICatalogueDemo,
+    CatalogueCategory
+} from '../../models';
 
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
@@ -17,6 +23,21 @@ export const filterLiveCatalogues = createAction('[Catalogues Page] Filter Live 
 export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empty Catalogues');
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
 export const filterArchivedCatalogues = createAction('[Catalogues Page] Filter Archived Catalogues');
+
+export const addNewCatalogueRequest = createAction(
+    '[Catalogues API] Add New Catalogue Request',
+    props<{ payload: any }>()
+);
+
+export const addNewCatalogueFailure = createAction(
+    '[Catalogues API] Add New Catalogue Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const addNewCatalogueSuccess = createAction(
+    '[Catalogues API] Add New Catalogue Success',
+    props<{ payload: Catalogue }>()
+);
 
 /**
  * FETCH CATALOGUE
@@ -35,6 +56,41 @@ export const fetchCatalogueFailure = createAction(
 export const fetchCatalogueSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Success',
     props<{ payload: { catalogue?: Catalogue; source: TSource } }>()
+);
+
+/**
+ * FETCH CATALOGUE UNIT
+ */
+
+export const fetchCatalogueUnitRequest = createAction(
+    '[Catalogues API] Fetch Catalogue Unit Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchCatalogueUnitFailure = createAction(
+    '[Catalogues API] Fetch Catalogue Unit Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCatalogueUnitSuccess = createAction(
+    '[Catalogues API] Fetch Catalogue Unit Success',
+    props<{ payload: { units: Array<CatalogueUnit>; source: TSource } }>()
+);
+
+/**
+ * FETCH CATEGORY TREE
+ */
+
+export const fetchCategoryTreeRequest = createAction('[Catalogues API] Fetch Category Tree Request');
+
+export const fetchCategoryTreeFailure = createAction(
+    '[Catalogues API] Fetch Category Tree Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCategoryTreeSuccess = createAction(
+    '[Catalogues API] Fetch Category Tree Success',
+    props<{ payload: { categories?: Array<CatalogueCategory>; source: TSource } }>()
 );
 
 /**
@@ -139,6 +195,16 @@ export const resetCatalogues = createAction('[Catalogues Page] Reset Catalogues 
 export const startLoading = createAction('[Catalogues Page] Start Loading');
 
 export const endLoading = createAction('[Catalogues Page] End Loading');
+
+export const setProductName = createAction(
+    '[Catalogues Page] Set Product Name',
+    props<{ payload: string }>()
+);
+
+export const setSelectedCategories = createAction(
+    '[Catalogues Page] Set Selected Category',
+    props<{ payload: Array<{ id: string, name: string }> }>()
+    );
 
 /**
  * FOR DEMO PURPOSE ONLY
