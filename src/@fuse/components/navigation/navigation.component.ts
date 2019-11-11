@@ -4,7 +4,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    OnDestroy
 } from '@angular/core';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { merge, Subject } from 'rxjs';
@@ -17,7 +18,7 @@ import { takeUntil } from 'rxjs/operators';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FuseNavigationComponent implements OnInit {
+export class FuseNavigationComponent implements OnInit, OnDestroy {
     @Input()
     layout = 'vertical';
 
@@ -61,8 +62,15 @@ export class FuseNavigationComponent implements OnInit {
             .subscribe(() => {
                 // Load the navigation
                 // this.navigations = this._fuseNavigationService.getCurrentNavigation();
+                this.navigations =
+                    this.navigation || this._fuseNavigationService.getCurrentNavigation();
 
-                console.log('NAVIGATION 2A', this.navigations, this.navigation, this.layout);
+                console.log(
+                    'NAVIGATION 2A CHANGED',
+                    this.navigations,
+                    this.navigation,
+                    this.layout
+                );
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -74,7 +82,12 @@ export class FuseNavigationComponent implements OnInit {
                 // Load the navigation
                 this.navigations = this.navigation;
 
-                console.log('NAVIGATION 2B', this.navigations, this.navigation, this.layout);
+                console.log(
+                    'NAVIGATION 2B REGISTERED',
+                    this.navigations,
+                    this.navigation,
+                    this.layout
+                );
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -88,8 +101,15 @@ export class FuseNavigationComponent implements OnInit {
         )
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
+                console.log('NAVIGATION 2C UPDATE', this.navigations, this.navigation, this.layout);
+
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
             });
+    }
+
+    ngOnDestroy(): void {
+        this._unsubscribeAll.next();
+        this._unsubscribeAll.complete();
     }
 }

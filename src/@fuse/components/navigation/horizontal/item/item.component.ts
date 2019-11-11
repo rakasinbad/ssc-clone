@@ -1,9 +1,9 @@
-import { Store } from '@ngrx/store';
 import { Component, HostBinding, Input, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import { Observable } from 'rxjs';
-import { UiSelectors } from 'app/shared/store/selectors';
 
 @Component({
     selector: 'fuse-nav-horizontal-item',
@@ -22,8 +22,8 @@ export class FuseNavHorizontalItemComponent implements OnInit {
     constructor(public store: Store<fromRoot.State>, public translate: TranslateService) {}
 
     ngOnInit(): void {
-        //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        //Add 'implements OnInit' to the class.
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
 
         this.currentCustomToolbarActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
     }
