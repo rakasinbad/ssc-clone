@@ -8,21 +8,26 @@
         [@animateStagger]="{ value: '50' }"
         fusePerfectScrollbar
     >
-        <!-- No Column -->
-        <ng-container matColumnDef="no">
-            <mat-header-cell *matHeaderCellDef>
-                <span class="text-left">No</span>
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="id">
+                <span class="text-left">ID</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let row; let i = index">
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row?.id }}
+                </p>
+            </mat-cell>
+            <!-- <mat-cell *matCellDef="let row; let i = index">
                 <p style="word-break: break-word;">
                     {{ i + 1 + paginator.pageIndex * paginator.pageSize }}
                 </p>
-                <!-- <div *ngIf="!row?.id || (isLoading$ | async)" fxFlex>
+                <div *ngIf="!row?.id || (isLoading$ | async)" fxFlex>
                     <ngx-skeleton-loader
                         [theme]="{ width: '100%', 'margin-top': '10px' }"
                     ></ngx-skeleton-loader>
-                </div> -->
-            </mat-cell>
+                </div>
+            </mat-cell> -->
         </ng-container>
 
         <!-- Name Column -->
@@ -147,10 +152,19 @@
                             mat-menu-item
                             type="button"
                             class="sinbad-mat-menu-item"
-                            aria-label="Deactivate"
+                            [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
+                            (click)="onChangeStatus(row)"
                         >
-                            <mat-icon>archive</mat-icon>
-                            <span>Deactivate</span>
+                            <mat-icon>
+                                {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
+                            </mat-icon>
+                            <span>
+                                {{
+                                    (row?.status === 'active'
+                                        ? 'ACTION.INACTIVE'
+                                        : 'ACTION.ACTIVE') | translate
+                                }}
+                            </span>
                         </button>
                     </mat-menu>
                 </div>

@@ -2,7 +2,7 @@
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
     <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
-        <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="15px">
+        <!-- <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="15px">
             <div class="default-img-sinbad" fxFlex="30">
                 <div class="bg-icon">
                     <mat-icon>zoom_in</mat-icon>
@@ -17,7 +17,7 @@
                     via foto
                 </span>
             </div>
-        </div>
+        </div> -->
 
         <div class="mt-12">
             <span class="mat-subheading-2">Account Receivable</span>
@@ -56,7 +56,7 @@
             </mat-form-field>
         </div>
 
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
             <label
                 fxFlex="25"
                 [class.mat-error]="
@@ -78,7 +78,7 @@
                     prefix="Rp "
                 />
 
-                <!-- <mat-error
+                <mat-error
                                     *ngIf="
                                         form.get('amount').errors &&
                                         (form.get('amount').dirty ||
@@ -86,9 +86,9 @@
                                     "
                                 >
                                     {{ getErrorMessage('amount') }}
-                                </mat-error> -->
+                                </mat-error>
             </mat-form-field>
-        </div>
+        </div> -->
 
         <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
             <label

@@ -21,7 +21,7 @@ import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -43,6 +43,7 @@ import { PaymentStatusSelectors } from './store/selectors';
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     // dataSource: MatTableDataSource<IPaymentStatusDemo>; // Need for demo
     search: FormControl;
+    filterStatus: string;
     total: number;
     displayedColumns = [
         'order-reference',
@@ -68,6 +69,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -114,7 +118,11 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Set default first status active
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
 
+        // this._fuseNavigationService.unregister('customNavigation');
         this._fuseNavigationService.register('customNavigation', this.statusPayment);
+
+        // Show custom toolbar
+        this.store.dispatch(UiActions.showCustomToolbar());
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -127,8 +135,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
+        this.filterStatus = '';
         this.hasSelected = false;
         this.paginator.pageSize = 5;
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
+
+        localStorage.removeItem('filter.payment.status');
 
         this.dataSource$ = this.store.select(PaymentStatusSelectors.getAllPaymentStatus);
         this.totalDataSource$ = this.store.select(PaymentStatusSelectors.getTotalPaymentStatus);
@@ -136,6 +152,43 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
 
         this.initTable();
+
+        this.store
+            .select(UiSelectors.getCustomToolbarActive)
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000),
+                filter(v => !!v),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(v => {
+                const currFilter = localStorage.getItem('filter.payment.status');
+
+                if (v !== 'all-status') {
+                    localStorage.setItem('filter.payment.status', v);
+                    this.filterStatus = v;
+                } else {
+                    localStorage.removeItem('filter.payment.status');
+                    this.filterStatus = '';
+                }
+
+                if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
+                    this.store.dispatch(PaymentStatusActions.filterStatusPayment({ payload: v }));
+                }
+            });
+
+        this.store
+            .select(PaymentStatusSelectors.getIsRefresh)
+            .pipe(
+                distinctUntilChanged(),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isRefresh => {
+                console.log('IS REFRESH', isRefresh);
+                if (isRefresh) {
+                    this.onRefreshTable();
+                }
+            });
 
         // Need for demo
         // this.store
@@ -152,7 +205,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
 
-        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
@@ -165,8 +220,13 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
+        localStorage.removeItem('filter.payment.status');
+
+        this._fuseNavigationService.unregister('customNavigation');
+
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.store.dispatch(UiActions.hideCustomToolbar());
+        this.store.dispatch(PaymentStatusActions.resetPaymentStatus());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -175,18 +235,21 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+    get searchPaymentStatus(): string {
+        return localStorage.getItem('filter.payment.status') || '';
+    }
 
-    agingDate(date): number {
-        const dueDate = moment(date);
-        const dateNow = moment();
-        const diffDate = dateNow.diff(dueDate, 'days');
-
-        return diffDate <= 0 ? 0 : diffDate;
+    agingDate(date): any {
+        return date < 0 ? '-' : date;
     }
 
     countDownDueDate(date): any {
-        const dueDate = moment(date);
-        const dateNow = moment();
+        if (!date) {
+            return '-';
+        }
+
+        const dueDate = moment.utc(date).local();
+        const dateNow = moment.utc();
         const diffDate = dueDate.diff(dateNow, 'days');
 
         return diffDate <= 0 ? '-' : diffDate;
@@ -194,6 +257,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
+
+        this.table.nativeElement.scrollIntoView();
     }
 
     onDelete(item): void {
@@ -209,6 +274,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             },
             disableClose: true
         });
+    }
+
+    onRemoveSearchPaymentStatus(): void {
+        // localStorage.removeItem('filter.payment.status');
+        this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
+        // this.filterStatus = '';
+    }
+
+    onTrackBy(index: number, item: any): string {
+        return !item ? null : item.id;
     }
 
     onUpdate(): void {
@@ -245,12 +320,59 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         if (this.search.value) {
             const query = this.search.value;
 
-            data['search'] = [
-                {
+            if (data['search'] && data['search'].length > 0) {
+                data['search'].push({
                     fieldName: 'keyword',
                     keyword: query
+                });
+            } else {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            }
+        }
+
+        if (this.filterStatus) {
+            if (
+                this.filterStatus === 'waiting-for-payment' ||
+                this.filterStatus === 'paid' ||
+                this.filterStatus === 'overdue'
+            ) {
+                if (data['search'] && data['search'].length > 0) {
+                    data['search'].push({
+                        fieldName: 'statusPayment',
+                        keyword: this.filterStatus.replace(/-/g, ' ')
+                    });
+                } else {
+                    data['search'] = [
+                        {
+                            fieldName: 'statusPayment',
+                            keyword: this.filterStatus.replace(/-/g, ' ')
+                        }
+                    ];
                 }
-            ];
+            } else if (
+                this.filterStatus === 'd-7' ||
+                this.filterStatus === 'd-3' ||
+                this.filterStatus === 'd-0'
+            ) {
+                if (data['search'] && data['search'].length > 0) {
+                    data['search'].push({
+                        fieldName: 'dueDay',
+                        keyword: String(this.filterStatus).split('-')[1]
+                    });
+                } else {
+                    data['search'] = [
+                        {
+                            fieldName: 'dueDay',
+                            keyword: String(this.filterStatus).split('-')[1]
+                        }
+                    ];
+                }
+            }
         }
 
         this.store.dispatch(PaymentStatusActions.fetchPaymentStatusRequest({ payload: data }));

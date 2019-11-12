@@ -20,15 +20,15 @@ export const statusPayment: FuseNavigation[] = [
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'waiting-for-payment' }));
         }
     },
-    {
-        id: 'temporary-paid',
-        title: 'Temporary Paid',
-        translate: 'STATUS.PAYMENT.TEMPORARY_PAID.TITLE',
-        type: 'item',
-        function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'temporary-paid' }));
-        }
-    },
+    // {
+    //     id: 'temporary-paid',
+    //     title: 'Temporary Paid',
+    //     translate: 'STATUS.PAYMENT.TEMPORARY_PAID.TITLE',
+    //     type: 'item',
+    //     function: store => {
+    //         store.dispatch(UiActions.setCustomToolbarActive({ payload: 'temporary-paid' }));
+    //     }
+    // },
     {
         id: 'paid',
         title: 'Paid',

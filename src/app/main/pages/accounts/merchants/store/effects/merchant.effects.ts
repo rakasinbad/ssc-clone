@@ -12,15 +12,7 @@ import { StoreCluster } from 'app/shared/models';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';
-import {
-    catchError,
-    exhaustMap,
-    finalize,
-    map,
-    switchMap,
-    tap,
-    withLatestFrom
-} from 'rxjs/operators';
+import { catchError, exhaustMap, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { BrandStore, StoreEdit, StoreEmployee, StoreEmployeeDetail } from '../../models';
 import { MerchantApiService } from '../../services';
@@ -446,6 +438,104 @@ export class MerchantEffects {
                     console.log('DELETE STORE EMPLOYEE', resp);
 
                     this._$notice.open('Data berhasil dihapus', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    confirmChangeStatusEmployeeStore$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(BrandStoreActions.confirmChangeStatusStoreEmployee),
+                map(action => action.payload),
+                exhaustMap(params => {
+                    const title = params.status === 'active' ? 'Inactive' : 'Active';
+                    const body = params.status === 'active' ? 'inactive' : 'active';
+                    const dialogRef = this.matDialog.open(ChangeConfirmationComponent, {
+                        data: {
+                            title: `Set ${title}`,
+                            message: `Are you sure want to change <strong>${params.user.fullName}</strong> status ?`,
+                            id: params.id,
+                            change: body
+                        },
+                        disableClose: true
+                    });
+
+                    return dialogRef.afterClosed();
+                }),
+                map(({ id, change }) => {
+                    if (id && change) {
+                        this.store.dispatch(
+                            BrandStoreActions.updateStatusStoreEmployeeRequest({
+                                payload: { body: change, id: id }
+                            })
+                        );
+                    } else {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStatusStoreEmployeeRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(BrandStoreActions.updateStatusStoreEmployeeRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$merchantApi.updatePatchStatusEmployee({ status: body }, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[UPDATE STATUS RESPONSE STORE EMPLOYEE]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return BrandStoreActions.updateStatusStoreEmployeeSuccess({
+                            payload: resp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            BrandStoreActions.updateStatusStoreEmployeeFailure({
+                                payload: { id: 'updateStatusStoreEmployeeFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    updateStatusStoreEmployeeFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(BrandStoreActions.updateStatusStoreEmployeeFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Update status gagal', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStatusStoreEmployeeSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(BrandStoreActions.updateStatusStoreEmployeeSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Update status berhasil', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

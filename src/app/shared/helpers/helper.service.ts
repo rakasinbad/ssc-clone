@@ -73,9 +73,24 @@ export class HelperService {
         if (params.search) {
             if (params.search.length) {
                 for (const search of params.search) {
-                    if (search.fieldName && search.fieldName === 'keyword') {
-                        newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
-                    } else if (search.fieldName && search.fieldName === 'type') {
+                    if (
+                        (search.fieldName && search.fieldName === 'keyword') ||
+                        search.fieldName === 'type' ||
+                        search.fieldName === 'statusPayment' ||
+                        search.fieldName === 'dueDay'
+                    ) {
+                        if (search.fieldName === 'statusPayment') {
+                            if (newParams.has('dueDay')) {
+                                newParams.delete('dueDay');
+                            }
+                        }
+
+                        if (search.fieldName === 'dueDay') {
+                            if (newParams.has('statusPayment')) {
+                                newParams.delete('statusPayment');
+                            }
+                        }
+
                         newParams = newParams.set(`${search.fieldName}`, `${search.keyword}`);
                     } else if (search.fieldName && search.fieldName !== 'id') {
                         newParams = newParams.append(
@@ -88,9 +103,9 @@ export class HelperService {
         }
 
         if (args && args.length > 0) {
-            args.forEach((arg, i) => {
-                if (arg[i].key && arg[i].value) {
-                    newParams = newParams.append(arg[i].key, arg[i].value);
+            args[0].forEach((arg, i) => {
+                if (arg.key && arg.value) {
+                    newParams = newParams.append(arg.key, arg.value);
                 }
             });
         }

@@ -11,7 +11,7 @@ export interface State {
     configFooterAction: IFooterActionConfig;
     breadcrumbs: IBreadcrumbs[];
     smallBreadcrumbs: IBreadcrumbs[];
-    customToolbarActive: string;
+    customToolbarActive?: string;
     selectedRowIndex: string;
 }
 
@@ -21,7 +21,7 @@ const initialState: State = {
     configFooterAction: null,
     breadcrumbs: null,
     smallBreadcrumbs: null,
-    customToolbarActive: null,
+    // customToolbarActive: null,
     selectedRowIndex: '-1'
 };
 
@@ -41,15 +41,23 @@ const uiReducer = createReducer(
     })),
     on(UiActions.resetCustomToolbarActive, state => ({
         ...state,
-        customToolbarActive: null
+        customToolbarActive: undefined
     })),
     on(UiActions.createBreadcrumb, (state, { payload }) => ({
         ...state,
         breadcrumbs: payload
     })),
+    on(UiActions.resetBreadcrumb, state => ({
+        ...state,
+        breadcrumbs: initialState.breadcrumbs
+    })),
     on(UiActions.createSmallBreadcrumb, (state, { payload }) => ({
         ...state,
         smallBreadcrumbs: payload
+    })),
+    on(UiActions.resetSmallBreadcrumb, state => ({
+        ...state,
+        smallBreadcrumbs: initialState.smallBreadcrumbs
     })),
     on(UiActions.hideFooterAction, state => ({
         ...state,

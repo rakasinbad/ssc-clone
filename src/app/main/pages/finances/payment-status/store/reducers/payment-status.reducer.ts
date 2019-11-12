@@ -55,13 +55,23 @@ const paymentStatusReducer = createReducer(
         isRefresh: undefined,
         errors: adapterError.upsertOne(payload, state.errors)
     })),
+    on(PaymentStatusActions.filterStatusPayment, (state, { payload }) => ({
+        ...state,
+        isRefresh: true
+    })),
     on(PaymentStatusActions.fetchPaymentStatusSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
+        isRefresh: undefined,
         paymentStatus: adapterPaymentStatus.addAll(payload.paymentStatus, {
             ...state.paymentStatus,
             total: payload.total
         }),
+        errors: adapterError.removeOne('fetchPaymentFailure', state.errors)
+    })),
+    on(PaymentStatusActions.resetPaymentStatus, state => ({
+        ...state,
+        paymentStatus: initialState.paymentStatus,
         errors: adapterError.removeOne('fetchPaymentFailure', state.errors)
     }))
     // on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({

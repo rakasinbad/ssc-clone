@@ -208,6 +208,11 @@ export class MerchantApiService {
         return this.http.patch<IStoreEmployeeDetail>(`${this._url}/${id}`, body);
     }
 
+    updatePatchStatusEmployee(body: { status: string }, id: string): Observable<any> {
+        this._url = this._$helper.handleApiRouter(this._endpointEmployee);
+        return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
+
     deleteEmployee(id: string): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpointEmployee);
         return this.http.delete<any>(`${this._url}/${id}`);

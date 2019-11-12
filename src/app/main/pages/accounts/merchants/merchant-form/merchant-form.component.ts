@@ -101,6 +101,11 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         cancel: {
                             label: 'Batal',
                             active: true
+                        },
+                        goBack: {
+                            label: 'Kembali',
+                            active: true,
+                            url: '/pages/account/stores'
                         }
                     }
                 }
@@ -203,7 +208,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.form.statusChanges
             .pipe(
                 distinctUntilChanged(),
-                debounceTime(1000)
+                debounceTime(1000),
+                takeUntil(this._unSubs$)
             )
             .subscribe(status => {
                 console.log('FORM STATUS 1', status);
@@ -1157,7 +1163,12 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 .subscribe(user => {
                     console.log('AUTH SELECTORS', user);
 
-                    if (user && user.data && user.data.urbanId) {
+                    if (
+                        user &&
+                        user.data &&
+                        user.data.userBrands &&
+                        user.data.userBrands.length > 0
+                    ) {
                         const createUser = new FormUser(
                             body.storeInfo.legalInfo.name,
                             body.storeInfo.legalInfo.npwpId,
@@ -1172,7 +1183,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             body.storeInfo.storeClassification.storeCluster
                         );
 
-                        const createBrand = new FormBrand(user.data.urbanId);
+                        const createBrand = new FormBrand(user.data.userBrands[0].brandId);
 
                         const payload = new FormStore(
                             body.storeInfo.storeId.id,

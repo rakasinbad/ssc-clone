@@ -88,6 +88,7 @@ const brandStoreReducer = createReducer(
     ),
     on(
         BrandStoreActions.updateStatusStoreRequest,
+        BrandStoreActions.updateStatusStoreEmployeeRequest,
         BrandStoreActions.deleteStoreRequest,
         BrandStoreActions.deleteStoreEmployeeRequest,
         state => ({
@@ -114,6 +115,7 @@ const brandStoreReducer = createReducer(
     ),
     on(
         BrandStoreActions.updateStatusStoreFailure,
+        BrandStoreActions.updateStatusStoreEmployeeFailure,
         BrandStoreActions.deleteStoreFailure,
         BrandStoreActions.deleteStoreEmployeeFailure,
         (state, { payload }) => ({
@@ -138,6 +140,12 @@ const brandStoreReducer = createReducer(
         isLoading: false,
         isRefresh: true,
         errors: adapterError.removeOne('updateStatusStoreFailure', state.errors)
+    })),
+    on(BrandStoreActions.updateStatusStoreEmployeeSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        errors: adapterError.removeOne('updateStatusStoreEmployeeFailure', state.errors)
     })),
     on(BrandStoreActions.deleteStoreSuccess, (state, { payload }) => ({
         ...state,

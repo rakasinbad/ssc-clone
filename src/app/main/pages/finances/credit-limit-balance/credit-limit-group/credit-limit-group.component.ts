@@ -1,7 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { fuseAnimations } from '@fuse/animations';
 import { MatDialog } from '@angular/material';
+import { fuseAnimations } from '@fuse/animations';
+import { Store } from '@ngrx/store';
+import { IQueryParams } from 'app/shared/models';
+import { Observable } from 'rxjs';
+
 import { CreditLimitGroupFormComponent } from '../credit-limit-group-form/credit-limit-group-form.component';
+import { CreditLimitGroup } from '../models';
+import { CreditLimitBalanceActions } from '../store/actions';
+import { fromCreditLimitBalance } from '../store/reducers';
+import { CreditLimitBalanceSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-credit-limit-group',
@@ -12,7 +20,13 @@ import { CreditLimitGroupFormComponent } from '../credit-limit-group-form/credit
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditLimitGroupComponent implements OnInit {
-    constructor(private matDialog: MatDialog) {}
+    creditLimitGroups$: Observable<CreditLimitGroup[]>;
+    isLoading$: Observable<boolean>;
+
+    constructor(
+        private matDialog: MatDialog,
+        private store: Store<fromCreditLimitBalance.FeatureState>
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -21,6 +35,12 @@ export class CreditLimitGroupComponent implements OnInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.creditLimitGroups$ = this.store.select(
+            CreditLimitBalanceSelectors.getAllCreditLimitGroup
+        );
+        this.initList();
+        this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -34,5 +54,14 @@ export class CreditLimitGroupComponent implements OnInit {
             },
             disableClose: true
         });
+    }
+
+    private initList(): void {
+        const data: IQueryParams = {};
+        data['paginate'] = true;
+
+        this.store.dispatch(
+            CreditLimitBalanceActions.fetchCreditLimitGroupsRequest({ payload: data })
+        );
     }
 }

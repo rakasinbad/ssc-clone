@@ -43,7 +43,7 @@ import { BrandStoreSelectors } from '../../store/selectors';
 })
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     // dataSource: MatTableDataSource<any>; // Need for demo
-    displayedColumns = ['no', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
+    displayedColumns = ['id', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
     dataSource$: Observable<StoreEmployee[]>;
     selectedRowIndex$: Observable<string>;
@@ -81,6 +81,11 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
 
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
 
         this.dataSource$ = this.store.select(BrandStoreSelectors.getAllStoreEmployee);
         /* .pipe(
@@ -157,6 +162,19 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
+    }
+
+    onChangeStatus(item: StoreEmployee): void {
+        console.log('CHANGE', item);
+
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(BrandStoreActions.confirmChangeStatusStoreEmployee({ payload: item }));
+
+        return;
     }
 
     onDelete(item: StoreEmployee): void {

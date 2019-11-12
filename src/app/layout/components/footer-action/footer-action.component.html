@@ -42,12 +42,26 @@
             <span>&bull;</span>
             <a mat-button routerLink="/documentation/changelog">Changelog</a> -->
 
+            <ng-container *ngTemplateOutlet="goBackAction"></ng-container>
             <ng-container *ngTemplateOutlet="cancelAction"></ng-container>
             <!-- <ng-container *ngTemplateOutlet="draftAction"></ng-container> -->
             <ng-container *ngTemplateOutlet="saveAction"></ng-container>
         </div>
     </div>
 </mat-toolbar>
+
+<ng-template #goBackAction>
+    <ng-container *ngIf="(config$ | async)?.action?.goBack?.url">
+        <button
+            mat-stroked-button
+            *ngIf="(config$ | async)?.action?.goBack?.active"
+            [routerLink]="(config$ | async)?.action?.goBack?.url"
+            replaceUrl
+        >
+            {{ (config$ | async)?.action?.goBack?.label }}
+        </button>
+    </ng-container>
+</ng-template>
 
 <ng-template #cancelAction>
     <ng-container *ngIf="cancelButtonAction$ | async as cancelButtonAction">

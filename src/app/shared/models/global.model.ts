@@ -116,5 +116,11 @@ export interface IFooterActionConfig {
             translate?: string;
             active: boolean;
         };
+        goBack?: {
+            label: string;
+            translate?: string;
+            active: boolean;
+            url: string;
+        };
     };
 }

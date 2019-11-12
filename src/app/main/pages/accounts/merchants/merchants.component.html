@@ -86,7 +86,7 @@
             >
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
                         <span class="text-left">ID</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -225,24 +225,6 @@
                             ></ngx-skeleton-loader>
                         </div> -->
                         <!-- <div *ngIf="!row?.store?.status" class="skeleton w-100-p"></div> -->
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Reason Column -->
-                <ng-container matColumnDef="reason">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Reason</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ row?.store?.reason | titlecase }}
-                        </p>
-                        <!-- <div *ngIf="!row?.store?.reason" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.reason" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 

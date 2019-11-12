@@ -50,7 +50,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'store-segment',
         'store-type',
         'status',
-        'reason',
         'actions'
     ];
 
@@ -111,6 +110,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
         this.paginator.pageSize = 5;
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
 
         localStorage.removeItem('filterBrandStore');
 
@@ -129,7 +133,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.search.valueChanges
             .pipe(
                 distinctUntilChanged(),
-                debounceTime(1000)
+                debounceTime(1000),
+                takeUntil(this._unSubs$)
             )
             .subscribe(v => {
                 if (v) {
@@ -166,7 +171,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
 
-        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))

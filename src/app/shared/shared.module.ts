@@ -17,7 +17,7 @@ import { ChangeConfirmationComponent } from './modals/change-confirmation/change
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
-import { HighlightPipe, PricePipe } from './pipes';
+import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
 
 /**
  *
@@ -37,7 +37,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         SuccessNoticeComponent,
         WarningNoticeComponent,
         DeleteConfirmationComponent,
-        ChangeConfirmationComponent
+        ChangeConfirmationComponent,
+        ReplacePipe
     ],
     imports: [
         MaterialModule,
@@ -63,7 +64,8 @@ import { HighlightPipe, PricePipe } from './pipes';
         ShowImageComponent,
         FuseSharedModule,
         DeleteConfirmationComponent,
-        ChangeConfirmationComponent
+        ChangeConfirmationComponent,
+        ReplacePipe
     ],
     providers: [TitleCasePipe],
     entryComponents: [

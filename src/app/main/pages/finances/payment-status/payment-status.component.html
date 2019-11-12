@@ -43,7 +43,10 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24">
+        <mat-card
+            class="mb-24"
+            *ngIf="search.value || (filterStatus && filterStatus !== 'all-status')"
+        >
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -51,15 +54,20 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <mat-chip>
-                            Status: Paid
+                        <!-- <mat-chip *ngIf="searchInternalEmployee || search.value">
+                            {{ searchInternalEmployee || search.value }}
 
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
+                            <mat-icon matChipRemove (click)="onRemoveSearchInternalEmployee()">
+                                cancel
+                            </mat-icon>
+                        </mat-chip> -->
 
-                        <mat-chip>
-                            Geo Coverage
-                            <mat-icon matChipRemove>cancel</mat-icon>
+                        <mat-chip *ngIf="searchPaymentStatus || filterStatus">
+                            Status: {{ searchPaymentStatus | titlecase | replace: '-':' ' }}
+
+                            <mat-icon matChipRemove (click)="onRemoveSearchPaymentStatus()">
+                                cancel
+                            </mat-icon>
                         </mat-chip>
                     </mat-chip-list>
                 </div>
@@ -76,6 +84,7 @@
                 class="payments-table"
                 #table
                 [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
@@ -112,8 +121,8 @@
                         <span class="text-left">Account Receivable</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ row?.totalPrice }}
+                        <p class="price" style="word-break: break-word;">
+                            {{ row?.totalPrice | number }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -210,7 +219,7 @@
 
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ agingDate(row?.dueDate) }}
+                            {{ agingDate(row?.agingDay) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -222,7 +231,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ countDownDueDate(row?.dueDate) }}
+                            {{ row?.dueDay }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -296,7 +305,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="payment"
                     matRipple
-                    [routerLink]="['/pages/orders/' + row.id + '/detail']"
+                    [routerLink]="['/pages/orders', row.id, 'detail']"
                 >
                 </mat-row>
             </mat-table>

@@ -222,6 +222,26 @@ export const deleteStoreEmployeeSuccess = createAction(
     props<{ payload: string }>()
 );
 
+export const confirmChangeStatusStoreEmployee = createAction(
+    '[Store Employees Page] Confirm Change Status Store Employee',
+    props<{ payload: any }>()
+);
+
+export const updateStatusStoreEmployeeRequest = createAction(
+    '[Store Employee API] Update Status Store Employee Request',
+    props<{ payload: { body: string; id: string } }>()
+);
+
+export const updateStatusStoreEmployeeFailure = createAction(
+    '[Store Employee API] Update Status Store Employee Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStatusStoreEmployeeSuccess = createAction(
+    '[Store Employee API] Update Status Store Employee Success',
+    props<{ payload: any }>()
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------

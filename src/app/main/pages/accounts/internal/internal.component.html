@@ -10,11 +10,11 @@
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- <button mat-flat-button color="accent">
                     EXPORT
-                </button>
+                </button> -->
 
                 <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
-                </button> -->
+                </button>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -74,7 +74,7 @@
             >
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
                         <span class="text-left">ID</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
