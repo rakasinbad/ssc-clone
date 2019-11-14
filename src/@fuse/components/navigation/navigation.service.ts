@@ -238,16 +238,18 @@ export class FuseNavigationService {
             }
         }
 
-        for (const item of navigation) {
-            if (item.id === id) {
-                return item;
-            }
-
-            if (item.children) {
-                const childItem = this.getNavigationItem(id, item.children);
-
-                if (childItem) {
-                    return childItem;
+        if (Array.isArray(navigation)) {
+            for (const item of navigation) {
+                if (item.id === id) {
+                    return item;
+                }
+    
+                if (item.children) {
+                    const childItem = this.getNavigationItem(id, item.children);
+    
+                    if (childItem) {
+                        return childItem;
+                    }
                 }
             }
         }

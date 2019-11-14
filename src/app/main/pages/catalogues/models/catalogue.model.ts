@@ -469,6 +469,9 @@ export class Catalogue extends Timestamp {
     detail: string;
     color: string;
     weight: number;
+    length: TNullable<number>;
+    width: TNullable<number>;
+    height: TNullable<number>;
     dimension: number;
     sku: string;
     skuRef: string;

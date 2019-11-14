@@ -12,6 +12,7 @@ import {
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { fuseAnimations } from '@fuse/animations';
+import { ActivatedRoute } from '@angular/router';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -50,11 +51,13 @@ import { CatalogueUnit } from '../models';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesFormComponent implements OnInit {
+    isEditMode = false;
     maxVariantSelections = 20;
 
     form: FormGroup;
     variantForm: FormGroup;
-    productPhotos: FormGroup;
+    productPhotos: FormArray;
+    productOldPhotos: FormArray;
     subs: Subscription = new Subscription();
 
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
@@ -62,6 +65,7 @@ export class CataloguesFormComponent implements OnInit {
 
     catalogueUnits$: Observable<Array<CatalogueUnit>>;
 
+    productTagsControls: FormArray;
     productCourierControls: AbstractControl[];
     productVariantControls: AbstractControl[];
     productVariantFormControls: AbstractControl[];
@@ -79,6 +83,7 @@ export class CataloguesFormComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
+        private route: ActivatedRoute,
         private store: Store<fromCatalogue.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _cd: ChangeDetectorRef,
@@ -120,7 +125,7 @@ export class CataloguesFormComponent implements OnInit {
                         value: {
                             active: false
                         },
-                        active: true
+                        active: false
                     },
                     action: {
                         save: {
@@ -134,6 +139,11 @@ export class CataloguesFormComponent implements OnInit {
                         cancel: {
                             label: 'Batal',
                             active: true
+                        },
+                        goBack: {
+                            label: 'Kembali',
+                            active: true,
+                            url: '/pages/catalogues'
                         }
                     }
                 }
@@ -155,7 +165,7 @@ export class CataloguesFormComponent implements OnInit {
         this.catalogueUnits$ = this.store.select(CatalogueSelectors.getCatalogueUnits);
     }
 
-    private onSubmit() {
+    private onSubmit(): void {
         const formValues = this.form.getRawValue();
 
         const catalogueData = {
@@ -173,10 +183,10 @@ export class CataloguesFormComponent implements OnInit {
             unitOfMeasureId:  formValues.productInfo.uom,
             suggestRetailPrice: formValues.productSale.retailPrice,
             productPrice: formValues.productSale.productPrice,
-            weight: isNaN(Number(formValues.productShipment.weight)) ? 0 : Number(formValues.productShipment.weight),
-            height: isNaN(Number(formValues.productSize.height)) ? 0 : Number(formValues.productSize.height),
-            width: isNaN(Number(formValues.productSize.width)) ? 0 : Number(formValues.productSize.width),
-            length: isNaN(Number(formValues.productSize.length)) ? 0 : Number(formValues.productSize.length),
+            weight: isNaN(Number(formValues.productShipment.weight)) ? null : Number(formValues.productShipment.weight),
+            height: isNaN(Number(formValues.productSize.height)) ? null : Number(formValues.productSize.height),
+            width: isNaN(Number(formValues.productSize.width)) ? null : Number(formValues.productSize.width),
+            length: isNaN(Number(formValues.productSize.length)) ? null : Number(formValues.productSize.length),
             minQty: 20,
             packagedQty: 20,
             multipleQty: 20,
@@ -187,7 +197,7 @@ export class CataloguesFormComponent implements OnInit {
             catalogueKeywords: formValues.productSale.tags,
             catalogueImages: formValues.productMedia.photos
                             .filter(photo => photo)
-                            .map(photo => ({ 'base64': photo }))
+                            .map(photo => ({ base64: photo }))
         };
 
         this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
@@ -211,7 +221,7 @@ export class CataloguesFormComponent implements OnInit {
             productSale: this.fb.group({
                 retailPrice: ['', Validators.required],
                 productPrice: ['', Validators.required],
-                tags: [[], control => (control.value as Array<string>).length > 0 ? true : null],
+                tags: this.fb.array([], Validators.required),
                 variants: this.fb.array([])
             }),
             productMedia: this.fb.group({
@@ -220,7 +230,16 @@ export class CataloguesFormComponent implements OnInit {
                     this.fb.control(null),
                     this.fb.control(null),
                     this.fb.control(null),
-                    this.fb.control(null)
+                    this.fb.control(null),
+                    this.fb.control(null),
+                ]),
+                oldPhotos: this.fb.array([
+                    this.fb.control(null, Validators.required),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null),
                 ])
             }),
             productSize: this.fb.group({
@@ -252,7 +271,9 @@ export class CataloguesFormComponent implements OnInit {
             variants: this.fb.array([])
         });
 
-        this.productPhotos = this.form.get('productMedia.photos') as FormGroup;
+        this.productPhotos = this.form.get('productMedia.photos') as FormArray;
+        this.productOldPhotos = this.form.get('productMedia.oldPhotos') as FormArray;
+        this.productTagsControls = (this.form.get('productSale.tags') as FormArray);
         this.productCourierControls = (this.form.get(
             'productShipment.couriers'
         ) as FormArray).controls;
@@ -282,15 +303,21 @@ export class CataloguesFormComponent implements OnInit {
                     return of([data.auth, data.categories, data.productName]);
                 })
             ).subscribe(data => {
+                const categories = !this.isEditMode ? data[1] : Array(...data[1]).reverse();
+
                 // this.brandUser$.id = auth.data.userBrands[0].brand.id;
                 // this.brandUser$.name = auth.data.userBrands[0].brand.name;
-                this.form.get('productInfo.brandId').setValue(data[0].data.userBrands[0].brand.id);
-                this.form.get('productInfo.brandName').setValue(data[0].data.userBrands[0].brand.name);
+                this.form.get('productInfo.brandId').patchValue(data[0].data.userBrands[0].brand.id);
+                this.form.get('productInfo.brandName').patchValue(data[0].data.userBrands[0].brand.name);
 
-                this.form.get('productInfo.category').patchValue(data[1]);
-                this.form.get('productInfo.name').patchValue(data[2]);
-                this.productCategory$ = data[1].map(category => category.name).join(' > ');
+                this.form.get('productInfo.category').patchValue(categories);
+                
+                if (!this.isEditMode) {
+                    this.form.get('productInfo.name').patchValue(data[2]);
+                }
 
+                this.productCategory$ = categories.map(category => category.name).join(' > ');
+                this._cd.markForCheck();
                 console.log(this.form.getRawValue());
             });
 
@@ -328,6 +355,8 @@ export class CataloguesFormComponent implements OnInit {
                     this.onSubmit();
                 }
             });
+
+        this._prepareEditCatalogue();
     }
 
     ngOnDestroy(): void {
@@ -343,6 +372,92 @@ export class CataloguesFormComponent implements OnInit {
         this._unSubs$.complete();
 
         this.subs.unsubscribe();
+    }
+
+    private _prepareEditCatalogue() {
+        const { id } = this.route.snapshot.params;
+
+        if (!id) {
+            this.isEditMode = false;
+        } else {
+            this.isEditMode = true;
+
+            this
+                .store
+                .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
+            this
+                .store
+                .select(CatalogueSelectors.getSelectedCatalogue)
+                .subscribe(catalogue => {
+                    if (catalogue) {
+                        for (const keyword of catalogue.catalogueKeywordCatalogues) {
+                            (this.form.get('productSale.tags') as FormArray).push(
+                                this.fb.control(keyword.catalogueKeyword.tag)
+                            );
+                        }
+
+                        this.form.patchValue({
+                            productInfo: {
+                                sku: catalogue.sku,
+                                name: catalogue.name,
+                                description: catalogue.description,
+                                // variant: ['', Validators.required],
+                                brandId: catalogue.brandId,
+                                // brandName: 'ini cuma unusued brand',
+                                // category: ['', Validators.required],
+                                stock: catalogue.stock,
+                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : ''
+                            }, productSale: {
+                                retailPrice: catalogue.suggestRetailPrice,
+                                productPrice: catalogue.productPrice,
+                                // variants: this.fb.array([])
+                            }, productMedia: {
+                                photos: [
+                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
+                                ],
+                                oldPhotos: [
+                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
+                                ]
+                            },
+                            productSize: {
+                                length: catalogue.length,
+                                width: catalogue.width,
+                                height: catalogue.height
+                            },
+                            productShipment: {
+                                weight: catalogue.weight,
+                                // isDangerous: [''],
+                                // couriers: this.fb.array([
+                                //     this.fb.control({
+                                //         name: 'SiCepat REG (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     }),
+                                //     this.fb.control({
+                                //         name: 'JNE REG (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     }),
+                                //     this.fb.control({
+                                //         name: 'SiCepat Cargo (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     })
+                                // ])
+                            }
+                        });
+
+                        for (const [idx, image] of catalogue.catalogueImages.entries()) {
+                            this.productPhotos.controls[idx].setValue(image.imageUrl);
+                            this.productOldPhotos.controls[idx].setValue(image.imageUrl);
+                        }
+
+                        this.store.dispatch(
+                            CatalogueActions
+                                .fetchCatalogueCategoryRequest({
+                                    payload: String(catalogue.lastCatalogueCategoryId)
+                                })
+                            );
+                    }
+                });
+        }
     }
 
     onAddVariant() {
@@ -387,6 +502,20 @@ export class CataloguesFormComponent implements OnInit {
         return;
     }
 
+    onAbortUploadPhoto($event: HTMLInputElement, index: number) {
+        $event.value = '';
+
+        (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(null);
+        this._cd.markForCheck();
+    }
+
+    onResetImage(index: number) {
+        const originalImage = this.productOldPhotos.controls[index].value;
+        (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(originalImage);
+
+        this._cd.markForCheck();
+    }
+
     onAddVariantSelection(_: Event, $variant: number) {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
@@ -413,10 +542,10 @@ export class CataloguesFormComponent implements OnInit {
     onAddTag(event: MatChipInputEvent) {
         const input = event.input;
         const value = event.value;
-        const formArray = this.form.get('productSale.tags');
+        const formArray = this.form.get('productSale.tags') as FormArray;
 
         if ((value || '').trim()) {
-            formArray.value.push(value);
+            formArray.push(this.fb.control(value));
         }
 
         if (input) {
@@ -424,13 +553,14 @@ export class CataloguesFormComponent implements OnInit {
         }
     }
 
-    onRemoveTag(tag: string) {
-        const formArray = this.form.get('productSale.tags') as FormArray;
-        const index = (formArray.value as Array<string>).indexOf(tag);
+    onRemoveTag(index: number) {
+        // const formArray = this.productTagsControls.removeAt indexOf(control => control.value) this.form.get('productSale.tags').value as Array<string>;
+        // const index = formArray.indexOf(tag);
 
-        if (index >= 0) {
-            formArray.removeAt(index);
-        }
+        // if (index >= 0) {
+        //     formArray.splice(index, 1);
+        // }
+        this.productTagsControls.removeAt(index);
     }
 
     printLog(val: any) {

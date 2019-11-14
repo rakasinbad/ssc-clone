@@ -4,6 +4,42 @@ import { fromCatalogue } from '../reducers';
 
 export const getCatalogueState = createFeatureSelector<fromCatalogue.State>(fromCatalogue.FEATURE_KEY);
 
+export const getAllTotalCatalogue = createSelector(
+    getCatalogueState,
+    state => ({
+        totalAllStatus: state.totalAllStatus,
+        totalEmptyStock: state.totalEmptyStock,
+        totalActive: state.totalActive,
+        totalInactive: state.totalInactive,
+        totalBanned: state.totalBanned,
+    })
+);
+
+export const getTotalCatalogueByStatusAll = createSelector(
+    getCatalogueState,
+    state => state.totalAllStatus
+);
+
+export const getTotalCatalogueByStatusEmpty = createSelector(
+    getCatalogueState,
+    state => state.totalEmptyStock
+);
+
+export const getTotalCatalogueByStatusActive = createSelector(
+    getCatalogueState,
+    state => state.totalActive
+);
+
+export const getTotalCatalogueByStatusInactive = createSelector(
+    getCatalogueState,
+    state => state.totalInactive
+);
+
+export const getTotalCatalogueByStatusBanned = createSelector(
+    getCatalogueState,
+    state => state.totalBanned
+);
+
 export const getProductName = createSelector(
     getCatalogueState,
     state => state.productName
@@ -12,6 +48,11 @@ export const getProductName = createSelector(
 export const getCategoryTree = createSelector(
     getCatalogueState,
     state => state.categories
+);
+
+export const getSelectedCatalogue = createSelector(
+    getCatalogueState,
+    state => state.catalogue
 );
 
 export const getCatalogueUnits = createSelector(

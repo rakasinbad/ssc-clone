@@ -9,6 +9,8 @@ import {
     CatalogueCategory
 } from '../../models';
 
+import { TNullable } from 'app/shared/models';
+
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
     props<{ payload: { status: string } }>()
@@ -59,6 +61,25 @@ export const fetchCatalogueSuccess = createAction(
 );
 
 /**
+ * FETCH CATALOGUE CATEGORY
+ */
+
+export const fetchCatalogueCategoryRequest = createAction(
+    '[Catalogues API] Fetch Catalogue Category Request',
+    props<{ payload: string }>()
+);
+
+export const fetchCatalogueCategoryFailure = createAction(
+    '[Catalogues API] Fetch Catalogue Category Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCatalogueCategorySuccess = createAction(
+    '[Catalogues API] Fetch Catalogue Category Success',
+    props<{ payload: { category?: CatalogueCategory; source: TSource } }>()
+);
+
+/**
  * FETCH CATALOGUE UNIT
  */
 
@@ -91,6 +112,21 @@ export const fetchCategoryTreeFailure = createAction(
 export const fetchCategoryTreeSuccess = createAction(
     '[Catalogues API] Fetch Category Tree Success',
     props<{ payload: { categories?: Array<CatalogueCategory>; source: TSource } }>()
+);
+
+/**
+ * FETCH TOTAL CATALOGUE STATUS
+ */
+export const fetchTotalCatalogueStatusRequest = createAction('[Catalogues API] Fetch Total Catalogue Status Request');
+
+export const fetchTotalCatalogueStatusFailure = createAction(
+    '[Catalogues API] Fetch Total Catalogue Status Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchTotalCatalogueStatusSuccess = createAction(
+    '[Catalogues API] Fetch Total Catalogue Status Failure',
+    props<{ payload: { totalAllStatus: number; totalEmptyStock: number; totalActive: number; totalInactive: number; totalBanned: number; } }>()
 );
 
 /**
@@ -201,9 +237,14 @@ export const setProductName = createAction(
     props<{ payload: string }>()
 );
 
+export const addSelectedCategory = createAction(
+    '[Catalogues Page] Add Selected Category',
+    props<{ payload: { id: string, name: string, parent: TNullable<string> } }>()
+    );
+
 export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
-    props<{ payload: Array<{ id: string, name: string }> }>()
+    props<{ payload: Array<{ id: string, name: string, parent: TNullable<string> }> }>()
     );
 
 /**

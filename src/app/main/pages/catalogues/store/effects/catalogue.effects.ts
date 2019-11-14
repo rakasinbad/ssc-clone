@@ -12,9 +12,11 @@ import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmati
 import { of } from 'rxjs';
 import {
     catchError,
+    concatMap,
     exhaustMap,
     finalize,
     map,
+    mergeMap,
     switchMap,
     tap,
     withLatestFrom
@@ -42,6 +44,81 @@ export class CatalogueEffects {
                               $$ |                                                 
                               $$/                                                  
     */
+
+    fetchCatalogueCategorySuccess$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCatalogueCategorySuccess),
+            map(action => {
+                const { id, category: name, parentId: parent } = action.payload.category;
+
+                if (parent) {
+                    this.store.dispatch(CatalogueActions.fetchCatalogueCategoryRequest({ payload: parent }));
+                }
+
+                return CatalogueActions.addSelectedCategory({
+                    payload: { id, name, parent }
+                });
+            })
+        )
+    );
+
+    fetchCatalogueCategoryRequest$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCatalogueCategoryRequest),
+            map(action => action.payload),
+            switchMap(categoryId => {
+                return this._$catalogueApi
+                    .getCategory(Number(categoryId))
+                    .pipe(
+                        map(response => {
+                            return CatalogueActions.fetchCatalogueCategorySuccess({
+                                payload: {
+                                    // category: actions[actions.length - 1],
+                                    category: response,
+                                    source: 'fetch'
+                                }
+                            });
+                        }),
+                        catchError(err => 
+                            of(CatalogueActions.fetchCatalogueCategoryFailure({
+                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
+                            }))
+                        )
+                    );
+            })
+        )
+    );
+
+    fetchTotalCatalogueStatuses = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchTotalCatalogueStatusRequest),
+            switchMap(_ => {
+                return this._$catalogueApi
+                    .fetchTotalCatalogueStatuses()
+                    .pipe(
+                        map(response => {
+                            return CatalogueActions.fetchTotalCatalogueStatusSuccess({
+                                payload: {
+                                    totalInactive: Number(response.totalinactive),
+                                    totalActive: Number(response.totalactive),
+                                    totalEmptyStock: Number(response.totalemptystock),
+                                    totalBanned: Number(response.totalbanned),
+                                    totalAllStatus: Number(response.total)
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.fetchTotalCatalogueStatusFailure({
+                                    payload: { id: 'fetchTotalCatalogueStatusFailure', errors: err }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
     addNewCatalogueRequest$ = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.addNewCatalogueRequest),
@@ -99,49 +176,49 @@ export class CatalogueEffects {
         )
     );
 
-   fetchCatalogueCategoriesRequest$ = createEffect(() =>
-   this.actions$.pipe(
-       ofType(CatalogueActions.fetchCategoryTreeRequest),
-       switchMap(_ => {
-           return this._$catalogueApi
-               .getCategoryTree()
-               .pipe(
-                   catchOffline(),
-                   map<Array<CatalogueCategory>, any>(categories => {
-                       if (categories.length > 0) {
-                           return CatalogueActions.fetchCategoryTreeSuccess({
-                               payload: {
-                                   categories: [
-                                       ...categories.map(category => ({
-                                           ...new CatalogueCategory(
-                                               category.id,
-                                               category.parentId,
-                                               category.category,
-                                               category.iconHome,
-                                               category.iconTree,
-                                               category.sequence,
-                                               category.hasChild,
-                                               category.status,
-                                               category.createdAt,
-                                               category.updatedAt,
-                                               category.deletedAt,
-                                               category.children
-                                           )
-                                       }))
-                                   ],
-                                   source: 'fetch'
-                               }
-                           });
-                       }
-                   }),
-                   catchError(err =>
-                       of(
-                           CatalogueActions.fetchCategoryTreeFailure({
-                               payload: { id: 'fetchCategoryTreeFailure', errors: err }
-                           })
-                       )
-                   )
-               );
+    fetchCatalogueCategoriesRequest$ = createEffect(() =>
+    this.actions$.pipe(
+        ofType(CatalogueActions.fetchCategoryTreeRequest),
+        switchMap(_ => {
+            return this._$catalogueApi
+                .getCategoryTree()
+                .pipe(
+                    catchOffline(),
+                    map<Array<CatalogueCategory>, any>(categories => {
+                        if (categories.length > 0) {
+                            return CatalogueActions.fetchCategoryTreeSuccess({
+                                payload: {
+                                    categories: [
+                                        ...categories.map(category => ({
+                                            ...new CatalogueCategory(
+                                                category.id,
+                                                category.parentId,
+                                                category.category,
+                                                category.iconHome,
+                                                category.iconTree,
+                                                category.sequence,
+                                                category.hasChild,
+                                                category.status,
+                                                category.createdAt,
+                                                category.updatedAt,
+                                                category.deletedAt,
+                                                category.children
+                                            )
+                                        }))
+                                    ],
+                                    source: 'fetch'
+                                }
+                            });
+                        }
+                    }),
+                    catchError(err =>
+                        of(
+                            CatalogueActions.fetchCategoryTreeFailure({
+                                payload: { id: 'fetchCategoryTreeFailure', errors: err }
+                            })
+                        )
+                    )
+                );
             })
         )
     );

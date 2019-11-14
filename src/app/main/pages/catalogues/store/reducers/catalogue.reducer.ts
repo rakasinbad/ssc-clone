@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { IErrorHandler, TNullable, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
@@ -22,13 +22,19 @@ export interface State {
     isDeleting?: boolean;
     isLoading: boolean;
     selectedCatalogueId: string | number;
-    selectedCategories: Array<{ id: string; name: string; }>;
+    selectedCategories: Array<{ id: string; name: string; parent: TNullable<string>; }>;
     productName: string;
+    category?: CatalogueCategory;
     categories: Array<CatalogueCategory>;
     units?: Array<CatalogueUnit>;
     source: TSource;
     catalogue?: Catalogue;
     catalogues: CatalogueState;
+    totalAllStatus: number;
+    totalEmptyStock: number;
+    totalActive: number;
+    totalInactive: number;
+    totalBanned: number;
     errors: ErrorState;
 }
 
@@ -56,6 +62,11 @@ const initialState: State = {
     source: 'fetch',
     units: [],
     catalogues: initialCatalogueState,
+    totalAllStatus: 0,
+    totalEmptyStock: 0,
+    totalActive: 0,
+    totalInactive: 0,
+    totalBanned: 0,
     errors: initialErrorState
 };
 
@@ -70,7 +81,16 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      *  GETTERS & SETTERS
      *  ===================================================================
-     */ 
+     */
+    on(
+        CatalogueActions.addSelectedCategory,
+        (state, { payload }) => ({
+            ...state,
+            selectedCategories: [...state.selectedCategories, {
+                id: payload.id, name: payload.name, parent: payload.parent
+            }]
+        })
+    ),
     on(
         CatalogueActions.setSelectedCategories,
         (state, { payload }) => ({
@@ -93,22 +113,12 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.fetchCatalogueRequest,
         CatalogueActions.fetchCataloguesRequest,
+        CatalogueActions.fetchCategoryTreeRequest,
         CatalogueActions.fetchCatalogueUnitRequest,
-        (state) => ({
-            ...state,
-            isLoading: true
-        })
-    ),
-    on(
         CatalogueActions.setCatalogueToActiveRequest,
         CatalogueActions.setCatalogueToInactiveRequest,
-        (state) => ({
-            ...state,
-            isLoading: true,
-        })
-    ),
-    on(
-        CatalogueActions.fetchCategoryTreeRequest,
+        CatalogueActions.fetchCatalogueCategoryRequest,
+        CatalogueActions.fetchTotalCatalogueStatusRequest,
         (state) => ({
             ...state,
             isLoading: true
@@ -130,6 +140,9 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.fetchCategoryTreeFailure,
         CatalogueActions.fetchCatalogueUnitFailure,
+        CatalogueActions.setCatalogueToActiveFailure,
+        CatalogueActions.setCatalogueToInactiveFailure,
+        CatalogueActions.fetchCatalogueCategoryFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -139,28 +152,11 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.fetchCatalogueFailure,
         CatalogueActions.fetchCataloguesFailure,
-        (state, { payload }) => ({
-            ...state,
-            isDeleting: initialState.isDeleting,
-            isLoading: false,
-            errors: adapterError.upsertOne(payload, state.errors)
-        })
-    ),
-    on(
-        CatalogueActions.setCatalogueToActiveFailure,
-        CatalogueActions.setCatalogueToInactiveFailure,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            errors: adapterError.upsertOne(payload, state.errors)
-        })
-    ),
-    on(
         CatalogueActions.removeCatalogueFailure,
         (state, { payload }) => ({
             ...state,
-            isLoading: false,
             isDeleting: initialState.isDeleting,
+            isLoading: false,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
@@ -170,12 +166,31 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      */ 
     on(
+        CatalogueActions.fetchCatalogueCategorySuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            category: payload.category,
+            errors: adapterError.removeOne('fetchCatalogueCategoryFailure', state.errors)
+        })
+    ),
+    on(
         CatalogueActions.fetchCategoryTreeSuccess,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
             categories: payload.categories,
-            errors: adapterError.removeOne('fetchCatalogueCategoriesFailure', state.errors)
+            errors: adapterError.removeOne('fetchCategoryTreeFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.fetchCatalogueSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: initialState.isDeleting,
+            catalogue: payload.catalogue,
+            errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
         })
     ),
     on(
@@ -218,6 +233,18 @@ const catalogueReducer = createReducer(
             isLoading: false,
             units: payload.units,
             errors: adapterError.removeOne('removeCatalogueFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.fetchTotalCatalogueStatusSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            totalAllStatus: payload.totalAllStatus,
+            totalEmptyStock: payload.totalEmptyStock,
+            totalActive: payload.totalActive,
+            totalInactive: payload.totalInactive,
+            totalBanned: payload.totalBanned
         })
     ),
     /** 

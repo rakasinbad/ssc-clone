@@ -679,9 +679,10 @@ export class CataloguesAddNewProductComponent implements OnInit {
             payload: [
                 ...this.selectedCategory.controls
                     .filter(control => control.get('id').value)
-                    .map(control => ({
+                    .map((control, idx, controls) => ({
                         id: control.get('id').value,
                         name: control.get('name').value,
+                        parent: idx === 0 ? null : controls[idx - 1].get('id').value
                     })
                 )
             ]
