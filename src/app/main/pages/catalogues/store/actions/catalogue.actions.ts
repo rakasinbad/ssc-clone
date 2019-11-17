@@ -41,6 +41,18 @@ export const addNewCatalogueSuccess = createAction(
     props<{ payload: Catalogue }>()
 );
 
+export const patchCatalogueRequest = createAction(
+    '[Catalogues API] Patch Catalogue Request',
+    props<{ payload: { id: string; data: Partial<Catalogue> } }>()
+);
+
+export const patchCatalogueFailure = createAction(
+    '[Catalogues API] Patch Catalogue Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const patchCatalogueSuccess = createAction('[Catalogues API] Patch Catalogue Success');
+
 /**
  * FETCH CATALOGUE
  */
@@ -246,6 +258,8 @@ export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
     props<{ payload: Array<{ id: string, name: string, parent: TNullable<string> }> }>()
     );
+
+export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
 
 /**
  * FOR DEMO PURPOSE ONLY

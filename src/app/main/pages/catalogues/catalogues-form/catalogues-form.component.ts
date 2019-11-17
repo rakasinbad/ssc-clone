@@ -39,8 +39,10 @@ import { fromCatalogue } from '../store/reducers';
 import { CatalogueActions } from '../store/actions';
 import { CatalogueSelectors } from '../store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { MatTableDataSource } from '@angular/material';
-import { CatalogueUnit } from '../models';
+import { MatTableDataSource, MatDialog } from '@angular/material';
+import { Catalogue, CatalogueUnit } from '../models';
+
+import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 
 @Component({
     selector: 'app-catalogues-form',
@@ -85,6 +87,7 @@ export class CataloguesFormComponent implements OnInit {
         private fb: FormBuilder,
         private route: ActivatedRoute,
         private store: Store<fromCatalogue.FeatureState>,
+        private matDialog: MatDialog,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _cd: ChangeDetectorRef,
         public translate: TranslateService
@@ -166,9 +169,11 @@ export class CataloguesFormComponent implements OnInit {
     }
 
     private onSubmit(): void {
+        this.store.dispatch(FormActions.setFormStatusInvalid());
         const formValues = this.form.getRawValue();
+        const oldPhotos = formValues.productMedia.oldPhotos;
 
-        const catalogueData = {
+        const catalogueData: Partial<Catalogue> = {
             sku: formValues.productInfo.sku,
             name: formValues.productInfo.name,
             description: formValues.productInfo.description,
@@ -200,7 +205,40 @@ export class CataloguesFormComponent implements OnInit {
                             .map(photo => ({ base64: photo }))
         };
 
-        this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
+        if (this.isEditMode) {
+            catalogueData.catalogueImages 
+            = formValues.productMedia.photos
+                .filter((photo, idx) => {
+                    const check = photo !== oldPhotos[idx].value && (!oldPhotos[idx].id || photo);
+
+                    if (check) {
+                        if (!catalogueData.deletedImages) {
+                            catalogueData.deletedImages = [];
+                        }
+
+                        if (!catalogueData.uploadedImages) {
+                            catalogueData.uploadedImages = [];
+                        }
+                        
+                        if (oldPhotos[idx].id) {
+                            catalogueData.deletedImages.push(oldPhotos[idx].id);
+                        }
+
+                        catalogueData.uploadedImages.push({ base64: photo });
+                    }
+
+                    return check; 
+                });
+        }
+
+        delete catalogueData.catalogueImages;
+        // console.log(catalogueData);
+
+        if (!this.isEditMode) {
+            this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
+        } else {
+            this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData } }));
+        }
     }
 
     ngOnInit() {
@@ -208,6 +246,7 @@ export class CataloguesFormComponent implements OnInit {
 
         this.form = this.fb.group({
             productInfo: this.fb.group({
+                id: [''],
                 sku: ['', Validators.required],
                 name: ['', Validators.required],
                 description: [''],
@@ -234,12 +273,12 @@ export class CataloguesFormComponent implements OnInit {
                     this.fb.control(null),
                 ]),
                 oldPhotos: this.fb.array([
-                    this.fb.control(null, Validators.required),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
                 ])
             }),
             productSize: this.fb.group({
@@ -301,9 +340,14 @@ export class CataloguesFormComponent implements OnInit {
                     }
 
                     return of([data.auth, data.categories, data.productName]);
-                })
+                }),
+                takeUntil(this._unSubs$)
             ).subscribe(data => {
-                const categories = !this.isEditMode ? data[1] : Array(...data[1]).reverse();
+                let categories;
+
+                if (data[1][0]) {
+                    categories = (!this.isEditMode || !data[1][0].parent) ? data[1] : Array(...data[1]).reverse();
+                }
 
                 // this.brandUser$.id = auth.data.userBrands[0].brand.id;
                 // this.brandUser$.name = auth.data.userBrands[0].brand.name;
@@ -316,27 +360,38 @@ export class CataloguesFormComponent implements OnInit {
                     this.form.get('productInfo.name').patchValue(data[2]);
                 }
 
-                this.productCategory$ = categories.map(category => category.name).join(' > ');
+                if (Array.isArray(categories)) {
+                    this.productCategory$ = categories.map(category => category.name).join(' > ');
+                }
+
                 this._cd.markForCheck();
                 console.log(this.form.getRawValue());
             });
 
         this.subs.add(
             this.form
-                .statusChanges
+                .valueChanges
                 .pipe(
                     distinctUntilChanged(),
                     debounceTime(1000)
                 )
-                .subscribe(status => {
+                .subscribe(() => {
                     console.log('FORM', this.form);
                     console.log('FORM VALUE', this.form.getRawValue());
 
-                    if (status === 'VALID') {
+                    const pristineStatuses = [
+                        this.form.get('productInfo').pristine,
+                        this.form.get('productSale').pristine,
+                        this.form.get('productMedia').pristine,
+                        this.form.get('productSize').pristine,
+                        this.form.get('productShipment').pristine
+                    ];
+
+                    if (this.form.status === 'VALID') {
                         this.store.dispatch(FormActions.setFormStatusValid());
                     }
     
-                    if (status === 'INVALID') {
+                    if (this.form.status === 'INVALID' || !pristineStatuses.includes(true)) {
                         this.store.dispatch(FormActions.setFormStatusInvalid());
                     }
                 })
@@ -362,11 +417,13 @@ export class CataloguesFormComponent implements OnInit {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this.store.dispatch(CatalogueActions.resetSelectedCategories());
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.store.dispatch(UiActions.hideCustomToolbar());
 
         this.store.dispatch(FormActions.resetFormStatus());
+        
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -382,15 +439,23 @@ export class CataloguesFormComponent implements OnInit {
         } else {
             this.isEditMode = true;
 
+            // this.productTagsControls.clear();
+            // (this.form.get('productSale.tags') as FormArray).clear();
+
             this
                 .store
                 .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
             this
                 .store
                 .select(CatalogueSelectors.getSelectedCatalogue)
+                .pipe(takeUntil(this._unSubs$))
                 .subscribe(catalogue => {
                     if (catalogue) {
                         for (const keyword of catalogue.catalogueKeywordCatalogues) {
+                            if ((this.form.get('productSale.tags') as FormArray).controls.length > catalogue.catalogueKeywordCatalogues.length) {
+                                (this.form.get('productSale.tags') as FormArray).clear();
+                            }
+
                             (this.form.get('productSale.tags') as FormArray).push(
                                 this.fb.control(keyword.catalogueKeyword.tag)
                             );
@@ -398,6 +463,7 @@ export class CataloguesFormComponent implements OnInit {
 
                         this.form.patchValue({
                             productInfo: {
+                                id: catalogue.id,
                                 sku: catalogue.sku,
                                 name: catalogue.name,
                                 description: catalogue.description,
@@ -446,7 +512,8 @@ export class CataloguesFormComponent implements OnInit {
 
                         for (const [idx, image] of catalogue.catalogueImages.entries()) {
                             this.productPhotos.controls[idx].setValue(image.imageUrl);
-                            this.productOldPhotos.controls[idx].setValue(image.imageUrl);
+                            this.productOldPhotos.controls[idx].get('id').setValue(image.id);
+                            this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
                         }
 
                         this.store.dispatch(
@@ -510,7 +577,7 @@ export class CataloguesFormComponent implements OnInit {
     }
 
     onResetImage(index: number) {
-        const originalImage = this.productOldPhotos.controls[index].value;
+        const originalImage = this.productOldPhotos.controls[index].get('value').value;
         (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(originalImage);
 
         this._cd.markForCheck();
@@ -561,6 +628,10 @@ export class CataloguesFormComponent implements OnInit {
         //     formArray.splice(index, 1);
         // }
         this.productTagsControls.removeAt(index);
+    }
+
+    onEditCategory(id: string) {
+        this.matDialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
     }
 
     printLog(val: any) {

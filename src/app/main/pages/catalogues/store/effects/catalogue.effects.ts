@@ -45,6 +45,46 @@ export class CatalogueEffects {
                               $$/                                                  
     */
 
+    patchCatalogueRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCatalogueRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$catalogueApi.patchCatalogue(payload.id, payload.data)
+                    .pipe(
+                        catchOffline(),
+                        map(() => {
+                            return CatalogueActions.patchCatalogueSuccess();
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.patchCatalogueFailure({
+                                    payload: {
+                                        id: 'patchCatalogueFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
+    patchCatalogueSuccess$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCatalogueSuccess),
+            tap(() => {
+                this._$notice.open('Produk berhasil di-update', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.matDialog.closeAll();
+            })
+        ), { dispatch: false }
+    );
+
     fetchCatalogueCategorySuccess$ = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategorySuccess),

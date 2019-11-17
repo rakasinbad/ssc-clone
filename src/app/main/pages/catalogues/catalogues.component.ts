@@ -33,7 +33,8 @@ import { CataloguesService } from './services';
 import { Catalogue } from './models';
 
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
-import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
+// import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
+import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CatalogueActions } from './store/actions';
@@ -335,6 +336,18 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         //         title: 'Import'
         //     }
         // });
+    }
+
+    editCatalogue(editMode: 'price' | 'stock', catalogue: Catalogue): void {
+        this.matDialog.open(CataloguesEditPriceStockComponent, {
+            data: {
+                catalogueId: catalogue.id,
+                editMode,
+                price: catalogue.suggestRetailPrice,
+                stock: catalogue.stock
+            },
+            disableClose: false
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------

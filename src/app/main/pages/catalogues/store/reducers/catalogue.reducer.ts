@@ -20,6 +20,7 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
     isDeleting?: boolean;
+    isUpdating?: boolean;
     isLoading: boolean;
     selectedCatalogueId: string | number;
     selectedCategories: Array<{ id: string; name: string; parent: TNullable<string>; }>;
@@ -54,6 +55,7 @@ const initialErrorState = adapterError.getInitialState();
 
 const initialState: State = {
     isDeleting: false,
+    isUpdating: false,
     isLoading: false,
     selectedCatalogueId: null,
     selectedCategories: [],
@@ -115,13 +117,21 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCataloguesRequest,
         CatalogueActions.fetchCategoryTreeRequest,
         CatalogueActions.fetchCatalogueUnitRequest,
-        CatalogueActions.setCatalogueToActiveRequest,
-        CatalogueActions.setCatalogueToInactiveRequest,
         CatalogueActions.fetchCatalogueCategoryRequest,
         CatalogueActions.fetchTotalCatalogueStatusRequest,
         (state) => ({
             ...state,
             isLoading: true
+        })
+    ),
+    on(
+        CatalogueActions.patchCatalogueRequest,
+        CatalogueActions.setCatalogueToActiveRequest,
+        CatalogueActions.setCatalogueToInactiveRequest,
+        (state) => ({
+            ...state,
+            isLoading: true,
+            isUpdating: true
         })
     ),
     on(
@@ -140,11 +150,20 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.fetchCategoryTreeFailure,
         CatalogueActions.fetchCatalogueUnitFailure,
-        CatalogueActions.setCatalogueToActiveFailure,
-        CatalogueActions.setCatalogueToInactiveFailure,
         CatalogueActions.fetchCatalogueCategoryFailure,
         (state, { payload }) => ({
             ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.patchCatalogueFailure,
+        CatalogueActions.setCatalogueToActiveFailure,
+        CatalogueActions.setCatalogueToInactiveFailure,
+        (state, { payload }) => ({
+            ...state,
+            isUpdating: initialState.isUpdating,
             isLoading: false,
             errors: adapterError.upsertOne(payload, state.errors)
         })
@@ -181,6 +200,16 @@ const catalogueReducer = createReducer(
             isLoading: false,
             categories: payload.categories,
             errors: adapterError.removeOne('fetchCategoryTreeFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.patchCatalogueSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false,
+            isDeleting: initialState.isDeleting,
+            isUpdating: initialState.isUpdating,
+            errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
         })
     ),
     on(
@@ -249,9 +278,16 @@ const catalogueReducer = createReducer(
     ),
     /** 
      *  ===================================================================
-     *  ERRORS
+     *  RESETS
      *  ===================================================================
      */ 
+    on(
+        CatalogueActions.resetSelectedCategories,
+        state => ({
+            ...state,
+            selectedCategories: []
+        })
+    ),
     on(
         CatalogueActions.resetCatalogue,
         state => ({

@@ -38,6 +38,12 @@
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
+                                hidden
+                                matInput
+                                name="id"
+                                formControlName="id"
+                            />
+                            <input
                                 matInput
                                 name="sku"
                                 formControlName="sku"
@@ -186,6 +192,16 @@
                 
                         <label>
                             <strong fxFlexAlign="center">{{ productCategory$ }}</strong>
+                            <button
+                                class="red-fg"
+                                mat-icon-button
+                                [disableRipple]="true"
+                                style="margin-left: 10px;"
+                                matTooltip="Change the category"
+                                (click)="onEditCategory(form.get('productInfo.id').value)"
+                            >
+                                <mat-icon>edit</mat-icon>
+                            </button>
                         </label>
                     </div>
                     <!-- / KATEGORI PRODUK -->
@@ -755,11 +771,8 @@
                                         matTooltip="Reset to original image"
                                         mat-icon-button
                                         (click)="onResetImage(i)"
-                                        *ngIf="
-                                        !productPhotos?.controls[i]?.value
-                                        && productOldPhotos?.controls[i]?.value
-                                        && productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.value; else noUndo;
-                                        "
+                                        *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
                                     >
                                         <mat-icon>undo</mat-icon>
                                     </button>
@@ -780,11 +793,8 @@
                                             matTooltip="Reset to original image"
                                             mat-icon-button
                                             (click)="onResetImage(i)"
-                                            *ngIf="
-                                            !productPhotos?.controls[i]?.value
-                                            && productOldPhotos?.controls[i]?.value
-                                            && productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.value; else noUndo;
-                                            "
+                                            *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                    && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
                                         >
                                             <mat-icon>undo</mat-icon>
                                         </button>

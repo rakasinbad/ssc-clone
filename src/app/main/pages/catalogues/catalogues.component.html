@@ -128,7 +128,13 @@
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Harga</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}</p>
+                        <a
+                            class="fuse-black-fg"
+                            matTooltip="Click to edit price"
+                            (click)="editCatalogue('price', row)"
+                        >
+                            <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}</p>
+                        </a>
                     </mat-cell>
                 </ng-container>
 
@@ -136,7 +142,13 @@
                 <ng-container matColumnDef="stock">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Stock</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.stock | number }}</p>
+                        <a
+                            class="fuse-black-fg"
+                            matTooltip="Click to edit stock"
+                            (click)="editCatalogue('stock', row)"
+                        >
+                            <p class="text-truncate">{{ row?.stock | number }}</p>
+                        </a>
                     </mat-cell>
                 </ng-container>
 
@@ -297,7 +309,6 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="catalogue"
-                    matRipple
                 >
                 </mat-row>
             </mat-table>

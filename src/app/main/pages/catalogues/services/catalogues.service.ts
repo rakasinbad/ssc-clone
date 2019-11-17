@@ -88,6 +88,11 @@ export class CataloguesService {
         return this.http.get<ICataloguesResponse>(this._url, { params: newParams });
     }
 
+    patchCatalogue(id: string, data: Partial<Catalogue>): Observable<Catalogue> {
+        this._url = this._$helper.handleApiRouter(`${this._endpoint}/${id}`);
+        return this.http.patch<Catalogue>(this._url, data);
+    }
+
     getCategory(id: number): Observable<CatalogueCategory> {
         this._url = this._$helper.handleApiRouter(`/catalogue-categories/${id}`);
         return this.http.get<CatalogueCategory>(this._url);

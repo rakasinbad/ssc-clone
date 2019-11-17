@@ -104,3 +104,8 @@ export const getIsLoading = createSelector(
     getCatalogueState,
     state => state.isLoading
 );
+
+export const getUpdatingActivity = createSelector(
+    getCatalogueState,
+    state => state.isUpdating
+);
