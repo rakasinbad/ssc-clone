@@ -1,18 +1,17 @@
 import { JSONSchema } from '@ngx-pwa/local-storage';
 import {
-    BrandAssocUser,
     IResponsePaginate,
     ITimestamp,
     Timestamp,
-    TNullable,
-    TStatus
+    TNullable
 } from 'app/shared/models';
 import * as _ from 'lodash';
 
-import { AttendanceAssocUser } from '../../attendances/models';
+import { SupplierAssocUser } from 'app/shared/models/supplier.model';
 import { Role } from '../../roles/role.model';
 import { StoreAssocUser } from '../../stores/models/store.model';
 import { Urban } from '../../urbans/models';
+import { AttendanceAssocUser } from '../../attendances/models';
 
 enum AccountStatus {
     active,
@@ -39,7 +38,7 @@ export interface IAccount extends ITimestamp {
     selfieImageUrl?: TNullable<string>;
     urbanId?: string;
     userStores?: StoreAssocUser[];
-    userBrands?: BrandAssocUser[];
+    userSuppliers?: SupplierAssocUser[];
     roles?: Role[];
     urban: Urban;
 }
@@ -175,7 +174,7 @@ export class Account extends Timestamp {
     selfieImageUrl: TNullable<string>;
     urbanId: string;
     userStores: StoreAssocUser[];
-    userBrands: BrandAssocUser[];
+    userSuppliers: SupplierAssocUser[];
     roles: Role[];
     urban: Urban;
 
@@ -194,7 +193,7 @@ export class Account extends Timestamp {
         selfieImageUrl: TNullable<string>,
         urbanId: string,
         userStores: StoreAssocUser[],
-        userBrands: BrandAssocUser[],
+        userSuppliers: SupplierAssocUser[],
         roles: Role[],
         urban: Urban,
         createdAt: TNullable<string>,
@@ -242,25 +241,26 @@ export class Account extends Timestamp {
             this.userStores = [];
         }
 
-        if (userBrands && userBrands.length > 0) {
-            userBrands = [
-                ...userBrands.map(userBrand => {
+        if (userSuppliers && userSuppliers.length > 0) {
+            userSuppliers = [
+                ...userSuppliers.map(userSupplier => {
                     return {
-                        ...new BrandAssocUser(
-                            userBrand.id,
-                            userBrand.brandId,
-                            userBrand.status,
-                            userBrand.brand,
-                            userBrand.createdAt,
-                            userBrand.updatedAt,
-                            userBrand.deletedAt
+                        ...new SupplierAssocUser(
+                            userSupplier.id,
+                            userSupplier.userId,
+                            userSupplier.supplierId,
+                            userSupplier.status,
+                            userSupplier.createdAt,
+                            userSupplier.updatedAt,
+                            userSupplier.deletedAt,
+                            userSupplier.supplier
                         )
                     };
                 })
             ];
-            this.userBrands = _.orderBy(userBrands, item => item.brand.name, 'asc');
+            this.userSuppliers = _.orderBy(userSuppliers, item => item.supplier.name, 'asc');
         } else {
-            this.userBrands = [];
+            this.userSuppliers = [];
         }
 
         if (roles && roles.length > 0) {

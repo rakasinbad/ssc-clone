@@ -25,7 +25,7 @@ export class PaymentEffects {
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getAuthState)),
             switchMap(([payload, auth]) => {
-                if (!auth.user.data.userBrands.length) {
+                if (!auth.user.data.userSuppliers.length) {
                     return of(
                         PaymentStatusActions.fetchPaymentStatusFailure({
                             payload: { id: 'fetchPaymentStatusFailure', errors: 'Not Found!' }
@@ -34,7 +34,7 @@ export class PaymentEffects {
                 }
 
                 return this._$paymentStatusApi
-                    .findAll(payload, auth.user.data.userBrands[0].brandId)
+                    .findAll(payload, auth.user.data.userSuppliers[0].supplierId)
                     .pipe(
                         catchOffline(),
                         map(resp => {

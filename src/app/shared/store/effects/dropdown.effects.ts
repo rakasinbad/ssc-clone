@@ -442,7 +442,7 @@ export class DropdownEffects {
                                                       account.selfieImageUrl,
                                                       account.urbanId,
                                                       account.userStores,
-                                                      account.userBrands,
+                                                      account.userSuppliers,
                                                       account.roles,
                                                       account.urban,
                                                       account.createdAt,

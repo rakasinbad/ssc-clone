@@ -27,7 +27,7 @@ export class Auth {
                       user.selfieImageUrl,
                       user.urbanId,
                       user.userStores,
-                      user.userBrands,
+                      user.userSuppliers,
                       user.roles,
                       user.urban,
                       user.createdAt,

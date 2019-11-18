@@ -1166,8 +1166,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     if (
                         user &&
                         user.data &&
-                        user.data.userBrands &&
-                        user.data.userBrands.length > 0
+                        user.data.userSuppliers &&
+                        user.data.userSuppliers.length > 0
                     ) {
                         const createUser = new FormUser(
                             body.storeInfo.legalInfo.name,
@@ -1183,7 +1183,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             body.storeInfo.storeClassification.storeCluster
                         );
 
-                        const createBrand = new FormBrand(user.data.userBrands[0].brandId);
+                        const createBrand = new FormBrand(user.data.userSuppliers[0].supplierId);
 
                         const payload = new FormStore(
                             body.storeInfo.storeId.id,

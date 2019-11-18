@@ -13,15 +13,18 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
 import * as moment from 'moment';
-import { fromAttendance } from './store/reducers';
-import { Store, select } from '@ngrx/store';
+import { fromAttendance, fromStore } from './store/reducers';
+import { Store as NgRxStore, select } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { IQueryParams } from 'app/shared/models';
 import { AttendanceActions } from './store/actions';
 import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
-import { Attendance } from './models';
+import { Store } from './models';
 import { AttendanceSelectors } from './store/selectors';
+
+import { StoreSelectors } from '../accounts/merchants/store/selectors';
+
 @Component({
     selector: 'app-attendances',
     templateUrl: './attendances.component.html',
@@ -33,17 +36,17 @@ import { AttendanceSelectors } from './store/selectors';
 export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     total: number;
     displayedColumns = [
-        'id',
-        'image',
-        'name',
-        'check-in',
-        'checkout',
-        'date',
-        'workinghours',
+        'idToko',
+        'storeName',
+        // 'GS',
+        // 'SPV',
+        // 'check-in',
+        // 'check-out',
+        // 'inventory',
         'actions'
     ];
 
-    dataSource$: Observable<Attendance[]>;
+    dataSource$: Observable<Store[]>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -59,7 +62,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
-        private store: Store<fromAttendance.FeatureState>,
+        private store: NgRxStore<fromAttendance.FeatureState>,
+        private _fromStore: NgRxStore<fromStore.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(english);
@@ -76,14 +80,14 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this.store.select(AttendanceSelectors.getAllAttendance);
-        this.totalDataSource$ = this.store.pipe(
-            select(AttendanceSelectors.getTotalAttendance),
+        this.dataSource$ = this._fromStore.select(StoreSelectors.getAllStore);
+        this.totalDataSource$ = this._fromStore.pipe(
+            select(StoreSelectors.getTotalStore),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
-        this.isLoading$ = this.store.pipe(
-            select(AttendanceSelectors.getIsLoading),
+        this.isLoading$ = this._fromStore.pipe(
+            select(StoreSelectors.getIsLoading),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );

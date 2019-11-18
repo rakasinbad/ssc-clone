@@ -104,113 +104,116 @@ export class AttendanceEffects {
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
 
-    fetchAttendancesRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(AttendanceActions.fetchAttendancesRequest),
-            map(action => action.payload),
-            concatMap(payload =>
-                of(payload).pipe(
-                    tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
-                )
-            ),
-            withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
-            switchMap(([payload, isOnline]) => {
-                console.log(payload);
-                if (isOnline) {
-                    this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] ONLINE', {
-                        online: {
-                            type: 'log',
-                            value: isOnline
-                        }
-                    });
+    // fetchAttendancesRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(AttendanceActions.fetchAttendancesRequest),
+    //         map(action => action.payload),
+    //         concatMap(payload =>
+    //             of(payload).pipe(
+    //                 tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
+    //             )
+    //         ),
+    //         withLatestFrom(
+    //             this.store.pipe(select(NetworkSelectors.isNetworkConnected)),
+    //             this.store.select(AuthSelectors.getAuthState)),
+    //         ),
+    //         switchMap(([payload, isOnline]) => {
+    //             console.log(payload);
+    //             if (isOnline) {
+    //                 this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] ONLINE', {
+    //                     online: {
+    //                         type: 'log',
+    //                         value: isOnline
+    //                     }
+    //                 });
 
-                    return this.attendanceApiSvc.findAll(payload).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
+    //                 return this.attendanceApiSvc.findAll(payload).pipe(
+    //                     catchOffline(),
+    //                     map(resp => {
+    //                         let newResp = {
+    //                             total: 0,
+    //                             data: []
+    //                         };
 
-                            if (resp.total > 0) {
-                                newResp = {
-                                    total: resp.total,
-                                    data: [
-                                        ...resp.data.map(attendance => {
-                                            return {
-                                                ...new Attendance(
-                                                    attendance.id,
-                                                    attendance.checkDate,
-                                                    attendance.longitudeCheckIn,
-                                                    attendance.latitudeCheckIn,
-                                                    attendance.longitudeCheckOut,
-                                                    attendance.latitudeCheckOut,
-                                                    attendance.checkIn,
-                                                    attendance.checkOut,
-                                                    attendance.userId,
-                                                    attendance.user,
-                                                    attendance.createdAt,
-                                                    attendance.updatedAt,
-                                                    attendance.deletedAt
-                                                )
-                                            };
-                                        })
-                                    ]
-                                };
-                            }
+    //                         if (resp.total > 0) {
+    //                             newResp = {
+    //                                 total: resp.total,
+    //                                 data: [
+    //                                     ...resp.data.map(attendance => {
+    //                                         return {
+    //                                             ...new Attendance(
+    //                                                 attendance.id,
+    //                                                 attendance.checkDate,
+    //                                                 attendance.longitudeCheckIn,
+    //                                                 attendance.latitudeCheckIn,
+    //                                                 attendance.longitudeCheckOut,
+    //                                                 attendance.latitudeCheckOut,
+    //                                                 attendance.checkIn,
+    //                                                 attendance.checkOut,
+    //                                                 attendance.userId,
+    //                                                 attendance.user,
+    //                                                 attendance.createdAt,
+    //                                                 attendance.updatedAt,
+    //                                                 attendance.deletedAt
+    //                                             )
+    //                                         };
+    //                                     })
+    //                                 ]
+    //                             };
+    //                         }
 
-                            this.logSvc.generateGroup(
-                                '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-                                {
-                                    online: {
-                                        type: 'log',
-                                        value: isOnline
-                                    },
-                                    payload: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                }
-                            );
+    //                         this.logSvc.generateGroup(
+    //                             '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
+    //                             {
+    //                                 online: {
+    //                                     type: 'log',
+    //                                     value: isOnline
+    //                                 },
+    //                                 payload: {
+    //                                     type: 'log',
+    //                                     value: resp
+    //                                 }
+    //                             }
+    //                         );
 
-                            return AttendanceActions.fetchAttendancesSuccess({
-                                payload: {
-                                    attendances: newResp.data,
-                                    total: newResp.total
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                AttendanceActions.fetchAttendancesFailure({
-                                    payload: {
-                                        id: 'fetchAttendancesFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
-                        )
-                    );
-                }
+    //                         return AttendanceActions.fetchAttendancesSuccess({
+    //                             payload: {
+    //                                 attendances: newResp.data,
+    //                                 total: newResp.total
+    //                             }
+    //                         });
+    //                     }),
+    //                     catchError(err =>
+    //                         of(
+    //                             AttendanceActions.fetchAttendancesFailure({
+    //                                 payload: {
+    //                                     id: 'fetchAttendancesFailure',
+    //                                     errors: err
+    //                                 }
+    //                             })
+    //                         )
+    //                     )
+    //                 );
+    //             }
 
-                this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] OFFLINE', {
-                    online: {
-                        type: 'log',
-                        value: isOnline
-                    }
-                });
+    //             this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] OFFLINE', {
+    //                 online: {
+    //                     type: 'log',
+    //                     value: isOnline
+    //                 }
+    //             });
 
-                return of(
-                    AttendanceActions.fetchAttendancesFailure({
-                        payload: {
-                            id: 'fetchAttendancesFailure',
-                            errors: 'Offline'
-                        }
-                    })
-                );
-            })
-        )
-    );
+    //             return of(
+    //                 AttendanceActions.fetchAttendancesFailure({
+    //                     payload: {
+    //                         id: 'fetchAttendancesFailure',
+    //                         errors: 'Offline'
+    //                     }
+    //                 })
+    //             );
+    //         })
+    //     )
+    // );
 
     fetchAttendanceRequest$ = createEffect(() =>
         this.actions$.pipe(
