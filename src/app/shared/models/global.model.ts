@@ -76,6 +76,54 @@ export interface IResponsePaginate {
     skip: number;
 }
 
+export interface IPaginateResponse<T> {
+    total: number;
+    limit: number;
+    skip: number;
+    data: T[];
+}
+
+export class PaginateResponse<T> implements IPaginateResponse<T> {
+    constructor(
+        private _total: number,
+        private _limit: number,
+        private _skip: number,
+        private _data: T[]
+    ) {}
+
+    get total(): number {
+        return this._total;
+    }
+
+    set total(value: number) {
+        this._total = value;
+    }
+
+    get limit(): number {
+        return this._limit;
+    }
+
+    set limit(value: number) {
+        this._limit = value;
+    }
+
+    get skip(): number {
+        return this._skip;
+    }
+
+    set skip(value: number) {
+        this._skip = value;
+    }
+
+    get data(): T[] {
+        return this._data;
+    }
+
+    set data(value: T[]) {
+        this._data = value;
+    }
+}
+
 export interface IErrorHandler {
     id: string;
     errors: any;

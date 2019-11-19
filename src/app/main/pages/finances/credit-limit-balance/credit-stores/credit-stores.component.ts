@@ -8,14 +8,19 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort } from '@angular/material';
 import { PageEvent } from '@angular/material/paginator';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { merge, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { IQueryParams } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
+import { merge, Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { CreditStoreFormComponent } from '../credit-store-form/credit-store-form.component';
+import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
+import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
 
@@ -28,21 +33,26 @@ import { CreditLimitBalanceSelectors } from '../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
-    dataSource: MatTableDataSource<any>; // Need for demo
+    // dataSource: MatTableDataSource<any>; // Need for demo
     displayedColumns = [
-        'order',
+        // 'order',
         'name',
-        'limit',
+        'credit-limit',
         'receivable',
         'balance',
         'avg-monthly',
-        'limit-group',
-        'segment',
+        'credit-limit-group',
+        'store-segment',
         'top',
         'last-update',
         'actions'
     ];
     today = new Date();
+
+    dataSource$: Observable<CreditLimitStore[]>;
+    selectedRowIndex$: Observable<string>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -59,7 +69,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         private matDialog: MatDialog,
         private store: Store<fromCreditLimitBalance.FeatureState>
     ) {
-        this.dataSource = new MatTableDataSource();
+        // this.dataSource = new MatTableDataSource();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -71,12 +81,36 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.paginator.pageSize = 5;
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
+
+        this.dataSource$ = this.store.select(CreditLimitBalanceSelectors.getAllCreditLimitStore);
+        this.totalDataSource$ = this.store.select(
+            CreditLimitBalanceSelectors.getTotalCreditLimitStore
+        );
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+        this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
+
+        this.initTable();
+
+        this.store
+            .select(CreditLimitBalanceSelectors.getIsRefresh)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+            .subscribe(isRefresh => {
+                if (isRefresh) {
+                    this.onRefreshTable();
+                }
+            });
 
         // Need for demo
-        this.store
-            .select(CreditLimitBalanceSelectors.getAllCreditLimitBalance)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
+        // this.store
+        //     .select(CreditLimitBalanceSelectors.getAllCreditLimitBalance)
+        //     .pipe(takeUntil(this._unSubs$))
+        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
@@ -84,10 +118,12 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements AfterViewInit' to the class.
 
         // Need for demo
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
 
-        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
@@ -118,18 +154,92 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    onEdit(item): void {
-        this.matDialog.open(CreditStoreFormComponent, {
+    onEdit(item: CreditLimitStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(
+            CreditLimitBalanceActions.fetchCreditLimitStoreRequest({ payload: item.id })
+        );
+
+        const dialogRef = this.matDialog.open<
+            CreditStoreFormComponent,
+            any,
+            { action: string; payload: CreditLimitStoreOptions }
+        >(CreditStoreFormComponent, {
             data: {
-                title: 'Set Credit Limit & Balance'
+                title: 'Set Credit Limit & Balance',
+                id: item.id
             },
             disableClose: true
         });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(resp => {
+                if (resp.action === 'edit' && resp.payload) {
+                } else {
+                    this.store.dispatch(UiActions.resetHighlightRow());
+                }
+                console.log('AFTER CLOSED', resp);
+            });
+    }
+
+    onFreezeBalance(item: CreditLimitStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(
+            CreditLimitBalanceActions.confirmChangeFreezeBalanceStatus({ payload: item })
+        );
+    }
+
+    onTrackBy(index: number, item: CreditLimitStore): string {
+        return !item ? null : item.id;
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private initTable(): void {}
+    private onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this.initTable();
+    }
+
+    private initTable(): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            data['sortBy'] = this.sort.active;
+        }
+
+        // if (this.search.value) {
+        //     const query = this.search.value;
+
+        //     data['search'] = [
+        //         {
+        //             fieldName: 'keyword',
+        //             keyword: query
+        //         }
+        //     ];
+        // }
+
+        this.store.dispatch(
+            CreditLimitBalanceActions.fetchCreditLimitStoresRequest({
+                payload: data
+            })
+        );
+    }
 }

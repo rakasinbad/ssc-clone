@@ -65,10 +65,19 @@ app-credit-stores {
             cursor: pointer;
         }
 
+        .mat-header-cell {
+            // display: flex;
+            // justify-content: flex-end;
+            text-align: left;
+        }
+
         .mat-cell {
             min-width: 0;
             display: flex;
             align-items: center;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
         }
 
         .mat-column-checkbox {
@@ -76,57 +85,81 @@ app-credit-stores {
             padding-left: 18px;
         }
 
-        .mat-column-id {
+        // .mat-column-id {
+        //     flex: 0 1 84px;
+        // }
+
+        // .mat-column-image {
+        //     flex: 0 1 84px;
+
+        //     .account-image {
+        //         width: 52px;
+        //         height: 52px;
+        //         border: 1px solid rgba(0, 0, 0, 0.12);
+        //     }
+        // }
+
+        .mat-column-order {
             flex: 0 1 84px;
         }
 
-        .mat-column-image {
-            flex: 0 1 84px;
+        // .mat-column-receivable {
+        //     flex: 0 1 70px;
+        // }
 
-            .account-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
+        // .mat-column-avg-monthly {
+        //     flex: 0 1 70px;
+        // }
+
+        // .mat-column-credit-limit-group {
+        //     flex: 0 1 70px;
+        // }
+
+        .mat-column-store-segment {
+            flex: 0 1 70px;
         }
 
-        .mat-column-phone {
-            flex: 0 1 160px;
+        .mat-column-top {
+            flex: 0 1 70px;
         }
 
-        .mat-column-roles {
-            flex: 0 1 160px;
-        }
+        // .mat-column-phone {
+        //     flex: 0 1 160px;
+        // }
 
-        .mat-column-totalProduct {
-            flex: 0 1 80px;
-        }
+        // .mat-column-roles {
+        //     flex: 0 1 160px;
+        // }
 
-        .mat-column-odooid {
-            flex: 0 1 120px;
-        }
+        // .mat-column-totalProduct {
+        //     flex: 0 1 80px;
+        // }
 
-        .mat-column-active {
-            flex: 0 1 80px;
-        }
+        // .mat-column-odooid {
+        //     flex: 0 1 120px;
+        // }
 
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
+        // .mat-column-active {
+        //     flex: 0 1 80px;
+        // }
 
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
-        }
+        // .quantity-indicator {
+        //     display: inline-block;
+        //     vertical-align: middle;
+        //     width: 8px;
+        //     height: 8px;
+        //     border-radius: 4px;
+        //     margin-right: 8px;
 
-        .active-icon {
-            border-radius: 50%;
-        }
+        //     & + span {
+        //         display: inline-block;
+        //         vertical-align: middle;
+        //     }
+        // }
+
+        // .active-icon {
+        //     border-radius: 50%;
+        // }
 
         .mat-column-actions {
             flex: 0 1 80px;

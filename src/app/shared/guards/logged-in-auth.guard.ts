@@ -36,7 +36,8 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
                     return true;
                 }
 
-                return this.router.createUrlTree(['/pages/dashboard']);
+                // /pages/dashboard
+                return this.router.createUrlTree(['/pages/account/stores']);
             })
         );
     }

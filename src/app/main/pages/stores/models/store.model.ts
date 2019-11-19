@@ -18,7 +18,7 @@ export class Store extends Timestamp {
     storeSegmentId: string;
     urbanId: string;
     warehouseId: string;
-    storeConfig: StoreConfig;
+    storeConfig: any;
 
     constructor(
         id: string,
@@ -35,9 +35,9 @@ export class Store extends Timestamp {
         storeSegmentId: string,
         urbanId: string,
         warehouseId: string,
-        storeConfig: StoreConfig,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        storeConfig: any,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
@@ -88,8 +88,8 @@ export class StoreAssocUser extends Timestamp {
         id: string,
         status: TStatus,
         store: Store,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);

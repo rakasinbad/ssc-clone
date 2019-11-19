@@ -8,6 +8,7 @@ import {
     createSelector,
     MetaReducer
 } from '@ngrx/store';
+import { AuthActions } from 'app/main/pages/core/auth/store/actions';
 import { fromDropdown, fromForm, fromNetwork, fromUi } from 'app/shared/store/reducers';
 import { environment } from 'environments/environment';
 import { storeFreeze } from 'ngrx-store-freeze';
@@ -49,9 +50,19 @@ export function logger(reducer: ActionReducer<State>): ActionReducer<State> {
     };
 }
 
+export function clearState(reducer: ActionReducer<State>): ActionReducer<State> {
+    return (state, action) => {
+        if (action.type === AuthActions.authLogout.type) {
+            state = undefined;
+        }
+
+        return reducer(state, action);
+    };
+}
+
 export const metaReducers: MetaReducer<State>[] = !environment.production
-    ? [logger, storeFreeze]
-    : [];
+    ? [logger, storeFreeze, clearState]
+    : [clearState];
 
 export const getRouterState = createFeatureSelector<RouterReducerState<RouterStateUrl>>('router');
 export const {

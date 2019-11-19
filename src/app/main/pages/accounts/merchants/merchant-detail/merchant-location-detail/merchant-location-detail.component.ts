@@ -7,14 +7,14 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { SupplierStore } from 'app/shared/models';
 import { icon, latLng, latLngBounds, Map, MapOptions, marker, tileLayer } from 'leaflet';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
-import { BrandStore } from '../../models';
-import { BrandStoreActions } from '../../store/actions';
+import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
-import { BrandStoreSelectors } from '../../store/selectors';
+import { StoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-merchant-location-detail',
@@ -38,7 +38,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         center: latLng([-2.5, 117.86])
     };
 
-    brandStore$: Observable<BrandStore>;
+    store$: Observable<SupplierStore>;
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
@@ -52,15 +52,16 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         const { id } = this.route.parent.snapshot.params;
 
         this._unSubs$ = new Subject<void>();
-        this.brandStore$ = this.store.select(BrandStoreSelectors.getSelectedBrandStoreInfo);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
-        this.store.dispatch(BrandStoreActions.fetchBrandStoreRequest({ payload: id }));
+        this.store$ = this.store.select(StoreSelectors.getSelectedStore);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+        this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
-        this.store.dispatch(BrandStoreActions.resetBrandStore());
+
+        this.store.dispatch(StoreActions.resetStore());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -77,24 +78,19 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         // this.options.layers.push(newMarker);
 
         this.store
-            .select(BrandStoreSelectors.getSelectedBrandStoreInfo)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(brandStores => {
-                if (
-                    brandStores &&
-                    brandStores.store &&
-                    brandStores.store.latitude &&
-                    brandStores.store.longitude
-                ) {
-                    const newMarker = marker(
-                        [brandStores.store.latitude, brandStores.store.longitude],
-                        {
-                            icon: icon({
-                                iconSize: [18, 30],
-                                iconUrl: 'assets/images/marker.png'
-                            })
-                        }
-                    );
+            .select(StoreSelectors.getSelectedStore)
+            .pipe(
+                filter(row => !!row),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(state => {
+                if (state && state.store && state.store.latitude && state.store.longitude) {
+                    const newMarker = marker([state.store.latitude, state.store.longitude], {
+                        icon: icon({
+                            iconSize: [18, 30],
+                            iconUrl: 'assets/images/marker.png'
+                        })
+                    });
 
                     newMarker.addTo(map);
 

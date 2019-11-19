@@ -3,20 +3,20 @@
         <div fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center">
                 <div
-                    *ngIf="(brandStore$ | async)?.store?.imageUrl || !(isLoading$ | async)"
+                    *ngIf="(store$ | async)?.store?.imageUrl || !(isLoading$ | async)"
                     class="store-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
                     <img
                         [defaultImage]="'assets/images/avatars/profile.jpg'"
                         [useSrcset]="true"
-                        [lazyLoad]="(brandStore$ | async)?.store?.imageUrl"
+                        [lazyLoad]="(store$ | async)?.store?.imageUrl"
                         [errorImage]="'assets/images/avatars/profile.jpg'"
                     />
                 </div>
 
                 <div
-                    *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                    *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                     class="mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
@@ -30,13 +30,11 @@
                     class="mat-headline m-0"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <ng-container
-                        *ngIf="(brandStore$ | async)?.store?.name || !(isLoading$ | async)"
-                    >
-                        {{ safeValue((brandStore$ | async)?.store?.name) }}
+                    <ng-container *ngIf="(store$ | async)?.store?.name || !(isLoading$ | async)">
+                        {{ safeValue((store$ | async)?.store?.name) }}
                     </ng-container>
                     <ngx-skeleton-loader
-                        *ngIf="!(brandStore$ | async)?.store?.name && (isLoading$ | async)"
+                        *ngIf="!(store$ | async)?.store?.name && (isLoading$ | async)"
                         [theme]="{ width: '150px', height: '25px', 'margin-top': '15px' }"
                     ></ngx-skeleton-loader>
                 </span>
@@ -45,14 +43,14 @@
             <button
                 mat-flat-button
                 color="accent"
-                [routerLink]="['/pages/account/stores', (brandStore$ | async)?.storeId]"
-                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
+                [routerLink]="['/pages/account/stores', (store$ | async)?.storeId]"
+                *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
             >
                 Edit
             </button>
 
             <ngx-skeleton-loader
-                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                 [theme]="{ width: '70px', height: '30px', margin: 0 }"
             ></ngx-skeleton-loader>
         </div>
@@ -62,13 +60,11 @@
                 <div class="order-box info-box" fxFlex="30">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Profile Information
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -84,31 +80,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Phone Number
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.phoneNo ||
+                                            (store$ | async)?.store?.phoneNo ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.phoneNo) }}
+                                        {{ safeValue((store$ | async)?.store?.phoneNo) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.phoneNo &&
+                                            !(store$ | async)?.store?.phoneNo &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -124,32 +116,26 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         NPWP ID
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.taxNo ||
-                                            !(isLoading$ | async)
+                                            (store$ | async)?.store?.taxNo || !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.taxNo) }}
+                                        {{ safeValue((store$ | async)?.store?.taxNo) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.taxNo &&
-                                            (isLoading$ | async)
+                                            !(store$ | async)?.store?.taxNo && (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
@@ -162,13 +148,11 @@
                 <div class="order-box info-box" fxFlex="30">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Store ID
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -179,29 +163,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         ID Toko
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.storeCode ||
+                                            (store$ | async)?.store?.storeCode ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.storeCode) }}
+                                        {{ safeValue((store$ | async)?.store?.storeCode) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.storeCode &&
+                                            !(store$ | async)?.store?.storeCode &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -212,32 +194,26 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Nama Toko
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.name ||
-                                            !(isLoading$ | async)
+                                            (store$ | async)?.store?.name || !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.name) }}
+                                        {{ safeValue((store$ | async)?.store?.name) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.name &&
-                                            (isLoading$ | async)
+                                            !(store$ | async)?.store?.name && (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
@@ -252,13 +228,11 @@
                 <div class="order-box info-box">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Address
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -269,35 +243,31 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Province
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.urban?.province?.name ||
+                                            (store$ | async)?.store?.urban?.province?.name ||
                                             !(isLoading$ | async)
                                         "
                                     >
                                         {{
                                             safeValue(
-                                                (brandStore$ | async)?.store?.urban?.province?.name
+                                                (store$ | async)?.store?.urban?.province?.name
                                             )
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.urban?.province?.name &&
+                                            !(store$ | async)?.store?.urban?.province?.name &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -308,29 +278,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         City
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.urban?.city ||
+                                            (store$ | async)?.store?.urban?.city ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.urban?.city) }}
+                                        {{ safeValue((store$ | async)?.store?.urban?.city) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.urban?.city &&
+                                            !(store$ | async)?.store?.urban?.city &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -341,33 +309,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Kecamatan
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.urban?.district ||
+                                            (store$ | async)?.store?.urban?.district ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue((brandStore$ | async)?.store?.urban?.district)
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.urban?.district) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.urban?.district &&
+                                            !(store$ | async)?.store?.urban?.district &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -378,31 +340,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Kelurahan
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.urban?.urban ||
+                                            (store$ | async)?.store?.urban?.urban ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((brandStore$ | async)?.store?.urban?.urban) }}
+                                        {{ safeValue((store$ | async)?.store?.urban?.urban) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.urban?.urban &&
+                                            !(store$ | async)?.store?.urban?.urban &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -413,33 +371,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Kode Pos
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.urban?.zipCode ||
+                                            (store$ | async)?.store?.urban?.zipCode ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue((brandStore$ | async)?.store?.urban?.zipCode)
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.urban?.zipCode) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.urban?.zipCode &&
+                                            !(store$ | async)?.store?.urban?.zipCode &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -450,31 +402,23 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Notes
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         -
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -483,37 +427,33 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Geo Loc
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.longitude ||
-                                            (brandStore$ | async)?.store?.latitude ||
+                                            (store$ | async)?.store?.longitude ||
+                                            (store$ | async)?.store?.latitude ||
                                             !(isLoading$ | async)
                                         "
                                     >
                                         {{
-                                            safeValue(brandStore$ | async)?.store?.longitude +
+                                            safeValue(store$ | async)?.store?.longitude +
                                                 ', ' +
-                                                safeValue((brandStore$ | async)?.store?.latitude)
+                                                safeValue((store$ | async)?.store?.latitude)
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.longitude &&
-                                            !(brandStore$ | async)?.store?.latitude &&
+                                            !(store$ | async)?.store?.longitude &&
+                                            !(store$ | async)?.store?.latitude &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -529,13 +469,11 @@
                 <div class="order-box info-box" fxFlex="30">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Legal Information
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -546,33 +484,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         KTP ID
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.legalInfo?.idNo ||
+                                            (store$ | async)?.store?.legalInfo?.idNo ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue((brandStore$ | async)?.store?.legalInfo?.idNo)
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.legalInfo?.idNo) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.legalInfo?.idNo &&
+                                            !(store$ | async)?.store?.legalInfo?.idNo &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -583,16 +515,12 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         KTP Photo
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -600,20 +528,21 @@
                                     <ng-container
                                         *ngIf="
                                             safeValue(
-                                                (brandStore$ | async)?.store?.legalInfo?.idImageUrl
+                                                (store$ | async)?.store?.legalInfo?.idImageUrl
                                             ) !== '-' && !(isLoading$ | async)
                                         "
                                     >
                                         <!-- <a href="#">View</a> -->
-                                        <!-- <input #idImageUrl type="hidden" [value]="(brandStore$ | async)?.store?.legalInfo?.idImageUrl"> -->
+                                        <!-- <input #idImageUrl type="hidden" [value]="(store$ | async)?.store?.legalInfo?.idImageUrl"> -->
                                         <button
-                                            *ngIf="brandStore$ | async as brandStore"
+                                            *ngIf="store$ | async as store"
                                             mat-button
                                             color="accent"
                                             class="btn-sinbad-link"
                                             (click)="
                                                 onShowImage(
-                                                    brandStore?.store?.legalInfo?.idImageUrl, 'KTP Photo'
+                                                    store?.store?.legalInfo?.idImageUrl,
+                                                    'KTP Photo'
                                                 )
                                             "
                                         >
@@ -624,7 +553,7 @@
                                     <ng-container
                                         *ngIf="
                                             safeValue(
-                                                (brandStore$ | async)?.store?.legalInfo?.idImageUrl
+                                                (store$ | async)?.store?.legalInfo?.idImageUrl
                                             ) === '-' && !(isLoading$ | async)
                                         "
                                     >
@@ -633,7 +562,7 @@
 
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.legalInfo?.idImageUrl &&
+                                            !(store$ | async)?.store?.legalInfo?.idImageUrl &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -644,16 +573,12 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         KTP Photo + Selfie
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -661,19 +586,19 @@
                                     <ng-container
                                         *ngIf="
                                             safeValue(
-                                                (brandStore$ | async)?.store?.legalInfo
-                                                    ?.selfieImageUrl
+                                                (store$ | async)?.store?.legalInfo?.selfieImageUrl
                                             ) !== '-' && !(isLoading$ | async)
                                         "
                                     >
                                         <button
-                                            *ngIf="brandStore$ | async as brandStore"
+                                            *ngIf="store$ | async as store"
                                             mat-button
                                             color="accent"
                                             class="btn-sinbad-link"
                                             (click)="
                                                 onShowImage(
-                                                    brandStore?.store?.legalInfo?.selfieImageUrl, 'KTP Photo + Selfie'
+                                                    store?.store?.legalInfo?.selfieImageUrl,
+                                                    'KTP Photo + Selfie'
                                                 )
                                             "
                                         >
@@ -684,8 +609,7 @@
                                     <ng-container
                                         *ngIf="
                                             safeValue(
-                                                (brandStore$ | async)?.store?.legalInfo
-                                                    ?.selfieImageUrl
+                                                (store$ | async)?.store?.legalInfo?.selfieImageUrl
                                             ) === '-' && !(isLoading$ | async)
                                         "
                                     >
@@ -694,8 +618,8 @@
 
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.legalInfo
-                                                ?.selfieImageUrl && (isLoading$ | async)
+                                            !(store$ | async)?.store?.legalInfo?.selfieImageUrl &&
+                                            (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
@@ -705,35 +629,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         NPWP ID
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.legalInfo?.taxNo ||
+                                            (store$ | async)?.store?.legalInfo?.taxNo ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(
-                                                (brandStore$ | async)?.store?.legalInfo?.taxNo
-                                            )
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.legalInfo?.taxNo) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.legalInfo?.taxNo &&
+                                            !(store$ | async)?.store?.legalInfo?.taxNo &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -747,13 +663,11 @@
                 <div class="order-box info-box">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Store Classification
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -764,33 +678,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Store Type
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.storeType?.name ||
+                                            (store$ | async)?.store?.storeType?.name ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue((brandStore$ | async)?.store?.storeType?.name)
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.storeType?.name) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.storeType?.name &&
+                                            !(store$ | async)?.store?.storeType?.name &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -801,35 +709,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Store Group
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.storeGroup?.name ||
+                                            (store$ | async)?.store?.storeGroup?.name ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(
-                                                (brandStore$ | async)?.store?.storeGroup?.name
-                                            )
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.storeGroup?.name) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.storeGroup?.name &&
+                                            !(store$ | async)?.store?.storeGroup?.name &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -840,31 +740,23 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Store Classification
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         -
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -873,35 +765,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Store Segment
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.storeSegment?.name ||
+                                            (store$ | async)?.store?.storeSegment?.name ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(
-                                                (brandStore$ | async)?.store?.storeSegment?.name
-                                            )
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.storeSegment?.name) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.storeSegment?.name &&
+                                            !(store$ | async)?.store?.storeSegment?.name &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -917,13 +801,11 @@
                 <div class="order-box info-box">
                     <header>
                         <div class="title">
-                            <ng-container
-                                *ngIf="(brandStore$ | async)?.store || !(isLoading$ | async)"
-                            >
+                            <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
                                 Physical Store Information
                             </ng-container>
                             <ngx-skeleton-loader
-                                *ngIf="!(brandStore$ | async)?.store && (isLoading$ | async)"
+                                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                 [theme]="{ width: '150px', margin: 0 }"
                             ></ngx-skeleton-loader>
                         </div>
@@ -934,38 +816,32 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Physical Store Size
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.largeArea ||
+                                            (store$ | async)?.store?.largeArea ||
                                             !(isLoading$ | async)
                                         "
                                     >
                                         {{
-                                            safeValue((brandStore$ | async)?.store?.largeArea) ===
-                                            '-'
-                                                ? safeValue((brandStore$ | async)?.store?.largeArea)
-                                                : safeValue(
-                                                      (brandStore$ | async)?.store?.largeArea
-                                                  ) + ' m'
+                                            safeValue((store$ | async)?.store?.largeArea) === '-'
+                                                ? safeValue((store$ | async)?.store?.largeArea)
+                                                : safeValue((store$ | async)?.store?.largeArea) +
+                                                  ' m'
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.largeArea &&
+                                            !(store$ | async)?.store?.largeArea &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -976,35 +852,27 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Number of Employee
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.numberOfEmployee ||
+                                            (store$ | async)?.store?.numberOfEmployee ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(
-                                                (brandStore$ | async)?.store?.numberOfEmployee
-                                            )
-                                        }}
+                                        {{ safeValue((store$ | async)?.store?.numberOfEmployee) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.numberOfEmployee &&
+                                            !(store$ | async)?.store?.numberOfEmployee &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -1015,31 +883,23 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Top Brand Selling
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         -
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -1048,31 +908,23 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Wanted Brand
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         -
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -1081,35 +933,31 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Vehicle Accessibility
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (brandStore$ | async)?.store?.vehicleAccessibility ||
+                                            (store$ | async)?.store?.vehicleAccessibility ||
                                             !(isLoading$ | async)
                                         "
                                     >
                                         {{
                                             safeValue(
-                                                (brandStore$ | async)?.store?.vehicleAccessibility?.name
+                                                (store$ | async)?.store?.vehicleAccessibility?.name
                                             )
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.vehicleAccessibility &&
+                                            !(store$ | async)?.store?.vehicleAccessibility &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
@@ -1120,32 +968,30 @@
                             <tr>
                                 <td class="info-title">
                                     <ng-container
-                                        *ngIf="
-                                            (brandStore$ | async)?.store || !(isLoading$ | async)
-                                        "
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
                                         Store Photo
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="
-                                            !(brandStore$ | async)?.store && (isLoading$ | async)
-                                        "
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
                                         [theme]="{ width: '60px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            safeValue((brandStore$ | async)?.store?.imageUrl) !==
-                                                '-' && !(isLoading$ | async)
+                                            safeValue((store$ | async)?.store?.imageUrl) !== '-' &&
+                                            !(isLoading$ | async)
                                         "
                                     >
                                         <button
-                                            *ngIf="brandStore$ | async as brandStore"
+                                            *ngIf="store$ | async as store"
                                             mat-button
                                             color="accent"
                                             class="btn-sinbad-link"
-                                            (click)="onShowImage(brandStore?.store?.imageUrl, 'Store Photo')"
+                                            (click)="
+                                                onShowImage(store?.store?.imageUrl, 'Store Photo')
+                                            "
                                         >
                                             View
                                         </button>
@@ -1153,8 +999,8 @@
 
                                     <ng-container
                                         *ngIf="
-                                            safeValue((brandStore$ | async)?.store?.imageUrl) ===
-                                                '-' && !(isLoading$ | async)
+                                            safeValue((store$ | async)?.store?.imageUrl) === '-' &&
+                                            !(isLoading$ | async)
                                         "
                                     >
                                         -
@@ -1162,7 +1008,7 @@
 
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(brandStore$ | async)?.store?.imageUrl &&
+                                            !(store$ | async)?.store?.imageUrl &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"

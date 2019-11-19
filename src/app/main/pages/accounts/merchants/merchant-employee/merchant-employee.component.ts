@@ -7,23 +7,22 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { Role } from 'app/main/pages/roles/role.model';
 import { ErrorMessageService } from 'app/shared/helpers';
+import { Role, User } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil, withLatestFrom, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { StoreEmployeeDetail } from '../models';
-import { BrandStoreActions } from '../store/actions';
-import { fromMerchant } from '../store/reducers';
-import { BrandStoreSelectors } from '../store/selectors';
-import { MatSelectChange } from '@angular/material';
 import { MerchantApiService } from '../services';
+import { StoreActions } from '../store/actions';
+import { fromMerchant } from '../store/reducers';
+import { StoreSelectors } from '../store/selectors';
 
+// import { Role } from 'app/main/pages/roles/role.model';
 @Component({
     selector: 'app-merchant-employee',
     templateUrl: './merchant-employee.component.html',
@@ -36,7 +35,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
     form: FormGroup;
     isEdit: boolean;
 
-    employee$: Observable<StoreEmployeeDetail>;
+    employee$: Observable<User>;
     isLoading$: Observable<boolean>;
     roles$: Observable<Role[]>;
 
@@ -62,6 +61,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
         //     }
         // };
         // this.store.dispatch(UiActions.showFooterAction());
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -85,8 +86,6 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                 ]
             })
         );
-
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -105,10 +104,10 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
-        this.employee$ = this.store.select(BrandStoreSelectors.getSelectedStoreEmployeeInfo);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+        this.employee$ = this.store.select(StoreSelectors.getEmployeeEdit);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
         this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
-        this.store.dispatch(BrandStoreActions.fetchStoreEmployeeRequest({ payload: id }));
+        this.store.dispatch(StoreActions.fetchStoreEmployeeEditRequest({ payload: id }));
 
         this.initForm();
         this.initUpdateForm();
@@ -117,12 +116,13 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+
         // this.store.dispatch(UiActions.hideFooterAction());
 
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
-        this.store.dispatch(BrandStoreActions.resetStoreEmployee());
+        this.store.dispatch(UiActions.resetBreadcrumb());
+        this.store.dispatch(StoreActions.resetStoreEmployee());
 
-        this.storage.delete('selectedStoreEmployee').subscribe(() => {});
+        this.storage.delete('selected.store.employee').subscribe(() => {});
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -158,7 +158,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
     goEmployeePage(): void {
         const { storeId } = this.route.snapshot.params;
-        this.store.dispatch(BrandStoreActions.goPage({ payload: 'employee' }));
+
+        this.store.dispatch(StoreActions.goPage({ payload: 'employee' }));
         this.router.navigate(['/pages/account/stores', storeId, 'detail']);
     }
 
@@ -179,8 +180,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
         const phoneNumberField = this.form.get('phoneNumber');
         const body = this.form.value;
 
-        this.storage.get('selectedStoreEmployee').subscribe({
-            next: (prev: StoreEmployeeDetail) => {
+        this.storage.get('selected.store.employee').subscribe({
+            next: (prev: User) => {
                 console.log('SELECTED EMPLOYEE', prev);
                 console.log('BEFORE FILTER', body);
 
@@ -226,9 +227,9 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
                 console.log('AFTER FILTER', body);
 
-                this.store.dispatch(
-                    BrandStoreActions.updateStoreEmployeeRequest({ payload: { body, id } })
-                );
+                // this.store.dispatch(
+                //     StoreActions.updateStoreEmployeeRequest({ payload: { body, id } })
+                // );
             },
             error: err => {}
         });
@@ -300,43 +301,67 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
     private initUpdateForm(): void {
         this.store
-            .select(BrandStoreSelectors.getSelectedStoreEmployeeInfo)
+            .select(StoreSelectors.getEmployeeEdit)
             .pipe(
-                withLatestFrom(this.store.select(DropdownSelectors.getRoleDropdownState)),
+                // withLatestFrom(this.store.select(DropdownSelectors.getRoleDropdownState)),
                 distinctUntilChanged(),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(([selectedEmployee, role]) => {
-                if (selectedEmployee && role) {
-                    this.storage.set('selectedStoreEmployee', selectedEmployee).subscribe(() => {});
+            .subscribe(employee => {
+                if (employee) {
+                    this.storage.set('selected.store.employee', employee).subscribe(() => {});
 
                     this.form.patchValue({
-                        fullName: selectedEmployee.fullName,
-                        phoneNumber: selectedEmployee.mobilePhoneNo
+                        fullName: employee.fullName,
+                        phoneNumber: employee.mobilePhoneNo
                     });
 
                     const rolesGroup = this.form.get('roles');
 
-                    if (selectedEmployee.roles && selectedEmployee.roles.length > 0) {
-                        const roles = selectedEmployee.roles
-                            .map((v, i) => {
-                                return v && v.id
-                                    ? role.findIndex(r => r.id === v.id) === -1
-                                        ? null
-                                        : v.id
-                                    : null;
-                            })
-                            .filter(v => v !== null);
-                        // .map(i => {
-                        //     console.log('MAP', i);
-                        //     // rolesGroup.patchValue(i);
-                        //     // rolesGroup.updateValueAndValidity();
-                        //     return i;
-                        // });
+                    this.store
+                        .select(DropdownSelectors.getRoleDropdownState)
+                        .pipe(takeUntil(this._unSubs$))
+                        .subscribe(roles => {
+                            if (employee.roles && employee.roles.length > 0) {
+                                const currRoles = employee.roles
+                                    .map((v, i) => {
+                                        return v && v.id
+                                            ? roles.findIndex(r => r.id === v.id) === -1
+                                                ? null
+                                                : v.id
+                                            : null;
+                                    })
+                                    .filter(v => v !== null);
 
-                        rolesGroup.patchValue(roles);
-                        rolesGroup.updateValueAndValidity();
-                    }
+                                rolesGroup.patchValue(currRoles);
+                                rolesGroup.updateValueAndValidity();
+                            }
+
+                            if (this.form.get('roles').errors) {
+                                this.form.get('roles').markAsTouched();
+                            }
+                        });
+
+                    // if (employee.roles && employee.roles.length > 0) {
+                    //     const roles = employee.roles
+                    //         .map((v, i) => {
+                    //             return v && v.id
+                    //                 ? role.findIndex(r => r.id === v.id) === -1
+                    //                     ? null
+                    //                     : v.id
+                    //                 : null;
+                    //         })
+                    //         .filter(v => v !== null);
+                    //     // .map(i => {
+                    //     //     console.log('MAP', i);
+                    //     //     // rolesGroup.patchValue(i);
+                    //     //     // rolesGroup.updateValueAndValidity();
+                    //     //     return i;
+                    //     // });
+
+                    //     rolesGroup.patchValue(roles);
+                    //     rolesGroup.updateValueAndValidity();
+                    // }
 
                     if (this.form.get('fullName').errors) {
                         this.form.get('fullName').markAsTouched();
@@ -346,9 +371,9 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                         this.form.get('phoneNumber').markAsTouched();
                     }
 
-                    if (this.form.get('roles').errors) {
-                        this.form.get('roles').markAsTouched();
-                    }
+                    // if (this.form.get('roles').errors) {
+                    //     this.form.get('roles').markAsTouched();
+                    // }
                 }
             });
     }

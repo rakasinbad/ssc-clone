@@ -1,8 +1,13 @@
-import { Role } from 'app/main/pages/roles/role.model';
-import { IResponsePaginate, ITimestamp, Timestamp, TNullable, TStatus } from 'app/shared/models';
+import {
+    IResponsePaginate,
+    ITimestamp,
+    Role,
+    Timestamp,
+    TNullable,
+    TStatus,
+    TUserStatus
+} from 'app/shared/models';
 import * as _ from 'lodash';
-
-import { TAccountStatus } from '../../models';
 
 export interface IInternalEmployee extends ITimestamp {
     id: string;
@@ -20,7 +25,7 @@ export interface IInternalEmployeeDetail extends ITimestamp {
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TAccountStatus;
+    status: TUserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
@@ -56,27 +61,25 @@ export class InternalEmployee extends Timestamp {
         this.brandId = brandId;
         this.status = status;
         this.user = user
-            ? {
-                  ...new User(
-                      user.id,
-                      user.fullName,
-                      user.email,
-                      user.phoneNo,
-                      user.mobilePhoneNo,
-                      user.idNo,
-                      user.taxNo,
-                      user.status,
-                      user.imageUrl,
-                      user.taxImageUrl,
-                      user.idImageUrl,
-                      user.selfieImageUrl,
-                      user.urbanId,
-                      user.roles,
-                      user.createdAt,
-                      user.updatedAt,
-                      user.deletedAt
-                  )
-              }
+            ? new User(
+                  user.id,
+                  user.fullName,
+                  user.email,
+                  user.phoneNo,
+                  user.mobilePhoneNo,
+                  user.idNo,
+                  user.taxNo,
+                  user.status,
+                  user.imageUrl,
+                  user.taxImageUrl,
+                  user.idImageUrl,
+                  user.selfieImageUrl,
+                  user.urbanId,
+                  user.roles,
+                  user.createdAt,
+                  user.updatedAt,
+                  user.deletedAt
+              )
             : null;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -92,7 +95,7 @@ export class InternalEmployeeDetail extends Timestamp {
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TAccountStatus;
+    status: TUserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
@@ -107,7 +110,7 @@ export class InternalEmployeeDetail extends Timestamp {
         mobilePhoneNo: string,
         idNo: string,
         taxNo: string,
-        status: TAccountStatus,
+        status: TUserStatus,
         imageUrl: TNullable<string>,
         taxImageUrl: TNullable<string>,
         idImageUrl: TNullable<string>,
@@ -133,23 +136,19 @@ export class InternalEmployeeDetail extends Timestamp {
         this.selfieImageUrl = selfieImageUrl;
 
         if (roles && roles.length > 0) {
-            roles = [
-                ...roles.map(role => {
-                    return {
-                        ...new Role(
-                            role.id,
-                            role.role,
-                            role.description,
-                            role.status,
-                            role.roleTypeId,
-                            role.privileges,
-                            role.createdAt,
-                            role.updatedAt,
-                            role.deletedAt
-                        )
-                    };
-                })
-            ];
+            roles = roles.map(role => {
+                return new Role(
+                    role.id,
+                    role.role,
+                    role.description,
+                    role.status,
+                    role.roleTypeId,
+                    role.createdAt,
+                    role.updatedAt,
+                    role.deletedAt
+                );
+            });
+
             this.roles = _.sortBy(roles, ['role'], ['asc']);
         } else {
             this.roles = [];
@@ -165,7 +164,7 @@ class User extends Timestamp {
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TAccountStatus;
+    status: TUserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
@@ -181,7 +180,7 @@ class User extends Timestamp {
         mobilePhoneNo: string,
         idNo: string,
         taxNo: string,
-        status: TAccountStatus,
+        status: TUserStatus,
         imageUrl: TNullable<string>,
         taxImageUrl: TNullable<string>,
         idImageUrl: TNullable<string>,
@@ -213,24 +212,19 @@ class User extends Timestamp {
 
         this.roles =
             roles && roles.length > 0
-                ? [
-                      ...roles.map(row => {
-                          return {
-                              ...new Role(
-                                  row.id,
-                                  row.role,
-                                  row.description,
-                                  row.status,
-                                  row.roleTypeId,
-                                  row.privileges,
-                                  row.createdAt,
-                                  row.updatedAt,
-                                  row.deletedAt
-                              )
-                          };
-                      })
-                  ]
-                : roles;
+                ? roles.map(row => {
+                      return new Role(
+                          row.id,
+                          row.role,
+                          row.description,
+                          row.status,
+                          row.roleTypeId,
+                          row.createdAt,
+                          row.updatedAt,
+                          row.deletedAt
+                      );
+                  })
+                : [];
     }
 }
 

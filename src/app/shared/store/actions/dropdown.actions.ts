@@ -1,22 +1,24 @@
 import { createAction, props } from '@ngrx/store';
-import { Account } from 'app/main/pages/accounts/models';
-import { Role } from 'app/main/pages/roles/role.model';
 import {
+    Cluster,
     IErrorHandler,
     IQueryParams,
     Province,
-    StoreCluster,
+    Role,
     StoreGroup,
     StoreSegment,
     StoreType,
     VehicleAccessibility
 } from 'app/shared/models';
 
+// import { Account } from 'app/main/pages/accounts/models';
+// import { Role } from 'app/main/pages/roles/role.model';
 // -----------------------------------------------------------------------------------------------------
 // Fetch Role
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchDropdownRoleRequest = createAction('[Helper Dropdown] Fetch Role Request');
+
 export const fetchDropdownRoleByTypeRequest = createAction(
     '[Helper Dropdown] Fetch Role By Type Request',
     props<{ payload: string }>()
@@ -65,7 +67,7 @@ export const fetchDropdownStoreClusterFailure = createAction(
 
 export const fetchDropdownStoreClusterSuccess = createAction(
     '[Helper Dropdown] Fetch Store Cluster Success',
-    props<{ payload: StoreCluster[] }>()
+    props<{ payload: Cluster[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -78,6 +78,10 @@ app-merchants {
             cursor: pointer;
         }
 
+        .mat-header-cell {
+            text-align: left;
+        }
+
         .mat-cell {
             min-width: 0;
             display: flex;

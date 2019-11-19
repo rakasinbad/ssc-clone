@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams, IStoreSegment, IStoreSegmentResponse } from '../models';
+import { IQueryParams } from '../models';
 import { HelperService } from './helper.service';
 
 /**
@@ -38,33 +38,28 @@ export class StoreSegmentApiService {
      * @param {HelperService} _$helper
      * @memberof StoreSegmentApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
-
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @returns {Observable<IStoreSegmentResponse[]>}
-     * @memberof StoreSegmentApiService
-     */
-    findAll(params: IQueryParams): Observable<IStoreSegmentResponse[]> {
+    constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
-
-        return this.http.get<IStoreSegmentResponse[]>(this._url, { params: newParams });
     }
 
     /**
      *
      *
+     * @template T
      * @param {IQueryParams} params
-     * @returns {Observable<IStoreSegment[]>}
+     * @returns {Observable<T>}
      * @memberof StoreSegmentApiService
      */
-    findAllDropdown(params: IQueryParams): Observable<IStoreSegment[]> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+    findAll<T>(params: IQueryParams): Observable<T> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<IStoreSegment[]>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams });
     }
+
+    // findAllDropdown(params: IQueryParams): Observable<IStoreSegment[]> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     const newParams = this._$helper.handleParams(this._url, params);
+
+    //     return this.http.get<IStoreSegment[]>(this._url, { params: newParams });
+    // }
 }

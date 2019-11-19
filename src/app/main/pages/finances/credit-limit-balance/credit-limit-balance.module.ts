@@ -9,11 +9,12 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { CreditLimitBalanceRoutingModule } from './credit-limit-balance-routing.module';
 import { CreditLimitBalanceComponent } from './credit-limit-balance.component';
+import { CreditLimitGroupFormComponent } from './credit-limit-group-form/credit-limit-group-form.component';
+import { CreditLimitGroupComponent } from './credit-limit-group/credit-limit-group.component';
 import { CreditStoreFormComponent } from './credit-store-form/credit-store-form.component';
 import { CreditStoresComponent } from './credit-stores/credit-stores.component';
+import { CreditLimitBalanceEffects } from './store/effects';
 import { fromCreditLimitBalance } from './store/reducers';
-import { CreditLimitGroupComponent } from './credit-limit-group/credit-limit-group.component';
-import { CreditLimitGroupFormComponent } from './credit-limit-group-form/credit-limit-group-form.component';
 
 /**
  *
@@ -22,7 +23,13 @@ import { CreditLimitGroupFormComponent } from './credit-limit-group-form/credit-
  * @class CreditLimitBalanceModule
  */
 @NgModule({
-    declarations: [CreditLimitBalanceComponent, CreditStoresComponent, CreditStoreFormComponent, CreditLimitGroupComponent, CreditLimitGroupFormComponent],
+    declarations: [
+        CreditLimitBalanceComponent,
+        CreditStoresComponent,
+        CreditStoreFormComponent,
+        CreditLimitGroupComponent,
+        CreditLimitGroupFormComponent
+    ],
     imports: [
         CreditLimitBalanceRoutingModule,
 
@@ -34,7 +41,7 @@ import { CreditLimitGroupFormComponent } from './credit-limit-group-form/credit-
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromCreditLimitBalance.FEATURE_KEY, fromCreditLimitBalance.reducer),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([CreditLimitBalanceEffects])
     ],
     entryComponents: [CreditStoreFormComponent, CreditLimitGroupFormComponent]
 })

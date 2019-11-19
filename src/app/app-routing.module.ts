@@ -12,17 +12,22 @@ const routes: Routes = [
     {
         path: 'pages',
         children: [
+            // {
+            //     path: '',
+            //     redirectTo: 'dashboard',
+            //     pathMatch: 'full'
+            // },
             {
                 path: '',
-                redirectTo: 'dashboard',
+                redirectTo: 'account',
                 pathMatch: 'full'
             },
-            {
-                path: 'dashboard',
-                loadChildren: () =>
-                    import('./main/pages/dashboard/dashboard.module').then(m => m.DashboardModule),
-                canLoad: [AuthGuard]
-            },
+            // {
+            //     path: 'dashboard',
+            //     loadChildren: () =>
+            //         import('./main/pages/dashboard/dashboard.module').then(m => m.DashboardModule),
+            //     canLoad: [AuthGuard]
+            // },
             {
                 path: 'account',
                 loadChildren: () =>
@@ -67,8 +72,10 @@ const routes: Routes = [
             {
                 path: 'catalogues',
                 loadChildren: () =>
-                    import('./main/pages/catalogues/catalogues.module').then(m => m.CataloguesModule),
-                    canLoad: [AuthGuard]
+                    import('./main/pages/catalogues/catalogues.module').then(
+                        m => m.CataloguesModule
+                    ),
+                canLoad: [AuthGuard]
             },
             {
                 path: 'in-store-inventories',

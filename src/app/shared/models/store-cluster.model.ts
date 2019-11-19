@@ -1,32 +1,60 @@
-import { TNullable } from './global.model';
+import { Cluster } from './cluster.model';
+import { TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
 
-export interface IStoreCluster extends ITimestamp {
-    id?: string;
-    name: string;
+interface IStoreCluster extends ITimestamp {
+    id: string;
+    storeId: string;
+    clusterId: string;
+    status: TStatus;
+    cluster?: Cluster;
 }
 
-export interface IStoreClusterResponse extends ITimestamp {
-    data: IStoreCluster[];
-}
-
-export class StoreCluster extends Timestamp {
-    id?: string;
-    name: string;
+export class StoreCluster extends Timestamp implements IStoreCluster {
+    private _cluster: Cluster;
 
     constructor(
-        name: string,
+        private _id: string,
+        private _storeId: string,
+        private _clusterId: string,
+        private _status: TStatus,
         createdAt: string,
         updatedAt: string,
-        deletedAt: TNullable<string>,
-        id?: string
+        deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+    }
 
-        this.id = id || undefined;
-        this.name = name ? name.trim() : name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
+    get id(): string {
+        return this._id;
+    }
+
+    get storeId(): string {
+        return this._storeId;
+    }
+
+    get clusterId(): string {
+        return this._clusterId;
+    }
+
+    get status(): TStatus {
+        return this._status;
+    }
+
+    get cluster(): Cluster {
+        return this._cluster;
+    }
+
+    set cluster(value: Cluster) {
+        this._cluster = value
+            ? new Cluster(
+                  value.id,
+                  value.name,
+                  value.supplierId,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
+              )
+            : null;
     }
 }

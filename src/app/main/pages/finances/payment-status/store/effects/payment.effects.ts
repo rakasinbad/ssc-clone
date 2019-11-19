@@ -23,9 +23,9 @@ export class PaymentEffects {
         this.actions$.pipe(
             ofType(PaymentStatusActions.fetchPaymentStatusRequest),
             map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getAuthState)),
-            switchMap(([payload, auth]) => {
-                if (!auth.user.data.userBrands.length) {
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                if (!supplierId) {
                     return of(
                         PaymentStatusActions.fetchPaymentStatusFailure({
                             payload: { id: 'fetchPaymentStatusFailure', errors: 'Not Found!' }
@@ -33,35 +33,33 @@ export class PaymentEffects {
                     );
                 }
 
-                return this._$paymentStatusApi
-                    .findAll(payload, auth.user.data.userBrands[0].brandId)
-                    .pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
+                return this._$paymentStatusApi.findAll(payload, supplierId).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        let newResp = {
+                            total: 0,
+                            data: []
+                        };
+
+                        if (resp.total > 0) {
+                            newResp = {
+                                total: resp.total,
+                                data: [...resp.data]
                             };
+                        }
 
-                            if (resp.total > 0) {
-                                newResp = {
-                                    total: resp.total,
-                                    data: [...resp.data]
-                                };
-                            }
-
-                            return PaymentStatusActions.fetchPaymentStatusSuccess({
-                                payload: { paymentStatus: newResp.data, total: newResp.total }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                PaymentStatusActions.fetchPaymentStatusFailure({
-                                    payload: { id: 'fetchPaymentStatusFailure', errors: err }
-                                })
-                            )
+                        return PaymentStatusActions.fetchPaymentStatusSuccess({
+                            payload: { paymentStatus: newResp.data, total: newResp.total }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            PaymentStatusActions.fetchPaymentStatusFailure({
+                                payload: { id: 'fetchPaymentStatusFailure', errors: err }
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );

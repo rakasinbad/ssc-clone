@@ -17,6 +17,10 @@ app-merchant-employee-detail {
             // height: 84px;
         }
 
+        .mat-header-cell {
+            text-align: left;
+        }
+
         .mat-cell {
             min-width: 0;
             display: flex;

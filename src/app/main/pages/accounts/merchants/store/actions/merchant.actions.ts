@@ -1,74 +1,64 @@
+import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
+import { IErrorHandler, IQueryParams, SupplierStore, TStatus, User } from 'app/shared/models';
 
-import {
-    BrandStore,
-    FormStore,
-    FormStoreEdit,
-    IMerchantDemo,
-    IStoreCreateResponse,
-    IStoreEditResponse,
-    IStoreEmployeeDemo,
-    StoreEdit,
-    StoreEmployee,
-    StoreEmployeeDetail
-} from '../../models';
+import { Store as Merchant, UserStore } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Brand Stores
+// Fetch Stores
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchBrandStoresRequest = createAction(
-    '[Brand Stores API] Fetch Brand Stores Request',
+export const fetchStoresRequest = createAction(
+    '[Stores API] Fetch Stores Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchBrandStoresFailure = createAction(
-    '[Brand Stores API] Fetch Brand Stores Failure',
+export const fetchStoresFailure = createAction(
+    '[Stores API] Fetch Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchBrandStoresSuccess = createAction(
-    '[Brand Stores API] Fetch Brand Stores Success',
-    props<{ payload: { brandStores: BrandStore[]; total: number } }>()
+export const fetchStoresSuccess = createAction(
+    '[Stores API] Fetch Stores Success',
+    props<{ payload: { data: SupplierStore[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Brand Store Edit
+// Fetch Store
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchBrandStoreEditRequest = createAction(
-    '[Brand Store API] Fetch Brand Store Edit Request',
+export const fetchStoreRequest = createAction(
+    '[Store API] Fetch Store Request',
     props<{ payload: string }>()
 );
 
-export const fetchBrandStoreEditFailure = createAction(
-    '[Brand Store API] Fetch Brand Store Edit Failure',
+export const fetchStoreFailure = createAction(
+    '[Store API] Fetch Store Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchBrandStoreEditSuccess = createAction(
-    '[Brand Store API] Fetch Brand Store Edit Success',
-    props<{ payload: { brandStore?: StoreEdit; source: TSource } }>()
+export const fetchStoreSuccess = createAction(
+    '[Store API] Fetch Store Success',
+    props<{ payload: Update<SupplierStore> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Brand Store
+// Fetch Store Edit
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchBrandStoreRequest = createAction(
-    '[Brand Store API] Fetch Brand Store Request',
+export const fetchStoreEditRequest = createAction(
+    '[Store API] Fetch Store Edit Request',
     props<{ payload: string }>()
 );
 
-export const fetchBrandStoreFailure = createAction(
-    '[Brand Store API] Fetch Brand Store Failure',
+export const fetchStoreEditFailure = createAction(
+    '[Store API] Fetch Store Edit Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchBrandStoreSuccess = createAction(
-    '[Brand Store API] Fetch Brand Store Success',
-    props<{ payload: { brandStore?: BrandStore; source: TSource } }>()
+export const fetchStoreEditSuccess = createAction(
+    '[Store API] Fetch Store Edit Success',
+    props<{ payload: Merchant }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -77,7 +67,7 @@ export const fetchBrandStoreSuccess = createAction(
 
 export const fetchStoreEmployeesRequest = createAction(
     '[Store Employees API] Fetch Store Employees Request',
-    props<{ payload: { params: IQueryParams; storeId: string } }>()
+    props<{ payload: IQueryParams }>()
 );
 
 export const fetchStoreEmployeesFailure = createAction(
@@ -87,149 +77,112 @@ export const fetchStoreEmployeesFailure = createAction(
 
 export const fetchStoreEmployeesSuccess = createAction(
     '[Store Employees API] Fetch Store Employees Success',
-    props<{ payload: { employees: StoreEmployee[]; total: number } }>()
+    props<{ payload: { data: UserStore[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Store Employee
+// Fetch Store Employee Edit
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchStoreEmployeeRequest = createAction(
-    '[Store Employee API] Fetch Store Employee Request',
+export const fetchStoreEmployeeEditRequest = createAction(
+    '[Store Employee API] Fetch Store Employee Edit Request',
     props<{ payload: string }>()
 );
 
-export const fetchStoreEmployeeFailure = createAction(
-    '[Store Employee API] Fetch Store Employee Failure',
+export const fetchStoreEmployeeEditFailure = createAction(
+    '[Store Employee API] Fetch Store Employee Edit Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchStoreEmployeeSuccess = createAction(
-    '[Store Employee API] Fetch Store Employee Success',
-    props<{ payload: { employee?: StoreEmployeeDetail; source: TSource } }>()
+export const fetchStoreEmployeeEditSuccess = createAction(
+    '[Store Employee API] Fetch Store Employee Edit Success',
+    props<{ payload: User }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// CRUD Store Actions
+// [CRUD - DELETE STORE] Stores
 // -----------------------------------------------------------------------------------------------------
-
-export const createStoreRequest = createAction(
-    '[Brand Stores API] Create Store Request',
-    props<{ payload: FormStore }>()
-);
-
-export const createStoreFailure = createAction(
-    '[Brand Stores API] Create Store Failure',
-    props<{ payload: IErrorHandler }>()
-);
-
-export const createStoreSuccess = createAction(
-    '[Brand Stores API] Create Store Success',
-    props<{ payload: IStoreCreateResponse }>()
-);
-
-export const updateStoreRequest = createAction(
-    '[Brand Stores API] Update Store Request',
-    props<{ payload: { body: FormStoreEdit; id: string } }>()
-);
-
-export const updateStoreFailure = createAction(
-    '[Brand Stores API] Update Store Failure',
-    props<{ payload: IErrorHandler }>()
-);
-
-export const updateStoreSuccess = createAction(
-    '[Brand Stores API] Update Store Success',
-    props<{ payload: IStoreEditResponse }>()
-);
 
 export const confirmDeleteStore = createAction(
-    '[Brand Stores Page] Confirm Delete Store',
-    props<{ payload: BrandStore }>()
+    '[Stores Page] Confirm Delete Store',
+    props<{ payload: SupplierStore }>()
 );
 
 export const deleteStoreRequest = createAction(
-    '[Brand Stores API] Delete Store Request',
+    '[Stores API] Delete Store Request',
     props<{ payload: string }>()
 );
 
 export const deleteStoreFailure = createAction(
-    '[Brand Stores API] Delete Store Failure',
+    '[Stores API] Delete Store Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const deleteStoreSuccess = createAction(
-    '[Brand Stores API] Delete Store Success',
+    '[Stores API] Delete Store Success',
     props<{ payload: string }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS STORE] Stores
+// -----------------------------------------------------------------------------------------------------
+
 export const confirmChangeStatusStore = createAction(
-    '[Brand Stores Page] Confirm Change Status Store',
-    props<{ payload: BrandStore }>()
+    '[Stores Page] Confirm Change Status Store',
+    props<{ payload: SupplierStore }>()
 );
 
 export const updateStatusStoreRequest = createAction(
-    '[Brand Stores API] Update Status Store Request',
-    props<{ payload: { body: string; id: string } }>()
+    '[Stores API] Update Status Store Request',
+    props<{ payload: { body: TStatus; id: string } }>()
 );
 
 export const updateStatusStoreFailure = createAction(
-    '[Brand Stores API] Update Status Store Failure',
+    '[Stores API] Update Status Store Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const updateStatusStoreSuccess = createAction(
-    '[Brand Stores API] Update Status Store Success',
-    props<{ payload: FormStore }>()
+    '[Stores API] Update Status Store Success',
+    props<{ payload: Update<SupplierStore> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// CRUD Store Employee Actions
+// [CRUD - DELETE EMPLOYEE] Store Employees
 // -----------------------------------------------------------------------------------------------------
-
-export const updateStoreEmployeeRequest = createAction(
-    '[Store Employee API] Update Store Employee Request',
-    props<{ payload: { body: StoreEmployeeDetail; id: string } }>()
-);
-
-export const updateStoreEmployeeFailure = createAction(
-    '[Store Employee API] Update Store Employee Failure',
-    props<{ payload: IErrorHandler }>()
-);
-
-export const updateStoreEmployeeSuccess = createAction(
-    '[Store Employee API] Update Store Employee Success',
-    props<{ payload: StoreEmployeeDetail }>()
-);
 
 export const confirmDeleteStoreEmployee = createAction(
     '[Store Employees Page] Confirm Delete Store Employee',
-    props<{ payload: StoreEmployee }>()
+    props<{ payload: UserStore }>()
 );
 
 export const deleteStoreEmployeeRequest = createAction(
-    '[Store Employee API] Delete Store Employee Request',
+    '[Store Employees API] Delete Store Employee Request',
     props<{ payload: string }>()
 );
 
 export const deleteStoreEmployeeFailure = createAction(
-    '[Store Employee API] Delete Store Employee Failure',
+    '[Store Employees API] Delete Store Employee Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const deleteStoreEmployeeSuccess = createAction(
-    '[Store Employee API] Delete Store Employee Success',
+    '[Store Employees API] Delete Store Employee Success',
     props<{ payload: string }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS EMPLOYEE] Store Employees
+// -----------------------------------------------------------------------------------------------------
+
 export const confirmChangeStatusStoreEmployee = createAction(
     '[Store Employees Page] Confirm Change Status Store Employee',
-    props<{ payload: any }>()
+    props<{ payload: UserStore }>()
 );
 
 export const updateStatusStoreEmployeeRequest = createAction(
     '[Store Employee API] Update Status Store Employee Request',
-    props<{ payload: { body: string; id: string } }>()
+    props<{ payload: { body: TStatus; id: string } }>()
 );
 
 export const updateStatusStoreEmployeeFailure = createAction(
@@ -239,16 +192,244 @@ export const updateStatusStoreEmployeeFailure = createAction(
 
 export const updateStatusStoreEmployeeSuccess = createAction(
     '[Store Employee API] Update Status Store Employee Success',
-    props<{ payload: any }>()
+    props<{ payload: Update<UserStore> }>()
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Brand Stores
+// -----------------------------------------------------------------------------------------------------
+
+// export const fetchBrandStoresRequest = createAction(
+//     '[Brand Stores API] Fetch Brand Stores Request',
+//     props<{ payload: IQueryParams }>()
+// );
+
+// export const fetchBrandStoresFailure = createAction(
+//     '[Brand Stores API] Fetch Brand Stores Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const fetchBrandStoresSuccess = createAction(
+//     '[Brand Stores API] Fetch Brand Stores Success',
+//     props<{ payload: { brandStores: BrandStore[]; total: number } }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Brand Store Edit
+// -----------------------------------------------------------------------------------------------------
+
+// export const fetchBrandStoreEditRequest = createAction(
+//     '[Brand Store API] Fetch Brand Store Edit Request',
+//     props<{ payload: string }>()
+// );
+
+// export const fetchBrandStoreEditFailure = createAction(
+//     '[Brand Store API] Fetch Brand Store Edit Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const fetchBrandStoreEditSuccess = createAction(
+//     '[Brand Store API] Fetch Brand Store Edit Success',
+//     props<{ payload: { brandStore?: StoreEdit; source: TSource } }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Brand Store
+// -----------------------------------------------------------------------------------------------------
+
+// export const fetchBrandStoreRequest = createAction(
+//     '[Brand Store API] Fetch Brand Store Request',
+//     props<{ payload: string }>()
+// );
+
+// export const fetchBrandStoreFailure = createAction(
+//     '[Brand Store API] Fetch Brand Store Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const fetchBrandStoreSuccess = createAction(
+//     '[Brand Store API] Fetch Brand Store Success',
+//     props<{ payload: { brandStore?: BrandStore; source: TSource } }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Store Employees
+// -----------------------------------------------------------------------------------------------------
+
+// export const fetchStoreEmployeesRequest = createAction(
+//     '[Store Employees API] Fetch Store Employees Request',
+//     props<{ payload: { params: IQueryParams; storeId: string } }>()
+// );
+
+// export const fetchStoreEmployeesFailure = createAction(
+//     '[Store Employees API] Fetch Store Employees Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const fetchStoreEmployeesSuccess = createAction(
+//     '[Store Employees API] Fetch Store Employees Success',
+//     props<{ payload: { employees: StoreEmployee[]; total: number } }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Store Employee
+// -----------------------------------------------------------------------------------------------------
+
+// export const fetchStoreEmployeeRequest = createAction(
+//     '[Store Employee API] Fetch Store Employee Request',
+//     props<{ payload: string }>()
+// );
+
+// export const fetchStoreEmployeeFailure = createAction(
+//     '[Store Employee API] Fetch Store Employee Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const fetchStoreEmployeeSuccess = createAction(
+//     '[Store Employee API] Fetch Store Employee Success',
+//     props<{ payload: { employee?: StoreEmployeeDetail; source: TSource } }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// CRUD Store Actions
+// -----------------------------------------------------------------------------------------------------
+
+// export const createStoreRequest = createAction(
+//     '[Brand Stores API] Create Store Request',
+//     props<{ payload: FormStore }>()
+// );
+
+// export const createStoreFailure = createAction(
+//     '[Brand Stores API] Create Store Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const createStoreSuccess = createAction(
+//     '[Brand Stores API] Create Store Success',
+//     props<{ payload: IStoreCreateResponse }>()
+// );
+
+// export const updateStoreRequest = createAction(
+//     '[Brand Stores API] Update Store Request',
+//     props<{ payload: { body: FormStoreEdit; id: string } }>()
+// );
+
+// export const updateStoreFailure = createAction(
+//     '[Brand Stores API] Update Store Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const updateStoreSuccess = createAction(
+//     '[Brand Stores API] Update Store Success',
+//     props<{ payload: IStoreEditResponse }>()
+// );
+
+// export const confirmDeleteStore = createAction(
+//     '[Brand Stores Page] Confirm Delete Store',
+//     props<{ payload: BrandStore }>()
+// );
+
+// export const deleteStoreRequest = createAction(
+//     '[Brand Stores API] Delete Store Request',
+//     props<{ payload: string }>()
+// );
+
+// export const deleteStoreFailure = createAction(
+//     '[Brand Stores API] Delete Store Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const deleteStoreSuccess = createAction(
+//     '[Brand Stores API] Delete Store Success',
+//     props<{ payload: string }>()
+// );
+
+// export const confirmChangeStatusStore = createAction(
+//     '[Brand Stores Page] Confirm Change Status Store',
+//     props<{ payload: BrandStore }>()
+// );
+
+// export const updateStatusStoreRequest = createAction(
+//     '[Brand Stores API] Update Status Store Request',
+//     props<{ payload: { body: string; id: string } }>()
+// );
+
+// export const updateStatusStoreFailure = createAction(
+//     '[Brand Stores API] Update Status Store Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const updateStatusStoreSuccess = createAction(
+//     '[Brand Stores API] Update Status Store Success',
+//     props<{ payload: FormStore }>()
+// );
+
+// -----------------------------------------------------------------------------------------------------
+// CRUD Store Employee Actions
+// -----------------------------------------------------------------------------------------------------
+
+// export const updateStoreEmployeeRequest = createAction(
+//     '[Store Employee API] Update Store Employee Request',
+//     props<{ payload: { body: StoreEmployeeDetail; id: string } }>()
+// );
+
+// export const updateStoreEmployeeFailure = createAction(
+//     '[Store Employee API] Update Store Employee Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const updateStoreEmployeeSuccess = createAction(
+//     '[Store Employee API] Update Store Employee Success',
+//     props<{ payload: StoreEmployeeDetail }>()
+// );
+
+// export const confirmDeleteStoreEmployee = createAction(
+//     '[Store Employees Page] Confirm Delete Store Employee',
+//     props<{ payload: StoreEmployee }>()
+// );
+
+// export const deleteStoreEmployeeRequest = createAction(
+//     '[Store Employee API] Delete Store Employee Request',
+//     props<{ payload: string }>()
+// );
+
+// export const deleteStoreEmployeeFailure = createAction(
+//     '[Store Employee API] Delete Store Employee Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const deleteStoreEmployeeSuccess = createAction(
+//     '[Store Employee API] Delete Store Employee Success',
+//     props<{ payload: string }>()
+// );
+
+// export const confirmChangeStatusStoreEmployee = createAction(
+//     '[Store Employees Page] Confirm Change Status Store Employee',
+//     props<{ payload: any }>()
+// );
+
+// export const updateStatusStoreEmployeeRequest = createAction(
+//     '[Store Employee API] Update Status Store Employee Request',
+//     props<{ payload: { body: string; id: string } }>()
+// );
+
+// export const updateStatusStoreEmployeeFailure = createAction(
+//     '[Store Employee API] Update Status Store Employee Failure',
+//     props<{ payload: IErrorHandler }>()
+// );
+
+// export const updateStatusStoreEmployeeSuccess = createAction(
+//     '[Store Employee API] Update Status Store Employee Success',
+//     props<{ payload: any }>()
+// );
 
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------
 
-export const resetBrandStores = createAction('[Brand Stores Page] Reset Brand Stores State');
+export const resetStores = createAction('[Stores Page] Reset Stores State');
 
-export const resetBrandStore = createAction('[Brand Stores Page] Reset Brand Store State');
+export const resetStore = createAction('[Stores Page] Reset Store State');
 
 export const resetStoreEmployees = createAction(
     '[Store Employees Page] Reset Store Employees State'
@@ -277,17 +458,17 @@ export const searchBrandStore = createAction(
 // For Demo
 // -----------------------------------------------------------------------------------------------------
 
-export const generateStoresDemo = createAction(
-    '[Stores Page] Generate Stores Demo',
-    props<{ payload: IMerchantDemo[] }>()
-);
+// export const generateStoresDemo = createAction(
+//     '[Stores Page] Generate Stores Demo',
+//     props<{ payload: IMerchantDemo[] }>()
+// );
 
-export const getStoreDemoDetail = createAction(
-    '[Stores Page] Get Store Demo Detail',
-    props<{ payload: string }>()
-);
+// export const getStoreDemoDetail = createAction(
+//     '[Stores Page] Get Store Demo Detail',
+//     props<{ payload: string }>()
+// );
 
-export const generateStoreEmployeesDemo = createAction(
-    '[Stores Page] Generate Store Employees Demo',
-    props<{ payload: IStoreEmployeeDemo[] }>()
-);
+// export const generateStoreEmployeesDemo = createAction(
+//     '[Stores Page] Generate Store Employees Demo',
+//     props<{ payload: IStoreEmployeeDemo[] }>()
+// );

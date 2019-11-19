@@ -5,7 +5,6 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 import { CreditLimitBalanceComponent } from './credit-limit-balance.component';
 import { CreditLimitGroupComponent } from './credit-limit-group/credit-limit-group.component';
 import { CreditStoresComponent } from './credit-stores/credit-stores.component';
-import { CreditLimitBalanceResolver } from './resolvers';
 
 const routes: Routes = [
     {
@@ -16,10 +15,10 @@ const routes: Routes = [
             {
                 path: 'stores',
                 component: CreditStoresComponent,
-                canActivate: [AuthGuard],
-                resolve: {
-                    stores: CreditLimitBalanceResolver
-                }
+                canActivate: [AuthGuard]
+                // resolve: {
+                //     stores: CreditLimitBalanceResolver
+                // }
             },
             {
                 path: 'group',

@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, AbstractControl } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -17,12 +17,19 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class CreditLimitGroupFormComponent implements OnInit {
     form: FormGroup;
+    pageType: string;
 
     constructor(private formBuilder: FormBuilder, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        if (this.data.id === 'new') {
+            this.pageType = 'new';
+        } else {
+            this.pageType = 'edit';
+        }
 
         this.form = this.formBuilder.group({
             groupName: [''],
@@ -45,6 +52,10 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
     onAddGeograph(): void {
         this.formGeographics.push(this.createGeoForm());
+    }
+
+    onSubmit(action: string): void {
+        console.log('Submit', action, this.form);
     }
 
     private createGeoForm(): FormGroup {

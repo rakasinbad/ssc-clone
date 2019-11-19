@@ -291,9 +291,11 @@ export class InternalEffects {
         this.actions$.pipe(
             ofType(InternalActions.fetchInternalEmployeesRequest),
             map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getAuthState)),
-            switchMap(([payload, auth]) => {
-                if (!auth.user.data.userBrands.length) {
+            // withLatestFrom(this.store.select(AuthSelectors.getAuthState))
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            // switchMap(([payload, auth]) => {
+            switchMap(([payload, { supplierId }]) => {
+                if (!supplierId) {
                     return of(
                         InternalActions.fetchInternalEmployeesFailure({
                             payload: {
@@ -304,50 +306,48 @@ export class InternalEffects {
                     );
                 }
 
-                return this._$internalApi
-                    .findAll(payload, auth.user.data.userBrands[0].brandId)
-                    .pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
+                return this._$internalApi.findAll(payload, supplierId).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        let newResp = {
+                            total: 0,
+                            data: []
+                        };
+
+                        if (resp.total > 0) {
+                            newResp = {
+                                total: resp.total,
+                                data: [
+                                    ...resp.data.map(row => {
+                                        return {
+                                            ...new InternalEmployee(
+                                                row.id,
+                                                row.userId,
+                                                row.brandId,
+                                                row.status,
+                                                row.user,
+                                                row.createdAt,
+                                                row.updatedAt,
+                                                row.deletedAt
+                                            )
+                                        };
+                                    })
+                                ]
                             };
+                        }
 
-                            if (resp.total > 0) {
-                                newResp = {
-                                    total: resp.total,
-                                    data: [
-                                        ...resp.data.map(row => {
-                                            return {
-                                                ...new InternalEmployee(
-                                                    row.id,
-                                                    row.userId,
-                                                    row.brandId,
-                                                    row.status,
-                                                    row.user,
-                                                    row.createdAt,
-                                                    row.updatedAt,
-                                                    row.deletedAt
-                                                )
-                                            };
-                                        })
-                                    ]
-                                };
-                            }
-
-                            return InternalActions.fetchInternalEmployeesSuccess({
-                                payload: { internalEmployees: newResp.data, total: newResp.total }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                InternalActions.fetchInternalEmployeesFailure({
-                                    payload: { id: 'fetchInternalEmployeesFailure', errors: err }
-                                })
-                            )
+                        return InternalActions.fetchInternalEmployeesSuccess({
+                            payload: { internalEmployees: newResp.data, total: newResp.total }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            InternalActions.fetchInternalEmployeesFailure({
+                                payload: { id: 'fetchInternalEmployeesFailure', errors: err }
+                            })
                         )
-                    );
+                    )
+                );
             })
         )
     );
@@ -379,26 +379,24 @@ export class InternalEffects {
                     map(resp =>
                         InternalActions.fetchInternalEmployeeSuccess({
                             payload: {
-                                internalEmployee: {
-                                    ...new InternalEmployeeDetail(
-                                        resp.id,
-                                        resp.fullName,
-                                        resp.email,
-                                        resp.phoneNo,
-                                        resp.mobilePhoneNo,
-                                        resp.idNo,
-                                        resp.taxNo,
-                                        resp.status,
-                                        resp.imageUrl,
-                                        resp.taxImageUrl,
-                                        resp.idImageUrl,
-                                        resp.selfieImageUrl,
-                                        resp.roles,
-                                        resp.createdAt,
-                                        resp.updatedAt,
-                                        resp.deletedAt
-                                    )
-                                },
+                                internalEmployee: new InternalEmployeeDetail(
+                                    resp.id,
+                                    resp.fullName,
+                                    resp.email,
+                                    resp.phoneNo,
+                                    resp.mobilePhoneNo,
+                                    resp.idNo,
+                                    resp.taxNo,
+                                    resp.status,
+                                    resp.imageUrl,
+                                    resp.taxImageUrl,
+                                    resp.idImageUrl,
+                                    resp.selfieImageUrl,
+                                    resp.roles,
+                                    resp.createdAt,
+                                    resp.updatedAt,
+                                    resp.deletedAt
+                                ),
                                 source: 'fetch'
                             }
                         })

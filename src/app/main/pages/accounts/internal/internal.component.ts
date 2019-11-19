@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -13,13 +12,12 @@ import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, Role } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
-import { Role } from '../../roles/role.model';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { InternalEmployee } from './models';
@@ -36,7 +34,6 @@ import { InternalSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
-    // dataSource: MatTableDataSource<any>; // Need for demo
     search: FormControl;
     total: number;
     displayedColumns = ['id', 'user', 'email', 'role', 'actions'];
@@ -52,8 +49,8 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    // @ViewChild('filter', { static: true })
+    // filter: ElementRef;
 
     private _unSubs$: Subject<void>;
 
@@ -111,11 +108,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.initTable();
 
         this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(v => {
                 if (v) {
                     localStorage.setItem('filterInternalEmployee', v);
@@ -126,10 +119,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store
             .select(InternalSelectors.getIsRefresh)
-            .pipe(
-                distinctUntilChanged(),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(isRefresh => {
                 if (isRefresh) {
                     this.onRefreshTable();

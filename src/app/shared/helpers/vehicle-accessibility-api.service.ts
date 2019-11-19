@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams, IVehicleAccessibility, IVehicleAccessibilityResponse } from '../models';
+import { IQueryParams } from '../models';
 import { HelperService } from './helper.service';
 
 /**
@@ -38,33 +38,28 @@ export class VehicleAccessibilityApiService {
      * @param {HelperService} _$helper
      * @memberof VehicleAccessibilityApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
-
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @returns {Observable<IVehicleAccessibilityResponse[]>}
-     * @memberof VehicleAccessibilityApiService
-     */
-    findAll(params: IQueryParams): Observable<IVehicleAccessibilityResponse[]> {
+    constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
-
-        return this.http.get<IVehicleAccessibilityResponse[]>(this._url, { params: newParams });
     }
 
     /**
      *
      *
+     * @template T
      * @param {IQueryParams} params
-     * @returns {Observable<IVehicleAccessibility[]>}
+     * @returns {Observable<T>}
      * @memberof VehicleAccessibilityApiService
      */
-    findAllDropdown(params: IQueryParams): Observable<IVehicleAccessibility[]> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+    findAll<T>(params: IQueryParams): Observable<T> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<IVehicleAccessibility[]>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams });
     }
+
+    // findAllDropdown(params: IQueryParams): Observable<IVehicleAccessibility[]> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     const newParams = this._$helper.handleParams(this._url, params);
+
+    //     return this.http.get<IVehicleAccessibility[]>(this._url, { params: newParams });
+    // }
 }

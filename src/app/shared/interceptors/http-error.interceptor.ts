@@ -26,6 +26,10 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     errMsg = `Error: ${err.error.message}`;
 
                     this._$log.generateGroup('[CLIENT SIDE ERROR]', {
+                        request: {
+                            type: 'log',
+                            value: req
+                        },
                         response: {
                             type: 'log',
                             value: err
@@ -42,6 +46,10 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                     // errMsg = `Error Code: ${err.status}\nMessage: ${err.message}`;
 
                     this._$log.generateGroup('[SERVER SIDE ERROR]', {
+                        request: {
+                            type: 'log',
+                            value: req
+                        },
                         response: {
                             type: 'log',
                             value: err
@@ -52,7 +60,8 @@ export class HttpErrorInterceptor implements HttpInterceptor {
                         code: err.status,
                         url: err.url,
                         message: err.message,
-                        error: err.error
+                        error: err.error,
+                        body: req.body
                     };
                 }
 

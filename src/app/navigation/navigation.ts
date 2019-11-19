@@ -1,14 +1,14 @@
 import { FuseNavigation } from '@fuse/types';
 
 export const navigation: FuseNavigation[] = [
-    {
-        id: 'dashboard',
-        title: 'Dashboard',
-        translate: 'NAV.DASHBOARD.TITLE',
-        type: 'item',
-        icon: 'dashboard',
-        url: '/pages/dashboard'
-    },
+    // {
+    //     id: 'dashboard',
+    //     title: 'Dashboard',
+    //     translate: 'NAV.DASHBOARD.TITLE',
+    //     type: 'item',
+    //     icon: 'dashboard',
+    //     url: '/pages/dashboard'
+    // },
     {
         id: 'account',
         title: 'Account',
@@ -77,13 +77,13 @@ export const navigation: FuseNavigation[] = [
                 type: 'item',
                 url: '/pages/finances/credit-limit-balance'
             },
-            {
-                id: 'banks',
-                title: 'Set Bank',
-                translate: 'NAV.SET_BANK.TITLE',
-                type: 'item',
-                url: '/pages/finances/banks'
-            },
+            // {
+            //     id: 'banks',
+            //     title: 'Set Bank',
+            //     translate: 'NAV.SET_BANK.TITLE',
+            //     type: 'item',
+            //     url: '/pages/finances/banks'
+            // },
             {
                 id: 'paymentStatus',
                 title: 'Payment Status',

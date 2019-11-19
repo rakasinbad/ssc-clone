@@ -1,6 +1,5 @@
 import 'hammerjs';
 
-import { AgmCoreModule } from '@agm/core';
 import { registerLocaleData } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
@@ -75,7 +74,9 @@ registerLocaleData(localId, 'id');
         RxReactiveFormsModule.forRoot(),
 
         StorageModule.forRoot({
-            IDBNoWrap: true
+            IDBNoWrap: true,
+            IDBDBName: environment.production ? 'sellerCenter' : 'sellerCenterDev',
+            LSPrefix: environment.production ? 'sellercenter_' : 'sellercenter_dev_'
         }),
 
         MomentModule,

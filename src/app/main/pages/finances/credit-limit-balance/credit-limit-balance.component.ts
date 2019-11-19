@@ -13,11 +13,13 @@ import { FuseConfig } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
+import { CreditLimitBalanceActions } from './store/actions';
 import { fromCreditLimitBalance } from './store/reducers';
+import { CreditLimitBalanceSelectors } from './store/selectors';
 
 @Component({
     selector: 'app-credit-limit-balance',
@@ -38,8 +40,11 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
             label: 'Set Credit Limit Group'
         }
     ];
+    urlActive: boolean;
 
     fuseConfig$: Observable<FuseConfig>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
 
@@ -52,17 +57,7 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
     ) {
         this.fuseConfig$ = this._fuseConfigService.config;
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-    }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject();
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -82,6 +77,18 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
                 ]
             })
         );
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
+    ngOnInit(): void {
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
+
+        this._unSubs$ = new Subject<void>();
+        this.urlActive = false;
 
         // { outlets: { 'credit-limit-balance': 'stores' } }
         this.router.navigate(['stores'], {
@@ -89,23 +96,46 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
             skipLocationChange: true
         });
 
-        this.router.events.pipe(takeUntil(this._unSubs$)).subscribe(routerEvent => {
-            if (routerEvent instanceof NavigationEnd) {
-                if (routerEvent.url.endsWith('credit-limit-balance')) {
+        this.router.events
+            .pipe(
+                filter(ev => ev instanceof NavigationEnd),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe((ev: NavigationEnd) => {
+                // this.urlActive = ev.url.endsWith('credit-limit-balance');
+                this.urlActive = ev.url.endsWith('stores');
+
+                if (ev.url.endsWith('credit-limit-balance')) {
                     this.router.navigate(['stores'], {
                         relativeTo: this.route,
                         skipLocationChange: true
                     });
                 }
-            }
-        });
+
+                // if (routerEvent instanceof NavigationEnd) {
+                //     if (routerEvent.url.endsWith('credit-limit-balance')) {
+                //         this.urlActive = true;
+
+                //         this.router.navigate(['stores'], {
+                //             relativeTo: this.route,
+                //             skipLocationChange: true
+                //         });
+                //     }
+                // }
+            });
+
+        this.totalDataSource$ = this.store.select(
+            CreditLimitBalanceSelectors.getTotalCreditLimitStore
+        );
+        this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.resetBreadcrumb());
+        this.store.dispatch(CreditLimitBalanceActions.resetCoreState());
 
         this._unSubs$.next();
         this._unSubs$.complete();

@@ -3,12 +3,13 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { CreditLimitGroup, ICreditLimitBalanceDemo } from '../../models';
+import { CreditLimitGroup, CreditLimitStore } from '../../models';
 import { CreditLimitBalanceActions } from '../actions';
 
-export const FEATURE_KEY = 'creditLimitBalance';
+export const FEATURE_KEY = 'creditLimitBalances';
 
-interface CreditLimitBalanceState extends EntityState<ICreditLimitBalanceDemo> {
+interface CreditLimitStoreState extends EntityState<CreditLimitStore> {
+    selectedCreditLimitStoreId: string | number;
     total: number;
 }
 
@@ -19,11 +20,11 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 export interface State {
     isRefresh?: boolean;
     isLoading: boolean;
-    selectedCreditLimitBalanceId: string | number;
+    // selectedCreditLimitStoreId?: string | number;
     selectedCreditLimitGroupId?: string | number;
     source: TSource;
-    creditLimitBalanceGroups?: CreditLimitGroupState;
-    creditLimitBalance: CreditLimitBalanceState;
+    creditLimitBalanceGroups: CreditLimitGroupState;
+    creditLimitBalanceStores: CreditLimitStoreState;
     errors: ErrorState;
 }
 
@@ -31,10 +32,13 @@ export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
 }
 
-const adapterCreditLimitBalance = createEntityAdapter<ICreditLimitBalanceDemo>({
+const adapterCreditLimitStore = createEntityAdapter<CreditLimitStore>({
     selectId: row => row.id
 });
-const initialCreditLimitBalanceState = adapterCreditLimitBalance.getInitialState({ total: 0 });
+const initialCreditLimitStoreState = adapterCreditLimitStore.getInitialState({
+    selectedCreditLimitStoreId: null,
+    total: 0
+});
 
 const adapterCreditLimitGroup = createEntityAdapter<CreditLimitGroup>({
     selectId: row => row.id
@@ -46,23 +50,85 @@ const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
     isLoading: false,
-    selectedCreditLimitBalanceId: null,
     source: 'fetch',
-    creditLimitBalance: initialCreditLimitBalanceState,
+    creditLimitBalanceGroups: initialCreditLimitGroupState,
+    creditLimitBalanceStores: initialCreditLimitStoreState,
     errors: initialErrorState
 };
 
 const creditLimitBalanceReducer = createReducer(
     initialState,
-    on(CreditLimitBalanceActions.fetchCreditLimitGroupsRequest, (state, { payload }) => ({
+    on(
+        CreditLimitBalanceActions.updateCreditLimitStoreRequest,
+        CreditLimitBalanceActions.updateStatusFreezeBalanceRequest,
+        CreditLimitBalanceActions.fetchCreditLimitStoreRequest,
+        CreditLimitBalanceActions.fetchCreditLimitStoresRequest,
+        CreditLimitBalanceActions.fetchCreditLimitGroupsRequest,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    // on(CreditLimitBalanceActions.updateStatusFreezeBalanceRequest, state => ({
+    //     ...state,
+    //     isLoading: true,
+    //     isRefresh: false
+    // })),
+    on(
+        CreditLimitBalanceActions.updateCreditLimitStoreFailure,
+        CreditLimitBalanceActions.updateStatusFreezeBalanceFailure,
+        CreditLimitBalanceActions.fetchCreditLimitStoreFailure,
+        CreditLimitBalanceActions.fetchCreditLimitStoresFailure,
+        CreditLimitBalanceActions.fetchCreditLimitGroupsFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(CreditLimitBalanceActions.updateCreditLimitStoreSuccess, (state, { payload }) => ({
         ...state,
-        isLoading: true
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(payload, {
+            ...state.creditLimitBalanceStores,
+            selectedCreditLimitStoreId: null
+        }),
+        errors: adapterError.removeOne('updateCreditLimitStoreFailure', state.errors)
     })),
-    on(CreditLimitBalanceActions.fetchCreditLimitGroupsFailure, (state, { payload }) => ({
+    // on(CreditLimitBalanceActions.updateStatusFreezeBalanceFailure, (state, { payload }) => ({
+    //     ...state,
+    //     isLoading: false,
+    //     isRefresh: true,
+    //     errors: adapterError.upsertOne(payload, state.errors)
+    // })),
+    on(CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(
+            payload,
+            state.creditLimitBalanceStores
+        ),
+        errors: adapterError.removeOne('updateStatusFreezeBalanceFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.fetchCreditLimitStoresSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
-        errors: adapterError.upsertOne(payload, state.errors)
+        creditLimitBalanceStores: adapterCreditLimitStore.addAll(payload.data, {
+            ...state.creditLimitBalanceStores,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchCreditLimitStoresFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.fetchCreditLimitStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(payload.data, {
+            ...state.creditLimitBalanceStores,
+            selectedCreditLimitStoreId: payload.id
+        }),
+        errors: adapterError.removeOne('fetchCreditLimitStoreFailure', state.errors)
     })),
     on(CreditLimitBalanceActions.fetchCreditLimitGroupsSuccess, (state, { payload }) => ({
         ...state,
@@ -73,23 +139,25 @@ const creditLimitBalanceReducer = createReducer(
             state.creditLimitBalanceGroups
         ),
         errors: adapterError.removeOne('fetchCreditLimitGroupsFailure', state.errors)
-    })),
-    on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
-        ...state,
-        creditLimitBalance: adapterCreditLimitBalance.addAll(payload, state.creditLimitBalance)
-    })),
-    on(CreditLimitBalanceActions.getCreditLimitBalanceDemoDetail, (state, { payload }) => ({
-        ...state,
-        selectedCreditLimitBalanceId: payload
     }))
+    // on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
+    //     ...state,
+    //     creditLimitBalance: adapterCreditLimitBalance.addAll(payload, state.creditLimitBalance)
+    // })),
+    // on(CreditLimitBalanceActions.getCreditLimitBalanceDemoDetail, (state, { payload }) => ({
+    //     ...state,
+    //     selectedCreditLimitBalanceId: payload
+    // }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {
     return creditLimitBalanceReducer(state, action);
 }
 
+const getCreditLimitStoresState = (state: State) => state.creditLimitBalanceStores;
 const getCreditLimitGroupsState = (state: State) => state.creditLimitBalanceGroups;
-const getListCreditLimitBalanceState = (state: State) => state.creditLimitBalance;
+
+// export const getSelectedCreditLimitStoreId = (state: State) => state.creditLimitBalanceStores.selectedCreditLimitStoreId;
 
 export const {
     selectAll: selectAllCreditLimitGroup,
@@ -99,8 +167,8 @@ export const {
 } = adapterCreditLimitGroup.getSelectors(getCreditLimitGroupsState);
 
 export const {
-    selectAll: selectAllCreditLimitBalance,
-    selectEntities: selectCreditLimitBalanceEntities,
-    selectIds: selectCreditLimitBalanceIds,
-    selectTotal: selectCreditLimitBalanceTotal
-} = adapterCreditLimitBalance.getSelectors(getListCreditLimitBalanceState);
+    selectAll: selectAllCreditLimitStore,
+    selectEntities: selectCreditLimitStoreEntities,
+    selectIds: selectCreditLimitStoreIds,
+    selectTotal: selectCreditLimitStoreTotal
+} = adapterCreditLimitStore.getSelectors(getCreditLimitStoresState);

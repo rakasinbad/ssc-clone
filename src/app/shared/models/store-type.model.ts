@@ -1,32 +1,27 @@
 import { TNullable } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
 
-export interface IStoreType extends ITimestamp {
-    id?: string;
+interface IStoreType extends ITimestamp {
+    id: string;
     name: string;
 }
 
-export interface IStoreTypeResponse extends ITimestamp {
-    data: IStoreType[];
-}
-
-export class StoreType extends Timestamp {
-    id?: string;
-    name: string;
-
+export class StoreType extends Timestamp implements IStoreType {
     constructor(
-        name: string,
+        private _id: string,
+        private _name: string,
         createdAt: string,
         updatedAt: string,
-        deletedAt: TNullable<string>,
-        id?: string
+        deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+    }
 
-        this.id = id || undefined;
-        this.name = name ? name.trim() : name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
+    get id(): string {
+        return this._id;
+    }
+
+    get name(): string {
+        return this._name;
     }
 }
