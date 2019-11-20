@@ -217,7 +217,7 @@ export class StoreEffects {
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getAuthState)),
             switchMap(([payload, auth]) => {
-                if (!auth.user.data.userSuppliers.length) {
+                if (auth.user.data.userSuppliers.length === 0) {
                     return of(
                         StoreActions.fetchStoresFailure({
                             payload: { id: 'fetchStoresFailure', errors: 'Not Found!' }
@@ -271,6 +271,7 @@ export class StoreEffects {
                                                     row.storeSegment,
                                                     row.storeGroup,
                                                     row.legalInfo,
+                                                    row.userStores,
                                                     row.createdAt,
                                                     row.updatedAt,
                                                     row.deletedAt
@@ -338,6 +339,7 @@ export class StoreEffects {
                                         resp.storeSegment,
                                         resp.storeGroup,
                                         resp.legalInfo,
+                                        resp.userStores,
                                         resp.createdAt,
                                         resp.updatedAt,
                                         resp.deletedAt

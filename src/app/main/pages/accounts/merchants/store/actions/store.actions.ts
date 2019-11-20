@@ -30,7 +30,7 @@ export const fetchStoresSuccess = createAction(
 
 export const fetchStoreRequest = createAction(
     '[Stores API] Fetch Store Request',
-    props<{ payload: { params: IQueryParams; storeId: string } }>()
+    props<{ payload: { params?: IQueryParams; storeId: string } }>()
 );
 
 export const fetchStoreFailure = createAction(

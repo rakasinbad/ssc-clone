@@ -11,6 +11,11 @@ export const getAllStore = createSelector(
     fromStore.selectAllStores
 );
 
+export const getSelectedStore = createSelector(
+    getStoreState,
+    state => state.store
+);
+
 export const getStoreEntities = createSelector(
     getStoreState,
     fromStore.selectStoreEntities

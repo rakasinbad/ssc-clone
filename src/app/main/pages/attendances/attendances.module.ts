@@ -6,7 +6,8 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 
-import { AttendanceDetailComponent } from './attendance-detail/attendance-detail.component';
+import { AttendanceStoreDetailComponent } from './attendance-store-detail/attendance-store-detail.component';
+import { AttendanceEmployeeDetailComponent } from './attendance-employee-detail/attendance-employee-detail.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { AttendancesRoutingModule } from './attendances-routing.module';
 import { AttendancesComponent } from './attendances.component';
@@ -15,7 +16,7 @@ import { fromAttendance } from './store/reducers';
 
 /** MERCHANT STUFF */
 import { fromStore } from './store/reducers';
-import { MerchantEffects } from './store/effects';
+import { StoreEffects } from './store/effects';
 
 /**
  *
@@ -24,7 +25,12 @@ import { MerchantEffects } from './store/effects';
  * @class AttendancesModule
  */
 @NgModule({
-    declarations: [AttendancesComponent, AttendanceFormComponent, AttendanceDetailComponent],
+    declarations: [
+        AttendancesComponent,
+        AttendanceFormComponent,
+        AttendanceStoreDetailComponent,
+        AttendanceEmployeeDetailComponent
+    ],
     imports: [
         AttendancesRoutingModule,
 
@@ -39,7 +45,7 @@ import { MerchantEffects } from './store/effects';
         
         EffectsModule.forFeature([
             AttendanceEffects,
-            MerchantEffects
+            StoreEffects
         ])
     ]
 })

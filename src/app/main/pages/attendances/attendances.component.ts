@@ -20,10 +20,12 @@ import { locale as english } from './i18n/en';
 import { IQueryParams } from 'app/shared/models';
 import { AttendanceActions } from './store/actions';
 import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
-import { Store } from './models';
+import { Store, Attendance } from './models';
 import { AttendanceSelectors } from './store/selectors';
-
 import { StoreSelectors } from '../accounts/merchants/store/selectors';
+import { StoreActions } from '../accounts/merchants/store/actions';
+
+// import { StoreSelectors } from '../accounts/merchants/store/selectors';
 
 @Component({
     selector: 'app-attendances',
@@ -46,7 +48,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
 
-    dataSource$: Observable<Store[]>;
+    dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -80,7 +82,50 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this._fromStore.select(StoreSelectors.getAllStore);
+        this.dataSource$ 
+            = this._fromStore
+                .select(StoreSelectors.getAllStore)
+                .pipe(
+                    map(stores => {
+                        return [
+                            ...stores.map(store => new Store(
+                                store.id,
+                                store.storeCode,
+                                store.name,
+                                store.address,
+                                store.taxNo,
+                                store.longitude,
+                                store.latitude,
+                                store.largeArea,
+                                store.phoneNo,
+                                store.imageUrl,
+                                store.taxImageUrl,
+                                store.status,
+                                store.reason,
+                                store.parent,
+                                store.parentId,
+                                store.numberOfEmployee,
+                                store.externalId,
+                                store.storeTypeId,
+                                store.storeGroupId,
+                                store.storeSegmentId,
+                                store.urbanId,
+                                store.warehouseId,
+                                store.vehicleAccessibility,
+                                store.urban,
+                                store.customerHierarchies,
+                                store.storeType,
+                                store.storeSegment,
+                                store.storeGroup,
+                                store.legalInfo,
+                                store.userStores,
+                                store.createdAt,
+                                store.updatedAt,
+                                store.deletedAt
+                            ))
+                        ];
+                    })
+                );
         this.totalDataSource$ = this._fromStore.pipe(
             select(StoreSelectors.getTotalStore),
             distinctUntilChanged(),
@@ -92,7 +137,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             takeUntil(this._unSubs$)
         );
 
-        this.initTable();
+        this.onChangePage();
     }
 
     ngAfterViewInit(): void {
@@ -108,7 +153,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(_ => {
-                this.initTable();
+                this.onChangePage();
             });
     }
 
@@ -124,8 +169,24 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
+    public onChangePage(): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex
+        };
+
+        data['paginate'] = true;
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            data['sortBy'] = this.sort.active;
+        }
+
+        this.store.dispatch(
+            StoreActions.fetchStoresRequest({
+                payload: data
+            })
+        );
     }
 
     getDiffTime(
@@ -169,25 +230,5 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
-    }
-
-    private initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
-        };
-
-        data['paginate'] = true;
-
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
-        }
-
-        this.store.dispatch(
-            AttendanceActions.fetchAttendancesRequest({
-                payload: data
-            })
-        );
     }
 }

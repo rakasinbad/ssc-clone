@@ -193,41 +193,42 @@ export class BrandStore extends Timestamp {
         this.status = status;
         this.store = store
             ? {
-                  ...new Store(
-                      store.id,
-                      store.storeCode,
-                      store.name,
-                      store.address,
-                      store.taxNo,
-                      store.longitude,
-                      store.latitude,
-                      store.largeArea,
-                      store.phoneNo,
-                      store.imageUrl,
-                      store.taxImageUrl,
-                      store.status,
-                      store.reason,
-                      store.parent,
-                      store.parentId,
-                      store.numberOfEmployee,
-                      store.externalId,
-                      store.storeTypeId,
-                      store.storeGroupId,
-                      store.storeSegmentId,
-                      store.urbanId,
-                      store.warehouseId,
-                      store.vehicleAccessibility,
-                      store.urban,
-                      store.customerHierarchies,
-                      store.storeType,
-                      store.storeSegment,
-                      store.storeGroup,
-                      store.legalInfo,
-                      store.createdAt,
-                      store.updatedAt,
-                      store.deletedAt
-                  )
-              }
+                ...new Store(
+                    store.id,
+                    store.storeCode,
+                    store.name,
+                    store.address,
+                    store.taxNo,
+                    store.longitude,
+                    store.latitude,
+                    store.largeArea,
+                    store.phoneNo,
+                    store.imageUrl,
+                    store.taxImageUrl,
+                    store.status,
+                    store.reason,
+                    store.parent,
+                    store.parentId,
+                    store.numberOfEmployee,
+                    store.externalId,
+                    store.storeTypeId,
+                    store.storeGroupId,
+                    store.storeSegmentId,
+                    store.urbanId,
+                    store.warehouseId,
+                    store.vehicleAccessibility,
+                    store.urban,
+                    store.customerHierarchies,
+                    store.storeType,
+                    store.storeSegment,
+                    store.storeGroup,
+                    store.legalInfo,
+                    store.userStores,
+                    store.createdAt,
+                    store.updatedAt,
+                    store.deletedAt
+                )
+            }
             : null;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -265,6 +266,7 @@ export class Store extends Timestamp {
     storeSegment: StoreSegment;
     storeGroup: StoreGroup;
     legalInfo: Legal;
+    userStores: Array<UserStores>;
 
     constructor(
         id: string,
@@ -296,6 +298,7 @@ export class Store extends Timestamp {
         storeSegment: StoreSegment,
         storeGroup: StoreGroup,
         legalInfo: Legal,
+        userStores: Array<UserStores>,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
@@ -317,7 +320,7 @@ export class Store extends Timestamp {
         this.reason = reason;
         this.parent = parent;
         this.parentId = parentId;
-        this.numberOfEmployee = numberOfEmployee;
+        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee : 0;
         this.externalId = externalId;
         this.storeTypeId = storeTypeId;
         this.storeGroupId = storeGroupId;
@@ -415,6 +418,21 @@ export class Store extends Timestamp {
                   )
               }
             : null;
+        
+        this.userStores = Array.isArray(userStores) ?
+            userStores.map(userStore => new UserStores(
+                userStore.id,
+                userStore.userId,
+                userStore.storeId,
+                userStore.status,
+                userStore.store,
+                userStore.user,
+                userStore.totalCheckIn,
+                userStore.totalCheckOut,
+                userStore.createdAt,
+                userStore.updatedAt,
+                userStore.deletedAt
+            )) : [];
 
         if (customerHierarchies && customerHierarchies.length > 0) {
             customerHierarchies = [
@@ -973,6 +991,9 @@ class UserStores extends Timestamp {
     storeId: string;
     status: TAccountStatus;
     store: StoreAssocUserStores;
+    user: AccountAssocStore;
+    totalCheckIn: number;
+    totalCheckOut: number;
 
     constructor(
         id: string,
@@ -980,6 +1001,9 @@ class UserStores extends Timestamp {
         storeId: string,
         status: TAccountStatus,
         store: StoreAssocUserStores,
+        user: AccountAssocStore,
+        totalCheckIn: number,
+        totalCheckOut: number,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
@@ -1023,6 +1047,35 @@ class UserStores extends Timestamp {
                   )
               }
             : null;
+
+        this.user = user ? new AccountAssocStore(
+            user.id,
+            user.fullName,
+            user.email,
+            user.phoneNo,
+            user.mobilePhoneNo,
+            user.idNo,
+            user.taxNo,
+            user.status,
+            user.imageUrl,
+            user.taxImageUrl,
+            user.idImageUrl,
+            user.selfieImageUrl,
+            user.urbanId,
+            user.roles,
+            user.attendances,
+            user.createdAt,
+            user.updatedAt,
+            user.deletedAt
+        ) : null;
+    }
+
+    public getChainRoles(delimiter: string = ', '): string {
+        if (this.user.roles.length === 0) {
+            return '';
+        } else {
+            return this.user.roles.map(role => role.role).join(delimiter);
+        }
     }
 }
 

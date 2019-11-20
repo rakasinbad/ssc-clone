@@ -361,13 +361,19 @@ export class Account extends Timestamp {
 
 export class AccountAssocAttendance extends Timestamp {
     id: string;
-    fullname: string;
+    fullName: string;
     email?: TNullable<string>;
     phoneNo?: TNullable<string>;
     mobilePhoneNo: string;
+    idNo: string;
+    taxNo: string;
     fcm?: TNullable<string>;
     status: TAccountStatus;
     image: TNullable<string>;
+    imageUrl: TNullable<string>;
+    taxImageUrl: TNullable<string>;
+    idImageUrl: TNullable<string>;
+    selfieImageUrl: TNullable<string>;
     urbanId?: string;
     userOdooId?: string;
     userStores?: StoreAssocUser[];
@@ -375,13 +381,17 @@ export class AccountAssocAttendance extends Timestamp {
 
     constructor(
         id: string,
-        fullname: string,
+        fullName: string,
         email: TNullable<string>,
         phoneNo: TNullable<string>,
         mobilePhoneNo: string,
         fcm: TNullable<string>,
         status: TAccountStatus,
         image: TNullable<string>,
+        imageUrl: TNullable<string>,
+        taxImageUrl: TNullable<string>,
+        idImageUrl: TNullable<string>,
+        selfieImageUrl: TNullable<string>,
         urbanId: string,
         userOdooId: string,
         userStores: StoreAssocUser[],
@@ -393,13 +403,17 @@ export class AccountAssocAttendance extends Timestamp {
         super(createdAt, updatedAt, deletedAt);
 
         this.id = id || undefined;
-        this.fullname = fullname;
+        this.fullName = fullName;
         this.email = email;
         this.phoneNo = phoneNo;
         this.mobilePhoneNo = mobilePhoneNo;
         this.fcm = fcm;
         this.status = status;
         this.image = image || 'assets/images/avatars/profile.jpg';
+        this.imageUrl = imageUrl;
+        this.taxImageUrl = taxImageUrl;
+        this.idImageUrl = idImageUrl;
+        this.selfieImageUrl = selfieImageUrl;
         this.urbanId = urbanId;
         this.userOdooId = userOdooId;
         this.createdAt = createdAt;
@@ -536,7 +550,7 @@ export class AccountAssocStore extends Timestamp {
                     return {
                         ...new AttendanceAssocUser(
                             attendance.id,
-                            attendance.checkDate,
+                            attendance.date,
                             attendance.longitudeCheckIn,
                             attendance.latitudeCheckIn,
                             attendance.longitudeCheckOut,

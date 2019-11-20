@@ -1,0 +1,122 @@
+#attendance-employee-detail {
+    .header {
+        .attendance-image {
+            overflow: hidden;
+            width: 56px;
+            min-width: 56px;
+            max-width: 56px;
+            height: 56px;
+            min-height: 56px;
+            max-height: 56px;
+            border-radius: 4px;
+
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        .subtitle {
+            margin: 6px 0 0 0;
+        }
+    }
+
+    .content {
+        .mat-tab-group,
+        .mat-tab-body-wrapper,
+        .tab-content {
+            flex: 1 1 auto;
+            max-width: 100%;
+        }
+
+        .mat-tab-body-content {
+            display: flex;
+        }
+
+        .mat-tab-label {
+            height: 64px;
+        }
+
+        .attendance-image {
+            overflow: hidden;
+            width: 128px;
+            height: 128px;
+            margin-right: 16px;
+            margin-bottom: 16px;
+            border-radius: 4px;
+
+            img {
+                height: 100%;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        // Temporary prefix alignment fix
+        .mat-form-field-appearance-outline .mat-form-field-prefix,
+        .mat-form-field-appearance-outline .mat-form-field-suffix {
+            top: 0;
+        }
+    }
+
+    .employees-activity-table {
+        flex: 1 1 auto;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        .mat-header-row {
+            min-height: 64px;
+        }
+
+        .attendance {
+            position: relative;
+            cursor: pointer;
+            height: 84px;
+        }
+
+        .mat-cell {
+            min-width: 0;
+            display: flex;
+            // align-items: center;
+        }
+
+        .mat-column-number {
+            flex: 0 1 10%;
+        }
+
+        .mat-column-employee {
+            flex: 0 1 20%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-role {
+            flex: 0 1 15%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-locationType {
+            flex: 0 1 15%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-checkDate {
+            flex: 0 1 15%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-checkIn {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-checkOut {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 10%;
+            justify-content: flex-end;
+        }
+    }
+}

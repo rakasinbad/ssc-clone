@@ -7,7 +7,7 @@ import { AttendanceActions } from '../store/actions';
 import { fromAttendance } from '../store/reducers';
 
 @Injectable({ providedIn: 'root' })
-export class AttendanceDetailResolver implements Resolve<any> {
+export class AttendanceEmployeeDetailResolver implements Resolve<any> {
     constructor(private store: Store<fromAttendance.FeatureState>) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {

@@ -59,6 +59,28 @@ const brandStoreReducer = createReducer(
         })
     ),
     on(
+        StoreActions.fetchStoreSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            source: payload.source,
+            store: payload.store,
+            errors: adapterError.removeOne('fetchStoreFailure', state.errors)
+        })
+    ),
+    on(
+        StoreActions.fetchStoresSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            stores: adapterStore.addAll(payload.stores, {
+                ...state.stores,
+                total: payload.total
+            }),
+            errors: adapterError.removeOne('fetchStoresFailure', state.errors)
+        })
+    ),
+    on(
         StoreActions.updateStoreRequest,
         StoreActions.deleteStoreRequest,
         state => ({
