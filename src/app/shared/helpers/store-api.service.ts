@@ -38,7 +38,9 @@ export class StoreApiService {
      * @param {HelperService} _$helper
      * @memberof StoreApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
+    constructor(private http: HttpClient, private _$helper: HelperService) {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+    }
 
     /**
      *
@@ -48,7 +50,6 @@ export class StoreApiService {
      * @memberof StoreApiService
      */
     findById(id: string): Observable<Merchant> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.get<Merchant>(`${this._url}/${id}`);
     }
 }

@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, SupplierStore, TSource, User } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { UserStore, Store as Merchant } from '../../models';
+import { Store as Merchant, UserStore } from '../../models';
 import { StoreActions } from '../actions';
 
 export const FEATURE_KEY = 'accountStores';
@@ -292,6 +292,7 @@ const brandStoreReducer = createReducer(
     on(StoreActions.resetStore, state => ({
         ...state,
         stores: { ...state.stores, selectedStoreId: null },
+        store: undefined,
         errors: adapterError.removeOne('fetchStoreFailure', state.errors)
     })),
     on(StoreActions.resetStoreEmployees, state => ({
@@ -302,6 +303,7 @@ const brandStoreReducer = createReducer(
     on(StoreActions.resetStoreEmployee, state => ({
         ...state,
         employees: { ...state.employees, selectedEmployeeId: null },
+        employee: undefined,
         errors: adapterError.removeOne('fetchStoreEmployeeFailure', state.errors)
     })),
     on(StoreActions.resetGoPage, state => ({

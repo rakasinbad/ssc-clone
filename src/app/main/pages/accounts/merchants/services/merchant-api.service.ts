@@ -76,10 +76,10 @@ export class MerchantApiService {
                       value: supplierId
                   }
               ]
-            : null;
+            : [];
 
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
 

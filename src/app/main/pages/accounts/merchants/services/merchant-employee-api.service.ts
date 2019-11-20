@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStoreOptions } from 'app/shared/models';
+import { IQueryParams, User } from 'app/shared/models';
 import { Observable } from 'rxjs';
-import { UserStoreOptions } from '../models';
+
+import { UserStoreOptions, UserStore } from '../models';
 
 /**
  *
@@ -32,28 +33,72 @@ export class MerchantEmployeeApiService {
      */
     private readonly _endpoint = '/user-stores';
 
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
+    /**
+     * Creates an instance of MerchantEmployeeApiService.
+     * @param {HttpClient} http
+     * @param {HelperService} _$helper
+     * @memberof MerchantEmployeeApiService
+     */
+    constructor(private http: HttpClient, private _$helper: HelperService) {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+    }
 
+    /**
+     *
+     *
+     * @template T
+     * @param {IQueryParams} params
+     * @param {string} [storeId]
+     * @returns {Observable<T>}
+     * @memberof MerchantEmployeeApiService
+     */
     findAll<T>(params: IQueryParams, storeId?: string): Observable<T> {
         const newArg = storeId
             ? [
                   {
                       key: 'storeId',
                       value: storeId
+                  },
+                  {
+                      key: 'attendance',
+                      value: 'latest'
                   }
               ]
-            : null;
+            : [
+                  {
+                      key: 'attendance',
+                      value: 'latest'
+                  }
+              ];
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
-
-        return this.http.get<T>(this._url, {
-            params: newParams
-        });
+        return this.http.get<T>(this._url, { params: newParams });
     }
 
-    patch<T>(body: UserStoreOptions, id: string): Observable<T> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.patch<T>(`${this._url}/${id}`, body);
+    /**
+     *
+     *
+     * @param {UserStoreOptions} body
+     * @param {string} id
+     * @returns {Observable<UserStore>}
+     * @memberof MerchantEmployeeApiService
+     */
+    patch(body: UserStoreOptions, id: string): Observable<UserStore> {
+        return this.http.patch<UserStore>(`${this._url}/${id}`, body);
+    }
+
+    patchCustom<T>(body: T, id: string): Observable<User> {
+        return this.http.patch<User>(`${this._url}/${id}`, body);
+    }
+
+    /**
+     *
+     *
+     * @param {string} id
+     * @returns {Observable<UserStore>}
+     * @memberof MerchantEmployeeApiService
+     */
+    delete(id: string): Observable<UserStore> {
+        return this.http.delete<UserStore>(`${this._url}/${id}`);
     }
 }

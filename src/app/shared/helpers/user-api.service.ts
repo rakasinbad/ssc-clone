@@ -38,7 +38,9 @@ export class UserApiService {
      * @param {HelperService} _$helper
      * @memberof UserApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
+    constructor(private http: HttpClient, private _$helper: HelperService) {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+    }
 
     /**
      *
@@ -48,7 +50,6 @@ export class UserApiService {
      * @memberof UserApiService
      */
     findById(id: string): Observable<User> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.get<User>(`${this._url}/${id}`);
     }
 }

@@ -117,8 +117,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         localStorage.removeItem('filter.store');
 
-        console.log('MERCHANT', Auth.getUserSupplier());
-
         // .pipe(
         //     filter(source => source.length > 0),
         //     delay(1000),

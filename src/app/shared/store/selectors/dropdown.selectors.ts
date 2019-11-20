@@ -21,7 +21,7 @@ export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDr
 // );
 
 export const getRoleDropdownState = createSelector(getDropdownState, state => {
-    return state.roles.length ? _.sortBy(state.roles, ['role'], ['asc']) : state.roles;
+    return state.roles && state.roles.length > 0 ? _.sortBy(state.roles, ['role'], ['asc']) : [];
 });
 
 export const getProvinceDropdownState = createSelector(getDropdownState, state =>

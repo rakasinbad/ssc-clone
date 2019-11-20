@@ -43,7 +43,7 @@ import { StoreSelectors } from '../../store/selectors';
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     displayedColumns = ['id', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
-    dataSource$: Observable<UserStore>;
+    dataSource$: Observable<UserStore[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -91,7 +91,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             startWith(this._$merchantApi.initStoreEmployee())
         ); */
 
-        this.dataSource$ = this.store.select(StoreSelectors.getSelectedStoreEmployee);
+        this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
         this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
@@ -199,11 +199,11 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             data['sortBy'] = this.sort.active;
         }
 
-        // const { id } = this.route.parent.snapshot.params;
+        const { id } = this.route.parent.snapshot.params;
 
         this.store.dispatch(
             StoreActions.fetchStoreEmployeesRequest({
-                payload: data
+                payload: { params: data, storeId: id }
             })
         );
     }

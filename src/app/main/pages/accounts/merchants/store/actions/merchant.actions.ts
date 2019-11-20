@@ -67,7 +67,7 @@ export const fetchStoreEditSuccess = createAction(
 
 export const fetchStoreEmployeesRequest = createAction(
     '[Store Employees API] Fetch Store Employees Request',
-    props<{ payload: IQueryParams }>()
+    props<{ payload: { params: IQueryParams; storeId: string } }>()
 );
 
 export const fetchStoreEmployeesFailure = createAction(
@@ -145,6 +145,30 @@ export const updateStatusStoreFailure = createAction(
 export const updateStatusStoreSuccess = createAction(
     '[Stores API] Update Status Store Success',
     props<{ payload: Update<SupplierStore> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE EMPLOYEE] Store Employees
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreEmployeeRequest = createAction(
+    '[Store Employee API] Update Store Employee Request',
+    props<{
+        payload: {
+            body: { fullName?: string; roles?: number[]; phoneNumber?: string };
+            id: string;
+        };
+    }>()
+);
+
+export const updateStoreEmployeeFailure = createAction(
+    '[Store Employee API] Update Store Employee Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStoreEmployeeSuccess = createAction(
+    '[Store Employee API] Update Store Employee Success',
+    props<{ payload: User }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, LogService } from 'app/shared/helpers';
 import { Role, User } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -50,6 +50,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
+        private _$log: LogService,
         private _$merchantApi: MerchantApiService
     ) {
         // Configure the layout
@@ -175,64 +176,88 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.snapshot.params;
 
-        const fullNameField = this.form.get('fullName');
-        const rolesField = this.form.get('roles');
-        const phoneNumberField = this.form.get('phoneNumber');
+        // const fullNameField = this.form.get('fullName');
+        // const rolesField = this.form.get('roles');
+        // const phoneNumberField = this.form.get('phoneNumber');
         const body = this.form.value;
+        const {
+            fullName: fullNameField,
+            roles: rolesField,
+            phoneNumber: phoneNumberField
+        } = this.form.controls;
 
-        this.storage.get('selected.store.employee').subscribe({
-            next: (prev: User) => {
-                console.log('SELECTED EMPLOYEE', prev);
-                console.log('BEFORE FILTER', body);
+        if (this.isEdit) {
+            this.storage.get('selected.store.employee').subscribe({
+                next: (prev: User) => {
+                    this._$log.generateGroup('[SELECTED EMPLOYEE]', {
+                        prev: {
+                            type: 'log',
+                            value: prev
+                        }
+                    });
 
-                if (
-                    (fullNameField.dirty && fullNameField.value === prev.fullName) ||
-                    (fullNameField.touched && fullNameField.value === prev.fullName) ||
-                    (fullNameField.pristine && fullNameField.value === prev.fullName)
-                ) {
-                    delete body.fullName;
-                }
+                    this._$log.generateGroup('[BEFORE FILTER]', {
+                        body: {
+                            type: 'log',
+                            value: body
+                        }
+                    });
 
-                if (
-                    (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
-                    (phoneNumberField.touched && phoneNumberField.value === prev.mobilePhoneNo) ||
-                    (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
-                ) {
-                    delete body.phoneNumber;
-                }
+                    if (
+                        (fullNameField.dirty && fullNameField.value === prev.fullName) ||
+                        (fullNameField.touched && fullNameField.value === prev.fullName) ||
+                        (fullNameField.pristine && fullNameField.value === prev.fullName)
+                    ) {
+                        delete body.fullName;
+                    }
 
-                const prevRoles =
-                    prev.roles && prev.roles.length > 0 ? [...prev.roles.map(role => role.id)] : [];
+                    if (
+                        (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
+                        (phoneNumberField.touched &&
+                            phoneNumberField.value === prev.mobilePhoneNo) ||
+                        (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
+                    ) {
+                        delete body.phoneNumber;
+                    }
 
-                if (
-                    (rolesField.dirty &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                    (rolesField.touched &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                    (rolesField.pristine &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
-                ) {
-                    delete body.roles;
-                }
+                    const prevRoles =
+                        prev.roles && prev.roles.length > 0 ? prev.roles.map(role => role.id) : [];
 
-                // if (body.roles) {
-                //     if (body.roles.length < 1) {
-                //         console.log('REMOVE ROLES 1', body.roles, rolesField);
-                //         rolesField.patchValue(null);
-                //         rolesField.updateValueAndValidity();
-                //         return;
-                //     }
-                //     console.log('REMOVE ROLES 2', body.roles);
-                // }
+                    if (
+                        (rolesField.dirty &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                        (rolesField.touched &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                        (rolesField.pristine &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
+                    ) {
+                        delete body.roles;
+                    }
 
-                console.log('AFTER FILTER', body);
+                    // if (body.roles) {
+                    //     if (body.roles.length < 1) {
+                    //         console.log('REMOVE ROLES 1', body.roles, rolesField);
+                    //         rolesField.patchValue(null);
+                    //         rolesField.updateValueAndValidity();
+                    //         return;
+                    //     }
+                    //     console.log('REMOVE ROLES 2', body.roles);
+                    // }
 
-                // this.store.dispatch(
-                //     StoreActions.updateStoreEmployeeRequest({ payload: { body, id } })
-                // );
-            },
-            error: err => {}
-        });
+                    this._$log.generateGroup('[AFTER FILTER]', {
+                        body: {
+                            type: 'log',
+                            value: body
+                        }
+                    });
+
+                    this.store.dispatch(
+                        StoreActions.updateStoreEmployeeRequest({ payload: { id, body } })
+                    );
+                },
+                error: err => {}
+            });
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------

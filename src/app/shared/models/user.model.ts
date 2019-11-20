@@ -174,4 +174,10 @@ export class User extends Timestamp implements IUser {
     set setAttendances(value: any) {
         this.attendances = value;
     }
+
+    static patch(body: UserOptions): UserOptions {
+        return body;
+    }
 }
+
+export type UserOptions = Partial<User>;
