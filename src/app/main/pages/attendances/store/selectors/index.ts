@@ -1,4 +1,4 @@
 import * as AttendanceSelectors from './attendance.selectors';
-import * as StoreSelectors from '../../../accounts/merchants/store/selectors';
+import * as MerchantSelectors from './merchant.selectors';
 
-export { AttendanceSelectors, StoreSelectors };
+export { AttendanceSelectors, MerchantSelectors };

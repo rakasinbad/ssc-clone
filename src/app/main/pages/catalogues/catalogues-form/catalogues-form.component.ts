@@ -271,7 +271,7 @@ export class CataloguesFormComponent implements OnInit {
                     (categories, auth, productName) => ({ categories, auth, productName })
                 ),
                 switchMap(data => {
-                    if (!data.auth.data.userSuppliers.length) {
+                    if (data.auth.user.userSuppliers.length === 0) {
                         return of(
                             CatalogueActions.fetchCategoryTreeFailure({
                                 payload: { id: 'fetchCategoryTreeFailure', errors: 'Not Authenticated' }

@@ -3,6 +3,10 @@ import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
 
 import { Attendance } from '../../models';
 
+/**
+ * ATTENDANCES
+ */
+
 export const fetchAttendancesRequest = createAction(
     '[Attendances API] Fetch Attendances Request',
     props<{ payload: IQueryParams }>()
@@ -17,6 +21,10 @@ export const fetchAttendancesSuccess = createAction(
     '[Attendances API] Fetch Attendances Success',
     props<{ payload: { attendances: Attendance[]; total: number } }>()
 );
+
+/**
+ * ATTENDANCE
+ */
 
 export const fetchAttendanceRequest = createAction(
     '[Attendances API] Fetch Attendance Request',

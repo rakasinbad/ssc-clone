@@ -105,7 +105,7 @@ export class Store extends Timestamp implements IStore {
         this.imageUrl = imageUrl ? imageUrl.trim() : null;
         this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
         this.reason = reason ? reason.trim() : null;
-        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : null;
+        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : '0';
 
         this.userStores =
             userStores && userStores.length > 0
@@ -149,20 +149,20 @@ export class Store extends Timestamp implements IStore {
                 storeSegment.deletedAt
             ) : null;
         
-        this.userStores = Array.isArray(userStores) ?
-            userStores.map(userStore => new UserStore(
-                userStore.id,
-                userStore.userId,
-                userStore.storeId,
-                userStore.status,
-                // userStore.store,
-                // userStore.user,
-                // userStore.totalCheckIn,
-                // userStore.totalCheckOut,
-                userStore.createdAt,
-                userStore.updatedAt,
-                userStore.deletedAt
-            )) : [];
+        // this.userStores = Array.isArray(userStores) ?
+        //     userStores.map(userStore => new UserStore(
+        //         userStore.id,
+        //         userStore.userId,
+        //         userStore.storeId,
+        //         userStore.status,
+        //         // userStore.store,
+        //         // userStore.user,
+        //         // userStore.totalCheckIn,
+        //         // userStore.totalCheckOut,
+        //         userStore.createdAt,
+        //         userStore.updatedAt,
+        //         userStore.deletedAt
+        //     )) : [];
 
         if (urban) {
             const newUrban = new Urban(

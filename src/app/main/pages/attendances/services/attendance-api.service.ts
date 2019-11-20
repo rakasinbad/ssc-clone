@@ -2,9 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
+import { Store as Merchant } from '../models';
 import { Observable } from 'rxjs';
 
-import { IAttendance, IAttendanceResponse, Attendance } from '../models';
+import { IAttendance, Attendance } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -30,6 +31,12 @@ export class AttendanceApiService {
 
     findById(id: string): Observable<IAttendance> {
         return this.http.get<IAttendance>(`${this._url}/${id}`);
+    }
+
+    getStore(supplierId: string): Observable<Merchant> {
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+
+        return this.http.get<Merchant>(`${this._url}/${supplierId}`, { params: { type: 'attendance' } });
     }
 
     create(body: IAttendance): Observable<any> {

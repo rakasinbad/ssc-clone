@@ -1,7 +1,7 @@
-import { IResponsePaginate, ITimestamp, Timestamp, TNullable } from 'app/shared/models';
+import { IResponsePaginate, ITimestamp, Timestamp, TNullable, User } from 'app/shared/models';
 
-import { AccountAssocAttendance } from '../../accounts/models/account.model';
-import { Store } from '../../accounts/merchants/models';
+// import { AccountAssocAttendance } from '../../accounts/models/account.model';
+import { Store } from './index';
 
 type ELocationType = 'inside' | 'outside' | 'others';
 
@@ -19,7 +19,7 @@ export interface IAttendance extends ITimestamp {
     locationType: ELocationType;
     attendanceType: EAttendanceType;
     userId?: TNullable<string>;
-    user?: AccountAssocAttendance;
+    user?: User;
 }
 
 export interface IAttendanceResponse extends IResponsePaginate {
@@ -38,7 +38,7 @@ export class Attendance extends Timestamp {
     locationType: ELocationType;
     attendanceType: EAttendanceType;
     userId: TNullable<string>;
-    user: AccountAssocAttendance;
+    user: User;
 
     constructor(
         id: string,
@@ -52,7 +52,7 @@ export class Attendance extends Timestamp {
         locationType: ELocationType,
         attendanceType: EAttendanceType,
         userId: TNullable<string>,
-        user: AccountAssocAttendance,
+        user: User,
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
         deletedAt: TNullable<string>
@@ -72,22 +72,20 @@ export class Attendance extends Timestamp {
 
         this.userId = userId;
         this.user = user
-            ? new AccountAssocAttendance(
+            ? new User(
                 user.id,
                 user.fullName,
                 user.email,
                 user.phoneNo,
                 user.mobilePhoneNo,
-                user.fcm,
+                user.idNo,
+                user.taxNo,
                 user.status,
-                user.image,
                 user.imageUrl,
                 user.taxImageUrl,
                 user.idImageUrl,
                 user.selfieImageUrl,
                 user.urbanId,
-                user.userOdooId,
-                user.userStores,
                 user.roles,
                 user.createdAt,
                 user.updatedAt,

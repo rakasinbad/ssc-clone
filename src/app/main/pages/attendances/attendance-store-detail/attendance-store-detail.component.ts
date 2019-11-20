@@ -26,15 +26,30 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs
 
 import { Attendance, Store } from '../models';
 import { locale as english } from '../i18n/en';
-import { fromAttendance, fromStore } from '../store/reducers';
-import { AttendanceSelectors } from '../store/selectors';
-import { StoreSelectors } from '../../accounts/merchants/store/selectors';
-import { StoreActions } from '../../accounts/merchants/store/actions';
-import { AttendanceActions } from '../store/actions';
 
-// import * as localization from 'moment/locale/id';
-// import { LocaleConfig } from 'ngx-daterangepicker-material';
-// moment.locale('id', localization);
+/**
+ * ACTIONS
+ */
+import {
+    AttendanceActions,
+    MerchantActions
+} from '../store/actions';
+
+/**
+ * REDUCERS
+ */
+import {
+    fromAttendance,
+    fromMerchant
+} from '../store/reducers';
+
+/**
+ * SELECTORS
+ */
+import {
+    AttendanceSelectors,
+    MerchantSelectors
+} from '../store/selectors';
 
 @Component({
     selector: 'app-attendance-store-detail',
@@ -90,7 +105,7 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
-        private _fromStore: NgRxStore<fromStore.FeatureState>,
+        private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
@@ -100,10 +115,8 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         this.storeId = id;
 
         /** Melakukan request data Store berdasarkan ID nya melalui dispatch action. */
-        this._fromStore.dispatch(StoreActions.fetchStoreRequest({
-            payload: {
-                storeId: id
-            }
+        this._fromMerchant.dispatch(MerchantActions.fetchStoreRequest({
+            payload: id
         }));
 
         this._fuseTranslationLoaderService.loadTranslations(english);
@@ -128,16 +141,19 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         );
 
         /** Mendapatkan status loading dari store-nya Store. */
-        this.isStoreLoading$ = this._fromStore.select(StoreSelectors.getIsLoading)
+        this.isStoreLoading$ = this._fromMerchant.select(MerchantSelectors.getIsLoading)
         .pipe(
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
 
         /** Mendapatkan store yang telah dipilih dari halaman depan. */
-        this.selectedStore$ = this._fromStore.select(StoreSelectors.getSelectedStore)
+        this.selectedStore$ = this._fromMerchant.select(MerchantSelectors.getMerchant)
         .pipe(
-            takeUntil(this._unSubs$)
+            takeUntil(this._unSubs$),
+            map(store => {
+                return store;
+            })
         );
 
         /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */

@@ -17,20 +17,20 @@ import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, User } from 'app/shared/models';
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 
-import { Attendance, Store } from '../models';
+import { Attendance } from '../models';
 import { locale as english } from '../i18n/en';
-import { fromAttendance, fromStore } from '../store/reducers';
+import { fromAttendance } from '../store/reducers';
 import { AttendanceSelectors } from '../store/selectors';
-import { StoreSelectors } from '../../accounts/merchants/store/selectors';
-import { StoreActions } from '../../accounts/merchants/store/actions';
 import { AttendanceActions } from '../store/actions';
+
+import { UserApiService } from 'app/shared/helpers';
 
 // import * as localization from 'moment/locale/id';
 // import { LocaleConfig } from 'ngx-daterangepicker-material';
@@ -48,12 +48,15 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
-    /** Observable untuk Store yang dipilih dari halaman depan. */
-    selectedStore$: Observable<Store>;
-    /** Observable untuk Array Attendance dari store yang dipilih. */
-    employeesActivities$: Observable<Array<Attendance>>;
+    /** ID pegawai yang ingin diambil data-nya. */
+    _employeeId: string;
+
+    /** Observable untuk User yang dipilih dari halaman depan. */
+    selectedUser$: Observable<User>;
+    /** Observable untuk Array User dari store yang dipilih. */
+    employeeActivities$: Observable<Array<Attendance>>;
     /** Observable untuk mendapatkan jumlah data keseluruhan untuk aktivitas karyawan. */
-    totalEmployeesActivities$: Observable<number>;
+    totalEmployeeActivities$: Observable<number>;
 
     /** Field-field table yang akan ditampilkan di view. */
     public displayedColumns = [
@@ -81,24 +84,18 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
 
     /** Observable untuk status loading dari state-nya Attendance. */
     isAttendanceLoading$: Observable<boolean>;
-    /** Observable untuk status loading dari state-nya Store. */
-    isStoreLoading$: Observable<boolean>;
 
     constructor(
         private route: ActivatedRoute,
+        private _userApi: UserApiService,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
-        private _fromStore: NgRxStore<fromStore.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
-        /** Mendapatkan ID dari route (parameter URL) */
-        const { storeId: id } = this.route.snapshot.params;
+        /** Mendapatkan ID user dari parameter URL. */
+        this._employeeId = this.route.snapshot.params.employeeId;
 
-        /** Melakukan request data Store berdasarkan ID nya melalui dispatch action. */
-        this._fromStore.dispatch(StoreActions.fetchStoreRequest({
-            payload: {
-                storeId: id
-            }
-        }));
+        /** Mengambil data user sesuai dengan ID pegawainya. */
+        this.selectedUser$ = this._userApi.findById(this._employeeId).pipe(takeUntil(this._unSubs$));
 
         this._fuseTranslationLoaderService.loadTranslations(english);
     }
@@ -121,27 +118,14 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
             takeUntil(this._unSubs$)
         );
 
-        /** Mendapatkan status loading dari store-nya Store. */
-        this.isStoreLoading$ = this._fromStore.select(StoreSelectors.getIsLoading)
-        .pipe(
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
-
-        /** Mendapatkan store yang telah dipilih dari halaman depan. */
-        this.selectedStore$ = this._fromStore.select(StoreSelectors.getSelectedStore)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
-
         /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */
-        this.employeesActivities$ = this._fromAttendance.select(AttendanceSelectors.getAllAttendance)
+        this.employeeActivities$ = this._fromAttendance.select(AttendanceSelectors.getAllAttendance)
         .pipe(
             takeUntil(this._unSubs$)
         );
 
         /** Mendapatkan jumlah aktivitas karyawan dari store yang telah dipilih. */
-        this.totalEmployeesActivities$ = this._fromAttendance.select(AttendanceSelectors.getTotalAttendance)
+        this.totalEmployeeActivities$ = this._fromAttendance.select(AttendanceSelectors.getTotalAttendance)
         .pipe(
             takeUntil(this._unSubs$)
         );
@@ -175,7 +159,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         data['paginate'] = true;
 
         /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
-        data['storeId'] = this.route.snapshot.params.storeId;
+        data['userId'] = this._employeeId;
 
         /** Mengambil arah sortir dan data yang ingin disotir. */
         if (this.sort.direction) {

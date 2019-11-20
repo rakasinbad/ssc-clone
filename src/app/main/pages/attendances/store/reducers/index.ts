@@ -1,4 +1,7 @@
 import * as fromAttendance from './attendance.reducer';
-import * as fromStore from '../../../accounts/merchants/store/reducers/store.reducer';
+import * as fromMerchant from './merchant.reducer';
 
-export { fromAttendance, fromStore };
+export {
+    fromAttendance,
+    fromMerchant
+};

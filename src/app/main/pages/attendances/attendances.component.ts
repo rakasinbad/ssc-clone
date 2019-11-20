@@ -13,19 +13,36 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
 import * as moment from 'moment';
-import { fromAttendance, fromStore } from './store/reducers';
 import { Store as NgRxStore, select } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { locale as english } from './i18n/en';
 import { IQueryParams } from 'app/shared/models';
-import { AttendanceActions } from './store/actions';
 import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
 import { Store, Attendance } from './models';
-import { AttendanceSelectors } from './store/selectors';
-import { StoreSelectors } from '../accounts/merchants/store/selectors';
-import { StoreActions } from '../accounts/merchants/store/actions';
 
-// import { StoreSelectors } from '../accounts/merchants/store/selectors';
+/**
+ * ACTIONS
+ */
+import {
+    AttendanceActions,
+    MerchantActions
+} from './store/actions';
+
+/**
+ * REDUCERS
+ */
+import {
+    fromAttendance,
+    fromMerchant
+} from './store/reducers';
+
+/**
+ * SELECTORS
+ */
+import {
+    AttendanceSelectors,
+    MerchantSelectors
+} from './store/selectors';
 
 @Component({
     selector: 'app-attendances',
@@ -64,8 +81,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
-        private store: NgRxStore<fromAttendance.FeatureState>,
-        private _fromStore: NgRxStore<fromStore.FeatureState>,
+        private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(english);
@@ -84,55 +100,59 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.dataSource$ 
             = this._fromStore
-                .select(StoreSelectors.getAllStore)
+                .select(MerchantSelectors.getAllMerchant)
                 .pipe(
-                    map(stores => {
-                        return [
-                            ...stores.map(store => new Store(
-                                store.id,
-                                store.storeCode,
-                                store.name,
-                                store.address,
-                                store.taxNo,
-                                store.longitude,
-                                store.latitude,
-                                store.largeArea,
-                                store.phoneNo,
-                                store.imageUrl,
-                                store.taxImageUrl,
-                                store.status,
-                                store.reason,
-                                store.parent,
-                                store.parentId,
-                                store.numberOfEmployee,
-                                store.externalId,
-                                store.storeTypeId,
-                                store.storeGroupId,
-                                store.storeSegmentId,
-                                store.urbanId,
-                                store.warehouseId,
-                                store.vehicleAccessibility,
-                                store.urban,
-                                store.customerHierarchies,
-                                store.storeType,
-                                store.storeSegment,
-                                store.storeGroup,
-                                store.legalInfo,
-                                store.userStores,
-                                store.createdAt,
-                                store.updatedAt,
-                                store.deletedAt
-                            ))
-                        ];
+                    map(stores => stores.map(store => {
+                        const newStore = new Store(
+                            store.id,
+                            store.storeCode,
+                            store.name,
+                            store.address,
+                            store.taxNo,
+                            store.longitude,
+                            store.latitude,
+                            store.largeArea,
+                            store.phoneNo,
+                            store.imageUrl,
+                            store.taxImageUrl,
+                            store.status,
+                            store.reason,
+                            store.parent,
+                            store.parentId,
+                            store.numberOfEmployee,
+                            store.externalId,
+                            store.storeTypeId,
+                            store.storeGroupId,
+                            store.storeSegmentId,
+                            store.urbanId,
+                            store.vehicleAccessibilityId,
+                            store.warehouseId,
+                            store.userStores,
+                            store.storeType,
+                            store.storeGroup,
+                            store.storeSegment,
+                            store.urban,
+                            store.storeConfig,
+                            store.createdAt,
+                            store.updatedAt,
+                            store.deletedAt
+                        );
+
+                        newStore.setLegalInfo = store.legalInfo;
+                        newStore.setCustomerHierarchies = store.customerHierarchies;
+
+                        return newStore;
                     })
-                );
+                )
+            );
+
         this.totalDataSource$ = this._fromStore.pipe(
-            select(StoreSelectors.getTotalStore),
+            select(MerchantSelectors.getTotalMerchant),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
         this.isLoading$ = this._fromStore.pipe(
-            select(StoreSelectors.getIsLoading),
+            select(MerchantSelectors.getIsLoading),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
@@ -182,8 +202,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sortBy'] = this.sort.active;
         }
 
-        this.store.dispatch(
-            StoreActions.fetchStoresRequest({
+        this._fromStore.dispatch(
+            MerchantActions.fetchStoresRequest({
                 payload: data
             })
         );

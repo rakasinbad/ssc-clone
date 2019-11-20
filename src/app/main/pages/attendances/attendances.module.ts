@@ -15,8 +15,8 @@ import { AttendanceEffects } from './store/effects/attendance.effects';
 import { fromAttendance } from './store/reducers';
 
 /** MERCHANT STUFF */
-import { fromStore } from './store/reducers';
-import { StoreEffects } from './store/effects';
+import { fromMerchant } from './store/reducers';
+import { MerchantEffects } from './store/effects';
 
 /**
  *
@@ -41,11 +41,11 @@ import { StoreEffects } from './store/effects';
         RxReactiveFormsModule,
 
         StoreModule.forFeature(fromAttendance.FEATURE_KEY, fromAttendance.reducer),
-        StoreModule.forFeature(fromStore.FEATURE_KEY, fromStore.reducer),
+        StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
         
         EffectsModule.forFeature([
             AttendanceEffects,
-            StoreEffects
+            MerchantEffects
         ])
     ]
 })

@@ -16,7 +16,7 @@ import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
-import { Account } from '../../accounts/models';
+// import { Account } from '../../accounts/models';
 import { locale as english } from '../i18n/en';
 import { Attendance } from '../models/attendance.model';
 import { AttendanceActions } from '../store/actions';
@@ -242,11 +242,11 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
                 }
             });
 
-        this.filteredAccounts$ = this.store.pipe(
-            select(DropdownSelectors.getAllSearchAccount),
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+        // this.filteredAccounts$ = this.store.pipe(
+        //     select(DropdownSelectors.getAllSearchAccount),
+        //     distinctUntilChanged(),
+        //     takeUntil(this._unSubs$)
+        // );
     }
 
     ngOnDestroy(): void {
@@ -295,9 +295,9 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    displayFilterAccount(account?: Account): string | undefined {
-        return account ? account.email : undefined;
-    }
+    // displayFilterAccount(account?: Account): string | undefined {
+    //     return account ? account.email : undefined;
+    // }
 
     onBlurAccount(): void {
         if (!this._selectedAccount || this._selectedAccount !== this.form.get('userId').value) {
