@@ -1,4 +1,4 @@
-import { Store as Merchant } from 'app/main/pages/accounts/merchants/models/merchant.model';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
@@ -16,49 +16,21 @@ interface ISupplier extends ITimestamp {
 
 export class Supplier extends Timestamp implements ISupplier {
     constructor(
-        private _id: string,
-        private _name: string,
-        private _longitude: number,
-        private _latitude: number,
-        private _phoneNo: string,
-        private _status: TStatus,
-        private _urbanId: string,
+        public id: string,
+        public name: string,
+        public longitude: number,
+        public latitude: number,
+        public phoneNo: string,
+        public status: TStatus,
+        public urbanId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this._name = _name ? _name.trim() : null;
-        this._phoneNo = _phoneNo ? _phoneNo.trim() : null;
-    }
-
-    get id(): string {
-        return this._id;
-    }
-
-    get name(): string {
-        return this._name;
-    }
-
-    get longitude(): number {
-        return this._longitude;
-    }
-
-    get latitude(): number {
-        return this._latitude;
-    }
-
-    get phoneNo(): string {
-        return this._phoneNo;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get urbanId(): string {
-        return this._urbanId;
+        this.name = name ? name.trim() : null;
+        this.phoneNo = phoneNo ? phoneNo.trim() : null;
     }
 }
 
@@ -72,61 +44,37 @@ interface IUserSupplier {
 }
 
 export class UserSupplier extends Timestamp implements IUserSupplier {
-    private _user?: User;
+    public user?: User;
 
     constructor(
-        private _id: string,
-        private _userId: string,
-        private _supplierId: string,
-        private _status: TStatus,
-        private _supplier: Supplier,
+        public id: string,
+        public userId: string,
+        public supplierId: string,
+        public status: TStatus,
+        public supplier: Supplier,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this._supplier = _supplier
+        this.supplier = supplier
             ? new Supplier(
-                  _supplier.id,
-                  _supplier.name,
-                  _supplier.longitude,
-                  _supplier.latitude,
-                  _supplier.phoneNo,
-                  _supplier.status,
-                  _supplier.urbanId,
-                  _supplier.createdAt,
-                  _supplier.updatedAt,
-                  _supplier.deletedAt
+                  supplier.id,
+                  supplier.name,
+                  supplier.longitude,
+                  supplier.latitude,
+                  supplier.phoneNo,
+                  supplier.status,
+                  supplier.urbanId,
+                  supplier.createdAt,
+                  supplier.updatedAt,
+                  supplier.deletedAt
               )
             : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
-
-    get userId(): string {
-        return this._userId;
-    }
-
-    get supplierId(): string {
-        return this._supplierId;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get supplier(): Supplier {
-        return this._supplier;
-    }
-
-    get user(): User {
-        return this._user;
-    }
-
-    set user(value: User) {
+    set setUser(value: User) {
         if (value) {
             const newUser = new User(
                 value.id,
@@ -149,24 +97,24 @@ export class UserSupplier extends Timestamp implements IUserSupplier {
             );
 
             if (value.userStores) {
-                newUser.userStores = value.userStores;
+                newUser.setUserStores = value.userStores;
             }
 
             if (value.userSuppliers) {
-                newUser.userSuppliers = value.userSuppliers;
+                newUser.setUserSuppliers = value.userSuppliers;
             }
 
             if (value.urban) {
-                newUser.urban = value.urban;
+                newUser.setUrban = value.urban;
             }
 
             if (value.attendances) {
-                newUser.attendances = value.attendances;
+                newUser.setAttendances = value.attendances;
             }
 
-            this._user = newUser;
+            this.user = newUser;
         } else {
-            this._user = null;
+            this.user = null;
         }
     }
 }
@@ -181,97 +129,81 @@ interface ISupplierStore {
 
 export class SupplierStore extends Timestamp implements ISupplierStore {
     constructor(
-        private _id: string,
-        private _supplierId: string,
-        private _storeId: string,
-        private _status: TStatus,
-        private _store: Merchant,
+        public id: string,
+        public supplierId: string,
+        public storeId: string,
+        public status: TStatus,
+        public store: Merchant,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        if (_store) {
+        if (store) {
             const newStore = new Merchant(
-                _store.id,
-                _store.storeCode,
-                _store.name,
-                _store.address,
-                _store.taxNo,
-                _store.longitude,
-                _store.latitude,
-                _store.largeArea,
-                _store.phoneNo,
-                _store.imageUrl,
-                _store.taxImageUrl,
-                _store.status,
-                _store.reason,
-                _store.parent,
-                _store.parentId,
-                _store.numberOfEmployee,
-                _store.externalId,
-                _store.storeTypeId,
-                _store.storeGroupId,
-                _store.storeSegmentId,
-                _store.urbanId,
-                _store.vehicleAccessibilityId,
-                _store.warehouseId,
-                _store.userStores,
-                _store.storeType,
-                _store.storeGroup,
-                _store.storeSegment,
-                _store.urban,
-                _store.storeConfig,
-                _store.createdAt,
-                _store.updatedAt,
-                _store.deletedAt
+                store.id,
+                store.storeCode,
+                store.name,
+                store.address,
+                store.taxNo,
+                store.longitude,
+                store.latitude,
+                store.largeArea,
+                store.phoneNo,
+                store.imageUrl,
+                store.taxImageUrl,
+                store.status,
+                store.reason,
+                store.parent,
+                store.parentId,
+                store.numberOfEmployee,
+                store.externalId,
+                store.storeTypeId,
+                store.storeGroupId,
+                store.storeSegmentId,
+                store.urbanId,
+                store.vehicleAccessibilityId,
+                store.warehouseId,
+                store.userStores,
+                store.storeType,
+                store.storeGroup,
+                store.storeSegment,
+                store.urban,
+                store.storeConfig,
+                store.createdAt,
+                store.updatedAt,
+                store.deletedAt
             );
 
-            if (_store.supplierStores) {
-                newStore.supplierStores = _store.supplierStores;
+            if (store.supplierStores) {
+                newStore.setSupplierStores = store.supplierStores;
             }
 
-            if (_store.vehicleAccessibility) {
-                newStore.vehicleAccessibility = _store.vehicleAccessibility;
+            if (store.vehicleAccessibility) {
+                newStore.setVehicleAccessibility = store.vehicleAccessibility;
             }
 
-            if (_store.customerHierarchies) {
-                newStore.customerHierarchies = _store.customerHierarchies;
+            if (store.customerHierarchies) {
+                newStore.setCustomerHierarchies = store.customerHierarchies;
             }
 
-            if (_store.storeClusters) {
-                newStore.storeClusters = _store.storeClusters;
+            if (store.storeClusters) {
+                newStore.setStoreClusters = store.storeClusters;
             }
 
-            if (_store.legalInfo) {
-                newStore.legalInfo = _store.legalInfo;
+            if (store.legalInfo) {
+                newStore.setLegalInfo = store.legalInfo;
             }
 
-            this._store = newStore;
+            if (store.owner) {
+                newStore.setOwner = store.owner;
+            }
+
+            this.store = newStore;
         } else {
-            this._store = null;
+            this.store = null;
         }
-    }
-
-    get id(): string {
-        return this._id;
-    }
-
-    get supplierId(): string {
-        return this._supplierId;
-    }
-
-    get storeId(): string {
-        return this._storeId;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get store(): Merchant {
-        return this._store;
     }
 
     static patch(body: SupplierStoreOptions): SupplierStoreOptions {

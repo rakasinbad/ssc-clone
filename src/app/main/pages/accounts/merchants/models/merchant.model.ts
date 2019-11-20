@@ -1,19 +1,18 @@
 import {
     CustomerHierarchy,
-    ITimestamp,
     StoreCluster,
     StoreConfig,
     StoreGroup,
     StoreSegment,
     StoreType,
-    Timestamp,
+    SupplierStore,
     TNullable,
     TStatus,
     Urban,
     User,
     VehicleAccessibility
 } from 'app/shared/models';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 
 interface IStore extends ITimestamp {
     id: string;
@@ -50,54 +49,67 @@ interface IStore extends ITimestamp {
     storeConfig: StoreConfig;
     storeClusters?: StoreCluster[];
     legalInfo?: User;
+    owner?: User;
 }
 
 export class Store extends Timestamp implements IStore {
-    private _supplierStores?: SupplierStore[];
-    private _vehicleAccessibility?: VehicleAccessibility;
-    private _customerHierarchies?: CustomerHierarchy[];
-    private _storeClusters?: StoreCluster[];
-    private _legalInfo?: User;
+    public supplierStores?: SupplierStore[];
+    public vehicleAccessibility?: VehicleAccessibility;
+    public customerHierarchies?: CustomerHierarchy[];
+    public storeClusters?: StoreCluster[];
+    public legalInfo?: User;
+    public owner?: User;
 
     constructor(
-        private _id: string,
-        private _storeCode: string,
-        private _name: string,
-        private _address: string,
-        private _taxNo: string,
-        private _longitude: number,
-        private _latitude: number,
-        private _largeArea: string,
-        private _phoneNo: string,
-        private _imageUrl: TNullable<string>,
-        private _taxImageUrl: TNullable<string>,
-        private _status: TStatus,
-        private _reason: string,
-        private _parent: boolean,
-        private _parentId: string,
-        private _numberOfEmployee: TNullable<string>,
-        private _externalId: string,
-        private _storeTypeId: string,
-        private _storeGroupId: string,
-        private _storeSegmentId: string,
-        private _urbanId: string,
-        private _vehicleAccessibilityId: string,
-        private _warehouseId: string,
-        private _userStores: UserStore[],
-        private _storeType: StoreType,
-        private _storeGroup: StoreGroup,
-        private _storeSegment: StoreSegment,
-        private _urban: Urban,
-        private _storeConfig: StoreConfig,
+        public id: string,
+        public storeCode: string,
+        public name: string,
+        public address: string,
+        public taxNo: string,
+        public longitude: number,
+        public latitude: number,
+        public largeArea: string,
+        public phoneNo: string,
+        public imageUrl: TNullable<string>,
+        public taxImageUrl: TNullable<string>,
+        public status: TStatus,
+        public reason: string,
+        public parent: boolean,
+        public parentId: string,
+        public numberOfEmployee: TNullable<string>,
+        public externalId: string,
+        public storeTypeId: string,
+        public storeGroupId: string,
+        public storeSegmentId: string,
+        public urbanId: string,
+        public vehicleAccessibilityId: string,
+        public warehouseId: string,
+        public userStores: UserStore[],
+        public storeType: StoreType,
+        public storeGroup: StoreGroup,
+        public storeSegment: StoreSegment,
+        public urban: Urban,
+        public storeConfig: StoreConfig,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this._userStores =
-            _userStores && _userStores.length > 0
-                ? _userStores.map(row => {
+        this.storeCode = storeCode ? storeCode.trim() : null;
+        this.name = name ? name.trim() : null;
+        this.address = address ? address.trim() : null;
+        this.taxNo = taxNo ? taxNo.trim() : null;
+        this.largeArea = largeArea ? largeArea.trim() : null;
+        this.phoneNo = phoneNo ? phoneNo.trim() : null;
+        this.imageUrl = imageUrl ? imageUrl.trim() : null;
+        this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
+        this.reason = reason ? reason.trim() : null;
+        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : null;
+
+        this.userStores =
+            userStores && userStores.length > 0
+                ? userStores.map(row => {
                       const newUserStore = new UserStore(
                           row.id,
                           row.userId,
@@ -109,274 +121,159 @@ export class Store extends Timestamp implements IStore {
                       );
 
                       if (row.user) {
-                          newUserStore.user = row.user;
+                          newUserStore.setUser = row.user;
+                      }
+
+                      if (row.store) {
+                          newUserStore.setStore = row.store;
                       }
 
                       return newUserStore;
                   })
                 : [];
 
-        this._storeType = _storeType
+        this.storeType = storeType
             ? new StoreType(
-                  _storeType.id,
-                  _storeType.name,
-                  _storeType.createdAt,
-                  _storeType.updatedAt,
-                  _storeType.deletedAt
+                  storeType.id,
+                  storeType.name,
+                  storeType.createdAt,
+                  storeType.updatedAt,
+                  storeType.deletedAt
               )
             : null;
 
-        this._storeSegment = _storeSegment
+        this.storeSegment = storeSegment
             ? new StoreSegment(
-                  _storeSegment.id,
-                  _storeSegment.name,
-                  _storeSegment.createdAt,
-                  _storeSegment.updatedAt,
-                  _storeSegment.deletedAt
+                  storeSegment.id,
+                  storeSegment.name,
+                  storeSegment.createdAt,
+                  storeSegment.updatedAt,
+                  storeSegment.deletedAt
               )
             : null;
 
-        if (_urban) {
+        if (urban) {
             const newUrban = new Urban(
-                _urban.id,
-                _urban.zipCode,
-                _urban.city,
-                _urban.district,
-                _urban.urban,
-                _urban.provinceId,
-                _urban.createdAt,
-                _urban.updatedAt,
-                _urban.deletedAt
+                urban.id,
+                urban.zipCode,
+                urban.city,
+                urban.district,
+                urban.urban,
+                urban.provinceId,
+                urban.createdAt,
+                urban.updatedAt,
+                urban.deletedAt
             );
 
-            if (_urban.province) {
-                newUrban.province = _urban.province;
+            if (urban.province) {
+                newUrban.province = urban.province;
             }
 
-            this._urban = newUrban;
+            this.urban = newUrban;
         } else {
-            this._urban = null;
+            this.urban = null;
         }
 
-        this._storeConfig = _storeConfig
+        this.storeConfig = storeConfig
             ? new StoreConfig(
-                  _storeConfig.id,
-                  _storeConfig.startingWorkHour,
-                  _storeConfig.finishedWorkHour,
-                  _storeConfig.status,
-                  _storeConfig.storeId,
-                  _storeConfig.createdAt,
-                  _storeConfig.updatedAt,
-                  _storeConfig.deletedAt
+                  storeConfig.id,
+                  storeConfig.startingWorkHour,
+                  storeConfig.finishedWorkHour,
+                  storeConfig.status,
+                  storeConfig.storeId,
+                  storeConfig.createdAt,
+                  storeConfig.updatedAt,
+                  storeConfig.deletedAt
               )
             : null;
     }
 
-    get id(): string {
-        return this._id;
+    set setSupplierStores(value: SupplierStore[]) {
+        if (value && value.length > 0) {
+            const newSupplierStores = value.map(row => {
+                return new SupplierStore(
+                    row.id,
+                    row.supplierId,
+                    row.storeId,
+                    row.status,
+                    row.store,
+                    row.createdAt,
+                    row.updatedAt,
+                    row.deletedAt
+                );
+            });
+
+            this.supplierStores = newSupplierStores;
+        } else {
+            this.supplierStores = [];
+        }
     }
 
-    get storeCode(): string {
-        return this._storeCode;
+    set setVehicleAccessibility(value: VehicleAccessibility) {
+        this.vehicleAccessibility = value
+            ? new VehicleAccessibility(
+                  value.id,
+                  value.name,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
+              )
+            : null;
     }
 
-    get name(): string {
-        return this._name;
+    set setCustomerHierarchies(value: CustomerHierarchy[]) {
+        if (value && value.length > 0) {
+            const newCustomerHierarchies = value.map(row => {
+                const newCustomerHierarchy = new CustomerHierarchy(
+                    row.id,
+                    row.storeId,
+                    row.hierarchyId,
+                    row.status,
+                    row.hierarchy,
+                    row.createdAt,
+                    row.updatedAt,
+                    row.deletedAt
+                );
+
+                if (row.store) {
+                    newCustomerHierarchy.setStore = row.store;
+                }
+
+                return newCustomerHierarchy;
+            });
+            this.customerHierarchies = newCustomerHierarchies;
+        } else {
+            this.customerHierarchies = [];
+        }
     }
 
-    get address(): string {
-        return this._address;
+    set setStoreClusters(value: StoreCluster[]) {
+        if (value && value.length > 0) {
+            const newStoreClusters = value.map(row => {
+                const newStoreCluster = new StoreCluster(
+                    row.id,
+                    row.storeId,
+                    row.clusterId,
+                    row.status,
+                    row.createdAt,
+                    row.updatedAt,
+                    row.deletedAt
+                );
+
+                if (row.cluster) {
+                    newStoreCluster.setCluster = row.cluster;
+                }
+
+                return newStoreCluster;
+            });
+
+            this.storeClusters = newStoreClusters;
+        } else {
+            this.storeClusters = [];
+        }
     }
 
-    get taxNo(): string {
-        return this._taxNo;
-    }
-
-    get longitude(): number {
-        return this._longitude;
-    }
-
-    get latitude(): number {
-        return this._latitude;
-    }
-
-    get largeArea(): string {
-        return this._largeArea;
-    }
-
-    get phoneNo(): string {
-        return this._phoneNo;
-    }
-
-    get imageUrl(): string {
-        return this._imageUrl;
-    }
-
-    get taxImageUrl(): string {
-        return this._taxImageUrl;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get reason(): string {
-        return this._reason;
-    }
-
-    get parent(): boolean {
-        return this._parent;
-    }
-
-    get parentId(): string {
-        return this._parentId;
-    }
-
-    get numberOfEmployee(): string {
-        return this._numberOfEmployee;
-    }
-
-    get externalId(): string {
-        return this._externalId;
-    }
-
-    get storeTypeId(): string {
-        return this._storeTypeId;
-    }
-
-    get storeGroupId(): string {
-        return this._storeGroupId;
-    }
-
-    get storeSegmentId(): string {
-        return this._storeSegmentId;
-    }
-
-    get urbanId(): string {
-        return this._urbanId;
-    }
-
-    get vehicleAccessibilityId(): string {
-        return this._vehicleAccessibilityId;
-    }
-
-    get warehouseId(): string {
-        return this._warehouseId;
-    }
-
-    get userStores(): UserStore[] {
-        return this._userStores;
-    }
-
-    get storeType(): StoreType {
-        return this._storeType;
-    }
-
-    get storeGroup(): StoreGroup {
-        return this._storeGroup;
-    }
-
-    get storeSegment(): StoreSegment {
-        return this._storeSegment;
-    }
-
-    get urban(): Urban {
-        return this._urban;
-    }
-
-    get storeConfig(): StoreConfig {
-        return this._storeConfig;
-    }
-
-    get supplierStores(): SupplierStore[] {
-        return this._supplierStores;
-    }
-
-    set supplierStores(value: SupplierStore[]) {
-        this._supplierStores = value;
-    }
-
-    get vehicleAccessibility(): VehicleAccessibility {
-        return this._vehicleAccessibility;
-    }
-
-    set vehicleAccessibility(value: VehicleAccessibility) {
-        this._vehicleAccessibility = value;
-    }
-
-    get customerHierarchies(): CustomerHierarchy[] {
-        return this._customerHierarchies;
-    }
-
-    set customerHierarchies(value: CustomerHierarchy[]) {
-        this._customerHierarchies = value;
-    }
-
-    get storeClusters(): StoreCluster[] {
-        return this._storeClusters;
-    }
-
-    set storeClusters(value: StoreCluster[]) {
-        this._storeClusters = value;
-    }
-
-    get legalInfo(): User {
-        return this._legalInfo;
-    }
-
-    set legalInfo(value: User) {
-        this._legalInfo = value;
-    }
-}
-
-export type StoreOptions = Partial<Store>;
-
-interface IUserStore {
-    id: string;
-    userId: string;
-    storeId: string;
-    status: TStatus;
-    user?: User;
-    store?: Store;
-}
-
-export class UserStore extends Timestamp implements IUserStore {
-    private _user?: User;
-    private _store?: Store;
-
-    constructor(
-        private _id: string,
-        private _userId: string,
-        private _storeId: string,
-        private _status: TStatus,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
-    }
-
-    get id(): string {
-        return this._id;
-    }
-
-    get userId(): string {
-        return this._userId;
-    }
-
-    get storeId(): string {
-        return this._storeId;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get user(): User {
-        return this._user;
-    }
-
-    set user(value: User) {
+    set setLegalInfo(value: User) {
         if (value) {
             const newUser = new User(
                 value.id,
@@ -399,32 +296,144 @@ export class UserStore extends Timestamp implements IUserStore {
             );
 
             if (value.userStores) {
-                newUser.userStores = value.userStores;
+                newUser.setUserStores = value.userStores;
             }
 
             if (value.userSuppliers) {
-                newUser.userSuppliers = value.userSuppliers;
+                newUser.setUserSuppliers = value.userSuppliers;
             }
 
             if (value.urban) {
-                newUser.urban = value.urban;
+                newUser.setUrban = value.urban;
             }
 
             if (value.attendances) {
-                newUser.attendances = value.attendances;
+                newUser.setAttendances = value.attendances;
             }
 
-            this._user = newUser;
+            this.legalInfo = newUser;
         } else {
-            this._user = null;
+            this.legalInfo = null;
         }
     }
 
-    get store(): Store {
-        return this._store;
+    set setOwner(value: User) {
+        if (value) {
+            const newUser = new User(
+                value.id,
+                value.fullName,
+                value.email,
+                value.phoneNo,
+                value.mobilePhoneNo,
+                value.idNo,
+                value.taxNo,
+                value.status,
+                value.imageUrl,
+                value.taxImageUrl,
+                value.idImageUrl,
+                value.selfieImageUrl,
+                value.urbanId,
+                value.roles,
+                value.createdAt,
+                value.urbanId,
+                value.deletedAt
+            );
+
+            if (value.userStores) {
+                newUser.setUserStores = value.userStores;
+            }
+
+            if (value.userSuppliers) {
+                newUser.setUserSuppliers = value.userSuppliers;
+            }
+
+            if (value.urban) {
+                newUser.setUrban = value.urban;
+            }
+
+            if (value.attendances) {
+                newUser.setAttendances = value.attendances;
+            }
+
+            this.owner = newUser;
+        } else {
+            this.owner = null;
+        }
+    }
+}
+
+export type StoreOptions = Partial<Store>;
+
+interface IUserStore {
+    id: string;
+    userId: string;
+    storeId: string;
+    status: TStatus;
+    user?: User;
+    store?: Store;
+}
+
+export class UserStore extends Timestamp implements IUserStore {
+    public user?: User;
+    public store?: Store;
+
+    constructor(
+        public id: string,
+        public userId: string,
+        public storeId: string,
+        public status: TStatus,
+        createdAt: string,
+        updatedAt: string,
+        deletedAt: TNullable<string>
+    ) {
+        super(createdAt, updatedAt, deletedAt);
     }
 
-    set store(value: Store) {
+    set setUser(value: User) {
+        if (value) {
+            const newUser = new User(
+                value.id,
+                value.fullName,
+                value.email,
+                value.phoneNo,
+                value.mobilePhoneNo,
+                value.idNo,
+                value.taxNo,
+                value.status,
+                value.imageUrl,
+                value.taxImageUrl,
+                value.idImageUrl,
+                value.selfieImageUrl,
+                value.urbanId,
+                value.roles,
+                value.createdAt,
+                value.urbanId,
+                value.deletedAt
+            );
+
+            if (value.userStores) {
+                newUser.setUserStores = value.userStores;
+            }
+
+            if (value.userSuppliers) {
+                newUser.setUserSuppliers = value.userSuppliers;
+            }
+
+            if (value.urban) {
+                newUser.setUrban = value.urban;
+            }
+
+            if (value.attendances) {
+                newUser.setAttendances = value.attendances;
+            }
+
+            this.user = newUser;
+        } else {
+            this.user = null;
+        }
+    }
+
+    set setStore(value: Store) {
         if (value) {
             const newStore = new Store(
                 value.id,
@@ -462,28 +471,32 @@ export class UserStore extends Timestamp implements IUserStore {
             );
 
             if (value.supplierStores) {
-                newStore.supplierStores = value.supplierStores;
+                newStore.setSupplierStores = value.supplierStores;
             }
 
             if (value.vehicleAccessibility) {
-                newStore.vehicleAccessibility = value.vehicleAccessibility;
+                newStore.setVehicleAccessibility = value.vehicleAccessibility;
             }
 
             if (value.customerHierarchies) {
-                newStore.customerHierarchies = value.customerHierarchies;
+                newStore.setCustomerHierarchies = value.customerHierarchies;
             }
 
             if (value.storeClusters) {
-                newStore.storeClusters = value.storeClusters;
+                newStore.setStoreClusters = value.storeClusters;
             }
 
             if (value.legalInfo) {
-                newStore.legalInfo = value.legalInfo;
+                newStore.setLegalInfo = value.legalInfo;
             }
 
-            this._store = newStore;
+            if (value.owner) {
+                newStore.setOwner = value.owner;
+            }
+
+            this.store = newStore;
         } else {
-            this._store = null;
+            this.store = null;
         }
     }
 

@@ -15,40 +15,46 @@ export interface IProvinceResponse extends IResponsePaginate {
 }
 
 export class Province extends Timestamp implements IProvince {
-    private _urbans?: Urban[];
+    public urbans?: Urban[];
 
     constructor(
-        private _id: string,
-        private _name: string,
+        public id: string,
+        public name: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+
+        this.name = name ? name.trim() : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    set setUrbans(value: Urban[]) {
+        if (value && value.length > 0) {
+            const newUrbans = value.map(row => {
+                const newUrban = new Urban(
+                    row.id,
+                    row.zipCode,
+                    row.city,
+                    row.district,
+                    row.urban,
+                    row.provinceId,
+                    row.createdAt,
+                    row.updatedAt,
+                    row.deletedAt
+                );
 
-    set id(value: string) {
-        this._id = value;
-    }
+                if (row.province) {
+                    newUrban.setProvince = row.province;
+                }
 
-    get name(): string {
-        return this._name;
-    }
+                return newUrban;
+            });
 
-    set name(value: string) {
-        this._name = value ? value.trim() : value;
-    }
-
-    get urbans(): Urban[] {
-        return this._urbans;
-    }
-
-    set urbans(value: Urban[]) {
-        this._urbans = value && value.length > 0 ? sortBy(value, ['urban'], ['asc']) : value;
+            this.urbans = sortBy(newUrbans, ['urban'], ['asc']);
+        } else {
+            this.urbans = [];
+        }
     }
 }
 

@@ -8,20 +8,14 @@ interface IVehicleAccessibility extends ITimestamp {
 
 export class VehicleAccessibility extends Timestamp implements IVehicleAccessibility {
     constructor(
-        private _id: string,
-        private _name: string,
+        public id: string,
+        public name: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
-    }
 
-    get id(): string {
-        return this._id;
-    }
-
-    get name(): string {
-        return this._name;
+        this.name = name ? name.trim() : null;
     }
 }

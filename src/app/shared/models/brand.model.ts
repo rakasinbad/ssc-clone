@@ -17,112 +17,53 @@ interface IBrand extends ITimestamp {
 }
 
 export class Brand extends Timestamp implements IBrand {
-    private _urban?: Urban;
+    public urban?: Urban;
 
     constructor(
-        private _id: string,
-        private _name: string,
-        private _address: string,
-        private _longitude: number,
-        private _latitude: number,
-        private _phoneNo: string,
-        private _imageUrl: TNullable<string>,
-        private _official: boolean,
-        private _status: TStatus,
-        private _urbanId: string,
+        public id: string,
+        public name: string,
+        public address: string,
+        public longitude: number,
+        public latitude: number,
+        public phoneNo: string,
+        public imageUrl: TNullable<string>,
+        public official: boolean,
+        public status: TStatus,
+        public urbanId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+
+        this.name = name ? name.trim() : null;
+        this.address = address ? address.trim() : null;
+        this.phoneNo = phoneNo ? phoneNo.trim() : null;
+        this.imageUrl = imageUrl ? imageUrl.trim() : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    set setUrban(value: Urban) {
+        if (value) {
+            const newUrban = new Urban(
+                value.id,
+                value.zipCode,
+                value.city,
+                value.district,
+                value.urban,
+                value.provinceId,
+                value.createdAt,
+                value.updatedAt,
+                value.deletedAt
+            );
 
-    set id(value: string) {
-        this._id = value;
-    }
+            if (value.province) {
+                newUrban.setProvince = value.province;
+            }
 
-    get name(): string {
-        return this._name;
-    }
-
-    set name(value: string) {
-        this._name = value ? value.trim() : value;
-    }
-
-    get address(): string {
-        return this._address;
-    }
-
-    set address(value: string) {
-        this._address = value ? value.trim() : value;
-    }
-
-    get longitude(): number {
-        return this._longitude;
-    }
-
-    set longitude(value: number) {
-        this._longitude = value;
-    }
-
-    get latitude(): number {
-        return this._latitude;
-    }
-
-    set latitude(value: number) {
-        this._latitude = value;
-    }
-
-    get phoneNo(): string {
-        return this._phoneNo;
-    }
-
-    set phoneNo(value: string) {
-        this._phoneNo = value ? value.trim() : value;
-    }
-
-    get imageUrl(): string {
-        return this._imageUrl;
-    }
-
-    set imageUrl(value: string) {
-        this._imageUrl = value ? value.trim() : value;
-    }
-
-    get official(): boolean {
-        return this._official;
-    }
-
-    set official(value: boolean) {
-        this._official = value;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    set status(value: TStatus) {
-        this._status = value;
-    }
-
-    get urbanId(): string {
-        return this._urbanId;
-    }
-
-    set urbanId(value: string) {
-        this._urbanId = value;
-    }
-
-    get urban(): Urban {
-        return this._urban;
-    }
-
-    set urban(value: Urban) {
-        this._urban = value;
+            this.urban = newUrban;
+        } else {
+            this.urban = null;
+        }
     }
 }
 

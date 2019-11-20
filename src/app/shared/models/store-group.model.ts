@@ -8,22 +8,14 @@ interface IStoreGroup extends ITimestamp {
 
 export class StoreGroup extends Timestamp implements IStoreGroup {
     constructor(
-        private _id: string,
-        private _name: string,
+        public id: string,
+        public name: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this._name = _name ? _name.trim() : null;
-    }
-
-    get id(): string {
-        return this._id;
-    }
-
-    get name(): string {
-        return this._name;
+        this.name = name ? name.trim() : null;
     }
 }

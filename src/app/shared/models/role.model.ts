@@ -1,3 +1,5 @@
+import { sortBy } from 'lodash';
+
 import { IResponsePaginate, TNullable, TStatus } from './global.model';
 import { Privilege } from './privilege.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
@@ -16,66 +18,39 @@ export interface IRoleResponse extends IResponsePaginate {
 }
 
 export class Role extends Timestamp implements IRole {
-    private _privileges?: Privilege[];
+    public privileges?: Privilege[];
 
     constructor(
-        private _id: string,
-        private _role: string,
-        private _description: string,
-        private _status: TStatus,
-        private _roleTypeId: string,
+        public id: string,
+        public role: string,
+        public description: string,
+        public status: TStatus,
+        public roleTypeId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+
+        this.role = role ? role.trim() : null;
+        this.description = description ? description.trim() : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    set setPrivileges(value: Privilege[]) {
+        if (value && value.length > 0) {
+            const newPrivileges = value.map(row => {
+                return new Privilege(
+                    row.id,
+                    row.privilege,
+                    row.createdAt,
+                    row.updatedAt,
+                    row.deletedAt
+                );
+            });
 
-    set id(value: string) {
-        this._id = value;
-    }
-
-    get role(): string {
-        return this._role;
-    }
-
-    set role(value: string) {
-        this._role = value;
-    }
-
-    get description(): string {
-        return this._description;
-    }
-
-    set description(value: string) {
-        this._description = value;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    set status(value: TStatus) {
-        this._status = value;
-    }
-
-    get roleTypeId(): string {
-        return this._roleTypeId;
-    }
-
-    set roleTypeId(value: string) {
-        this._roleTypeId = value;
-    }
-
-    get privileges(): Privilege[] {
-        return this._privileges;
-    }
-
-    set privileges(value: Privilege[]) {
-        this._privileges = value;
+            this.privileges = sortBy(newPrivileges, ['privilege'], ['asc']);
+        } else {
+            this.privileges = [];
+        }
     }
 }

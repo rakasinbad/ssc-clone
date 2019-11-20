@@ -27,6 +27,7 @@ import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
+import { Auth } from '../../core/auth/models';
 
 @Component({
     selector: 'app-merchants',
@@ -115,6 +116,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         localStorage.removeItem('filter.store');
+
+        console.log('MERCHANT', Auth.getUserSupplier());
 
         // .pipe(
         //     filter(source => source.length > 0),

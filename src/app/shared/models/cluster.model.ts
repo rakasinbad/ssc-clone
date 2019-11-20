@@ -10,39 +10,23 @@ interface ICluster extends ITimestamp {
 }
 
 export class Cluster extends Timestamp implements ICluster {
-    private _supplier?: Supplier;
+    public supplier?: Supplier;
 
     constructor(
-        private _id: string,
-        private _name: string,
-        private _supplierId: string,
+        public id: string,
+        public name: string,
+        public supplierId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this._name = _name ? _name.trim() : null;
+        this.name = name ? name.trim() : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
-
-    get name(): string {
-        return this._name;
-    }
-
-    get supplierId(): string {
-        return this._supplierId;
-    }
-
-    get supplier(): Supplier {
-        return this._supplier;
-    }
-
-    set supplier(value: Supplier) {
-        this._supplier = value
+    set setSupplier(value: Supplier) {
+        this.supplier = value
             ? new Supplier(
                   value.id,
                   value.name,

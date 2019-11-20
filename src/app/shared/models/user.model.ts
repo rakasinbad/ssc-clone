@@ -38,34 +38,44 @@ interface IUser extends ITimestamp {
 }
 
 export class User extends Timestamp implements IUser {
-    private _userStores?: UserStore[];
-    private _userSuppliers?: UserSupplier[];
-    private _urban?: Urban;
-    private _attendances?: any;
+    public userStores?: UserStore[];
+    public userSuppliers?: UserSupplier[];
+    public urban?: Urban;
+    public attendances?: any;
 
     constructor(
-        private _id: string,
-        private _fullName: string,
-        private _email: TNullable<string>,
-        private _phoneNo: TNullable<string>,
-        private _mobilePhoneNo: string,
-        private _idNo: string,
-        private _taxNo: string,
-        private _status: TUserStatus,
-        private _imageUrl: TNullable<string>,
-        private _taxImageUrl: TNullable<string>,
-        private _idImageUrl: TNullable<string>,
-        private _selfieImageUrl: TNullable<string>,
-        private _urbanId: string,
-        private _roles: Role[],
+        public id: string,
+        public fullName: string,
+        public email: TNullable<string>,
+        public phoneNo: TNullable<string>,
+        public mobilePhoneNo: string,
+        public idNo: string,
+        public taxNo: string,
+        public status: TUserStatus,
+        public imageUrl: TNullable<string>,
+        public taxImageUrl: TNullable<string>,
+        public idImageUrl: TNullable<string>,
+        public selfieImageUrl: TNullable<string>,
+        public urbanId: string,
+        public roles: Role[],
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        if (_roles && _roles.length > 0) {
-            const newRoles = _roles.map(row => {
+        this.fullName = fullName ? fullName.trim() : null;
+        this.email = email ? email.trim() : null;
+        this.phoneNo = phoneNo ? phoneNo.trim() : null;
+        this.idNo = idNo ? idNo.trim() : null;
+        this.taxNo = taxNo ? taxNo.trim() : null;
+        this.imageUrl = imageUrl ? imageUrl.trim() : null;
+        this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
+        this.idImageUrl = idImageUrl ? idImageUrl.trim() : null;
+        this.selfieImageUrl = selfieImageUrl ? selfieImageUrl.trim() : null;
+
+        if (roles && roles.length > 0) {
+            const newRoles = roles.map(row => {
                 const newRole = new Role(
                     row.id,
                     row.role,
@@ -78,103 +88,90 @@ export class User extends Timestamp implements IUser {
                 );
 
                 if (row.privileges) {
-                    newRole.privileges = row.privileges;
+                    newRole.setPrivileges = row.privileges;
                 }
 
                 return newRole;
             });
 
-            this._roles = newRoles;
+            this.roles = newRoles;
         } else {
-            this._roles = null;
+            this.roles = [];
         }
     }
 
-    get id(): string {
-        return this._id;
+    set setUserStores(value: UserStore[]) {
+        this.userStores =
+            value && value.length > 0
+                ? value.map(row => {
+                      const newUserStore = new UserStore(
+                          row.id,
+                          row.userId,
+                          row.storeId,
+                          row.status,
+                          row.createdAt,
+                          row.updatedAt,
+                          row.deletedAt
+                      );
+
+                      if (row.store) {
+                          newUserStore.setStore = row.store;
+                      }
+
+                      return newUserStore;
+                  })
+                : [];
     }
 
-    get fullName(): string {
-        return this._fullName;
+    set setUserSuppliers(value: UserSupplier[]) {
+        this.userSuppliers =
+            value && value.length > 0
+                ? value.map(row => {
+                      const newUserSupplier = new UserSupplier(
+                          row.id,
+                          row.userId,
+                          row.supplierId,
+                          row.status,
+                          row.supplier,
+                          row.createdAt,
+                          row.updatedAt,
+                          row.deletedAt
+                      );
+
+                      if (row.user) {
+                          newUserSupplier.setUser = row.user;
+                      }
+
+                      return newUserSupplier;
+                  })
+                : [];
     }
 
-    get email(): string {
-        return this._email;
+    set setUrban(value: Urban) {
+        if (value) {
+            const newUrban = new Urban(
+                value.id,
+                value.zipCode,
+                value.city,
+                value.district,
+                value.urban,
+                value.provinceId,
+                value.createdAt,
+                value.updatedAt,
+                value.deletedAt
+            );
+
+            if (value.province) {
+                newUrban.setProvince = value.province;
+            }
+
+            this.urban = newUrban;
+        } else {
+            this.urban = null;
+        }
     }
 
-    get phoneNo(): string {
-        return this._phoneNo;
-    }
-
-    get mobilePhoneNo(): string {
-        return this._mobilePhoneNo;
-    }
-
-    get idNo(): string {
-        return this._idNo;
-    }
-
-    get taxNo(): string {
-        return this._taxNo;
-    }
-
-    get status(): TUserStatus {
-        return this._status;
-    }
-
-    get imageUrl(): string {
-        return this._imageUrl;
-    }
-
-    get taxImageUrl(): string {
-        return this._taxImageUrl;
-    }
-
-    get idImageUrl(): string {
-        return this._idImageUrl;
-    }
-
-    get selfieImageUrl(): string {
-        return this._selfieImageUrl;
-    }
-
-    get urbanId(): string {
-        return this._urbanId;
-    }
-
-    get userStores(): UserStore[] {
-        return this._userStores;
-    }
-
-    set userStores(value: UserStore[]) {
-        this._userStores = value;
-    }
-
-    get userSuppliers(): UserSupplier[] {
-        return this._userSuppliers;
-    }
-
-    set userSuppliers(value: UserSupplier[]) {
-        this._userSuppliers = value;
-    }
-
-    get urban(): Urban {
-        return this._urban;
-    }
-
-    set urban(value: Urban) {
-        this._urban = value;
-    }
-
-    get roles(): Role[] {
-        return this._roles;
-    }
-
-    get attendances(): any {
-        return this._attendances;
-    }
-
-    set attendances(value: any) {
-        this._attendances = value;
+    set setAttendances(value: any) {
+        this.attendances = value;
     }
 }

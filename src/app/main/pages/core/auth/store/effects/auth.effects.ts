@@ -6,8 +6,8 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { Network } from '@ngx-pwa/offline';
 import { LogService, NoticeService } from 'app/shared/helpers';
 import * as fromRoot from 'app/store/app.reducer';
-import { asyncScheduler, of } from 'rxjs';
-import { catchError, debounceTime, exhaustMap, map, retry, tap } from 'rxjs/operators';
+import { asyncScheduler, of, throwError } from 'rxjs';
+import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap } from 'rxjs/operators';
 
 import { AuthService } from '../../auth.service';
 import { Auth } from '../../models';
@@ -36,25 +36,25 @@ export class AuthEffects {
                 //     .toPromise()
                 //     .then(user => [isOnline, user]);
             }),
-            map((user: any) => {
-                if (user && user._token) {
-                    this._$log.generateGroup('[AUTO LOGIN REQUEST]', {
-                        resp: {
+            map((session: Auth) => {
+                if (session && session.user && session.token) {
+                    this._$log.generateGroup('[REQUEST AUTO LOGIN]', {
+                        session: {
                             type: 'log',
-                            value: user
+                            value: session
                         },
                         user: {
                             type: 'log',
-                            value: user._user
+                            value: session.user
                         },
                         token: {
                             type: 'log',
-                            value: user._token
+                            value: session.token
                         }
                     });
 
                     return AuthActions.authAutoLoginSuccess({
-                        payload: new Auth(user._user, user._token)
+                        payload: new Auth(session.user, session.token)
                     });
                 }
 
@@ -151,10 +151,11 @@ export class AuthEffects {
 
                         return this._$auth.login(username, password).pipe(
                             retry(3),
-                            map(resp => {
+                            switchMap(resp => {
                                 const { user, token } = resp;
+                                const { userSuppliers } = user;
 
-                                this._$log.generateGroup('[LOGIN REQUEST] RESP', {
+                                this._$log.generateGroup('[RESPONSE REQUEST LOGIN]', {
                                     resp: {
                                         type: 'log',
                                         value: resp
@@ -169,9 +170,17 @@ export class AuthEffects {
                                     }
                                 });
 
-                                return AuthActions.authLoginSuccess({
-                                    payload: resp
-                                });
+                                if (!userSuppliers && userSuppliers.length < 1) {
+                                    return throwError({
+                                        error: { message: 'Need Set Supplier!' }
+                                    });
+                                }
+
+                                return of(
+                                    AuthActions.authLoginSuccess({
+                                        payload: resp
+                                    })
+                                );
                             }),
                             catchError(err =>
                                 of(

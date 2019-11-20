@@ -6,56 +6,43 @@ interface IAuth {
 }
 
 export class Auth implements IAuth {
-    constructor(private _user: User, private _token: string) {}
+    constructor(public user: User, public token: string) {
+        if (user) {
+            const newUser = new User(
+                user.id,
+                user.fullName,
+                user.email,
+                user.phoneNo,
+                user.mobilePhoneNo,
+                user.idNo,
+                user.taxNo,
+                user.status,
+                user.imageUrl,
+                user.taxImageUrl,
+                user.idImageUrl,
+                user.selfieImageUrl,
+                user.urbanId,
+                user.roles,
+                user.createdAt,
+                user.updatedAt,
+                user.deletedAt
+            );
 
-    get user(): User {
-        return this._user;
-    }
+            if (user.userStores) {
+                newUser.userStores = user.userStores;
+            }
 
-    set user(value: User) {
-        this._user = value;
-    }
+            if (user.userSuppliers) {
+                newUser.userSuppliers = user.userSuppliers;
+            }
 
-    get token(): string {
-        return this._token;
-    }
+            if (user.urban) {
+                newUser.urban = user.urban;
+            }
 
-    set token(value: string) {
-        this._token = value;
+            this.user = newUser;
+        } else {
+            this.user = null;
+        }
     }
 }
-
-// export class Auth {
-//     data: User;
-//     token: string;
-
-//     constructor(user: Account, token: string) {
-//         this.data = user
-//             ? {
-//                   ...new Account(
-//                       user.id,
-//                       user.fullName,
-//                       user.email,
-//                       user.phoneNo,
-//                       user.mobilePhoneNo,
-//                       user.idNo,
-//                       user.taxNo,
-//                       user.status,
-//                       user.imageUrl,
-//                       user.taxImageUrl,
-//                       user.idImageUrl,
-//                       user.selfieImageUrl,
-//                       user.urbanId,
-//                       user.userStores,
-//                       user.userBrands,
-//                       user.roles,
-//                       user.urban,
-//                       user.createdAt,
-//                       user.updatedAt,
-//                       user.deletedAt
-//                   )
-//               }
-//             : undefined;
-//         this.token = token;
-//     }
-// }

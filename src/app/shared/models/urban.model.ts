@@ -13,75 +13,43 @@ interface IUrban extends ITimestamp {
 }
 
 export class Urban extends Timestamp implements IUrban {
-    private _province?: Province;
+    public province?: Province;
 
     constructor(
-        private _id: string,
-        private _zipCode: string,
-        private _city: string,
-        private _district: string,
-        private _urban: string,
-        private _provinceId: string,
+        public id: string,
+        public zipCode: string,
+        public city: string,
+        public district: string,
+        public urban: string,
+        public provinceId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+
+        this.zipCode = zipCode ? zipCode.trim() : null;
+        this.city = city ? city.trim() : null;
+        this.urban = urban ? urban.trim() : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    set setProvince(value: Province) {
+        if (value) {
+            const newProvince = new Province(
+                value.id,
+                value.name,
+                value.createdAt,
+                value.updatedAt,
+                value.deletedAt
+            );
 
-    set id(value: string) {
-        this._id = value;
-    }
+            if (value.urbans) {
+                newProvince.setUrbans = value.urbans;
+            }
 
-    get zipCode(): string {
-        return this._zipCode;
-    }
-
-    set zipCode(value: string) {
-        this._zipCode = value ? value.trim() : value;
-    }
-
-    get city(): string {
-        return this._city;
-    }
-
-    set city(value: string) {
-        this._city = value ? value.trim() : value;
-    }
-
-    get district(): string {
-        return this._district;
-    }
-
-    set district(value: string) {
-        this._district = value ? value.trim() : value;
-    }
-
-    get urban(): string {
-        return this._urban;
-    }
-
-    set urban(value: string) {
-        this._urban = value ? value.trim() : value;
-    }
-
-    get provinceId(): string {
-        return this._provinceId;
-    }
-
-    set provinceId(value: string) {
-        this._provinceId = value;
-    }
-
-    get province(): Province {
-        return this._province;
-    }
-
-    set province(value: Province) {
-        this._province = value;
+            this.province = newProvince;
+        } else {
+            this.province = null;
+        }
     }
 }

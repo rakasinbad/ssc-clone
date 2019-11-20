@@ -98,28 +98,26 @@ export class StoreAssocUser extends Timestamp {
         this.status = status;
 
         if (store) {
-            this.store = {
-                ...new Store(
-                    store.id,
-                    store.name,
-                    store.longitude,
-                    store.latitude,
-                    store.largeArea,
-                    store.phoneNo,
-                    store.status,
-                    store.parent,
-                    store.parentId,
-                    store.storeTypeId,
-                    store.storeGroupId,
-                    store.storeSegmentId,
-                    store.urbanId,
-                    store.warehouseId,
-                    store.storeConfig,
-                    store.createdAt,
-                    store.updatedAt,
-                    store.deletedAt
-                )
-            };
+            this.store = new Store(
+                store.id,
+                store.name,
+                store.longitude,
+                store.latitude,
+                store.largeArea,
+                store.phoneNo,
+                store.status,
+                store.parent,
+                store.parentId,
+                store.storeTypeId,
+                store.storeGroupId,
+                store.storeSegmentId,
+                store.urbanId,
+                store.warehouseId,
+                store.storeConfig,
+                store.createdAt,
+                store.updatedAt,
+                store.deletedAt
+            );
         } else {
             this.store = null;
         }

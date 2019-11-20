@@ -12,28 +12,14 @@ export interface IPrivilegeResponse extends IResponsePaginate {
 
 export class Privilege extends Timestamp implements IPrivilege {
     constructor(
-        private _id: string,
-        private _privilege: string,
+        public id: string,
+        public privilege: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
-    }
 
-    get id(): string {
-        return this._id;
-    }
-
-    set id(value: string) {
-        this._id = value;
-    }
-
-    get privilege(): string {
-        return this._privilege;
-    }
-
-    set privilege(value: string) {
-        this._privilege = value;
+        this.privilege = privilege ? privilege.trim() : null;
     }
 }

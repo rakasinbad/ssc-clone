@@ -11,13 +11,13 @@ interface IStoreCluster extends ITimestamp {
 }
 
 export class StoreCluster extends Timestamp implements IStoreCluster {
-    private _cluster: Cluster;
+    public cluster: Cluster;
 
     constructor(
-        private _id: string,
-        private _storeId: string,
-        private _clusterId: string,
-        private _status: TStatus,
+        public id: string,
+        public storeId: string,
+        public clusterId: string,
+        public status: TStatus,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
@@ -25,28 +25,8 @@ export class StoreCluster extends Timestamp implements IStoreCluster {
         super(createdAt, updatedAt, deletedAt);
     }
 
-    get id(): string {
-        return this._id;
-    }
-
-    get storeId(): string {
-        return this._storeId;
-    }
-
-    get clusterId(): string {
-        return this._clusterId;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    get cluster(): Cluster {
-        return this._cluster;
-    }
-
-    set cluster(value: Cluster) {
-        this._cluster = value
+    set setCluster(value: Cluster) {
+        this.cluster = value
             ? new Cluster(
                   value.id,
                   value.name,

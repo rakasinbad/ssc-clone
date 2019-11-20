@@ -1,4 +1,4 @@
-import { Store } from 'app/main/pages/accounts/merchants/models';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
@@ -16,117 +16,118 @@ interface ICustomerHierarchy extends ITimestamp {
     hierarchyId: string;
     status: TStatus;
     hierarchy: Hierarchy;
-    store?: Store;
+    store?: Merchant;
 }
 
 export class Hierarchy extends Timestamp implements IHierarchy {
     constructor(
-        private _id: string,
-        private _name: string,
-        private _status: TStatus,
-        private _supplierId: string,
+        public id: string,
+        public name: string,
+        public status: TStatus,
+        public supplierId: string,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
-    }
 
-    get id(): string {
-        return this._id;
-    }
-
-    set id(value: string) {
-        this._id = value;
-    }
-
-    get name(): string {
-        return this._name;
-    }
-
-    set name(value: string) {
-        this._name = value ? value.trim() : value;
-    }
-
-    get status(): TStatus {
-        return this._status;
-    }
-
-    set status(value: TStatus) {
-        this._status = value;
-    }
-
-    get supplierId(): string {
-        return this._supplierId;
-    }
-
-    set supplierId(value: string) {
-        this._supplierId = value;
+        this.name = name ? name.trim() : null;
     }
 }
 
 export class CustomerHierarchy extends Timestamp implements ICustomerHierarchy {
-    private _store?: Store;
+    public store?: Merchant;
 
     constructor(
-        private _id: string,
-        private _storeId: string,
-        private _hierarchyId: string,
-        private _status: TStatus,
-        private _hierarchy: Hierarchy,
+        public id: string,
+        public storeId: string,
+        public hierarchyId: string,
+        public status: TStatus,
+        public hierarchy: Hierarchy,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+
+        this.hierarchy = hierarchy
+            ? new Hierarchy(
+                  hierarchy.id,
+                  hierarchy.name,
+                  hierarchy.status,
+                  hierarchy.supplierId,
+                  hierarchy.createdAt,
+                  hierarchy.updatedAt,
+                  hierarchy.deletedAt
+              )
+            : null;
     }
 
-    get id(): string {
-        return this._id;
-    }
+    set setStore(value: Merchant) {
+        if (value) {
+            const newStore = new Merchant(
+                value.id,
+                value.storeCode,
+                value.name,
+                value.address,
+                value.taxNo,
+                value.longitude,
+                value.latitude,
+                value.largeArea,
+                value.phoneNo,
+                value.imageUrl,
+                value.taxImageUrl,
+                value.status,
+                value.reason,
+                value.parent,
+                value.parentId,
+                value.numberOfEmployee,
+                value.externalId,
+                value.storeTypeId,
+                value.storeGroupId,
+                value.storeSegmentId,
+                value.urbanId,
+                value.vehicleAccessibilityId,
+                value.warehouseId,
+                value.userStores,
+                value.storeType,
+                value.storeGroup,
+                value.storeSegment,
+                value.urban,
+                value.storeConfig,
+                value.createdAt,
+                value.updatedAt,
+                value.deletedAt
+            );
 
-    set id(value: string) {
-        this._id = value;
-    }
+            if (value.supplierStores) {
+                newStore.setSupplierStores = value.supplierStores;
+            }
 
-    get storeId(): string {
-        return this._storeId;
-    }
+            if (value.vehicleAccessibility) {
+                newStore.setVehicleAccessibility = value.vehicleAccessibility;
+            }
 
-    set storeId(value: string) {
-        this._storeId = value;
-    }
+            if (value.customerHierarchies) {
+                newStore.setCustomerHierarchies = value.customerHierarchies;
+            }
 
-    get hierarchyId(): string {
-        return this._hierarchyId;
-    }
+            if (value.storeClusters) {
+                newStore.setStoreClusters = value.storeClusters;
+            }
 
-    set hierarchyId(value: string) {
-        this._hierarchyId = value;
-    }
+            if (value.legalInfo) {
+                newStore.setLegalInfo = value.legalInfo;
+            }
 
-    get status(): TStatus {
-        return this._status;
-    }
+            if (value.owner) {
+                newStore.setOwner = value.owner;
+            }
 
-    set status(value: TStatus) {
-        this._status = value;
-    }
-
-    get hierarchy(): Hierarchy {
-        return this._hierarchy;
-    }
-
-    set hierarchy(value: Hierarchy) {
-        this._hierarchy = value;
-    }
-
-    get store(): Store {
-        return this._store;
-    }
-
-    set store(value: Store) {
-        this._store = value;
+            this.store = newStore;
+        } else {
+            this.store = null;
+        }
     }
 }
 
