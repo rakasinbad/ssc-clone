@@ -19,7 +19,7 @@ export class CreditLimitBalanceResolver implements Resolve<any> {
     ) {}
 
     resolve(route: ActivatedRouteSnapshot): Observable<any> | Promise<any> | any {
-        return this.store.select(CreditLimitBalanceSelectors.getTotalCreditLimitBalanceEntity).pipe(
+        return this.store.select(CreditLimitBalanceSelectors.getTotalCreditLimitStoreEntity).pipe(
             tap(total => {
                 if (!total) {
                     const generator = this._$generator.generator(

@@ -102,8 +102,10 @@ export class HelperService {
             }
         }
 
+        console.log('ARGS 1', args);
+
         if (args && args.length > 0) {
-            args[0].forEach((arg, i) => {
+            args.forEach(arg => {
                 if (arg.key && arg.value) {
                     newParams = newParams.append(arg.key, arg.value);
                 }

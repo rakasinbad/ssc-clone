@@ -1,5 +1,5 @@
 import { Params, RouterStateSnapshot } from '@angular/router';
-import { RouterReducerState, RouterStateSerializer } from '@ngrx/router-store';
+import { RouterStateSerializer } from '@ngrx/router-store';
 
 export interface RouterStateUrl {
     url: string;
@@ -7,12 +7,14 @@ export interface RouterStateUrl {
     queryParams: Params;
 }
 
-export interface State {
-    router: RouterReducerState<RouterStateUrl>;
-}
+// interface State {
+//     router: RouterReducerState<RouterStateUrl>;
+// }
 
 export class CustomSerializer implements RouterStateSerializer<RouterStateUrl> {
     serialize(routerState: RouterStateSnapshot): RouterStateUrl {
+        console.log('CUSTOM SERIALIZER', routerState);
+
         let route = routerState.root;
 
         while (route.firstChild) {

@@ -1,34 +1,34 @@
-import { prop } from '@rxweb/reactive-form-validators';
+// import { prop } from '@rxweb/reactive-form-validators';
 
-import { IAccount } from './account.model';
+// import { IAccount } from './account.model';
 
-export class AccountDetailFormModel {
-    @prop()
-    fullName: string;
+// export class AccountDetailFormModel {
+//     @prop()
+//     fullName: string;
 
-    @prop()
-    email: string;
+//     @prop()
+//     email: string;
 
-    @prop()
-    mobilePhone: string;
+//     @prop()
+//     mobilePhone: string;
 
-    @prop()
-    phone: string;
+//     @prop()
+//     phone: string;
 
-    // @prop()
-    // fcm: string;
+//     // @prop()
+//     // fcm: string;
 
-    @prop()
-    status: string;
+//     @prop()
+//     status: string;
 
-    constructor(data?: IAccount) {
-        if (data) {
-            this.fullName = data.fullName;
-            this.email = data.email;
-            this.mobilePhone = data.mobilePhoneNo;
-            this.phone = data.phoneNo;
-            // this.fcm = data.fcm;
-            this.status = data.status;
-        }
-    }
-}
+//     constructor(data?: IAccount) {
+//         if (data) {
+//             this.fullName = data.fullName;
+//             this.email = data.email;
+//             this.mobilePhone = data.mobilePhoneNo;
+//             this.phone = data.phoneNo;
+//             // this.fcm = data.fcm;
+//             this.status = data.status;
+//         }
+//     }
+// }

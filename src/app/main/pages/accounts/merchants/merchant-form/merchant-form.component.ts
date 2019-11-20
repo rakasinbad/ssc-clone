@@ -12,11 +12,10 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import {
+    Cluster,
     Province,
-    StoreCluster,
     StoreGroup,
     StoreSegment,
     StoreType,
@@ -30,10 +29,10 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { FormBrand, FormCluster, FormStore, FormStoreEdit, FormUser, StoreEdit } from '../models';
-import { BrandStoreActions } from '../store/actions';
+import { Store as Merchant } from '../models';
+import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
-import { BrandStoreSelectors } from '../store/selectors';
+import { StoreSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-merchant-form',
@@ -51,13 +50,13 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
 
-    stores$: Observable<StoreEdit>;
+    stores$: Observable<Merchant>;
     provinces$: Observable<Province[]>;
     cities$: Observable<Urban[]>;
     districts$: Observable<Urban[]>;
     urbans$: Observable<Urban[]>;
     postcode$: Observable<string>;
-    storeClusters$: Observable<StoreCluster[]>;
+    storeClusters$: Observable<Cluster[]>;
     storeGroups$: Observable<StoreGroup[]>;
     storeSegments$: Observable<StoreSegment[]>;
     storeTypes$: Observable<StoreType[]>;
@@ -76,6 +75,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         private _$helper: HelperService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.setFooterActionConfig({
                 payload: {
@@ -174,8 +174,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
-            this.stores$ = this.store.select(BrandStoreSelectors.getEditBrandStore);
-            this.store.dispatch(BrandStoreActions.fetchBrandStoreEditRequest({ payload: id }));
+            this.stores$ = this.store.select(StoreSelectors.getStoreEdit);
+            this.store.dispatch(StoreActions.fetchStoreEditRequest({ payload: id }));
         }
 
         this.initForm();
@@ -200,17 +200,13 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         );
         this.store.dispatch(DropdownActions.fetchDropdownVehicleAccessibilityRequest());
 
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         this.numberOfEmployees = this._$helper.numberOfEmployee();
 
         this.store.dispatch(FormActions.resetFormStatus());
         this.form.statusChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(status => {
                 console.log('FORM STATUS 1', status);
                 console.log('FORM STATUS 2', this.form);
@@ -264,7 +260,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         console.log('DESTROY STORE FORM');
 
         this.store.dispatch(UiActions.hideFooterAction());
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(FormActions.resetFormStatus());
 
         this._unSubs$.next();
@@ -1042,7 +1038,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             });
 
             this.store
-                .select(BrandStoreSelectors.getEditBrandStore)
+                .select(StoreSelectors.getStoreEdit)
                 .pipe(takeUntil(this._unSubs$))
                 .subscribe(data => {
                     if (data) {
@@ -1157,62 +1153,56 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         const body = this.form.value;
 
         if (this.pageType === 'new') {
-            this.store
-                .select(AuthSelectors.getUserState)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe(user => {
-                    console.log('AUTH SELECTORS', user);
-
-                    if (
-                        user &&
-                        user.data &&
-                        user.data.userSuppliers &&
-                        user.data.userSuppliers.length > 0
-                    ) {
-                        const createUser = new FormUser(
-                            body.storeInfo.legalInfo.name,
-                            body.storeInfo.legalInfo.npwpId,
-                            body.storeInfo.legalInfo.identityPhoto,
-                            body.storeInfo.legalInfo.identityPhotoSelfie,
-                            body.profileInfo.phoneNumber,
-                            'active',
-                            ['1']
-                        );
-
-                        const createCluser = new FormCluster(
-                            body.storeInfo.storeClassification.storeCluster
-                        );
-
-                        const createBrand = new FormBrand(user.data.userSuppliers[0].supplierId);
-
-                        const payload = new FormStore(
-                            body.storeInfo.storeId.id,
-                            body.storeInfo.storeId.storeName,
-                            body.profileInfo.photos,
-                            body.profileInfo.npwpId,
-                            body.storeInfo.address.notes,
-                            body.profileInfo.phoneNumber,
-                            'active',
-                            body.storeInfo.storeClassification.storeType,
-                            body.storeInfo.storeClassification.storeGroup,
-                            body.storeInfo.storeClassification.storeSegment,
-                            body.storeInfo.address.urban,
-                            createUser,
-                            createCluser,
-                            createBrand,
-                            body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-                            body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                            body.storeInfo.physicalStoreInfo.vehicleAccessibility
-                        );
-
-                        console.log('SUBMIT CREATE 1', body);
-                        console.log('SUBMIT CREATE 2', payload);
-
-                        this.store.dispatch(
-                            BrandStoreActions.createStoreRequest({ payload: payload })
-                        );
-                    }
-                });
+            // this.store
+            //     .select(AuthSelectors.getUserState)
+            //     .pipe(takeUntil(this._unSubs$))
+            //     .subscribe(user => {
+            //         console.log('AUTH SELECTORS', user);
+            //         if (
+            //             user &&
+            //             user.data &&
+            //             user.data.userBrands &&
+            //             user.data.userBrands.length > 0
+            //         ) {
+            //             const createUser = new FormUser(
+            //                 body.storeInfo.legalInfo.name,
+            //                 body.storeInfo.legalInfo.npwpId,
+            //                 body.storeInfo.legalInfo.identityPhoto,
+            //                 body.storeInfo.legalInfo.identityPhotoSelfie,
+            //                 body.profileInfo.phoneNumber,
+            //                 'active',
+            //                 ['1']
+            //             );
+            //             const createCluser = new FormCluster(
+            //                 body.storeInfo.storeClassification.storeCluster
+            //             );
+            //             const createBrand = new FormBrand(user.data.userBrands[0].brandId);
+            //             const payload = new FormStore(
+            //                 body.storeInfo.storeId.id,
+            //                 body.storeInfo.storeId.storeName,
+            //                 body.profileInfo.photos,
+            //                 body.profileInfo.npwpId,
+            //                 body.storeInfo.address.notes,
+            //                 body.profileInfo.phoneNumber,
+            //                 'active',
+            //                 body.storeInfo.storeClassification.storeType,
+            //                 body.storeInfo.storeClassification.storeGroup,
+            //                 body.storeInfo.storeClassification.storeSegment,
+            //                 body.storeInfo.address.urban,
+            //                 createUser,
+            //                 createCluser,
+            //                 createBrand,
+            //                 body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+            //                 body.storeInfo.physicalStoreInfo.numberOfEmployee,
+            //                 body.storeInfo.physicalStoreInfo.vehicleAccessibility
+            //             );
+            //             console.log('SUBMIT CREATE 1', body);
+            //             console.log('SUBMIT CREATE 2', payload);
+            //             this.store.dispatch(
+            //                 BrandStoreActions.createStoreRequest({ payload: payload })
+            //             );
+            //         }
+            //     });
         }
 
         if (this.pageType === 'edit') {
@@ -1228,31 +1218,31 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }); */
             const { id } = this.route.snapshot.params;
 
-            const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
+            // const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
 
-            const payload = new FormStoreEdit(
-                body.storeInfo.storeId.id,
-                body.storeInfo.storeId.storeName,
-                body.profileInfo.photos,
-                body.profileInfo.npwpId,
-                body.storeInfo.address.notes,
-                body.profileInfo.phoneNumber,
-                body.storeInfo.storeClassification.storeType,
-                body.storeInfo.storeClassification.storeGroup,
-                body.storeInfo.storeClassification.storeSegment,
-                body.storeInfo.address.urban,
-                createCluser,
-                body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-                body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                body.storeInfo.physicalStoreInfo.vehicleAccessibility
-            );
+            // const payload = new FormStoreEdit(
+            //     body.storeInfo.storeId.id,
+            //     body.storeInfo.storeId.storeName,
+            //     body.profileInfo.photos,
+            //     body.profileInfo.npwpId,
+            //     body.storeInfo.address.notes,
+            //     body.profileInfo.phoneNumber,
+            //     body.storeInfo.storeClassification.storeType,
+            //     body.storeInfo.storeClassification.storeGroup,
+            //     body.storeInfo.storeClassification.storeSegment,
+            //     body.storeInfo.address.urban,
+            //     createCluser,
+            //     body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+            //     body.storeInfo.physicalStoreInfo.numberOfEmployee,
+            //     body.storeInfo.physicalStoreInfo.vehicleAccessibility
+            // );
 
-            console.log('SUBMIT UPDATE 1', body);
-            console.log('SUBMIT UPDATE 2', payload);
+            // console.log('SUBMIT UPDATE 1', body);
+            // console.log('SUBMIT UPDATE 2', payload);
 
-            this.store.dispatch(
-                BrandStoreActions.updateStoreRequest({ payload: { body: payload, id: id } })
-            );
+            // this.store.dispatch(
+            //     BrandStoreActions.updateStoreRequest({ payload: { body: payload, id: id } })
+            // );
         }
 
         console.log(this.form.value);

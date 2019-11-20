@@ -36,6 +36,16 @@
 
         <!-- CONTENT CARD -->
         <router-outlet *ngIf="true"></router-outlet>
+
+        <div
+            class="loader"
+            *ngIf="
+                ((isLoading$ | async) && !urlActive) ||
+                ((isLoading$ | async) && urlActive && (totalDataSource$ | async))
+            "
+        >
+            <mat-spinner color="accent"></mat-spinner>
+        </div>
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->

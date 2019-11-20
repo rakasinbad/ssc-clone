@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -15,19 +14,20 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { IQueryParams } from 'app/shared/models';
+import { LogService } from 'app/shared/helpers';
+import { IQueryParams, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { BrandStore } from './models';
 import { MerchantApiService } from './services';
-import { BrandStoreActions } from './store/actions';
+import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
-import { BrandStoreSelectors } from './store/selectors';
+import { StoreSelectors } from './store/selectors';
+import { Auth } from '../../core/auth/models';
 
 @Component({
     selector: 'app-merchants',
@@ -38,7 +38,6 @@ import { BrandStoreSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
-    // dataSource: MatTableDataSource<any>; // Need for demo
     search: FormControl;
     total: number;
     displayedColumns = [
@@ -53,7 +52,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
 
-    dataSource$: Observable<BrandStore[]>;
+    dataSource$: Observable<SupplierStore[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -64,8 +63,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    // @ViewChild('filter', { static: true })
+    // filter: ElementRef;
 
     private _unSubs$: Subject<void>;
 
@@ -73,10 +72,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$log: LogService,
         private _$merchantApi: MerchantApiService,
         public translate: TranslateService
     ) {
-        // this.dataSource = new MatTableDataSource(); // Need for demo
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.store.dispatch(
             UiActions.createBreadcrumb({
@@ -116,60 +115,44 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             disableClear: true
         });
 
-        localStorage.removeItem('filterBrandStore');
+        localStorage.removeItem('filter.store');
 
-        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllBrandStore);
         // .pipe(
         //     filter(source => source.length > 0),
         //     delay(1000),
         //     startWith(this._$merchantApi.initBrandStore())
         // );
-        this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalBrandStore);
+
+        this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
+        this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         this.initTable();
 
         this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(v => {
                 if (v) {
-                    localStorage.setItem('filterBrandStore', v);
+                    localStorage.setItem('filter.store', v);
                 }
 
                 this.onRefreshTable();
             });
 
         this.store
-            .select(BrandStoreSelectors.getIsRefresh)
-            .pipe(
-                distinctUntilChanged(),
-                takeUntil(this._unSubs$)
-            )
+            .select(StoreSelectors.getIsRefresh)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(isRefresh => {
                 if (isRefresh) {
                     this.onRefreshTable();
                 }
             });
-
-        // Need for demo
-        // this.store
-        //     .select(BrandStoreSelectors.getAllBrandStore)
-        //     .pipe(takeUntil(this._unSubs$))
-        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
-        // Need for demo
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
@@ -186,8 +169,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
-        this.store.dispatch(BrandStoreActions.resetBrandStores());
+        this.store.dispatch(UiActions.resetBreadcrumb());
+        this.store.dispatch(StoreActions.resetStore());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -197,42 +180,38 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    get searchBrandStore(): string {
-        return localStorage.getItem('filterBrandStore') || '';
+    get searchStore(): string {
+        return localStorage.getItem('filter.store') || '';
     }
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
     }
 
-    onChangeStatus(item: BrandStore): void {
+    onChangeStatus(item: SupplierStore): void {
         if (!item || !item.id) {
             return;
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(BrandStoreActions.confirmChangeStatusStore({ payload: item }));
-
-        return;
+        this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
     }
 
-    onDelete(item: BrandStore): void {
+    onDelete(item: SupplierStore): void {
         if (!item || !item.id) {
             return;
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(BrandStoreActions.confirmDeleteStore({ payload: item }));
-
-        return;
+        this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
     }
 
-    onRemoveSearchBrandStore(): void {
-        localStorage.removeItem('filterBrandStore');
+    onRemoveSearchStore(): void {
+        localStorage.removeItem('filter.store');
         this.search.reset();
     }
 
-    onTrackBy(index: number, item: BrandStore): string {
+    onTrackBy(index: number, item: SupplierStore): string {
         return !item ? null : item.id;
     }
 
@@ -241,7 +220,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(BrandStoreActions.goPage({ payload: 'info' }));
+        this.store.dispatch(StoreActions.goPage({ payload: 'info' }));
         this.router.navigate(['/pages/account/stores', storeId, 'detail']);
     }
 
@@ -278,10 +257,15 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             ];
         }
 
-        console.log('SEARCH', this.search.value);
+        this._$log.generateGroup('[INIT TABLE MERCHANTS]', {
+            payload: {
+                type: 'log',
+                value: data
+            }
+        });
 
         this.store.dispatch(
-            BrandStoreActions.fetchBrandStoresRequest({
+            StoreActions.fetchStoresRequest({
                 payload: data
             })
         );

@@ -1,24 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, SupplierStore, SupplierStoreOptions } from 'app/shared/models';
 import { Observable } from 'rxjs';
-
-import {
-    BrandStore,
-    FormStore,
-    FormStoreEdit,
-    IBrandStore,
-    IBrandStoreDeleteResponse,
-    IBrandStoreResponse,
-    IStoreCreateResponse,
-    IStoreEdit,
-    IStoreEditResponse,
-    IStoreEmployeeDetail,
-    IStoreEmployeeResponse,
-    StoreEmployee,
-    StoreEmployeeDetail
-} from '../models';
+import { Store as Merchant } from '../models';
 
 /**
  *
@@ -45,7 +30,7 @@ export class MerchantApiService {
      * @private
      * @memberof MerchantApiService
      */
-    private readonly _endpoint = '/brand-stores';
+    private readonly _endpoint = '/supplier-stores';
 
     /**
      *
@@ -83,208 +68,272 @@ export class MerchantApiService {
         private _$helper: HelperService
     ) {}
 
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @param {string} [brandId]
-     * @returns {Observable<IBrandStoreResponse>}
-     * @memberof MerchantApiService
-     */
-    findAll(params: IQueryParams, brandId?: string): Observable<IBrandStoreResponse> {
-        const newArg = brandId
+    findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        const newArg = supplierId
             ? [
                   {
-                      key: 'brandId',
-                      value: brandId
+                      key: 'supplierId',
+                      value: supplierId
                   }
               ]
-            : null;
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+            : [];
 
-        return this.http.get<IBrandStoreResponse>(this._url, { params: newParams });
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
+
+        return this.http.get<T>(this._url, { params: newParams });
+
+        // .pipe(
+        //     map(resp => {
+        //         if (params.paginate) {
+        //             const newRespPaginate = resp as PaginateResponse<SupplierStore>;
+        //             const newRespData =
+        //                 newRespPaginate.data && newRespPaginate.data.length > 0
+        //                     ? [
+        //                           ...newRespPaginate.data.map(row => {
+        //                               const newStore = row.store
+        //                                   ? new Merchant(
+        //                                         row.store.id,
+        //                                         row.store.storeCode,
+        //                                         row.store.name,
+        //                                         row.store.address,
+        //                                         row.store.taxNo,
+        //                                         row.store.longitude,
+        //                                         row.store.latitude,
+        //                                         row.store.largeArea,
+        //                                         row.store.phoneNo,
+        //                                         row.store.imageUrl,
+        //                                         row.store.taxImageUrl,
+        //                                         row.store.status,
+        //                                         row.store.reason,
+        //                                         row.store.parent,
+        //                                         row.store.parentId,
+        //                                         row.store.numberOfEmployee,
+        //                                         row.store.externalId,
+        //                                         row.store.storeTypeId,
+        //                                         row.store.storeGroupId,
+        //                                         row.store.storeSegmentId,
+        //                                         row.store.urbanId,
+        //                                         row.store.vehicleAccessibilityId,
+        //                                         row.store.warehouseId,
+        //                                         row.store.userStores,
+        //                                         row.store.storeType,
+        //                                         row.store.storeGroup,
+        //                                         row.store.storeSegment,
+        //                                         row.store.urban,
+        //                                         row.store.storeConfig,
+        //                                         row.store.createdAt,
+        //                                         row.store.updatedAt,
+        //                                         row.store.deletedAt
+        //                                     )
+        //                                   : null;
+
+        //                               return new SupplierStore(
+        //                                   row.id,
+        //                                   row.supplierId,
+        //                                   row.storeId,
+        //                                   row.status,
+        //                                   newStore,
+        //                                   row.createdAt,
+        //                                   row.updatedAt,
+        //                                   row.deletedAt
+        //                               );
+        //                           })
+        //                       ]
+        //                     : newRespPaginate.data;
+
+        //             return new PaginateResponse<SupplierStore>(
+        //                 newRespPaginate.total,
+        //                 newRespPaginate.limit,
+        //                 newRespPaginate.skip,
+        //                 newRespData
+        //             );
+        //         }
+
+        //         const newResp = resp as SupplierStore;
+        //         const newRespStore = newResp.store
+        //             ? new Merchant(
+        //                   newResp.store.id,
+        //                   newResp.store.storeCode,
+        //                   newResp.store.name,
+        //                   newResp.store.address,
+        //                   newResp.store.taxNo,
+        //                   newResp.store.longitude,
+        //                   newResp.store.latitude,
+        //                   newResp.store.largeArea,
+        //                   newResp.store.phoneNo,
+        //                   newResp.store.imageUrl,
+        //                   newResp.store.taxImageUrl,
+        //                   newResp.store.status,
+        //                   newResp.store.reason,
+        //                   newResp.store.parent,
+        //                   newResp.store.parentId,
+        //                   newResp.store.numberOfEmployee,
+        //                   newResp.store.externalId,
+        //                   newResp.store.storeTypeId,
+        //                   newResp.store.storeGroupId,
+        //                   newResp.store.storeSegmentId,
+        //                   newResp.store.urbanId,
+        //                   newResp.store.vehicleAccessibilityId,
+        //                   newResp.store.warehouseId,
+        //                   newResp.store.userStores,
+        //                   newResp.store.storeType,
+        //                   newResp.store.storeGroup,
+        //                   newResp.store.storeSegment,
+        //                   newResp.store.urban,
+        //                   newResp.store.storeConfig,
+        //                   newResp.store.createdAt,
+        //                   newResp.store.updatedAt,
+        //                   newResp.store.deletedAt
+        //               )
+        //             : null;
+
+        //         return new SupplierStore(
+        //             newResp.id,
+        //             newResp.supplierId,
+        //             newResp.storeId,
+        //             newResp.status,
+        //             newRespStore,
+        //             newResp.createdAt,
+        //             newResp.updatedAt,
+        //             newResp.deletedAt
+        //         );
+        //     })
+        // );
     }
 
-    /**
-     *
-     *
-     * @param {string} id
-     * @returns {Observable<IBrandStore>}
-     * @memberof MerchantApiService
-     */
-    findById(id: string): Observable<IBrandStore> {
+    findById(id: string): Observable<SupplierStore> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.get<IBrandStore>(`${this._url}/${id}`);
+        return this.http.get<SupplierStore>(`${this._url}/${id}`);
     }
 
-    /**
-     *
-     *
-     * @param {string} id
-     * @returns {Observable<IStoreEdit>}
-     * @memberof MerchantApiService
-     */
-    findStoreById(id: string): Observable<IStoreEdit> {
+    patch<T>(body: SupplierStoreOptions, id: string): Observable<T> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<T>(`${this._url}/${id}`, body);
+    }
+
+    delete<T>(id: string): Observable<T> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.delete<T>(`${this._url}/${id}`);
+    }
+
+    getStore(id: string): Observable<Merchant> {
         this._url = this._$helper.handleApiRouter(this._endpointStore);
-        return this.http.get<IStoreEdit>(`${this._url}/${id}`);
+        return this.http.get<Merchant>(`${this._url}/${id}`);
     }
 
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @param {string} [storeId]
-     * @returns {Observable<IStoreEmployeeResponse>}
-     * @memberof MerchantApiService
-     */
-    findAllEmployeeByStoreId(
-        params: IQueryParams,
-        storeId?: string
-    ): Observable<IStoreEmployeeResponse> {
-        const newArg = storeId
-            ? [
-                  {
-                      key: 'storeId',
-                      value: storeId
-                  }
-              ]
-            : null;
-        this._url = this._$helper.handleApiRouter(this._endpointEmployee);
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+    // findStoreById(id: string): Observable<IStoreEdit> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointStore);
+    //     return this.http.get<IStoreEdit>(`${this._url}/${id}`);
+    // }
 
-        return this.http.get<IStoreEmployeeResponse>(this._url, { params: newParams });
-    }
+    // findAllEmployeeByStoreId(
+    //     params: IQueryParams,
+    //     storeId?: string
+    // ): Observable<IStoreEmployeeResponse> {
+    //     const newArg = storeId
+    //         ? [
+    //               {
+    //                   key: 'storeId',
+    //                   value: storeId
+    //               }
+    //           ]
+    //         : null;
+    //     this._url = this._$helper.handleApiRouter(this._endpointEmployee);
+    //     const newParams = this._$helper.handleParams(this._url, params, newArg);
 
-    /**
-     *
-     *
-     * @param {string} id
-     * @returns {Observable<IStoreEmployeeDetail>}
-     * @memberof MerchantApiService
-     */
-    findStoreEmployeeById(id: string): Observable<IStoreEmployeeDetail> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
-        return this.http.get<IStoreEmployeeDetail>(`${this._url}/${id}`);
-    }
+    //     return this.http.get<IStoreEmployeeResponse>(this._url, { params: newParams });
+    // }
 
-    /**
-     *
-     *
-     * @param {FormStore} body
-     * @returns {Observable<IStoreCreateResponse>}
-     * @memberof MerchantApiService
-     */
-    createStore(body: FormStore): Observable<IStoreCreateResponse> {
-        this._url = this._$helper.handleApiRouter(this._endpointStore);
-        return this.http.post<IStoreCreateResponse>(this._url, body);
-    }
+    // findStoreEmployeeById(id: string): Observable<IStoreEmployeeDetail> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+    //     return this.http.get<IStoreEmployeeDetail>(`${this._url}/${id}`);
+    // }
 
-    /**
-     *
-     *
-     * @param {FormStoreEdit} body
-     * @param {string} id
-     * @returns {Observable<IStoreEditResponse>}
-     * @memberof MerchantApiService
-     */
-    updatePatchStore(body: FormStoreEdit, id: string): Observable<IStoreEditResponse> {
-        this._url = this._$helper.handleApiRouter(this._endpointStore);
-        return this.http.patch<IStoreEditResponse>(`${this._url}/${id}`, body);
-    }
+    // createStore(body: FormStore): Observable<IStoreCreateResponse> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointStore);
+    //     return this.http.post<IStoreCreateResponse>(this._url, body);
+    // }
 
-    updatePatchStatusStore(body: { status: string }, id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.patch<any>(`${this._url}/${id}`, body);
-    }
+    // updatePatchStore(body: FormStoreEdit, id: string): Observable<IStoreEditResponse> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointStore);
+    //     return this.http.patch<IStoreEditResponse>(`${this._url}/${id}`, body);
+    // }
 
-    deleteStore(id: string): Observable<IBrandStoreDeleteResponse> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        return this.http.delete<IBrandStoreDeleteResponse>(`${this._url}/${id}`);
-    }
+    // updatePatchStatusStore(body: { status: string }, id: string): Observable<any> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     return this.http.patch<any>(`${this._url}/${id}`, body);
+    // }
 
-    updatePatchEmployee(body: StoreEmployeeDetail, id: string): Observable<IStoreEmployeeDetail> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
-        return this.http.patch<IStoreEmployeeDetail>(`${this._url}/${id}`, body);
-    }
+    // deleteStore(id: string): Observable<IBrandStoreDeleteResponse> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     return this.http.delete<IBrandStoreDeleteResponse>(`${this._url}/${id}`);
+    // }
 
-    updatePatchStatusEmployee(body: { status: string }, id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployee);
-        return this.http.patch<any>(`${this._url}/${id}`, body);
-    }
+    // updatePatchEmployee(body: StoreEmployeeDetail, id: string): Observable<IStoreEmployeeDetail> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointEmployeeDetail);
+    //     return this.http.patch<IStoreEmployeeDetail>(`${this._url}/${id}`, body);
+    // }
 
-    deleteEmployee(id: string): Observable<any> {
-        this._url = this._$helper.handleApiRouter(this._endpointEmployee);
-        return this.http.delete<any>(`${this._url}/${id}`);
-    }
+    // updatePatchStatusEmployee(body: { status: string }, id: string): Observable<any> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointEmployee);
+    //     return this.http.patch<any>(`${this._url}/${id}`, body);
+    // }
 
-    /**
-     *
-     *
-     * @returns {BrandStore[]}
-     * @memberof MerchantApiService
-     */
-    initBrandStore(): BrandStore[] {
-        return this._$generator.initGenerator(
-            {
-                brandId: null,
-                createdAt: null,
-                deletedAt: null,
-                id: null,
-                status: null,
-                store: null,
-                storeId: null,
-                updatedAt: null
-            },
-            2,
-            5
-        );
-    }
+    // deleteEmployee(id: string): Observable<any> {
+    //     this._url = this._$helper.handleApiRouter(this._endpointEmployee);
+    //     return this.http.delete<any>(`${this._url}/${id}`);
+    // }
 
-    /**
-     *
-     *
-     * @returns {StoreEmployee[]}
-     * @memberof MerchantApiService
-     */
-    initStoreEmployee(): StoreEmployee[] {
-        return this._$generator.initGenerator(
-            {
-                id: null,
-                userId: null,
-                storeId: null,
-                status: null,
-                user: null
-            },
-            2,
-            5
-        );
-    }
+    // initBrandStore(): BrandStore[] {
+    //     return this._$generator.initGenerator(
+    //         {
+    //             brandId: null,
+    //             createdAt: null,
+    //             deletedAt: null,
+    //             id: null,
+    //             status: null,
+    //             store: null,
+    //             storeId: null,
+    //             updatedAt: null
+    //         },
+    //         2,
+    //         5
+    //     );
+    // }
 
-    /**
-     *
-     *
-     * @returns {StoreEmployeeDetail}
-     * @memberof MerchantApiService
-     */
-    initStoreEmployeeDetail(): StoreEmployeeDetail {
-        return {
-            id: '-',
-            fullName: '-',
-            email: '-',
-            phoneNo: '-',
-            mobilePhoneNo: '-',
-            idNo: '-',
-            taxNo: '-',
-            status: null,
-            imageUrl: '-',
-            taxImageUrl: '-',
-            idImageUrl: '-',
-            selfieImageUrl: '-',
-            roles: null,
-            createdAt: '-',
-            updatedAt: '-',
-            deletedAt: '-'
-        };
-    }
+    // initStoreEmployee(): StoreEmployee[] {
+    //     return this._$generator.initGenerator(
+    //         {
+    //             id: null,
+    //             userId: null,
+    //             storeId: null,
+    //             status: null,
+    //             user: null
+    //         },
+    //         2,
+    //         5
+    //     );
+    // }
+
+    // initStoreEmployeeDetail(): StoreEmployeeDetail {
+    //     return {
+    //         id: '-',
+    //         fullName: '-',
+    //         email: '-',
+    //         phoneNo: '-',
+    //         mobilePhoneNo: '-',
+    //         idNo: '-',
+    //         taxNo: '-',
+    //         status: null,
+    //         imageUrl: '-',
+    //         taxImageUrl: '-',
+    //         idImageUrl: '-',
+    //         selfieImageUrl: '-',
+    //         roles: null,
+    //         createdAt: '-',
+    //         updatedAt: '-',
+    //         deletedAt: '-'
+    //     };
+    // }
 }

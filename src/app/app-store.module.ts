@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
-import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'environments/environment';
@@ -24,11 +24,21 @@ import { CustomSerializer } from './store/custom-serializer';
         }),
         EffectsModule.forRoot([AuthEffects, NetworkEffects, DropdownEffects]),
         environment.production
-            ? []
+            ? StoreDevtoolsModule.instrument({
+                  name: 'Sinbad Seller Center',
+                  logOnly: environment.production,
+                  maxAge: 25
+              })
             : StoreDevtoolsModule.instrument({
                   name: 'NgRx Sinbad Seller Center',
                   logOnly: environment.production
               }),
+        // environment.production
+        //     ? []
+        //     : StoreDevtoolsModule.instrument({
+        //           name: 'NgRx Sinbad Seller Center',
+        //           logOnly: environment.production
+        //       }),
         StoreRouterConnectingModule.forRoot({
             stateKey: 'router',
             serializer: CustomSerializer

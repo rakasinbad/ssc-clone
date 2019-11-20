@@ -6,7 +6,7 @@ import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
 import { CreditLimitGroupFormComponent } from '../credit-limit-group-form/credit-limit-group-form.component';
-import { CreditLimitGroup } from '../models';
+import { CreditLimitArea, CreditLimitGroup } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
@@ -47,18 +47,31 @@ export class CreditLimitGroupComponent implements OnInit {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    onSetup(): void {
+    joinCreditLimitAreas(creditLimitAreas: CreditLimitArea[]): string {
+        if (creditLimitAreas.length > 0) {
+            return creditLimitAreas.map(i => i.unitType).join(',<br>');
+        }
+
+        return '-';
+    }
+
+    onSetup(id?: string): void {
         this.matDialog.open(CreditLimitGroupFormComponent, {
             data: {
-                title: 'Set Credit Limit'
+                title: 'Set Credit Limit',
+                id: !id || id === 'new' ? 'new' : id
             },
             disableClose: true
         });
     }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
     private initList(): void {
         const data: IQueryParams = {};
-        data['paginate'] = true;
+        data['paginate'] = false;
 
         this.store.dispatch(
             CreditLimitBalanceActions.fetchCreditLimitGroupsRequest({ payload: data })

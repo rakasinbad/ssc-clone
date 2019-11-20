@@ -83,6 +83,22 @@ export interface IResponsePaginate {
     skip: number;
 }
 
+export interface IPaginateResponse<T> {
+    total: number;
+    limit: number;
+    skip: number;
+    data: T[];
+}
+
+export class PaginateResponse<T> implements IPaginateResponse<T> {
+    constructor(
+        public total: number,
+        public limit: number,
+        public skip: number,
+        public data: T[]
+    ) {}
+}
+
 export interface IErrorHandler {
     id: string;
     errors: any;

@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -14,20 +13,20 @@ import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { Role } from 'app/main/pages/roles/role.model';
-import { IQueryParams } from 'app/shared/models';
+import { LogService } from 'app/shared/helpers';
+import { IQueryParams, Role } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
-import { StoreEmployee } from '../../models';
+import { UserStore } from '../../models';
 import { MerchantApiService } from '../../services';
-import { BrandStoreActions } from '../../store/actions';
+import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
-import { BrandStoreSelectors } from '../../store/selectors';
+import { StoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-merchant-employee-detail',
@@ -42,10 +41,9 @@ import { BrandStoreSelectors } from '../../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-    // dataSource: MatTableDataSource<any>; // Need for demo
     displayedColumns = ['id', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
-    dataSource$: Observable<StoreEmployee[]>;
+    dataSource$: Observable<UserStore[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -56,8 +54,8 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    // @ViewChild('filter', { static: true })
+    // filter: ElementRef;
 
     private _unSubs$: Subject<void>;
 
@@ -65,9 +63,9 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         private route: ActivatedRoute,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$log: LogService,
         private _$merchantApi: MerchantApiService
     ) {
-        // this.dataSource = new MatTableDataSource(); // Need for demo
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
@@ -87,49 +85,36 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             disableClear: true
         });
 
-        this.dataSource$ = this.store.select(BrandStoreSelectors.getAllStoreEmployee);
         /* .pipe(
             filter(source => source.length > 0),
             delay(1000),
             startWith(this._$merchantApi.initStoreEmployee())
         ); */
-        this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
+
+        this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
+        this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         this.initTable();
 
         this.store
-            .select(BrandStoreSelectors.getIsRefresh)
-            .pipe(
-                distinctUntilChanged(),
-                takeUntil(this._unSubs$)
-            )
+            .select(StoreSelectors.getIsRefresh)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(isRefresh => {
-                console.log('TRY Refresh', isRefresh);
                 if (isRefresh) {
                     this.onRefreshTable();
                 }
             });
-
-        // Need for demo
-        // this.store
-        //     .select(BrandStoreSelectors.getAllStoreEmployee)
-        //     .pipe(takeUntil(this._unSubs$))
-        //     .subscribe(source => {
-        //         this.dataSource = new MatTableDataSource(source);
-        //     });
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        // Need for demo
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
-
-        this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
@@ -142,7 +127,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(BrandStoreActions.resetStoreEmployees());
+        this.store.dispatch(StoreActions.resetStoreEmployees());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -164,7 +149,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         console.log('Change page', ev);
     }
 
-    onChangeStatus(item: StoreEmployee): void {
+    onChangeStatus(item: UserStore): void {
         console.log('CHANGE', item);
 
         if (!item || !item.id) {
@@ -172,23 +157,19 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(BrandStoreActions.confirmChangeStatusStoreEmployee({ payload: item }));
-
-        return;
+        this.store.dispatch(StoreActions.confirmChangeStatusStoreEmployee({ payload: item }));
     }
 
-    onDelete(item: StoreEmployee): void {
+    onDelete(item: UserStore): void {
         if (!item || !item.id) {
             return;
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(BrandStoreActions.confirmDeleteStoreEmployee({ payload: item }));
-
-        return;
+        this.store.dispatch(StoreActions.confirmDeleteStoreEmployee({ payload: item }));
     }
 
-    onTrackBy(index: number, item: StoreEmployee): string {
+    onTrackBy(index: number, item: UserStore): string {
         return !item ? null : item.id;
     }
 
@@ -221,11 +202,8 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         const { id } = this.route.parent.snapshot.params;
 
         this.store.dispatch(
-            BrandStoreActions.fetchStoreEmployeesRequest({
-                payload: {
-                    params: data,
-                    storeId: id
-                }
+            StoreActions.fetchStoreEmployeesRequest({
+                payload: { params: data, storeId: id }
             })
         );
     }

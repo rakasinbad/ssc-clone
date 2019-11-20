@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -13,13 +13,12 @@ import { FuseConfig } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil, filter } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { BrandStoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
-import { BrandStoreSelectors } from '../store/selectors';
+import { StoreSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-merchant-detail',
@@ -59,6 +58,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.fuseConfig$ = this._fuseConfigService.config;
         this.store.dispatch(
             UiActions.createBreadcrumb({
@@ -80,8 +80,6 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                 ]
             })
         );
-
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -100,19 +98,16 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(ev => {
-                console.log('EVVV 1', ev);
                 this.urlActive = this.router.url.endsWith('(store-detail:employee)');
             });
 
         this.store
-            .select(BrandStoreSelectors.getGoPage)
+            .select(StoreSelectors.getGoPage)
             .pipe(
                 filter(page => !!page),
                 takeUntil(this._unSubs$)
             )
             .subscribe(page => {
-                console.log('GO PAGE', page);
-
                 if (page) {
                     this.router.navigate([{ outlets: { 'store-detail': page } }], {
                         relativeTo: this.route,
@@ -121,15 +116,15 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                 }
             });
 
-        this.totalDataSource$ = this.store.select(BrandStoreSelectors.getTotalStoreEmployee);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
+        // this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.resetBreadcrumb());
         // this.store.dispatch(BrandStoreActions.resetGoPage());
 
         this._unSubs$.next();

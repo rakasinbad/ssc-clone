@@ -12,7 +12,7 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
     isLoading: boolean;
-    user: Auth;
+    user?: Auth;
     errors: ErrorState;
 }
 
@@ -25,7 +25,6 @@ const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
     isLoading: false,
-    user: null,
     errors: initialErrorState
 };
 

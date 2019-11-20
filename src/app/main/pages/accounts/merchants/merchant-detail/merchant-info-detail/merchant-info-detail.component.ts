@@ -9,13 +9,13 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
+import { SupplierStore } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { BrandStore } from '../../models';
-import { BrandStoreActions } from '../../store/actions';
+import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
-import { BrandStoreSelectors } from '../../store/selectors';
-import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
+import { StoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-merchant-info-detail',
@@ -26,7 +26,7 @@ import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.comp
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
-    brandStore$: Observable<BrandStore>;
+    store$: Observable<SupplierStore>;
     isLoading$: Observable<boolean>;
 
     constructor(
@@ -45,16 +45,16 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.parent.snapshot.params;
 
-        this.brandStore$ = this.store.select(BrandStoreSelectors.getSelectedBrandStoreInfo);
-        this.isLoading$ = this.store.select(BrandStoreSelectors.getIsLoading);
-        this.store.dispatch(BrandStoreActions.fetchBrandStoreRequest({ payload: id }));
+        this.store$ = this.store.select(StoreSelectors.getSelectedStore);
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+        this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(BrandStoreActions.resetBrandStore());
+        this.store.dispatch(StoreActions.resetStore());
     }
 
     // -----------------------------------------------------------------------------------------------------

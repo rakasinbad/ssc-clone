@@ -179,6 +179,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         ReactiveFormConfig.set({
+            allowDecimalSymbol: '.',
             validationMessage: {
                 required: 'This field is required'
             }
@@ -186,10 +187,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.store
             .select(AuthSelectors.getUserState)
-            .pipe(
-                distinctUntilChanged(),
-                takeUntil(this._unsubscribeAll)
-            )
+            .pipe(distinctUntilChanged(), takeUntil(this._unsubscribeAll))
             .subscribe(user => {
                 if (user) {
                     // Sets a timeout period of 30 seconds

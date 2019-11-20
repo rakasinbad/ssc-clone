@@ -29,21 +29,25 @@ export class Urban extends Timestamp {
         this.district = district;
         this.urban = urban;
         this.provinceId = provinceId;
-        this.province = province
-            ? {
-                  ...new Province(
-                      province.id,
-                      province.name,
-                      province.urbans ? province.urbans : null,
-                      province.createdAt,
-                      province.updatedAt,
-                      province.deletedAt
-                  )
-              }
-            : null;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+
+        if (province) {
+            const newProvince = new Province(
+                province.id,
+                province.name,
+                province.createdAt,
+                province.updatedAt,
+                province.deletedAt
+            );
+
+            newProvince.urbans = province.urbans ? province.urbans : null;
+
+            this.province = newProvince;
+        } else {
+            this.province = null;
+        }
     }
 }
 

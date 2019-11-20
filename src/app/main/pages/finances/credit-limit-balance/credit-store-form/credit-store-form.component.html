@@ -1,7 +1,17 @@
-<h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
-    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+    <form
+        id="credit-limit-form"
+        class="w-100-p"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit(pageType)"
+        fxLayout="column"
+        fxFlex
+        novalidate
+    >
         <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
             <label
                 fxFlexAlign="center"
@@ -21,20 +31,19 @@
                     matInput
                     name="limit"
                     formControlName="limit"
-                    mask="separator"
+                    mask="separator.2"
                     thousandSeparator="."
-                    prefix="Rp "
+                    prefix="Rp"
                 />
 
-                <!-- <mat-error
-                                    *ngIf="
-                                        form.get('limit').errors &&
-                                        (form.get('limit').dirty ||
-                                            form.get('limit').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('limit') }}
-                                </mat-error> -->
+                <mat-error
+                    *ngIf="
+                        form.get('limit').errors &&
+                        (form.get('limit').dirty || form.get('limit').touched)
+                    "
+                >
+                    {{ getErrorMessage('limit') }}
+                </mat-error>
             </mat-form-field>
         </div>
 
@@ -52,25 +61,24 @@
             </label>
 
             <mat-form-field appearance="outline" fxFlex="80">
-                <!-- <span matPrefix>Rp &nbsp;</span> -->
+                <!-- <span matPrefix>Rp &nbsp;  thousandSeparator="."</span> -->
                 <input
                     matInput
                     name="balance"
                     formControlName="balance"
-                    mask="separator"
+                    mask="separator.2"
                     thousandSeparator="."
-                    prefix="Rp "
+                    prefix="Rp"
                 />
 
-                <!-- <mat-error
-                                    *ngIf="
-                                        form.get('balance').errors &&
-                                        (form.get('balance').dirty ||
-                                            form.get('balance').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('balance') }}
-                                </mat-error> -->
+                <mat-error
+                    *ngIf="
+                        form.get('balance').errors &&
+                        (form.get('balance').dirty || form.get('balance').touched)
+                    "
+                >
+                    {{ getErrorMessage('balance') }}
+                </mat-error>
             </mat-form-field>
         </div>
 
@@ -91,15 +99,13 @@
                 <!-- <span matPrefix>Rp &nbsp;</span> -->
                 <input matInput name="top" formControlName="top" suffix=" days" mask="0*" />
 
-                <!-- <mat-error
-                                    *ngIf="
-                                        form.get('top').errors &&
-                                        (form.get('top').dirty ||
-                                            form.get('top').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('top') }}
-                                </mat-error> -->
+                <mat-error
+                    *ngIf="
+                        form.get('top').errors && (form.get('top').dirty || form.get('top').touched)
+                    "
+                >
+                    {{ getErrorMessage('top') }}
+                </mat-error>
             </mat-form-field>
         </div>
     </form>
@@ -154,7 +160,16 @@
 
 <mat-dialog-actions align="end">
     <span fxLayout="row" fxLayoutGap="10px">
-        <button mat-flat-button color="accent" cdkFocusInitial>Simpan</button>
+        <button
+            mat-flat-button
+            type="submit"
+            color="accent"
+            [attr.cdkFocusInitial]="form.valid"
+            [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
+            form="credit-limit-form"
+        >
+            Simpan
+        </button>
         <button mat-stroked-button mat-dialog-close>Batal</button>
     </span>
 </mat-dialog-actions>

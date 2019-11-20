@@ -11,8 +11,8 @@ export class StoreConfig extends Timestamp {
         startingWorkHour: string,
         finishedWorkHour: string,
         status: TStatus,
-        createdAt: TNullable<string>,
-        updatedAt: TNullable<string>,
+        createdAt: string,
+        updatedAt: string,
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);

@@ -54,10 +54,10 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <mat-chip *ngIf="searchBrandStore || search.value">
-                            {{ searchBrandStore || search.value }}
+                        <mat-chip *ngIf="searchStore || search.value">
+                            {{ searchStore || search.value }}
 
-                            <mat-icon matChipRemove (click)="onRemoveSearchBrandStore()">
+                            <mat-icon matChipRemove (click)="onRemoveSearchStore()">
                                 cancel
                             </mat-icon>
                         </mat-chip>
@@ -87,7 +87,7 @@
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                        <span class="text-left">ID</span>
+                        ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -105,7 +105,7 @@
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Store Name</span>
+                        Store Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -123,7 +123,7 @@
                 <!-- City Column -->
                 <ng-container matColumnDef="city">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">City</span>
+                        City
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -141,7 +141,7 @@
                 <!-- Address Column -->
                 <ng-container matColumnDef="address">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Address</span>
+                        Address
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -159,7 +159,7 @@
                 <!-- Owner Phone Number Column -->
                 <ng-container matColumnDef="owner-phone-no">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Owner Phone Number</span>
+                        Owner Phone Number
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -177,7 +177,7 @@
                 <!-- Store Segment Column -->
                 <ng-container matColumnDef="store-segment">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Store Segment</span>
+                        Store Segment
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -195,7 +195,7 @@
                 <!-- Store Type Column -->
                 <ng-container matColumnDef="store-type">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Store Type</span>
+                        Store Type
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -213,7 +213,7 @@
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Status</span>
+                        Status
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -230,7 +230,7 @@
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Action</span>
+                        Action
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -294,7 +294,8 @@
                                     <span>{{
                                         (row?.status === 'active'
                                             ? 'ACTION.INACTIVE'
-                                            : 'ACTION.ACTIVE') | translate
+                                            : 'ACTION.ACTIVE'
+                                        ) | translate
                                     }}</span>
                                 </button>
                             </mat-menu>

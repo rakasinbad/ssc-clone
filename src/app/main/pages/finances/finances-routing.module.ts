@@ -13,11 +13,11 @@ const routes: Routes = [
             ),
         canLoad: [AuthGuard]
     },
-    {
-        path: 'banks',
-        loadChildren: () => import('./banks/banks.module').then(m => m.BanksModule),
-        canLoad: [AuthGuard]
-    },
+    // {
+    //     path: 'banks',
+    //     loadChildren: () => import('./banks/banks.module').then(m => m.BanksModule),
+    //     canLoad: [AuthGuard]
+    // },
     {
         path: 'payment-status',
         loadChildren: () =>

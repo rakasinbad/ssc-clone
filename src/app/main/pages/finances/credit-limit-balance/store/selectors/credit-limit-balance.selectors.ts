@@ -6,9 +6,9 @@ export const getCreditLimitBalanceState = createFeatureSelector<fromCreditLimitB
     fromCreditLimitBalance.FEATURE_KEY
 );
 
-export const getAllCreditLimitBalance = createSelector(
+export const getAllCreditLimitStore = createSelector(
     getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectAllCreditLimitBalance
+    fromCreditLimitBalance.selectAllCreditLimitStore
 );
 
 export const getAllCreditLimitGroup = createSelector(
@@ -16,9 +16,9 @@ export const getAllCreditLimitGroup = createSelector(
     fromCreditLimitBalance.selectAllCreditLimitGroup
 );
 
-export const getCreditLimitBalanceEntities = createSelector(
+export const getCreditLimitStoreEntities = createSelector(
     getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectCreditLimitBalanceEntities
+    fromCreditLimitBalance.selectCreditLimitStoreEntities
 );
 
 export const getCreditLimitGroupEntities = createSelector(
@@ -26,9 +26,9 @@ export const getCreditLimitGroupEntities = createSelector(
     fromCreditLimitBalance.selectCreditLimitGroupEntities
 );
 
-export const getTotalCreditLimitBalanceEntity = createSelector(
+export const getTotalCreditLimitStoreEntity = createSelector(
     getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectCreditLimitBalanceTotal
+    fromCreditLimitBalance.selectCreditLimitStoreTotal
 );
 
 export const getTotalCreditLimitGroupEntity = createSelector(
@@ -36,21 +36,20 @@ export const getTotalCreditLimitGroupEntity = createSelector(
     fromCreditLimitBalance.selectCreditLimitGroupTotal
 );
 
-export const getTotalCreditLimitBalance = createSelector(
+export const getTotalCreditLimitStore = createSelector(
     getCreditLimitBalanceState,
-    state => state.creditLimitBalance.total
+    state => state.creditLimitBalanceStores.total
 );
 
-export const getSelectedCreditLimitBalanceId = createSelector(
+export const getSelectedCreditLimitStoreId = createSelector(
     getCreditLimitBalanceState,
-    state => state.selectedCreditLimitBalanceId
+    state => state.creditLimitBalanceStores.selectedCreditLimitStoreId
 );
 
-export const getSelectedCreditLimitBalance = createSelector(
-    getCreditLimitBalanceEntities,
-    getSelectedCreditLimitBalanceId,
-    (creditLimitBalanceEntities, creditLimitBalanceId) =>
-        creditLimitBalanceEntities[creditLimitBalanceId]
+export const getSelectedCreditLimitStore = createSelector(
+    getCreditLimitStoreEntities,
+    getSelectedCreditLimitStoreId,
+    (entities, id) => entities[id]
 );
 
 export const getSelectedCreditLimitGroupId = createSelector(

@@ -12,8 +12,8 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { Role } from 'app/main/pages/roles/role.model';
 import { ErrorMessageService } from 'app/shared/helpers';
+import { Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -27,6 +27,7 @@ import { InternalActions } from '../store/actions';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
 
+// import { Role } from 'app/main/pages/roles/role.model';
 @Component({
     selector: 'app-internal-form',
     templateUrl: './internal-form.component.html',
@@ -148,10 +149,10 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(UiActions.hideFooterAction());
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(InternalActions.resetInternalEmployee());
 
-        this.storage.delete('selectedInternalEmployee').subscribe(() => {});
+        this.storage.delete('selected.internal.employee').subscribe(() => {});
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -193,7 +194,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         const phoneNumberField = this.form.get('phoneNumber');
         const body = this.form.value;
 
-        this.storage.get('selectedInternalEmployee').subscribe({
+        this.storage.get('selected.internal.employee').subscribe({
             next: (prev: InternalEmployeeDetail) => {
                 console.log('SELECTED EMPLOYEE', prev);
                 console.log('BEFORE FILTER', body);
@@ -332,7 +333,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             .subscribe(selectedEmployee => {
                 if (selectedEmployee) {
                     this.storage
-                        .set('selectedInternalEmployee', selectedEmployee)
+                        .set('selected.internal.employee', selectedEmployee)
                         .subscribe(() => {});
 
                     this.form.patchValue({

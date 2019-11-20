@@ -5,34 +5,29 @@ import { fromDropdown } from '../reducers';
 
 export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDropdown.FEATURE_KEY);
 
-export const getSearchState = createSelector(
-    getDropdownState,
-    state => state.search
-);
+// export const getSearchState = createSelector(
+//     getDropdownState,
+//     state => state.search
+// );
 
-export const getSearchAccountState = createSelector(
-    getSearchState,
-    state => state.accounts
-);
+// export const getSearchAccountState = createSelector(
+//     getSearchState,
+//     state => state.accounts
+// );
 
-export const getAllSearchAccount = createSelector(
-    getDropdownState,
-    fromDropdown.selectAllSearchAccounts
-);
+// export const getAllSearchAccount = createSelector(
+//     getDropdownState,
+//     fromDropdown.selectAllSearchAccounts
+// );
 
-export const getRoleDropdownState = createSelector(
-    getDropdownState,
-    state => {
-        return state.roles.length ? _.sortBy(state.roles, ['role'], ['asc']) : state.roles;
-    }
-);
+export const getRoleDropdownState = createSelector(getDropdownState, state => {
+    return state.roles && state.roles.length > 0 ? _.sortBy(state.roles, ['role'], ['asc']) : [];
+});
 
-export const getProvinceDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.provinces && state.provinces.length > 0
-            ? _.sortBy(state.provinces, ['name'], ['asc'])
-            : state.provinces
+export const getProvinceDropdownState = createSelector(getDropdownState, state =>
+    state.provinces && state.provinces.length > 0
+        ? _.sortBy(state.provinces, ['name'], ['asc'])
+        : state.provinces
 );
 
 export const getCityDropdownState = createSelector(
@@ -93,44 +88,34 @@ export const getPostcodeDropdownState = createSelector(
     }
 );
 
-export const getStoreClusterDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.storeClusters && state.storeClusters.length > 0
-            ? _.sortBy(state.storeClusters, ['name'], ['asc'])
-            : state.storeClusters
+export const getStoreClusterDropdownState = createSelector(getDropdownState, state =>
+    state.storeClusters && state.storeClusters.length > 0
+        ? _.sortBy(state.storeClusters, ['name'], ['asc'])
+        : state.storeClusters
 );
 
-export const getStoreGroupDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.storeGroups && state.storeGroups.length > 0
-            ? _.sortBy(state.storeGroups, ['name'], ['asc'])
-            : state.storeGroups
+export const getStoreGroupDropdownState = createSelector(getDropdownState, state =>
+    state.storeGroups && state.storeGroups.length > 0
+        ? _.sortBy(state.storeGroups, ['name'], ['asc'])
+        : state.storeGroups
 );
 
-export const getStoreSegmentDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.storeSegments && state.storeSegments.length > 0
-            ? _.sortBy(state.storeSegments, ['name'], ['asc'])
-            : state.storeSegments
+export const getStoreSegmentDropdownState = createSelector(getDropdownState, state =>
+    state.storeSegments && state.storeSegments.length > 0
+        ? _.sortBy(state.storeSegments, ['name'], ['asc'])
+        : state.storeSegments
 );
 
-export const getStoreTypeDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.storeTypes && state.storeTypes.length > 0
-            ? _.sortBy(state.storeTypes, ['name'], ['asc'])
-            : state.storeTypes
+export const getStoreTypeDropdownState = createSelector(getDropdownState, state =>
+    state.storeTypes && state.storeTypes.length > 0
+        ? _.sortBy(state.storeTypes, ['name'], ['asc'])
+        : state.storeTypes
 );
 
-export const getVehicleAccessibilityDropdownState = createSelector(
-    getDropdownState,
-    state =>
-        state.vehicleAccessibilities && state.vehicleAccessibilities.length > 0
-            ? _.sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
-            : state.vehicleAccessibilities
+export const getVehicleAccessibilityDropdownState = createSelector(getDropdownState, state =>
+    state.vehicleAccessibilities && state.vehicleAccessibilities.length > 0
+        ? _.sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
+        : state.vehicleAccessibilities
 );
 
 /* export const getCityDropdownState = (provinceId: string) =>
@@ -148,9 +133,6 @@ export const getVehicleAccessibilityDropdownState = createSelector(
     ); */
 
 export const getRoleDropdownStateByType = (typeId: string) =>
-    createSelector(
-        getRoleDropdownState,
-        roles => {
-            return roles.length ? roles.filter(role => role.roleTypeId === typeId) : roles;
-        }
-    );
+    createSelector(getRoleDropdownState, roles => {
+        return roles.length ? roles.filter(role => role.roleTypeId === typeId) : roles;
+    });

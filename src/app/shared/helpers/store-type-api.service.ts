@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams, IStoreType, IStoreTypeResponse } from '../models';
+import { IQueryParams } from '../models';
 import { HelperService } from './helper.service';
 
 /**
@@ -38,33 +38,28 @@ export class StoreTypeApiService {
      * @param {HelperService} _$helper
      * @memberof StoreTypeApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
-
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @returns {Observable<IStoreTypeResponse[]>}
-     * @memberof StoreTypeApiService
-     */
-    findAll(params: IQueryParams): Observable<IStoreTypeResponse[]> {
+    constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
-
-        return this.http.get<IStoreTypeResponse[]>(this._url, { params: newParams });
     }
 
     /**
      *
      *
+     * @template T
      * @param {IQueryParams} params
-     * @returns {Observable<IStoreType[]>}
+     * @returns {Observable<T>}
      * @memberof StoreTypeApiService
      */
-    findAllDropdown(params: IQueryParams): Observable<IStoreType[]> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+    findAll<T>(params: IQueryParams): Observable<T> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<IStoreType[]>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams });
     }
+
+    // findAllDropdown(params: IQueryParams): Observable<IStoreType[]> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     const newParams = this._$helper.handleParams(this._url, params);
+
+    //     return this.http.get<IStoreType[]>(this._url, { params: newParams });
+    // }
 }

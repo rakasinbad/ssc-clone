@@ -1,7 +1,17 @@
-<h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
-    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+    <form
+        id="credit-limit-group-form"
+        class="w-100-p"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit(pageType)"
+        fxLayout="column"
+        fxFlex
+        novalidate
+    >
         <div class="form-box">
             <span class="mat-subheading-2">
                 Credit Limit & Balance
@@ -382,7 +392,15 @@
 
 <mat-dialog-actions align="end">
     <span fxLayout="row" fxLayoutGap="10px">
-        <button mat-flat-button color="accent" cdkFocusInitial>Simpan</button>
+        <button
+            mat-flat-button
+            type="submit"
+            color="accent"
+            cdkFocusInitial
+            form="credit-limit-group-form"
+        >
+            Simpan
+        </button>
         <button mat-stroked-button mat-dialog-close>Tutup</button>
     </span>
 </mat-dialog-actions>

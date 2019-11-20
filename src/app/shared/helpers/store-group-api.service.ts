@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams, IStoreGroup, IStoreGroupResponse } from '../models';
+import { IQueryParams } from '../models';
 import { HelperService } from './helper.service';
 
 /**
@@ -38,33 +38,28 @@ export class StoreGroupApiService {
      * @param {HelperService} _$helper
      * @memberof StoreGroupApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
-
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @returns {Observable<IStoreGroupResponse[]>}
-     * @memberof StoreGroupApiService
-     */
-    findAll(params: IQueryParams): Observable<IStoreGroupResponse[]> {
+    constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
-
-        return this.http.get<IStoreGroupResponse[]>(this._url, { params: newParams });
     }
 
     /**
      *
      *
+     * @template T
      * @param {IQueryParams} params
-     * @returns {Observable<IStoreGroup[]>}
+     * @returns {Observable<T>}
      * @memberof StoreGroupApiService
      */
-    findAllDropdown(params: IQueryParams): Observable<IStoreGroup[]> {
-        this._url = this._$helper.handleApiRouter(this._endpoint);
+    findAll<T>(params: IQueryParams): Observable<T> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<IStoreGroup[]>(this._url, { params: newParams });
+        return this.http.get<T>(this._url, { params: newParams });
     }
+
+    // findAllDropdown(params: IQueryParams): Observable<IStoreGroup[]> {
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     const newParams = this._$helper.handleParams(this._url, params);
+
+    //     return this.http.get<IStoreGroup[]>(this._url, { params: newParams });
+    // }
 }

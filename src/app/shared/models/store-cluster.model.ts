@@ -1,32 +1,40 @@
-import { TNullable } from './global.model';
+import { Cluster } from './cluster.model';
+import { TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
 
-export interface IStoreCluster extends ITimestamp {
-    id?: string;
-    name: string;
+interface IStoreCluster extends ITimestamp {
+    id: string;
+    storeId: string;
+    clusterId: string;
+    status: TStatus;
+    cluster?: Cluster;
 }
 
-export interface IStoreClusterResponse extends ITimestamp {
-    data: IStoreCluster[];
-}
-
-export class StoreCluster extends Timestamp {
-    id?: string;
-    name: string;
+export class StoreCluster extends Timestamp implements IStoreCluster {
+    public cluster: Cluster;
 
     constructor(
-        name: string,
+        public id: string,
+        public storeId: string,
+        public clusterId: string,
+        public status: TStatus,
         createdAt: string,
         updatedAt: string,
-        deletedAt: TNullable<string>,
-        id?: string
+        deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
+    }
 
-        this.id = id || undefined;
-        this.name = name ? name.trim() : name;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
+    set setCluster(value: Cluster) {
+        this.cluster = value
+            ? new Cluster(
+                  value.id,
+                  value.name,
+                  value.supplierId,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
+              )
+            : null;
     }
 }
