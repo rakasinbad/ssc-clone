@@ -35,7 +35,7 @@ const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: ':storeId/employee/:employeeId/edit',
+        path: ':storeId/employee/:employeeId/activity/:activityId/edit',
         component: AttendanceEmployeeFormComponent,
         canActivate: [AuthGuard]
     }

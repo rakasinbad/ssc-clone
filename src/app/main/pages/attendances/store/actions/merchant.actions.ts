@@ -22,6 +22,13 @@ export const fetchStoreSuccess = createAction(
     props<{ payload: { merchant?: Merchant; source: TSource } }>()
 );
 
+export const setSelectedStore = createAction(
+    '[Attendances Page] Set Selected Store',
+    props<{ payload: Merchant }>()
+);
+
+export const resetSelectedStore = createAction('[Attendances Page] Reset Selected Store');
+
 /**
  * STORES
  */

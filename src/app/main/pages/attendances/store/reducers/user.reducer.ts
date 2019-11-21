@@ -96,7 +96,21 @@ const userReducer = createReducer(
         }
 
         return newState;
-    })
+    }),
+    on(
+        UserActions.setSelectedUser,
+        (state, { payload }) => ({
+            ...state,
+            user: payload
+        })
+    ),
+    on(
+        UserActions.resetSelectedUser,
+        (state) => ({
+            ...state,
+            user: null
+        })
+    )
 );
 
 export function reducer(state: State | undefined, action: Action): State {

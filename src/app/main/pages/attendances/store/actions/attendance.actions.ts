@@ -55,3 +55,25 @@ export const createAttendanceSuccess = createAction(
     '[Attendances API] Create Attendance Success',
     props<{ payload: Attendance }>()
 );
+
+export const patchAttendanceRequest = createAction(
+    '[Attendances API] Patch Attendance Request',
+    props<{ payload: { id: string; data: Partial<Attendance> } }>()
+);
+
+export const patchAttendanceFailure = createAction(
+    '[Attendances API] Patch Attendance Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const patchAttendanceSuccess = createAction(
+    '[Attendances API] Patch Attendance Success',
+    props<{ payload: Attendance }>()
+);
+
+export const setSelectedAttendance = createAction(
+    '[Attendances Page] Set Selected Attendance',
+    props<{ payload: Attendance }>()
+);
+
+export const resetSelectedAttendance = createAction('[Attendances Page] Reset Selected Attendance');

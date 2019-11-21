@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -18,21 +18,24 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { IQueryParams, Role } from 'app/shared/models';
-import { DropdownActions } from 'app/shared/store/actions';
+import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
 
-import { Attendance, Store } from '../models';
+import { Attendance, Store as Merchant } from '../models';
+
 import { locale as english } from '../i18n/en';
+import { locale as indonesian } from 'app/navigation/i18n/id';
 
 /**
  * ACTIONS
  */
 import {
     AttendanceActions,
-    MerchantActions
+    MerchantActions,
+    UserActions
 } from '../store/actions';
 
 /**
@@ -40,7 +43,8 @@ import {
  */
 import {
     fromAttendance,
-    fromMerchant
+    fromMerchant,
+    fromUser
 } from '../store/reducers';
 
 /**
@@ -67,7 +71,7 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
     storeId: string;
 
     /** Observable untuk Store yang dipilih dari halaman depan. */
-    selectedStore$: Observable<Store>;
+    selectedStore$: Observable<Merchant>;
     /** Observable untuk Array Attendance dari store yang dipilih. */
     employeesActivities$: Observable<Array<Attendance>>;
     /** Observable untuk mendapatkan jumlah data keseluruhan untuk aktivitas karyawan. */
@@ -104,8 +108,10 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
+        private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
@@ -119,7 +125,23 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
             payload: id
         }));
 
-        this._fuseTranslationLoaderService.loadTranslations(english);
+        this._fromMerchant.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -150,10 +172,56 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         /** Mendapatkan store yang telah dipilih dari halaman depan. */
         this.selectedStore$ = this._fromMerchant.select(MerchantSelectors.getMerchant)
         .pipe(
-            takeUntil(this._unSubs$),
-            map(store => {
-                return store;
-            })
+            map(merchant => {
+                if (merchant) {
+                    const newMerchant = new Merchant(
+                        merchant.id,
+                        merchant.storeCode,
+                        merchant.name,
+                        merchant.address,
+                        merchant.taxNo,
+                        merchant.longitude,
+                        merchant.latitude,
+                        merchant.largeArea,
+                        merchant.phoneNo,
+                        merchant.imageUrl,
+                        merchant.taxImageUrl,
+                        merchant.status,
+                        merchant.reason,
+                        merchant.parent,
+                        merchant.parentId,
+                        merchant.numberOfEmployee,
+                        merchant.externalId,
+                        merchant.storeTypeId,
+                        merchant.storeGroupId,
+                        merchant.storeSegmentId,
+                        merchant.urbanId,
+                        merchant.vehicleAccessibilityId,
+                        merchant.warehouseId,
+                        merchant.userStores,
+                        merchant.storeType,
+                        merchant.storeGroup,
+                        merchant.storeSegment,
+                        merchant.urban,
+                        merchant.storeConfig,
+                        merchant.createdAt,
+                        merchant.updatedAt,
+                        merchant.deletedAt
+                    );
+
+                    return newMerchant;
+                }
+
+            }),
+            tap(merchant => {
+                if (!merchant) {
+                    this._fromMerchant.dispatch(MerchantActions.fetchStoreRequest({
+                        payload: this.storeId
+                    }));
+                }
+            }),
+            takeUntil(this._unSubs$)
+
         );
 
         /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */
@@ -175,6 +243,11 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._fromMerchant.dispatch(
+            UiActions.createBreadcrumb({
+                payload: null
+            })
+        );
 
         if (this._unSubs$) {
             this._unSubs$.next();
@@ -223,6 +296,16 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
 
     public getLocationType(locationType: any): string {
         return Attendance.getLocationType(locationType);
+    }
+
+    public openEmployeeAttendanceDetail(data: Attendance): void {
+        this._fromUser.dispatch(
+            UserActions.setSelectedUser({ payload: data.user })
+        );
+
+        this.router.navigate([
+            `/pages/attendances/${this.storeId}/employee/${data.user.id}/detail`
+        ]);
     }
 
     // -----------------------------------------------------------------------------------------------------

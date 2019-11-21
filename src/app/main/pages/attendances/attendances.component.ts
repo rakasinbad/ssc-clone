@@ -15,7 +15,10 @@ import { fuseAnimations } from '@fuse/animations';
 import * as moment from 'moment';
 import { Store as NgRxStore, select } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+
 import { locale as english } from './i18n/en';
+import { locale as indonesian } from 'app/navigation/i18n/id';
+
 import { IQueryParams } from 'app/shared/models';
 import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
 import { Store, Attendance } from './models';
@@ -44,6 +47,7 @@ import {
     MerchantSelectors
 } from './store/selectors';
 import { UiActions } from 'app/shared/store/actions';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-attendances',
@@ -82,6 +86,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
+        private router: Router,
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
@@ -101,7 +106,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             })
         );
 
-        this._fuseTranslationLoaderService.loadTranslations(english);
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -197,6 +202,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._fromStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -259,6 +265,14 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         return diffNumber;
+    }
+
+    public openStoreAttendanceDetail(data: Store): void {
+        this._fromStore.dispatch(
+            MerchantActions.setSelectedStore({ payload: data })
+        );
+
+        this.router.navigate(['/pages/attendances/' + data.id + '/detail']);
     }
 
     // -----------------------------------------------------------------------------------------------------

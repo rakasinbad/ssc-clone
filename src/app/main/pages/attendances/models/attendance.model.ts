@@ -129,6 +129,10 @@ export class Attendance extends Timestamp {
         return 'Tidak diketahui';
     }
 
+    static patch(attendance: Partial<Attendance>): Partial<Attendance> {
+        return attendance;
+    }
+
     getStore(index: number = 0): Store {
         return this.user.userStores[index].store;
     }

@@ -158,7 +158,7 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item aria-label="edit" [routerLink]="[row?.id]">
+                                <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
                                 </button>
@@ -178,7 +178,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="attendance"
                     matRipple
-                    [routerLink]="['/pages/attendances/' + row.id + '/detail']"
+                    (click)="openStoreAttendanceDetail(row)"
                 >
                 </mat-row>
             </mat-table>

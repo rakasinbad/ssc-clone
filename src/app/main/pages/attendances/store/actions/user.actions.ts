@@ -22,6 +22,13 @@ export const fetchUserSuccess = createAction(
     props<{ payload: { user?: User; source: TSource } }>()
 );
 
+export const setSelectedUser = createAction(
+    '[Attendances Page] Set Selected User',
+    props<{ payload: User }>()
+);
+
+export const resetSelectedUser = createAction('[Attendances Page] Reset Selected User');
+
 /**
  * STORES
  */

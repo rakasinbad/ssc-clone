@@ -52,6 +52,10 @@ export class AttendanceApiService {
         return this.http.get<IAttendance>(`${this._url}/${id}`);
     }
 
+    patch(id: string, data: Partial<Attendance>): Observable<Attendance> {
+        return this.http.patch<Attendance>(`${this._url}/${id}`, data);
+    }
+
     getStore(supplierId: string): Observable<Merchant> {
         this._url = this.helperSvc.handleApiRouter(this._endpoint);
 

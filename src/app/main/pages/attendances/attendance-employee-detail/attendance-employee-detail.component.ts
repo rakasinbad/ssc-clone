@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
@@ -18,14 +18,17 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { IQueryParams, User, Role } from 'app/shared/models';
-import { DropdownActions } from 'app/shared/store/actions';
+import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
 
 import { Attendance } from '../models';
+
 import { locale as english } from '../i18n/en';
+import { locale as indonesian } from 'app/navigation/i18n/id';
+
 import { fromAttendance, fromUser } from '../store/reducers';
 import { AttendanceSelectors, UserSelectors } from '../store/selectors';
 import { AttendanceActions, UserActions } from '../store/actions';
@@ -49,6 +52,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
     /** ID toko dan pegawai yang ingin diambil data-nya. */
     _storeId: string;
     _employeeId: string;
+    _activityId: string;
 
     /** Observable untuk User yang dipilih dari halaman depan. */
     selectedUser$: Observable<User>;
@@ -86,6 +90,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -93,9 +98,27 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         /** Mendapatkan ID user dan toko dari parameter URL. */
         this._employeeId = this.route.snapshot.params.employeeId;
         this._storeId = this.route.snapshot.params.storeId;
+        this._activityId = this.route.snapshot.params.activityId;
 
         this._fromUser.dispatch(UserActions.fetchUserRequest({ payload: this._employeeId }));
-        this._fuseTranslationLoaderService.loadTranslations(english);
+
+        this._fromAttendance.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -138,6 +161,11 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._fromAttendance.dispatch(
+            UiActions.createBreadcrumb({
+                payload: null
+            })
+        );
 
         if (this._unSubs$) {
             this._unSubs$.next();
@@ -186,6 +214,16 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
 
     public getLocationType(locationType: any): string {
         return Attendance.getLocationType(locationType);
+    }
+
+    public editEmployeeAttendanceDetail(data: Attendance): void {
+        this._fromAttendance.dispatch(
+            AttendanceActions.setSelectedAttendance({ payload: data })
+        );
+
+        this.router.navigate([
+            '/pages', '/attendances/', this._storeId, '/employee/', this._employeeId, '/activity/' , this._activityId, '/detail'
+        ]);
     }
 
     // -----------------------------------------------------------------------------------------------------
