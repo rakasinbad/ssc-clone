@@ -50,7 +50,12 @@ export class CataloguesService {
         private translate: TranslateService
     ) {}
 
-    getCatalogueStatus(data: ICatalogueTitleParameter) {
+    fetchTotalCatalogueStatuses() {
+        this._url = this._$helper.handleApiRouter('/calculate-catalogue');
+        return this.http.get<{ total: string; totalemptystock: string; totalactive: string; totalinactive: string; totalbanned: string; }>(this._url);
+    }
+
+    getCatalogueStatuses(data: ICatalogueTitleParameter) {
         const {
             allCount,
             liveCount,
@@ -81,6 +86,16 @@ export class CataloguesService {
         const newParams = this._$helper.handleParams(this._url, params);
 
         return this.http.get<ICataloguesResponse>(this._url, { params: newParams });
+    }
+
+    patchCatalogue(id: string, data: Partial<Catalogue>): Observable<Catalogue> {
+        this._url = this._$helper.handleApiRouter(`${this._endpoint}/${id}`);
+        return this.http.patch<Catalogue>(this._url, data);
+    }
+
+    getCategory(id: number): Observable<CatalogueCategory> {
+        this._url = this._$helper.handleApiRouter(`/catalogue-categories/${id}`);
+        return this.http.get<CatalogueCategory>(this._url);
     }
 
     /**

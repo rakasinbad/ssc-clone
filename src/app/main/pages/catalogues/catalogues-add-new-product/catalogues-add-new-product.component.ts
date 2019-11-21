@@ -2,11 +2,15 @@ import {
     ChangeDetectionStrategy,
     Component,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef,
+    ViewChild,
+    ElementRef
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { fuseAnimations } from '@fuse/animations';
+import { MatInput } from '@angular/material';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -14,7 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { GeneratorService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -32,6 +36,12 @@ interface CatalogueCategoryFlatNode {
     expandable: boolean;
     name: string;
     level: number;
+}
+
+
+interface ISelectedCategory {
+    selected: string;
+    data: Array<CatalogueCategory>;
 }
 
 const CATALOGUE_CATEGORIES_DUMMY: Array<CatalogueCategory> = [
@@ -490,13 +500,16 @@ const CATALOGUE_CATEGORIES_DUMMY: Array<CatalogueCategory> = [
 
 export class CataloguesAddNewProductComponent implements OnInit {
 
-    productName: FormControl;   
+    isFulfilled = false;
+    productName: FormControl;
     search: FormControl;
     selectedCategories$: Observable<string>;
 
     subs: Subscription = new Subscription();
 
     selectedCategory: FormArray;
+
+    @ViewChild('productNameInput', { static: true }) productNameInput: ElementRef;
     
     _transform = (node: CatalogueCategory, level: number) => ({
         expandable: !!node.children && node.children.length > 0,
@@ -520,10 +533,22 @@ export class CataloguesAddNewProductComponent implements OnInit {
         new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, []),
         new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, []),
     ];
+
+    selectedCategories: Array<ISelectedCategory> = [
+        { data: [], selected: '' },
+        { data: [], selected: '' },
+        { data: [], selected: '' },
+        { data: [], selected: '' }
+    ];
+    categoryTree: Array<CatalogueCategory>;
+    // selectedCategories: Array<string> = ['', '', '', ''];
+
+    private _unSubs$: Subject<void>;
     
     constructor(
         private router: Router,
         private fb: FormBuilder,
+        private _cd: ChangeDetectorRef,
         private store: Store<fromCatalogue.FeatureState>,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -556,15 +581,29 @@ export class CataloguesAddNewProductComponent implements OnInit {
     }
 
     ngOnInit() {
+        this._unSubs$ = new Subject<void>();
+
         this.productName = new FormControl('', Validators.required);
         this.search = new FormControl('', Validators.required);
+
+        // this.subs.add(this.productName.valueChanges.pipe(
+        //     debounceTime(1000),
+        //     distinctUntilChanged()
+        // ).subscribe(() => {
+        //     console.log('NAME', this.productName);
+        //     console.log('Is fulfilled?', this.isFulfilled);
+        // }));
 // 
         this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
 
-        this.subs.add(
-            this.store.select(CatalogueSelectors.getCategoryTree)
-                        .subscribe(categories => this.dataSource[0].data = categories)
-        );
+        this.store
+            .select(CatalogueSelectors.getCategoryTree)
+            .pipe(
+                takeUntil(this._unSubs$)
+            ).subscribe(categories => {
+                this.categoryTree = categories;
+                this._cd.markForCheck();
+            });
 
         this.selectedCategory = this.fb.array([
             // Level 1
@@ -603,36 +642,43 @@ export class CataloguesAddNewProductComponent implements OnInit {
                                     );
     }
 
+    ngAfterViewInit() {
+        this.productNameInput.nativeElement.focus();
+    }
+
     ngOnDestroy() {
+        this._unSubs$.next();
+        this._unSubs$.complete();
+
         this.subs.unsubscribe();
     }
 
-    onSelectCategory(_: Event, id: string, data: CatalogueCategory, name: string, level: number, hasChild: any) {
-        const isHasChild = hasChild ? true : false;
-
+    onSelectCategory(_: Event, id: string, data: CatalogueCategory, name: string, level: number, hasChild: any): void {
         const resetTree = lvl => {
             let tempLevel = lvl;
 
-            while (tempLevel <= this.dataSource.length - 1) {
+            while (tempLevel <= this.selectedCategories.length - 1) {
                 this.selectedCategory.controls[tempLevel].get('id').setValue(null);
                 this.selectedCategory.controls[tempLevel].get('name').setValue(null);
 
-                this.dataSource[tempLevel].data = [];
+                this.selectedCategories[tempLevel].data = [];
                 tempLevel++;
             }
         };
 //
         if (hasChild) {
+            this.isFulfilled = false;
+
             // Jika parentId nya null, berarti dia induk kategori.
             if (!data.parentId) {
                 const idx = CATALOGUE_CATEGORIES_DUMMY.findIndex(category => category.id === data.id);
-                this.dataSource[level + 1].data = CATALOGUE_CATEGORIES_DUMMY[idx].children;
-                resetTree(level + 2);
+                this.selectedCategories[level + 1].data = this.categoryTree[idx].children;
             } else {
-                this.dataSource[level + 1].data = data.children;
-                resetTree(level + 2);
+                this.selectedCategories[level + 1].data = data.children;
             }
+            resetTree(level + 2);
         } else {
+            this.isFulfilled = true;
             resetTree(level + 1);
         }
 
@@ -679,9 +725,10 @@ export class CataloguesAddNewProductComponent implements OnInit {
             payload: [
                 ...this.selectedCategory.controls
                     .filter(control => control.get('id').value)
-                    .map(control => ({
+                    .map((control, idx, controls) => ({
                         id: control.get('id').value,
                         name: control.get('name').value,
+                        parent: idx === 0 ? null : controls[idx - 1].get('id').value
                     })
                 )
             ]

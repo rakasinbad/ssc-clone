@@ -469,6 +469,9 @@ export class Catalogue extends Timestamp {
     detail: string;
     color: string;
     weight: number;
+    length: TNullable<number>;
+    width: TNullable<number>;
+    height: TNullable<number>;
     dimension: number;
     sku: string;
     skuRef: string;
@@ -491,6 +494,10 @@ export class Catalogue extends Timestamp {
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     catalogueTypeId: number;
+    dangerItem?: boolean;
+    unlimitedStock?: boolean;
+    deletedImages?: Array<number>;
+    uploadedImages?: Array<{ base64: string }>;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -500,6 +507,7 @@ export class Catalogue extends Timestamp {
     catalogueTax: CatalogueTax;
     firstCatalogueCategory: CatalogueCategory;
     lastCatalogueCategory: CatalogueCategory;
+    catalogueKeywords?: Array<CatalogueKeywordCatalogue>;
     catalogueKeywordCatalogues: Array<CatalogueKeywordCatalogue>;
     catalogueType: CatalogueType;
     catalogueUnit: CatalogueUnit;
@@ -742,5 +750,9 @@ export class Catalogue extends Timestamp {
                 catalogueVariant.deletedAt
             )
         } : null;
+    }
+
+    static patch(catalogue: Partial<Catalogue>): Partial<Catalogue> {
+        return catalogue;
     }
 }
