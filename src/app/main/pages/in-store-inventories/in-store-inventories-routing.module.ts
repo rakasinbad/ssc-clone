@@ -1,4 +1,3 @@
-// import { InStoreCatalogsComponent } from './in-store-catalogs/in-store-catalogs.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -10,14 +9,15 @@ const routes: Routes = [
         path: '',
         component: InStoreInventoriesComponent,
         canActivate: [AuthGuard]
-    }
-    // {
-    //     path: 'catalogs',
-    //     component: InStoreCatalogsComponent
-    // }
+        // resolve: {
+        //     merchants: MerchantResolver
+        // }
+    },
 ];
 
 /**
+ *
+ *
  * @export
  * @class InStoreInventoriesRoutingModule
  */
