@@ -6,7 +6,7 @@
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT CARD -->
-        <div class="content-card" style="margin-top: 30px;">
+        <div class="content-card" style="margin: 30px 0px;">
             <!-- CONTENT TOOLBAR -->
             <!-- <div class="toolbar px-24 py-8">
                 <span>Content toolbar</span>
@@ -43,8 +43,10 @@
                     <mat-form-field appearance="outline" fxFlex="80">
                         <input
                             matInput
+                            #productNameInput
                             name="product-name"
                             [formControl]="productName"
+                            cdkFocusInitial
                         />
                     </mat-form-field>
                 </div>
@@ -52,12 +54,49 @@
             </div>
             
             <div class="p-16 pt-0 line-height-1.75"
-                class="grey-400"
-                fxLayout="column"
-                fxLayoutGap="30px"
-                fxLayoutAlign="space-around start"
-                style="margin: 0px 16px 30px; padding: 30px;"
+                class="grey-300"
+                fxLayout="row"
+                fxLayoutGap="1px"
+                fxLayoutAlign="space-between stretch"
+                style="margin: 0px 16px 30px; padding: 30px; border-radius: 8px;"
             >
+                <ng-container
+                    *ngFor="let _ of [0, 1, 2, 3]; index as $catLevel"
+                >
+                    <div
+                        fxFlex="25"
+                        class="fuse-white"
+                    >
+                        <ng-container *ngIf="$catLevel === 0; else aboveLevel0;">
+                            <a
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                class="category"
+                                *ngFor="let category of (categoryTree); index as $index;"
+                                (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                                [class.fuse-black-fg]="selectedCategory.controls[$catLevel].get('id').value != category.id"
+                                [class.red-fg]="selectedCategory.controls[$catLevel].get('id').value == category.id"
+                            >
+                                <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                                <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                            </a>
+                        </ng-container>
+                        <ng-template #aboveLevel0>
+                            <a
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                class="category"
+                                *ngFor="let category of (selectedCategories[$catLevel].data); index as $index;"
+                                (click)="onSelectCategory($event, category.id, category, category.category, $catLevel, category.hasChild)"
+                                [class.fuse-black-fg]="selectedCategory.controls[$catLevel].get('id').value != category.id"
+                                [class.red-fg]="selectedCategory.controls[$catLevel].get('id').value == category.id"
+                            >
+                                <span style="padding: 10px 0px 10px 8px;">{{ category.category }}</span>
+                                <mat-icon *ngIf="category.hasChild">chevron_right</mat-icon>
+                            </a>
+                        </ng-template>
+                    </div>
+                </ng-container>
                 <!-- SEARCH -->
                 <!-- <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
@@ -67,11 +106,12 @@
                 </div> -->
                 <!-- / SEARCH -->
                 <!-- CATEGORIES -->
-                <div
+                <!-- <div
                     fxLayout="row"
                     fxLayoutAlign="start start"
                     fxLayoutGap="1px"
                 >
+                    </div>
                     <mat-tree [dataSource]="dataSource[0]" [treeControl]="treeControl">
                         <mat-tree-node
                             *matTreeNodeDef="let node"
@@ -206,6 +246,12 @@
                             </button>
                         </mat-tree-node>
                     </mat-tree>
+                </div> -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="space-between center"
+                >
+                    
                 </div>
                 <!-- / CATEGORIES -->
             </div>
@@ -213,7 +259,7 @@
                 fxLayout="column"
                 fxLayoutGap="30px"
                 fxLayoutAlign="center start"
-                style="margin: 0px 16px;"
+                style="margin: 0px 16px 16px;"
             >
                 <!-- SELECTED CATEGORIES -->
                 <strong>Dipilih: <span class="warn-900-fg">{{ selectedCategories$ | async }}</span></strong>
@@ -223,6 +269,7 @@
                     mat-raised-button
                     class="warn-900"
                     (click)="addNewCatalogue()"
+                    [disabled]="productName.errors && !isFulfilled"
                 >
                     Lanjut
                 </button>

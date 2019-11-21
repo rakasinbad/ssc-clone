@@ -1,0 +1,97 @@
+<h2 mat-dialog-title>{{ data.editMode === 'price' ? 'Edit Harga' : 'Edit Stock' }}</h2>
+
+<mat-dialog-content class="mat-typography" style="min-width: 50em;">
+    <div class="p-16 pt-0 line-height-1.75">
+        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+            <!-- OLD VALUE -->
+            <div class="custom-field" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlex="20"
+                    fxFlexAlign="center"
+                >
+                    {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Sekarang
+                </label>
+                <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                    <ng-container *ngIf="data.editMode === 'price'; else oldStock;">
+                        <input
+                            matInput
+                            type="text"
+                            name="price"
+                            prefix="Rp"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="oldPrice"
+                        />
+                    </ng-container>
+                    <ng-template #oldStock>
+                        <input
+                            matInput
+                            type="text"
+                            name="stock"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="oldStock"
+                        />
+                    </ng-template>
+                </mat-form-field>
+            </div>
+            <!-- / OLD VALUE -->
+            <!-- NEW VALUE -->
+            <div class="custom-field" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlex="20"
+                    fxFlexAlign="center"
+                    [class.mat-error]="
+                        form.errors &&
+                        !form.untouched &&
+                        (form.dirty || form.touched)
+                    "
+                >
+                    {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Baru
+                </label>
+                <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                    <ng-container *ngIf="data.editMode === 'price'; else inputStock;">
+                        <input
+                            matInput
+                            type="text"
+                            name="price"
+                            prefix="Rp"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="price"
+                        />
+                    </ng-container>
+                    <ng-template #inputStock>
+                        <input
+                            matInput
+                            type="text"
+                            name="stock"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="stock"
+                        />
+                    </ng-template>
+                </mat-form-field>
+            </div>
+            <!-- / NEW VALUE -->
+        </form>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button
+        mat-raised-button
+        mat-dialog-close
+        [disabled]="isUpdating"
+    >
+        Cancel
+    </button>
+    <button
+        mat-button
+        class="warn-900"
+        [disabled]="form.status === 'INVALID' || isUpdating"
+        (click)="updateData()"
+    >
+        OK
+    </button>
+</mat-dialog-actions>

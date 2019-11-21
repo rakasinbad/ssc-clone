@@ -7,7 +7,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'all-type',
         title: 'All',
-        translate: 'STATUS.CATALOGUE.ALL.TITLE',
+        // translate: 'STATUS.CATALOGUE.ALL.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-type' }));
@@ -16,7 +16,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'live',
         title: 'Live',
-        translate: 'STATUS.CATALOGUE.LIVE.TITLE',
+        // translate: 'STATUS.CATALOGUE.LIVE.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'live' }));
@@ -25,7 +25,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'empty',
         title: 'Empty',
-        translate: 'STATUS.CATALOGUE.EMPTY.TITLE',
+        // translate: 'STATUS.CATALOGUE.EMPTY.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'empty' }));
@@ -34,7 +34,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'blocked',
         title: 'Blocked',
-        translate: 'STATUS.CATALOGUE.BLOCKED.TITLE',
+        // translate: 'STATUS.CATALOGUE.BLOCKED.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'blocked' }));
@@ -43,7 +43,7 @@ export const statusCatalogue: FuseNavigation[] = [
     {
         id: 'archived',
         title: 'Archived',
-        translate: 'STATUS.CATALOGUE.ARCHIVED.TITLE',
+        // translate: 'STATUS.CATALOGUE.ARCHIVED.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'archived' }));

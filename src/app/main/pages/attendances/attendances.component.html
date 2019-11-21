@@ -1,46 +1,45 @@
-<div id="attendances" class="page-layout carded fullwidth inner-scroll">
+<div id="attendances" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- TOP BACKGROUND -->
-    <div class="top-bg accent"></div>
+    <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center">
         <!-- HEADER -->
         <div
-            class="header accent"
-            fxLayout="column"
-            fxLayoutAlign="center center"
-            fxLayout.gt-sm="row"
-            fxLayoutAlign.gt-sm="space-between center"
+            class="header sinbad"
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
         >
-            <!-- APP TITLE -->
-            <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
-                <mat-icon
-                    class="logo-icon s-32 mr-16"
-                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+            <!-- <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-raised-button
+                    color="accent"
+                    class="sinbad"
+                    type="button"
                 >
-                    event_available
-                </mat-icon>
-                <span
-                    class="logo-text h1"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                    EXPORT
+                </button>
+                <button
+                    mat-stroked-button
+                    color="accent"
+                    class="sinbad"
+                    type="button"
                 >
-                    Attendances
-                </span>
-            </div>
-            <!-- / APP TITLE -->
+                    IMPOORT
+                </button>
+            </div> -->
 
             <!-- SEARCH -->
             <div class="search-wrapper mx-32 mx-md-0">
                 <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                     <mat-icon>search</mat-icon>
-                    <input #filter placeholder="Search for a attendance" />
+                    <input #filter placeholder="Cari di sini"/>
                 </div>
             </div>
             <!-- / SEARCH -->
-
             <!-- ADD BUTTON -->
-            <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
+            <!-- <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
                 <mat-button-toggle value="left" aria-label="Filter">
                     <mat-icon>filter_list</mat-icon>
                 </mat-button-toggle>
@@ -52,16 +51,7 @@
                 >
                     <mat-icon>add</mat-icon>
                 </mat-button-toggle>
-            </mat-button-toggle-group>
-
-            <!-- <button
-                mat-raised-button
-                [routerLink]="['/pages/attendances/new']"
-                class="add-product-button fuse-white mt-24 mt-md-0"
-            >
-                <span>ADD NEW ATTENDANCE</span>
-            </button> -->
-            <!-- / ADD BUTTON -->
+            </mat-button-toggle-group> -->
         </div>
         <!-- / HEADER -->
 
@@ -83,49 +73,56 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Image Column -->
-                <ng-container matColumnDef="image">
-                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                <!-- "ID Toko" Column -->
+                <ng-container matColumnDef="idToko">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID Toko</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <img
-                            class="attendance-image"
-                            *ngIf="row?.user?.image"
-                            [alt]="row?.user?.fullname"
-                            [src]="row?.user?.image"
-                        />
-
-                        <img
-                            class="attendance-image"
-                            *ngIf="!row?.user?.image"
-                            [src]="'assets/images/avatars/profile.jpg'"
-                        />
+                        <p class="text-truncate">{{ row.storeCode }}</p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Name Column -->
-                <ng-container matColumnDef="name">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="storeName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Nama Toko</mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row.name }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- GS Column -->
+                <ng-container matColumnDef="GS">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>GS</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
                         <p class="text-truncate">{{ row?.user?.fullname }}</p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Check In Column -->
-                <ng-container matColumnDef="check-in">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
-                        Check In
-                    </mat-header-cell>
+                <!-- SPV Column -->
+                <ng-container matColumnDef="SPV">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>SPV</mat-header-cell>
 
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                        {{ row?.checkIn | date: 'MMM dd, yyyy HH:mm:ss' }}
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.user?.fullname }}</p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Check Out Column -->
-                <ng-container matColumnDef="checkout">
+                <!-- Sum of Check-in Column -->
+                <ng-container matColumnDef="check-in">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        Sum of Check-in
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        {{ row?.checkIn }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sum of Check-out Column -->
+                <ng-container matColumnDef="check-out">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                        Check Out
+                        Sum of Check-out
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
@@ -133,10 +130,10 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Date Column -->
-                <ng-container matColumnDef="date">
+                <!-- Inventory Column -->
+                <ng-container matColumnDef="inventory">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                        Date
+                        Inventory
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
@@ -144,19 +141,11 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Working Hours Column -->
-                <ng-container matColumnDef="workinghours">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
-                        Working Hours
-                    </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                        {{ this.getDiffTime(row?.checkIn, row?.checkOut, 'hours', false) }}
-                    </mat-cell>
-                </ng-container>
-
+                <!-- Action Column -->
                 <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
@@ -169,7 +158,7 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item aria-label="edit" [routerLink]="[row?.id]">
+                                <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
                                 </button>
@@ -189,7 +178,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="attendance"
                     matRipple
-                    [routerLink]="['/pages/attendances/' + row.id + '/detail']"
+                    (click)="openStoreAttendanceDetail(row)"
                 >
                 </mat-row>
             </mat-table>
@@ -198,7 +187,7 @@
                 [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"
-                (page)="onChangePage($event)"
+                (page)="onChangePage()"
                 showFirstLastButtons
             >
             </mat-paginator>

@@ -10,7 +10,7 @@
         <!-- / CONTENT HEADER -->
 
         <!-- CONTENT CARD (INFORMASI PRODUK) -->
-        <div class="content-card">
+        <div class="content-card mt-16">
             <div class="p-16">
                 <div class="h1">Informasi Produk</div>
             </div>
@@ -37,6 +37,12 @@
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                hidden
+                                matInput
+                                name="id"
+                                formControlName="id"
+                            />
                             <input
                                 matInput
                                 name="sku"
@@ -147,20 +153,19 @@
                         >
                             *Brand
                         </label>
-                
+
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                hidden
-                                matInput
+                            <mat-select
                                 name="brandId"
                                 formControlName="brandId"
-                            />
-                            <input
-                                disabled
-                                matInput
-                                name="brandName"
-                                formControlName="brandName"
-                            />
+                            >
+                                <mat-option
+                                    *ngFor="let brand of brands$ | async"
+                                    [value]="brand.id"
+                                >
+                                    {{ brand.name }}
+                                </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <!-- / BRAND PRODUK -->
@@ -185,6 +190,16 @@
                 
                         <label>
                             <strong fxFlexAlign="center">{{ productCategory$ }}</strong>
+                            <button
+                                class="red-fg"
+                                mat-icon-button
+                                [disableRipple]="true"
+                                style="margin-left: 10px;"
+                                matTooltip="Change the category"
+                                (click)="onEditCategory(form.get('productInfo.id').value)"
+                            >
+                                <mat-icon>edit</mat-icon>
+                            </button>
                         </label>
                     </div>
                     <!-- / KATEGORI PRODUK -->
@@ -212,6 +227,8 @@
                                 matInput
                                 name="stock"
                                 formControlName="stock"
+                                mask="separator"
+                                thousandSeparator="."
                             />
                         </mat-form-field>
                     </div>
@@ -287,6 +304,9 @@
                                 matInput
                                 name="price"
                                 formControlName="productPrice"
+                                mask="separator"
+                                thousandSeparator="."
+                                prefix="Rp "
                             />
                         </mat-form-field>
                     </div>
@@ -315,6 +335,9 @@
                                 matInput
                                 name="price"
                                 formControlName="retailPrice"
+                                mask="separator"
+                                thousandSeparator="."
+                                prefix="Rp "
                             />
                         </mat-form-field>
                     </div>
@@ -340,11 +363,11 @@
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <mat-chip-list #chipList aria-label="Tags">
-                                <mat-chip *ngFor="let tag of (form.get('productSale.tags').value)"
+                                <mat-chip *ngFor="let tag of (productTagsControls?.controls); index as $index;"
                                             selectable="true"
                                             removable="true"
-                                            (removed)="onRemoveTag(tag)">
-                                    {{ tag }}
+                                            (removed)="onRemoveTag($index)">
+                                    {{ tag.value }}
                                     <mat-icon matChipRemove>cancel</mat-icon>
                                 </mat-chip>
                                 <input
@@ -672,6 +695,7 @@
                     <div
                         class="custom-field"
                         fxLayout="row"
+                        fxLayoutGap="10px"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productMedia"
                     >
@@ -699,13 +723,13 @@
                         <div appearance="outline"
                             fxFlex="80"
                             fxLayout="row"
-                            fxLayoutAlign="space-between stretch"
+                            fxLayoutAlign="space-between start"
                             *ngFor="let photo of productPhotos.controls; let i = index;"
                         >
                             <div
                                 fxFill
                                 fxLayout="column"
-                                fxLayoutAlign="space-around center"
+                                fxLayoutAlign="space-between center"
                             >
                                 <input
                                     hidden
@@ -713,15 +737,74 @@
                                     type="file"
                                     (change)="onFileBrowse($event, i)"
                                 />
-                                <button *ngIf="!photo.value; else hasPhoto;" (click)="photos.click()" mat-stroked-button style="border-style: dashed; width: 100%; min-height: 130px;" class="red--fg">
+                                <button
+                                    *ngIf="!photo.value; else hasPhoto;"
+                                    (click)="photos.click()"
+                                    mat-stroked-button
+                                    style="border-style: dashed; width: 100%; min-height: 130px;"
+                                    class="red-fg red-border"
+                                >
                                     <mat-icon>add_circle</mat-icon>
                                 </button>
                                 <ng-template #hasPhoto>
-                                    <img [src]="photo.value"/>
+                                    <div
+                                        fxLayout="row"
+                                        fxLayoutAlign="space-between start"
+                                    >
+                                        <img [src]="photo.value"/>
+                                        <button
+                                            class="red-fg"
+                                            mat-icon-button
+                                            style="bottom: 20px; right: 22px;"
+                                            (click)="onAbortUploadPhoto(photos, i)"
+                                        >
+                                            <mat-icon>remove_circle</mat-icon>
+                                        </button>
+                                    </div>
                                 </ng-template>
-                                <p *ngIf="i === 0; else optionalPhoto">*Foto Utama</p>
+                                <div *ngIf="i === 0; else optionalPhoto" fxLayout="column" fxLayoutAlign="space-between center">
+                                    <p style="margin-bottom: 0px;">*Foto Utama</p>
+                                    <button
+                                        class="red-fg"
+                                        matTooltip="Reset to original image"
+                                        mat-icon-button
+                                        (click)="onResetImage(i)"
+                                        *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                    >
+                                        <mat-icon>undo</mat-icon>
+                                    </button>
+                                    <ng-template #noUndo>
+                                        <button
+                                            disabled
+                                            mat-icon-button
+                                        >
+                                            <mat-icon></mat-icon>
+                                        </button>
+                                    </ng-template>
+                                </div>
                                 <ng-template #optionalPhoto>
-                                    <p>Foto {{ i }}</p>
+                                    <div>
+                                        <p style="margin-bottom: 0px;">Foto {{ i }}</p>
+                                        <button
+                                            class="red-fg"
+                                            matTooltip="Reset to original image"
+                                            mat-icon-button
+                                            (click)="onResetImage(i)"
+                                            *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                    && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                        >
+                                            <mat-icon>undo</mat-icon>
+                                        </button>
+                                        <ng-template #noUndo>
+                                            <button
+                                                disabled
+                                                mat-icon-button
+                                            >
+                                                <mat-icon></mat-icon>
+                                            </button>
+                                        </ng-template>
+                                    </div>
                                 </ng-template>
                             </div>
                         </div>
@@ -764,6 +847,8 @@
                                 matInput
                                 name="weight"
                                 formControlName="weight"
+                                mask="separator"
+                                thousandSeparator="."
                             />
                         </mat-form-field>
                     </div>
@@ -799,6 +884,8 @@
                                     name="width"
                                     formControlName="width"
                                     placeholder="L"
+                                    mask="separator"
+                                    thousandSeparator="."
                                 />
                                 <p matSuffix>cm</p>
                             </mat-form-field>
@@ -808,6 +895,8 @@
                                     name="height"
                                     formControlName="height"
                                     placeholder="P"
+                                    mask="separator"
+                                    thousandSeparator="."
                                 />
                                 <p matSuffix>cm</p>
                             </mat-form-field>
@@ -817,6 +906,8 @@
                                     name="width"
                                     formControlName="width"
                                     placeholder="T"
+                                    mask="separator"
+                                    thousandSeparator="."
                                 />
                                 <p matSuffix>cm</p>
                             </mat-form-field>

@@ -13,25 +13,25 @@ export const locale = {
                     TITLE: 'Semua'
                 },
                 ALL_PARAM: {
-                    TITLE: 'Semua{{ allCount }}}'
+                    TITLE: 'Semua ({{ allCount }})'
                 },
                 LIVE: {
                     TITLE: 'Live'
                 },
                 LIVE_PARAM: {
-                    TITLE: 'Live{{ liveCount }}'
+                    TITLE: 'Live ({{ liveCount }})'
                 },
                 EMPTY: {
                     TITLE: 'Habis'
                 },
                 EMPTY_PARAM: {
-                    TITLE: 'Habis{{ emptyCount }}'
+                    TITLE: 'Habis ({{ emptyCount }})'
                 },
                 BLOCKED: {
                     TITLE: 'Diblokir'
                 },
                 BLOCKED_PARAM: {
-                    TITLE: 'Diblokir{{ blockedCount }}'
+                    TITLE: 'Diblokir ({{ blockedCount }})'
                 },
                 ARCHIVED: {
                     TITLE: 'Diarsipkan'

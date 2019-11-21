@@ -13,15 +13,42 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
 import * as moment from 'moment';
-import { fromAttendance } from './store/reducers';
-import { Store, select } from '@ngrx/store';
+import { Store as NgRxStore, select } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+
 import { locale as english } from './i18n/en';
+import { locale as indonesian } from 'app/navigation/i18n/id';
+
 import { IQueryParams } from 'app/shared/models';
-import { AttendanceActions } from './store/actions';
 import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
-import { Attendance } from './models';
-import { AttendanceSelectors } from './store/selectors';
+import { Store, Attendance } from './models';
+
+/**
+ * ACTIONS
+ */
+import {
+    AttendanceActions,
+    MerchantActions
+} from './store/actions';
+
+/**
+ * REDUCERS
+ */
+import {
+    fromAttendance,
+    fromMerchant
+} from './store/reducers';
+
+/**
+ * SELECTORS
+ */
+import {
+    AttendanceSelectors,
+    MerchantSelectors
+} from './store/selectors';
+import { UiActions } from 'app/shared/store/actions';
+import { Router } from '@angular/router';
+
 @Component({
     selector: 'app-attendances',
     templateUrl: './attendances.component.html',
@@ -33,17 +60,17 @@ import { AttendanceSelectors } from './store/selectors';
 export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     total: number;
     displayedColumns = [
-        'id',
-        'image',
-        'name',
-        'check-in',
-        'checkout',
-        'date',
-        'workinghours',
+        'idToko',
+        'storeName',
+        // 'GS',
+        // 'SPV',
+        // 'check-in',
+        // 'check-out',
+        // 'inventory',
         'actions'
     ];
 
-    dataSource$: Observable<Attendance[]>;
+    dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -59,10 +86,27 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
-        private store: Store<fromAttendance.FeatureState>,
+        private router: Router,
+        private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
-        this._fuseTranslationLoaderService.loadTranslations(english);
+        this._fromStore.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -76,19 +120,66 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.paginator.pageSize = 5;
 
-        this.dataSource$ = this.store.select(AttendanceSelectors.getAllAttendance);
-        this.totalDataSource$ = this.store.pipe(
-            select(AttendanceSelectors.getTotalAttendance),
+        this.dataSource$ 
+            = this._fromStore
+                .select(MerchantSelectors.getAllMerchant)
+                .pipe(
+                    map(stores => stores.map(store => {
+                        const newStore = new Store(
+                            store.id,
+                            store.storeCode,
+                            store.name,
+                            store.address,
+                            store.taxNo,
+                            store.longitude,
+                            store.latitude,
+                            store.largeArea,
+                            store.phoneNo,
+                            store.imageUrl,
+                            store.taxImageUrl,
+                            store.status,
+                            store.reason,
+                            store.parent,
+                            store.parentId,
+                            store.numberOfEmployee,
+                            store.externalId,
+                            store.storeTypeId,
+                            store.storeGroupId,
+                            store.storeSegmentId,
+                            store.urbanId,
+                            store.vehicleAccessibilityId,
+                            store.warehouseId,
+                            store.userStores,
+                            store.storeType,
+                            store.storeGroup,
+                            store.storeSegment,
+                            store.urban,
+                            store.storeConfig,
+                            store.createdAt,
+                            store.updatedAt,
+                            store.deletedAt
+                        );
+
+                        newStore.setLegalInfo = store.legalInfo;
+                        newStore.setCustomerHierarchies = store.customerHierarchies;
+
+                        return newStore;
+                    })
+                )
+            );
+
+        this.totalDataSource$ = this._fromStore.pipe(
+            select(MerchantSelectors.getTotalMerchant),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
-        this.isLoading$ = this.store.pipe(
-            select(AttendanceSelectors.getIsLoading),
+        this.isLoading$ = this._fromStore.pipe(
+            select(MerchantSelectors.getIsLoading),
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
 
-        this.initTable();
+        this.onChangePage();
     }
 
     ngAfterViewInit(): void {
@@ -104,13 +195,14 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(_ => {
-                this.initTable();
+                this.onChangePage();
             });
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._fromStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -120,8 +212,24 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
+    public onChangePage(): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex
+        };
+
+        data['paginate'] = true;
+
+        if (this.sort.direction) {
+            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+            data['sortBy'] = this.sort.active;
+        }
+
+        this._fromStore.dispatch(
+            MerchantActions.fetchStoresRequest({
+                payload: data
+            })
+        );
     }
 
     getDiffTime(
@@ -159,31 +267,19 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         return diffNumber;
     }
 
+    public openStoreAttendanceDetail(data: Store): void {
+        this._fromStore.dispatch(
+            MerchantActions.setSelectedStore({ payload: data })
+        );
+
+        this.router.navigate(['/pages/attendances/' + data.id + '/detail']);
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
-    }
-
-    private initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
-        };
-
-        data['paginate'] = true;
-
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
-        }
-
-        this.store.dispatch(
-            AttendanceActions.fetchAttendancesRequest({
-                payload: data
-            })
-        );
     }
 }

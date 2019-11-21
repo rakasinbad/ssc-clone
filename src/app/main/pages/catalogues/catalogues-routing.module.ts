@@ -9,13 +9,13 @@ import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/c
 
 const routes: Routes = [
     {
-        path: '',
+        path: 'list',
         component: CataloguesComponent,
         canActivate: [AuthGuard],
-        resolve: {
-            catalogues: CatalogueResolver,
-            status: CatalogueStatusResolver
-        },
+        // resolve: {
+        //     catalogues: CatalogueResolver,
+        //     status: CatalogueStatusResolver
+        // },
         // children: []
     },
     {
@@ -37,15 +37,11 @@ const routes: Routes = [
         // },
     },
     {
-        path: 'edit',
-        children: [
-            {
-                path: ':id',
-                component: CataloguesFormComponent,
-                canActivate: [AuthGuard]
-            }
-        ]
+        path: 'edit/:id',
+        component: CataloguesFormComponent,
+        canActivate: [AuthGuard]
     }
+    // 
 ];
 
 /**

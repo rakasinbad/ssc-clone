@@ -12,13 +12,15 @@ import { CataloguesComponent } from './catalogues.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
-import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
+import { CataloguesSelectCategoryComponent } from './catalogues-select-category/catalogues-select-category.component';
+import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
 import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 
 import { CatalogueEffects } from './store/effects';
 
-import { fromCatalogue } from './store/reducers';
+import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+import { BrandEffects } from './store/effects/brand.effects';
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/
       CataloguesImportComponent,
       CataloguesAddNewProductComponent,
       CataloguesFormComponent,
-      CataloguesBlockComponent,
+      CataloguesSelectCategoryComponent,
+      CataloguesEditPriceStockComponent,
       CataloguesRemoveComponent,
       CataloguesActiveInactiveComponent
   ],
@@ -41,12 +44,15 @@ import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/
     NgxPermissionsModule.forChild(),
 
     StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
-    EffectsModule.forFeature([ CatalogueEffects ])
+    StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
+
+    EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
   ],
   entryComponents: [
     CataloguesImportComponent,
     CataloguesAddNewProductComponent,
-    CataloguesBlockComponent,
+    CataloguesEditPriceStockComponent,
+    CataloguesSelectCategoryComponent,
     CataloguesRemoveComponent,
     CataloguesActiveInactiveComponent
   ]

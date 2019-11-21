@@ -1,7 +1,7 @@
 import { Timestamp, TNullable, TStatus } from 'app/shared/models';
-
+​
 import { StoreConfig } from '../../store-configs/models/store-config.model';
-
+​
 export class Store extends Timestamp {
     id: string;
     name: string;
@@ -19,7 +19,7 @@ export class Store extends Timestamp {
     urbanId: string;
     warehouseId: string;
     storeConfig: any;
-
+​
     constructor(
         id: string,
         name: string,
@@ -41,7 +41,7 @@ export class Store extends Timestamp {
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
-
+​
         this.id = id || undefined;
         this.name = name;
         this.longitude = longitude;
@@ -56,7 +56,7 @@ export class Store extends Timestamp {
         this.storeSegmentId = storeSegmentId;
         this.urbanId = urbanId;
         this.warehouseId = warehouseId;
-
+​
         if (storeConfig) {
             this.storeConfig = {
                 ...new StoreConfig(
@@ -72,18 +72,18 @@ export class Store extends Timestamp {
         } else {
             this.storeConfig = null;
         }
-
+​
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
 }
-
+​
 export class StoreAssocUser extends Timestamp {
     id: string;
     status: TStatus;
     store: Store;
-
+​
     constructor(
         id: string,
         status: TStatus,
@@ -93,10 +93,10 @@ export class StoreAssocUser extends Timestamp {
         deletedAt: TNullable<string>
     ) {
         super(createdAt, updatedAt, deletedAt);
-
+​
         this.id = id || undefined;
         this.status = status;
-
+​
         if (store) {
             this.store = new Store(
                 store.id,
@@ -121,7 +121,7 @@ export class StoreAssocUser extends Timestamp {
         } else {
             this.store = null;
         }
-
+​
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

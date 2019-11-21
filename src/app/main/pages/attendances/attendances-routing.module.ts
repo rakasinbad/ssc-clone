@@ -2,8 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from '../core/auth/auth.guard';
-import { AttendanceDetailComponent } from './attendance-detail/attendance-detail.component';
-import { AttendanceDetailResolver } from './attendance-detail/attendance-detail.resolver';
+import { AttendanceStoreDetailComponent } from './attendance-store-detail/attendance-store-detail.component';
+// import { AttendanceStoreDetailResolver } from './attendance-store-detail/attendance-store-detail.resolver';
+import { AttendanceEmployeeDetailComponent } from './attendance-employee-detail/attendance-employee-detail.component';
+import { AttendanceEmployeeFormComponent } from './attendance-employee-form/attendance-employee-form.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { AttendanceResolver } from './attendance-form/attendance.resolver';
 import { AttendancesComponent } from './attendances.component';
@@ -24,11 +26,18 @@ const routes: Routes = [
     },
     {
         path: ':id/detail',
-        component: AttendanceDetailComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            attendance: AttendanceDetailResolver
-        }
+        component: AttendanceStoreDetailComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: ':storeId/employee/:employeeId/detail',
+        component: AttendanceEmployeeDetailComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: ':storeId/employee/:employeeId/activity/:activityId/edit',
+        component: AttendanceEmployeeFormComponent,
+        canActivate: [AuthGuard]
     }
 ];
 

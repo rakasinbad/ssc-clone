@@ -71,6 +71,13 @@ export interface IBreadcrumbs {
     active?: boolean;
 }
 
+export interface IPaginatedResponse<T> {
+    total: number;
+    limit: number;
+    skip: number;
+    data: Array<T>;
+}
+
 export interface IResponsePaginate {
     total: number;
     limit: number;

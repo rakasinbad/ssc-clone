@@ -1,4 +1,4 @@
-#attendance-detail {
+#attendance-store-detail {
     .header {
         .attendance-image {
             overflow: hidden;
@@ -57,6 +57,66 @@
         .mat-form-field-appearance-outline .mat-form-field-prefix,
         .mat-form-field-appearance-outline .mat-form-field-suffix {
             top: 0;
+        }
+    }
+
+    .employees-activity-table {
+        flex: 1 1 auto;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+
+        .mat-header-row {
+            min-height: 64px;
+        }
+
+        .attendance {
+            position: relative;
+            cursor: pointer;
+            height: 84px;
+        }
+
+        .mat-cell {
+            min-width: 0;
+            display: flex;
+            // align-items: center;
+        }
+
+        .mat-column-number {
+            flex: 0 1 10%;
+        }
+
+        .mat-column-employee {
+            flex: 0 1 22%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-role {
+            flex: 0 1 15%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-locationType {
+            flex: 0 1 10%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-checkDate {
+            flex: 0 1 10%;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-checkIn {
+            flex: 0 1 12.5%;
+        }
+
+        .mat-column-checkOut {
+            flex: 0 1 12.5%;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 8%;
+            justify-content: flex-end;
         }
     }
 }

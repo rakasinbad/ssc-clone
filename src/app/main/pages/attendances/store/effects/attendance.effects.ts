@@ -1,18 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
-import { LogService } from 'app/shared/helpers';
+import { LogService, NoticeService } from 'app/shared/helpers';
 import { NetworkActions } from 'app/shared/store/actions';
+import { getParams } from 'app/store/app.reducer';
 import { NetworkSelectors } from 'app/shared/store/selectors';
 import { of } from 'rxjs';
 import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { Attendance } from '../../models';
 import { AttendanceApiService } from '../../services';
 import { AttendanceActions } from '../actions';
 import { fromAttendance } from '../reducers';
+import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 
 @Injectable()
 export class AttendanceEffects {
@@ -104,27 +107,65 @@ export class AttendanceEffects {
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
 
+    fetchAttendanceRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AttendanceActions.fetchAttendanceRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                /** WITHOUT PAGINATION */
+                return this.attendanceApiSvc.findById(id).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const newResp = new Attendance(
+                            resp.id,
+                            resp.date,
+                            resp.longitudeCheckIn,
+                            resp.latitudeCheckIn,
+                            resp.longitudeCheckOut,
+                            resp.latitudeCheckOut,
+                            resp.checkIn,
+                            resp.checkOut,
+                            resp.locationType,
+                            resp.attendanceType,
+                            resp.userId,
+                            resp.user,
+                            resp.createdAt,
+                            resp.updatedAt,
+                            resp.deletedAt
+                        );
+
+                        // newResp.user.setUserStores = resp.user.userStores;
+
+                        return AttendanceActions.fetchAttendanceSuccess({
+                            payload: {
+                                attendance: newResp,
+                                source: 'fetch'
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            AttendanceActions.fetchAttendanceFailure({
+                                payload: {
+                                    id: 'fetchAttendanceFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
     fetchAttendancesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AttendanceActions.fetchAttendancesRequest),
             map(action => action.payload),
-            concatMap(payload =>
-                of(payload).pipe(
-                    tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
-                )
-            ),
-            withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
-            switchMap(([payload, isOnline]) => {
-                console.log(payload);
-                if (isOnline) {
-                    this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] ONLINE', {
-                        online: {
-                            type: 'log',
-                            value: isOnline
-                        }
-                    });
-
-                    return this.attendanceApiSvc.findAll(payload).pipe(
+            switchMap(queryParams => {
+                /** WITH PAGINATION */
+                if (queryParams.paginate) {
+                    return this.attendanceApiSvc.find<IPaginatedResponse<Attendance>>(queryParams).pipe(
                         catchOffline(),
                         map(resp => {
                             let newResp = {
@@ -132,47 +173,43 @@ export class AttendanceEffects {
                                 data: []
                             };
 
-                            if (resp.total > 0) {
-                                newResp = {
-                                    total: resp.total,
-                                    data: [
-                                        ...resp.data.map(attendance => {
-                                            return {
-                                                ...new Attendance(
-                                                    attendance.id,
-                                                    attendance.checkDate,
-                                                    attendance.longitudeCheckIn,
-                                                    attendance.latitudeCheckIn,
-                                                    attendance.longitudeCheckOut,
-                                                    attendance.latitudeCheckOut,
-                                                    attendance.checkIn,
-                                                    attendance.checkOut,
-                                                    attendance.userId,
-                                                    attendance.user,
-                                                    attendance.createdAt,
-                                                    attendance.updatedAt,
-                                                    attendance.deletedAt
-                                                )
-                                            };
-                                        })
-                                    ]
-                                };
-                            }
-
+                            newResp = {
+                                total: resp.total,
+                                data: resp.data.map(attendance => {
+                                    const newAttendance = new Attendance(
+                                        attendance.id,
+                                        attendance.date,
+                                        attendance.longitudeCheckIn,
+                                        attendance.latitudeCheckIn,
+                                        attendance.longitudeCheckOut,
+                                        attendance.latitudeCheckOut,
+                                        attendance.checkIn,
+                                        attendance.checkOut,
+                                        attendance.locationType,
+                                        attendance.attendanceType,
+                                        attendance.userId,
+                                        attendance.user,
+                                        attendance.createdAt,
+                                        attendance.updatedAt,
+                                        attendance.deletedAt
+                                    );
+    
+                                    newAttendance.user.setUserStores = attendance.user.userStores;
+    
+                                    return newAttendance;
+                                })
+                            };
+    
                             this.logSvc.generateGroup(
                                 '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
                                 {
-                                    online: {
-                                        type: 'log',
-                                        value: isOnline
-                                    },
                                     payload: {
                                         type: 'log',
                                         value: resp
                                     }
                                 }
                             );
-
+    
                             return AttendanceActions.fetchAttendancesSuccess({
                                 payload: {
                                     attendances: newResp.data,
@@ -193,118 +230,134 @@ export class AttendanceEffects {
                     );
                 }
 
-                this.logSvc.generateGroup('[FETCH ATTENDANCES REQUEST] OFFLINE', {
-                    online: {
-                        type: 'log',
-                        value: isOnline
-                    }
-                });
+                /** WITHOUT PAGINATION */
+                return this.attendanceApiSvc.find<Array<Attendance>>(queryParams).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        let newResp = {
+                            total: 0,
+                            data: []
+                        };
 
-                return of(
-                    AttendanceActions.fetchAttendancesFailure({
-                        payload: {
-                            id: 'fetchAttendancesFailure',
-                            errors: 'Offline'
-                        }
-                    })
+                        newResp = {
+                            total: resp.length,
+                            data: resp.map(attendance => {
+                                const newAttendance = new Attendance(
+                                    attendance.id,
+                                    attendance.date,
+                                    attendance.longitudeCheckIn,
+                                    attendance.latitudeCheckIn,
+                                    attendance.longitudeCheckOut,
+                                    attendance.latitudeCheckOut,
+                                    attendance.checkIn,
+                                    attendance.checkOut,
+                                    attendance.locationType,
+                                    attendance.attendanceType,
+                                    attendance.userId,
+                                    attendance.user,
+                                    attendance.createdAt,
+                                    attendance.updatedAt,
+                                    attendance.deletedAt
+                                );
+
+                                newAttendance.user.setUserStores = attendance.user.userStores;
+
+                                return newAttendance;
+                            })
+                        };
+
+                        this.logSvc.generateGroup(
+                            '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
+                            {
+                                payload: {
+                                    type: 'log',
+                                    value: resp
+                                }
+                            }
+                        );
+
+                        return AttendanceActions.fetchAttendancesSuccess({
+                            payload: {
+                                attendances: newResp.data,
+                                total: newResp.total
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            AttendanceActions.fetchAttendancesFailure({
+                                payload: {
+                                    id: 'fetchAttendancesFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
                 );
             })
         )
     );
 
-    fetchAttendanceRequest$ = createEffect(() =>
+    patchAttendanceSuccess$ = createEffect(() => 
         this.actions$.pipe(
-            ofType(AttendanceActions.fetchAttendanceRequest),
-            map(action => action.payload),
-            concatMap(payload =>
-                of(payload).pipe(
-                    tap(() => this.store.dispatch(NetworkActions.networkStatusRequest()))
-                )
-            ),
-            withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
-            switchMap(([id, isOnline]) => {
-                if (isOnline) {
-                    this.logSvc.generateGroup('[FETCH ATTENDANCE REQUEST] ONLINE', {
-                        online: {
-                            type: 'log',
-                            value: isOnline
-                        },
-                        payload: {
-                            type: 'log',
-                            value: id
-                        }
-                    });
+            ofType(AttendanceActions.patchAttendanceSuccess),
+            withLatestFrom(this.store.select(getParams)),
+            tap(([_, params]) => {
+                const { storeId, employeeId } = params;
 
-                    return this.attendanceApiSvc.findById(id).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            this.logSvc.generateGroup(
-                                '[FETCH RESPONSE ATTENDANCE REQUEST] ONLINE',
-                                {
-                                    online: {
-                                        type: 'log',
-                                        value: isOnline
-                                    },
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                }
-                            );
-
-                            return AttendanceActions.fetchAttendanceSuccess({
-                                payload: {
-                                    attendance: {
-                                        ...new Attendance(
-                                            resp.id,
-                                            resp.checkDate,
-                                            resp.longitudeCheckIn,
-                                            resp.latitudeCheckIn,
-                                            resp.longitudeCheckOut,
-                                            resp.latitudeCheckOut,
-                                            resp.checkIn,
-                                            resp.checkOut,
-                                            resp.userId,
-                                            resp.user,
-                                            resp.createdAt,
-                                            resp.updatedAt,
-                                            resp.deletedAt
-                                        )
-                                    },
-                                    source: 'fetch'
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                AttendanceActions.fetchAttendanceFailure({
-                                    payload: {
-                                        id: 'fetchAttendanceFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
-                        )
-                    );
-                }
-
-                this.logSvc.generateGroup('[FETCH ATTENDANCE REQUEST] OFFLINE', {
-                    online: {
-                        type: 'log',
-                        value: isOnline
-                    },
-                    payload: {
-                        type: 'log',
-                        value: id
-                    }
+                this._$notice.open('Sukses merubah data attendance', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
                 });
 
-                return of(
-                    AttendanceActions.fetchAttendanceSuccess({
-                        payload: {
-                            source: 'cache'
-                        }
-                    })
+                this.router.navigate([`/pages/attendances/${storeId}/employee/${employeeId}/detail`]);
+            })
+        ), { dispatch: false }
+    );
+
+    patchAttendanceRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AttendanceActions.patchAttendanceRequest),
+            map(action => action.payload),
+            switchMap(({ id, data }) => {
+                /** WITHOUT PAGINATION */
+                return this.attendanceApiSvc.patch(id, data).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const newResp = new Attendance(
+                            resp.id,
+                            resp.date,
+                            resp.longitudeCheckIn,
+                            resp.latitudeCheckIn,
+                            resp.longitudeCheckOut,
+                            resp.latitudeCheckOut,
+                            resp.checkIn,
+                            resp.checkOut,
+                            resp.locationType,
+                            resp.attendanceType,
+                            resp.userId,
+                            resp.user,
+                            resp.createdAt,
+                            resp.updatedAt,
+                            resp.deletedAt
+                        );
+
+                        // newResp.user.setUserStores = resp.user.userStores;
+
+                        return AttendanceActions.patchAttendanceSuccess({
+                            payload: newResp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            AttendanceActions.patchAttendanceFailure({
+                                payload: {
+                                    id: 'patchAttendanceFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
                 );
             })
         )
@@ -312,9 +365,11 @@ export class AttendanceEffects {
 
     constructor(
         private actions$: Actions,
+        private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromAttendance.FeatureState>,
         private attendanceApiSvc: AttendanceApiService,
-        private logSvc: LogService
+        private logSvc: LogService,
+        private _$notice: NoticeService
     ) {}
 }

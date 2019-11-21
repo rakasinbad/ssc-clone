@@ -13,25 +13,25 @@ export const locale = {
                     TITLE: 'All'
                 },
                 ALL_PARAM: {
-                    TITLE: 'All{{ allCount }}'
+                    TITLE: 'All ({{ allCount }})'
                 },
                 LIVE: {
                     TITLE: 'Live'
                 },
                 LIVE_PARAM: {
-                    TITLE: 'Live{{ liveCount }}'
+                    TITLE: 'Live ({{ liveCount }})'
                 },
                 EMPTY: {
                     TITLE: 'Empty'
                 },
                 EMPTY_PARAM: {
-                    TITLE: 'Empty{{ emptyCount }}'
+                    TITLE: 'Empty ({{ emptyCount }})'
                 },
                 BLOCKED: {
                     TITLE: 'Blocked'
                 },
                 BLOCKED_PARAM: {
-                    TITLE: 'Blocked{{ blockedCount }}'
+                    TITLE: 'Blocked ({{ blockedCount }})'
                 },
                 ARCHIVED: {
                     TITLE: 'Archived'

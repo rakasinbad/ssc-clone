@@ -1,18 +1,26 @@
-import { IResponsePaginate, ITimestamp, Timestamp, TNullable } from 'app/shared/models';
+import { IResponsePaginate, ITimestamp, Timestamp, TNullable, User, Role } from 'app/shared/models';
 
-import { AccountAssocAttendance } from '../../accounts/models/account.model';
+// import { AccountAssocAttendance } from '../../accounts/models/account.model';
+import { Store } from './index';
+import { UserStore } from '../../accounts/merchants/models';
+
+type ELocationType = 'inside' | 'outside' | 'others';
+
+type EAttendanceType = 'absent' | 'present' | 'leave';
 
 export interface IAttendance extends ITimestamp {
     id: string;
-    checkDate: string;
+    date: string;
     longitudeCheckIn: TNullable<number>;
     latitudeCheckIn: TNullable<number>;
     longitudeCheckOut: TNullable<number>;
     latitudeCheckOut: TNullable<number>;
     checkIn: TNullable<string>;
     checkOut: TNullable<string>;
+    locationType: ELocationType;
+    attendanceType: EAttendanceType;
     userId?: TNullable<string>;
-    user?: AccountAssocAttendance;
+    user?: User;
 }
 
 export interface IAttendanceResponse extends IResponsePaginate {
@@ -21,27 +29,31 @@ export interface IAttendanceResponse extends IResponsePaginate {
 
 export class Attendance extends Timestamp {
     id: string;
-    checkDate: string;
+    date: string;
     longitudeCheckIn: TNullable<number>;
     latitudeCheckIn: TNullable<number>;
     longitudeCheckOut: TNullable<number>;
     latitudeCheckOut: TNullable<number>;
     checkIn: TNullable<string>;
     checkOut: TNullable<string>;
+    locationType: ELocationType;
+    attendanceType: EAttendanceType;
     userId: TNullable<string>;
-    user: AccountAssocAttendance;
+    user: User;
 
     constructor(
         id: string,
-        checkDate: string,
+        date: string,
         longitudeCheckIn: TNullable<number>,
         latitudeCheckIn: TNullable<number>,
         longitudeCheckOut: TNullable<number>,
         latitudeCheckOut: TNullable<number>,
         checkIn: TNullable<string>,
         checkOut: TNullable<string>,
+        locationType: ELocationType,
+        attendanceType: EAttendanceType,
         userId: TNullable<string>,
-        user: AccountAssocAttendance,
+        user: User,
         createdAt: TNullable<string>,
         updatedAt: TNullable<string>,
         deletedAt: TNullable<string>
@@ -49,46 +61,86 @@ export class Attendance extends Timestamp {
         super(createdAt, updatedAt, deletedAt);
 
         this.id = id || undefined;
-        this.checkDate = checkDate;
+        this.date = date;
         this.longitudeCheckIn = longitudeCheckIn;
         this.latitudeCheckIn = latitudeCheckIn;
         this.longitudeCheckOut = longitudeCheckOut;
         this.latitudeCheckOut = latitudeCheckOut;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
+        this.locationType = locationType;
+        this.attendanceType = attendanceType;
 
         this.userId = userId;
         this.user = user
-            ? {
-                  ...new AccountAssocAttendance(
-                      user.id,
-                      user.fullname,
-                      user.email,
-                      user.phoneNo,
-                      user.mobilePhoneNo,
-                      user.fcm,
-                      user.status,
-                      user.image,
-                      user.urbanId,
-                      user.userOdooId,
-                      user.userStores,
-                      user.roles,
-                      user.createdAt,
-                      user.updatedAt,
-                      user.deletedAt
-                  )
-              }
+            ? new User(
+                user.id,
+                user.fullName,
+                user.email,
+                user.phoneNo,
+                user.mobilePhoneNo,
+                user.idNo,
+                user.taxNo,
+                user.status,
+                user.imageUrl,
+                user.taxImageUrl,
+                user.idImageUrl,
+                user.selfieImageUrl,
+                user.urbanId,
+                user.roles,
+                user.createdAt,
+                user.updatedAt,
+                user.deletedAt
+            )
             : null;
 
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
+
+    static getChainRoles(roles: Array<Role>): string {
+
+        return !Array.isArray(roles) ? '' : roles.map(role => role.role).join(', ');
+    }
+
+
+    static getAttendanceType(attendanceType: EAttendanceType): string {
+        if (attendanceType === 'present') {
+            return 'Hadir';
+        } else if (attendanceType === 'absent') {
+            return 'Tidak Hadir';
+        } else if (attendanceType === 'leave') {
+            return 'Cuti';
+        }
+
+        return 'Tidak diketahui';
+    }
+
+    static getLocationType(locationType: ELocationType): string {
+        if (locationType === 'inside') {
+            return 'Kerja di Toko';
+        } else if (locationType === 'outside') {
+            return 'Kerja di Luar Toko';
+    } else if (locationType === 'others') {
+            return 'Lainnya';
+        }
+
+        return 'Tidak diketahui';
+    }
+
+    static patch(attendance: Partial<Attendance>): Partial<Attendance> {
+        return attendance;
+    }
+
+    getStore(index: number = 0): Store {
+        return this.user.userStores[index].store;
+    }
 }
 
 export class AttendanceAssocUser extends Timestamp {
     id: string;
-    checkDate: string;
+    date: string;
     longitudeCheckIn: TNullable<number>;
     latitudeCheckIn: TNullable<number>;
     longitudeCheckOut: TNullable<number>;
@@ -98,7 +150,7 @@ export class AttendanceAssocUser extends Timestamp {
 
     constructor(
         id: string,
-        checkDate: string,
+        date: string,
         longitudeCheckIn: TNullable<number>,
         latitudeCheckIn: TNullable<number>,
         longitudeCheckOut: TNullable<number>,
@@ -112,7 +164,7 @@ export class AttendanceAssocUser extends Timestamp {
         super(createdAt, updatedAt, deletedAt);
 
         this.id = id || undefined;
-        this.checkDate = checkDate;
+        this.date = date;
         this.longitudeCheckIn = longitudeCheckIn;
         this.latitudeCheckIn = latitudeCheckIn;
         this.longitudeCheckOut = longitudeCheckOut;
