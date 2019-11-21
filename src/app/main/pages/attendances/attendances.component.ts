@@ -43,6 +43,7 @@ import {
     AttendanceSelectors,
     MerchantSelectors
 } from './store/selectors';
+import { UiActions } from 'app/shared/store/actions';
 
 @Component({
     selector: 'app-attendances',
@@ -84,6 +85,22 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
+        this._fromStore.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+
         this._fuseTranslationLoaderService.loadTranslations(english);
     }
 

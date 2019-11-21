@@ -12,6 +12,7 @@ export const globalEnLang = {
         ACCOUNT: 'Account',
         ADD_PRODUCT: 'Add Product',
         ADD_STORE: 'Add Store',
+        ATTENDANCES: 'Attendances',
         CATALOGUE: 'Catalogue',
         CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
         DETAIL: 'Detail',

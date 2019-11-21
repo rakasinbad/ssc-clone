@@ -12,6 +12,7 @@ export const globalIdLang = {
         ACCOUNT: 'Account',
         ADD_PRODUCT: 'Tambah Produk',
         ADD_STORE: 'Add Toko',
+        ATTENDANCES: 'Attendances',
         CATALOGUE: 'Catalogue',
         CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
         DETAIL: 'Detail',
