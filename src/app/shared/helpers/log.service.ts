@@ -17,7 +17,7 @@ export class LogService {
                     case 'table':
                         console.groupCollapsed(k);
                         console.table(value);
-                        console.groupEnd();
+                        // console.groupEnd();
                         break;
 
                     case 'group':
@@ -39,7 +39,7 @@ export class LogService {
                             console.warn(value);
                         }
 
-                        console.groupEnd();
+                        // console.groupEnd();
                         break;
 
                     case 'groupCollapsed':
@@ -62,7 +62,7 @@ export class LogService {
                             console.warn(value);
                         }
 
-                        console.groupEnd();
+                        // console.groupEnd();
                         break;
                 }
             });

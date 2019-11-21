@@ -9,7 +9,7 @@ import { LogService, NoticeService, StoreApiService, UserApiService } from 'app/
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { PaginateResponse, SupplierStore, TStatus, User } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
+import { UiActions, FormActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';
 import {
@@ -32,6 +32,193 @@ export class MerchantEffects {
     // -----------------------------------------------------------------------------------------------------
     // @ CRUD methods
     // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [CREATE - REQUEST] Store
+     * @memberof MerchantEffects
+     */
+    createStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.createStoreRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$storeApi.create(payload).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST CREATE STORE]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return StoreActions.createStoreSuccess({ payload: resp });
+                    }),
+                    catchError(err =>
+                        of(
+                            StoreActions.createStoreFailure({
+                                payload: { id: 'createStoreFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [CREATE - FAILURE] Store
+     * @memberof MerchantEffects
+     */
+    createStoreFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.createStoreFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    // console.log('GAGAL CREATE STORE', resp);
+
+                    this._$log.generateGroup(`[REQUEST CREATE STORE FAILURE]`, {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Data gagal ditambah', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [CREATE - SUCCESS] Store
+     * @memberof MerchantEffects
+     */
+    createStoreSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.createStoreSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(`[REQUEST CREATE STORE SUCCESS]`, {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this.router.navigate(['/pages/account/stores']).finally(() => {
+                        this._$notice.open(`${resp.name} berhasil ditambah`, 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - REQUEST] Store
+     * @memberof MerchantEffects
+     */
+    updateStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.updateStoreRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$storeApi.patchCustom<any>(body, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(`[RESPONSE REQUEST UPDATE STORE]`, {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            },
+                            payload: {
+                                type: 'log',
+                                value: body
+                            }
+                        });
+
+                        return StoreActions.updateStoreSuccess({ payload: resp });
+                    }),
+                    catchError(err =>
+                        of(
+                            StoreActions.updateStoreFailure({
+                                payload: { id: 'updateStoreFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Store
+     * @memberof MerchantEffects
+     */
+    updateStoreFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.updateStoreFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(`[REQUEST UPDATE STORE FAILURE]`, {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Data gagal diubah', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Store
+     * @memberof MerchantEffects
+     */
+    updateStoreSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.updateStoreSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(`[REQUEST UPDATE STORE SUCCESS]`, {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this.router.navigate(['/pages/account/stores']).finally(() => {
+                        this._$notice.open('Data berhasil diubah', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
 
     /**
      *
@@ -293,13 +480,18 @@ export class MerchantEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [UPDATE - REQUEST] Store Employee
+     * @memberof MerchantEffects
+     */
     updateStoreEmployeeRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(StoreActions.updateStoreEmployeeRequest),
             map(action => action.payload),
             switchMap(({ body, id }) => {
-                return this._$merchantEmployeeApi
-                    .patchCustom<{ fullName?: string; roles?: number[]; phoneNumber?: string }>(
+                return this._$userApi
+                    .patchCustom<{ fullName?: string; roles?: number[]; mobilePhoneNo?: string }>(
                         body,
                         id
                     )
@@ -328,6 +520,54 @@ export class MerchantEffects {
         )
     );
 
+    /**
+     *
+     * [UPDATE - FAILURE] Store Employee
+     * @memberof MerchantEffects
+     */
+    updateStoreEmployeeFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.updateStoreEmployeeFailure),
+                map(action => action.payload),
+                withLatestFrom(this.store.select(getParams)),
+                tap(([resp, params]) => {
+                    const { storeId } = params;
+
+                    this._$log.generateGroup(`[REQUEST UPDATE STORE EMPLOYEE FAILURE]`, {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        },
+                        params: {
+                            type: 'log',
+                            value: params
+                        }
+                    });
+
+                    this._$notice.open('Data gagal diupdate', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+
+                    // this.router
+                    //     .navigate(['/pages/account/stores', storeId, 'detail'])
+                    //     .finally(() => {
+                    //         this._$notice.open('Data berhasil diupdate', 'success', {
+                    //             verticalPosition: 'bottom',
+                    //             horizontalPosition: 'right'
+                    //         });
+                    //     });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Store Employee
+     * @memberof MerchantEffects
+     */
     updateStoreEmployeeSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -337,7 +577,7 @@ export class MerchantEffects {
                 tap(([resp, params]) => {
                     const { storeId } = params;
 
-                    this._$log.generateGroup(`[REQUEST UPDATE EMPLOYEE SUCCESS]`, {
+                    this._$log.generateGroup(`[REQUEST UPDATE STORE EMPLOYEE SUCCESS]`, {
                         response: {
                             type: 'log',
                             value: resp
@@ -371,22 +611,28 @@ export class MerchantEffects {
             ofType(StoreActions.confirmDeleteStoreEmployee),
             map(action => action.payload),
             exhaustMap(params => {
-                const dialogRef = this.matDialog.open<
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
                     DeleteConfirmationComponent,
-                    any,
-                    { id: string }
-                >(DeleteConfirmationComponent, {
-                    data: {
-                        title: 'Delete',
-                        message: `Are you sure want to delete <strong>${params.user.fullName}</strong> ?`,
-                        id: params.id
-                    },
-                    disableClose: true
-                });
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete <strong>${params.user.fullName}</strong> ?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    }
+                );
 
                 return dialogRef.afterClosed();
             }),
-            map(({ id }) => {
+            map(id => {
+                this._$log.generateGroup(`[REQUEST CONFIRM DELETE STORE EMPLOYEE]`, {
+                    id: {
+                        type: 'log',
+                        value: id
+                    }
+                });
+
                 if (id) {
                     return StoreActions.deleteStoreEmployeeRequest({ payload: id });
                 } else {
@@ -587,7 +833,7 @@ export class MerchantEffects {
                 map(action => action.payload),
                 tap(resp => {
                     this._$log.generateGroup('[REQUEST UPDATE STATUS STORE EMPLOYEE FAILURE]', {
-                        resp: {
+                        response: {
                             type: 'log',
                             value: resp
                         }
@@ -614,7 +860,7 @@ export class MerchantEffects {
                 map(action => action.payload),
                 tap(resp => {
                     this._$log.generateGroup('[REQUEST UPDATE STATUS STORE EMPLOYEE SUCCESS]', {
-                        resp: {
+                        response: {
                             type: 'log',
                             value: resp
                         }
@@ -1177,7 +1423,11 @@ export class MerchantEffects {
                         catchOffline(),
                         map(resp => {
                             this._$log.generateGroup('[RESPONSE REQUEST FETCH STORES]', {
-                                resp: {
+                                payload: {
+                                    type: 'log',
+                                    value: payload
+                                },
+                                response: {
                                     type: 'log',
                                     value: resp
                                 }
@@ -1234,7 +1484,7 @@ export class MerchantEffects {
                 map(action => action.payload),
                 tap(resp => {
                     this._$log.generateGroup('[REQUEST FETCH STORES FAILURE]', {
-                        resp: {
+                        response: {
                             type: 'log',
                             value: resp
                         }
@@ -1262,21 +1512,36 @@ export class MerchantEffects {
                 return this._$merchantApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[FETCH STORE REQUEST]', {
-                            resp: {
+                        this._$log.generateGroup('[RESPONSE REQUEST FETCH STORE]', {
+                            response: {
                                 type: 'log',
                                 value: resp
                             }
                         });
 
-                        const change = SupplierStore.patch({ id: resp.id });
+                        const newResp = new SupplierStore(
+                            resp.id,
+                            resp.supplierId,
+                            resp.storeId,
+                            resp.status,
+                            resp.store,
+                            resp.createdAt,
+                            resp.updatedAt,
+                            resp.deletedAt
+                        );
 
                         return StoreActions.fetchStoreSuccess({
-                            payload: {
-                                id,
-                                changes: change
-                            }
+                            payload: newResp
                         });
+
+                        // const change = SupplierStore.patch({ id: resp.id });
+
+                        // return StoreActions.fetchStoreSuccess({
+                        //     payload: {
+                        //         id,
+                        //         changes: change
+                        //     }
+                        // });
                     }),
                     catchError(err =>
                         of(

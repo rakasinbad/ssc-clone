@@ -52,4 +52,29 @@ export class UserApiService {
     findById(id: string): Observable<User> {
         return this.http.get<User>(`${this._url}/${id}`);
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @returns {Observable<User>}
+     * @memberof UserApiService
+     */
+    create<T>(body: T): Observable<User> {
+        return this.http.post<User>(this._url, body);
+    }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @param {string} id
+     * @returns {Observable<User>}
+     * @memberof UserApiService
+     */
+    patchCustom<T>(body: T, id: string): Observable<User> {
+        return this.http.patch<User>(`${this._url}/${id}`, body);
+    }
 }

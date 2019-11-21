@@ -31,7 +31,18 @@
                 </div>
 
                 <div
-                    *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                    *ngIf="pageType === 'new'"
+                    class="employee-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img src="assets/images/avatars/profile.jpg" />
+                </div>
+
+                <div
+                    *ngIf="
+                        (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                        pageType === 'edit'
+                    "
                     class="mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
@@ -55,14 +66,27 @@
                     </div>
 
                     <ngx-skeleton-loader
-                        *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                        *ngIf="
+                            (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                            pageType === 'edit'
+                        "
                         [theme]="{ width: '150px', height: '25px', margin: 0 }"
                     ></ngx-skeleton-loader>
 
                     <div class="subtitle secondary-text">
-                        <span *ngIf="!(isLoading$ | async)">Account Detail</span>
+                        <span
+                            *ngIf="
+                                (!(isLoading$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                                    employee$ | async
+                            "
+                        >
+                            Account Detail
+                        </span>
                         <ngx-skeleton-loader
-                            *ngIf="(isLoading$ | async) && !isEdit"
+                            *ngIf="
+                                (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                                pageType === 'edit'
+                            "
                             [theme]="{ width: '70px', margin: 0 }"
                         ></ngx-skeleton-loader>
                     </div>
@@ -71,12 +95,20 @@
             <!-- / APP TITLE -->
 
             <ngx-skeleton-loader
-                *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                *ngIf="
+                    (!(employee$ | async) || ((isLoading$ | async) && !isEdit)) &&
+                    pageType === 'edit'
+                "
                 [theme]="{ width: '70px', height: '30px', margin: 0 }"
             ></ngx-skeleton-loader>
 
-            <ng-container *ngIf="employee$ | async">
-                <button mat-raised-button type="button" (click)="onEdit(isEdit)" *ngIf="!isEdit">
+            <ng-container *ngIf="(employee$ | async) || pageType">
+                <button
+                    mat-raised-button
+                    type="button"
+                    (click)="onEdit(isEdit)"
+                    *ngIf="!isEdit && pageType === 'edit'"
+                >
                     <span>EDIT</span>
                 </button>
 
@@ -85,7 +117,7 @@
                     type="submit"
                     [disabled]="form.invalid || form.pristine"
                     form="internal-form"
-                    *ngIf="isEdit"
+                    *ngIf="isEdit || pageType === 'new'"
                 >
                     <span>SAVE</span>
                 </button>
@@ -97,7 +129,9 @@
         <div class="content-card sinbad">
             <!-- CONTENT -->
             <div class="content px-24 py-8" fxLayout="column">
-                <span class="mat-title">Edit User</span>
+                <span class="mat-title">
+                    {{ pageType === 'new' ? 'Create' : isEdit ? 'Edit' : 'Detail' }} User
+                </span>
 
                 <form
                     id="internal-form"
@@ -219,6 +253,10 @@
                 </form>
             </div>
             <!-- / CONTENT -->
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

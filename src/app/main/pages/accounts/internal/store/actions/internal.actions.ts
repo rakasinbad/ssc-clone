@@ -1,7 +1,8 @@
+import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
+import { IErrorHandler, IQueryParams, TStatus, User, UserSupplier } from 'app/shared/models';
 
-import { IInternalDemo, InternalEmployee, InternalEmployeeDetail } from '../../models';
+import { IInternalDemo } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Internal Employees
@@ -19,7 +20,7 @@ export const fetchInternalEmployeesFailure = createAction(
 
 export const fetchInternalEmployeesSuccess = createAction(
     '[Internal Employees API] Fetch Internal Employees Success',
-    props<{ payload: { internalEmployees: InternalEmployee[]; total: number } }>()
+    props<{ payload: { data: UserSupplier[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -38,65 +39,111 @@ export const fetchInternalEmployeeFailure = createAction(
 
 export const fetchInternalEmployeeSuccess = createAction(
     '[Internal Employee API] Fetch Internal Employee Success',
-    props<{ payload: { internalEmployee?: InternalEmployeeDetail; source: TSource } }>()
+    props<{ payload: User }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
-// CRUD Internal Employee Actions
+// [CRUD - CREATE EMPLOYEE] Internal Employees
+// -----------------------------------------------------------------------------------------------------
+
+export const createInternalEmployeeRequest = createAction(
+    '[Internal Employees API] Create Internal Employee Request',
+    props<{
+        payload: {
+            fullName: string;
+            roles: number[];
+            mobilePhoneNo: string;
+            email?: string;
+            supplierId: string;
+        };
+    }>()
+);
+
+export const createInternalEmployeeFailure = createAction(
+    '[Internal Employees API] Create Internal Employee Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const createInternalEmployeeSuccess = createAction(
+    '[Internal Employees API] Create Internal Employee Success',
+    props<{ payload: UserSupplier }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE EMPLOYEE] Internal Employees
 // -----------------------------------------------------------------------------------------------------
 
 export const updateInternalEmployeeRequest = createAction(
-    '[Internal Employee API] Update Internal Employee Request',
-    props<{ payload: { body: InternalEmployeeDetail; id: string } }>()
+    '[Internal Employees API] Update Internal Employee Request',
+    props<{
+        payload: {
+            body: {
+                fullName?: string;
+                roles?: number[];
+                mobilePhoneNo?: string;
+                email?: string;
+            };
+            id: string;
+        };
+    }>()
 );
 
 export const updateInternalEmployeeFailure = createAction(
-    '[Internal Employee API] Update Internal Employee Failure',
+    '[Internal Employees API] Update Internal Employee Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const updateInternalEmployeeSuccess = createAction(
-    '[Internal Employee API] Update Internal Employee Success',
-    props<{ payload: InternalEmployeeDetail }>()
+    '[Internal Employees API] Update Internal Employee Success',
+    props<{ payload: User }>()
 );
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - DELETE EMPLOYEE] Internal Employees
+// -----------------------------------------------------------------------------------------------------
 
 export const confirmDeleteInternalEmployee = createAction(
     '[Internal Employees Page] Confirm Delete Internal Employee',
-    props<{ payload: InternalEmployee }>()
+    props<{ payload: UserSupplier }>()
 );
 
 export const deleteInternalEmployeeRequest = createAction(
-    '[Internal Employee API] Delete Internal Employee Request',
+    '[Internal Employees API] Delete Internal Employee Request',
     props<{ payload: string }>()
 );
 
 export const deleteInternalEmployeeFailure = createAction(
-    '[Internal Employee API] Delete Internal Employee Failure',
+    '[Internal Employees API] Delete Internal Employee Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const deleteInternalEmployeeSuccess = createAction(
-    '[Internal Employee API] Delete Internal Employee Success',
+    '[Internal Employees API] Delete Internal Employee Success',
     props<{ payload: string }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS EMPLOYEE] Internal Employees
+// -----------------------------------------------------------------------------------------------------
+
 export const confirmChangeStatusInternalEmployee = createAction(
-    '[Internal Employees Page] Confirm Change Status Internal Employees',
-    props<{ payload: InternalEmployee }>()
+    '[Internal Employees Page] Confirm Change Status Internal Employee',
+    props<{ payload: UserSupplier }>()
 );
 
 export const updateStatusInternalEmployeeRequest = createAction(
-    '[Internal Employees API] Update Status Internal Employees Request',
-    props<{ payload: { body: string; id: string } }>()
+    '[Internal Employees API] Update Status Internal Employee Request',
+    props<{ payload: { body: TStatus; id: string } }>()
 );
 
 export const updateStatusInternalEmployeeFailure = createAction(
-    '[Internal Employees API] Update Status Internal Employees Failure',
+    '[Internal Employees API] Update Status Internal Employee Failure',
     props<{ payload: IErrorHandler }>()
 );
 
 export const updateStatusInternalEmployeeSuccess = createAction(
-    '[Internal Employees API] Update Status Internal Employees Success'
+    '[Internal Employees API] Update Status Internal Employee Success',
+    props<{ payload: Update<UserSupplier> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

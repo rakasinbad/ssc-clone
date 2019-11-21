@@ -12,7 +12,7 @@ import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IQueryParams, Role } from 'app/shared/models';
+import { IQueryParams, Role, UserSupplier } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
@@ -20,7 +20,6 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { InternalEmployee } from './models';
 import { InternalActions } from './store/actions';
 import { fromInternal } from './store/reducers';
 import { InternalSelectors } from './store/selectors';
@@ -38,7 +37,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     total: number;
     displayedColumns = ['id', 'user', 'email', 'role', 'actions'];
 
-    dataSource$: Observable<InternalEmployee[]>;
+    dataSource$: Observable<UserSupplier[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -58,8 +57,8 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
-        // this.dataSource = new MatTableDataSource(); // Need for demo
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -98,7 +97,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             disableClear: true
         });
 
-        localStorage.removeItem('filterInternalEmployee');
+        localStorage.removeItem('filter.internal.employee');
 
         this.dataSource$ = this.store.select(InternalSelectors.getAllInternalEmployee);
         this.totalDataSource$ = this.store.select(InternalSelectors.getTotalInternalEmployee);
@@ -111,7 +110,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(v => {
                 if (v) {
-                    localStorage.setItem('filterInternalEmployee', v);
+                    localStorage.setItem('filter.internal.employee', v);
                 }
 
                 this.onRefreshTable();
@@ -125,21 +124,11 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.onRefreshTable();
                 }
             });
-
-        // Need for demo
-        // this.store
-        //     .select(InternalSelectors.getAllInternalEmployee)
-        //     .pipe(takeUntil(this._unSubs$))
-        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
-        // Need for demo
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
@@ -167,7 +156,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
     get searchInternalEmployee(): string {
-        return localStorage.getItem('filterInternalEmployee') || '';
+        return localStorage.getItem('filter.internal.employee') || '';
     }
 
     joinRoles(roles: Role[]): string {
@@ -182,34 +171,30 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('Change page', ev);
     }
 
-    onChangeStatus(item: InternalEmployee): void {
+    onChangeStatus(item: UserSupplier): void {
         if (!item || !item.id) {
             return;
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
         this.store.dispatch(InternalActions.confirmChangeStatusInternalEmployee({ payload: item }));
-
-        return;
     }
 
-    onDelete(item: InternalEmployee): void {
+    onDelete(item: UserSupplier): void {
         if (!item || !item.id) {
             return;
         }
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
         this.store.dispatch(InternalActions.confirmDeleteInternalEmployee({ payload: item }));
-
-        return;
     }
 
     onRemoveSearchInternalEmployee(): void {
-        localStorage.removeItem('filterInternalEmployee');
+        localStorage.removeItem('filter.internal.employee');
         this.search.reset();
     }
 
-    onTrackBy(index: number, item: InternalEmployee): string {
+    onTrackBy(index: number, item: UserSupplier): string {
         return !item ? null : item.id;
     }
 

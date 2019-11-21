@@ -52,4 +52,28 @@ export class StoreApiService {
     findById(id: string): Observable<Merchant> {
         return this.http.get<Merchant>(`${this._url}/${id}`);
     }
+
+    /**
+     *
+     *
+     * @param {*} body
+     * @returns {Observable<Merchant>}
+     * @memberof StoreApiService
+     */
+    create(body: any): Observable<Merchant> {
+        return this.http.post<Merchant>(this._url, body);
+    }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @param {string} id
+     * @returns {Observable<Merchant>}
+     * @memberof StoreApiService
+     */
+    patchCustom<T>(body: T, id: string): Observable<Merchant> {
+        return this.http.patch<Merchant>(`${this._url}/${id}`, body);
+    }
 }

@@ -7,7 +7,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -19,6 +19,7 @@ import { CreditLimitStore } from '../models';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
 import { CreditLimitBalanceActions } from '../store/actions';
+import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 
 @Component({
     selector: 'app-credit-store-form',
@@ -36,6 +37,7 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
     constructor(
         private dialogRef: MatDialogRef<CreditStoreFormComponent>,
         private formBuilder: FormBuilder,
+        private matDialog: MatDialog,
         private storage: StorageMap,
         private store: Store<fromCreditLimitBalance.FeatureState>,
         @Inject(MAT_DIALOG_DATA) public data: any,
@@ -102,36 +104,46 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
         const { limit: limitField, balance: balanceField, top: topField } = this.form.controls;
 
         if (action === 'edit') {
-            this.storage.get('selected.credit.limit.store').subscribe({
-                next: (prev: CreditLimitStore) => {
-                    if (
-                        (limitField.dirty && limitField.value === prev.creditLimit) ||
-                        (limitField.touched && limitField.value === prev.creditLimit) ||
-                        (limitField.pristine && limitField.value === prev.creditLimit)
-                    ) {
-                        delete payload.creditLimit;
-                    }
-
-                    if (
-                        (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
-                        (balanceField.touched && balanceField.value === prev.balanceAmount) ||
-                        (balanceField.pristine && balanceField.value === prev.balanceAmount)
-                    ) {
-                        delete payload.balanceAmount;
-                    }
-
-                    if (
-                        (topField.dirty && topField.value === prev.termOfPayment) ||
-                        (topField.touched && topField.value === prev.termOfPayment) ||
-                        (topField.pristine && topField.value === prev.termOfPayment)
-                    ) {
-                        delete payload.termOfPayment;
-                    }
-
-                    this.dialogRef.close({ action, payload });
+            const dialogRef = this.matDialog.open(ChangeConfirmationComponent, {
+                data: {
+                    title: `Confirmation`,
+                    message: `Are you sure want to change ?`,
+                    id: 's',
+                    change: body
                 },
-                error: err => {}
+                disableClose: true
             });
+
+            // this.storage.get('selected.credit.limit.store').subscribe({
+            //     next: (prev: CreditLimitStore) => {
+            //         if (
+            //             (limitField.dirty && limitField.value === prev.creditLimit) ||
+            //             (limitField.touched && limitField.value === prev.creditLimit) ||
+            //             (limitField.pristine && limitField.value === prev.creditLimit)
+            //         ) {
+            //             delete payload.creditLimit;
+            //         }
+
+            //         if (
+            //             (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
+            //             (balanceField.touched && balanceField.value === prev.balanceAmount) ||
+            //             (balanceField.pristine && balanceField.value === prev.balanceAmount)
+            //         ) {
+            //             delete payload.balanceAmount;
+            //         }
+
+            //         if (
+            //             (topField.dirty && topField.value === prev.termOfPayment) ||
+            //             (topField.touched && topField.value === prev.termOfPayment) ||
+            //             (topField.pristine && topField.value === prev.termOfPayment)
+            //         ) {
+            //             delete payload.termOfPayment;
+            //         }
+
+            //         this.dialogRef.close({ action, payload });
+            //     },
+            //     error: err => {}
+            // });
         }
     }
 

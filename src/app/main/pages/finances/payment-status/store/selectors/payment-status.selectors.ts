@@ -6,6 +6,10 @@ export const getPaymentStatusState = createFeatureSelector<fromPaymentStatus.Sta
     fromPaymentStatus.FEATURE_KEY
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Payment Statuses State
+// -----------------------------------------------------------------------------------------------------
+
 export const getAllPaymentStatus = createSelector(
     getPaymentStatusState,
     fromPaymentStatus.selectAllPaymentStatus
@@ -23,26 +27,24 @@ export const getTotalPaymentStatusEntity = createSelector(
 
 export const getTotalPaymentStatus = createSelector(
     getPaymentStatusState,
-    state => state.paymentStatus.total
+    state => state.paymentStatuses.total
 );
 
 export const getSelectedPaymentStatusId = createSelector(
     getPaymentStatusState,
-    state => state.selectedPaymentStatusId
+    state => state.paymentStatuses.selectedPaymentStatusId
 );
 
 export const getSelectedPaymentStatus = createSelector(
     getPaymentStatusEntities,
     getSelectedPaymentStatusId,
-    (paymentStatusEntities, paymentStatusId) => paymentStatusEntities[paymentStatusId]
+    (entities, id) => entities[id]
 );
 
-export const getIsRefresh = createSelector(
-    getPaymentStatusState,
-    state => state.isRefresh
-);
+// -----------------------------------------------------------------------------------------------------
+// Helper State
+// -----------------------------------------------------------------------------------------------------
 
-export const getIsLoading = createSelector(
-    getPaymentStatusState,
-    state => state.isLoading
-);
+export const getIsRefresh = createSelector(getPaymentStatusState, state => state.isRefresh);
+
+export const getIsLoading = createSelector(getPaymentStatusState, state => state.isLoading);

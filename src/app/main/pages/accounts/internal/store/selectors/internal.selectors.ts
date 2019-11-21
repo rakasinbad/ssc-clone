@@ -6,9 +6,13 @@ export const getInternalEmployeeState = createFeatureSelector<fromInternal.State
     fromInternal.FEATURE_KEY
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Internal Employees State
+// -----------------------------------------------------------------------------------------------------
+
 export const getAllInternalEmployee = createSelector(
     getInternalEmployeeState,
-    fromInternal.selectAllInternalEmployees
+    fromInternal.selectAllInternalEmployee
 );
 
 export const getInternalEmployeeEntities = createSelector(
@@ -16,9 +20,14 @@ export const getInternalEmployeeEntities = createSelector(
     fromInternal.selectInternalEmployeeEntities
 );
 
+export const getInternalEmployeeIds = createSelector(
+    getInternalEmployeeState,
+    fromInternal.selectInternalEmployeeIds
+);
+
 export const getTotalInternalEmployeeEntity = createSelector(
     getInternalEmployeeState,
-    fromInternal.selectInternalEmployeesTotal
+    fromInternal.selectInternalEmployeeTotal
 );
 
 export const getTotalInternalEmployee = createSelector(
@@ -28,26 +37,28 @@ export const getTotalInternalEmployee = createSelector(
 
 export const getSelectedInternalEmployeeId = createSelector(
     getInternalEmployeeState,
-    state => state.selectedInternalEmployeeId
+    state => state.internalEmployees.selectedEmployeeId
 );
 
 export const getSelectedInternalEmployee = createSelector(
     getInternalEmployeeEntities,
     getSelectedInternalEmployeeId,
-    (internalEmployeeEntities, internalEmployeeId) => internalEmployeeEntities[internalEmployeeId]
+    (entities, id) => entities[id]
 );
 
-export const getSelectedInternalEmployeeInfo = createSelector(
+// -----------------------------------------------------------------------------------------------------
+// Internal mployee State
+// -----------------------------------------------------------------------------------------------------
+
+export const getInternalEmployee = createSelector(
     getInternalEmployeeState,
     state => state.internalEmployee
 );
 
-export const getIsRefresh = createSelector(
-    getInternalEmployeeState,
-    state => state.isRefresh
-);
+// -----------------------------------------------------------------------------------------------------
+// Helper State
+// -----------------------------------------------------------------------------------------------------
 
-export const getIsLoading = createSelector(
-    getInternalEmployeeState,
-    state => state.isLoading
-);
+export const getIsRefresh = createSelector(getInternalEmployeeState, state => state.isRefresh);
+
+export const getIsLoading = createSelector(getInternalEmployeeState, state => state.isLoading);

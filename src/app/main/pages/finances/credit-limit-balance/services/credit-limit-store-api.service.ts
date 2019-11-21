@@ -71,7 +71,7 @@ export class CreditLimitStoreApiService {
                   }
               ];
 
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }

@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, User } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { UserStoreOptions, UserStore } from '../models';
+import { UserStore, UserStoreOptions } from '../models';
 
 /**
  *
@@ -87,8 +87,8 @@ export class MerchantEmployeeApiService {
         return this.http.patch<UserStore>(`${this._url}/${id}`, body);
     }
 
-    patchCustom<T>(body: T, id: string): Observable<User> {
-        return this.http.patch<User>(`${this._url}/${id}`, body);
+    patchCustom<T>(body: T, id: string): Observable<UserStore> {
+        return this.http.patch<UserStore>(`${this._url}/${id}`, body);
     }
 
     /**

@@ -11,14 +11,16 @@ export class PaymentStatusApiService {
     private _url: string;
     private readonly _endpoint = '/order-parcels';
 
-    constructor(private http: HttpClient, private _$helper: HelperService) {}
+    constructor(private http: HttpClient, private _$helper: HelperService) {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+    }
 
-    findAll(params: IQueryParams, brandId?: string): Observable<any> {
-        const newArg = brandId
+    findAll(params: IQueryParams, supplierId?: string): Observable<any> {
+        const newArg = supplierId
             ? [
                   {
-                      key: 'brandId',
-                      value: brandId
+                      key: 'supplierId',
+                      value: supplierId
                   },
                   {
                       key: 'type',
@@ -31,8 +33,8 @@ export class PaymentStatusApiService {
                       value: 'payment'
                   }
               ];
-        this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
     }

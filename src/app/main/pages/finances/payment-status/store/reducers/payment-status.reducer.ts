@@ -6,9 +6,10 @@ import * as fromRoot from 'app/store/app.reducer';
 
 import { PaymentStatusActions } from '../actions';
 
-export const FEATURE_KEY = 'paymentStatus';
+export const FEATURE_KEY = 'paymentStatuses';
 
 interface PaymentStatusState extends EntityState<any> {
+    selectedPaymentStatusId: string | number;
     total: number;
 }
 
@@ -17,9 +18,9 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 export interface State {
     isRefresh?: boolean;
     isLoading: boolean;
-    selectedPaymentStatusId: string | number;
+    // selectedPaymentStatusId: string | number;
     source: TSource;
-    paymentStatus: PaymentStatusState;
+    paymentStatuses: PaymentStatusState;
     errors: ErrorState;
 }
 
@@ -30,26 +31,29 @@ export interface FeatureState extends fromRoot.State {
 const adapterPaymentStatus = createEntityAdapter<any>({
     selectId: paymentStatus => paymentStatus.id
 });
-const initialPaymentStatus = adapterPaymentStatus.getInitialState({ total: 0 });
+const initialPaymentStatus = adapterPaymentStatus.getInitialState({
+    selectedPaymentStatusId: null,
+    total: 0
+});
 
 const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
 
 export const initialState: State = {
     isLoading: false,
-    selectedPaymentStatusId: null,
+    // selectedPaymentStatusId: null,
     source: 'fetch',
-    paymentStatus: initialPaymentStatus,
+    paymentStatuses: initialPaymentStatus,
     errors: initialErrorState
 };
 
 const paymentStatusReducer = createReducer(
     initialState,
-    on(PaymentStatusActions.fetchPaymentStatusRequest, state => ({
+    on(PaymentStatusActions.fetchPaymentStatusesRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(PaymentStatusActions.fetchPaymentStatusFailure, (state, { payload }) => ({
+    on(PaymentStatusActions.fetchPaymentStatusesFailure, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
@@ -59,20 +63,20 @@ const paymentStatusReducer = createReducer(
         ...state,
         isRefresh: true
     })),
-    on(PaymentStatusActions.fetchPaymentStatusSuccess, (state, { payload }) => ({
+    on(PaymentStatusActions.fetchPaymentStatusesSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
-        paymentStatus: adapterPaymentStatus.addAll(payload.paymentStatus, {
-            ...state.paymentStatus,
+        paymentStatuses: adapterPaymentStatus.addAll(payload.data, {
+            ...state.paymentStatuses,
             total: payload.total
         }),
-        errors: adapterError.removeOne('fetchPaymentFailure', state.errors)
+        errors: adapterError.removeOne('fetchPaymentStatusesFailure', state.errors)
     })),
-    on(PaymentStatusActions.resetPaymentStatus, state => ({
+    on(PaymentStatusActions.resetPaymentStatuses, state => ({
         ...state,
-        paymentStatus: initialState.paymentStatus,
-        errors: adapterError.removeOne('fetchPaymentFailure', state.errors)
+        paymentStatuses: initialState.paymentStatuses,
+        errors: adapterError.removeOne('fetchPaymentStatusesFailure', state.errors)
     }))
     // on(PaymentStatusActions.generatePaymentsDemo, (state, { payload }) => ({
     //     ...state,
@@ -84,11 +88,11 @@ export function reducer(state: State | undefined, action: Action): State {
     return paymentStatusReducer(state, action);
 }
 
-const getListPaymentStatusState = (state: State) => state.paymentStatus;
+const getPaymentStatusesState = (state: State) => state.paymentStatuses;
 
 export const {
     selectAll: selectAllPaymentStatus,
     selectEntities: selectPaymentStatusEntities,
     selectIds: selectPaymentStatusIds,
     selectTotal: selectPaymentStatusTotal
-} = adapterPaymentStatus.getSelectors(getListPaymentStatusState);
+} = adapterPaymentStatus.getSelectors(getPaymentStatusesState);

@@ -41,7 +41,6 @@ import { PaymentStatusSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
-    // dataSource: MatTableDataSource<IPaymentStatusDemo>; // Need for demo
     search: FormControl;
     filterStatus: string;
     total: number;
@@ -79,8 +78,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    // @ViewChild('filter', { static: true })
+    // filter: ElementRef;
 
     private _unSubs$: Subject<void>;
 
@@ -92,8 +91,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         private _$generate: GeneratorService,
         public translate: TranslateService
     ) {
-        // this.dataSource = new MatTableDataSource(); // Need for demo
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -179,31 +178,17 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this.store
             .select(PaymentStatusSelectors.getIsRefresh)
-            .pipe(
-                distinctUntilChanged(),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(isRefresh => {
-                console.log('IS REFRESH', isRefresh);
                 if (isRefresh) {
                     this.onRefreshTable();
                 }
             });
-
-        // Need for demo
-        // this.store
-        //     .select(PaymentStatusSelectors.getAllPaymentStatus)
-        //     .pipe(takeUntil(this._unSubs$))
-        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
-        // Need for demo
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
@@ -224,9 +209,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this._fuseNavigationService.unregister('customNavigation');
 
-        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(UiActions.hideCustomToolbar());
-        this.store.dispatch(PaymentStatusActions.resetPaymentStatus());
+        this.store.dispatch(PaymentStatusActions.resetPaymentStatuses());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -375,6 +360,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
 
-        this.store.dispatch(PaymentStatusActions.fetchPaymentStatusRequest({ payload: data }));
+        this.store.dispatch(PaymentStatusActions.fetchPaymentStatusesRequest({ payload: data }));
     }
 }

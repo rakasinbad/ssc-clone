@@ -12,7 +12,8 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
 import {
     Cluster,
     Province,
@@ -72,7 +73,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
-        private _$helper: HelperService
+        private _$helper: HelperService,
+        private _$log: LogService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -208,8 +210,19 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.form.statusChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(status => {
-                console.log('FORM STATUS 1', status);
-                console.log('FORM STATUS 2', this.form);
+                // console.log('FORM STATUS 1', status);
+                // console.log('FORM STATUS 2', this.form);
+
+                this._$log.generateGroup(`[FORM STATUS]`, {
+                    status: {
+                        type: 'log',
+                        value: status
+                    },
+                    form: {
+                        type: 'log',
+                        value: this.form
+                    }
+                });
 
                 if (status === 'VALID' && this.addressValid()) {
                     this.store.dispatch(FormActions.setFormStatusValid());
@@ -227,7 +240,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                console.log('CLICK RESET', isClick);
+                // console.log('CLICK RESET', isClick);
+
+                this._$log.generateGroup(`[CLICK RESET]`, {
+                    isClick: {
+                        type: 'log',
+                        value: isClick
+                    }
+                });
 
                 if (isClick) {
                     this.form.reset();
@@ -243,7 +263,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                console.log('CLICK SUBMIT', isClick);
+                // console.log('CLICK SUBMIT', isClick);
+
+                this._$log.generateGroup(`[CLICK SUBMIT]`, {
+                    isClick: {
+                        type: 'log',
+                        value: isClick
+                    }
+                });
 
                 if (isClick) {
                     this.onSubmit();
@@ -356,7 +383,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('SELECT PROVINCE', ev);
+        // console.log('SELECT PROVINCE', ev);
+
+        this._$log.generateGroup(`[SELECT PROVINCE]`, {
+            selectedProvince: {
+                type: 'log',
+                value: ev
+            }
+        });
 
         this.cities$ = this.store
             .select(DropdownSelectors.getCityDropdownState, {
@@ -364,7 +398,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             })
             .pipe(
                 tap(hasCity => {
-                    console.log('LIST CITIES', hasCity);
+                    // console.log('LIST CITIES', hasCity);
+
+                    this._$log.generateGroup(`[LIST CITIES]`, {
+                        cities: {
+                            type: 'log',
+                            value: hasCity
+                        }
+                    });
+
                     if (hasCity && hasCity.length > 0) {
                         this.form.get('storeInfo.address.city').enable();
                     }
@@ -383,7 +425,18 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('SELECT CITY', ev, provinceId);
+        // console.log('SELECT CITY', ev, provinceId);
+
+        this._$log.generateGroup(`[SELECT CITY]`, {
+            selectedCity: {
+                type: 'log',
+                value: ev
+            },
+            provinceId: {
+                type: 'log',
+                value: provinceId
+            }
+        });
 
         this.districts$ = this.store
             .select(DropdownSelectors.getDistrictDropdownState, {
@@ -393,7 +446,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(
                 tap(hasDistrict => {
                     if (hasDistrict && hasDistrict.length > 0) {
-                        console.log('LIST DISTRICTS', hasDistrict);
+                        // console.log('LIST DISTRICTS', hasDistrict);
+
+                        this._$log.generateGroup(`[LIST DISTRICTS]`, {
+                            districts: {
+                                type: 'log',
+                                value: hasDistrict
+                            }
+                        });
+
                         this.form.get('storeInfo.address.district').enable();
                     }
                 })
@@ -411,7 +472,22 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('SELECT DISTRICT', ev, provinceId, city);
+        // console.log('SELECT DISTRICT', ev, provinceId, city);
+
+        this._$log.generateGroup(`[SELECT DISTRICT]`, {
+            selectedDistrict: {
+                type: 'log',
+                value: ev
+            },
+            provinceId: {
+                type: 'log',
+                value: provinceId
+            },
+            city: {
+                type: 'log',
+                value: city
+            }
+        });
 
         this.urbans$ = this.store
             .select(DropdownSelectors.getUrbanDropdownState, {
@@ -422,7 +498,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(
                 tap(hasUrban => {
                     if (hasUrban && hasUrban.length > 0) {
-                        console.log('LIST URBANS', hasUrban);
+                        // console.log('LIST URBANS', hasUrban);
+
+                        this._$log.generateGroup(`[LIST URBANS]`, {
+                            urbans: {
+                                type: 'log',
+                                value: hasUrban
+                            }
+                        });
+
                         this.form.get('storeInfo.address.urban').enable();
                     }
                 })
@@ -440,7 +524,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('SELECT URBAN', ev, provinceId, city, district);
+        // console.log('SELECT URBAN', ev, provinceId, city, district);
+
+        this._$log.generateGroup(`[SELECT URBAN]`, {
+            selectedUrban: {
+                type: 'log',
+                value: ev
+            },
+            provinceId: {
+                type: 'log',
+                value: provinceId
+            },
+            city: {
+                type: 'log',
+                value: city
+            },
+            district: {
+                type: 'log',
+                value: district
+            }
+        });
 
         this.store
             .select(DropdownSelectors.getPostcodeDropdownState, {
@@ -452,8 +555,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(postcode => {
                 if (postcode) {
-                    console.log('POST CODE', postcode);
+                    // console.log('POST CODE', postcode);
                     // this.form.get('storeInfo.address.postcode').enable();
+
+                    this._$log.generateGroup(`[POST CODE]`, {
+                        postcode: {
+                            type: 'log',
+                            value: postcode
+                        }
+                    });
+
                     this.form.get('storeInfo.address.postcode').patchValue(postcode);
                 }
             });
@@ -1132,7 +1243,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         if (data.storeClusters && data.storeClusters.length > 0) {
                             this.form
                                 .get('storeInfo.storeClassification.storeCluster')
-                                .patchValue(data.storeClusters[0].id);
+                                .patchValue(data.storeClusters[0].cluster.id);
                         }
 
                         if (data.storeSegment && data.storeSegment.id) {
@@ -1153,56 +1264,116 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         const body = this.form.value;
 
         if (this.pageType === 'new') {
-            // this.store
-            //     .select(AuthSelectors.getUserState)
-            //     .pipe(takeUntil(this._unSubs$))
-            //     .subscribe(user => {
-            //         console.log('AUTH SELECTORS', user);
-            //         if (
-            //             user &&
-            //             user.data &&
-            //             user.data.userBrands &&
-            //             user.data.userBrands.length > 0
-            //         ) {
-            //             const createUser = new FormUser(
-            //                 body.storeInfo.legalInfo.name,
-            //                 body.storeInfo.legalInfo.npwpId,
-            //                 body.storeInfo.legalInfo.identityPhoto,
-            //                 body.storeInfo.legalInfo.identityPhotoSelfie,
-            //                 body.profileInfo.phoneNumber,
-            //                 'active',
-            //                 ['1']
-            //             );
-            //             const createCluser = new FormCluster(
-            //                 body.storeInfo.storeClassification.storeCluster
-            //             );
-            //             const createBrand = new FormBrand(user.data.userBrands[0].brandId);
-            //             const payload = new FormStore(
-            //                 body.storeInfo.storeId.id,
-            //                 body.storeInfo.storeId.storeName,
-            //                 body.profileInfo.photos,
-            //                 body.profileInfo.npwpId,
-            //                 body.storeInfo.address.notes,
-            //                 body.profileInfo.phoneNumber,
-            //                 'active',
-            //                 body.storeInfo.storeClassification.storeType,
-            //                 body.storeInfo.storeClassification.storeGroup,
-            //                 body.storeInfo.storeClassification.storeSegment,
-            //                 body.storeInfo.address.urban,
-            //                 createUser,
-            //                 createCluser,
-            //                 createBrand,
-            //                 body.storeInfo.physicalStoreInfo.physicalStoreInfo,
-            //                 body.storeInfo.physicalStoreInfo.numberOfEmployee,
-            //                 body.storeInfo.physicalStoreInfo.vehicleAccessibility
-            //             );
-            //             console.log('SUBMIT CREATE 1', body);
-            //             console.log('SUBMIT CREATE 2', payload);
-            //             this.store.dispatch(
-            //                 BrandStoreActions.createStoreRequest({ payload: payload })
-            //             );
-            //         }
-            //     });
+            this.store
+                .select(AuthSelectors.getUserSupplier)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(({ supplierId }) => {
+                    // console.log('AUTH SELECTORS', user);
+
+                    this._$log.generateGroup(`[AUTH SELECTORS]`, {
+                        supplierId: {
+                            type: 'log',
+                            value: supplierId
+                        }
+                    });
+
+                    if (supplierId) {
+                        // const createUser = new FormUser(
+                        //     body.storeInfo.legalInfo.name,
+                        //     body.storeInfo.legalInfo.npwpId,
+                        //     body.storeInfo.legalInfo.identityPhoto,
+                        //     body.storeInfo.legalInfo.identityPhotoSelfie,
+                        //     body.profileInfo.phoneNumber,
+                        //     'active',
+                        //     ['1']
+                        // );
+                        // const createCluser = new FormCluster(
+                        //     body.storeInfo.storeClassification.storeCluster
+                        // );
+                        // const createBrand = new FormBrand(user.data.userBrands[0].brandId);
+                        // const payload = new FormStore(
+                        //     body.storeInfo.storeId.id,
+                        //     body.storeInfo.storeId.storeName,
+                        //     body.profileInfo.photos,
+                        //     body.profileInfo.npwpId,
+                        //     body.storeInfo.address.notes,
+                        //     body.profileInfo.phoneNumber,
+                        //     'active',
+                        //     body.storeInfo.storeClassification.storeType,
+                        //     body.storeInfo.storeClassification.storeGroup,
+                        //     body.storeInfo.storeClassification.storeSegment,
+                        //     body.storeInfo.address.urban,
+                        //     createUser,
+                        //     createCluser,
+                        //     createBrand,
+                        //     body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                        //     body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                        //     body.storeInfo.physicalStoreInfo.vehicleAccessibility
+                        // );
+
+                        // console.log('SUBMIT CREATE 1', body);
+                        // console.log('SUBMIT CREATE 2', payload);
+
+                        const payload = {
+                            name: body.storeInfo.storeId.storeName,
+                            storeCode: body.storeInfo.storeId.id,
+                            image: body.profileInfo.photos,
+                            taxNo: body.profileInfo.npwpId,
+                            address: body.storeInfo.address.notes,
+                            phoneNo: body.profileInfo.phoneNumber,
+                            numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                            largeArea: body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                            status: 'active',
+                            storeTypeId: body.storeInfo.storeClassification.storeType,
+                            storeGroupId: body.storeInfo.storeClassification.storeGroup,
+                            storeSegmentId: body.storeInfo.storeClassification.storeSegment,
+                            vehicleAccessibilityId:
+                                body.storeInfo.physicalStoreInfo.vehicleAccessibility,
+                            urbanId: body.storeInfo.address.urban,
+                            user: {
+                                idNo: body.storeInfo.legalInfo.identityId,
+                                fullName: body.storeInfo.legalInfo.name,
+                                taxNo: body.storeInfo.legalInfo.npwpId,
+                                idImage: body.storeInfo.legalInfo.identityPhoto,
+                                selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
+                                phone: body.profileInfo.phoneNumber,
+                                status: 'active',
+                                roles: [1]
+                            },
+                            cluster: {
+                                clusterId: body.storeInfo.storeClassification.storeCluster
+                            },
+                            supplier: {
+                                supplierId: supplierId
+                            }
+                        };
+
+                        if (!body.storeInfo.physicalStoreInfo.physicalStoreInfo) {
+                            delete payload.largeArea;
+                        }
+
+                        if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
+                            delete payload.numberOfEmployee;
+                        }
+
+                        if (!body.storeInfo.physicalStoreInfo.vehicleAccessibility) {
+                            delete payload.vehicleAccessibilityId;
+                        }
+
+                        this._$log.generateGroup(`[SUBMIT CREATE STORE]`, {
+                            body: {
+                                type: 'log',
+                                value: body
+                            },
+                            payload: {
+                                type: 'log',
+                                value: payload
+                            }
+                        });
+
+                        this.store.dispatch(StoreActions.createStoreRequest({ payload }));
+                    }
+                });
         }
 
         if (this.pageType === 'edit') {
@@ -1216,6 +1387,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                     }
                 }); */
+
             const { id } = this.route.snapshot.params;
 
             // const createCluser = new FormCluster(body.storeInfo.storeClassification.storeCluster);
@@ -1240,9 +1412,39 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             // console.log('SUBMIT UPDATE 1', body);
             // console.log('SUBMIT UPDATE 2', payload);
 
-            // this.store.dispatch(
-            //     BrandStoreActions.updateStoreRequest({ payload: { body: payload, id: id } })
-            // );
+            const payload = {
+                storeCode: body.storeInfo.storeId.id,
+                name: body.storeInfo.storeId.storeName,
+                image: body.profileInfo.photos,
+                taxNo: body.profileInfo.npwpId,
+                address: body.storeInfo.address.notes,
+                phoneNo: body.profileInfo.phoneNumber,
+                numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
+                largeArea: body.storeInfo.physicalStoreInfo.physicalStoreInfo,
+                storeTypeId: body.storeInfo.storeClassification.storeType,
+                storeGroupId: body.storeInfo.storeClassification.storeGroup,
+                storeSegmentId: body.storeInfo.storeClassification.storeSegment,
+                vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
+                urbanId: body.storeInfo.address.urban,
+                cluster: {
+                    clusterId: body.storeInfo.storeClassification.storeCluster
+                }
+            };
+
+            this._$log.generateGroup(`[SUBMIT UPDATE STORE]`, {
+                body: {
+                    type: 'log',
+                    value: body
+                },
+                payload: {
+                    type: 'log',
+                    value: payload
+                }
+            });
+
+            this.store.dispatch(
+                StoreActions.updateStoreRequest({ payload: { id, body: payload } })
+            );
         }
 
         console.log(this.form.value);

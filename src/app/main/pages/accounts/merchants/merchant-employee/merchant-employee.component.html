@@ -61,9 +61,16 @@
                     ></ngx-skeleton-loader>
 
                     <div class="subtitle secondary-text">
-                        <span *ngIf="!(isLoading$ | async)">Account Detail</span>
+                        <span
+                            *ngIf="
+                                (!(isLoading$ | async) || ((isLoading$ | async) && isEdit)) &&
+                                    employee$ | async
+                            "
+                        >
+                            Account Detail
+                        </span>
                         <ngx-skeleton-loader
-                            *ngIf="(isLoading$ | async) && !isEdit"
+                            *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
                             [theme]="{ width: '70px', margin: 0 }"
                         ></ngx-skeleton-loader>
                     </div>

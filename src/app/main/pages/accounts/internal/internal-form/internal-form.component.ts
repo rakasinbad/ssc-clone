@@ -12,8 +12,9 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
-import { Role } from 'app/shared/models';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { ErrorMessageService, LogService } from 'app/shared/helpers';
+import { Role, User } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -22,7 +23,6 @@ import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { InternalEmployeeDetail } from '../models';
 import { InternalActions } from '../store/actions';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
@@ -41,7 +41,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     isEdit: boolean;
     pageType: string;
 
-    employee$: Observable<InternalEmployeeDetail>;
+    employee$: Observable<User>;
     isLoading$: Observable<boolean>;
     roles$: Observable<Role[]>;
 
@@ -53,7 +53,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         private storage: StorageMap,
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$log: LogService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         /* this.store.dispatch(
@@ -89,8 +90,6 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         this.store.dispatch(UiActions.showFooterAction()); */
 
         const { id } = this.route.snapshot.params;
-
-        this.initForm();
 
         if (id === 'new') {
             this.pageType = 'new';
@@ -133,15 +132,19 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         this._unSubs$ = new Subject<void>();
         this.isEdit = false;
 
-        const { id } = this.route.snapshot.params;
+        this.initForm();
+
+        if (this.pageType === 'edit') {
+            const { id } = this.route.snapshot.params;
+
+            this.employee$ = this.store.select(InternalSelectors.getInternalEmployee);
+            this.store.dispatch(InternalActions.fetchInternalEmployeeRequest({ payload: id }));
+        }
 
         this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
-        this.employee$ = this.store.select(InternalSelectors.getSelectedInternalEmployeeInfo);
-        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
         this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
-        this.store.dispatch(InternalActions.fetchInternalEmployeeRequest({ payload: id }));
 
-        this.initUpdateForm();
+        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
     }
 
     ngOnDestroy(): void {
@@ -188,63 +191,158 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.snapshot.params;
 
-        const fullNameField = this.form.get('fullName');
-        const rolesField = this.form.get('roles');
-        const emailField = this.form.get('email');
-        const phoneNumberField = this.form.get('phoneNumber');
+        // const fullNameField = this.form.get('fullName');
+        // const rolesField = this.form.get('roles');
+        // const emailField = this.form.get('email');
+        // const phoneNumberField = this.form.get('phoneNumber');
         const body = this.form.value;
+        const {
+            fullName: fullNameField,
+            roles: rolesField,
+            phoneNumber: phoneNumberField,
+            email: emailField
+        } = this.form.controls;
 
-        this.storage.get('selected.internal.employee').subscribe({
-            next: (prev: InternalEmployeeDetail) => {
-                console.log('SELECTED EMPLOYEE', prev);
-                console.log('BEFORE FILTER', body);
+        if (this.pageType === 'new') {
+            this.store
+                .select(AuthSelectors.getUserSupplier)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(({ supplierId }) => {
+                    // console.log('AUTH SELECTORS', user);
 
-                if (
-                    (fullNameField.dirty && fullNameField.value === prev.fullName) ||
-                    (fullNameField.touched && fullNameField.value === prev.fullName) ||
-                    (fullNameField.pristine && fullNameField.value === prev.fullName)
-                ) {
-                    delete body.fullName;
-                }
+                    this._$log.generateGroup(`[AUTH SELECTORS]`, {
+                        supplierId: {
+                            type: 'log',
+                            value: supplierId
+                        }
+                    });
 
-                if (
-                    (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
-                    (phoneNumberField.touched && phoneNumberField.value === prev.mobilePhoneNo) ||
-                    (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
-                ) {
-                    delete body.phoneNumber;
-                }
+                    if (supplierId) {
+                        const payload = {
+                            fullName: body.fullName,
+                            mobilePhoneNo: body.phoneNumber,
+                            email: body.email,
+                            roles: body.roles,
+                            supplierId: supplierId
+                        };
 
-                const prevRoles =
-                    prev.roles && prev.roles.length > 0 ? [...prev.roles.map(role => role.id)] : [];
+                        this._$log.generateGroup(`[SUBMIT CREATE INTERNAL EMPLOYEE]`, {
+                            body: {
+                                type: 'log',
+                                value: body
+                            },
+                            payload: {
+                                type: 'log',
+                                value: payload
+                            }
+                        });
 
-                if (
-                    (rolesField.dirty &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                    (rolesField.touched &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                    (rolesField.pristine &&
-                        _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
-                ) {
-                    delete body.roles;
-                }
+                        this.store.dispatch(
+                            InternalActions.createInternalEmployeeRequest({ payload })
+                        );
+                    }
+                });
+        }
 
-                if (
-                    (emailField.dirty && emailField.value === prev.email) ||
-                    (emailField.touched && emailField.value === prev.email) ||
-                    (emailField.pristine && emailField.value === prev.email)
-                ) {
-                    delete body.email;
-                }
+        if (this.isEdit && this.pageType === 'edit') {
+            this.storage.get('selected.internal.employee').subscribe({
+                next: (prev: User) => {
+                    this._$log.generateGroup('[SELECTED EMPLOYEE]', {
+                        prev: {
+                            type: 'log',
+                            value: prev
+                        }
+                    });
 
-                console.log('AFTER FILTER', body);
+                    this._$log.generateGroup('[BEFORE FILTER]', {
+                        body: {
+                            type: 'log',
+                            value: body
+                        }
+                    });
 
-                this.store.dispatch(
-                    InternalActions.updateInternalEmployeeRequest({ payload: { body, id } })
-                );
-            },
-            error: err => {}
-        });
+                    if (
+                        (fullNameField.dirty && fullNameField.value === prev.fullName) ||
+                        (fullNameField.touched && fullNameField.value === prev.fullName) ||
+                        (fullNameField.pristine && fullNameField.value === prev.fullName)
+                    ) {
+                        delete body.fullName;
+                    }
+
+                    if (
+                        (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
+                        (phoneNumberField.touched &&
+                            phoneNumberField.value === prev.mobilePhoneNo) ||
+                        (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
+                    ) {
+                        delete body.phoneNumber;
+                    }
+
+                    const prevRoles =
+                        prev.roles && prev.roles.length > 0 ? prev.roles.map(role => role.id) : [];
+
+                    if (
+                        (rolesField.dirty &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                        (rolesField.touched &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                        (rolesField.pristine &&
+                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
+                    ) {
+                        delete body.roles;
+                    }
+
+                    if (
+                        (emailField.dirty && emailField.value === prev.email) ||
+                        (emailField.touched && emailField.value === prev.email) ||
+                        (emailField.pristine && emailField.value === prev.email)
+                    ) {
+                        delete body.email;
+                    }
+
+                    const payload = {
+                        fullName: body.fullName,
+                        mobilePhoneNo: body.phoneNumber,
+                        email: body.email,
+                        roles: body.roles
+                    };
+
+                    if (!body.fullName) {
+                        delete payload.fullName;
+                    }
+
+                    if (!body.email) {
+                        delete payload.email;
+                    }
+
+                    if (!body.phoneNumber) {
+                        delete payload.mobilePhoneNo;
+                    }
+
+                    if (!body.roles) {
+                        delete payload.roles;
+                    }
+
+                    this._$log.generateGroup('[AFTER FILTER]', {
+                        body: {
+                            type: 'log',
+                            value: body
+                        },
+                        payload: {
+                            type: 'log',
+                            value: payload
+                        }
+                    });
+
+                    this.store.dispatch(
+                        InternalActions.updateInternalEmployeeRequest({
+                            payload: { id, body: payload }
+                        })
+                    );
+                },
+                error: err => {}
+            });
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -319,27 +417,29 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             ]
         });
 
+        if (this.pageType === 'edit') {
+            this.initUpdateForm();
+        }
+
         this.formStatus();
     }
 
     private initUpdateForm(): void {
         this.store
-            .select(InternalSelectors.getSelectedInternalEmployeeInfo)
+            .select(InternalSelectors.getInternalEmployee)
             .pipe(
                 // withLatestFrom(this.store.select(DropdownSelectors.getRoleDropdownState)),
                 distinctUntilChanged(),
                 takeUntil(this._unSubs$)
             )
-            .subscribe(selectedEmployee => {
-                if (selectedEmployee) {
-                    this.storage
-                        .set('selected.internal.employee', selectedEmployee)
-                        .subscribe(() => {});
+            .subscribe(employee => {
+                if (employee) {
+                    this.storage.set('selected.internal.employee', employee).subscribe(() => {});
 
                     this.form.patchValue({
-                        fullName: selectedEmployee.fullName,
-                        phoneNumber: selectedEmployee.mobilePhoneNo,
-                        email: selectedEmployee.email
+                        fullName: employee.fullName,
+                        phoneNumber: employee.mobilePhoneNo,
+                        email: employee.email
                     });
 
                     const rolesGroup = this.form.get('roles');
@@ -348,8 +448,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                         .select(DropdownSelectors.getRoleDropdownState)
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe(roles => {
-                            if (selectedEmployee.roles && selectedEmployee.roles.length > 0) {
-                                const currRoles = selectedEmployee.roles
+                            if (employee.roles && employee.roles.length > 0) {
+                                const currRoles = employee.roles
                                     .map((v, i) => {
                                         return v && v.id
                                             ? roles.findIndex(r => r.id === v.id) === -1
@@ -384,7 +484,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
     }
 
     private formStatus(): void {
-        if (!this.isEdit) {
+        if (this.isEdit === false && this.pageType === 'edit') {
             this.form.get('fullName').disable();
             this.form.get('roles').disable();
             this.form.get('email').disable();
@@ -413,7 +513,9 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                     ]
                 })
             );
-        } else {
+        }
+
+        if ((this.isEdit === true && this.pageType === 'edit') || this.pageType === 'new') {
             this.form.get('fullName').enable();
             this.form.get('roles').enable();
             this.form.get('email').enable();
@@ -435,8 +537,11 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                             translate: 'BREADCRUMBS.INTERNAL'
                         },
                         {
-                            title: 'Edit',
-                            translate: 'BREADCRUMBS.EDIT',
+                            title: this.pageType === 'edit' ? 'Edit' : 'Create',
+                            translate:
+                                this.pageType === 'edit'
+                                    ? 'BREADCRUMBS.EDIT'
+                                    : 'BREADCRUMBS.CREATE',
                             active: true
                         }
                     ]

@@ -360,6 +360,10 @@ export class Store extends Timestamp implements IStore {
             this.owner = null;
         }
     }
+
+    static patch(body: StoreOptions): StoreOptions {
+        return body;
+    }
 }
 
 export type StoreOptions = Partial<Store>;
@@ -506,6 +510,12 @@ export class UserStore extends Timestamp implements IUserStore {
 }
 
 export type UserStoreOptions = Partial<UserStore>;
+
+interface StoreForm extends Partial<IStore> {
+    cluster: { clusterId: string };
+}
+
+export type StoreFormOptions = Partial<StoreForm>;
 
 // import { Role } from 'app/main/pages/roles/role.model';
 // import { Urban } from 'app/main/pages/urbans/models';

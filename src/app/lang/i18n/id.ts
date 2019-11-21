@@ -14,6 +14,7 @@ export const globalIdLang = {
         ADD_STORE: 'Add Toko',
         CATALOGUE: 'Catalogue',
         CREDIT_LIMIT_BALANCE: 'Credit Limit / Balance',
+        CREATE: 'Create',
         DETAIL: 'Detail',
         EDIT: 'Edit',
         EDIT_STORE: 'Edit Toko',

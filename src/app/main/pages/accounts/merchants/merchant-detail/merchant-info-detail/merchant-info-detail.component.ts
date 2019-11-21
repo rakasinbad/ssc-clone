@@ -1,3 +1,4 @@
+import { takeUntil, filter, tap } from 'rxjs/operators';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -9,9 +10,10 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { LogService } from 'app/shared/helpers';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
 import { SupplierStore } from 'app/shared/models';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
@@ -29,10 +31,13 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     store$: Observable<SupplierStore>;
     isLoading$: Observable<boolean>;
 
+    private _unSubs$: Subject<void>;
+
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
-        private store: Store<fromMerchant.FeatureState>
+        private store: Store<fromMerchant.FeatureState>,
+        private _$log: LogService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -42,6 +47,8 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this._unSubs$ = new Subject<void>();
 
         const { id } = this.route.parent.snapshot.params;
 
@@ -55,6 +62,9 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(StoreActions.resetStore());
+
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -66,6 +76,17 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     }
 
     onShowImage(imageUrl: string, title: string): void {
+        this._$log.generateGroup(`[SHOW IMAGE]`, {
+            imageUrl: {
+                type: 'log',
+                value: imageUrl
+            },
+            title: {
+                type: 'log',
+                value: title
+            }
+        });
+
         this.matDialog.open(ShowImageComponent, {
             data: {
                 title: title || '',

@@ -101,7 +101,10 @@ const brandStoreReducer = createReducer(
         // BrandStoreActions.fetchBrandStoresRequest,
         // BrandStoreActions.fetchStoreEmployeeRequest,
         // BrandStoreActions.fetchStoreEmployeesRequest,
+        StoreActions.createStoreRequest,
+        StoreActions.updateStoreRequest,
         StoreActions.deleteStoreRequest,
+        StoreActions.updateStoreEmployeeRequest,
         StoreActions.deleteStoreEmployeeRequest,
         StoreActions.updateStatusStoreRequest,
         StoreActions.updateStatusStoreEmployeeRequest,
@@ -139,7 +142,10 @@ const brandStoreReducer = createReducer(
         // BrandStoreActions.fetchBrandStoresFailure,
         // BrandStoreActions.fetchStoreEmployeeFailure,
         // BrandStoreActions.fetchStoreEmployeesFailure,
+        StoreActions.createStoreFailure,
+        StoreActions.updateStoreFailure,
         StoreActions.deleteStoreFailure,
+        StoreActions.updateStoreEmployeeFailure,
         StoreActions.deleteStoreEmployeeFailure,
         StoreActions.updateStatusStoreFailure,
         StoreActions.updateStatusStoreEmployeeFailure,
@@ -228,7 +234,8 @@ const brandStoreReducer = createReducer(
         ...state,
         isLoading: false,
         isRefresh: undefined,
-        stores: adapterStore.updateOne(payload, { ...state.stores, selectedStoreId: payload.id }),
+        // stores: adapterStore.updateOne(payload, { ...state.stores, selectedStoreId: payload.id }),
+        stores: adapterStore.addOne(payload, { ...state.stores, selectedStoreId: payload.id }),
         errors: adapterError.removeOne('fetchStoreFailure', state.errors)
     })),
     on(StoreActions.fetchStoresSuccess, (state, { payload }) => ({
@@ -254,6 +261,17 @@ const brandStoreReducer = createReducer(
         }),
         errors: adapterError.removeOne('fetchStoreEmployeesFailure', state.errors)
     })),
+    on(StoreActions.createStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        errors: adapterError.removeOne('createStoreFailure', state.errors)
+    })),
+    on(StoreActions.updateStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        store: undefined,
+        errors: adapterError.removeOne('updateStoreFailure', state.errors)
+    })),
     on(StoreActions.deleteStoreSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -262,6 +280,12 @@ const brandStoreReducer = createReducer(
             total: state.stores.total - 1
         }),
         errors: adapterError.removeOne('deleteStoreFailure', state.errors)
+    })),
+    on(StoreActions.updateStoreEmployeeSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        employee: undefined,
+        errors: adapterError.removeOne('updateStoreEmployeeFailure', state.errors)
     })),
     on(StoreActions.deleteStoreEmployeeSuccess, (state, { payload }) => ({
         ...state,
@@ -286,13 +310,13 @@ const brandStoreReducer = createReducer(
     })),
     on(StoreActions.resetStores, state => ({
         ...state,
-        stores: initialStoreState,
+        stores: initialState.stores,
         errors: adapterError.removeOne('fetchStoresFailure', state.errors)
     })),
     on(StoreActions.resetStore, state => ({
         ...state,
-        stores: { ...state.stores, selectedStoreId: null },
-        store: undefined,
+        stores: initialState.stores,
+        // stores: { ...state.stores, selectedStoreId: null },
         errors: adapterError.removeOne('fetchStoreFailure', state.errors)
     })),
     on(StoreActions.resetStoreEmployees, state => ({
@@ -302,8 +326,8 @@ const brandStoreReducer = createReducer(
     })),
     on(StoreActions.resetStoreEmployee, state => ({
         ...state,
-        employees: { ...state.employees, selectedEmployeeId: null },
-        employee: undefined,
+        employees: initialState.employees,
+        // employees: { ...state.employees, selectedEmployeeId: null },
         errors: adapterError.removeOne('fetchStoreEmployeeFailure', state.errors)
     })),
     on(StoreActions.resetGoPage, state => ({

@@ -4,36 +4,38 @@ import { IErrorHandler, IQueryParams } from 'app/shared/models';
 import { IPaymentStatusDemo } from './../../models';
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Payment Status
+// Fetch Payment Statuses
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchPaymentStatusRequest = createAction(
-    '[Payment Status API] Fetch Payment Status Request',
+export const fetchPaymentStatusesRequest = createAction(
+    '[Payment Statuses API] Fetch Payment Statuses Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchPaymentStatusFailure = createAction(
-    '[Payment Status API] Fetch Payment Status Failure',
+export const fetchPaymentStatusesFailure = createAction(
+    '[Payment Statuses API] Fetch Payment Statuses Failure',
     props<{ payload: IErrorHandler }>()
 );
 
-export const fetchPaymentStatusSuccess = createAction(
-    '[Payment Status API] Fetch Payment Status Success',
-    props<{ payload: { paymentStatus: any; total: number } }>()
+export const fetchPaymentStatusesSuccess = createAction(
+    '[Payment Statuses API] Fetch Payment Statuses Success',
+    props<{ payload: { data: any; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------
 
-export const resetPaymentStatus = createAction('[Payment Status Page] Reset Payment Status State');
+export const resetPaymentStatuses = createAction(
+    '[Payment Statuses Page] Reset Payment Statuses State'
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
 
 export const filterStatusPayment = createAction(
-    '[Payment Status Page] Filter Payment Status',
+    '[Payment Statuses Page] Filter Payment Statuses',
     props<{ payload: string }>()
 );
 

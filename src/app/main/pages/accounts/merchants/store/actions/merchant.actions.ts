@@ -39,8 +39,13 @@ export const fetchStoreFailure = createAction(
 
 export const fetchStoreSuccess = createAction(
     '[Store API] Fetch Store Success',
-    props<{ payload: Update<SupplierStore> }>()
+    props<{ payload: SupplierStore }>()
 );
+
+// export const fetchStoreSuccess = createAction(
+//     '[Store API] Fetch Store Success',
+//     props<{ payload: Update<SupplierStore> }>()
+// );
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Edit
@@ -100,6 +105,44 @@ export const fetchStoreEmployeeEditSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - CREATE STORE] Stores
+// -----------------------------------------------------------------------------------------------------
+
+export const createStoreRequest = createAction(
+    '[Stores API] Create Store Request',
+    props<{ payload: any }>()
+);
+
+export const createStoreFailure = createAction(
+    '[Stores API] Create Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const createStoreSuccess = createAction(
+    '[Stores API] Create Store Success',
+    props<{ payload: Merchant }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE STORE] Stores
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreRequest = createAction(
+    '[Stores API] Update Store Request',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateStoreFailure = createAction(
+    '[Stores API] Update Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStoreSuccess = createAction(
+    '[Stores API] Update Store Success',
+    props<{ payload: Merchant }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - DELETE STORE] Stores
 // -----------------------------------------------------------------------------------------------------
 
@@ -155,7 +198,7 @@ export const updateStoreEmployeeRequest = createAction(
     '[Store Employee API] Update Store Employee Request',
     props<{
         payload: {
-            body: { fullName?: string; roles?: number[]; phoneNumber?: string };
+            body: { fullName?: string; roles?: number[]; mobilePhoneNo?: string };
             id: string;
         };
     }>()

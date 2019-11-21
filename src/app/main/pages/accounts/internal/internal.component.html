@@ -8,13 +8,23 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button
+                    mat-flat-button
+                    color="accent"
+                    [routerLink]="['/pages/account/internal/new']"
+                >
+                    <mat-icon>add</mat-icon>
+
+                    TAMBAH EMPLOYEE
+                </button>
+
                 <!-- <button mat-flat-button color="accent">
                     EXPORT
                 </button> -->
 
-                <button mat-stroked-button color="accent" class="sinbad">
+                <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
-                </button>
+                </button> -->
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -75,7 +85,7 @@
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                        <span class="text-left">ID</span>
+                        ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -87,7 +97,7 @@
                 <!-- User Column -->
                 <ng-container matColumnDef="user">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">User</span>
+                        User
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -99,7 +109,7 @@
                 <!-- Email Column -->
                 <ng-container matColumnDef="email">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Email</span>
+                        Email
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -112,7 +122,7 @@
                 <!-- Role Column -->
                 <ng-container matColumnDef="role">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Role</span>
+                        Role
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -125,7 +135,7 @@
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Action</span>
+                        Action
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -171,16 +181,21 @@
                                     "
                                     (click)="onChangeStatus(row)"
                                 >
-                                    <mat-icon>{{
-                                        row?.status === 'active'
-                                            ? 'archive'
-                                            : 'check_circle_outline'
-                                    }}</mat-icon>
-                                    <span>{{
-                                        (row?.status === 'active'
-                                            ? 'ACTION.INACTIVE'
-                                            : 'ACTION.ACTIVE') | translate
-                                    }}</span>
+                                    <mat-icon>
+                                        {{
+                                            row?.status === 'active'
+                                                ? 'archive'
+                                                : 'check_circle_outline'
+                                        }}
+                                    </mat-icon>
+                                    <span>
+                                        {{
+                                            (row?.status === 'active'
+                                                ? 'ACTION.INACTIVE'
+                                                : 'ACTION.ACTIVE'
+                                            ) | translate
+                                        }}
+                                    </span>
                                 </button>
                             </mat-menu>
                         </div>
@@ -193,11 +208,20 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="internal"
                     [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
-                    matRipple
-                    [routerLink]="['/pages/account/internal', row?.id, 'detail']"
                 >
                 </mat-row>
+
+                <!--  <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="internal"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.userId }"
+                    matRipple
+                    [routerLink]="[row?.userId]"
+                >
+                </mat-row> -->
             </mat-table>
+
+            <!--  [routerLink]="['/pages/account/internal', row?.userId, 'detail']" -->
 
             <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>

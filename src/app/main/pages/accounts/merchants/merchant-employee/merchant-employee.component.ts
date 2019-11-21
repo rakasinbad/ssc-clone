@@ -244,15 +244,37 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                     //     console.log('REMOVE ROLES 2', body.roles);
                     // }
 
+                    const payload = {
+                        fullName: body.fullName,
+                        roles: body.roles,
+                        mobilePhoneNo: body.phoneNumber
+                    };
+
+                    if (!body.fullName) {
+                        delete payload.fullName;
+                    }
+
+                    if (!body.roles) {
+                        delete payload.roles;
+                    }
+
+                    if (!body.phoneNumber) {
+                        delete payload.mobilePhoneNo;
+                    }
+
                     this._$log.generateGroup('[AFTER FILTER]', {
                         body: {
                             type: 'log',
                             value: body
+                        },
+                        payload: {
+                            type: 'log',
+                            value: payload
                         }
                     });
 
                     this.store.dispatch(
-                        StoreActions.updateStoreEmployeeRequest({ payload: { id, body } })
+                        StoreActions.updateStoreEmployeeRequest({ payload: { id, body: payload } })
                     );
                 },
                 error: err => {}

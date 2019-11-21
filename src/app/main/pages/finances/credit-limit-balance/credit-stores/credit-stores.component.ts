@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -23,6 +22,7 @@ import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
+import { LogService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-credit-stores',
@@ -33,7 +33,6 @@ import { CreditLimitBalanceSelectors } from '../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
-    // dataSource: MatTableDataSource<any>; // Need for demo
     displayedColumns = [
         // 'order',
         'name',
@@ -60,17 +59,16 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    // @ViewChild('filter', { static: true })
+    // filter: ElementRef;
 
     private _unSubs$: Subject<void>;
 
     constructor(
         private matDialog: MatDialog,
-        private store: Store<fromCreditLimitBalance.FeatureState>
-    ) {
-        // this.dataSource = new MatTableDataSource();
-    }
+        private store: Store<fromCreditLimitBalance.FeatureState>,
+        private _$log: LogService
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -105,21 +103,11 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.onRefreshTable();
                 }
             });
-
-        // Need for demo
-        // this.store
-        //     .select(CreditLimitBalanceSelectors.getAllCreditLimitBalance)
-        //     .pipe(takeUntil(this._unSubs$))
-        //     .subscribe(source => (this.dataSource = new MatTableDataSource(source)));
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
-        // Need for demo
-        // this.dataSource.paginator = this.paginator;
-        // this.dataSource.sort = this.sort;
 
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
@@ -180,11 +168,17 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
             .subscribe(resp => {
+                this._$log.generateGroup('[AFTER CLOSED DIALOG EDIT CREDIT LIMIT]', {
+                    response: {
+                        type: 'log',
+                        value: resp
+                    }
+                });
+
                 if (resp.action === 'edit' && resp.payload) {
                 } else {
                     this.store.dispatch(UiActions.resetHighlightRow());
                 }
-                console.log('AFTER CLOSED', resp);
             });
     }
 

@@ -117,7 +117,13 @@ export class UserSupplier extends Timestamp implements IUserSupplier {
             this.user = null;
         }
     }
+
+    static patch(body: UserSupplierOptions): UserSupplierOptions {
+        return body;
+    }
 }
+
+export type UserSupplierOptions = Partial<UserSupplier>;
 
 interface ISupplierStore {
     id: string;

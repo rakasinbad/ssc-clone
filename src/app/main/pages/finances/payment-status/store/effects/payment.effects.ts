@@ -5,7 +5,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { NoticeService } from 'app/shared/helpers';
+import { LogService, NoticeService } from 'app/shared/helpers';
 import { of } from 'rxjs';
 import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
@@ -19,16 +19,21 @@ export class PaymentEffects {
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
 
-    fetchPaymentStatusRequest$ = createEffect(() =>
+    /**
+     *
+     * [REQUEST] Payment Statuses
+     * @memberof PaymentEffects
+     */
+    fetchPaymentStatusesRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(PaymentStatusActions.fetchPaymentStatusRequest),
+            ofType(PaymentStatusActions.fetchPaymentStatusesRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([payload, { supplierId }]) => {
                 if (!supplierId) {
                     return of(
-                        PaymentStatusActions.fetchPaymentStatusFailure({
-                            payload: { id: 'fetchPaymentStatusFailure', errors: 'Not Found!' }
+                        PaymentStatusActions.fetchPaymentStatusesFailure({
+                            payload: { id: 'fetchPaymentStatusesFailure', errors: 'Not Found!' }
                         })
                     );
                 }
@@ -36,26 +41,30 @@ export class PaymentEffects {
                 return this._$paymentStatusApi.findAll(payload, supplierId).pipe(
                     catchOffline(),
                     map(resp => {
-                        let newResp = {
-                            total: 0,
-                            data: []
+                        this._$log.generateGroup('[RESPONSE REQUEST FETCH PAYMENT STATUSES]', {
+                            payload: {
+                                type: 'log',
+                                value: payload
+                            },
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        const newResp = {
+                            total: resp.total,
+                            data: resp.data
                         };
 
-                        if (resp.total > 0) {
-                            newResp = {
-                                total: resp.total,
-                                data: [...resp.data]
-                            };
-                        }
-
-                        return PaymentStatusActions.fetchPaymentStatusSuccess({
-                            payload: { paymentStatus: newResp.data, total: newResp.total }
+                        return PaymentStatusActions.fetchPaymentStatusesSuccess({
+                            payload: newResp
                         });
                     }),
                     catchError(err =>
                         of(
-                            PaymentStatusActions.fetchPaymentStatusFailure({
-                                payload: { id: 'fetchPaymentStatusFailure', errors: err }
+                            PaymentStatusActions.fetchPaymentStatusesFailure({
+                                payload: { id: 'fetchPaymentStatusesFailure', errors: err }
                             })
                         )
                     )
@@ -64,13 +73,23 @@ export class PaymentEffects {
         )
     );
 
-    fetchPaymentStatusFailure$ = createEffect(
+    /**
+     *
+     * [REQUEST - FAILURE] Payment Statuses
+     * @memberof PaymentEffects
+     */
+    fetchPaymentStatusesFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(PaymentStatusActions.fetchPaymentStatusFailure),
+                ofType(PaymentStatusActions.fetchPaymentStatusesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    console.log('FETCH PAYMENT STATUS ERR', resp);
+                    this._$log.generateGroup('[REQUEST FETCH PAYMENT STATUSES FAILURE]', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
 
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',
@@ -86,6 +105,7 @@ export class PaymentEffects {
         private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromPaymentStatus.FeatureState>,
+        private _$log: LogService,
         private _$notice: NoticeService,
         private _$paymentStatusApi: PaymentStatusApiService
     ) {}

@@ -48,7 +48,7 @@ export const fetchCreditLimitStoreSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
-// [UPDATE] Credit Limit Store Actions
+// [CRUD - UPDATE CREDIT LIMIT STORE] Credit Limit Store
 // -----------------------------------------------------------------------------------------------------
 
 export const confirmUpdateCreditLimitStore = createAction(
@@ -72,7 +72,7 @@ export const updateCreditLimitStoreSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
-// [UPDATE] Freeze Balance Status Actions
+// [CRUD - CHANGE STATUS FREEZE BALANCE] Freeze Balance Status
 // -----------------------------------------------------------------------------------------------------
 
 export const confirmChangeFreezeBalanceStatus = createAction(

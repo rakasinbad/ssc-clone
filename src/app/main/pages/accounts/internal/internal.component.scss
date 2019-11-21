@@ -75,7 +75,11 @@ app-internal {
 
         .internal {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
+        }
+
+        .mat-header-cell {
+            text-align: left;
         }
 
         .mat-cell {
