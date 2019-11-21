@@ -18,8 +18,9 @@ import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove
 
 import { CatalogueEffects } from './store/effects';
 
-import { fromCatalogue } from './store/reducers';
+import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+import { BrandEffects } from './store/effects/brand.effects';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,9 @@ import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/
     NgxPermissionsModule.forChild(),
 
     StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
-    EffectsModule.forFeature([ CatalogueEffects ])
+    StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
+
+    EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
   ],
   entryComponents: [
     CataloguesImportComponent,

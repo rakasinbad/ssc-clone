@@ -36,13 +36,14 @@ import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { statusCatalogue } from '../status';
 import { fromCatalogue } from '../store/reducers';
-import { CatalogueActions } from '../store/actions';
-import { CatalogueSelectors } from '../store/selectors';
+import { CatalogueActions, BrandActions } from '../store/actions';
+import { CatalogueSelectors, BrandSelectors } from '../store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { MatTableDataSource, MatDialog } from '@angular/material';
 import { Catalogue, CatalogueUnit } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
+import { IQueryParams, Brand } from 'app/shared/models';
 
 @Component({
     selector: 'app-catalogues-form',
@@ -62,6 +63,7 @@ export class CataloguesFormComponent implements OnInit {
     productOldPhotos: FormArray;
     subs: Subscription = new Subscription();
 
+    brands$: Observable<Array<Brand>>;
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
     productCategory$: string;
 
@@ -146,7 +148,7 @@ export class CataloguesFormComponent implements OnInit {
                         goBack: {
                             label: 'Kembali',
                             active: true,
-                            url: '/pages/catalogues'
+                            url: '/pages/catalogues/list'
                         }
                     }
                 }
@@ -333,8 +335,8 @@ export class CataloguesFormComponent implements OnInit {
                 switchMap(data => {
                     if (data.auth.user.userSuppliers.length === 0) {
                         return of(
-                            CatalogueActions.fetchCategoryTreeFailure({
-                                payload: { id: 'fetchCategoryTreeFailure', errors: 'Not Authenticated' }
+                            BrandActions.fetchBrandsFailure({
+                                payload: { id: 'fetchBrandsFailure', errors: 'Not Authenticated' }
                             })
                         );
                     }
@@ -351,10 +353,12 @@ export class CataloguesFormComponent implements OnInit {
 
                 // this.brandUser$.id = auth.data.userBrands[0].brand.id;
                 // this.brandUser$.name = auth.data.userBrands[0].brand.name;
-                this.form.get('productInfo.brandId').patchValue(data[0].data.userBrands[0].brand.id);
-                this.form.get('productInfo.brandName').patchValue(data[0].data.userBrands[0].brand.name);
+                this.form.get('productInfo.brandId').patchValue(data[0].user.userSuppliers[0].id);
+                this.form.get('productInfo.brandName').patchValue(data[0].user.userSuppliers[0].name);
 
                 this.form.get('productInfo.category').patchValue(categories);
+
+                this.startFetchBrands(data[0].user.userSuppliers[0].id);
                 
                 if (!this.isEditMode) {
                     this.form.get('productInfo.name').patchValue(data[2]);
@@ -411,6 +415,8 @@ export class CataloguesFormComponent implements OnInit {
                 }
             });
 
+        this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
+
         this._prepareEditCatalogue();
     }
 
@@ -429,6 +435,16 @@ export class CataloguesFormComponent implements OnInit {
         this._unSubs$.complete();
 
         this.subs.unsubscribe();
+    }
+
+    private startFetchBrands(supplierId: string): void {
+        const data: IQueryParams = {
+            paginate: false,
+        };
+
+        data['supplierId'] = supplierId;
+
+        this.store.dispatch(BrandActions.fetchBrandsRequest({ payload: data }));
     }
 
     private _prepareEditCatalogue() {

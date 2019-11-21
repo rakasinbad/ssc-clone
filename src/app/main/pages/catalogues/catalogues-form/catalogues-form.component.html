@@ -10,7 +10,7 @@
         <!-- / CONTENT HEADER -->
 
         <!-- CONTENT CARD (INFORMASI PRODUK) -->
-        <div class="content-card">
+        <div class="content-card mt-16">
             <div class="p-16">
                 <div class="h1">Informasi Produk</div>
             </div>
@@ -141,7 +141,6 @@
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
-                        *ngIf="!isEditMode"
                     >
                         <label
                             fxFlexAlign="center"
@@ -154,20 +153,19 @@
                         >
                             *Brand
                         </label>
-                
+
                         <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                hidden
-                                matInput
+                            <mat-select
                                 name="brandId"
                                 formControlName="brandId"
-                            />
-                            <input
-                                disabled
-                                matInput
-                                name="brandName"
-                                formControlName="brandName"
-                            />
+                            >
+                                <mat-option
+                                    *ngFor="let brand of brands$ | async"
+                                    [value]="brand.id"
+                                >
+                                    {{ brand.name }}
+                                </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <!-- / BRAND PRODUK -->
