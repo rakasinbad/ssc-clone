@@ -1,4 +1,5 @@
 import * as CatalogueActions from './catalogue.actions';
+import * as BrandActions from './brand.actions';
 
-export { CatalogueActions };
+export { BrandActions, CatalogueActions };
 
