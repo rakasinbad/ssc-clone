@@ -9,7 +9,7 @@ import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/c
 
 const routes: Routes = [
     {
-        path: '',
+        path: 'list',
         component: CataloguesComponent,
         canActivate: [AuthGuard],
         // resolve: {
