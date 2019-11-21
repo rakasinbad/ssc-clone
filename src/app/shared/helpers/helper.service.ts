@@ -77,7 +77,8 @@ export class HelperService {
                         (search.fieldName && search.fieldName === 'keyword') ||
                         search.fieldName === 'type' ||
                         search.fieldName === 'statusPayment' ||
-                        search.fieldName === 'dueDay'
+                        search.fieldName === 'dueDay' ||
+                        search.fieldName === 'status'
                     ) {
                         if (search.fieldName === 'statusPayment') {
                             if (newParams.has('dueDay')) {

@@ -220,6 +220,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
     get searchPaymentStatus(): string {
         return localStorage.getItem('filter.payment.status') || '';
     }

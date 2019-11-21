@@ -56,14 +56,18 @@ app-orders {
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
-        .mat-header-row {
-            min-height: 64px;
-        }
+        // .mat-header-row {
+        //     min-height: 64px;
+        // }
 
         .order {
             position: relative;
             cursor: pointer;
-            height: 84px;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
         }
 
         .mat-cell {
