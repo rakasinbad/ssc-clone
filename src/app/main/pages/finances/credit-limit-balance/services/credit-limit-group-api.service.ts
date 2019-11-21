@@ -4,6 +4,8 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
+import { CreditLimitGroup } from '../models';
+
 /**
  *
  *
@@ -63,5 +65,17 @@ export class CreditLimitGroupApiService {
         const newParams = this._$helper.handleParams(this._url, params, newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @returns {Observable<CreditLimitGroup>}
+     * @memberof CreditLimitGroupApiService
+     */
+    create<T>(body: T): Observable<CreditLimitGroup> {
+        return this.http.post<CreditLimitGroup>(this._url, body);
     }
 }

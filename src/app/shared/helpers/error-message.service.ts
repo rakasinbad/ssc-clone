@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { LogService } from './log.service';
 
 @Injectable({
@@ -66,6 +67,9 @@ export class ErrorMessageService {
 
             case 'selected':
                 return this.translate.instant('ERROR.SELECTED', { fieldName: labelName });
+
+            case 'is_unique':
+                return this.translate.instant('ERROR.IS_UNIQUE', { fieldName: labelName });
 
             default:
                 break;

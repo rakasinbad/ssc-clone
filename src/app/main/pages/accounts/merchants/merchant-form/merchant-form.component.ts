@@ -263,8 +263,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                // console.log('CLICK SUBMIT', isClick);
-
                 this._$log.generateGroup(`[CLICK SUBMIT]`, {
                     isClick: {
                         type: 'log',
@@ -277,14 +275,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }
             });
 
-        console.log('INIT STORE FORM');
+        this._$log.generateGroup('INIT STORE FORM', '', 'default');
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        console.log('DESTROY STORE FORM');
+        this._$log.generateGroup('DESTROY STORE FORM', '', 'default');
 
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.resetBreadcrumb());

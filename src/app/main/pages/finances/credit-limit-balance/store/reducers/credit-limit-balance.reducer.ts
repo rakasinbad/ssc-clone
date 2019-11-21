@@ -61,6 +61,7 @@ const creditLimitBalanceReducer = createReducer(
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreRequest,
         CreditLimitBalanceActions.updateStatusFreezeBalanceRequest,
+        CreditLimitBalanceActions.createCreditLimitGroupRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoreRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoresRequest,
         CreditLimitBalanceActions.fetchCreditLimitGroupsRequest,
@@ -77,6 +78,7 @@ const creditLimitBalanceReducer = createReducer(
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreFailure,
         CreditLimitBalanceActions.updateStatusFreezeBalanceFailure,
+        CreditLimitBalanceActions.createCreditLimitGroupFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoreFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoresFailure,
         CreditLimitBalanceActions.fetchCreditLimitGroupsFailure,
@@ -87,30 +89,6 @@ const creditLimitBalanceReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
-    on(CreditLimitBalanceActions.updateCreditLimitStoreSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(payload, {
-            ...state.creditLimitBalanceStores,
-            selectedCreditLimitStoreId: null
-        }),
-        errors: adapterError.removeOne('updateCreditLimitStoreFailure', state.errors)
-    })),
-    // on(CreditLimitBalanceActions.updateStatusFreezeBalanceFailure, (state, { payload }) => ({
-    //     ...state,
-    //     isLoading: false,
-    //     isRefresh: true,
-    //     errors: adapterError.upsertOne(payload, state.errors)
-    // })),
-    on(CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(
-            payload,
-            state.creditLimitBalanceStores
-        ),
-        errors: adapterError.removeOne('updateStatusFreezeBalanceFailure', state.errors)
-    })),
     on(CreditLimitBalanceActions.fetchCreditLimitStoresSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -139,6 +117,39 @@ const creditLimitBalanceReducer = createReducer(
             state.creditLimitBalanceGroups
         ),
         errors: adapterError.removeOne('fetchCreditLimitGroupsFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.updateCreditLimitStoreSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(payload, {
+            ...state.creditLimitBalanceStores,
+            selectedCreditLimitStoreId: null
+        }),
+        errors: adapterError.removeOne('updateCreditLimitStoreFailure', state.errors)
+    })),
+    // on(CreditLimitBalanceActions.updateStatusFreezeBalanceFailure, (state, { payload }) => ({
+    //     ...state,
+    //     isLoading: false,
+    //     isRefresh: true,
+    //     errors: adapterError.upsertOne(payload, state.errors)
+    // })),
+    on(CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(
+            payload,
+            state.creditLimitBalanceStores
+        ),
+        errors: adapterError.removeOne('updateStatusFreezeBalanceFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.createCreditLimitGroupSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceGroups: adapterCreditLimitGroup.addOne(
+            payload,
+            state.creditLimitBalanceGroups
+        ),
+        errors: adapterError.removeOne('createCreditLimitGroupFailure', state.errors)
     }))
     // on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
     //     ...state,

@@ -2,6 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import {
     Cluster,
+    Hierarchy,
     IErrorHandler,
     Province,
     Role,
@@ -18,7 +19,9 @@ import { DropdownActions } from '../actions';
 export const FEATURE_KEY = 'dropdowns';
 
 // interface AccountState extends EntityState<Account> {}
-interface ErrorState extends EntityState<IErrorHandler> {}
+interface ErrorState extends EntityState<IErrorHandler> {
+    selectedErrorId: string | number;
+}
 
 // interface SearchState {
 //     accounts: AccountState;
@@ -26,6 +29,7 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
     // search: SearchState;
+    hierarchies?: Hierarchy[];
     roles?: Role[];
     provinces?: Province[];
     storeClusters?: Cluster[];
@@ -38,8 +42,10 @@ export interface State {
 // const adapterAccount = createEntityAdapter<Account>();
 // const initialAccountState = adapterAccount.getInitialState();
 
-const adapterError = createEntityAdapter<IErrorHandler>();
-const initialErrorState = adapterError.getInitialState();
+const adapterError = createEntityAdapter<IErrorHandler>({
+    selectId: row => row.id
+});
+const initialErrorState = adapterError.getInitialState({ selectedErrorId: null });
 
 export const initialState: State = {
     // search: {
@@ -52,14 +58,6 @@ export const initialState: State = {
 
 const dropdownReducer = createReducer(
     initialState,
-    on(DropdownActions.fetchDropdownRoleSuccess, (state, { payload }) => ({
-        ...state,
-        roles: payload
-    })),
-    on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
-        ...state,
-        provinces: payload
-    })),
     // on(DropdownActions.fetchSearchAccountSuccess, (state, { payload }) => ({
     //     ...state,
     //     search: {
@@ -69,6 +67,7 @@ const dropdownReducer = createReducer(
     //     errors: adapterError.removeOne('fetchAccountSearchFailure', state.errors)
     // })),
     on(
+        DropdownActions.fetchDropdownHierarchyFailure,
         DropdownActions.fetchDropdownProvinceFailure,
         DropdownActions.fetchDropdownRoleFailure,
         DropdownActions.fetchDropdownStoreClusterFailure,
@@ -82,6 +81,21 @@ const dropdownReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
+    on(DropdownActions.fetchDropdownHierarchySuccess, (state, { payload }) => ({
+        ...state,
+        hierarchies: payload,
+        errors: adapterError.removeOne('fetchDropdownHierarchyFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
+        ...state,
+        provinces: payload,
+        errors: adapterError.removeOne('fetchDropdownProvinceFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownRoleSuccess, (state, { payload }) => ({
+        ...state,
+        roles: payload,
+        errors: adapterError.removeOne('fetchDropdownRoleFailure', state.errors)
+    })),
     on(DropdownActions.fetchDropdownStoreClusterSuccess, (state, { payload }) => ({
         ...state,
         storeClusters: payload,
@@ -114,6 +128,7 @@ export function reducer(state: State | undefined, action: Action): State {
 }
 
 const selectProvinceState = (state: State) => state.provinces;
+const getErrorsState = (state: State) => state.errors;
 // const getListSearchAccountState = (state: State) => state.search.accounts;
 
 // export const {
@@ -122,3 +137,10 @@ const selectProvinceState = (state: State) => state.provinces;
 //     selectIds: selectSearchAccountIds,
 //     selectTotal: selectSearchAccountsTotal
 // } = adapterAccount.getSelectors(getListSearchAccountState);
+
+export const {
+    selectAll: selectAllError,
+    selectEntities: selectErrorEntities,
+    selectIds: selectErrorIds,
+    selectTotal: selectErrorTotal
+} = adapterError.getSelectors(getErrorsState);

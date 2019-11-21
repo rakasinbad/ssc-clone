@@ -280,6 +280,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         });
     }
 
+    safeValue(item: any): any {
+        return item ? item : '-';
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------

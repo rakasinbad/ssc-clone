@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
 import {
     ClusterApiService,
+    HierarchyApiService,
     LogService,
     ProvinceApiService,
     StoreClusterApiService,
@@ -15,6 +16,7 @@ import {
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import {
     Cluster,
+    Hierarchy,
     Province,
     Role,
     StoreGroup,
@@ -40,6 +42,63 @@ import { DropdownActions } from '../actions';
 @Injectable()
 export class DropdownEffects {
     private _isOnline = this.network.online;
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Hierarchy]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchDropdownHierarchyRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownHierarchyRequest),
+            switchMap(() => {
+                return this._$hierarchyApi
+                    .findAll<Hierarchy[]>({ paginate: false })
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map(resp => {
+                            this._$log.generateGroup(
+                                '[RESPONSE REQUEST FETCH HIERARCHY DROPDOWN]',
+                                {
+                                    response: {
+                                        type: 'log',
+                                        value: resp
+                                    }
+                                }
+                            );
+
+                            const newResp =
+                                resp && resp.length > 0
+                                    ? resp.map(row => {
+                                          const newHierarchy = new Hierarchy(
+                                              row.id,
+                                              row.name,
+                                              row.status,
+                                              row.supplierId,
+                                              row.createdAt,
+                                              row.updatedAt,
+                                              row.deletedAt
+                                          );
+
+                                          return newHierarchy;
+                                      })
+                                    : [];
+
+                            return DropdownActions.fetchDropdownHierarchySuccess({
+                                payload: newResp
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                DropdownActions.fetchDropdownHierarchyFailure({
+                                    payload: { id: 'fetchDropdownHierarchyFailure', errors: err }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Role]
@@ -174,7 +233,7 @@ export class DropdownEffects {
                     retry(3),
                     map(resp => {
                         this._$log.generateGroup('[RESPONSE REQUEST FETCH PROVINCE DROPDOWN]', {
-                            resp: {
+                            response: {
                                 type: 'log',
                                 value: resp
                             }
@@ -237,11 +296,12 @@ export class DropdownEffects {
                             this._$log.generateGroup(
                                 '[RESPONSE REQUEST FETCH STORE CLUSTER DROPDOWN]',
                                 {
-                                    resp: {
+                                    response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -302,11 +362,12 @@ export class DropdownEffects {
                             this._$log.generateGroup(
                                 '[RESPONSE REQUEST FETCH STORE GROUP DROPDOWN]',
                                 {
-                                    resp: {
+                                    response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -363,11 +424,12 @@ export class DropdownEffects {
                             this._$log.generateGroup(
                                 '[RESPONSE REQUEST FETCH STORE SEGMENT DROPDOWN]',
                                 {
-                                    resp: {
+                                    response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -424,11 +486,12 @@ export class DropdownEffects {
                             this._$log.generateGroup(
                                 '[RESPONSE REQUEST FETCH STORE TYPE DROPDOWN]',
                                 {
-                                    resp: {
+                                    response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -485,11 +548,12 @@ export class DropdownEffects {
                             this._$log.generateGroup(
                                 '[RESPONSE REQUEST FETCH VEHICLE ACCESSIBILITY DROPDOWN]',
                                 {
-                                    resp: {
+                                    response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -637,9 +701,10 @@ export class DropdownEffects {
         private actions$: Actions,
         private store: Store<fromRoot.State>,
         protected network: Network,
+        private _$log: LogService,
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
-        private _$log: LogService,
+        private _$hierarchyApi: HierarchyApiService,
         private _$provinceApi: ProvinceApiService,
         private _$roleApi: RoleApiService,
         private _$storeClusterApi: StoreClusterApiService,

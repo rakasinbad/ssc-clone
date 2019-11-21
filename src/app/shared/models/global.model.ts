@@ -33,7 +33,8 @@ type SortString = keyof typeof Sort;
 enum LogMode {
     group,
     groupCollapsed,
-    table
+    table,
+    default
 }
 
 type LogModeString = keyof typeof LogMode;

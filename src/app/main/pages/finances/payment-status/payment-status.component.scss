@@ -73,6 +73,15 @@ app-payment-status {
         //     height: 84px;
         // }
 
+        .payment {
+            position: relative;
+            // cursor: pointer;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+        }
+
         .mat-cell {
             min-width: 0;
             display: flex;

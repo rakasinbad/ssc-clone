@@ -36,6 +36,111 @@ export class CreditLimitBalanceEffects {
 
     /**
      *
+     * [CREATE - REQUEST] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    createCreditLimitGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.createCreditLimitGroupRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$creditLimitGroupApi.create(payload).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(
+                            `[RESPONSE REQUEST CREATE CREDIT LIMIT GROUP]`,
+                            {
+                                payload: {
+                                    type: 'log',
+                                    value: payload
+                                },
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                }
+                            },
+                            'groupCollapsed'
+                        );
+
+                        return CreditLimitBalanceActions.createCreditLimitGroupSuccess({
+                            payload: resp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            CreditLimitBalanceActions.createCreditLimitGroupFailure({
+                                payload: { id: 'createCreditLimitGroupFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [CREATE - FAILURE] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    createCreditLimitGroupFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.createCreditLimitGroupFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        `[REQUEST CREATE CREDIT LIMIT GROUP FAILURE]`,
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data gagal ditambah', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [CREATE - SUCCESS] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    createCreditLimitGroupSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.createCreditLimitGroupSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        `[REQUEST CREATE CREDIT LIMIT GROUP SUCCESS]`,
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data berhasil ditambah', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
      * [UPDATE - DIALOG] Credit Limit Store
      * @memberof CreditLimitBalanceEffects
      */
@@ -70,6 +175,120 @@ export class CreditLimitBalanceEffects {
                 }
             })
         )
+    );
+
+    /**
+     *
+     * [UPDATE - REQUEST] Credit Limit Store
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateCreditLimitStoreRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.updateCreditLimitStoreRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$creditLimitStoreApi.patch(body, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(
+                            `[RESPONSE REQUEST UPDATE CREDIT LIMIT STORE]`,
+                            {
+                                payload: {
+                                    type: 'log',
+                                    value: body
+                                },
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                }
+                            },
+                            'groupCollapsed'
+                        );
+
+                        return CreditLimitBalanceActions.updateCreditLimitStoreSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...body,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            CreditLimitBalanceActions.updateCreditLimitStoreFailure({
+                                payload: { id: 'updateCreditLimitStoreFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Credit Limit Store
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateCreditLimitStoreFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.updateCreditLimitStoreFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        `[REQUEST UPDATE CREDIT LIMIT STORE FAILURE]`,
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data gagal diubah', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Credit Limit Store
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateCreditLimitStoreSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.updateCreditLimitStoreSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        `[REQUEST UPDATE CREDIT LIMIT STORE SUCCESS]`,
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data berhasil diubah', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     /**

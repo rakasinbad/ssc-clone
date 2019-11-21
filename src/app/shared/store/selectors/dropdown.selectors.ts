@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import * as _ from 'lodash';
+import { sortBy, unionBy, uniqBy } from 'lodash';
 
 import { fromDropdown } from '../reducers';
 
@@ -20,15 +20,37 @@ export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDr
 //     fromDropdown.selectAllSearchAccounts
 // );
 
-export const getRoleDropdownState = createSelector(getDropdownState, state => {
-    return state.roles && state.roles.length > 0 ? _.sortBy(state.roles, ['role'], ['asc']) : [];
+// -----------------------------------------------------------------------------------------------------
+// Hierarchies State
+// -----------------------------------------------------------------------------------------------------
+
+export const getHierarchyDropdownState = createSelector(getDropdownState, state => {
+    return state.hierarchies && state.hierarchies.length > 0
+        ? sortBy(state.hierarchies, ['name'], ['asc'])
+        : [];
 });
+
+// -----------------------------------------------------------------------------------------------------
+// Roles State
+// -----------------------------------------------------------------------------------------------------
+
+export const getRoleDropdownState = createSelector(getDropdownState, state => {
+    return state.roles && state.roles.length > 0 ? sortBy(state.roles, ['role'], ['asc']) : [];
+});
+
+// -----------------------------------------------------------------------------------------------------
+// Provinces State
+// -----------------------------------------------------------------------------------------------------
 
 export const getProvinceDropdownState = createSelector(getDropdownState, state =>
     state.provinces && state.provinces.length > 0
-        ? _.sortBy(state.provinces, ['name'], ['asc'])
+        ? sortBy(state.provinces, ['name'], ['asc'])
         : state.provinces
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Provinces State Get Cities
+// -----------------------------------------------------------------------------------------------------
 
 export const getCityDropdownState = createSelector(
     getDropdownState,
@@ -37,10 +59,14 @@ export const getCityDropdownState = createSelector(
 
         if (idx !== -1) {
             const selectedProv = state.provinces[idx];
-            return _.sortBy(_.uniqBy(selectedProv.urbans, 'city'), ['city'], ['asc']);
+            return sortBy(uniqBy(selectedProv.urbans, 'city'), ['city'], ['asc']);
         }
     }
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Provinces State Get Districts
+// -----------------------------------------------------------------------------------------------------
 
 export const getDistrictDropdownState = createSelector(
     getDropdownState,
@@ -50,10 +76,14 @@ export const getDistrictDropdownState = createSelector(
         if (idx !== -1) {
             const selectedProv = state.provinces[idx];
             const selectedCity = selectedProv.urbans.filter(row => row.city === city);
-            return _.sortBy(_.unionBy(selectedCity, 'district'), ['district'], ['asc']);
+            return sortBy(unionBy(selectedCity, 'district'), ['district'], ['asc']);
         }
     }
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Provinces State Get Urbans
+// -----------------------------------------------------------------------------------------------------
 
 export const getUrbanDropdownState = createSelector(
     getDropdownState,
@@ -65,10 +95,14 @@ export const getUrbanDropdownState = createSelector(
             const selectedDistrict = selectedProv.urbans.filter(
                 row => row.city === city && row.district === district
             );
-            return _.sortBy(_.unionBy(selectedDistrict, 'urban'), ['urban'], ['asc']);
+            return sortBy(unionBy(selectedDistrict, 'urban'), ['urban'], ['asc']);
         }
     }
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Provinces State Get Postcode
+// -----------------------------------------------------------------------------------------------------
 
 export const getPostcodeDropdownState = createSelector(
     getDropdownState,
@@ -88,35 +122,86 @@ export const getPostcodeDropdownState = createSelector(
     }
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Store Clusters State
+// -----------------------------------------------------------------------------------------------------
+
 export const getStoreClusterDropdownState = createSelector(getDropdownState, state =>
     state.storeClusters && state.storeClusters.length > 0
-        ? _.sortBy(state.storeClusters, ['name'], ['asc'])
+        ? sortBy(state.storeClusters, ['name'], ['asc'])
         : state.storeClusters
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Store Groups State
+// -----------------------------------------------------------------------------------------------------
+
 export const getStoreGroupDropdownState = createSelector(getDropdownState, state =>
     state.storeGroups && state.storeGroups.length > 0
-        ? _.sortBy(state.storeGroups, ['name'], ['asc'])
+        ? sortBy(state.storeGroups, ['name'], ['asc'])
         : state.storeGroups
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Store Segments State
+// -----------------------------------------------------------------------------------------------------
+
 export const getStoreSegmentDropdownState = createSelector(getDropdownState, state =>
     state.storeSegments && state.storeSegments.length > 0
-        ? _.sortBy(state.storeSegments, ['name'], ['asc'])
+        ? sortBy(state.storeSegments, ['name'], ['asc'])
         : state.storeSegments
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Store Types State
+// -----------------------------------------------------------------------------------------------------
+
 export const getStoreTypeDropdownState = createSelector(getDropdownState, state =>
     state.storeTypes && state.storeTypes.length > 0
-        ? _.sortBy(state.storeTypes, ['name'], ['asc'])
+        ? sortBy(state.storeTypes, ['name'], ['asc'])
         : state.storeTypes
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Vehicle Accessibilities State
+// -----------------------------------------------------------------------------------------------------
+
 export const getVehicleAccessibilityDropdownState = createSelector(getDropdownState, state =>
     state.vehicleAccessibilities && state.vehicleAccessibilities.length > 0
-        ? _.sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
+        ? sortBy(state.vehicleAccessibilities, ['name'], ['asc'])
         : state.vehicleAccessibilities
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Errors State
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllError = createSelector(getDropdownState, fromDropdown.selectAllError);
+
+export const getErrorEntities = createSelector(getDropdownState, fromDropdown.selectErrorEntities);
+
+export const getTotalErrorEntity = createSelector(getDropdownState, fromDropdown.selectErrorTotal);
+
+export const getSelectedErrorId = createSelector(
+    getDropdownState,
+    state => state.errors.selectedErrorId
+);
+
+export const getSelectedError = createSelector(
+    getErrorEntities,
+    getSelectedErrorId,
+    (entities, id) => entities[id]
+);
+
+export const getSelectedErrorById = createSelector(getErrorEntities, (entities, { errorId }) => {
+    console.log('SELECTOR', errorId, entities);
+    return entities[errorId];
+});
+
+export const getIsError = createSelector(getErrorEntities, (entities, { errorId }) => {
+    console.log('SELECTOR', errorId, entities, entities[errorId]);
+    return entities[errorId] ? true : false;
+});
 
 /* export const getCityDropdownState = (provinceId: string) =>
     createSelector(

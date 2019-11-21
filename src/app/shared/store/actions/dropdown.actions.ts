@@ -8,11 +8,31 @@ import {
     StoreGroup,
     StoreSegment,
     StoreType,
-    VehicleAccessibility
+    VehicleAccessibility,
+    Hierarchy
 } from 'app/shared/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Hierarchy
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownHierarchyRequest = createAction(
+    '[Helper Dropdown] Fetch Hierarchy Request'
+);
+
+export const fetchDropdownHierarchyFailure = createAction(
+    '[Helper Dropdown] Fetch Hierarchy Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownHierarchySuccess = createAction(
+    '[Helper Dropdown] Fetch Hierarchy Success',
+    props<{ payload: Hierarchy[] }>()
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Fetch Role
 // -----------------------------------------------------------------------------------------------------

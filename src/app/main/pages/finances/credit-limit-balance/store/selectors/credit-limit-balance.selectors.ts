@@ -6,14 +6,13 @@ export const getCreditLimitBalanceState = createFeatureSelector<fromCreditLimitB
     fromCreditLimitBalance.FEATURE_KEY
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Credit Limit Stores State
+// -----------------------------------------------------------------------------------------------------
+
 export const getAllCreditLimitStore = createSelector(
     getCreditLimitBalanceState,
     fromCreditLimitBalance.selectAllCreditLimitStore
-);
-
-export const getAllCreditLimitGroup = createSelector(
-    getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectAllCreditLimitGroup
 );
 
 export const getCreditLimitStoreEntities = createSelector(
@@ -21,19 +20,9 @@ export const getCreditLimitStoreEntities = createSelector(
     fromCreditLimitBalance.selectCreditLimitStoreEntities
 );
 
-export const getCreditLimitGroupEntities = createSelector(
-    getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectCreditLimitGroupEntities
-);
-
 export const getTotalCreditLimitStoreEntity = createSelector(
     getCreditLimitBalanceState,
     fromCreditLimitBalance.selectCreditLimitStoreTotal
-);
-
-export const getTotalCreditLimitGroupEntity = createSelector(
-    getCreditLimitBalanceState,
-    fromCreditLimitBalance.selectCreditLimitGroupTotal
 );
 
 export const getTotalCreditLimitStore = createSelector(
@@ -52,6 +41,25 @@ export const getSelectedCreditLimitStore = createSelector(
     (entities, id) => entities[id]
 );
 
+// -----------------------------------------------------------------------------------------------------
+// Credit Limit Groups State
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllCreditLimitGroup = createSelector(
+    getCreditLimitBalanceState,
+    fromCreditLimitBalance.selectAllCreditLimitGroup
+);
+
+export const getCreditLimitGroupEntities = createSelector(
+    getCreditLimitBalanceState,
+    fromCreditLimitBalance.selectCreditLimitGroupEntities
+);
+
+export const getTotalCreditLimitGroupEntity = createSelector(
+    getCreditLimitBalanceState,
+    fromCreditLimitBalance.selectCreditLimitGroupTotal
+);
+
 export const getSelectedCreditLimitGroupId = createSelector(
     getCreditLimitBalanceState,
     state => state.selectedCreditLimitGroupId
@@ -62,6 +70,10 @@ export const getSelectedCreditLimitGroup = createSelector(
     getSelectedCreditLimitGroupId,
     (entities, id) => entities[id]
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Helper State
+// -----------------------------------------------------------------------------------------------------
 
 export const getIsRefresh = createSelector(getCreditLimitBalanceState, state => state.isRefresh);
 

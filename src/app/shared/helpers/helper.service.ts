@@ -176,4 +176,25 @@ export class HelperService {
             }
         ];
     }
+
+    unitParameter(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'Provinsi',
+                label: 'Provinsi'
+            },
+            {
+                id: 'Kota/Kabupaten',
+                label: 'Kota/Kabupaten'
+            },
+            {
+                id: 'Kecamatan',
+                label: 'Kecamatan'
+            },
+            {
+                id: 'Kelurahan',
+                label: 'Kelurahan'
+            }
+        ];
+    }
 }

@@ -7,19 +7,18 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, LogService } from 'app/shared/helpers';
+import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
 import { CreditLimitStore } from '../models';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
-import { CreditLimitBalanceActions } from '../store/actions';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 
 @Component({
     selector: 'app-credit-store-form',
@@ -41,7 +40,8 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
         private storage: StorageMap,
         private store: Store<fromCreditLimitBalance.FeatureState>,
         @Inject(MAT_DIALOG_DATA) public data: any,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$log: LogService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -91,59 +91,98 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(action: string): void {
-        console.log('Submit', action, this.form);
+        this._$log.generateGroup(
+            `[SUBMIT ${action.toUpperCase()}]`,
+            {
+                form: {
+                    type: 'log',
+                    value: this.form
+                }
+            },
+            'groupCollapsed'
+        );
 
-        const body = this.form.value;
-        const payload = {
-            ...CreditLimitStore.patch({
-                creditLimit: body.limit,
-                balanceAmount: body.balance,
-                termOfPayment: body.top
-            })
-        };
+        const { limit: creditLimit, balance: balanceAmount, top: termOfPayment } = this.form.value;
+        const payload = CreditLimitStore.patch({
+            creditLimit,
+            balanceAmount,
+            termOfPayment
+        });
         const { limit: limitField, balance: balanceField, top: topField } = this.form.controls;
 
         if (action === 'edit') {
-            const dialogRef = this.matDialog.open(ChangeConfirmationComponent, {
-                data: {
-                    title: `Confirmation`,
-                    message: `Are you sure want to change ?`,
-                    id: 's',
-                    change: body
+            this.storage.get('selected.credit.limit.store').subscribe({
+                next: (prev: CreditLimitStore) => {
+                    if (
+                        (limitField.dirty && limitField.value === prev.creditLimit) ||
+                        (limitField.touched && limitField.value === prev.creditLimit) ||
+                        (limitField.pristine && limitField.value === prev.creditLimit)
+                    ) {
+                        delete payload.creditLimit;
+                    }
+
+                    if (
+                        (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
+                        (balanceField.touched && balanceField.value === prev.balanceAmount) ||
+                        (balanceField.pristine && balanceField.value === prev.balanceAmount)
+                    ) {
+                        delete payload.balanceAmount;
+                    }
+
+                    if (
+                        (topField.dirty && topField.value === prev.termOfPayment) ||
+                        (topField.touched && topField.value === prev.termOfPayment) ||
+                        (topField.pristine && topField.value === prev.termOfPayment)
+                    ) {
+                        delete payload.termOfPayment;
+                    }
+
+                    const dialogRef = this.matDialog.open<
+                        ChangeConfirmationComponent,
+                        any,
+                        {
+                            id: string;
+                            change: {
+                                balanceAmount?: string;
+                                creditLimit?: string;
+                                termOfPayment?: number;
+                            };
+                        }
+                    >(ChangeConfirmationComponent, {
+                        data: {
+                            title: `Confirmation`,
+                            message: `Are you sure want to change ?`,
+                            id: this.data.id,
+                            change: payload
+                        },
+                        disableClose: true
+                    });
+
+                    dialogRef
+                        .afterClosed()
+                        .pipe(takeUntil(this._unSubs$))
+                        .subscribe(resp => {
+                            this._$log.generateGroup(
+                                '[AFTER CLOSED DIALOG CONFIRMATION EDIT CREDIT LIMIT]',
+                                {
+                                    response: {
+                                        type: 'log',
+                                        value: resp
+                                    }
+                                },
+                                'groupCollapsed'
+                            );
+
+                            if (resp.id && resp.change) {
+                                this.dialogRef.close({ action, payload });
+                            }
+                            // else {
+                            //     this.dialogRef.close();
+                            // }
+                        });
                 },
-                disableClose: true
+                error: err => {}
             });
-
-            // this.storage.get('selected.credit.limit.store').subscribe({
-            //     next: (prev: CreditLimitStore) => {
-            //         if (
-            //             (limitField.dirty && limitField.value === prev.creditLimit) ||
-            //             (limitField.touched && limitField.value === prev.creditLimit) ||
-            //             (limitField.pristine && limitField.value === prev.creditLimit)
-            //         ) {
-            //             delete payload.creditLimit;
-            //         }
-
-            //         if (
-            //             (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
-            //             (balanceField.touched && balanceField.value === prev.balanceAmount) ||
-            //             (balanceField.pristine && balanceField.value === prev.balanceAmount)
-            //         ) {
-            //             delete payload.balanceAmount;
-            //         }
-
-            //         if (
-            //             (topField.dirty && topField.value === prev.termOfPayment) ||
-            //             (topField.touched && topField.value === prev.termOfPayment) ||
-            //             (topField.pristine && topField.value === prev.termOfPayment)
-            //         ) {
-            //             delete payload.termOfPayment;
-            //         }
-
-            //         this.dialogRef.close({ action, payload });
-            //     },
-            //     error: err => {}
-            // });
         }
     }
 

@@ -168,14 +168,23 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
             .subscribe(resp => {
-                this._$log.generateGroup('[AFTER CLOSED DIALOG EDIT CREDIT LIMIT]', {
-                    response: {
-                        type: 'log',
-                        value: resp
-                    }
-                });
+                this._$log.generateGroup(
+                    '[AFTER CLOSED DIALOG EDIT CREDIT LIMIT]',
+                    {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    },
+                    'groupCollapsed'
+                );
 
                 if (resp.action === 'edit' && resp.payload) {
+                    this.store.dispatch(
+                        CreditLimitBalanceActions.updateCreditLimitStoreRequest({
+                            payload: { id: item.id, body: resp.payload }
+                        })
+                    );
                 } else {
                     this.store.dispatch(UiActions.resetHighlightRow());
                 }

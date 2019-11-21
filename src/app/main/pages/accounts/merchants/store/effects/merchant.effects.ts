@@ -9,7 +9,7 @@ import { LogService, NoticeService, StoreApiService, UserApiService } from 'app/
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { PaginateResponse, SupplierStore, TStatus, User } from 'app/shared/models';
-import { UiActions, FormActions } from 'app/shared/store/actions';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';
 import {
@@ -109,12 +109,16 @@ export class MerchantEffects {
                 ofType(StoreActions.createStoreSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST CREATE STORE SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        `[REQUEST CREATE STORE SUCCESS]`,
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
                     this.router.navigate(['/pages/account/stores']).finally(() => {
                         this._$notice.open(`${resp.name} berhasil ditambah`, 'success', {
