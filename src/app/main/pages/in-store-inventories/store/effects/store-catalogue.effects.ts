@@ -18,7 +18,7 @@ import { fromStoreCatalogue } from '../reducers';
 import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 
 @Injectable()
-export class AttendanceEffects {
+export class StoreCatalogueEffects {
     // -----------------------------------------------------------------------------------------------------
     // @ CRUD methods
     // -----------------------------------------------------------------------------------------------------

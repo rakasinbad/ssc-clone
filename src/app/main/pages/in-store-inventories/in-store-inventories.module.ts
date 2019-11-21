@@ -1,34 +1,44 @@
 import { NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
-import { FuseSharedModule } from '@fuse/shared.module';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { MaterialModule } from 'app/shared/material.module';
+import { SharedModule } from 'app/shared/shared.module';
+import { NgxPermissionsModule } from 'ngx-permissions';
+
 import { InStoreInventoriesRoutingModule } from './in-store-inventories-routing.module';
 import { InStoreInventoriesComponent } from './in-store-inventories.component';
-// import { InStoreCatalogsComponent } from './in-store-catalogs/in-store-catalogs.component';
+import { StoreCatalogueEffects } from './store/effects';
+import { fromStoreCatalogue } from './store/reducers';
 
+/**
+ *
+ *
+ * @export
+ * @class InStoreInventoriesModule
+ */
 @NgModule({
-  declarations: [InStoreInventoriesComponent],
-  imports: [
-    InStoreInventoriesRoutingModule,
+    declarations: [
+        InStoreInventoriesComponent,
+    ],
+    imports: [
+        InStoreInventoriesRoutingModule,
 
-    MatButtonModule,
-    MatIconModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatTableModule,
-    MatMenuModule,
-    MatTabsModule,
-    MatFormFieldModule,
-    MatInputModule,
+        SharedModule,
+        MaterialModule,
 
-    FuseSharedModule
-  ]
+        // AgmCoreModule,
+        LeafletModule,
+        RxReactiveFormsModule,
+        RxReactiveDynamicFormsModule,
+        NgxPermissionsModule.forChild(),
+
+        StoreModule.forFeature(fromStoreCatalogue.FEATURE_KEY, fromStoreCatalogue.reducer),
+        EffectsModule.forFeature([
+            StoreCatalogueEffects
+        ])
+    ]
 })
-export class InStoreInventoriesModule {}
+export class InStoreCataloguesModule {}
