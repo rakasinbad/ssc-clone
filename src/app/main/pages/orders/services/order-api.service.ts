@@ -35,14 +35,6 @@ export class OrderApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
-    /**
-     *
-     *
-     * @param {IQueryParams} params
-     * @param {string} [supplierId]
-     * @returns {Observable<any>}
-     * @memberof OrderApiService
-     */
     findAll(params: IQueryParams, supplierId?: string): Observable<any> {
         const newArg = supplierId
             ? [
@@ -56,5 +48,17 @@ export class OrderApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get(this._url, { params: newParams });
+    }
+
+    findById(id: string): Observable<any> {
+        return this.http.get(`${this._url}/${id}`);
+    }
+
+    patch(body: any, id: string): Observable<any> {
+        return this.http.patch(`${this._url}/${id}`, body);
+    }
+
+    patchCustom<T>(body: T, id: string): Observable<any> {
+        return this.http.patch(`${this._url}/${id}`, body);
     }
 }

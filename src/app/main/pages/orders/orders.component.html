@@ -52,7 +52,34 @@
                 <div>
                     <mat-chip-list aria-label="Filter">
                         <mat-chip *ngIf="searchStatus || filterStatus">
-                            Status: {{ searchStatus | titlecase | replace: '-':' ' }}
+                            Status:
+                            <!-- {{ searchStatus | titlecase | replace: '-':' ' }} -->
+
+                            <ng-container [ngSwitch]="searchStatus">
+                                <ng-container *ngSwitchCase="'checkout'">
+                                    Order Baru
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'packing'">
+                                    Dikemas
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'confirm'">
+                                    Siap Dikirim
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'delivery'">
+                                    Dikirim
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'arrived'">
+                                    Diterima
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'done'">
+                                    Selesai
+                                </ng-container>
+                            </ng-container>
 
                             <mat-icon matChipRemove (click)="onRemoveSearchStatus()">
                                 cancel
@@ -204,7 +231,31 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.status) }}
+                            <ng-container [ngSwitch]="row?.status">
+                                <ng-container *ngSwitchCase="'checkout'">
+                                    Order Baru
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'packing'">
+                                    Dikemas
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'confirm'">
+                                    Siap Dikirim
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'delivery'">
+                                    Dikirim
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'arrived'">
+                                    Diterima
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'done'">
+                                    Selesai
+                                </ng-container>
+                            </ng-container>
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -278,14 +329,36 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="send"
+                                    (click)="onChangeStatus(row)"
                                 >
                                     <mat-icon>send</mat-icon>
                                     <span>
-                                        {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }}
+                                        <ng-container [ngSwitch]="row?.status">
+                                            <ng-container *ngSwitchCase="'checkout'">
+                                                Dikemas
+                                            </ng-container>
+
+                                            <ng-container *ngSwitchCase="'packing'">
+                                                Siap Dikirim
+                                            </ng-container>
+
+                                            <ng-container *ngSwitchCase="'confirm'">
+                                                Dikirim
+                                            </ng-container>
+
+                                            <ng-container *ngSwitchCase="'delivery'">
+                                                Diterima
+                                            </ng-container>
+
+                                            <ng-container *ngSwitchCase="'arrived'">
+                                                Selesai
+                                            </ng-container>
+                                        </ng-container>
+                                        <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
                                     </span>
                                 </button>
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -294,9 +367,9 @@
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
-                                </button>
+                                </button> -->
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -305,9 +378,9 @@
                                 >
                                     <mat-icon>delete</mat-icon>
                                     <span>Remove</span>
-                                </button>
+                                </button> -->
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -315,9 +388,9 @@
                                 >
                                     <mat-icon>archive</mat-icon>
                                     <span>Archive</span>
-                                </button>
+                                </button> -->
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -325,7 +398,7 @@
                                 >
                                     <mat-icon>print</mat-icon>
                                     <span>{{ 'ACTION.PRINT' | translate }}</span>
-                                </button>
+                                </button> -->
                             </mat-menu>
                         </div>
                     </mat-cell>

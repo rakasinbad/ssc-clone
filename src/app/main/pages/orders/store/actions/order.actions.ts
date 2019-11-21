@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
 import { IOrderDemo } from '../../models';
+import { Update } from '@ngrx/entity';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Orders
@@ -39,6 +40,30 @@ export const fetchOrderFailure = createAction(
 export const fetchOrderSuccess = createAction(
     '[Order API] Fetch Order Success',
     props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS ORDER] Orders
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeStatusOrder = createAction(
+    '[Orders Page] Confirm Change Status Order',
+    props<{ payload: any }>()
+);
+
+export const updateStatusOrderRequest = createAction(
+    '[Orders API] Update Status Order Request',
+    props<{ payload: { body: string; id: string } }>()
+);
+
+export const updateStatusOrderFailure = createAction(
+    '[Orders API] Update Status Order Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStatusOrderSuccess = createAction(
+    '[Orders API] Update Status Order Success',
+    props<{ payload: Update<any> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

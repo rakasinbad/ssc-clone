@@ -195,6 +195,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store.dispatch(UiActions.resetBreadcrumb());
         this.store.dispatch(UiActions.hideCustomToolbar());
+        this.store.dispatch(OrderActions.resetOrders());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -210,6 +211,15 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
+    }
+
+    onChangeStatus(item: any): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(OrderActions.confirmChangeStatusOrder({ payload: item }));
     }
 
     onDelete(item): void {

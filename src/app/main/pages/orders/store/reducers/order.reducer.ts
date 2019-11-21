@@ -43,15 +43,32 @@ const initialState: State = {
 
 const orderReducer = createReducer(
     initialState,
-    on(OrderActions.fetchOrderRequest, OrderActions.fetchOrdersRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(OrderActions.fetchOrderFailure, OrderActions.fetchOrdersFailure, (state, { payload }) => ({
+    on(
+        OrderActions.updateStatusOrderRequest,
+        OrderActions.fetchOrderRequest,
+        OrderActions.fetchOrdersRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        OrderActions.updateStatusOrderFailure,
+        OrderActions.fetchOrderFailure,
+        OrderActions.fetchOrdersFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(OrderActions.fetchOrderSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         isRefresh: undefined,
-        errors: adapterError.upsertOne(payload, state.errors)
+        orders: adapterOrder.addOne(payload, { ...state.orders, selectedOrderId: payload.id }),
+        errors: adapterError.removeOne('fetchOrderFailure', state.errors)
     })),
     on(OrderActions.fetchOrdersSuccess, (state, { payload }) => ({
         ...state,
@@ -59,6 +76,12 @@ const orderReducer = createReducer(
         isRefresh: undefined,
         orders: adapterOrder.addAll(payload.data, { ...state.orders, total: payload.total }),
         errors: adapterError.removeOne('fetchOrdersFailure', state.errors)
+    })),
+    on(OrderActions.updateStatusOrderSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        orders: adapterOrder.updateOne(payload, state.orders),
+        errors: adapterError.removeOne('updateStatusOrderFailure', state.errors)
     })),
     on(OrderActions.filterOrder, (state, { payload }) => ({
         ...state,
