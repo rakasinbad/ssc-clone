@@ -4,26 +4,24 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from '../core/auth/auth.guard';
 import { OrderDetailComponent } from './order-detail/order-detail.component';
 import { OrdersComponent } from './orders.component';
-import { OrderResolver, OrderStatusResolver } from './resolvers';
-import { OrderDetailResolver } from './resolvers/order-detail.resolver';
 
 const routes: Routes = [
     {
         path: '',
         component: OrdersComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            orders: OrderResolver,
-            status: OrderStatusResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     orders: OrderResolver,
+        //     status: OrderStatusResolver
+        // }
     },
     {
         path: ':id/detail',
         component: OrderDetailComponent,
-        canActivate: [AuthGuard],
-        resolve: {
-            order: OrderDetailResolver
-        }
+        canActivate: [AuthGuard]
+        // resolve: {
+        //     order: OrderDetailResolver
+        // }
     }
 ];
 

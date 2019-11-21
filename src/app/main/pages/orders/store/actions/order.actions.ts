@@ -1,15 +1,59 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams } from 'app/shared/models';
+import { IErrorHandler, IQueryParams } from 'app/shared/models';
+
 import { IOrderDemo } from '../../models';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Orders
+// -----------------------------------------------------------------------------------------------------
 
 export const fetchOrdersRequest = createAction(
     '[Orders API] Fetch Orders Request',
     props<{ payload: IQueryParams }>()
 );
 
+export const fetchOrdersFailure = createAction(
+    '[Orders API] Fetch Orders Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
 export const fetchOrdersSuccess = createAction(
     '[Orders API] Fetch Orders Success',
-    props<{ payload: { orders: any; total: number } }>()
+    props<{ payload: { data: any; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Order
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchOrderRequest = createAction(
+    '[Order API] Fetch Order Request',
+    props<{ payload: string }>()
+);
+
+export const fetchOrderFailure = createAction(
+    '[Order API] Fetch Order Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchOrderSuccess = createAction(
+    '[Order API] Fetch Order Success',
+    props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Reset Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const resetOrders = createAction('[Orders Page] Reset Orders State');
+
+// -----------------------------------------------------------------------------------------------------
+// Helper Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const filterOrder = createAction(
+    '[Orders Page] Filter Orders',
+    props<{ payload: string }>()
 );
 
 export const filterAllOrder = createAction('[Orders Page] Filter All Order');
@@ -19,6 +63,10 @@ export const filterToBeShippedOrder = createAction('[Orders Page] Filter To be S
 export const filterShippedOrder = createAction('[Orders Page] Filter Shipped Order');
 export const filterReceivedOrder = createAction('[Orders Page] Filter Received Order');
 export const filterCompletedOrder = createAction('[Orders Page] Filter Completed Order');
+
+// -----------------------------------------------------------------------------------------------------
+// For Demo
+// -----------------------------------------------------------------------------------------------------
 
 export const generateOrdersDemo = createAction(
     '[Orders Page] Generate Orders Demo',

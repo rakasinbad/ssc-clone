@@ -10,6 +10,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { OrderDetailComponent } from './order-detail/order-detail.component';
 import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersComponent } from './orders.component';
+import { OrderEffects } from './store/effects';
 import { fromOrder } from './store/reducers';
 
 /**
@@ -31,7 +32,7 @@ import { fromOrder } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromOrder.FEATURE_KEY, fromOrder.reducer),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([OrderEffects])
     ]
 })
 export class OrdersModule {}

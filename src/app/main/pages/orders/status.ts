@@ -4,65 +4,72 @@ import { UiActions } from 'app/shared/store/actions';
 export const statusOrder: FuseNavigation[] = [
     {
         id: 'all-status',
-        title: 'All',
-        translate: 'STATUS.ORDER.ALL.TITLE',
+        title: 'Semua',
+        // title: 'All',
+        // translate: 'STATUS.ORDER.ALL.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
         }
     },
     {
-        id: 'new-order',
-        title: 'New Order',
-        translate: 'STATUS.ORDER.NEW_ORDER.TITLE',
+        id: 'checkout',
+        title: 'Order Baru',
+        // title: 'New Order',
+        // translate: 'STATUS.ORDER.NEW_ORDER.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'new-order' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'checkout' }));
         }
     },
     {
         id: 'packing',
-        title: 'Packing',
-        translate: 'STATUS.ORDER.PACKING.TITLE',
+        title: 'Dikemas',
+        // title: 'Packing',
+        // translate: 'STATUS.ORDER.PACKING.TITLE',
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'packing' }));
         }
     },
     {
-        id: 'to-be-shipped',
-        title: 'To be shipped',
-        translate: 'STATUS.ORDER.TO_BE_SHIPPED.TITLE',
+        id: 'confirm',
+        title: 'Siap Dikirim',
+        //    title: 'To be shipped',
+        //    translate: 'STATUS.ORDER.TO_BE_SHIPPED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'to-be-shipped' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'confirm' }));
         }
     },
     {
-        id: 'shipped',
-        title: 'Shipped',
-        translate: 'STATUS.ORDER.SHIPPED.TITLE',
+        id: 'delivery',
+        title: 'Dikirim',
+        //    title: 'Shipped',
+        //    translate: 'STATUS.ORDER.SHIPPED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'shipped' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'delivery' }));
         }
     },
     {
-        id: 'received',
-        title: 'Received',
-        translate: 'STATUS.ORDER.RECEIVED.TITLE',
+        id: 'arrived',
+        title: 'Diterima',
+        //    title: 'Received',
+        //    translate: 'STATUS.ORDER.RECEIVED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'received' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'arrived' }));
         }
     },
     {
-        id: 'completed',
-        title: 'Completed',
-        translate: 'STATUS.ORDER.COMPLETED.TITLE',
+        id: 'done',
+        title: 'Selesai',
+        // title: 'Completed',
+        // translate: 'STATUS.ORDER.COMPLETED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'completed' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'done' }));
         }
     }
 ];

@@ -8,10 +8,10 @@
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
-            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
+        <!-- <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"> -->
+        <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <button mat-flat-button color="accent">
                     EXPORT
                 </button>
@@ -19,19 +19,19 @@
                 <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button>
-            </div>
+            </div> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <div class="search-wrapper mx-12">
+        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
+        <!-- SEARCH -->
+        <!-- <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
                         <input #filter placeholder="Search for a order" />
                     </div>
-                </div>
-                <!-- / SEARCH -->
+                </div> -->
+        <!-- / SEARCH -->
 
-                <button mat-flat-button class="grey-600">
+        <!-- <button mat-flat-button class="grey-600">
                     <mat-icon>filter_list</mat-icon>
                     Filter Lists
                 </button>
@@ -39,11 +39,11 @@
                 <button mat-flat-button class="grey-600">
                     Group By
                 </button>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24">
+        <mat-card class="mt-8 mb-24" *ngIf="filterStatus && filterStatus !== 'all-status'">
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -51,15 +51,12 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <mat-chip>
-                            Status: Diterima
+                        <mat-chip *ngIf="searchStatus || filterStatus">
+                            Status: {{ searchStatus | titlecase | replace: '-':' ' }}
 
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-
-                        <mat-chip>
-                            Geo Coverage
-                            <mat-icon matChipRemove>cancel</mat-icon>
+                            <mat-icon matChipRemove (click)="onRemoveSearchStatus()">
+                                cancel
+                            </mat-icon>
                         </mat-chip>
                     </mat-chip-list>
                 </div>
@@ -67,7 +64,10 @@
         </mat-card>
 
         <!-- CONTENT CARD -->
-        <div class="content-card">
+        <div
+            class="sinbad-content mat-elevation-z1"
+            [class.mt-8]="!filterStatus || filterStatus === 'all-status'"
+        >
             <!-- CONTENT TOOLBAR -->
             <!-- <div class="toolbar px-24 py-8">
                 <span>Content toolbar</span>
@@ -81,13 +81,14 @@
             <mat-table
                 class="orders-table"
                 #table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
                 <!-- Checkbox Column -->
-                <ng-container matColumnDef="checkbox">
+                <!-- <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox
                             [(ngModel)]="hasSelected"
@@ -98,115 +99,139 @@
                     <mat-cell *matCellDef="let row">
                         <mat-checkbox (click)="$event.stopPropagation()"></mat-checkbox>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <!-- Origins Column -->
                 <ng-container matColumnDef="origins">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Origins
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.origins }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.orderCode) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- ID Column -->
                 <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
+                        ID
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.id }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.id) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Order Date Column -->
                 <ng-container matColumnDef="orderDate">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Order Date
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.orderDate | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+                        <p style="word-break: break-word;">
+                            {{
+                                safeValue(row?.createdAt) !== '-'
+                                    ? (row?.createdAt | date: 'dd/MM/yyyy HH:mm:ss')
+                                    : safeValue(row?.createdAt)
+                            }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="storeName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Store Name
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.storeName }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.store?.name) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Trx Amount Column -->
                 <ng-container matColumnDef="trxAmount">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                    <mat-header-cell *matHeaderCellDef>
                         Trx Amount
                     </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                        <p class="text-truncate price">
-                            {{ row?.trxAmount | currency: 'IDR':'symbol':'4.2-2' | price }}
+                    <mat-cell *matCellDef="let row">
+                        <p class="price" style="word-break: break-word;">
+                            {{
+                                safeValue(row?.totalPrice) !== '-'
+                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                    : +row?.totalPrice
+                            }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Payment Method Column -->
                 <ng-container matColumnDef="paymentMethod">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                    <mat-header-cell *matHeaderCellDef>
                         Payment Method/TOP
                     </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                        <p class="text-truncate">
-                            {{ row?.paymentMethod }}
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.paymentTypeSupplierMethod?.paymentMethod?.name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Total Product Column -->
                 <ng-container matColumnDef="totalProduct">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                    <mat-header-cell *matHeaderCellDef>
                         Jumlah Produk
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.totalProduct }}</p>
+                        <p style="word-break: break-word;">
+                            {{
+                                safeValue(row?.totalQty) !== '-'
+                                    ? (+row?.totalQty | number)
+                                    : +row?.totalQty
+                            }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Status Column -->
                 <ng-container matColumnDef="status">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>
+                        Status
+                    </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.status }}</p>
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.status) }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Delivered On Column -->
-                <ng-container matColumnDef="deliveredOn">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <!-- <ng-container matColumnDef="deliveredOn">
+                    <mat-header-cell *matHeaderCellDef>
                         Delivered On
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.deliveredOn | date: 'dd/MM/yyyy' }}</p>
+                        <p style="word-break: break-word;">
+                            {{ row?.deliveredOn | date: 'dd/MM/yyyy' }}
+                        </p>
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <!-- Actual Amt Delivered Column -->
                 <ng-container matColumnDef="actualAmountDelivered">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Actual Amt Delivered
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate price">
+                        <p class="price" style="word-break: break-word;">
                             {{
-                                row?.actualAmountDelivered
-                                    | currency: 'IDR':'symbol':'4.2-2'
-                                    | price
+                                safeValue(row?.totalPrice) !== '-'
+                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                    : +row?.totalPrice
                             }}
                         </p>
                     </mat-cell>
@@ -317,7 +342,23 @@
                 </mat-row>
             </mat-table>
 
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
                 [pageSize]="5"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
@@ -325,9 +366,9 @@
             >
             </mat-paginator>
 
-            <!-- <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
-            </div> -->
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

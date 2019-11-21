@@ -4,33 +4,33 @@ import { fromOrder } from '../reducers';
 
 export const getOrderState = createFeatureSelector<fromOrder.State>(fromOrder.FEATURE_KEY);
 
-export const getAllOrder = createSelector(
-    getOrderState,
-    fromOrder.selectAllOrders
-);
+// -----------------------------------------------------------------------------------------------------
+// Orders State
+// -----------------------------------------------------------------------------------------------------
 
-export const getOrderEntities = createSelector(
-    getOrderState,
-    fromOrder.selectOrderEntities
-);
+export const getAllOrder = createSelector(getOrderState, fromOrder.selectAllOrder);
 
-export const getTotalOrderEntity = createSelector(
-    getOrderState,
-    fromOrder.selectOrdersTotal
-);
+export const getOrderEntities = createSelector(getOrderState, fromOrder.selectOrderEntities);
 
-export const getTotalOrder = createSelector(
-    getOrderState,
-    state => state.orders.total
-);
+export const getTotalOrderEntity = createSelector(getOrderState, fromOrder.selectOrderTotal);
+
+export const getTotalOrder = createSelector(getOrderState, state => state.orders.total);
 
 export const getSelectedOrderId = createSelector(
     getOrderState,
-    state => state.selectedOrderId
+    state => state.orders.selectedOrderId
 );
 
 export const getSelectedOrder = createSelector(
     getOrderEntities,
     getSelectedOrderId,
-    (orderEntities, orderId) => orderEntities[orderId]
+    (entities, id) => entities[id]
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Helper State
+// -----------------------------------------------------------------------------------------------------
+
+export const getIsRefresh = createSelector(getOrderState, state => state.isRefresh);
+
+export const getIsLoading = createSelector(getOrderState, state => state.isLoading);
