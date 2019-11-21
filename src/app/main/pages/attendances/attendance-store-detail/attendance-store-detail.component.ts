@@ -17,7 +17,7 @@ import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, Role } from 'app/shared/models';
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
@@ -211,6 +211,18 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
                 payload: data
             })
         );
+    }
+
+    public getChainRoles(roles: Array<Role>): string {
+        return Attendance.getChainRoles(roles);
+    }
+
+    public getAttendanceType(attendanceType: any): string {
+        return Attendance.getAttendanceType(attendanceType);
+    }
+
+    public getLocationType(locationType: any): string {
+        return Attendance.getLocationType(locationType);
     }
 
     // -----------------------------------------------------------------------------------------------------

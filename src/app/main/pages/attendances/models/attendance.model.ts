@@ -1,7 +1,8 @@
-import { IResponsePaginate, ITimestamp, Timestamp, TNullable, User } from 'app/shared/models';
+import { IResponsePaginate, ITimestamp, Timestamp, TNullable, User, Role } from 'app/shared/models';
 
 // import { AccountAssocAttendance } from '../../accounts/models/account.model';
 import { Store } from './index';
+import { UserStore } from '../../accounts/merchants/models';
 
 type ELocationType = 'inside' | 'outside' | 'others';
 
@@ -98,32 +99,30 @@ export class Attendance extends Timestamp {
         this.deletedAt = deletedAt;
     }
 
-    public getChainRoles(delimiter: string = ', '): string {
-        if (this.user.roles.length === 0) {
-            return '';
-        } else {
-            return this.user.roles.map(role => role.role).join(delimiter);
-        }
+    static getChainRoles(roles: Array<Role>): string {
+
+        return !Array.isArray(roles) ? '' : roles.map(role => role.role).join(', ');
     }
 
-    public getAttendanceType(): string {
-        if (this.attendanceType === 'present') {
+
+    static getAttendanceType(attendanceType: EAttendanceType): string {
+        if (attendanceType === 'present') {
             return 'Hadir';
-        } else if (this.attendanceType === 'absent') {
+        } else if (attendanceType === 'absent') {
             return 'Tidak Hadir';
-        } else if (this.attendanceType === 'leave') {
+        } else if (attendanceType === 'leave') {
             return 'Cuti';
         }
 
         return 'Tidak diketahui';
     }
 
-    public getLocationType(): string {
-        if (this.locationType === 'inside') {
+    static getLocationType(locationType: ELocationType): string {
+        if (locationType === 'inside') {
             return 'Kerja di Toko';
-        } else if (this.locationType === 'outside') {
+        } else if (locationType === 'outside') {
             return 'Kerja di Luar Toko';
-        } else if (this.locationType === 'others') {
+    } else if (locationType === 'others') {
             return 'Lainnya';
         }
 

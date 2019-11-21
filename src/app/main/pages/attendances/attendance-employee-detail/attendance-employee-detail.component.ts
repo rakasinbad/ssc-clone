@@ -17,7 +17,7 @@ import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { IQueryParams, User } from 'app/shared/models';
+import { IQueryParams, User, Role } from 'app/shared/models';
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
@@ -26,11 +26,9 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs
 
 import { Attendance } from '../models';
 import { locale as english } from '../i18n/en';
-import { fromAttendance } from '../store/reducers';
-import { AttendanceSelectors } from '../store/selectors';
-import { AttendanceActions } from '../store/actions';
-
-import { UserApiService } from 'app/shared/helpers';
+import { fromAttendance, fromUser } from '../store/reducers';
+import { AttendanceSelectors, UserSelectors } from '../store/selectors';
+import { AttendanceActions, UserActions } from '../store/actions';
 
 // import * as localization from 'moment/locale/id';
 // import { LocaleConfig } from 'ngx-daterangepicker-material';
@@ -48,7 +46,8 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
-    /** ID pegawai yang ingin diambil data-nya. */
+    /** ID toko dan pegawai yang ingin diambil data-nya. */
+    _storeId: string;
     _employeeId: string;
 
     /** Observable untuk User yang dipilih dari halaman depan. */
@@ -87,16 +86,15 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
 
     constructor(
         private route: ActivatedRoute,
-        private _userApi: UserApiService,
+        private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
-        /** Mendapatkan ID user dari parameter URL. */
+        /** Mendapatkan ID user dan toko dari parameter URL. */
         this._employeeId = this.route.snapshot.params.employeeId;
+        this._storeId = this.route.snapshot.params.storeId;
 
-        /** Mengambil data user sesuai dengan ID pegawainya. */
-        this.selectedUser$ = this._userApi.findById(this._employeeId).pipe(takeUntil(this._unSubs$));
-
+        this._fromUser.dispatch(UserActions.fetchUserRequest({ payload: this._employeeId }));
         this._fuseTranslationLoaderService.loadTranslations(english);
     }
 
@@ -129,6 +127,9 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         .pipe(
             takeUntil(this._unSubs$)
         );
+
+        /** Mengambil data user sesuai dengan ID pegawainya. */
+        this.selectedUser$ = this._fromUser.select(UserSelectors.getUser).pipe(takeUntil(this._unSubs$));
 
         /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
         this.onChangePage();
@@ -173,6 +174,18 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
                 payload: data
             })
         );
+    }
+
+    public getChainRoles(roles: Array<Role>): string {
+        return Attendance.getChainRoles(roles);
+    }
+
+    public getAttendanceType(attendanceType: any): string {
+        return Attendance.getAttendanceType(attendanceType);
+    }
+
+    public getLocationType(locationType: any): string {
+        return Attendance.getLocationType(locationType);
     }
 
     // -----------------------------------------------------------------------------------------------------

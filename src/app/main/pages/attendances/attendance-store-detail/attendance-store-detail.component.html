@@ -87,7 +87,7 @@
                         </label>
                         <div fxLayout="column" fxLayoutGap="20px">
                             <span *ngFor="let userStore of ((selectedStore$ | async)?.userStores)">
-                                {{ userStore?.user?.fullName }} ({{ userStore.getChainRoles() }})
+                                {{ userStore?.user?.fullName }} ({{ getChainRoles(userStore?.user?.roles) }})
                             </span>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                         <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
     
                         <mat-cell *matCellDef="let row">
-                            <p class="text-truncate">{{ row?.getLocationType() }}</p>
+                            <p class="text-truncate">{{ getLocationType(row?.locationType) }}</p>
                         </mat-cell>
                     </ng-container>
     

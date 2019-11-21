@@ -111,7 +111,75 @@ export class AttendanceEffects {
             ofType(AttendanceActions.fetchAttendancesRequest),
             map(action => action.payload),
             switchMap(queryParams => {
-                return this.attendanceApiSvc.findAll(queryParams).pipe(
+                /** WITH PAGINATION */
+                if (queryParams.paginate) {
+                    return this.attendanceApiSvc.find<IPaginatedResponse<Attendance>>(queryParams).pipe(
+                        catchOffline(),
+                        map(resp => {
+                            let newResp = {
+                                total: 0,
+                                data: []
+                            };
+
+                            newResp = {
+                                total: resp.total,
+                                data: resp.data.map(attendance => {
+                                    const newAttendance = new Attendance(
+                                        attendance.id,
+                                        attendance.date,
+                                        attendance.longitudeCheckIn,
+                                        attendance.latitudeCheckIn,
+                                        attendance.longitudeCheckOut,
+                                        attendance.latitudeCheckOut,
+                                        attendance.checkIn,
+                                        attendance.checkOut,
+                                        attendance.locationType,
+                                        attendance.attendanceType,
+                                        attendance.userId,
+                                        attendance.user,
+                                        attendance.createdAt,
+                                        attendance.updatedAt,
+                                        attendance.deletedAt
+                                    );
+    
+                                    newAttendance.user.setUserStores = attendance.user.userStores;
+    
+                                    return newAttendance;
+                                })
+                            };
+    
+                            this.logSvc.generateGroup(
+                                '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
+                                {
+                                    payload: {
+                                        type: 'log',
+                                        value: resp
+                                    }
+                                }
+                            );
+    
+                            return AttendanceActions.fetchAttendancesSuccess({
+                                payload: {
+                                    attendances: newResp.data,
+                                    total: newResp.total
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                AttendanceActions.fetchAttendancesFailure({
+                                    payload: {
+                                        id: 'fetchAttendancesFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+                }
+
+                /** WITHOUT PAGINATION */
+                return this.attendanceApiSvc.find<Array<Attendance>>(queryParams).pipe(
                     catchOffline(),
                     map(resp => {
                         let newResp = {
@@ -119,12 +187,10 @@ export class AttendanceEffects {
                             data: []
                         };
 
-                        if ((resp as IPaginatedResponse<Attendance>).total > 0) {
-                            const newResponse = (resp as IPaginatedResponse<Attendance>);
-
-                            newResp = {
-                                total: newResponse.total,
-                                data: newResponse.data.map(attendance => new Attendance(
+                        newResp = {
+                            total: resp.length,
+                            data: resp.map(attendance => {
+                                const newAttendance = new Attendance(
                                     attendance.id,
                                     attendance.date,
                                     attendance.longitudeCheckIn,
@@ -140,32 +206,13 @@ export class AttendanceEffects {
                                     attendance.createdAt,
                                     attendance.updatedAt,
                                     attendance.deletedAt
-                                ))
-                            };
-                        } else {
-                            const newResponse = (resp as Array<Attendance>);
+                                );
 
-                            newResp = {
-                                total: newResponse.length,
-                                data: newResponse.map(attendance => new Attendance(
-                                    attendance.id,
-                                    attendance.date,
-                                    attendance.longitudeCheckIn,
-                                    attendance.latitudeCheckIn,
-                                    attendance.longitudeCheckOut,
-                                    attendance.latitudeCheckOut,
-                                    attendance.checkIn,
-                                    attendance.checkOut,
-                                    attendance.locationType,
-                                    attendance.attendanceType,
-                                    attendance.userId,
-                                    attendance.user,
-                                    attendance.createdAt,
-                                    attendance.updatedAt,
-                                    attendance.deletedAt
-                                ))
-                            };
-                        }
+                                newAttendance.user.setUserStores = attendance.user.userStores;
+
+                                return newAttendance;
+                            })
+                        };
 
                         this.logSvc.generateGroup(
                             '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',

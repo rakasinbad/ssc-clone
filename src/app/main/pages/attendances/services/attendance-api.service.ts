@@ -18,15 +18,34 @@ export class AttendanceApiService {
         this._url = helperSvc.handleApiRouter(this._endpoint);
     }
     
-    findAll(params: IQueryParams): Observable<Array<Attendance> | IPaginatedResponse<Attendance>> {
-        this._url = this.helperSvc.handleApiRouter(this._endpoint);
-        const newParams = this.helperSvc.handleParams(this._url, params);
+    find<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
 
-        if (params.paginate) {
-            return this.http.get<IPaginatedResponse<Attendance>>(this._url, { params: newParams });
-        } else {
-            return this.http.get<Array<Attendance>>(this._url, { params: newParams });
+        if (params['supplierId']) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
         }
+
+        if (params['storeId']) {
+            newArgs.push({
+                key: 'storeId',
+                value: params['storeId']
+            });
+        }
+
+        if (params['userId']) {
+            newArgs.push({
+                key: 'userId',
+                value: params['userId']
+            });
+        }
+        
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
     }
 
     findById(id: string): Observable<IAttendance> {
