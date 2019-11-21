@@ -51,7 +51,7 @@ export const navigation: FuseNavigation[] = [
                 title: 'Manage Product',
                 translate: 'NAV.MANAGE_PRODUCT.TITLE',
                 type: 'item',
-                url: '/pages/catalogues'
+                url: '/pages/catalogues/list'
             }
         ]
     },
