@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
+import { Store as Merchant } from '../models';
 import { Observable } from 'rxjs';
 
-import { IAttendance, IAttendanceResponse } from '../models';
+import { IAttendance, Attendance } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -16,15 +17,49 @@ export class AttendanceApiService {
     constructor(private http: HttpClient, private helperSvc: HelperService) {
         this._url = helperSvc.handleApiRouter(this._endpoint);
     }
+    
+    find<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
 
-    findAll(params: IQueryParams): Observable<IAttendanceResponse> {
-        const newParams = this.helperSvc.handleParams(this._url, params);
+        if (params['supplierId']) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
 
-        return this.http.get<IAttendanceResponse>(this._url, { params: newParams });
+        if (params['storeId']) {
+            newArgs.push({
+                key: 'storeId',
+                value: params['storeId']
+            });
+        }
+
+        if (params['userId']) {
+            newArgs.push({
+                key: 'userId',
+                value: params['userId']
+            });
+        }
+        
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
     }
 
     findById(id: string): Observable<IAttendance> {
         return this.http.get<IAttendance>(`${this._url}/${id}`);
+    }
+
+    patch(id: string, data: Partial<Attendance>): Observable<Attendance> {
+        return this.http.patch<Attendance>(`${this._url}/${id}`, data);
+    }
+
+    getStore(supplierId: string): Observable<Merchant> {
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+
+        return this.http.get<Merchant>(`${this._url}/${supplierId}`, { params: { type: 'attendance' } });
     }
 
     create(body: IAttendance): Observable<any> {

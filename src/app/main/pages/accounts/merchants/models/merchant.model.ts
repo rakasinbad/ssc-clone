@@ -105,52 +105,64 @@ export class Store extends Timestamp implements IStore {
         this.imageUrl = imageUrl ? imageUrl.trim() : null;
         this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
         this.reason = reason ? reason.trim() : null;
-        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : null;
+        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : '0';
 
         this.userStores =
             userStores && userStores.length > 0
                 ? userStores.map(row => {
-                      const newUserStore = new UserStore(
-                          row.id,
-                          row.userId,
-                          row.storeId,
-                          row.status,
-                          row.createdAt,
-                          row.updatedAt,
-                          row.deletedAt
-                      );
+                    const newUserStore = new UserStore(
+                        row.id,
+                        row.userId,
+                        row.storeId,
+                        row.status,
+                        row.createdAt,
+                        row.updatedAt,
+                        row.deletedAt
+                    );
 
-                      if (row.user) {
-                          newUserStore.setUser = row.user;
-                      }
+                    if (row.user) {
+                        newUserStore.setUser = row.user;
+                    }
 
-                      if (row.store) {
-                          newUserStore.setStore = row.store;
-                      }
+                    if (row.store) {
+                        newUserStore.setStore = row.store;
+                    }
 
-                      return newUserStore;
-                  })
-                : [];
+                    return newUserStore;
+                }) : [];
 
         this.storeType = storeType
             ? new StoreType(
-                  storeType.id,
-                  storeType.name,
-                  storeType.createdAt,
-                  storeType.updatedAt,
-                  storeType.deletedAt
-              )
-            : null;
+                storeType.id,
+                storeType.name,
+                storeType.createdAt,
+                storeType.updatedAt,
+                storeType.deletedAt
+            ) : null;
 
         this.storeSegment = storeSegment
             ? new StoreSegment(
-                  storeSegment.id,
-                  storeSegment.name,
-                  storeSegment.createdAt,
-                  storeSegment.updatedAt,
-                  storeSegment.deletedAt
-              )
-            : null;
+                storeSegment.id,
+                storeSegment.name,
+                storeSegment.createdAt,
+                storeSegment.updatedAt,
+                storeSegment.deletedAt
+            ) : null;
+        
+        // this.userStores = Array.isArray(userStores) ?
+        //     userStores.map(userStore => new UserStore(
+        //         userStore.id,
+        //         userStore.userId,
+        //         userStore.storeId,
+        //         userStore.status,
+        //         // userStore.store,
+        //         // userStore.user,
+        //         // userStore.totalCheckIn,
+        //         // userStore.totalCheckOut,
+        //         userStore.createdAt,
+        //         userStore.updatedAt,
+        //         userStore.deletedAt
+        //     )) : [];
 
         if (urban) {
             const newUrban = new Urban(
@@ -176,16 +188,15 @@ export class Store extends Timestamp implements IStore {
 
         this.storeConfig = storeConfig
             ? new StoreConfig(
-                  storeConfig.id,
-                  storeConfig.startingWorkHour,
-                  storeConfig.finishedWorkHour,
-                  storeConfig.status,
-                  storeConfig.storeId,
-                  storeConfig.createdAt,
-                  storeConfig.updatedAt,
-                  storeConfig.deletedAt
-              )
-            : null;
+                storeConfig.id,
+                storeConfig.startingWorkHour,
+                storeConfig.finishedWorkHour,
+                storeConfig.status,
+                storeConfig.storeId,
+                storeConfig.createdAt,
+                storeConfig.updatedAt,
+                storeConfig.deletedAt
+            ) : null;
     }
 
     set setSupplierStores(value: SupplierStore[]) {
@@ -212,13 +223,12 @@ export class Store extends Timestamp implements IStore {
     set setVehicleAccessibility(value: VehicleAccessibility) {
         this.vehicleAccessibility = value
             ? new VehicleAccessibility(
-                  value.id,
-                  value.name,
-                  value.createdAt,
-                  value.updatedAt,
-                  value.deletedAt
-              )
-            : null;
+                value.id,
+                value.name,
+                value.createdAt,
+                value.updatedAt,
+                value.deletedAt
+            ) : null;
     }
 
     set setCustomerHierarchies(value: CustomerHierarchy[]) {
@@ -506,6 +516,14 @@ export class UserStore extends Timestamp implements IUserStore {
 
     static patch(body: UserStoreOptions): UserStoreOptions {
         return body;
+    }
+
+    public getChainRoles(delimiter: string = ', '): string {
+        if (this.user.roles.length === 0) {
+            return '';
+        } else {
+            return this.user.roles.map(role => role.role).join(delimiter);
+        }
     }
 }
 

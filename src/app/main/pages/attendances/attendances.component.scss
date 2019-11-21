@@ -71,10 +71,6 @@ app-attendances {
             align-items: center;
         }
 
-        .mat-column-id {
-            flex: 0 1 84px;
-        }
-
         .mat-column-image {
             flex: 0 1 84px;
 
@@ -127,8 +123,16 @@ app-attendances {
             border-radius: 50%;
         }
 
+        .mat-column-idToko {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-storeName {
+            flex: 0 1 70%;
+        }
+
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 10%;
             justify-content: flex-end;
         }
     }

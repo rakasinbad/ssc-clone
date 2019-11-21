@@ -6,12 +6,24 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 
-import { AttendanceDetailComponent } from './attendance-detail/attendance-detail.component';
+import { AttendanceStoreDetailComponent } from './attendance-store-detail/attendance-store-detail.component';
+import { AttendanceEmployeeDetailComponent } from './attendance-employee-detail/attendance-employee-detail.component';
+import { AttendanceEmployeeFormComponent } from './attendance-employee-form/attendance-employee-form.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { AttendancesRoutingModule } from './attendances-routing.module';
 import { AttendancesComponent } from './attendances.component';
+
+/** ATTENDANCE'S STATE MANAGEMENT */
 import { AttendanceEffects } from './store/effects/attendance.effects';
 import { fromAttendance } from './store/reducers';
+
+/** MERCHANT'S STATE MANAGEMENT */
+import { fromMerchant } from './store/reducers';
+import { MerchantEffects } from './store/effects';
+
+/** USER'S STATE MANAGEMENT */
+import { fromUser } from './store/reducers';
+import { UserEffects } from './store/effects';
 
 /**
  *
@@ -20,7 +32,13 @@ import { fromAttendance } from './store/reducers';
  * @class AttendancesModule
  */
 @NgModule({
-    declarations: [AttendancesComponent, AttendanceFormComponent, AttendanceDetailComponent],
+    declarations: [
+        AttendancesComponent,
+        AttendanceFormComponent,
+        AttendanceStoreDetailComponent,
+        AttendanceEmployeeFormComponent,
+        AttendanceEmployeeDetailComponent
+    ],
     imports: [
         AttendancesRoutingModule,
 
@@ -31,7 +49,14 @@ import { fromAttendance } from './store/reducers';
         RxReactiveFormsModule,
 
         StoreModule.forFeature(fromAttendance.FEATURE_KEY, fromAttendance.reducer),
-        EffectsModule.forFeature([AttendanceEffects])
+        StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
+        StoreModule.forFeature(fromUser.FEATURE_KEY, fromUser.reducer),
+        
+        EffectsModule.forFeature([
+            AttendanceEffects,
+            MerchantEffects,
+            UserEffects
+        ])
     ]
 })
 export class AttendancesModule {}

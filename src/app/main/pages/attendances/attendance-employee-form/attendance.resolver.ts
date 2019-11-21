@@ -7,13 +7,17 @@ import { AttendanceActions } from '../store/actions';
 import { fromAttendance } from '../store/reducers';
 
 @Injectable({ providedIn: 'root' })
-export class AttendanceDetailResolver implements Resolve<any> {
+export class AttendanceResolver implements Resolve<any> {
     constructor(private store: Store<fromAttendance.FeatureState>) {}
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
         const { id } = route.params;
 
-        if (!id || id === 'new') {
+        if (!id) {
+            return of(null);
+        }
+
+        if (id === 'new') {
             return of(null);
         }
 
