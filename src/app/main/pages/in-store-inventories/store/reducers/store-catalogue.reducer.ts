@@ -12,6 +12,10 @@ interface StoreCatalogueState extends EntityState<any> {
     total: number;
 }
 
+interface CatalogueHistoryState extends EntityState<any> {
+    total: number;
+}
+
 interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
@@ -21,6 +25,7 @@ export interface State {
     source: TSource;
     storeCatalogue: any;
     storeCatalogues: StoreCatalogueState;
+    catalogueHistories: CatalogueHistoryState;
     errors: ErrorState;
 }
 
@@ -28,6 +33,11 @@ const adapterStoreCatalogue = createEntityAdapter<any>({
     selectId: storeCatalogue => storeCatalogue.id
 });
 const initialStoreCatalogueState = adapterStoreCatalogue.getInitialState({ total: 0 });
+
+const adapterCatalogueHistory = createEntityAdapter<any>({
+    selectId: catalogueHistory => catalogueHistory.id
+});
+const initialCatalogueHistoryState = adapterCatalogueHistory.getInitialState({ total: 0 });
 
 const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
@@ -39,6 +49,7 @@ export const initialState: State = {
     source: 'fetch',
     storeCatalogue: undefined,
     storeCatalogues: initialStoreCatalogueState,
+    catalogueHistories: initialCatalogueHistoryState,
     errors: initialErrorState
 };
 
@@ -47,6 +58,7 @@ const storeCatalogueReducer = createReducer(
     on(
         StoreCatalogueActions.fetchStoreCatalogueRequest,
         StoreCatalogueActions.fetchStoreCataloguesRequest,
+        StoreCatalogueActions.fetchStoreCatalogueHistoriesRequest,
         state => ({
             ...state,
             isLoading: true
@@ -55,6 +67,7 @@ const storeCatalogueReducer = createReducer(
     on(
         StoreCatalogueActions.fetchStoreCatalogueFailure,
         StoreCatalogueActions.fetchStoreCataloguesFailure,
+        StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure,
         (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -65,10 +78,7 @@ const storeCatalogueReducer = createReducer(
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            storeCatalogue: adapterStoreCatalogue.addOne(payload, {
-                ...state.storeCatalogues,
-                total: state.storeCatalogues.total + 1
-            }),
+            storeCatalogue: payload.storeCatalogue,
             errors: adapterError.removeOne('fetchStoreCatalogueFailure', state.errors)
         })
     ),
@@ -82,7 +92,19 @@ const storeCatalogueReducer = createReducer(
                 ...state.storeCatalogues,
                 total: payload.total
             }),
-            errors: adapterError.removeOne('fetchAttendancesFailure', state.errors)
+            errors: adapterError.removeOne('fetchStoreCataloguesFailure', state.errors)
+        })
+    ),
+    on(
+        StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            catalogueHistories: adapterCatalogueHistory.addAll(payload.catalogueHistories, {
+                ...state.catalogueHistories,
+                total: payload.total
+            }),
+            errors: adapterError.removeOne('fetchStoreCatalogueHistoriesFailure', state.errors)
         })
     ),
 );
@@ -97,9 +119,18 @@ export interface FeatureState extends fromRoot.State {
 
 const getListStoreCatalogueState = (state: State) => state.storeCatalogues;
 
+const getListCatalogueHistoryState = (state: State) => state.catalogueHistories;
+
 export const {
     selectAll: selectAllStoreCatalogues,
     selectEntities: selectStoreCatalogueEntities,
     selectIds: selectStoreCatalogueIds,
     selectTotal: selectStoreCatalogueTotal
 } = adapterStoreCatalogue.getSelectors(getListStoreCatalogueState);
+
+export const {
+    selectAll: selectAllCatalogueHistories,
+    selectEntities: selectCatalogueHistoryEntities,
+    selectIds: selectCatalogueHistoryIds,
+    selectTotal: selectCatalogueHistoryTotal
+} = adapterCatalogueHistory.getSelectors(getListCatalogueHistoryState);

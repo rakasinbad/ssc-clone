@@ -23,6 +23,7 @@ export const globalEnLang = {
         FINANCE: 'Finance',
         HOME: 'Beranda',
         INTERNAL: 'Internal',
+        IN_STORE_INVENTORY: 'In-Store Inventory',
         INVENTORY: 'Inventory',
         MANAGE_PRODUCT: 'Manage Product',
         MERCHANTS: 'Merchants',

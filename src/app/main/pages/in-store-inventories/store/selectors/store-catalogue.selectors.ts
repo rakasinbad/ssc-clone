@@ -26,9 +26,33 @@ export const getSourceType = createSelector(
     state => state.source
 );
 
+export const getSelectedStoreCatalogue = createSelector(
+    getStoreCatalogueState,
+    state => state.storeCatalogue
+);
+
 export const getStoreCatalogue = createSelector(
     getStoreCatalogueState,
     state => state.storeCatalogues
+);
+
+/**
+ * CATALOGUE HISTORY
+ */
+
+export const getAllCatalogueHistory = createSelector(
+    getStoreCatalogueState,
+    fromStoreCatalogue.selectAllCatalogueHistories
+);
+
+export const getTotalCatalogueHistory = createSelector(
+    getStoreCatalogueState,
+    state => state.catalogueHistories.total
+);
+
+export const getCatalogueHistory = createSelector(
+    getStoreCatalogueState,
+    state => state.catalogueHistories
 );
 
 export const getIsLoading = createSelector(

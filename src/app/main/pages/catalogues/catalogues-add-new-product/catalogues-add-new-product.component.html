@@ -269,7 +269,7 @@
                     mat-raised-button
                     class="warn-900"
                     (click)="addNewCatalogue()"
-                    [disabled]="productName.errors && !isFulfilled"
+                    [disabled]="productName.errors || !isFulfilled"
                 >
                     Lanjut
                 </button>
