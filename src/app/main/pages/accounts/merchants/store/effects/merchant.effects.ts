@@ -1570,8 +1570,8 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[FETCH STORE REQUEST FAILURE]', {
-                        resp: {
+                    this._$log.generateGroup('[REQUEST FETCH STORE FAILURE]', {
+                        payload: {
                             type: 'log',
                             value: resp
                         }

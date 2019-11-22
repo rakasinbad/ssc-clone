@@ -1,7 +1,7 @@
 @import 'src/@fuse/scss/fuse';
 
-app-payment-status {
-    #payment-status {
+app-supplier-inventories {
+    #supplier-inventories {
         .top-bg {
             @include media-breakpoint('lt-md') {
                 height: 256px;
@@ -57,7 +57,7 @@ app-payment-status {
         }
     }
 
-    .payments-table {
+    .supplier-inventories-table {
         flex: 1 1 auto;
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
@@ -73,7 +73,7 @@ app-payment-status {
         //     height: 84px;
         // }
 
-        .payment {
+        .supplier-inventory {
             position: relative;
             // cursor: pointer;
         }
@@ -89,20 +89,12 @@ app-payment-status {
             padding-top: 8px;
             padding-bottom: 8px;
             padding-right: 8px;
-
-            p[data-content='-'] {
-                // color: red;
-                // text-align: center;
-            }
         }
 
         // .ngxImageZoomContainer {
         //     width: 100% !important;
         //     height: 100% !important;
         // }
-
-        .mat-column-order-reference {
-        }
 
         .mat-column-order-store {
             flex: 0 1 100px;
@@ -114,7 +106,7 @@ app-payment-status {
         }
 
         .mat-column-id {
-            flex: 0 1 84px;
+            flex: 0 1 95px;
         }
 
         .mat-column-image {

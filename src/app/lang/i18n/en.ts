@@ -23,6 +23,7 @@ export const globalEnLang = {
         FINANCE: 'Finance',
         HOME: 'Beranda',
         INTERNAL: 'Internal',
+        INVENTORY: 'Inventory',
         MANAGE_PRODUCT: 'Manage Product',
         MERCHANTS: 'Merchants',
         MERCHANT: 'Merchant',
@@ -31,7 +32,8 @@ export const globalEnLang = {
         PAYMENT_STATUS: 'Payment Status',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
-        STORE: 'Store'
+        STORE: 'Store',
+        SUPPLIER_INVENTORY: 'Supplier Inventory'
     },
     FORM: {
         ACCOUNT: 'Account',

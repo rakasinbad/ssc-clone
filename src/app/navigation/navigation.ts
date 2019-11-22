@@ -109,8 +109,15 @@ export const navigation: FuseNavigation[] = [
         icon: 'layers',
         children: [
             {
+                id: 'supp',
+                title: 'Supplier Inventory',
+                translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/supplier-inventories'
+            },
+            {
                 id: 'instore',
-                title: 'In Store',
+                title: 'In-Store Inventory',
                 translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/in-store-inventories',

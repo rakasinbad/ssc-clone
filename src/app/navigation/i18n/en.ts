@@ -6,9 +6,8 @@ export const locale = {
                 TITLE: 'Add Product'
             },
             APPLICATIONS: 'Applications',
-            DASHBOARD: {
-                TITLE: 'Dashboard',
-                BADGE: '25'
+            ARCHIVED: {
+                TITLE: 'Archived'
             },
             ACCOUNTS: {
                 TITLE: 'Accounts'
@@ -28,14 +27,18 @@ export const locale = {
             CREDIT_LIMIT_BALANCE: {
                 TITLE: 'Credit Limit/Balance'
             },
+            DASHBOARD: {
+                TITLE: 'Dashboard',
+                BADGE: '25'
+            },
             FINANCES: {
                 TITLE: 'Finances'
             },
             IN_STORE_INVENTORIES: {
-                TITLE: 'In Store Inventories'
+                TITLE: 'In-Store Inventory'
             },
             INVENTORIES: {
-                TITLE: 'Inventories'
+                TITLE: 'Inventory'
             },
             MANAGE_PRODUCT: {
                 TITLE: 'Manage Product'
@@ -49,8 +52,8 @@ export const locale = {
             SET_BANK: {
                 TITLE: 'Set Bank'
             },
-            ARCHIVED: {
-                TITLE: 'Archived'
+            SUPPLIER_INVENTORIES: {
+                TITLE: 'Supplier Inventory'
             }
         }
     }

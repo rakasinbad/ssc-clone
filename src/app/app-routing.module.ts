@@ -84,6 +84,14 @@ const routes: Routes = [
                         m => m.InStoreInventoriesModule
                     ),
                 canLoad: [AuthGuard]
+            },
+            {
+                path: 'supplier-inventories',
+                loadChildren: () =>
+                    import('./main/pages/supplier-inventories/supplier-inventories.module').then(
+                        m => m.SupplierInventoriesModule
+                    ),
+                canLoad: [AuthGuard]
             }
         ]
     },

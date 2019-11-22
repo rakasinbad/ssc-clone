@@ -1,4 +1,8 @@
-<div id="payment-status" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div
+    id="supplier-inventories"
+    class="page-layout carded fullwidth inner-scroll"
+    fusePerfectScrollbar
+>
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
     <!-- TOP BACKGROUND -->
@@ -23,12 +27,12 @@
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- SEARCH mx-12 -->
-                <div class="search-wrapper">
+                <!-- <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
                         <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
-                </div>
+                </div> -->
                 <!-- / SEARCH -->
 
                 <!-- <button mat-flat-button class="grey-600">
@@ -43,7 +47,7 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card
+        <!-- <mat-card
             class="mb-24"
             *ngIf="search.value || (filterStatus && filterStatus !== 'all-status')"
         >
@@ -54,14 +58,6 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <!-- <mat-chip *ngIf="searchInternalEmployee || search.value">
-                            {{ searchInternalEmployee || search.value }}
-
-                            <mat-icon matChipRemove (click)="onRemoveSearchInternalEmployee()">
-                                cancel
-                            </mat-icon>
-                        </mat-chip> -->
-
                         <mat-chip *ngIf="searchPaymentStatus || filterStatus">
                             Status: {{ searchPaymentStatus | titlecase | replace: '-':' ' }}
 
@@ -72,16 +68,12 @@
                     </mat-chip-list>
                 </div>
             </div>
-        </mat-card>
-
-        <!-- CONTENT CARD -->
-        <!--  <mat-card>
-
         </mat-card> -->
 
+        <!-- CONTENT CARD -->
         <div class="sinbad-content mat-elevation-z1">
             <mat-table
-                class="payments-table"
+                class="supplier-inventories-table"
                 #table
                 [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy"
@@ -89,190 +81,89 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
-                <!-- Order Reference Column -->
-                <ng-container matColumnDef="order-reference">
+                <!-- Product ID Column -->
+                <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef>
-                        Order Reference
+                        Product ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.orderRef) }}
+                            {{ safeValue(row?.id) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Store Column -->
-                <ng-container matColumnDef="store">
+                <!-- Product Name Column -->
+                <ng-container matColumnDef="product-name">
                     <mat-header-cell *matHeaderCellDef>
-                        Store
+                        Product Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.store?.name) }}
+                            {{ safeValue(row?.name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Account Receivable Column -->
-                <ng-container matColumnDef="account-receivable">
+                <!-- Brand Name Column -->
+                <ng-container matColumnDef="brand-name">
                     <mat-header-cell *matHeaderCellDef>
-                        Account Receivable
+                        Brand
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
-                            {{
-                                safeValue(row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
-                                    : +row?.totalPrice
-                            }}
+                            {{ safeValue(row?.brand?.name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
+                <!-- Stock Type Column -->
+                <ng-container matColumnDef="stock-type">
                     <mat-header-cell *matHeaderCellDef>
-                        Status
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p
-                            [attr.data-content]="safeValue(row?.statusPayment)"
-                            style="word-break: break-word;"
-                        >
-                            {{ safeValue(row?.statusPayment) }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Source Column -->
-                <!-- <ng-container matColumnDef="source">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Source</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                       <p style="word-break: break-word;">
-                            {{ row?.source }}
-                        </p>
-                    </mat-cell>
-                </ng-container> -->
-
-                <!-- Payment Type Column -->
-                <ng-container matColumnDef="payment-type">
-                    <mat-header-cell *matHeaderCellDef>
-                        Payment Type
+                        Stock Type
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{
-                                safeValue(
-                                    row?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType
-                                        ?.name
-                                )
-                            }}
+                            <ng-container [ngSwitch]="row?.unlimitedStock">
+                                <ng-container *ngSwitchCase="true">
+                                    Unlimited
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="false">
+                                    Limited
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    -
+                                </ng-container>
+                            </ng-container>
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Payment Method Column -->
-                <ng-container matColumnDef="payment-method">
+                <!-- Stock Column -->
+                <ng-container matColumnDef="stock">
                     <mat-header-cell *matHeaderCellDef>
-                        Payment Method
+                        Stock
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.paymentTypeSupplierMethod?.paymentMethod?.name) }}
+                            {{ safeValue(row?.stock) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Order Date Column -->
-                <ng-container matColumnDef="order-date">
+                <!-- Stock en Route Column -->
+                <ng-container matColumnDef="stock-en-route">
                     <mat-header-cell *matHeaderCellDef>
-                        Date Order
+                        Stock en Route
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{
-                                safeValue(row?.createdAt) !== '-'
-                                    ? (row?.createdAt | date: 'dd MMM yyyy')
-                                    : safeValue(row?.createdAt)
-                            }}
+                            {{ safeValue(row?.totalOrderStock) }}
                         </p>
                     </mat-cell>
                 </ng-container>
-
-                <!-- Due Date Column -->
-                <ng-container matColumnDef="due-date">
-                    <mat-header-cell *matHeaderCellDef>
-                        Due Date
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{
-                                safeValue(row?.dueDate) !== '-'
-                                    ? (row?.dueDate | date: 'dd MMM yyyy')
-                                    : safeValue(row?.dueDate)
-                            }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Paid On Column -->
-                <ng-container matColumnDef="paid-on">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Paid On</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{
-                                safeValue(row?.paidTime) !== '-'
-                                    ? (row?.paidTime | date: 'dd MMM yyyy')
-                                    : safeValue(row?.paidTime)
-                            }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Aging Day Column -->
-                <ng-container matColumnDef="aging-day">
-                    <mat-header-cell *matHeaderCellDef>
-                        Aging Day
-                    </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ agingDate(row?.agingDay) }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- D Column -->
-                <ng-container matColumnDef="d">
-                    <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">D-</span>
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.dueDay) }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Proof of Payment Status Column -->
-                <!-- <ng-container matColumnDef="proof-of-payment-status">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
-                        <span class="text-left">Proof of Payment Status</span>
-                    </mat-header-cell>
-
-                    <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                        <ng-container *ngIf="row?.proofOfPaymentStatus">
-                            <a href="#">Checked</a>
-                        </ng-container>
-                        <ng-container *ngIf="!row?.proofOfPaymentStatus">
-                            <a href="#">To be Checked</a>
-                        </ng-container>
-                    </mat-cell>
-                </ng-container> -->
 
                 <ng-container matColumnDef="actions">
                     <!-- <mat-header-cell *matHeaderCellDef>
@@ -301,6 +192,16 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
+                                    aria-label="Edit"
+                                    [routerLink]="[row?.id]"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <!-- <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
                                     aria-label="Update Status"
                                     (click)="onUpdate()"
                                 >
@@ -315,7 +216,7 @@
                                     (click)="onProofPayment()"
                                 >
                                     <span>Proof of Payment</span>
-                                </button>
+                                </button> -->
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -323,13 +224,16 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="payment"></mat-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="supplier-inventory"
+                ></mat-row>
 
                 <!-- <mat-row
                     *matRowDef="let row; columns: displayedColumns"
-                    class="payment"
+                    class="supplier-inventory"
                     matRipple
-                    [routerLink]="['/pages/orders', row.id, 'detail']"
+                    [routerLink]="['/pages/supplier-inventories', row.id]"
                 >
                 </mat-row> -->
             </mat-table>

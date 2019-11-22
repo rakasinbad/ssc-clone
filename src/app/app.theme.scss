@@ -124,6 +124,7 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/finances/payment-status/payment-status.theme';
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
 @import 'src/app/main/pages/orders/orders.theme';
+@import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
 
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
@@ -140,12 +141,14 @@ $typography: mat-typography-config(
     @include accounts-theme($theme);
     @include attendances-theme($theme);
     @include banks-theme($theme);
+    @include catalogues-theme($theme);
     @include credit-limit-balance-theme($theme);
     @include in-store-inventories-theme($theme);
+    @include internals-theme($theme);
     @include merchants-theme($theme);
     @include orders-theme($theme);
     @include payment-status-theme($theme);
-    @include internals-theme($theme);
+    @include supplier-inventories-theme($theme);
 
     // Plugin
     // @include mat-datepicker-theme($theme);

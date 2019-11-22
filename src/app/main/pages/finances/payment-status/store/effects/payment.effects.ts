@@ -41,16 +41,20 @@ export class PaymentEffects {
                 return this._$paymentStatusApi.findAll(payload, supplierId).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH PAYMENT STATUSES]', {
-                            payload: {
-                                type: 'log',
-                                value: payload
+                        this._$log.generateGroup(
+                            '[RESPONSE REQUEST FETCH PAYMENT STATUSES]',
+                            {
+                                payload: {
+                                    type: 'log',
+                                    value: payload
+                                },
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                }
                             },
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
+                            'groupCollapsed'
+                        );
 
                         const newResp = {
                             total: resp.total,
@@ -84,12 +88,16 @@ export class PaymentEffects {
                 ofType(PaymentStatusActions.fetchPaymentStatusesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH PAYMENT STATUSES FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        '[REQUEST FETCH PAYMENT STATUSES FAILURE]',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',

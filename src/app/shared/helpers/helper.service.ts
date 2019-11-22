@@ -178,6 +178,19 @@ export class HelperService {
         ];
     }
 
+    stockType(): { id: boolean; label: string }[] {
+        return [
+            {
+                id: true,
+                label: 'Unlimited'
+            },
+            {
+                id: false,
+                label: 'Limited'
+            }
+        ];
+    }
+
     unitParameter(): { id: string; label: string }[] {
         return [
             {
