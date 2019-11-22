@@ -12,6 +12,12 @@ import { InStoreInventoriesRoutingModule } from './in-store-inventories-routing.
 import { InStoreInventoriesComponent } from './in-store-inventories.component';
 import { StoreCatalogueEffects } from './store/effects';
 import { fromStoreCatalogue } from './store/reducers';
+import { CatalogueDetailComponent } from './catalogue-detail/catalogue-detail.component';
+import { fromAttendance } from '../attendances/store/reducers';
+import { AttendanceEffects } from '../attendances/store/effects';
+
+import { MerchantEffects } from '../attendances/store/effects';
+import { fromMerchant } from '../attendances/store/reducers';
 
 /**
  *
@@ -22,6 +28,7 @@ import { fromStoreCatalogue } from './store/reducers';
 @NgModule({
     declarations: [
         InStoreInventoriesComponent,
+        CatalogueDetailComponent,
     ],
     imports: [
         InStoreInventoriesRoutingModule,
@@ -36,9 +43,12 @@ import { fromStoreCatalogue } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromStoreCatalogue.FEATURE_KEY, fromStoreCatalogue.reducer),
+        StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
+
         EffectsModule.forFeature([
+            MerchantEffects,
             StoreCatalogueEffects
         ])
     ]
 })
-export class InStoreCataloguesModule {}
+export class InStoreInventoriesModule {}

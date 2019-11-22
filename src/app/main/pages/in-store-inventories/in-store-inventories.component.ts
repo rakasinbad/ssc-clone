@@ -46,14 +46,15 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         'skuId',
         'skuName',
         'price',
-        'addition',
-        'subtraction',
-        'stockOnHand',
-        'stockType',
-        'condition',
-        'employeeName',
-        'role',
+        // 'addition',
+        // 'subtraction',
+        // 'stockOnHand',
+        // 'stockType',
+        // 'condition',
+        // 'employeeName',
+        // 'role',
         'date',
+        'actions',
     ];
 
     dataSource$: Observable<Array<any>>;
@@ -119,17 +120,26 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
             disableClear: true
         });
 
-        localStorage.removeItem('filter.store');
-
         // .pipe(
         //     filter(source => source.length > 0),
         //     delay(1000),
         //     startWith(this._$merchantApi.initBrandStore())
         // );
 
-        this.dataSource$ = this.store.select(StoreCatalogueSelectors.getAllStoreCatalogue);
-        this.totalDataSource$ = this.store.select(StoreCatalogueSelectors.getTotalStoreCatalogue);
-        this.isLoading$ = this.store.select(StoreCatalogueSelectors.getIsLoading);
+        this.dataSource$ = this.store
+                            .select(StoreCatalogueSelectors.getAllStoreCatalogue)
+                            .pipe(
+                                takeUntil(this._unSubs$)
+                            );
+        this.totalDataSource$ = this.store
+                                .select(StoreCatalogueSelectors.getTotalStoreCatalogue)
+                                .pipe(
+                                    takeUntil(this._unSubs$)
+                                );
+        this.isLoading$ = this.store.select(StoreCatalogueSelectors.getIsLoading)
+                                .pipe(
+                                    takeUntil(this._unSubs$)
+                                );
 
         this.initTable();
 
@@ -143,14 +153,14 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                 this.onRefreshTable();
             });
 
-        this.store
-            .select(StoreSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
+        // this.store
+        //     .select(StoreSelectors.getIsRefresh)
+        //     .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+        //     .subscribe(isRefresh => {
+        //         if (isRefresh) {
+        //             this.onRefreshTable();
+        //         }
+        //     });
     }
 
     ngAfterViewInit(): void {
@@ -173,7 +183,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(UiActions.resetBreadcrumb());
-        this.store.dispatch(StoreActions.resetStore());
+        // this.store.dispatch(StoreActions.resetStore());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -183,48 +193,9 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    get searchStore(): string {
-        return localStorage.getItem('filter.store') || '';
-    }
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
-    }
-
-    onChangeStatus(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
-    }
-
-    onDelete(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
-    }
-
-    onRemoveSearchStore(): void {
-        localStorage.removeItem('filter.store');
-        this.search.reset();
-    }
-
-    onTrackBy(index: number, item: SupplierStore): string {
-        return !item ? null : item.id;
-    }
-
-    goStoreInfoPage(storeId: string): void {
-        if (!storeId) {
-            return;
-        }
-
-        this.store.dispatch(StoreActions.goPage({ payload: 'info' }));
-        this.router.navigate(['/pages/account/stores', storeId, 'detail']);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -260,15 +231,8 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
             ];
         }
 
-        this._$log.generateGroup('[INIT TABLE MERCHANTS]', {
-            payload: {
-                type: 'log',
-                value: data
-            }
-        });
-
         this.store.dispatch(
-            StoreActions.fetchStoresRequest({
+            StoreCatalogueActions.fetchStoreCataloguesRequest({
                 payload: data
             })
         );

@@ -1,4 +1,4 @@
-<div id="merchants" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="in-store-inventories" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
     <!-- TOP BACKGROUND -->
@@ -12,11 +12,11 @@
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
+                <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
                     <mat-icon>add</mat-icon>
 
                     TAMBAH TOKO
-                </button>
+                </button> -->
 
                 <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
@@ -48,11 +48,11 @@
 
         <mat-card class="mb-24" *ngIf="search.value">
             <div fxLayout="column" fxLayoutGap="10px">
-                <small>
+                <!-- <small>
                     Filter & Group By
-                </small>
+                </small> -->
 
-                <div>
+                <!-- <div>
                     <mat-chip-list aria-label="Filter">
                         <mat-chip *ngIf="searchStore || search.value">
                             {{ searchStore || search.value }}
@@ -62,12 +62,8 @@
                             </mat-icon>
                         </mat-chip>
 
-                        <!-- <mat-chip>
-                            Geo Coverage
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip> -->
                     </mat-chip-list>
-                </div>
+                </div> -->
             </div>
         </mat-card>
 
@@ -79,139 +75,96 @@
                 class="merchants-table"
                 #table
                 [dataSource]="dataSource$ | async"
-                [trackBy]="onTrackBy"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                        ID
+                <!-- Store ID Column -->
+                <ng-container matColumnDef="storeId">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header="storeId">
+                        Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.id }}
+                            {{ row?.store?.storeCode }}
                         </p>
-                        <!-- <div *ngIf="!row?.id" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.id" class="skeleton"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Store Name Column -->
-                <ng-container matColumnDef="name">
+                <!-- SKU ID Column -->
+                <ng-container matColumnDef="skuId">
                     <mat-header-cell *matHeaderCellDef>
-                        Store Name
+                        SKU ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.name }}
+                            {{ row?.catalogue?.sku }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.name" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- City Column -->
-                <ng-container matColumnDef="city">
+                <!-- SKU Name Column -->
+                <ng-container matColumnDef="skuName">
                     <mat-header-cell *matHeaderCellDef>
-                        City
+                        SKU Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.urban?.urban }}
+                            {{ row?.catalogue?.name | uppercase }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.urban?.urban" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.urban?.urban" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Address Column -->
-                <ng-container matColumnDef="address">
+                <!-- Price Column -->
+                <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef>
-                        Address
+                        Price
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.address }}
+                            {{ row?.catalogue?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.address" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.address" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Owner Phone Number Column -->
-                <ng-container matColumnDef="owner-phone-no">
+                <!-- Addition Number Column -->
+                <ng-container matColumnDef="addition">
                     <mat-header-cell *matHeaderCellDef>
-                        Owner Phone Number
+                        Addition
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.store?.phoneNo }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.phoneNo" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.phoneNo" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Store Segment Column -->
-                <ng-container matColumnDef="store-segment">
+                <!-- Subtraction Column -->
+                <ng-container matColumnDef="subtraction">
                     <mat-header-cell *matHeaderCellDef>
-                        Store Segment
+                        Subtraction
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.store?.storeSegment?.name }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.storeSegment?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.storeSegment?.name" class="skeleton"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Store Type Column -->
-                <ng-container matColumnDef="store-type">
+                <!-- Stock on Hand Column -->
+                <ng-container matColumnDef="stockOnHand">
                     <mat-header-cell *matHeaderCellDef>
                         Store Type
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeType?.name | titlecase }}
+                            {{ row?.store?.stock | number: '3.0-0' }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.storeType?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.storeType?.name" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
+                <!-- Stock Type Column -->
+                <ng-container matColumnDef="stockType">
                     <mat-header-cell *matHeaderCellDef>
                         Status
                     </mat-header-cell>
@@ -219,12 +172,54 @@
                         <p style="word-break: break-word;">
                             {{ row?.status | uppercase }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.status" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.status" class="skeleton w-100-p"></div> -->
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Condition Column -->
+                <ng-container matColumnDef="condition">
+                    <mat-header-cell *matHeaderCellDef>
+                        Condition
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Employee Name Column -->
+                <ng-container matColumnDef="employeeName">
+                    <mat-header-cell *matHeaderCellDef>
+                        Employee Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Role Column -->
+                <ng-container matColumnDef="role">
+                    <mat-header-cell *matHeaderCellDef>
+                        Role
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | uppercase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.createdAt | date: 'dd MMMM yyyy HH:mm:ss' }}
+                        </p>
                     </mat-cell>
                 </ng-container>
 
@@ -250,22 +245,21 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Edit"
-                                    [routerLink]="[row?.storeId]"
+                                    [routerLink]="['/pages/in-store-inventories/' + row?.catalogueId + '/detail']"
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
                                 </button>
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Delete"
-                                    (click)="onDelete(row)"
                                 >
                                     <mat-icon>delete</mat-icon>
                                     <span>Delete</span>
-                                </button>
+                                </button> -->
 
                                 <!-- <button
                                     mat-menu-item
@@ -277,14 +271,11 @@
                                     <span>Deactivate</span>
                                 </button> -->
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    [attr.aria-label]="
-                                        row?.status === 'active' ? 'inactive' : 'active'
-                                    "
-                                    (click)="onChangeStatus(row)"
+                                    [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
                                 >
                                     <mat-icon>{{
                                         row?.status === 'active'
@@ -297,7 +288,7 @@
                                             : 'ACTION.ACTIVE'
                                         ) | translate
                                     }}</span>
-                                </button>
+                                </button> -->
                             </mat-menu>
                         </div>
                         <!-- <div
@@ -318,9 +309,8 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="merchant"
-                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     matRipple
-                    (click)="goStoreInfoPage(row?.id)"
+                    [routerLink]="['/pages/in-store-inventories/' + row?.catalogueId + '/detail']"
                 >
                 </mat-row>
             </mat-table>

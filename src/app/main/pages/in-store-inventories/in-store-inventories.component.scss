@@ -1,7 +1,7 @@
 @import 'src/@fuse/scss/fuse';
 
-app-merchants {
-    #merchants {
+app-in-store-inventories {
+    #in-store-inventories {
         .top-bg {
             @include media-breakpoint('lt-md') {
                 height: 256px;

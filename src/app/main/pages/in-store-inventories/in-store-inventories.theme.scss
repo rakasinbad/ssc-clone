@@ -1,4 +1,4 @@
-@mixin merchants-theme($theme) {
+@mixin in-store-inventories-theme($theme) {
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
