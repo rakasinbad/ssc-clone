@@ -68,7 +68,7 @@ export class CataloguesService {
             'STATUS.CATALOGUE.LIVE_PARAM.TITLE',
             'STATUS.CATALOGUE.EMPTY_PARAM.TITLE',
             'STATUS.CATALOGUE.BLOCKED_PARAM.TITLE',
-            'STATUS.CATALOGUE.ARCHIVED.TITLE'
+            'STATUS.CATALOGUE.INACTIVE.TITLE'
         ];
 
         return this.translate.instant(STATUS_CATALOGUES_KEYS, { allCount, liveCount, emptyCount, blockedCount });

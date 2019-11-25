@@ -33,8 +33,8 @@ export const locale = {
                 BLOCKED_PARAM: {
                     TITLE: 'Diblokir ({{ blockedCount }})'
                 },
-                ARCHIVED: {
-                    TITLE: 'Diarsipkan'
+                INACTIVE: {
+                    TITLE: 'Inactive'
                 }
             }
         }

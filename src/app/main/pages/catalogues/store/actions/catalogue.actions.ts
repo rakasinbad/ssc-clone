@@ -24,7 +24,7 @@ export const filterAllCatalogues = createAction('[Catalogues Page] Filter All Ca
 export const filterLiveCatalogues = createAction('[Catalogues Page] Filter Live Catalogues');
 export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empty Catalogues');
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
-export const filterArchivedCatalogues = createAction('[Catalogues Page] Filter Archived Catalogues');
+export const filterInactiveCatalogues = createAction('[Catalogues Page] Filter Inactive Catalogues');
 
 export const addNewCatalogueRequest = createAction(
     '[Catalogues API] Add New Catalogue Request',

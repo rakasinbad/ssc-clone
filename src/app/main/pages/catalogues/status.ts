@@ -41,12 +41,12 @@ export const statusCatalogue: FuseNavigation[] = [
         }
     },
     {
-        id: 'archived',
-        title: 'Archived',
-        // translate: 'STATUS.CATALOGUE.ARCHIVED.TITLE',
+        id: 'inactive',
+        title: 'inactive',
+        // translate: 'STATUS.CATALOGUE.INACTIVE.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'archived' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'inactive' }));
         }
     }
 ];

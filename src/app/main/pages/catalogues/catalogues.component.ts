@@ -135,8 +135,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             this.dataSource$ = this.store.select(CatalogueSelectors.getEmptyStockCatalogues);
         } else if (index === 'blocked') {
             this.dataSource$ = this.store.select(CatalogueSelectors.getBlockedCatalogues);
-        } else if (index === 'archived') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getArchivedCatalogues).pipe(
+        } else if (index === 'inactive') {
+            this.dataSource$ = this.store.select(CatalogueSelectors.getInactiveCatalogues).pipe(
                 tap(catalogues => console.log(catalogues))
             );
         }

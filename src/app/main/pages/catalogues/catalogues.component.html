@@ -90,17 +90,29 @@
                                     </p> -->
                                     <mat-chip-list aria-label="Catalogue status">
                                         <mat-chip
+                                            *ngIf="row?.status === 'active'"
+                                            class="green-800"
+                                        >
+                                            <strong>Live</strong>
+                                        </mat-chip>
+                                        <mat-chip
                                             *ngIf="row?.status === 'inactive'"
-                                            class="orange-bg"
-                                        >Inactive</mat-chip>
+                                            class="orange-800"
+                                        >
+                                            <strong>Inactive</strong>
+                                        </mat-chip>
                                         <mat-chip
                                             *ngIf="row?.status === 'banned'"
                                             class="warn"
-                                        >Diblokir</mat-chip>
+                                        >
+                                            <strong>Diblokir</strong>
+                                        </mat-chip>
                                         <mat-chip
                                             *ngIf="row?.stock <= 0"
                                             class="fuse-black"
-                                        >Habis</mat-chip>
+                                        >
+                                            <strong>Habis</strong>
+                                        </mat-chip>
                                     </mat-chip-list>
                                 </div>
                             </div>
@@ -110,7 +122,7 @@
 
                 <!-- SKU's Product Column -->
                 <ng-container matColumnDef="sku">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Code</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-truncate">{{ row?.sku }}</p>
                     </mat-cell>
@@ -133,7 +145,7 @@
                             matTooltip="Click to edit price"
                             (click)="editCatalogue('price', row)"
                         >
-                            <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}</p>
+                            <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.0-2' | price }}</p>
                         </a>
                     </mat-cell>
                 </ng-container>
