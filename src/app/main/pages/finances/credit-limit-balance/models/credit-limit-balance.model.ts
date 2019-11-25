@@ -19,7 +19,7 @@ interface ICreditLimitStore extends ITimestamp {
     creditLimitGroup: CreditLimitGroup;
     store: Merchant;
     averageOrder: number;
-    totalPrice: number;
+    totalOrder: number;
 }
 
 interface ICreditLimitGroup extends ITimestamp {
@@ -67,7 +67,7 @@ export class CreditLimitStore extends Timestamp implements ICreditLimitStore {
         public creditLimitGroup: CreditLimitGroup,
         public store: Merchant,
         public averageOrder: number,
-        public totalPrice: number,
+        public totalOrder: number,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>

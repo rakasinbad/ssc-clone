@@ -12,25 +12,25 @@
         </button> -->
     </div>
 
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-        <!-- SEARCH mx-12 -->
-        <div class="search-wrapper">
+    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
+    <!-- SEARCH mx-12 -->
+    <!-- <div class="search-wrapper">
             <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                 <mat-icon>search</mat-icon>
                 <input #filter placeholder="Cari Disini" />
             </div>
-        </div>
-        <!-- / SEARCH -->
+        </div> -->
+    <!-- / SEARCH -->
 
-        <!-- <button mat-flat-button class="grey-600">
+    <!-- <button mat-flat-button class="grey-600">
             <mat-icon>filter_list</mat-icon>
             Filter Lists
         </button>
 
         <button mat-flat-button class="grey-600">
             Group By
-        </button> -->
-    </div>
+        </button>
+    </div> -->
 </div>
 <!-- / CONTENT HEADER -->
 
@@ -80,9 +80,9 @@
             <mat-cell *matCellDef="let row">
                 <p class="price" style="word-break: break-word;">
                     {{
-                        +row?.totalPrice > 0
-                            ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
-                            : +row?.totalPrice
+                        +row?.totalOrder > 0
+                            ? (+row?.totalOrder | currency: 'IDR':'symbol':'1.2-2')
+                            : +row?.totalOrder
                     }}
                 </p>
             </mat-cell>
@@ -221,10 +221,17 @@
             *matRowDef="let row; columns: displayedColumns"
             class="store"
             [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+        >
+        </mat-row>
+
+        <!-- <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="store"
+            [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
             matRipple
             [routerLink]="['/pages/account/stores', row?.id, 'employee']"
         >
-        </mat-row>
+        </mat-row> -->
     </mat-table>
 
     <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">

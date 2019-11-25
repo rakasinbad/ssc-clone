@@ -511,7 +511,7 @@ export class CreditLimitBalanceEffects {
                                                   row.creditLimitGroup,
                                                   row.store,
                                                   row.averageOrder,
-                                                  row.totalPrice,
+                                                  row.totalOrder,
                                                   row.createdAt,
                                                   row.updatedAt,
                                                   row.deletedAt
