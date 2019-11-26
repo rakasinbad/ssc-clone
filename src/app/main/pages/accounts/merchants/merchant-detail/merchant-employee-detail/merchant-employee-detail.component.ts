@@ -173,7 +173,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         return !item ? null : item.id;
     }
 
-    safeValue(item: any): any {
+    safeValue(item: string): string {
         return item ? item : '-';
     }
 

@@ -1,23 +1,24 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    OnDestroy
+    ViewEncapsulation
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { LogService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
 import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { CreditLimitGroupFormComponent } from '../credit-limit-group-form/credit-limit-group-form.component';
 import { CreditLimitArea, CreditLimitGroup } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
-import { takeUntil } from 'rxjs/operators';
-import { LogService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-credit-limit-group',
@@ -29,6 +30,7 @@ import { LogService } from 'app/shared/helpers';
 })
 export class CreditLimitGroupComponent implements OnInit, OnDestroy {
     creditLimitGroups$: Observable<CreditLimitGroup[]>;
+    selectedRowIndex$: Observable<string>;
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
@@ -71,11 +73,37 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     joinCreditLimitAreas(creditLimitAreas: CreditLimitArea[]): string {
-        if (creditLimitAreas.length > 0) {
+        if (creditLimitAreas && creditLimitAreas.length > 0) {
             return creditLimitAreas.map(i => i.unitType).join(',<br>');
         }
 
         return '-';
+    }
+
+    onDelete(item: CreditLimitGroup): void {
+        this._$log.generateGroup(
+            'DELETE CREDIT LIMIT GROUP',
+            {
+                id: {
+                    type: 'log',
+                    value: item.id || null
+                },
+                item: {
+                    type: 'log',
+                    value: item
+                }
+            },
+            'groupCollapsed'
+        );
+
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(
+            CreditLimitBalanceActions.confirmDeleteCreditLimitGroup({ payload: item })
+        );
     }
 
     onSetup(id?: string): void {
@@ -96,7 +124,9 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(resp => {
                 this._$log.generateGroup(
-                    `[AFTER CLOSED DIALOG ${resp.action.toUpperCase()} CREDIT LIMIT GROUP]`,
+                    `[AFTER CLOSED DIALOG ${resp &&
+                        resp.action &&
+                        resp.action.toUpperCase()} CREDIT LIMIT GROUP]`,
                     {
                         response: {
                             type: 'log',
@@ -114,6 +144,10 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
                     );
                 }
             });
+    }
+
+    safeValue(item: string): string {
+        return item ? item : '-';
     }
 
     // -----------------------------------------------------------------------------------------------------

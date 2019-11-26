@@ -60,9 +60,9 @@ export class CreditLimitGroupApiService {
                       value: supplierId
                   }
               ]
-            : null;
+            : [];
 
-        const newParams = this._$helper.handleParams(this._url, params, newArg);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
@@ -77,5 +77,16 @@ export class CreditLimitGroupApiService {
      */
     create<T>(body: T): Observable<CreditLimitGroup> {
         return this.http.post<CreditLimitGroup>(this._url, body);
+    }
+
+    /**
+     *
+     *
+     * @param {string} id
+     * @returns {Observable<CreditLimitGroup>}
+     * @memberof CreditLimitGroupApiService
+     */
+    delete(id: string): Observable<CreditLimitGroup> {
+        return this.http.delete<CreditLimitGroup>(`${this._url}/${id}`);
     }
 }

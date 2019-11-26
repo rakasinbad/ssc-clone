@@ -328,8 +328,10 @@ body.theme-sinbad-light {
         min-height: 180px;
         max-height: 180px;
 
-        mat-icon {
-            color: #2dc3ab;
+        .top-content {
+            mat-icon {
+                color: #2dc3ab;
+            }
         }
 
         .background-box {

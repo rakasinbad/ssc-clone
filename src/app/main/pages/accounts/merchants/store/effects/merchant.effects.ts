@@ -234,22 +234,21 @@ export class MerchantEffects {
             ofType(StoreActions.confirmDeleteStore),
             map(action => action.payload),
             exhaustMap(params => {
-                const dialogRef = this.matDialog.open<
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
                     DeleteConfirmationComponent,
-                    any,
-                    { id: string }
-                >(DeleteConfirmationComponent, {
-                    data: {
-                        title: 'Delete',
-                        message: `Are you sure want to delete <strong>${params.store.name}</strong> ?`,
-                        id: params.id
-                    },
-                    disableClose: true
-                });
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete <strong>${params.store.name}</strong> ?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    }
+                );
 
                 return dialogRef.afterClosed();
             }),
-            map(({ id }) => {
+            map(id => {
                 if (id) {
                     return StoreActions.deleteStoreRequest({ payload: id });
                 } else {

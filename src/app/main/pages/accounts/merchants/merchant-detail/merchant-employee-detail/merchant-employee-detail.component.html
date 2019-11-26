@@ -15,19 +15,9 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row?.id }}
+                    {{ safeValue(row?.id) }}
                 </p>
             </mat-cell>
-            <!-- <mat-cell *matCellDef="let row; let i = index">
-                <p style="word-break: break-word;">
-                    {{ i + 1 + paginator.pageIndex * paginator.pageSize }}
-                </p>
-                <div *ngIf="!row?.id || (isLoading$ | async)" fxFlex>
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div>
-            </mat-cell> -->
         </ng-container>
 
         <!-- Name Column -->
@@ -39,11 +29,6 @@
                 <p style="word-break: break-word;">
                     {{ safeValue(row?.user?.fullName) }}
                 </p>
-                <!-- <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div> -->
             </mat-cell>
         </ng-container>
 
@@ -52,14 +37,8 @@
             <mat-header-cell *matHeaderCellDef>
                 Role
             </mat-header-cell>
-
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;" [innerHTML]="joinRoles(row?.user?.roles)"></p>
-                <!-- <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div> -->
             </mat-cell>
         </ng-container>
 
@@ -68,17 +47,10 @@
             <mat-header-cell *matHeaderCellDef>
                 Phone Number
             </mat-header-cell>
-
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row?.user?.mobilePhoneNo }}
+                    {{ safeValue(row?.user?.mobilePhoneNo) }}
                 </p>
-
-                <!-- <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div> -->
             </mat-cell>
         </ng-container>
 
@@ -96,11 +68,6 @@
                             : safeValue((row?.user?.attendances)[0]?.checkIn)
                     }}
                 </p>
-                <!-- <div *ngIf="!row?.user || (isLoading$ | async)" fxFlex>
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '100%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div> -->
             </mat-cell>
         </ng-container>
 
@@ -108,7 +75,6 @@
             <mat-header-cell *matHeaderCellDef>
                 Action
             </mat-header-cell>
-
             <mat-cell *matCellDef="let row">
                 <div fxFlex="row" fxLayoutAlign="end center">
                     <button
@@ -169,16 +135,6 @@
                         </button>
                     </mat-menu>
                 </div>
-
-                <!-- <div
-                    *ngIf="!row?.user || (isLoading$ | async)"
-                    style="text-align: right; margin-right: 15px;"
-                    fxFlex
-                >
-                    <ngx-skeleton-loader
-                        [theme]="{ width: '50%', 'margin-top': '10px' }"
-                    ></ngx-skeleton-loader>
-                </div> -->
             </mat-cell>
         </ng-container>
 

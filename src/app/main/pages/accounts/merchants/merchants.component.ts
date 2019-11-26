@@ -224,6 +224,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/pages/account/stores', storeId, 'detail']);
     }
 
+    safeValue(item: string): string {
+        return item ? item : '-';
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------

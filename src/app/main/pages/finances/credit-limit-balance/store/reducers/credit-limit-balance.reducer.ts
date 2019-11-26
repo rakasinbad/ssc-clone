@@ -13,7 +13,9 @@ interface CreditLimitStoreState extends EntityState<CreditLimitStore> {
     total: number;
 }
 
-interface CreditLimitGroupState extends EntityState<CreditLimitGroup> {}
+interface CreditLimitGroupState extends EntityState<CreditLimitGroup> {
+    selectedCreditLimitGroupId: string | number;
+}
 
 interface ErrorState extends EntityState<IErrorHandler> {}
 
@@ -21,7 +23,7 @@ export interface State {
     isRefresh?: boolean;
     isLoading: boolean;
     // selectedCreditLimitStoreId?: string | number;
-    selectedCreditLimitGroupId?: string | number;
+    // selectedCreditLimitGroupId?: string | number;
     source: TSource;
     creditLimitBalanceGroups: CreditLimitGroupState;
     creditLimitBalanceStores: CreditLimitStoreState;
@@ -43,7 +45,9 @@ const initialCreditLimitStoreState = adapterCreditLimitStore.getInitialState({
 const adapterCreditLimitGroup = createEntityAdapter<CreditLimitGroup>({
     selectId: row => row.id
 });
-const initialCreditLimitGroupState = adapterCreditLimitGroup.getInitialState();
+const initialCreditLimitGroupState = adapterCreditLimitGroup.getInitialState({
+    selectedCreditLimitGroupId: null
+});
 
 const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
@@ -62,6 +66,7 @@ const creditLimitBalanceReducer = createReducer(
         CreditLimitBalanceActions.updateCreditLimitStoreRequest,
         CreditLimitBalanceActions.updateStatusFreezeBalanceRequest,
         CreditLimitBalanceActions.createCreditLimitGroupRequest,
+        CreditLimitBalanceActions.deleteCreditLimitGroupRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoreRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoresRequest,
         CreditLimitBalanceActions.fetchCreditLimitGroupsRequest,
@@ -79,6 +84,7 @@ const creditLimitBalanceReducer = createReducer(
         CreditLimitBalanceActions.updateCreditLimitStoreFailure,
         CreditLimitBalanceActions.updateStatusFreezeBalanceFailure,
         CreditLimitBalanceActions.createCreditLimitGroupFailure,
+        CreditLimitBalanceActions.deleteCreditLimitGroupFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoreFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoresFailure,
         CreditLimitBalanceActions.fetchCreditLimitGroupsFailure,
@@ -150,6 +156,15 @@ const creditLimitBalanceReducer = createReducer(
             state.creditLimitBalanceGroups
         ),
         errors: adapterError.removeOne('createCreditLimitGroupFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.deleteCreditLimitGroupSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceGroups: adapterCreditLimitGroup.removeOne(
+            payload,
+            state.creditLimitBalanceGroups
+        ),
+        errors: adapterError.removeOne('deleteCreditLimitGroupFailure', state.errors)
     }))
     // on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
     //     ...state,

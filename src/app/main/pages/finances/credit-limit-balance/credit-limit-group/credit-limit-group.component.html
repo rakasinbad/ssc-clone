@@ -9,18 +9,32 @@
 
     <ng-container *ngIf="creditLimitGroups$ | async as creditLimitGroups">
         <div
+            appMaterialElevation
+            [defaultElevation]="0"
+            [raisedElevation]="2"
             class="credit-box-action-fill mb-12"
             fxLayout="column"
             fxLayoutAlign="start stretch"
             matRipple
             style="cursor: pointer"
             *ngFor="let row of creditLimitGroups"
+            [class.active]="(selectedRowIndex$ | async) === row?.id"
             (click)="onSetup(row?.id)"
         >
             <div class="background-box" fxFill fxLayout="column" fxLayoutAlign="stretch">
                 <div class="top" style="background:#666666" fxFlex="35">
                     <div fxLayout="row" fxLayoutAlign="end stretch" fxFlex>
-                        <div style="height:52px"></div>
+                        <div style="min-height:70px">
+                            <button
+                                mat-icon-button
+                                type="button"
+                                aria-label="Delete"
+                                class="fuse-white-fg"
+                                (click)="$event.stopPropagation(); onDelete(row)"
+                            >
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
                         <!-- <span style="color:#757575;font-size:48px">CL01</span> -->
                     </div>
                 </div>
@@ -46,13 +60,19 @@
 
                         <div class="top-content" fxLayout="column">
                             <div style="color:white">
-                                {{ row?.name }}
+                                {{ safeValue(row?.name) }}
                             </div>
 
                             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="7px">
-                                <mat-icon>monetization_on</mat-icon>
+                                <mat-icon svgIcon="icons8-coin"></mat-icon>
 
-                                <span>{{ row?.defaultCreditLimit | currency: 'IDR' | price }}</span>
+                                <span>
+                                    {{
+                                        +row?.defaultCreditLimit > 0
+                                            ? (+row?.defaultCreditLimit | price: 'short')
+                                            : +row?.defaultCreditLimit
+                                    }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -60,12 +80,12 @@
                     <div class="content-bottom">
                         <div>
                             <span>Segment:</span>
-                            <span class="ml-4">{{ row?.storeSegment?.name }}</span>
+                            <span class="ml-4">{{ safeValue(row?.storeSegment?.name) }}</span>
                         </div>
 
                         <div>
                             <span>Days:</span>
-                            <span class="ml-4">{{ row?.termOfPayment }} Days</span>
+                            <span class="ml-4">{{ +row?.termOfPayment | number }} Days</span>
                         </div>
 
                         <div>
