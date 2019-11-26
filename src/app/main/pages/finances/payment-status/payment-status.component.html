@@ -101,10 +101,22 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Store Column -->
-                <ng-container matColumnDef="store">
+                <!-- Order Code Column -->
+                <ng-container matColumnDef="order-code">
                     <mat-header-cell *matHeaderCellDef>
-                        Store
+                        Order Code
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ safeValue(row?.orderCode) }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="store-name">
+                    <mat-header-cell *matHeaderCellDef>
+                        Store Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -122,7 +134,7 @@
                         <p class="price" style="word-break: break-word;">
                             {{
                                 safeValue(row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                    ? (+row?.totalPrice | price: 'short')
                                     : +row?.totalPrice
                             }}
                         </p>
@@ -139,7 +151,15 @@
                             [attr.data-content]="safeValue(row?.statusPayment)"
                             style="word-break: break-word;"
                         >
-                            {{ safeValue(row?.statusPayment) }}
+                            <ng-container [ngSwitch]="row?.statusPayment">
+                                <ng-container *ngSwitchCase="'waiting for payment'">
+                                    Waiting for Payment
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    {{ safeValue(row?.statusPayment) | titlecase }}
+                                </ng-container>
+                            </ng-container>
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -284,7 +304,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Action
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button

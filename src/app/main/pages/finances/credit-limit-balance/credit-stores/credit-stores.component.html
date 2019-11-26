@@ -65,7 +65,7 @@
                 <p class="price" style="word-break: break-word;">
                     {{
                         +row?.creditLimit > 0
-                            ? (+row?.creditLimit | currency: 'IDR':'symbol':'1.2-2')
+                            ? (+row?.creditLimit | price: 'short')
                             : +row?.creditLimit
                     }}
                 </p>
@@ -81,7 +81,7 @@
                 <p class="price" style="word-break: break-word;">
                     {{
                         +row?.totalOrder > 0
-                            ? (+row?.totalOrder | currency: 'IDR':'symbol':'1.2-2')
+                            ? (+row?.totalOrder | price: 'short')
                             : +row?.totalOrder
                     }}
                 </p>
@@ -97,7 +97,7 @@
                 <p class="price" style="word-break: break-word;">
                     {{
                         +row?.balanceAmount > 0
-                            ? (+row?.balanceAmount | currency: 'IDR':'symbol':'1.2-2')
+                            ? (+row?.balanceAmount | price: 'short')
                             : +row?.balanceAmount
                     }}
                 </p>
@@ -113,7 +113,7 @@
                 <p class="price" style="word-break: break-word;">
                     {{
                         +row?.averageOrder > 0
-                            ? (+row?.averageOrder | currency: 'IDR':'symbol':'1.2-2')
+                            ? (+row?.averageOrder | price: 'short')
                             : +row?.averageOrder
                     }}
                 </p>

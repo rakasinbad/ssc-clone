@@ -8,42 +8,43 @@
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT HEADER -->
-        <!-- <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"> -->
-        <!--  <h2 class="m-0">Full width with content scroll</h2> -->
-
-        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent">
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- <button mat-flat-button color="accent">
                     EXPORT
                 </button>
 
                 <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
-                </button>
-            </div> -->
+                </button> -->
+            </div>
 
-        <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
-        <!-- SEARCH -->
-        <!-- <div class="search-wrapper mx-12">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Search for a order" />
+                        <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
-                </div> -->
-        <!-- / SEARCH -->
+                </div>
+                <!-- / SEARCH -->
 
-        <!-- <button mat-flat-button class="grey-600">
+                <!-- <button mat-flat-button class="grey-600">
                     <mat-icon>filter_list</mat-icon>
                     Filter Lists
                 </button>
 
                 <button mat-flat-button class="grey-600">
                     Group By
-                </button>
-            </div> -->
-        <!-- </div> -->
+                </button> -->
+            </div>
+        </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mt-8 mb-24" *ngIf="filterStatus && filterStatus !== 'all-status'">
+        <mat-card
+            class="mt-8 mb-24"
+            *ngIf="(filterStatus && filterStatus !== 'all-status') || search.value"
+        >
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -85,6 +86,14 @@
                                 cancel
                             </mat-icon>
                         </mat-chip>
+
+                        <mat-chip *ngIf="searchOrder || search.value">
+                            {{ searchOrder || search.value }}
+
+                            <mat-icon matChipRemove (click)="onRemoveSearchOrder()">
+                                cancel
+                            </mat-icon>
+                        </mat-chip>
                     </mat-chip-list>
                 </div>
             </div>
@@ -95,16 +104,6 @@
             class="sinbad-content mat-elevation-z1"
             [class.mt-8]="!filterStatus || filterStatus === 'all-status'"
         >
-            <!-- CONTENT TOOLBAR -->
-            <!-- <div class="toolbar px-24 py-8">
-                <span>Content toolbar</span>
-            </div> -->
-            <!-- / CONTENT TOOLBAR -->
-
-            <!-- CONTENT -->
-            <!-- <div class="content p-24"></div> -->
-            <!-- / CONTENT -->
-
             <mat-table
                 class="orders-table"
                 #table
@@ -131,23 +130,23 @@
                 <!-- Origins Column -->
                 <ng-container matColumnDef="origins">
                     <mat-header-cell *matHeaderCellDef>
-                        Origins
+                        Order Origins
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.orderCode) }}
+                            {{ safeValue(row?.order?.originOrderCode) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                        ID
+                <!-- Order Code Column -->
+                <ng-container matColumnDef="orderCode">
+                    <mat-header-cell *matHeaderCellDef>
+                        Order Code
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.id) }}
+                            {{ safeValue(row?.orderCode) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -183,13 +182,13 @@
                 <!-- Trx Amount Column -->
                 <ng-container matColumnDef="trxAmount">
                     <mat-header-cell *matHeaderCellDef>
-                        Trx Amount
+                        Order Value
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
                                 safeValue(row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                    ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                     : +row?.totalPrice
                             }}
                         </p>
@@ -211,7 +210,7 @@
                 <!-- Total Product Column -->
                 <ng-container matColumnDef="totalProduct">
                     <mat-header-cell *matHeaderCellDef>
-                        Jumlah Produk
+                        Qty(pcs)
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -281,7 +280,7 @@
                         <p class="price" style="word-break: break-word;">
                             {{
                                 safeValue(row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                    ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                     : +row?.totalPrice
                             }}
                         </p>
@@ -421,7 +420,10 @@
 
             <div
                 class="no-records"
-                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                *ngIf="
+                    !(isLoading$ | async) &&
+                    ((totalDataSource$ | async) === 0 || (dataSource$ | async)?.length === 0)
+                "
             >
                 No records found
             </div>

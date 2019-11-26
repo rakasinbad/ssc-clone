@@ -3,9 +3,10 @@ import {
     ChangeDetectorRef,
     Component,
     Input,
+    isDevMode,
+    OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    OnDestroy
+    ViewEncapsulation
 } from '@angular/core';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { merge, Subject } from 'rxjs';
@@ -54,23 +55,57 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
         // Load the navigation either from the input or from the service
         this.navigations = this.navigation || this._fuseNavigationService.getCurrentNavigation();
 
-        console.log('NAVIGATION 1', this.navigations, this.navigation, this.layout);
+        if (isDevMode()) {
+            console.groupCollapsed('NAVIGATION 1');
+
+            console.groupCollapsed('navigations');
+            console.log(this.navigations);
+            console.groupEnd();
+
+            console.groupCollapsed('navigation');
+            console.log(this.navigation);
+            console.groupEnd();
+
+            console.groupCollapsed('layout');
+            console.log(this.layout);
+            console.groupEnd();
+
+            console.groupCollapsed('getCurrent');
+            console.log(this._fuseNavigationService.getCurrentNavigation());
+            console.groupEnd();
+
+            console.groupEnd();
+        }
 
         // Subscribe to the current navigation changes
         this._fuseNavigationService.onNavigationChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
                 // Load the navigation
-                // this.navigations = this._fuseNavigationService.getCurrentNavigation();
                 this.navigations =
                     this.navigation || this._fuseNavigationService.getCurrentNavigation();
 
-                console.log(
-                    'NAVIGATION 2A CHANGED',
-                    this.navigations,
-                    this.navigation,
-                    this.layout
-                );
+                if (isDevMode()) {
+                    console.groupCollapsed('NAVIGATION 1 [CHANGED]');
+
+                    console.groupCollapsed('navigations');
+                    console.log(this.navigations);
+                    console.groupEnd();
+
+                    console.groupCollapsed('navigation');
+                    console.log(this.navigation);
+                    console.groupEnd();
+
+                    console.groupCollapsed('layout');
+                    console.log(this.layout);
+                    console.groupEnd();
+
+                    console.groupCollapsed('getCurrent');
+                    console.log(this._fuseNavigationService.getCurrentNavigation());
+                    console.groupEnd();
+
+                    console.groupEnd();
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -82,12 +117,27 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
                 // Load the navigation
                 this.navigations = this.navigation;
 
-                console.log(
-                    'NAVIGATION 2B REGISTERED',
-                    this.navigations,
-                    this.navigation,
-                    this.layout
-                );
+                if (isDevMode()) {
+                    console.groupCollapsed('NAVIGATION 1 [REGISTERED]');
+
+                    console.groupCollapsed('navigations');
+                    console.log(this.navigations);
+                    console.groupEnd();
+
+                    console.groupCollapsed('navigation');
+                    console.log(this.navigation);
+                    console.groupEnd();
+
+                    console.groupCollapsed('layout');
+                    console.log(this.layout);
+                    console.groupEnd();
+
+                    console.groupCollapsed('getCurrent');
+                    console.log(this._fuseNavigationService.getCurrentNavigation());
+                    console.groupEnd();
+
+                    console.groupEnd();
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();
@@ -101,7 +151,27 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
         )
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
-                console.log('NAVIGATION 2C UPDATE', this.navigations, this.navigation, this.layout);
+                if (isDevMode()) {
+                    console.groupCollapsed('NAVIGATION 1 [UPDATE]');
+
+                    console.groupCollapsed('navigations');
+                    console.log(this.navigations);
+                    console.groupEnd();
+
+                    console.groupCollapsed('navigation');
+                    console.log(this.navigation);
+                    console.groupEnd();
+
+                    console.groupCollapsed('layout');
+                    console.log(this.layout);
+                    console.groupEnd();
+
+                    console.groupCollapsed('getCurrent');
+                    console.log(this._fuseNavigationService.getCurrentNavigation());
+                    console.groupEnd();
+
+                    console.groupEnd();
+                }
 
                 // Mark for check
                 this._changeDetectorRef.markForCheck();

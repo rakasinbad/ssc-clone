@@ -68,12 +68,18 @@ app-orders {
 
         .mat-header-cell {
             text-align: left;
+            font-weight: 700;
+            padding-right: 8px;
         }
 
         .mat-cell {
+            font-size: 12px;
             min-width: 0;
             display: flex;
             align-items: center;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
         }
 
         .mat-column-checkbox {

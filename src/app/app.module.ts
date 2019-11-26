@@ -1,6 +1,6 @@
 import 'hammerjs';
 
-import { registerLocaleData } from '@angular/common';
+import { getCurrencySymbol, registerLocaleData } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
 import { LOCALE_ID, NgModule } from '@angular/core';
@@ -21,6 +21,7 @@ import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxMaskModule } from 'ngx-mask';
 import { MomentModule } from 'ngx-moment';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import * as numeral from 'numeral';
 
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -34,6 +35,27 @@ import { HttpConfigInterceptor } from './shared/interceptors/http-config.interce
 import { HttpErrorInterceptor } from './shared/interceptors/http-error.interceptor';
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
+
+numeral.register('locale', 'id-sinbad', {
+    delimiters: {
+        thousands: '.',
+        decimal: ','
+    },
+    abbreviations: {
+        thousand: 'ribu',
+        million: 'juta',
+        billion: 'miliar',
+        trillion: 'triliun'
+    },
+    ordinal: _ => {
+        return '';
+    },
+    currency: {
+        symbol: getCurrencySymbol('IDR', 'narrow')
+    }
+});
+
+numeral.locale('id-sinbad');
 
 registerLocaleData(localId, 'id');
 

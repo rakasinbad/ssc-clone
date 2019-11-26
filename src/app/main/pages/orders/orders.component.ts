@@ -7,13 +7,14 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { LogService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -37,12 +38,13 @@ import { OrderSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+    search: FormControl;
     filterStatus: string;
     total: number;
     displayedColumns = [
         // 'checkbox',
         'origins',
-        'id',
+        'orderCode',
         'orderDate',
         'storeName',
         'trxAmount',
@@ -74,9 +76,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private store: Store<fromOrder.FeatureState>,
-        private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private _$log: LogService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -95,18 +97,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             })
         );
         this.statusOrder = statusOrder;
-
-        // Set default first status active
-        this.store.dispatch(
-            UiActions.setCustomToolbarActive({
-                payload: 'all-status'
-            })
-        );
-
-        this._fuseNavigationService.register('customNavigation', this.statusOrder);
-
-        // Show custom toolbar
-        this.store.dispatch(UiActions.showCustomToolbar());
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -118,6 +108,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.search = new FormControl('');
         this.filterStatus = '';
         this.hasSelected = false;
         this.paginator.pageSize = 5;
@@ -160,6 +151,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
 
+        // Filter by search column
+        this.search.valueChanges
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(v => {
+                if (v) {
+                    localStorage.setItem('filter.search.order', v);
+                }
+
+                this.onRefreshTable();
+            });
+
         this.store
             .select(OrderSelectors.getIsRefresh)
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
@@ -173,6 +175,23 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
+
+        // Set default first status active
+        this.store.dispatch(
+            UiActions.setCustomToolbarActive({
+                payload: 'all-status'
+            })
+        );
+
+        // Register to navigation [FuseNavigation]
+        this.store.dispatch(
+            UiActions.registerNavigation({
+                payload: { key: 'customNavigation', navigation: this.statusOrder }
+            })
+        );
+
+        // Show custom toolbar
+        this.store.dispatch(UiActions.showCustomToolbar());
 
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
@@ -191,10 +210,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         localStorage.removeItem('filter.order');
 
-        this._fuseNavigationService.unregister('customNavigation');
-
+        // Reset breadcrumb state
         this.store.dispatch(UiActions.resetBreadcrumb());
+
+        // Reset custom toolbar state
         this.store.dispatch(UiActions.hideCustomToolbar());
+
+        // Unregister navigation [FuseNavigation]
+        this.store.dispatch(UiActions.unregisterNavigation({ payload: 'customNavigation' }));
+
+        // Reset orders state
         this.store.dispatch(OrderActions.resetOrders());
 
         this._unSubs$.next();
@@ -204,6 +229,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    get searchOrder(): string {
+        return localStorage.getItem('filter.search.order') || '';
+    }
 
     get searchStatus(): string {
         return localStorage.getItem('filter.order') || '';
@@ -230,6 +259,11 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onRemoveSearchStatus(): void {
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
+    }
+
+    onRemoveSearchOrder(): void {
+        localStorage.removeItem('filter.search.order');
+        this.search.reset();
     }
 
     onTrackBy(index: number, item: any): string {
@@ -262,23 +296,23 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sortBy'] = this.sort.active;
         }
 
-        // if (this.search.value) {
-        //     const query = this.search.value;
+        if (this.search.value) {
+            const query = this.search.value;
 
-        //     if (data['search'] && data['search'].length > 0) {
-        //         data['search'].push({
-        //             fieldName: 'keyword',
-        //             keyword: query
-        //         });
-        //     } else {
-        //         data['search'] = [
-        //             {
-        //                 fieldName: 'keyword',
-        //                 keyword: query
-        //             }
-        //         ];
-        //     }
-        // }
+            if (data['search'] && data['search'].length > 0) {
+                data['search'].push({
+                    fieldName: 'keyword',
+                    keyword: query
+                });
+            } else {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            }
+        }
 
         if (this.filterStatus) {
             if (
@@ -303,26 +337,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     ];
                 }
             }
-
-            // else if (
-            //     this.filterStatus === 'd-7' ||
-            //     this.filterStatus === 'd-3' ||
-            //     this.filterStatus === 'd-0'
-            // ) {
-            //     if (data['search'] && data['search'].length > 0) {
-            //         data['search'].push({
-            //             fieldName: 'dueDay',
-            //             keyword: String(this.filterStatus).split('-')[1]
-            //         });
-            //     } else {
-            //         data['search'] = [
-            //             {
-            //                 fieldName: 'dueDay',
-            //                 keyword: String(this.filterStatus).split('-')[1]
-            //             }
-            //         ];
-            //     }
-            // }
         }
 
         this.store.dispatch(OrderActions.fetchOrdersRequest({ payload: data }));

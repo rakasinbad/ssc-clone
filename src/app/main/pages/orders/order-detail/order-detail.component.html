@@ -88,23 +88,23 @@
                                         <tr>
                                             <td class="info-title">User</td>
                                             <td>
-                                                {{ (order$ | async)?.order?.store?.user?.fullName }}
+                                                {{ safeValue((order$ | async)?.order?.store?.user?.fullName) }}
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td class="info-title">Nama Toko</td>
-                                            <td>{{ (order$ | async)?.order?.store?.name }}</td>
+                                            <td class="info-title">Store Name</td>
+                                            <td>{{ safeValue((order$ | async)?.order?.store?.name) }}</td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Outlet ID</td>
-                                            <td>{{ (order$ | async)?.order?.store?.storeCode }}</td>
+                                            <td>{{ safeValue((order$ | async)?.order?.store?.storeCode) }}</td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Store Address</td>
-                                            <td>{{ (order$ | async)?.order?.store?.address }}</td>
+                                            <td>{{ safeValue((order$ | async)?.order?.store?.address) }}</td>
                                         </tr>
                                     </table>
                                 </div>
@@ -119,7 +119,7 @@
                                     <table class="info-group-1">
                                         <tr>
                                             <td class="info-title">Delivery Address</td>
-                                            <td>{{ (order$ | async)?.order?.store?.address }}</td>
+                                            <td>{{ safeValue((order$ | async)?.order?.store?.address) }}</td>
                                         </tr>
 
                                         <!-- <tr>
@@ -130,7 +130,7 @@
                                         <tr>
                                             <td class="info-title">Geo Coverage</td>
                                             <td>
-                                                {{ (order$ | async)?.order?.store?.urban?.urban }}
+                                                {{ safeValue((order$ | async)?.order?.store?.urban?.urban) }}
                                             </td>
                                         </tr>
                                     </table>
@@ -148,12 +148,12 @@
                                     <table class="info-group-1">
                                         <tr>
                                             <td class="info-title">Order ID</td>
-                                            <td>{{ (order$ | async)?.orderCode }}</td>
+                                            <td>{{ safeValue((order$ | async)?.orderCode) }}</td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Order Reference</td>
-                                            <td>{{ (order$ | async)?.orderRef }}</td>
+                                            <td>{{ safeValue((order$ | async)?.orderRef) }}</td>
                                         </tr>
 
                                         <!-- <tr>
@@ -162,8 +162,12 @@
                                         </tr> -->
 
                                         <tr>
-                                            <td class="info-title">Group Faktur ID</td>
-                                            <td>{{ (order$ | async)?.invoiceGroup?.name }}</td>
+                                            <td class="info-title">Group Faktur Name</td>
+                                            <td>
+                                                {{
+                                                    safeValue((order$ | async)?.invoiceGroup?.name)
+                                                }}
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -207,8 +211,10 @@
                                             <td class="info-title">Order Date</td>
                                             <td>
                                                 {{
-                                                    (order$ | async)?.createdAt
-                                                        | date: 'dd/MM/yy HH:mm:ss'
+                                                    safeValue((order$ | async)?.createdAt) !== '-'
+                                                        ? ((order$ | async)?.createdAt
+                                                          | date: 'dd/MM/yy HH:mm:ss')
+                                                        : safeValue((order$ | async)?.createdAt)
                                                 }}
                                             </td>
                                         </tr>
@@ -262,14 +268,24 @@
                                         <tr>
                                             <td class="info-title">Payment Due Date</td>
                                             <td>
-                                                {{ (order$ | async)?.dueDate | date: 'dd/MM/yy' }}
+                                                {{
+                                                    safeValue((order$ | async)?.dueDate) !== '-'
+                                                        ? ((order$ | async)?.dueDate
+                                                          | date: 'dd/MM/yy')
+                                                        : safeValue((order$ | async)?.dueDate)
+                                                }}
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Payment Date</td>
                                             <td>
-                                                {{ (order$ | async)?.paidTime | date: 'dd/MM/yy' }}
+                                                {{
+                                                    safeValue((order$ | async)?.paidTime) !== '-'
+                                                        ? ((order$ | async)?.paidTime
+                                                          | date: 'dd/MM/yy')
+                                                        : safeValue((order$ | async)?.paidTime)
+                                                }}
                                             </td>
                                         </tr>
 

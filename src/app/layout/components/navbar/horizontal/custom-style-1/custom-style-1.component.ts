@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, isDevMode, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseConfigService } from '@fuse/services/config.service';
@@ -70,7 +70,16 @@ export class NavbarHorizontalCustomStyle1Component implements OnInit, OnDestroy 
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
                 this.navigation = this._fuseNavigationService.getNavigation('customNavigation');
-                console.log('CUSTOM 2', this.navigation);
+
+                if (isDevMode()) {
+                    console.groupCollapsed('[NAVBAR] CUSTOM STYLE 1');
+
+                    console.groupCollapsed('navigation');
+                    console.log(this.navigation);
+                    console.groupEnd();
+
+                    console.groupEnd();
+                }
             });
 
         // Subscribe to the config changes
