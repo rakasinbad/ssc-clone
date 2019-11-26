@@ -6,6 +6,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
+import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { PaginateResponse } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
@@ -131,6 +132,132 @@ export class CreditLimitBalanceEffects {
                     );
 
                     this._$notice.open('Data berhasil ditambah', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [DELETE - DIALOG] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    confirmDeleteCreditLimitGroup$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.confirmDeleteCreditLimitGroup),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                    DeleteConfirmationComponent,
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete <strong>${params.name}</strong> ?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    }
+                );
+
+                return dialogRef.afterClosed();
+            }),
+            map(id => {
+                if (id) {
+                    return CreditLimitBalanceActions.deleteCreditLimitGroupRequest({ payload: id });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    /**
+     *
+     * [DELETE - REQUEST] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    deleteCreditLimitGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.deleteCreditLimitGroupRequest),
+            map(action => action.payload),
+            switchMap(params => {
+                return this._$creditLimitGroupApi.delete(params).pipe(
+                    map(({ id }) => {
+                        this._$log.generateGroup('[RESPONSE REQUEST DELETE CREDIT LIMIT GROUP]', {
+                            resp: {
+                                type: 'log',
+                                value: id
+                            }
+                        });
+
+                        return CreditLimitBalanceActions.deleteCreditLimitGroupSuccess({
+                            payload: id
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            CreditLimitBalanceActions.deleteCreditLimitGroupFailure({
+                                payload: { id: 'deleteCreditLimitGroupSuccess', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [DELETE - FAILURE] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    deleteCreditLimitGroupFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.deleteCreditLimitGroupFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('[REQUEST DELETE CREDIT LIMIT GROUP FAILURE]', {
+                        resp: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Data gagal dihapus', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [DELETE - SUCCESS] Credit Limit Group
+     * @memberof CreditLimitBalanceEffects
+     */
+    deleteCreditLimitGroupSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.deleteCreditLimitGroupSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('[REQUEST DELETE CREDIT LIMIT GROUP SUCCESS]', {
+                        resp: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Data berhasil dihapus', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

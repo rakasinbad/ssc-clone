@@ -31,6 +31,7 @@ import { FakeDbService } from './fake-db/fake-db.service';
 import { fuseConfig } from './fuse-config';
 import { LayoutModule } from './layout/layout.module';
 import { AuthInterceptor } from './main/pages/core/auth/auth.interceptor';
+import { IconModule } from './shared/icon.module';
 import { HttpConfigInterceptor } from './shared/interceptors/http-config.interceptor';
 import { HttpErrorInterceptor } from './shared/interceptors/http-error.interceptor';
 import { MaterialModule } from './shared/material.module';
@@ -75,6 +76,9 @@ registerLocaleData(localId, 'id');
 
         // Material
         MaterialModule,
+
+        // Icon
+        IconModule,
 
         // Fuse modules
         FuseModule.forRoot(fuseConfig),

@@ -62,7 +62,7 @@ export const getTotalCreditLimitGroupEntity = createSelector(
 
 export const getSelectedCreditLimitGroupId = createSelector(
     getCreditLimitBalanceState,
-    state => state.selectedCreditLimitGroupId
+    state => state.creditLimitBalanceGroups.selectedCreditLimitGroupId
 );
 
 export const getSelectedCreditLimitGroup = createSelector(

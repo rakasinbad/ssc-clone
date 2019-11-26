@@ -134,6 +134,30 @@ export const createCreditLimitGroupSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - DELETE CREDIT LIMIT GROUP] Credit Limit Groups
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmDeleteCreditLimitGroup = createAction(
+    '[Credit Limit Groups Page] Confirm Delete Credit Limit Group',
+    props<{ payload: CreditLimitGroup }>()
+);
+
+export const deleteCreditLimitGroupRequest = createAction(
+    '[Credit Limit Groups API] Delete Credit Limit Group Request',
+    props<{ payload: string }>()
+);
+
+export const deleteCreditLimitGroupFailure = createAction(
+    '[Credit Limit Groups API] Delete Credit Limit Group Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const deleteCreditLimitGroupSuccess = createAction(
+    '[Credit Limit Groups API] Delete Credit Limit Group Success',
+    props<{ payload: string }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
 

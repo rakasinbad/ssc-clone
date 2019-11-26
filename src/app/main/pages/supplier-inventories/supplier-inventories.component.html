@@ -150,7 +150,12 @@
                         <p style="word-break: break-word;">
                             <ng-container [ngSwitch]="row?.unlimitedStock">
                                 <ng-container *ngSwitchCase="true">
-                                    <mat-icon>all_inclusive</mat-icon>
+                                    <mat-icon
+                                        class="font-size-14"
+                                        style="min-width: 18px;min-height: 12px;padding-left: 1px;"
+                                    >
+                                        all_inclusive
+                                    </mat-icon>
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="false">

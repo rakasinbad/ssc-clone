@@ -1,0 +1,6 @@
+@import 'src/@fuse/scss/fuse';
+
+.active {
+    @include mat-elevation-transition;
+    @include mat-elevation(2);
+}

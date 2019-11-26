@@ -149,7 +149,7 @@
                     <header>
                         <div class="title">
                             <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
-                                Store ID
+                                Store Information
                             </ng-container>
                             <ngx-skeleton-loader
                                 *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -165,7 +165,7 @@
                                     <ng-container
                                         *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
-                                        ID Toko
+                                        Store ID
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -196,7 +196,7 @@
                                     <ng-container
                                         *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
-                                        Nama Toko
+                                        Store Name
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="!(store$ | async)?.store && (isLoading$ | async)"

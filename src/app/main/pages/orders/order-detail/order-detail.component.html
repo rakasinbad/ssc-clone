@@ -98,7 +98,7 @@
                                         </tr>
 
                                         <tr>
-                                            <td class="info-title">Outlet ID</td>
+                                            <td class="info-title">Store ID</td>
                                             <td>{{ safeValue((order$ | async)?.order?.store?.storeCode) }}</td>
                                         </tr>
 
@@ -213,7 +213,7 @@
                                                 {{
                                                     safeValue((order$ | async)?.createdAt) !== '-'
                                                         ? ((order$ | async)?.createdAt
-                                                          | date: 'dd/MM/yy HH:mm:ss')
+                                                          | date: 'dd/MM/yyyy HH:mm:ss')
                                                         : safeValue((order$ | async)?.createdAt)
                                                 }}
                                             </td>
@@ -271,7 +271,7 @@
                                                 {{
                                                     safeValue((order$ | async)?.dueDate) !== '-'
                                                         ? ((order$ | async)?.dueDate
-                                                          | date: 'dd/MM/yy')
+                                                          | date: 'dd/MM/yyyy')
                                                         : safeValue((order$ | async)?.dueDate)
                                                 }}
                                             </td>
@@ -283,7 +283,7 @@
                                                 {{
                                                     safeValue((order$ | async)?.paidTime) !== '-'
                                                         ? ((order$ | async)?.paidTime
-                                                          | date: 'dd/MM/yy')
+                                                          | date: 'dd/MM/yyyy')
                                                         : safeValue((order$ | async)?.paidTime)
                                                 }}
                                             </td>
@@ -1099,7 +1099,7 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
-                                {{ row?.qty | number }}
+                                {{ +row?.qty | number }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -1146,7 +1146,7 @@
                             <p style="word-break: break-word;">
                                 {{
                                     +row?.grossPrice > 0
-                                        ? (+row?.grossPrice | currency: 'IDR':'symbol':'1.2-2')
+                                        ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                         : +row?.grossPrice
                                 }}
                             </p>
@@ -1162,7 +1162,7 @@
                             <p class="text-truncate">
                                 {{
                                     +row?.totalPrice > 0
-                                        ? (+row?.totalPrice | currency: 'IDR':'symbol':'1.2-2')
+                                        ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                         : +row?.totalPrice
                                 }}
                             </p>
@@ -1277,10 +1277,10 @@
                                     <td class="info-title">Untaxed Original:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.originalPrice?.beforeTaxPrice > 0
-                                                ? (+(order$ | async)?.originalPrice?.beforeTaxPrice
-                                                  | currency: 'IDR':'symbol':'1.2-2')
-                                                : +(order$ | async)?.originalPrice?.beforeTaxPrice
+                                            +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
+                                                ? (+(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                  | price: 'full':'IDR':'narrow':'1.2-2')
+                                                : +(order$ | async)?.parcelDetails?.totalGrossPrice
                                         }}
                                     </td>
                                 </tr>
@@ -1289,10 +1289,10 @@
                                     <td class="info-title">Tax Original:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.originalPrice?.taxPrice > 0
-                                                ? (+(order$ | async)?.originalPrice?.taxPrice
-                                                  | currency: 'IDR':'symbol':'1.2-2')
-                                                : +(order$ | async)?.originalPrice?.taxPrice
+                                            +(order$ | async)?.parcelDetails?.tax > 0
+                                                ? (+(order$ | async)?.parcelDetails?.tax
+                                                  | price: 'full':'IDR':'narrow':'1.2-2')
+                                                : +(order$ | async)?.parcelDetails?.tax
                                         }}
                                     </td>
                                 </tr>
@@ -1302,12 +1302,12 @@
                                         <td class="info-title">Total Original:</td>
                                         <td>
                                             {{
-                                                +(order$ | async)?.originalPrice?.afterTaxPrice > 0
-                                                    ? (+(order$ | async)?.originalPrice
-                                                          ?.afterTaxPrice
-                                                      | currency: 'IDR':'symbol':'1.2-2')
-                                                    : +(order$ | async)?.originalPrice
-                                                          ?.afterTaxPrice
+                                                +(order$ | async)?.parcelDetails?.totalNettPrice > 0
+                                                    ? (+(order$ | async)?.parcelDetails
+                                                          ?.totalNettPrice
+                                                      | price: 'full':'IDR':'narrow':'1.2-2')
+                                                    : +(order$ | async)?.parcelDetails
+                                                          ?.totalNettPrice
                                             }}
                                         </td>
                                     </tr>
@@ -1441,10 +1441,10 @@
                                     <td class="info-title">Untaxed:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.originalPrice?.beforeTaxPrice > 0
-                                                ? (+(order$ | async)?.originalPrice?.beforeTaxPrice
-                                                  | currency: 'IDR':'symbol':'1.2-2')
-                                                : +(order$ | async)?.originalPrice?.beforeTaxPrice
+                                            +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
+                                                ? (+(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                  | price: 'full':'IDR':'narrow':'1.2-2')
+                                                : +(order$ | async)?.parcelDetails?.totalGrossPrice
                                         }}
                                     </td>
                                 </tr>
@@ -1453,10 +1453,10 @@
                                     <td class="info-title">Tax:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.originalPrice?.taxPrice > 0
-                                                ? (+(order$ | async)?.originalPrice?.taxPrice
-                                                  | currency: 'IDR':'symbol':'1.2-2')
-                                                : +(order$ | async)?.originalPrice?.taxPrice
+                                            +(order$ | async)?.parcelDetails?.tax > 0
+                                                ? (+(order$ | async)?.parcelDetails?.tax
+                                                  | price: 'full':'IDR':'narrow':'1.2-2')
+                                                : +(order$ | async)?.parcelDetails?.tax
                                         }}
                                     </td>
                                 </tr>
@@ -1466,12 +1466,12 @@
                                         <td class="info-title">Total:</td>
                                         <td>
                                             {{
-                                                +(order$ | async)?.originalPrice?.afterTaxPrice > 0
-                                                    ? (+(order$ | async)?.originalPrice
-                                                          ?.afterTaxPrice
-                                                      | currency: 'IDR':'symbol':'1.2-2')
-                                                    : +(order$ | async)?.originalPrice
-                                                          ?.afterTaxPrice
+                                                +(order$ | async)?.parcelDetails?.totalNettPrice > 0
+                                                    ? (+(order$ | async)?.parcelDetails
+                                                          ?.totalNettPrice
+                                                      | price: 'full':'IDR':'narrow':'1.2-2')
+                                                    : +(order$ | async)?.parcelDetails
+                                                          ?.totalNettPrice
                                             }}
                                         </td>
                                     </tr>

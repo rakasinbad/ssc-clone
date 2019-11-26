@@ -11,7 +11,11 @@ import { FiltersModule } from './components/filters/filters.module';
 import { ErrorNoticeComponent } from './components/notices/error-notice/error-notice.component';
 import { SuccessNoticeComponent } from './components/notices/success-notice/success-notice.component';
 import { WarningNoticeComponent } from './components/notices/warning-notice/warning-notice.component';
-import { CheckboxValidatorDirective, ContentDirective } from './directives';
+import {
+    CheckboxValidatorDirective,
+    ContentDirective,
+    MaterialElevationDirective
+} from './directives';
 import { MaterialModule } from './material.module';
 import { ChangeConfirmationComponent } from './modals/change-confirmation/change-confirmation.component';
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
@@ -38,7 +42,8 @@ import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
         WarningNoticeComponent,
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
-        ReplacePipe
+        ReplacePipe,
+        MaterialElevationDirective
     ],
     imports: [
         MaterialModule,
@@ -65,7 +70,8 @@ import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
         FuseSharedModule,
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
-        ReplacePipe
+        ReplacePipe,
+        MaterialElevationDirective
     ],
     providers: [TitleCasePipe],
     entryComponents: [
