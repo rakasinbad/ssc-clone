@@ -297,14 +297,20 @@ export class OrderEffects {
                 ofType(OrderActions.fetchOrdersFailure),
                 map(action => action.payload),
                 tap(resp => {
+                    const message = resp.errors.error.message || resp.errors.message;
+
                     this._$log.generateGroup('[REQUEST FETCH ORDERS FAILURE]', {
                         response: {
                             type: 'log',
                             value: resp
+                        },
+                        message: {
+                            type: 'log',
+                            value: message
                         }
                     });
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -360,14 +366,20 @@ export class OrderEffects {
                 ofType(OrderActions.fetchOrderFailure),
                 map(action => action.payload),
                 tap(resp => {
+                    const message = resp.errors.error.message || resp.errors.message;
+
                     this._$log.generateGroup('[REQUEST FETCH ORDER FAILURE]', {
                         response: {
                             type: 'log',
                             value: resp
+                        },
+                        message: {
+                            type: 'log',
+                            value: message
                         }
                     });
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

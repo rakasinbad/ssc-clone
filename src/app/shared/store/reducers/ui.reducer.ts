@@ -13,6 +13,7 @@ export interface State {
     smallBreadcrumbs: IBreadcrumbs[];
     customToolbarActive?: string;
     selectedRowIndex: string;
+    // showCustomToolbar: string;
 }
 
 const initialState: State = {
@@ -23,6 +24,7 @@ const initialState: State = {
     smallBreadcrumbs: null,
     // customToolbarActive: null,
     selectedRowIndex: '-1'
+    // showCustomToolbar: null
 };
 
 const uiReducer = createReducer(

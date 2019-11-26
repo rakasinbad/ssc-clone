@@ -1,3 +1,4 @@
+import { isDevMode } from '@angular/core';
 import { Params, RouterStateSnapshot } from '@angular/router';
 import { RouterStateSerializer } from '@ngrx/router-store';
 
@@ -13,7 +14,11 @@ export interface RouterStateUrl {
 
 export class CustomSerializer implements RouterStateSerializer<RouterStateUrl> {
     serialize(routerState: RouterStateSnapshot): RouterStateUrl {
-        console.log('CUSTOM SERIALIZER', routerState);
+        if (isDevMode()) {
+            console.groupCollapsed('CUSTOM SERIALIZER');
+            console.log(routerState);
+            console.groupEnd();
+        }
 
         let route = routerState.root;
 

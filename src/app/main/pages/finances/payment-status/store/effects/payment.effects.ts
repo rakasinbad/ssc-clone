@@ -88,18 +88,24 @@ export class PaymentEffects {
                 ofType(PaymentStatusActions.fetchPaymentStatusesFailure),
                 map(action => action.payload),
                 tap(resp => {
+                    const message = resp.errors.error.message || resp.errors.message;
+
                     this._$log.generateGroup(
                         '[REQUEST FETCH PAYMENT STATUSES FAILURE]',
                         {
                             response: {
                                 type: 'log',
                                 value: resp
+                            },
+                            message: {
+                                type: 'log',
+                                value: message
                             }
                         },
                         'groupCollapsed'
                     );
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

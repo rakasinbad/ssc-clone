@@ -144,11 +144,23 @@
                 <!-- Stock Column -->
                 <ng-container matColumnDef="stock">
                     <mat-header-cell *matHeaderCellDef>
-                        Stock
+                        Stock on Hand
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.stock) }}
+                            <ng-container [ngSwitch]="row?.unlimitedStock">
+                                <ng-container *ngSwitchCase="true">
+                                    <mat-icon>all_inclusive</mat-icon>
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="false">
+                                    {{ safeValue(row?.stock) }}
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    -
+                                </ng-container>
+                            </ng-container>
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -175,7 +187,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Action
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button

@@ -11,11 +11,10 @@ import {
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { GeneratorService } from 'app/shared/helpers';
+import { LogService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -46,7 +45,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     total: number;
     displayedColumns = [
         'order-reference',
-        'store',
+        'order-code',
+        'store-name',
         'account-receivable',
         'status',
         // 'source',
@@ -86,10 +86,9 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     constructor(
         private matDialog: MatDialog,
         private store: Store<fromPaymentStatus.FeatureState>,
-        private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$generate: GeneratorService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private _$log: LogService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -113,15 +112,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             })
         );
         this.statusPayment = statusPayment;
-
-        // Set default first status active
-        this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all-status' }));
-
-        // this._fuseNavigationService.unregister('customNavigation');
-        this._fuseNavigationService.register('customNavigation', this.statusPayment);
-
-        // Show custom toolbar
-        this.store.dispatch(UiActions.showCustomToolbar());
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -190,6 +180,26 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
+        // Set default first status active
+        this.store.dispatch(
+            UiActions.setCustomToolbarActive({
+                payload: 'all-status'
+            })
+        );
+
+        // Register to navigation [FuseNavigation]
+        this.store.dispatch(
+            UiActions.registerNavigation({
+                payload: {
+                    key: 'customNavigation',
+                    navigation: this.statusPayment
+                }
+            })
+        );
+
+        // Show custom toolbar
+        this.store.dispatch(UiActions.showCustomToolbar());
+
         this.sort.sortChange
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => (this.paginator.pageIndex = 0));
@@ -207,10 +217,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         localStorage.removeItem('filter.payment.status');
 
-        this._fuseNavigationService.unregister('customNavigation');
-
+        // Reset breadcrumb state
         this.store.dispatch(UiActions.resetBreadcrumb());
+
+        // Reset custom toolbar state
         this.store.dispatch(UiActions.hideCustomToolbar());
+
+        // Unregister navigation [FuseNavigation]
+        this.store.dispatch(UiActions.unregisterNavigation({ payload: 'customNavigation' }));
+
+        // Reset payment statuses state
         this.store.dispatch(PaymentStatusActions.resetPaymentStatuses());
 
         this._unSubs$.next();
