@@ -62,9 +62,13 @@ app-catalogues {
 
         .catalogue {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
             padding: 10px 0px;
             min-height: 100px;
+        }
+
+        .clickable {
+            cursor: pointer;
         }
 
         .mat-cell {

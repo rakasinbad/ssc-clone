@@ -6,7 +6,8 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    SecurityContext
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatTable } from '@angular/material';
@@ -22,7 +23,7 @@ import { GeneratorService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil, debounceTime, tap } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil, debounceTime, tap, filter } from 'rxjs/operators';
 
 import { IQueryParams } from 'app/shared/models';
 import { locale as english } from './i18n/en';
@@ -40,6 +41,9 @@ import { CataloguesImportComponent } from './catalogues-import/catalogues-import
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
+import { DomSanitizer } from '@angular/platform-browser';
+
+type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
 @Component({
   selector: 'app-catalogues',
@@ -65,6 +69,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     hasSelected: boolean;
     search: FormControl;
     statusCatalogue: any;
+    findCatalogueMode: TFindCatalogueMode = 'all';
 
     dataSource$: Observable<Array<Catalogue>>;
     isLoading$: Observable<boolean>;
@@ -91,6 +96,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _$generate: GeneratorService,
     private matDialog: MatDialog,
     public translate: TranslateService,
+    private readonly santizer: DomSanitizer
   ) {
     this.store.dispatch(
         UiActions.createBreadcrumb({
@@ -120,53 +126,12 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         })
     );
 
-    this.store.select(
-        UiSelectors.getCustomToolbarActive
-    ).pipe(
-        distinctUntilChanged(),
-        takeUntil(this._unSubs$)
-    ).subscribe(index => {
-        console.log('INDEX', index);
-        if (index === 'all-type') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
-        } else if (index === 'live') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getLiveCatalogues);
-        } else if (index === 'empty') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getEmptyStockCatalogues);
-        } else if (index === 'blocked') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getBlockedCatalogues);
-        } else if (index === 'inactive') {
-            this.dataSource$ = this.store.select(CatalogueSelectors.getInactiveCatalogues).pipe(
-                tap(catalogues => console.log(catalogues))
-            );
-        }
-    });
-
     this._fuseNavigationService.register('customNavigation', this.statusCatalogue);
     this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
     this.store.dispatch(UiActions.showCustomToolbar());
     this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
-    this.store.select(
-        CatalogueSelectors.getAllTotalCatalogue
-    ).pipe(
-        takeUntil(this._unSubs$)
-    ).subscribe(payload => {
-        const newNavigations = this._$catalogue
-                                    .getCatalogueStatuses({
-                                        allCount: payload.totalAllStatus,
-                                        liveCount: payload.totalActive,
-                                        emptyCount: payload.totalEmptyStock,
-                                        blockedCount: payload.totalEmptyStock
-                                    });
-        
-        if (Array.isArray(Object.keys(newNavigations))) {
-            for (const [idx, navigation] of Object.keys(newNavigations).entries()) {
-                this._fuseNavigationService.updateNavigationItem(statusCatalogue[idx].id, { title: newNavigations[navigation] }, 'customNavigation');
-            }
-        }
-    });
-  }
+    }
 
   // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -190,12 +155,25 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.search.valueChanges
             .pipe(
                 distinctUntilChanged(),
-                debounceTime(1000)
-            ).subscribe(value => {
+                debounceTime(1000),
+                filter(value => {
+                    const sanitized = !!this.santizer.sanitize(SecurityContext.HTML, value);
+
+                    if (sanitized) {
+                        return true;
+                    } else {
+                        if (value.length === 0) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }),
+                takeUntil(this._unSubs$)
+            ).subscribe(() => {
                 this.onRefreshTable();
             });
 
-        this.initTable();
         // Need for demo
         // this.store
         //     .select(CatalogueSelectors.getAllCatalogues)
@@ -232,6 +210,58 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(() => {
                 this.initTable();
             });
+
+        this.store.select(
+            CatalogueSelectors.getAllTotalCatalogue
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(payload => {
+            const newNavigations = this._$catalogue
+                                        .getCatalogueStatuses({
+                                            allCount: payload.totalAllStatus,
+                                            liveCount: payload.totalActive,
+                                            emptyCount: payload.totalEmptyStock,
+                                            blockedCount: payload.totalBanned
+                                        });
+            
+            if (Array.isArray(Object.keys(newNavigations))) {
+                for (const [idx, navigation] of Object.keys(newNavigations).entries()) {
+                    this._fuseNavigationService.updateNavigationItem(statusCatalogue[idx].id, { title: newNavigations[navigation] }, 'customNavigation');
+                }
+            }
+        });
+
+        this.store.select(
+            UiSelectors.getCustomToolbarActive
+        ).pipe(
+            distinctUntilChanged(),
+            takeUntil(this._unSubs$)
+        ).subscribe(index => {
+            // console.log('INDEX', index);
+            if (index === 'all-type') {
+                this.findCatalogueMode = 'all';
+                // this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
+            } else if (index === 'live') {
+                this.findCatalogueMode = 'live';
+                // this.dataSource$ = this.store.select(CatalogueSelectors.getLiveCatalogues);
+            } else if (index === 'empty') {
+                // this.findEmptyStock = true;
+                this.findCatalogueMode = 'empty';
+                // this.initTable();
+                // this.dataSource$ = this.store.select(CatalogueSelectors.getEmptyStockCatalogues);
+            } else if (index === 'blocked') {
+                this.findCatalogueMode = 'blocked';
+                // this.dataSource$ = this.store.select(CatalogueSelectors.getBlockedCatalogues);
+            } else if (index === 'inactive') {
+                this.findCatalogueMode = 'inactive';
+                // this.dataSource$ = this.store.select(CatalogueSelectors.getInactiveCatalogues).pipe(
+                //     tap(catalogues => console.log(catalogues))
+                // );
+            }
+    
+            this.initTable();
+        });
+        // this.initTable();
     }
 
     ngOnDestroy(): void {
@@ -330,7 +360,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // });
     }
 
-    onImportProduct() {
+    onImportProduct(): void {
         // this.matDialog.open(CataloguesImportComponent, {
         //     data: {
         //         title: 'Import'
@@ -360,38 +390,55 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 10,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-        };
-
-        data['paginate'] = true;
-
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+        if (this.paginator) {
             
-            if (this.sort.active === 'price') {
-                data['sortBy'] = 'suggest_retail_price';
-            } else {
-                data['sortBy'] = this.sort.active;
-            }
-        }
-
-        if (this.search.value) {
-            const query = this.search.value;
-
-            data['search'] = [
-                {
-                    fieldName: 'name',
-                    keyword: query
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 10,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
+    
+            data['paginate'] = true;
+    
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                
+                if (this.sort.active === 'price') {
+                    data['sortBy'] = 'suggest_retail_price';
+                } else {
+                    data['sortBy'] = this.sort.active;
                 }
-            ];
+            }
+    
+            switch (this.findCatalogueMode) {
+                case 'live':
+                    data['status'] = 'active';
+                    break;
+                case 'empty':
+                    data['emptyStock'] = true;
+                    break;
+                case 'blocked':
+                    data['status'] = 'banned';
+                    break;
+                case 'inactive':
+                    data['status'] = 'inactive';
+                    break;
+            }
+    
+            const searchValue = this.santizer.sanitize(SecurityContext.HTML, this.search.value);
+            if (searchValue) {
+                data['search'] = [
+                    {
+                        fieldName: 'name',
+                        keyword: searchValue
+                    }
+                ];
+            }
+    
+            this.store.dispatch(
+                CatalogueActions.fetchCataloguesRequest({
+                    payload: data
+                })
+            );
         }
-
-        this.store.dispatch(
-            CatalogueActions.fetchCataloguesRequest({
-                payload: data
-            })
-        );
     }
 }

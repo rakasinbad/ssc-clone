@@ -39,8 +39,13 @@ export class CatalogueEffects {
                 return this._$catalogueApi.patchCatalogue(payload.id, payload.data)
                     .pipe(
                         catchOffline(),
-                        map(() => {
-                            return CatalogueActions.patchCatalogueSuccess();
+                        map(catalogue => {
+                            return CatalogueActions.patchCatalogueSuccess({
+                                payload: {
+                                    data: catalogue,
+                                    source: payload.source
+                                }
+                            });
                         }),
                         catchError(err =>
                             of(
@@ -60,13 +65,20 @@ export class CatalogueEffects {
     patchCatalogueSuccess$ = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.patchCatalogueSuccess),
-            tap(() => {
+            map(action => action.payload),
+            tap(({ source }) => {
                 this._$notice.open('Produk berhasil di-update', 'success', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
 
-                this.matDialog.closeAll();
+                if (source === 'form') {
+                    this.router.navigate(['pages', 'catalogues']);
+                } else if (source === 'list') {
+                    this.matDialog.closeAll();
+                    this.router.navigate(['pages', 'catalogues']);
+                }
+
             })
         ), { dispatch: false }
     );
@@ -122,15 +134,9 @@ export class CatalogueEffects {
                 return this._$catalogueApi
                     .fetchTotalCatalogueStatuses()
                     .pipe(
-                        map(response => {
+                        map(({ total: totalAllStatus, totalEmptyStock, totalActive, totalInactive, totalBanned }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
-                                payload: {
-                                    totalInactive: Number(response.totalinactive),
-                                    totalActive: Number(response.totalactive),
-                                    totalEmptyStock: Number(response.totalemptystock),
-                                    totalBanned: Number(response.totalbanned),
-                                    totalAllStatus: Number(response.total)
-                                }
+                                payload: { totalAllStatus, totalEmptyStock, totalActive, totalInactive, totalBanned }
                             });
                         }),
                         catchError(err =>

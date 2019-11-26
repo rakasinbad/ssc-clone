@@ -196,6 +196,7 @@
                                 [disableRipple]="true"
                                 style="margin-left: 10px;"
                                 matTooltip="Change the category"
+                                matTooltipPosition="right"
                                 (click)="onEditCategory(form.get('productInfo.id').value)"
                             >
                                 <mat-icon>edit</mat-icon>
@@ -267,6 +268,96 @@
                         </mat-form-field>
                     </div>
                     <!-- / UOM -->
+                    <!-- MINIMUM QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.minQty').errors &&
+                                !form.get('productInfo.minQty').untouched &&
+                                (form.get('productInfo.minQty').dirty || form.get('productInfo.minQty').touched)
+                            "
+                        >
+                            Minimum Quantity
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="minQty"
+                                formControlName="minQty"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / MINIMUM QUANTITY -->
+                    <!-- PACKAGED QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.packagedQty').errors &&
+                                !form.get('productInfo.packagedQty').untouched &&
+                                (form.get('productInfo.packagedQty').dirty || form.get('productInfo.packagedQty').touched)
+                            "
+                        >
+                            Packaged Quantity
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="packagedQty"
+                                formControlName="packagedQty"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / PACKAGED QUANTITY -->
+                    <!-- MULTIPLE QUANTITY -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('productInfo.multipleQty').errors &&
+                                !form.get('productInfo.multipleQty').untouched &&
+                                (form.get('productInfo.multipleQty').dirty || form.get('productInfo.multipleQty').touched)
+                            "
+                        >
+                            Multiple Quantity
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="multipleQty"
+                                formControlName="multipleQty"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / MULTIPLE QUANTITY -->
                 </form>
             </div>
         </div>
@@ -304,9 +395,9 @@
                                 matInput
                                 name="price"
                                 formControlName="productPrice"
-                                mask="separator"
+                                mask="separator.2"
                                 thousandSeparator="."
-                                prefix="Rp "
+                                prefix="Rp"
                             />
                         </mat-form-field>
                     </div>
@@ -335,9 +426,9 @@
                                 matInput
                                 name="price"
                                 formControlName="retailPrice"
-                                mask="separator"
+                                mask="separator.2"
                                 thousandSeparator="."
-                                prefix="Rp "
+                                prefix="Rp"
                             />
                         </mat-form-field>
                     </div>
@@ -849,6 +940,7 @@
                                 formControlName="weight"
                                 mask="separator"
                                 thousandSeparator="."
+                                placeholder="in gram(s)"
                             />
                         </mat-form-field>
                     </div>

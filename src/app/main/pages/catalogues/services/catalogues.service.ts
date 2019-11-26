@@ -52,7 +52,7 @@ export class CataloguesService {
 
     fetchTotalCatalogueStatuses() {
         this._url = this._$helper.handleApiRouter('/calculate-catalogue');
-        return this.http.get<{ total: string; totalemptystock: string; totalactive: string; totalinactive: string; totalbanned: string; }>(this._url);
+        return this.http.get<{ total: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; }>(this._url);
     }
 
     getCatalogueStatuses(data: ICatalogueTitleParameter) {
@@ -82,8 +82,24 @@ export class CataloguesService {
      * @memberof CataloguesService
      */
     findAll(params: IQueryParams): Observable<ICataloguesResponse> {
+        const newArgs = [];
+        
+        if (params['emptyStock']) {
+            newArgs.push({
+                key: 'emptyStock',
+                value: true
+            });
+        }
+
+        if (params['status']) {
+            newArgs.push({
+                key: 'status',
+                value: params['status']
+            });
+        }
+
         this._url = this._$helper.handleApiRouter(this._endpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<ICataloguesResponse>(this._url, { params: newParams });
     }

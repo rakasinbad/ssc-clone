@@ -14,17 +14,19 @@
                 <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
                     <ng-container *ngIf="data.editMode === 'price'; else oldStock;">
                         <input
+                            [hidden]="true"
                             matInput
-                            type="text"
                             name="price"
                             prefix="Rp"
                             mask="separator"
                             thousandSeparator="."
                             formControlName="oldPrice"
                         />
+                        {{ data?.price | price: 'full':'IDR':'narrow':'3.0-2' }}
                     </ng-container>
                     <ng-template #oldStock>
                         <input
+                            [hidden]="true"
                             matInput
                             type="text"
                             name="stock"
@@ -32,6 +34,7 @@
                             thousandSeparator="."
                             formControlName="oldStock"
                         />
+                        {{ data?.stock | number:'3.0-2' }}
                     </ng-template>
                 </mat-form-field>
             </div>
