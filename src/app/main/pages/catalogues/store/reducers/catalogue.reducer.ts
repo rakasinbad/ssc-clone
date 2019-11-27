@@ -278,6 +278,18 @@ const catalogueReducer = createReducer(
     ),
     /** 
      *  ===================================================================
+     *  UPDATE
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.updateCatalogue,
+        (state, { catalogue }) => ({
+            ...state,
+            catalogues: adapterCatalogue.updateOne(catalogue, state.catalogues)
+        })
+    ),
+    /** 
+     *  ===================================================================
      *  RESETS
      *  ===================================================================
      */ 

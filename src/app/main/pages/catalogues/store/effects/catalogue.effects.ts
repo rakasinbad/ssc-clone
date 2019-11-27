@@ -27,6 +27,7 @@ import { CataloguesService } from '../../services';
 import { CatalogueActions } from '../actions';
 import { fromCatalogue } from '../reducers';
 import { state } from '@angular/animations';
+import { Update } from '@ngrx/entity';
 
 @Injectable()
 export class CatalogueEffects {
@@ -66,7 +67,7 @@ export class CatalogueEffects {
         this.actions$.pipe(
             ofType(CatalogueActions.patchCatalogueSuccess),
             map(action => action.payload),
-            tap(({ source }) => {
+            tap(({ data: catalogue, source }) => {
                 this._$notice.open('Produk berhasil di-update', 'success', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
@@ -76,7 +77,16 @@ export class CatalogueEffects {
                     this.router.navigate(['pages', 'catalogues']);
                 } else if (source === 'list') {
                     this.matDialog.closeAll();
-                    this.router.navigate(['pages', 'catalogues']);
+                    // this.router.navigate(['pages', 'catalogues']);
+                    const updatedCatalogue: Update<Catalogue> = {
+                        id: catalogue.id,
+                        changes: {
+                            suggestRetailPrice: catalogue.suggestRetailPrice,
+                            stock: catalogue.stock
+                        }
+                    };
+
+                    this.store.dispatch(CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue }));
                 }
 
             })

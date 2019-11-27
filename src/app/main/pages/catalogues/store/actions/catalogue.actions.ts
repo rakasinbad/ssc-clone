@@ -79,6 +79,15 @@ export const fetchCatalogueSuccess = createAction(
 );
 
 /**
+ * UPDATE CATALOGUE
+ */
+
+export const updateCatalogue = createAction(
+    '[Catalogues Page] Update Catalogue',
+    props<{ catalogue: Update<Catalogue> }>()
+);
+
+/**
  * FETCH CATALOGUE CATEGORY
  */
 
