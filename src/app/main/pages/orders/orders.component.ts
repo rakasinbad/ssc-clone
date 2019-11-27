@@ -4,12 +4,14 @@ import {
     Component,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -75,6 +77,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(
+        private domSanitizer: DomSanitizer,
         private store: Store<fromOrder.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
@@ -153,7 +156,18 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Filter by search column
         this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000),
+                // filter(v => {
+                //     if (v) {
+                //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                //     }
+
+                //     return true;
+                // }),
+                takeUntil(this._unSubs$)
+            )
             .subscribe(v => {
                 if (v) {
                     localStorage.setItem('filter.search.order', v);
@@ -296,9 +310,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sortBy'] = this.sort.active;
         }
 
-        if (this.search.value) {
-            const query = this.search.value;
+        const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
 
+        if (query) {
             if (data['search'] && data['search'].length > 0) {
                 data['search'].push({
                     fieldName: 'keyword',

@@ -11,6 +11,7 @@ import {
     StoreGroupApiService,
     StoreSegmentApiService,
     StoreTypeApiService,
+    UrbanApiService,
     VehicleAccessibilityApiService
 } from 'app/shared/helpers';
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
@@ -22,9 +23,11 @@ import {
     StoreGroup,
     StoreSegment,
     StoreType,
+    Urban,
     VehicleAccessibility
 } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
+import { sortBy } from 'lodash';
 import { of } from 'rxjs';
 import { catchError, map, retry, switchMap } from 'rxjs/operators';
 
@@ -42,6 +45,90 @@ import { DropdownActions } from '../actions';
 @Injectable()
 export class DropdownEffects {
     private _isOnline = this.network.online;
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Geo Parameter]
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Geo Parameter Province
+     * @memberof DropdownEffects
+     */
+    fetchDropdownGeoParameterProvinceRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownGeoParameterProvinceRequest),
+            map(action => action.payload),
+            switchMap(({ id, type }) => {
+                return this._$provinceApi.findAll({ paginate: false }).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const sources = (resp as Array<Province>).map(row => {
+                            const newProvince = new Province(
+                                row.id,
+                                row.name,
+                                row.createdAt,
+                                row.updatedAt,
+                                row.deletedAt
+                            );
+
+                            return newProvince.name;
+                        });
+
+                        return DropdownActions.fetchDropdownGeoParameterProvinceSuccess({
+                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownGeoParameterProvinceFailure({
+                                payload: {
+                                    id: `fetchDropdownGeoParameterProvinceFailure`,
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST] Geo Parameter City
+     * @memberof DropdownEffects
+     */
+    fetchDropdownGeoParameterCityRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownGeoParameterCityRequest),
+            map(action => action.payload),
+            switchMap(({ id, type }) => {
+                return this._$urbanApi.findAll({ paginate: false }, 'city').pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
+                            return row.city;
+                        });
+
+                        return DropdownActions.fetchDropdownGeoParameterCitySuccess({
+                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownGeoParameterCityFailure({
+                                payload: {
+                                    id: `fetchDropdownGeoParameterCityFailure`,
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Hierarchy]
@@ -711,6 +798,7 @@ export class DropdownEffects {
         private _$storeGroupApi: StoreGroupApiService,
         private _$storeSegmentApi: StoreSegmentApiService,
         private _$storeTypeApi: StoreTypeApiService,
+        private _$urbanApi: UrbanApiService,
         private _$vehicleAccessibilityApi: VehicleAccessibilityApiService
     ) {}
 }

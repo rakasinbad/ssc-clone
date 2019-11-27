@@ -37,11 +37,11 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     displayedColumns = [
         'product',
         // 'bonus',
-        'orderQty',
-        // 'delivered',
-        // 'invoiced',
+        'order-qty',
+        'delivered-qty',
+        'invoiced-qty',
         // 'unitOfMeasured',
-        'unitPrice',
+        'unit-price',
         'gross'
         // 'amountDisc1',
         // 'amountDisc2',

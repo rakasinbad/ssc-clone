@@ -9,11 +9,69 @@ import {
     StoreSegment,
     StoreType,
     VehicleAccessibility,
-    Hierarchy
+    Hierarchy,
+    GeoParameter
 } from 'app/shared/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Geo Parameter
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownGeoParameterRequest = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Request',
+    props<{ payload: Partial<GeoParameter> }>()
+);
+
+export const fetchDropdownGeoParameterFailure = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownGeoParameterSuccess = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Success',
+    props<{ payload: GeoParameter[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Geo Parameter [Province]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownGeoParameterProvinceRequest = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Province Request',
+    props<{ payload: Partial<GeoParameter> }>()
+);
+
+export const fetchDropdownGeoParameterProvinceFailure = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Province Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownGeoParameterProvinceSuccess = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Province Success',
+    props<{ payload: GeoParameter }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Geo Parameter [City]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownGeoParameterCityRequest = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter City Request',
+    props<{ payload: Partial<GeoParameter> }>()
+);
+
+export const fetchDropdownGeoParameterCityFailure = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter City Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownGeoParameterCitySuccess = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter City Success',
+    props<{ payload: GeoParameter }>()
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Hierarchy

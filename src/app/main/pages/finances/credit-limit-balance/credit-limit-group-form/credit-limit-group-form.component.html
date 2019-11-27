@@ -288,7 +288,7 @@
             </div>
         </div>
 
-        <!-- <div class="form-box dynamic">
+        <div class="form-box dynamic">
             <span class="mat-subheading-2">
                 Geographic
             </span>
@@ -334,6 +334,7 @@
                                     <mat-select
                                         formControlName="unitType"
                                         placeholder="Pick your parameter"
+                                        (selectionChange)="onSelectUnit($event, i)"
                                     >
                                         <mat-option
                                             *ngFor="let row of unitParameters"
@@ -373,12 +374,40 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="70">
-                                <mat-select
-                                    formControlName="unitValue"
-                                    placeholder="Pick your parameter..."
+                                <ng-container
+                                    *ngIf="
+                                        geoParameterSource$[i] | async as parameterSources;
+                                        else noSources
+                                    "
                                 >
-                                    <mat-option>Ciamis</mat-option>
-                                </mat-select>
+                                    <mat-select
+                                        formControlName="unitValue"
+                                        placeholder="Pick your parameter"
+                                    >
+                                        <mat-option
+                                            *ngFor="let value of parameterSources?.source"
+                                            [value]="value"
+                                        >
+                                            {{ value }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noSources>
+                                    <mat-select placeholder="Pick your parameter" disabled>
+                                        <mat-option>Parameter not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error
+                                    *ngIf="
+                                        formGeographics.controls[i].get('unitValue').errors &&
+                                        (formGeographics.controls[i].get('unitValue').dirty ||
+                                            formGeographics.controls[i].get('unitValue').touched)
+                                    "
+                                >
+                                    {{ getErrorMessageArray('creditLimitArea', 'unitValue', i) }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -402,7 +431,7 @@
                     <span>Add</span>
                 </div>
             </div>
-        </div> -->
+        </div>
     </form>
     <!-- <p [innerHTML]="data?.message"></p>
     <form [formGroup]="form">

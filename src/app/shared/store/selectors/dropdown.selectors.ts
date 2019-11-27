@@ -1,4 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { GeoParameterType } from 'app/shared/models';
 import { sortBy, unionBy, uniqBy } from 'lodash';
 
 import { fromDropdown } from '../reducers';
@@ -19,6 +20,46 @@ export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDr
 //     getDropdownState,
 //     fromDropdown.selectAllSearchAccounts
 // );
+
+// -----------------------------------------------------------------------------------------------------
+// Geo Parameters State [Province]
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllGeoParameter = createSelector(
+    getDropdownState,
+    fromDropdown.selectAllGeoParameter
+);
+
+export const getGeoParameterEntities = createSelector(
+    getDropdownState,
+    fromDropdown.selectGeoParameterEntities
+);
+
+export const getTotalGeoParameterEntity = createSelector(
+    getDropdownState,
+    fromDropdown.selectGeoParameterTotal
+);
+
+export const getSelectedGeoParameterId = createSelector(
+    getDropdownState,
+    state => state.geoParameters.selectedId
+);
+
+export const getSelectedGeoParameter = createSelector(
+    getGeoParameterEntities,
+    getSelectedGeoParameterId,
+    (entities, id) => entities[id]
+);
+
+export const getGeoParameterProvince = createSelector(
+    getGeoParameterEntities,
+    entities => entities[GeoParameterType.PROVINCE]
+);
+
+export const getGeoParameterCity = createSelector(
+    getGeoParameterEntities,
+    entities => entities[GeoParameterType.CITY]
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Hierarchies State

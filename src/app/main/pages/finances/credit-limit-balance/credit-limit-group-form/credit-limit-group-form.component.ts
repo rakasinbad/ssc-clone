@@ -6,16 +6,17 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { MatSelectChange } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
-import { Hierarchy, StoreSegment } from 'app/shared/models';
+import { GeoParameter, GeoParameterType, Hierarchy, StoreSegment } from 'app/shared/models';
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { takeUntil, tap, map } from 'rxjs/operators';
 
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
@@ -34,6 +35,8 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
     storeSegments$: Observable<StoreSegment[]>;
     hierarchies$: Observable<Hierarchy[]>;
+    geoParameterSource$: Array<Observable<GeoParameter>>;
+    geoParameterProvince$: Observable<GeoParameter>;
 
     isLoading$: Observable<boolean>;
 
@@ -58,6 +61,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.geoParameterSource$ = [];
 
         if (this.data.id === 'new') {
             this.pageType = 'new';
@@ -65,17 +69,30 @@ export class CreditLimitGroupFormComponent implements OnInit {
             this.pageType = 'edit';
         }
 
-        this.initForm();
-
         this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
         this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
 
         this.hierarchies$ = this.store.select(DropdownSelectors.getHierarchyDropdownState);
         this.store.dispatch(DropdownActions.fetchDropdownHierarchyRequest());
 
+        this.geoParameterSource$[0] = of(null);
+        this.geoParameterProvince$ = this.store.select(DropdownSelectors.getGeoParameterProvince);
+        this.store.dispatch(
+            DropdownActions.fetchDropdownGeoParameterProvinceRequest({
+                payload: { id: GeoParameterType.PROVINCE, type: GeoParameterType.PROVINCE }
+            })
+        );
+        this.store.dispatch(
+            DropdownActions.fetchDropdownGeoParameterCityRequest({
+                payload: { id: GeoParameterType.CITY, type: GeoParameterType.CITY }
+            })
+        );
+
         this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
 
         this.unitParameters = this._$helper.unitParameter();
+
+        this.initForm();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -135,6 +152,52 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
     onAddGeograph(): void {
         this.formGeographics.push(this.createGeoForm());
+    }
+
+    onSelectUnit(ev: MatSelectChange, idx: number): void {
+        if (!ev.value) {
+            return;
+        }
+
+        console.log(this.form.get(`creditLimitArea[${idx}].unitValue`));
+
+        // Enable unit value parameter
+        this.formGeographics
+            .at(idx)
+            .get('unitValue')
+            .enable();
+
+        switch (ev.value) {
+            case GeoParameterType.PROVINCE:
+                this.geoParameterSource$[idx] = this.store.select(
+                    DropdownSelectors.getGeoParameterProvince
+                );
+                break;
+
+            case GeoParameterType.CITY:
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterCity)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
+                break;
+
+            case GeoParameterType.DISTRICT:
+                console.log('DISTRICT');
+                break;
+
+            case GeoParameterType.URBAN:
+                console.log('URBAN');
+                break;
+
+            default:
+                break;
+        }
+
+        console.log('IDX 1', ev.value);
+        console.log('IDX 2', idx);
     }
 
     onSubmit(action: string): void {
@@ -214,7 +277,14 @@ export class CreditLimitGroupFormComponent implements OnInit {
                 //     })
                 // ]
             ],
-            unitValue: ['']
+            unitValue: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.unique({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'is_unique')
+                    })
+                ]
+            ]
         });
     }
 
@@ -267,8 +337,8 @@ export class CreditLimitGroupFormComponent implements OnInit {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     })
                 ]
-            ]
-            // creditLimitArea: this.formBuilder.array([this.createGeoForm()])
+            ],
+            creditLimitArea: this.formBuilder.array([this.createGeoForm()])
         });
     }
 }

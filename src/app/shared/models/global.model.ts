@@ -148,3 +148,26 @@ export interface IFooterActionConfig {
         };
     };
 }
+
+export type FilterUrban = 'city' | 'district' | 'urban';
+
+export enum GeoParameterType {
+    PROVINCE = 'Provinsi',
+    CITY = 'Kota/Kabupaten',
+    DISTRICT = 'Kecamatan',
+    URBAN = 'Kelurahan'
+}
+
+interface IGeoParameter {
+    readonly id: string;
+    type: GeoParameterType;
+    source: Array<string>;
+}
+
+export class GeoParameter implements IGeoParameter {
+    constructor(
+        public readonly id: string,
+        public type: GeoParameterType,
+        public source: Array<string>
+    ) {}
+}

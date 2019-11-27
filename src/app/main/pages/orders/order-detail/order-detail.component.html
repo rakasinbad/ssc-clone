@@ -1093,7 +1093,7 @@
                     </ng-container> -->
 
                     <!-- Order Qty Column -->
-                    <ng-container matColumnDef="orderQty">
+                    <ng-container matColumnDef="order-qty">
                         <mat-header-cell *matHeaderCellDef>
                             Order Qty
                         </mat-header-cell>
@@ -1104,27 +1104,29 @@
                         </mat-cell>
                     </ng-container>
 
-                    <!-- Delivered Column -->
-                    <!-- <ng-container matColumnDef="delivered">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>
-                            Delivered
+                    <!-- Delivered Qty Column -->
+                    <ng-container matColumnDef="delivered-qty">
+                        <mat-header-cell *matHeaderCellDef>
+                            Delivered Qty
                         </mat-header-cell>
-
                         <mat-cell *matCellDef="let row">
-                            <p class="text-truncate">{{ row?.delivered }}</p>
+                            <p style="word-break: break-word;">
+                                {{ +row?.deliveredQty | number }}
+                            </p>
                         </mat-cell>
-                    </ng-container> -->
+                    </ng-container>
 
-                    <!-- Invoiced Column -->
-                    <!-- <ng-container matColumnDef="invoiced">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>
-                            Invoiced
+                    <!-- Invoiced Qty Column -->
+                    <ng-container matColumnDef="invoiced-qty">
+                        <mat-header-cell *matHeaderCellDef>
+                            Invoiced Qty
                         </mat-header-cell>
-
                         <mat-cell *matCellDef="let row">
-                            <p class="text-truncate">{{ row?.invoiced }}</p>
+                            <p style="word-break: break-word;">
+                                {{ +row?.invoicedQty | number }}
+                            </p>
                         </mat-cell>
-                    </ng-container> -->
+                    </ng-container>
 
                     <!-- Unit Of Measured Column -->
                     <!-- <ng-container matColumnDef="unitOfMeasured">
@@ -1138,7 +1140,7 @@
                     </ng-container> -->
 
                     <!-- Unit Price Column -->
-                    <ng-container matColumnDef="unitPrice">
+                    <ng-container matColumnDef="unit-price">
                         <mat-header-cell *matHeaderCellDef>
                             Unit Price
                         </mat-header-cell>
