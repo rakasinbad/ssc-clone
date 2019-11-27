@@ -117,7 +117,7 @@ export class MerchantEffects {
                             data: []
                         };
 
-                        if ((resp as IPaginatedResponse<Merchant>).total > 0) {
+                        if (queryParams.paginate) {
                             const newResponse = (resp as IPaginatedResponse<Merchant>);
 
                             newResp = {
