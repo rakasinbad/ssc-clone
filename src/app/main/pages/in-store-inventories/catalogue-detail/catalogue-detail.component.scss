@@ -66,57 +66,71 @@
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
-        .mat-header-row {
-            min-height: 64px;
-        }
-
-        .attendance {
+        .catalogue-detail-row {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
             height: 84px;
         }
 
         .mat-cell {
             min-width: 0;
             display: flex;
+            text-align: center;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
+            // padding-right: 8px;
             // align-items: center;
         }
-
-        .mat-column-number {
-            flex: 0 1 10%;
-        }
-
-        .mat-column-employee {
-            flex: 0 1 22%;
-            // justify-content: flex-end;
-        }
-
-        .mat-column-role {
-            flex: 0 1 15%;
-            // justify-content: flex-end;
-        }
-
-        .mat-column-locationType {
-            flex: 0 1 10%;
-            // justify-content: flex-end;
-        }
-
-        .mat-column-checkDate {
-            flex: 0 1 10%;
-            // justify-content: flex-end;
-        }
-
-        .mat-column-checkIn {
-            flex: 0 1 12.5%;
-        }
-
-        .mat-column-checkOut {
-            flex: 0 1 12.5%;
-        }
-
-        .mat-column-actions {
-            flex: 0 1 8%;
+        
+        .mat-header-cell {
+            display: flex;
             justify-content: flex-end;
         }
+
+        .mat-header-row {
+            min-height: 64px;
+        }
+
+
+        // .mat-column-stockOnHand {
+        //     align-items: center !important;
+        // }
+
+        // .mat-column-number {
+        //     flex: 0 1 10%;
+        // }
+
+        // .mat-column-employee {
+        //     flex: 0 1 22%;
+        //     // justify-content: flex-end;
+        // }
+
+        // .mat-column-role {
+        //     flex: 0 1 15%;
+        //     // justify-content: flex-end;
+        // }
+
+        // .mat-column-locationType {
+        //     flex: 0 1 10%;
+        //     // justify-content: flex-end;
+        // }
+
+        // .mat-column-checkDate {
+        //     flex: 0 1 10%;
+        //     // justify-content: flex-end;
+        // }
+
+        // .mat-column-checkIn {
+        //     flex: 0 1 12.5%;
+        // }
+
+        // .mat-column-checkOut {
+        //     flex: 0 1 12.5%;
+        // }
+
+        // .mat-column-actions {
+        //     flex: 0 1 8%;
+        //     justify-content: flex-end;
+        // }
     }
 }

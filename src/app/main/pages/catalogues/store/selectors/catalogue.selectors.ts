@@ -80,7 +80,7 @@ export const getTotalCatalogueEntity = createSelector(
     fromCatalogue.selectCataloguesTotal
 );
 
-export const getArchivedCatalogues = createSelector(
+export const getInactiveCatalogues = createSelector(
     getAllCatalogues,
     catalogues => catalogues.filter(catalogue => catalogue.status === 'inactive')
 );

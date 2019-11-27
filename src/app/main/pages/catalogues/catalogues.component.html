@@ -12,8 +12,7 @@
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent"
-                        [routerLink]="['/pages/catalogues/add']">
+                <button mat-flat-button color="accent" [routerLink]="['/pages/catalogues/add']">
                     <mat-icon>add</mat-icon>
                     Tambah Produk
                 </button>
@@ -28,7 +27,7 @@
                 <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter [formControl]="search" placeholder="Cari Pesanan/Order" />
+                        <input #filter [formControl]="search" placeholder="Cari di sini" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -78,7 +77,7 @@
                     <mat-cell *matCellDef="let row">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
                             <div fxLayout="row" fxFlex="20" fxLayoutAlign="center">
-                                <img [src]="row?.catalogueImages[0]?.imageUrl"/>
+                                <img [src]="(row?.catalogueImages)[0]?.imageUrl" />
                             </div>
                             <div fxLayout="row" fxFlex="80">
                                 <div fxLayout="column" fxLayoutGap="2px">
@@ -90,17 +89,26 @@
                                     </p> -->
                                     <mat-chip-list aria-label="Catalogue status">
                                         <mat-chip
+                                            *ngIf="row?.status === 'active'"
+                                            class="green-800"
+                                        >
+                                            <strong>Live</strong>
+                                        </mat-chip>
+                                        <mat-chip
                                             *ngIf="row?.status === 'inactive'"
-                                            class="orange-bg"
-                                        >Inactive</mat-chip>
+                                            class="orange-800"
+                                        >
+                                            <strong>Inactive</strong>
+                                        </mat-chip>
+                                        <mat-chip *ngIf="row?.status === 'banned'" class="warn">
+                                            <strong>Diblokir</strong>
+                                        </mat-chip>
                                         <mat-chip
-                                            *ngIf="row?.status === 'banned'"
-                                            class="warn"
-                                        >Diblokir</mat-chip>
-                                        <mat-chip
-                                            *ngIf="row?.stock <= 0"
+                                            *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
                                             class="fuse-black"
-                                        >Habis</mat-chip>
+                                        >
+                                            <strong>Habis</strong>
+                                        </mat-chip>
                                     </mat-chip-list>
                                 </div>
                             </div>
@@ -110,7 +118,7 @@
 
                 <!-- SKU's Product Column -->
                 <ng-container matColumnDef="sku">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Code</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-truncate">{{ row?.sku }}</p>
                     </mat-cell>
@@ -129,11 +137,13 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Harga</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <a
-                            class="fuse-black-fg"
+                            class="fuse-black-fg clickable"
                             matTooltip="Click to edit price"
                             (click)="editCatalogue('price', row)"
                         >
-                            <p class="text-truncate">{{ row?.suggestRetailPrice | currency: 'IDR':'symbol':'3.2-2' | price }}</p>
+                            <p class="text-truncate">
+                                {{ row?.suggestRetailPrice | price: 'full':'IDR':'narrow':'3.0-2' }}
+                            </p>
                         </a>
                     </mat-cell>
                 </ng-container>
@@ -143,7 +153,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Stock</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <a
-                            class="fuse-black-fg"
+                            class="fuse-black-fg clickable"
                             matTooltip="Click to edit stock"
                             (click)="editCatalogue('stock', row)"
                         >
@@ -289,7 +299,7 @@
                                     <span>Blokir</span>
                                 </button> -->
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -298,7 +308,7 @@
                                 >
                                     <mat-icon>_</mat-icon>
                                     <span>Export</span>
-                                </button>
+                                </button> -->
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -306,10 +316,7 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row
-                    *matRowDef="let row; columns: displayedColumns"
-                    class="catalogue"
-                >
+                <mat-row *matRowDef="let row; columns: displayedColumns" class="catalogue">
                 </mat-row>
             </mat-table>
 

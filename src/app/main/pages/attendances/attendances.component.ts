@@ -7,7 +7,8 @@ import {
     ViewEncapsulation,
     ChangeDetectionStrategy,
     OnDestroy,
-    AfterViewInit
+    AfterViewInit,
+    SecurityContext
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -17,10 +18,10 @@ import { Store as NgRxStore, select } from '@ngrx/store';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 
 import { locale as english } from './i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from './i18n/id';
 
 import { IQueryParams } from 'app/shared/models';
-import { tap, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
+import { tap, distinctUntilChanged, takeUntil, map, debounceTime } from 'rxjs/operators';
 import { Store, Attendance } from './models';
 
 /**
@@ -48,6 +49,9 @@ import {
 } from './store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 import { Router } from '@angular/router';
+import { FormControl, Validators } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ValidationError } from '@ngx-pwa/local-storage';
 
 @Component({
     selector: 'app-attendances',
@@ -62,6 +66,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     displayedColumns = [
         'idToko',
         'storeName',
+        'storeAddress',
+        'storePhoneNumber',
         // 'GS',
         // 'SPV',
         // 'check-in',
@@ -73,6 +79,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    search: FormControl;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -87,6 +94,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private router: Router,
+        private sanitizer: DomSanitizer,
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
@@ -118,6 +126,23 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.search = new FormControl('' , [
+            Validators.required,
+            control => {
+                const value = control.value;
+                const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+
+                if (sanitized) {
+                    return null;
+                } else {
+                    if (value.length === 0) {
+                        return null;
+                    } else {
+                        return { unsafe: true };
+                    }
+                }
+            }
+        ]);
         this.paginator.pageSize = 5;
 
         this.dataSource$ 
@@ -178,6 +203,15 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
+        this.search.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(() => {
+                this.onChangePage();
+            });
 
         this.onChangePage();
     }
@@ -223,6 +257,15 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
             data['sortBy'] = this.sort.active;
+        }
+
+        if (this.search.status === 'VALID') {
+            data['search'] = [
+                {
+                    fieldName: 'name',
+                    keyword: this.search.value
+                }
+            ];
         }
 
         this._fromStore.dispatch(

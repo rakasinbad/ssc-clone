@@ -16,6 +16,9 @@ export const fetchCatalogues = createAction(
     props<{ payload: { status: string } }>()
 );
 
+/** Untuk mendefinisikan asal tempat pengubahan data katalog. */
+type TSourceEdit = 'list' | 'form';
+
 /**
  * FILTER CATALOGUES
  */
@@ -24,7 +27,7 @@ export const filterAllCatalogues = createAction('[Catalogues Page] Filter All Ca
 export const filterLiveCatalogues = createAction('[Catalogues Page] Filter Live Catalogues');
 export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empty Catalogues');
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
-export const filterArchivedCatalogues = createAction('[Catalogues Page] Filter Archived Catalogues');
+export const filterInactiveCatalogues = createAction('[Catalogues Page] Filter Inactive Catalogues');
 
 export const addNewCatalogueRequest = createAction(
     '[Catalogues API] Add New Catalogue Request',
@@ -43,7 +46,7 @@ export const addNewCatalogueSuccess = createAction(
 
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
-    props<{ payload: { id: string; data: Partial<Catalogue> } }>()
+    props<{ payload: { id: string; data: Partial<Catalogue>; source: TSourceEdit } }>()
 );
 
 export const patchCatalogueFailure = createAction(
@@ -51,7 +54,10 @@ export const patchCatalogueFailure = createAction(
     props<{ payload: IErrorHandler }>()
 );
 
-export const patchCatalogueSuccess = createAction('[Catalogues API] Patch Catalogue Success');
+export const patchCatalogueSuccess = createAction(
+    '[Catalogues API] Patch Catalogue Success',
+    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit; } }>()
+);
 
 /**
  * FETCH CATALOGUE
@@ -70,6 +76,15 @@ export const fetchCatalogueFailure = createAction(
 export const fetchCatalogueSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Success',
     props<{ payload: { catalogue?: Catalogue; source: TSource } }>()
+);
+
+/**
+ * UPDATE CATALOGUE
+ */
+
+export const updateCatalogue = createAction(
+    '[Catalogues Page] Update Catalogue',
+    props<{ catalogue: Update<Catalogue> }>()
 );
 
 /**
@@ -138,7 +153,7 @@ export const fetchTotalCatalogueStatusFailure = createAction(
 
 export const fetchTotalCatalogueStatusSuccess = createAction(
     '[Catalogues API] Fetch Total Catalogue Status Failure',
-    props<{ payload: { totalAllStatus: number; totalEmptyStock: number; totalActive: number; totalInactive: number; totalBanned: number; } }>()
+    props<{ payload: { totalAllStatus: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; } }>()
 );
 
 /**

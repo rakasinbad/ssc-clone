@@ -45,6 +45,13 @@ export class StoreCatalogueApiService {
             });
         }
 
+        if (params['storeId']) {
+            newArgs.push({
+                key: 'storeId',
+                value: params['storeId']
+            });
+        }
+
         this._url = this.helperSvc.handleApiRouter(this._endpointCatalogueHistory);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 

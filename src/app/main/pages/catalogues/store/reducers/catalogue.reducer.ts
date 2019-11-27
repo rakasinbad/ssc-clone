@@ -269,11 +269,23 @@ const catalogueReducer = createReducer(
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            totalAllStatus: payload.totalAllStatus,
-            totalEmptyStock: payload.totalEmptyStock,
-            totalActive: payload.totalActive,
-            totalInactive: payload.totalInactive,
-            totalBanned: payload.totalBanned
+            totalAllStatus: +payload.totalAllStatus,
+            totalEmptyStock: +payload.totalEmptyStock,
+            totalActive: +payload.totalActive,
+            totalInactive: +payload.totalInactive,
+            totalBanned: +payload.totalBanned
+        })
+    ),
+    /** 
+     *  ===================================================================
+     *  UPDATE
+     *  ===================================================================
+     */ 
+    on(
+        CatalogueActions.updateCatalogue,
+        (state, { catalogue }) => ({
+            ...state,
+            catalogues: adapterCatalogue.updateOne(catalogue, state.catalogues)
         })
     ),
     /** 

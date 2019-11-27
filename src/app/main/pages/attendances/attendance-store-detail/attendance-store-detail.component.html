@@ -45,13 +45,11 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card">
+        <div class="sinbad-content mat-elevation-z1 fuse-white">
             <!-- MARGIN LEFT ADJUSMENT -->
-            <div class="ml-40">
+            <div class="pl-40 py-20">
                 <!-- CARD TITLE -->
-                <div class="mt-16 mb-40">
-                    <div class="h1">Store Information</div>
-                </div>
+                <div class="h1 mb-40">Store Information</div>
                 <!-- / CARD TITLE -->
 
                 <div
@@ -111,10 +109,10 @@
     </div>
     <!-- / CENTER -->
 
-    <div class="p-32">
-        <mat-card>
+    <div class="m-32">
+        <div class="sinbad-content mat-elevation-z1 fuse-white">
             <!-- TITLE -->
-            <mat-card-title>Employees Activity</mat-card-title>
+            <div class="h1 pl-40 py-20">Employees Activity</div>
             <!-- / TITLE -->
 
             <!-- DIVIDER -->
@@ -122,7 +120,7 @@
             <!-- / DIVIDER -->
 
             <!-- CONTENT -->
-            <div class="mt-20">
+            <div>
                 <mat-table
                     class="employees-activity-table"
                     #table
@@ -179,7 +177,7 @@
                         </mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                            {{ row?.date }}
+                            {{ row?.date | date: 'd MMM yyyy' }}
                         </mat-cell>
                     </ng-container>
     
@@ -190,7 +188,7 @@
                         </mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
-                            {{ row?.checkIn | date:'EEEE, MMMM yyyy @ HH:mm:ss' }}
+                            {{ row?.checkIn | date:'d MMM yyyy, HH:mm:ss' }}
                         </mat-cell>
                     </ng-container>
     
@@ -201,7 +199,7 @@
                         </mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
-                            {{ row?.checkOut | date:'EEEE, MMMM yyyy @ HH:mm:ss' }}
+                            {{ row?.checkOut | date:'d MMM yyyy, HH:mm:ss' }}
                         </mat-cell>
                     </ng-container>
     
@@ -261,7 +259,7 @@
                 </mat-paginator>
             </div>
             <!-- / CONTENT -->
-        </mat-card>
+        </div>
     </div>
 </div>
 

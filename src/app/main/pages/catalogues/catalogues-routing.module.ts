@@ -9,6 +9,11 @@ import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/c
 
 const routes: Routes = [
     {
+        path: '',
+        redirectTo: 'list',
+        pathMatch: 'full'
+    },
+    {
         path: 'list',
         component: CataloguesComponent,
         canActivate: [AuthGuard],

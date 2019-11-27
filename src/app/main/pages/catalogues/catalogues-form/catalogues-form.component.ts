@@ -53,7 +53,7 @@ import { IQueryParams, Brand } from 'app/shared/models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CataloguesFormComponent implements OnInit {
+export class CataloguesFormComponent implements OnInit, OnDestroy {
     isEditMode = false;
     maxVariantSelections = 20;
 
@@ -143,7 +143,7 @@ export class CataloguesFormComponent implements OnInit {
                         },
                         cancel: {
                             label: 'Batal',
-                            active: true
+                            active: false
                         },
                         goBack: {
                             label: 'Kembali',
@@ -194,9 +194,9 @@ export class CataloguesFormComponent implements OnInit {
             height: isNaN(Number(formValues.productSize.height)) ? null : Number(formValues.productSize.height),
             width: isNaN(Number(formValues.productSize.width)) ? null : Number(formValues.productSize.width),
             length: isNaN(Number(formValues.productSize.length)) ? null : Number(formValues.productSize.length),
-            minQty: 20,
-            packagedQty: 20,
-            multipleQty: 20,
+            minQty: formValues.productInfo.minQty,
+            packagedQty: formValues.productInfo.packagedQty,
+            multipleQty: formValues.productInfo.multipleQty,
             displayStock: true,
             catalogueTaxId: 1,
             dangerItem: false,
@@ -233,17 +233,19 @@ export class CataloguesFormComponent implements OnInit {
                 });
         }
 
-        delete catalogueData.catalogueImages;
+        // delete catalogueData.catalogueImages;
         // console.log(catalogueData);
 
         if (!this.isEditMode) {
             this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
         } else {
-            this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData } }));
+            this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' } }));
         }
+
+        this.store.dispatch(FormActions.resetClickSaveButton());
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this._unSubs$ = new Subject<void>();
 
         this.form = this.fb.group({
@@ -257,7 +259,10 @@ export class CataloguesFormComponent implements OnInit {
                 brandName: [{ value: '', disabled: true }, Validators.required],
                 category: ['', Validators.required],
                 stock: [''],
-                uom: ['']
+                uom: [''],
+                minQty: ['', [Validators.required, Validators.min(1)]],
+                packagedQty: ['', [Validators.required, Validators.min(1)]],
+                multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
                 retailPrice: ['', Validators.required],
@@ -395,7 +400,7 @@ export class CataloguesFormComponent implements OnInit {
                         this.store.dispatch(FormActions.setFormStatusValid());
                     }
     
-                    if (this.form.status === 'INVALID' || !pristineStatuses.includes(true)) {
+                    if (this.form.status === 'INVALID' || !pristineStatuses.includes(true) || !this.form.dirty || this.form.untouched) {
                         this.store.dispatch(FormActions.setFormStatusInvalid());
                     }
                 })
@@ -447,7 +452,7 @@ export class CataloguesFormComponent implements OnInit {
         this.store.dispatch(BrandActions.fetchBrandsRequest({ payload: data }));
     }
 
-    private _prepareEditCatalogue() {
+    private _prepareEditCatalogue(): void {
         const { id } = this.route.snapshot.params;
 
         if (!id) {
@@ -488,10 +493,13 @@ export class CataloguesFormComponent implements OnInit {
                                 // brandName: 'ini cuma unusued brand',
                                 // category: ['', Validators.required],
                                 stock: catalogue.stock,
-                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : ''
+                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                                minQty: catalogue.minQty,
+                                packagedQty: catalogue.packagedQty,
+                                multipleQty: catalogue.multipleQty
                             }, productSale: {
-                                retailPrice: catalogue.suggestRetailPrice,
-                                productPrice: catalogue.productPrice,
+                                retailPrice: catalogue.suggestRetailPrice.toString().replace('.', ','),
+                                productPrice: catalogue.productPrice.toString().replace('.', ','),
                                 // variants: this.fb.array([])
                             }, productMedia: {
                                 photos: [
@@ -543,7 +551,7 @@ export class CataloguesFormComponent implements OnInit {
         }
     }
 
-    onAddVariant() {
+    onAddVariant(): void {
         const $index = this.productVariantControls.push(this.fb.array([this.fb.control('')]));
 
         this.productVariantFormControls.push(
@@ -564,7 +572,7 @@ export class CataloguesFormComponent implements OnInit {
         // console.log(this.productVariantSelections);
     }
 
-    onFileBrowse($event: Event, index: number) {
+    onFileBrowse($event: Event, index: number): void {
         const inputEl = $event.target as HTMLInputElement;
 
         if (inputEl.files && inputEl.files.length > 0) {
@@ -575,6 +583,7 @@ export class CataloguesFormComponent implements OnInit {
 
             fileReader.onload = () => {
                 photo.patchValue(fileReader.result);
+                this.form.markAsTouched();
                 this._cd.markForCheck();
 
             };
@@ -585,21 +594,21 @@ export class CataloguesFormComponent implements OnInit {
         return;
     }
 
-    onAbortUploadPhoto($event: HTMLInputElement, index: number) {
+    onAbortUploadPhoto($event: HTMLInputElement, index: number): void {
         $event.value = '';
 
         (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(null);
         this._cd.markForCheck();
     }
 
-    onResetImage(index: number) {
+    onResetImage(index: number): void {
         const originalImage = this.productOldPhotos.controls[index].get('value').value;
         (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(originalImage);
 
         this._cd.markForCheck();
     }
 
-    onAddVariantSelection(_: Event, $variant: number) {
+    onAddVariantSelection(_: Event, $variant: number): void {
         (this.productVariantControls[$variant] as FormArray).push(this.fb.control(''));
 
         console.log((this.productVariantControls[$variant] as FormArray).controls);
@@ -609,7 +618,7 @@ export class CataloguesFormComponent implements OnInit {
         console.log(this.productVariantSelectionData[$variant]);
     }
 
-    onRemoveVariantSelection(_: Event, $variant: number, $index: number) {
+    onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
         (this.productVariantControls[$variant] as FormArray).removeAt($index);
         if (
             (this.productVariantControls[$variant] as FormArray).controls.length === 0
@@ -622,7 +631,7 @@ export class CataloguesFormComponent implements OnInit {
         );
     }
 
-    onAddTag(event: MatChipInputEvent) {
+    onAddTag(event: MatChipInputEvent): void {
         const input = event.input;
         const value = event.value;
         const formArray = this.form.get('productSale.tags') as FormArray;
@@ -636,7 +645,7 @@ export class CataloguesFormComponent implements OnInit {
         }
     }
 
-    onRemoveTag(index: number) {
+    onRemoveTag(index: number): void {
         // const formArray = this.productTagsControls.removeAt indexOf(control => control.value) this.form.get('productSale.tags').value as Array<string>;
         // const index = formArray.indexOf(tag);
 
@@ -646,11 +655,11 @@ export class CataloguesFormComponent implements OnInit {
         this.productTagsControls.removeAt(index);
     }
 
-    onEditCategory(id: string) {
+    onEditCategory(id: string): void {
         this.matDialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
     }
 
-    printLog(val: any) {
+    printLog(val: any): void {
         console.log(val);
     }
 }
