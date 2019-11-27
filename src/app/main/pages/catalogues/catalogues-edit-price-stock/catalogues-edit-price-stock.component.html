@@ -22,7 +22,7 @@
                             thousandSeparator="."
                             formControlName="oldPrice"
                         />
-                        {{ data?.price | price: 'full':'IDR':'narrow':'3.0-2' }}
+                        {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
                     </ng-container>
                     <ng-template #oldStock>
                         <input
@@ -34,7 +34,7 @@
                             thousandSeparator="."
                             formControlName="oldStock"
                         />
-                        {{ data?.stock | number:'3.0-2' }}
+                        {{ data?.stock | number:'1.0-2' }}
                     </ng-template>
                 </mat-form-field>
             </div>
