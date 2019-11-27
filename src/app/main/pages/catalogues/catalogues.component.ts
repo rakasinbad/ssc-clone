@@ -96,7 +96,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _$generate: GeneratorService,
     private matDialog: MatDialog,
     public translate: TranslateService,
-    private readonly santizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer
   ) {
     this.store.dispatch(
         UiActions.createBreadcrumb({
@@ -157,7 +157,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 distinctUntilChanged(),
                 debounceTime(1000),
                 filter(value => {
-                    const sanitized = !!this.santizer.sanitize(SecurityContext.HTML, value);
+                    const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
 
                     if (sanitized) {
                         return true;
@@ -424,7 +424,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     break;
             }
     
-            const searchValue = this.santizer.sanitize(SecurityContext.HTML, this.search.value);
+            const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
             if (searchValue) {
                 data['search'] = [
                     {
