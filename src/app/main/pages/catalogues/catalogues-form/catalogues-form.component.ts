@@ -143,7 +143,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         },
                         cancel: {
                             label: 'Batal',
-                            active: true
+                            active: false
                         },
                         goBack: {
                             label: 'Kembali',
