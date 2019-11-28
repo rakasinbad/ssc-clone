@@ -42,6 +42,7 @@ import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -89,6 +90,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
   constructor(
+    private router: Router,
     private store: Store<fromCatalogue.FeatureState>,
     private _fuseNavigationService: FuseNavigationService,
     private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -285,6 +287,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
+    }
+
+    addProduct(): void {
+        this.router.navigate(['/pages/catalogues/add']);
+    }
+
+    editProduct(id: string): void {
+        this.router.navigate(['/pages/catalogues/edit', id]);
     }
 
     onChangePage(ev: PageEvent): void {
