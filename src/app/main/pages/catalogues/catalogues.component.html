@@ -12,7 +12,7 @@
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent" [routerLink]="['/pages/catalogues/add']">
+                <button mat-flat-button color="accent" (click)="addProduct()">
                     <mat-icon>add</mat-icon>
                     Tambah Produk
                 </button>
@@ -246,7 +246,7 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="edit"
-                                    [routerLink]="['/pages/catalogues/edit/' + row.id]"
+                                    (click)="editProduct(row.id)"
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
