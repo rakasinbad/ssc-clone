@@ -21,7 +21,7 @@ import { ChangeConfirmationComponent } from './modals/change-confirmation/change
 import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete-confirmation.component';
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
-import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
+import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
 
 /**
  *
@@ -33,6 +33,7 @@ import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
     declarations: [
         HighlightPipe,
         PricePipe,
+        SafePipe,
         ContentDirective,
         CheckboxValidatorDirective,
         FilterAdvancedFormComponent,
@@ -58,6 +59,7 @@ import { HighlightPipe, PricePipe, ReplacePipe } from './pipes';
     exports: [
         HighlightPipe,
         PricePipe,
+        SafePipe,
         FiltersModule,
         FilterAdvancedModule,
         ContentDirective,
