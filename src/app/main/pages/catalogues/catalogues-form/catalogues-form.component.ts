@@ -478,18 +478,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         const Block = Quill.import('blots/block');
         const Inline = Quill.import('blots/inline');
 
-        Block.tagName = 'DIV';
+        (Block as any).tagName = 'DIV';
         Quill.register(Block, true);
 
         class BoldBlot extends Inline {}
 
-        BoldBlot.blotName = 'bold';
-        BoldBlot.tagName = 'b';
+        (BoldBlot as any).blotName = 'bold';
+        (BoldBlot as any).tagName = 'b';
 
         class ItalicBlot extends Inline {}
 
-        ItalicBlot.blotName = 'italic';
-        ItalicBlot.tagName = 'i';
+        (ItalicBlot as any).blotName = 'italic';
+        (ItalicBlot as any).tagName = 'i';
 
         Quill.register(BoldBlot);
         Quill.register(ItalicBlot);
