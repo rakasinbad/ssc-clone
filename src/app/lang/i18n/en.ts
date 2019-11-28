@@ -18,6 +18,7 @@ export const globalEnLang = {
         CREATE: 'Create',
         DETAIL: 'Detail',
         EDIT: 'Edit',
+        EDIT_PRODUCT: 'Edit Product',
         EDIT_STORE: 'Edit Store',
         EDIT_USER: 'Edit User',
         FINANCE: 'Finance',

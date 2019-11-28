@@ -18,6 +18,7 @@ export const globalIdLang = {
         CREATE: 'Create',
         DETAIL: 'Detail',
         EDIT: 'Edit',
+        EDIT_PRODUCT: 'Edit Produk',
         EDIT_STORE: 'Edit Toko',
         EDIT_USER: 'Edit User',
         FINANCE: 'Finance',
