@@ -87,7 +87,6 @@
                         formGroupName="productInfo"
                     >
                         <label
-                            fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
                                 form.get('productInfo.description').errors &&
@@ -98,13 +97,19 @@
                             Deskripsi Produk
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+                            <quill-editor format='html' formControlName="description"></quill-editor>
+                            <code>
+                                {{ form.get('productInfo.description').value }}
+                            </code>
+                        </div>
+                        <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
                                 matInput
                                 name="description"
                                 formControlName="description"
                             ></textarea>
-                        </mat-form-field>
+                        </mat-form-field> -->
                     </div>
                     <!-- / DESKRIPSI PRODUK -->
                     <!-- VARIAN PRODUK -->

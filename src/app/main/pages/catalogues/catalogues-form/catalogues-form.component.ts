@@ -31,6 +31,7 @@ import {
     FormControl,
     AbstractControl
 } from '@angular/forms';
+import Quill from 'quill';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -44,6 +45,7 @@ import { Catalogue, CatalogueUnit } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { IQueryParams, Brand } from 'app/shared/models';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-catalogues-form',
@@ -56,6 +58,7 @@ import { IQueryParams, Brand } from 'app/shared/models';
 export class CataloguesFormComponent implements OnInit, OnDestroy {
     isEditMode = false;
     maxVariantSelections = 20;
+    previewHTML: SafeHtml = '';
 
     form: FormGroup;
     variantForm: FormGroup;
@@ -92,25 +95,39 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         private matDialog: MatDialog,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _cd: ChangeDetectorRef,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private sanitizer: DomSanitizer
     ) {
+        const breadcrumbs = [
+            {
+                title: 'Home',
+                translate: 'BREADCRUMBS.HOME',
+                active: false
+            },
+            {
+                title: 'Catalogue',
+                translate: 'BREADCRUMBS.CATALOGUE',
+                url: '/pages/catalogues'
+            },
+        ];
+
+        if (this.route.snapshot.url.filter(url => url.path === 'edit').length > 0) {
+            breadcrumbs.push({
+                title: 'Edit Product',
+                translate: 'BREADCRUMBS.EDIT_PRODUCT',
+                active: true
+            });
+        } else {
+            breadcrumbs.push({
+                title: 'Add New Product',
+                translate: 'BREADCRUMBS.ADD_PRODUCT',
+                active: true
+            });
+        }
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Catalogue',
-                        translate: 'BREADCRUMBS.CATALOGUE'
-                    },
-                    {
-                        title: 'Add New Product',
-                        translate: 'BREADCRUMBS.ADD_PRODUCT',
-                        active: true
-                    }
-                ]
+                payload: breadcrumbs
             })
         );
 
@@ -387,6 +404,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 .subscribe(() => {
                     console.log('FORM', this.form);
                     console.log('FORM VALUE', this.form.getRawValue());
+                    // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
 
                     const pristineStatuses = [
                         this.form.get('productInfo').pristine,
@@ -403,6 +421,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     if (this.form.status === 'INVALID' || !pristineStatuses.includes(true) || !this.form.dirty || this.form.untouched) {
                         this.store.dispatch(FormActions.setFormStatusInvalid());
                     }
+
+                    this._cd.markForCheck();
                 })
         );
 
@@ -422,6 +442,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
         this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
 
+        // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
+        this.registerQuillFormatting();
         this._prepareEditCatalogue();
     }
 
@@ -450,6 +472,27 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         data['supplierId'] = supplierId;
 
         this.store.dispatch(BrandActions.fetchBrandsRequest({ payload: data }));
+    }
+
+    private registerQuillFormatting(): void {
+        const Block = Quill.import('blots/block');
+        const Inline = Quill.import('blots/inline');
+
+        Block.tagName = 'DIV';
+        Quill.register(Block, true);
+
+        class BoldBlot extends Inline {}
+
+        BoldBlot.blotName = 'bold';
+        BoldBlot.tagName = 'b';
+
+        class ItalicBlot extends Inline {}
+
+        ItalicBlot.blotName = 'italic';
+        ItalicBlot.tagName = 'i';
+
+        Quill.register(BoldBlot);
+        Quill.register(ItalicBlot);
     }
 
     private _prepareEditCatalogue(): void {
@@ -533,6 +576,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                                 // ])
                             }
                         });
+
+                        this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
 
                         for (const [idx, image] of catalogue.catalogueImages.entries()) {
                             this.productPhotos.controls[idx].setValue(image.imageUrl);
