@@ -6,6 +6,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { QuillModule } from 'ngx-quill';
 
 import { CataloguesRoutingModule } from './catalogues-routing.module';
 import { CataloguesComponent } from './catalogues.component';
@@ -23,38 +24,39 @@ import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/
 import { BrandEffects } from './store/effects/brand.effects';
 
 @NgModule({
-  declarations: [
-      CataloguesComponent,
-      CataloguesImportComponent,
-      CataloguesAddNewProductComponent,
-      CataloguesFormComponent,
-      CataloguesSelectCategoryComponent,
-      CataloguesEditPriceStockComponent,
-      CataloguesRemoveComponent,
-      CataloguesActiveInactiveComponent
-  ],
-  imports: [
-    CataloguesRoutingModule,
+    declarations: [
+        CataloguesComponent,
+        CataloguesImportComponent,
+        CataloguesAddNewProductComponent,
+        CataloguesFormComponent,
+        CataloguesSelectCategoryComponent,
+        CataloguesEditPriceStockComponent,
+        CataloguesRemoveComponent,
+        CataloguesActiveInactiveComponent
+    ],
+    imports: [
+        CataloguesRoutingModule,
 
-    SharedModule,
-    MaterialModule,
+        SharedModule,
+        MaterialModule,
 
-    RxReactiveFormsModule,
-    RxReactiveDynamicFormsModule,
-    NgxPermissionsModule.forChild(),
+        RxReactiveFormsModule,
+        RxReactiveDynamicFormsModule,
+        NgxPermissionsModule.forChild(),
+        QuillModule.forRoot(),
 
-    StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
-    StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
+        StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
+        StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
 
-    EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
-  ],
-  entryComponents: [
-    CataloguesImportComponent,
-    CataloguesAddNewProductComponent,
-    CataloguesEditPriceStockComponent,
-    CataloguesSelectCategoryComponent,
-    CataloguesRemoveComponent,
-    CataloguesActiveInactiveComponent
-  ]
+        EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
+    ],
+    entryComponents: [
+        CataloguesImportComponent,
+        CataloguesAddNewProductComponent,
+        CataloguesEditPriceStockComponent,
+        CataloguesSelectCategoryComponent,
+        CataloguesRemoveComponent,
+        CataloguesActiveInactiveComponent
+    ]
 })
 export class CataloguesModule { }
