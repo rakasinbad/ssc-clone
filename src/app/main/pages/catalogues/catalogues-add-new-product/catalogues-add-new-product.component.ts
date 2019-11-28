@@ -563,7 +563,8 @@ export class CataloguesAddNewProductComponent implements OnInit {
                     },
                     {
                         title: 'Catalogue',
-                        translate: 'BREADCRUMBS.CATALOGUE'
+                        translate: 'BREADCRUMBS.CATALOGUE',
+                        url: '/pages/catalogues'
                     },
                     {
                         title: 'Add Product',
