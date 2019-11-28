@@ -197,33 +197,33 @@
     
                     <!-- Sum of Check-in Column -->
                     <ng-container matColumnDef="checkDate">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-sm>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
                             Date
                         </mat-header-cell>
     
-                        <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <mat-cell class="line-breaker" *matCellDef="let row">
                             {{ row?.date | date: 'd MMM yyyy' }}
                         </mat-cell>
                     </ng-container>
     
                     <!-- Sum of Check-out Column -->
                     <ng-container matColumnDef="checkIn">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
                             Check-in
                         </mat-header-cell>
     
-                        <mat-cell *matCellDef="let row" fxHide fxShow.gt-sm>
+                        <mat-cell class="line-breaker" *matCellDef="let row">
                             {{ row?.checkIn | date:'d MMM yyyy, HH:mm:ss' }}
                         </mat-cell>
                     </ng-container>
     
                     <!-- Inventory Column -->
                     <ng-container matColumnDef="checkOut">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
                             Check-out
                         </mat-header-cell>
     
-                        <mat-cell *matCellDef="let row" fxHide fxShow.gt-xs>
+                        <mat-cell class="line-breaker" *matCellDef="let row">
                             {{ row?.checkOut | date:'d MMM yyyy, HH:mm:ss' }}
                         </mat-cell>
                     </ng-container>

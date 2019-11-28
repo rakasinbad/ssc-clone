@@ -66,6 +66,10 @@
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
+        .line-breaker {
+            white-space: pre-line;
+        }
+
         .mat-header-row {
             min-height: 64px;
         }

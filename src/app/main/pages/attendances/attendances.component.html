@@ -30,14 +30,16 @@
                 </button>
             </div> -->
 
-            <!-- SEARCH -->
-            <div class="search-wrapper mx-12">
-                <div class="search" fxFlex="50" fxLayout="row" fxLayoutAlign="end center">
-                    <mat-icon>search</mat-icon>
-                    <input #filter [formControl]='search' placeholder="Cari di sini"/>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [formControl]='search' placeholder="Cari di sini"/>
+                    </div>
                 </div>
+                <!-- / SEARCH -->
             </div>
-            <!-- / SEARCH -->
             <!-- ADD BUTTON -->
             <!-- <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
                 <mat-button-toggle value="left" aria-label="Filter">
