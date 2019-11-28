@@ -83,7 +83,7 @@ export class DropdownEffects {
                         of(
                             DropdownActions.fetchDropdownGeoParameterProvinceFailure({
                                 payload: {
-                                    id: `fetchDropdownGeoParameterProvinceFailure`,
+                                    id: 'fetchDropdownGeoParameterProvinceFailure',
                                     errors: err
                                 }
                             })
@@ -119,7 +119,79 @@ export class DropdownEffects {
                         of(
                             DropdownActions.fetchDropdownGeoParameterCityFailure({
                                 payload: {
-                                    id: `fetchDropdownGeoParameterCityFailure`,
+                                    id: 'fetchDropdownGeoParameterCityFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST] Geo Parameter District
+     * @memberof DropdownEffects
+     */
+    fetchDropdownGeoParameterDistrictRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownGeoParameterDistrictRequest),
+            map(action => action.payload),
+            switchMap(({ id, type }) => {
+                return this._$urbanApi.findAll({ paginate: false }, 'district').pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
+                            return row.district;
+                        });
+
+                        return DropdownActions.fetchDropdownGeoParameterDistrictSuccess({
+                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownGeoParameterDistrictFailure({
+                                payload: {
+                                    id: 'fetchDropdownGeoParameterDistrictFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST] Geo Parameter Urban
+     * @memberof DropdownEffects
+     */
+    fetchDropdownGeoParameterUrbanRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownGeoParameterUrbanRequest),
+            map(action => action.payload),
+            switchMap(({ id, type }) => {
+                return this._$urbanApi.findAll({ paginate: false }, 'urban').pipe(
+                    catchOffline(),
+                    map(resp => {
+                        const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
+                            return row.urban;
+                        });
+
+                        return DropdownActions.fetchDropdownGeoParameterUrbanSuccess({
+                            payload: { id, type, source: sortBy(sources).filter(v => !!v) }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownGeoParameterUrbanFailure({
+                                payload: {
+                                    id: 'fetchDropdownGeoParameterUrbanFailure',
                                     errors: err
                                 }
                             })

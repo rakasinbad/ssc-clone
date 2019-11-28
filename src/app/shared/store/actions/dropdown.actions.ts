@@ -1,6 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import {
     Cluster,
+    GeoParameter,
+    Hierarchy,
     IErrorHandler,
     IQueryParams,
     Province,
@@ -8,9 +10,7 @@ import {
     StoreGroup,
     StoreSegment,
     StoreType,
-    VehicleAccessibility,
-    Hierarchy,
-    GeoParameter
+    VehicleAccessibility
 } from 'app/shared/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
@@ -70,6 +70,44 @@ export const fetchDropdownGeoParameterCityFailure = createAction(
 
 export const fetchDropdownGeoParameterCitySuccess = createAction(
     '[Helper Dropdown] Fetch Geo Parameter City Success',
+    props<{ payload: GeoParameter }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Geo Parameter [District]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownGeoParameterDistrictRequest = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter District Request',
+    props<{ payload: Partial<GeoParameter> }>()
+);
+
+export const fetchDropdownGeoParameterDistrictFailure = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter District Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownGeoParameterDistrictSuccess = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter District Success',
+    props<{ payload: GeoParameter }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Geo Parameter [Urban]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownGeoParameterUrbanRequest = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Urban Request',
+    props<{ payload: Partial<GeoParameter> }>()
+);
+
+export const fetchDropdownGeoParameterUrbanFailure = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Urban Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownGeoParameterUrbanSuccess = createAction(
+    '[Helper Dropdown] Fetch Geo Parameter Urban Success',
     props<{ payload: GeoParameter }>()
 );
 

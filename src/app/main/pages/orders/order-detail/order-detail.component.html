@@ -88,23 +88,44 @@
                                         <tr>
                                             <td class="info-title">User</td>
                                             <td>
-                                                {{ safeValue((order$ | async)?.order?.store?.user?.fullName) }}
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.order?.store?.user
+                                                            ?.fullName
+                                                    )
+                                                }}
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Store Name</td>
-                                            <td>{{ safeValue((order$ | async)?.order?.store?.name) }}</td>
+                                            <td>
+                                                {{
+                                                    safeValue((order$ | async)?.order?.store?.name)
+                                                }}
+                                            </td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Store ID</td>
-                                            <td>{{ safeValue((order$ | async)?.order?.store?.storeCode) }}</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.order?.store?.storeCode
+                                                    )
+                                                }}
+                                            </td>
                                         </tr>
 
                                         <tr>
                                             <td class="info-title">Store Address</td>
-                                            <td>{{ safeValue((order$ | async)?.order?.store?.address) }}</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.order?.store?.address
+                                                    )
+                                                }}
+                                            </td>
                                         </tr>
                                     </table>
                                 </div>
@@ -119,7 +140,13 @@
                                     <table class="info-group-1">
                                         <tr>
                                             <td class="info-title">Delivery Address</td>
-                                            <td>{{ safeValue((order$ | async)?.order?.store?.address) }}</td>
+                                            <td>
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.order?.store?.address
+                                                    )
+                                                }}
+                                            </td>
                                         </tr>
 
                                         <!-- <tr>
@@ -130,7 +157,11 @@
                                         <tr>
                                             <td class="info-title">Geo Coverage</td>
                                             <td>
-                                                {{ safeValue((order$ | async)?.order?.store?.urban?.urban) }}
+                                                {{
+                                                    safeValue(
+                                                        (order$ | async)?.order?.store?.urban?.urban
+                                                    )
+                                                }}
                                             </td>
                                         </tr>
                                     </table>
@@ -1110,7 +1141,11 @@
                             Delivered Qty
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p
+                                matTooltip="Click to edit delivered qty"
+                                style="word-break: break-word;cursor: pointer"
+                                (click)="onChangeQty(row, 'delivered')"
+                            >
                                 {{ +row?.deliveredQty | number }}
                             </p>
                         </mat-cell>
@@ -1122,7 +1157,11 @@
                             Invoiced Qty
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
+                            <p
+                                matTooltip="Click to edit invoiced qty"
+                                style="word-break: break-word;cursor: pointer"
+                                (click)="onChangeQty(row, 'invoiced')"
+                            >
                                 {{ +row?.invoicedQty | number }}
                             </p>
                         </mat-cell>
@@ -1232,9 +1271,8 @@
 
                     <mat-row
                         *matRowDef="let row; columns: displayedColumns"
-                        class="order"
-                        matRipple
-                        [routerLink]="['/pages/orders/' + row.id + '/detail']"
+                        class="order-line"
+                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     >
                     </mat-row>
                 </mat-table>
@@ -1280,7 +1318,8 @@
                                     <td>
                                         {{
                                             +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                ? (+(order$ | async)?.parcelDetails
+                                                      ?.totalGrossPrice
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
                                                 : +(order$ | async)?.parcelDetails?.totalGrossPrice
                                         }}
@@ -1444,7 +1483,8 @@
                                     <td>
                                         {{
                                             +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                ? (+(order$ | async)?.parcelDetails
+                                                      ?.totalGrossPrice
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
                                                 : +(order$ | async)?.parcelDetails?.totalGrossPrice
                                         }}

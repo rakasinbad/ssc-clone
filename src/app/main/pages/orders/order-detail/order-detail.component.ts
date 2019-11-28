@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatDialog } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -23,6 +23,7 @@ import { fromOrder } from '../store/reducers';
 import { OrderSelectors } from '../store/selectors';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs/operators';
+import { OrderQtyFormComponent } from '../order-qty-form/order-qty-form.component';
 
 @Component({
     selector: 'app-order-detail',
@@ -51,11 +52,13 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     ];
 
     order$: Observable<any>;
+    selectedRowIndex$: Observable<string>;
     smallBreadcrumbs$: Observable<IBreadcrumbs[]>;
 
     private _unSubs$: Subject<void>;
 
     constructor(
+        private matDialog: MatDialog,
         private route: ActivatedRoute,
         private store: Store<fromOrder.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -162,6 +165,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         );
         this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id }));
 
+        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+
         this.smallBreadcrumbs$ = this.store.select(UiSelectors.getSmallBreadcrumbs);
     }
 
@@ -180,6 +185,39 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    onChangeQty(item: any, type: 'delivered' | 'invoiced'): void {
+        this._$log.generateGroup(
+            'CLICK CHANGE QTY',
+            {
+                item: {
+                    type: 'log',
+                    value: item
+                },
+                type: {
+                    type: 'log',
+                    value: type
+                }
+            },
+            'groupCollapsed'
+        );
+
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+
+        const dialogRef = this.matDialog.open(OrderQtyFormComponent, {
+            data: {
+                title: `Set ${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
+                id: item.id,
+                label: `${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
+                qty: type === 'delivered' ? item.deliveredQty : item.invoicedQty
+            },
+            disableClose: true
+        });
+    }
 
     safeValue(item: any): any {
         return item ? item : '-';

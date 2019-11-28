@@ -142,6 +142,12 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
                             payload: resp.payload
                         })
                     );
+                } else if (resp.action === 'edit' && resp.payload) {
+                    this.store.dispatch(
+                        CreditLimitBalanceActions.updateCreditLimitGroupRequest({
+                            payload: resp.payload
+                        })
+                    );
                 }
             });
     }

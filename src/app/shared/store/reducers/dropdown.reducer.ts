@@ -1,3 +1,4 @@
+import { fetchDropdownGeoParameterDistrictSuccess } from './../actions/dropdown.actions';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import {
@@ -79,6 +80,8 @@ const dropdownReducer = createReducer(
     on(
         DropdownActions.fetchDropdownGeoParameterProvinceFailure,
         DropdownActions.fetchDropdownGeoParameterCityFailure,
+        DropdownActions.fetchDropdownGeoParameterDistrictFailure,
+        DropdownActions.fetchDropdownGeoParameterUrbanFailure,
         DropdownActions.fetchDropdownHierarchyFailure,
         DropdownActions.fetchDropdownProvinceFailure,
         DropdownActions.fetchDropdownRoleFailure,
@@ -102,6 +105,16 @@ const dropdownReducer = createReducer(
         ...state,
         geoParameters: adapterGeoParameter.upsertOne(payload, state.geoParameters),
         errors: adapterError.removeOne('fetchDropdownGeoParameterCityFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownGeoParameterDistrictSuccess, (state, { payload }) => ({
+        ...state,
+        geoParameters: adapterGeoParameter.upsertOne(payload, state.geoParameters),
+        errors: adapterError.removeOne('fetchDropdownGeoParameterDistrictFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownGeoParameterUrbanSuccess, (state, { payload }) => ({
+        ...state,
+        geoParameters: adapterGeoParameter.upsertOne(payload, state.geoParameters),
+        errors: adapterError.removeOne('fetchDropdownGeoParameterUrbanFailure', state.errors)
     })),
     on(DropdownActions.fetchDropdownHierarchySuccess, (state, { payload }) => ({
         ...state,

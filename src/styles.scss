@@ -4,6 +4,110 @@
 // Import app.theme.scss
 @import 'app/app.theme';
 
+/* mat-editor should be applied to the container of contenteditable (<mat-form-field>)*/
+.mat-editor .mat-form-field-wrapper,
+.mat-editor .mat-form-field-infix {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.mat-editor .mat-form-field-flex {
+    align-items: center;
+}
+
+/* https://github.com/angular/material2/issues/13322 */
+.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,
+.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button {
+    display: inline-block !important;
+}
+
+.date-form:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button {
+    height: unset !important;
+}
+
+// Reference https://stackoverflow.com/a/20402340
+@media all and (min-width: 0px) and (max-width: 320px) {
+    .mat-datetimepicker-calendar-header-date-time {
+        font-size: 25px !important;
+    }
+
+    .mat-datetimepicker-calendar {
+        width: inherit !important;
+        height: inherit !important;
+    }
+}
+
+quill-editor {
+    display: block;
+}
+
+// .ql-editor:focus {
+//     border: 1px solid #80bdff !important;
+//     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+// }
+
+/* Set default font-family */
+[quill-editor-element] {
+    font-family: 'Roboto';
+}
+
+/* Set dropdown font-families */
+[quill-editor-toolbar] .ql-font span[data-label='Aref Ruqaa']::before {
+    font-family: 'Aref Ruqaa';
+}
+
+[quill-editor-toolbar] .ql-font span[data-label='Mirza']::before {
+    font-family: 'Mirza';
+}
+
+[quill-editor-toolbar] .ql-font span[data-label='Roboto']::before {
+    font-family: 'Roboto';
+}
+
+/* Set content font-families */
+.ql-font-mirza {
+    font-family: 'Mirza';
+}
+
+.ql-font-aref {
+    font-family: 'Aref Ruqaa';
+}
+
+// .ql-container {
+//     height: auto;
+// }
+
+//.ql-bubble .ql-tooltip {
+//    left: unset !important;
+//}
+//
+//.ql-bubble .ql-tooltip-arrow {
+//    top: unset !important;
+//}
+
+// .ql-container .ql-editor {
+//     min-height: 200px;
+//     padding: 10px 0;
+// }
+
+// .ql-toolbar.ql-snow {
+//     margin-top: -10px !important;
+//     margin-left: -10px !important;
+//     margin-right: -10px !important;
+//     border: unset !important;
+//     border-bottom: 1px solid #cccccc !important;
+//     padding: 8px 0 !important;
+// }
+
+// .ql-container.ql-snow {
+//     border: unset !important;
+// }
+
+// .ql-editor.ql-blank::before {
+//     left: unset !important;
+//     right: unset !important;
+// }
+
 .loader {
     position: absolute;
     top: 0;

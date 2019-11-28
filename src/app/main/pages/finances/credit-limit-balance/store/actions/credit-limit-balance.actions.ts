@@ -4,6 +4,7 @@ import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
 import {
     CreditLimitGroup,
+    CreditLimitGroupForm,
     CreditLimitStore,
     CreditLimitStoreOptions,
     ICreditLimitBalanceDemo
@@ -130,6 +131,25 @@ export const createCreditLimitGroupFailure = createAction(
 
 export const createCreditLimitGroupSuccess = createAction(
     '[Credit Limit Groups API] Create Credit Limit Group Success',
+    props<{ payload: CreditLimitGroup }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE CREDIT LIMIT GROUP] Credit Limit Groups
+// -----------------------------------------------------------------------------------------------------
+
+export const updateCreditLimitGroupRequest = createAction(
+    '[Credit Limit Groups API] Update Credit Limit Group Request',
+    props<{ payload: { id: string; body: Partial<CreditLimitGroupForm> } }>()
+);
+
+export const updateCreditLimitGroupFailure = createAction(
+    '[Credit Limit Groups API] Update Credit Limit Group Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateCreditLimitGroupSuccess = createAction(
+    '[Credit Limit Groups API] Update Credit Limit Group Success',
     props<{ payload: CreditLimitGroup }>()
 );
 

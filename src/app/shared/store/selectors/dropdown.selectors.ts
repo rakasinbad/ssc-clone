@@ -61,6 +61,16 @@ export const getGeoParameterCity = createSelector(
     entities => entities[GeoParameterType.CITY]
 );
 
+export const getGeoParameterDistrict = createSelector(
+    getGeoParameterEntities,
+    entities => entities[GeoParameterType.DISTRICT]
+);
+
+export const getGeoParameterUrban = createSelector(
+    getGeoParameterEntities,
+    entities => entities[GeoParameterType.URBAN]
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Hierarchies State
 // -----------------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@ import { GeoParameter, GeoParameterType, Hierarchy, StoreSegment } from 'app/sha
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import { Observable, of, Subject } from 'rxjs';
-import { takeUntil, tap, map } from 'rxjs/operators';
+import { map, takeUntil, tap } from 'rxjs/operators';
 
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
@@ -77,14 +77,41 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
         this.geoParameterSource$[0] = of(null);
         this.geoParameterProvince$ = this.store.select(DropdownSelectors.getGeoParameterProvince);
+
+        // Fetch request geo parameter province
         this.store.dispatch(
             DropdownActions.fetchDropdownGeoParameterProvinceRequest({
-                payload: { id: GeoParameterType.PROVINCE, type: GeoParameterType.PROVINCE }
+                payload: {
+                    id: GeoParameterType.PROVINCE,
+                    type: GeoParameterType.PROVINCE
+                }
             })
         );
+
+        // Fetch request geo parameter city
         this.store.dispatch(
             DropdownActions.fetchDropdownGeoParameterCityRequest({
                 payload: { id: GeoParameterType.CITY, type: GeoParameterType.CITY }
+            })
+        );
+
+        // Fetch request geo parameter district
+        this.store.dispatch(
+            DropdownActions.fetchDropdownGeoParameterDistrictRequest({
+                payload: {
+                    id: GeoParameterType.DISTRICT,
+                    type: GeoParameterType.DISTRICT
+                }
+            })
+        );
+
+        // Fetch request geo parameter urban
+        this.store.dispatch(
+            DropdownActions.fetchDropdownGeoParameterUrbanRequest({
+                payload: {
+                    id: GeoParameterType.URBAN,
+                    type: GeoParameterType.URBAN
+                }
             })
         );
 
@@ -108,10 +135,9 @@ export class CreditLimitGroupFormComponent implements OnInit {
     }
 
     getErrorMessageArray(parent: string, field: string, idx: number): string {
-        console.log((this.form.get(parent) as FormArray).controls[idx].get(field));
-
         if (field) {
-            const { errors } = (this.form.get(parent) as FormArray).controls[idx].get(field);
+            // const { errors } = (this.form.get(parent) as FormArray).controls[idx].get(field);
+            const { errors } = this.form.get([parent, idx, field]);
 
             if (errors) {
                 const type = Object.keys(errors)[0];
@@ -124,7 +150,6 @@ export class CreditLimitGroupFormComponent implements OnInit {
     }
 
     getErrorMessage(field: string): string {
-        console.log(this.form);
         if (field) {
             const { errors } = this.form.get(field);
 
@@ -154,24 +179,34 @@ export class CreditLimitGroupFormComponent implements OnInit {
         this.formGeographics.push(this.createGeoForm());
     }
 
+    onDeleteGeoParameter(idx: number): void {
+        if (idx > 0) {
+            this.formGeographics.removeAt(idx);
+            this.geoParameterSource$.splice(idx, 1);
+        }
+    }
+
     onSelectUnit(ev: MatSelectChange, idx: number): void {
         if (!ev.value) {
             return;
         }
 
-        console.log(this.form.get(`creditLimitArea[${idx}].unitValue`));
-
         // Enable unit value parameter
-        this.formGeographics
-            .at(idx)
-            .get('unitValue')
-            .enable();
+        // this.formGeographics
+        //     .at(idx)
+        //     .get('unitValue')
+        //     .enable();
+        this.form.get(['creditLimitArea', idx, 'unitValue']).enable();
 
         switch (ev.value) {
             case GeoParameterType.PROVINCE:
-                this.geoParameterSource$[idx] = this.store.select(
-                    DropdownSelectors.getGeoParameterProvince
-                );
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterProvince)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
                 break;
 
             case GeoParameterType.CITY:
@@ -185,19 +220,28 @@ export class CreditLimitGroupFormComponent implements OnInit {
                 break;
 
             case GeoParameterType.DISTRICT:
-                console.log('DISTRICT');
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterDistrict)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
                 break;
 
             case GeoParameterType.URBAN:
-                console.log('URBAN');
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterUrban)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
                 break;
 
             default:
                 break;
         }
-
-        console.log('IDX 1', ev.value);
-        console.log('IDX 2', idx);
     }
 
     onSubmit(action: string): void {
@@ -238,9 +282,23 @@ export class CreditLimitGroupFormComponent implements OnInit {
                             name: body.groupName,
                             defaultCreditLimit: body.creditAmount,
                             defaultBalanceAmount: body.startingBalance,
-                            termOfPayment: body.termOfPayment
-                            // creditLimitArea: body.creditLimitArea
+                            termOfPayment: body.termOfPayment,
+                            creditLimitArea: body.creditLimitArea
                         };
+
+                        if (
+                            !body.creditLimitArea ||
+                            ((body.creditLimitArea as Array<{
+                                unitType: string;
+                                unitValue: string;
+                            }>).length > 0 &&
+                                !(body.creditLimitArea as Array<{
+                                    unitType: string;
+                                    unitValue: string;
+                                }>)[0].unitType)
+                        ) {
+                            delete payload.creditLimitArea;
+                        }
 
                         this._$log.generateGroup(
                             `[SUBMIT CREATE CREDIT LIMIT GROUP]`,

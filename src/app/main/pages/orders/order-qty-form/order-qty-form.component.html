@@ -1,0 +1,97 @@
+<h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2>
+
+<mat-dialog-content class="mat-typography" style="min-width: 50em;">
+    <form
+        id="order-qty-form"
+        class="w-100-p"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit(pageType)"
+        fxLayout="column"
+        fxFlex
+        novalidate
+    >
+        <div class="form-box">
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('qty').errors &&
+                        !form.get('qty').untouched &&
+                        (form.get('qty').dirty || form.get('qty').touched)
+                    "
+                >
+                    {{ data?.label }}
+                </label>
+
+                <mat-form-field appearance="outline" fxFlex="70">
+                    <input matInput name="qty" formControlName="qty" />
+
+                    <mat-error
+                        *ngIf="
+                            form.get('qty').errors &&
+                            (form.get('qty').dirty || form.get('qty').touched)
+                        "
+                    >
+                        {{ getErrorMessage('qty') }}
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <label
+                    fxFlexAlign="center"
+                    fxFlex="15"
+                    [class.mat-error]="
+                        form.get('content').errors &&
+                        !form.get('content').untouched &&
+                        (form.get('content').dirty || form.get('content').touched)
+                    "
+                >
+                    Content
+                </label>
+
+                <quill-editor
+                    fxFlex="70"
+                    formControlName="content"
+                    [modules]="editorConfig.modules"
+                ></quill-editor>
+
+                <!-- <mat-form-field appearance="outline" fxFlex="70">
+                    <quill-editor
+                        matCkeditor
+                        formControlName="content"
+                        [customOptions]="editorConfig"
+                    ></quill-editor>
+
+                    <mat-error
+                        *ngIf="
+                            form.get('content').invalid &&
+                            (form.get('content').dirty || form.get('content').touched)
+                        "
+                    >
+                        {{ getErrorMessage('content') }}
+                    </mat-error>
+                </mat-form-field> -->
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <span fxLayout="row" fxLayoutGap="10px">
+        <button
+            mat-flat-button
+            type="submit"
+            color="accent"
+            [attr.cdkFocusInitial]="form.valid"
+            [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
+            form="credit-limit-group-form"
+        >
+            Simpan
+        </button>
+        <button mat-stroked-button mat-dialog-close>Tutup</button>
+    </span>
+</mat-dialog-actions>

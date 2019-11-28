@@ -314,11 +314,34 @@
                     </label>
 
                     <div
-                        class="bg-f9f9f9 pt-24 px-4"
+                        class="bg-f9f9f9 px-4"
                         fxLayout="column"
                         fxLayoutAlign="center stretch"
                         fxFlex="70"
                     >
+                        <button
+                            mat-icon-button
+                            matTooltip="Block"
+                            color="accent"
+                            style="position: relative;align-self: flex-end;"
+                            *ngIf="!i"
+                            disabled
+                        >
+                            <mat-icon>block</mat-icon>
+                        </button>
+
+                        <button
+                            mat-icon-button
+                            type="button"
+                            matTooltip="Delete"
+                            color="accent"
+                            style="position: relative;align-self: flex-end;"
+                            *ngIf="i"
+                            (click)="onDeleteGeoParameter(i)"
+                        >
+                            <mat-icon>remove_circle_outline</mat-icon>
+                        </button>
+
                         <div
                             fxLayout="row"
                             fxLayoutAlign="start center"

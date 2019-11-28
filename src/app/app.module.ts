@@ -21,6 +21,7 @@ import { NgxImageZoomModule } from 'ngx-image-zoom';
 import { NgxMaskModule } from 'ngx-mask';
 import { MomentModule } from 'ngx-moment';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { QuillModule } from 'ngx-quill';
 import * as numeral from 'numeral';
 
 import { environment } from '../environments/environment';
@@ -96,6 +97,8 @@ registerLocaleData(localId, 'id');
         //     // apiKey: 'AIzaSyAYbXdwC3U-zzUFkSVNIq7-xEO_ika4B98'
         //     apiKey: 'AIzaSyCJOq7jyP66ozbV2hXxLaTE_B9sx_y06vg'
         // }),
+
+        QuillModule.forRoot(),
         LeafletModule.forRoot(),
         RxReactiveFormsModule.forRoot(),
 

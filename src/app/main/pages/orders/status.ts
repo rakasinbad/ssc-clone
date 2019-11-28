@@ -32,16 +32,16 @@ export const statusOrder: FuseNavigation[] = [
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'packing' }));
         }
     },
-    {
-        id: 'confirm',
-        title: 'Siap Dikirim',
-        //    title: 'To be shipped',
-        //    translate: 'STATUS.ORDER.TO_BE_SHIPPED.TITLE',
-        type: 'item',
-        function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'confirm' }));
-        }
-    },
+    // {
+    //     id: 'confirm',
+    //     title: 'Siap Dikirim',
+    //     //    title: 'To be shipped',
+    //     //    translate: 'STATUS.ORDER.TO_BE_SHIPPED.TITLE',
+    //     type: 'item',
+    //     function: store => {
+    //         store.dispatch(UiActions.setCustomToolbarActive({ payload: 'confirm' }));
+    //     }
+    // },
     {
         id: 'delivery',
         title: 'Dikirim',

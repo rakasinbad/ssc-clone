@@ -212,6 +212,22 @@ export class CreditLimitGroup extends Timestamp implements ICreditLimitGroup {
 
 export type CreditLimitGroupOptions = Partial<CreditLimitGroup>;
 
+interface ICreditLimitAreaForm {
+    creditLimitArea: Array<{ unitType: string; unitValue: string }>;
+}
+
+export type CreditLimitGroupForm = Pick<
+    CreditLimitGroup,
+    | 'name'
+    | 'supplierId'
+    | 'customerHierarchyId'
+    | 'storeSegmentId'
+    | 'defaultCreditLimit'
+    | 'defaultBalanceAmount'
+    | 'termOfPayment'
+> &
+    ICreditLimitAreaForm;
+
 export class CreditLimitArea extends Timestamp implements ICreditLimitArea {
     constructor(
         public id: string,

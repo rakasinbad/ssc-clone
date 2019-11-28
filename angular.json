@@ -157,8 +157,14 @@
                                 "output": "leaflet/"
                             }
                         ],
-                        "styles": ["src/styles.scss", "./node_modules/leaflet/dist/leaflet.css"],
-                        "scripts": [],
+                        "styles": [
+                            "src/styles.scss",
+                            "./node_modules/leaflet/dist/leaflet.css",
+                            "./node_modules/quill/dist/quill.core.css",
+                            "./node_modules/quill/dist/quill.bubble.css",
+                            "./node_modules/quill/dist/quill.snow.css"
+                        ],
+                        "scripts": ["./node_modules/quill/dist/quill.min.js"],
                         "showCircularDependencies": false
                     },
                     "configurations": {
