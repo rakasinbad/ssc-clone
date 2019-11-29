@@ -111,6 +111,17 @@ app-attendances {
             min-width: 0;
             display: flex;
             align-items: center;
+
+            &.mat-column-actions {
+                flex: 0 1 10%;
+                padding-right: 10px;
+                justify-content: flex-end;
+            }
+        }
+
+        mat-header-cell.mat-column-actions {
+            flex: 0 1 10%;
+            justify-content: flex-end;
         }
 
         .mat-column-image {
