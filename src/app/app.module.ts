@@ -50,7 +50,11 @@ numeral.register('locale', 'id-sinbad', {
         trillion: 'triliun'
     },
     ordinal: _ => {
-        return '';
+        // http://mylanguages.org/indonesian_numbers.php
+        // The oridnals work by adding a prefix "ke" to the number except for when the value is 1.
+        // That is a special case value of "Pertama".
+        // Because it isn't clear how to prefix values i've left this as '.' per other locales I've seen.
+        return '.';
     },
     currency: {
         symbol: getCurrencySymbol('IDR', 'narrow')

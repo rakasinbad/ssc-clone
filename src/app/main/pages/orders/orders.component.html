@@ -191,9 +191,11 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                safeValue(+row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                    : +row?.totalPrice
+                                row?.parcelDetails?.totalNettPrice > 0 ||
+                                row?.parcelDetails?.totalNettPrice == 0
+                                    ? (row?.parcelDetails?.totalNettPrice
+                                      | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : safeValue(row?.parcelDetails?.totalNettPrice)
                             }}
                         </p>
                     </mat-cell>
@@ -219,9 +221,10 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{
-                                safeValue(+row?.totalQty) !== '-'
-                                    ? (+row?.totalQty | number)
-                                    : +row?.totalQty
+                                row?.parcelDetails?.totalQty > 0 ||
+                                row?.parcelDetails?.totalQty == 0
+                                    ? (row?.parcelDetails?.totalQty | number)
+                                    : safeValue(row?.parcelDetails?.totalQty)
                             }}
                         </p>
                     </mat-cell>
@@ -287,9 +290,11 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                safeValue(+row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                    : +row?.totalPrice
+                                row?.parcelDetails?.totalNettPrice > 0 ||
+                                row?.parcelDetails?.totalNettPrice == 0
+                                    ? (row?.parcelDetails?.totalNettPrice
+                                      | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : safeValue(row?.parcelDetails?.totalNettPrice)
                             }}
                         </p>
                     </mat-cell>

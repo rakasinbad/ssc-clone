@@ -32,9 +32,10 @@
 
             <p>
                 {{
-                    +data?.item?.totalPrice > 0 || data?.item?.totalPrice == 0
-                        ? (+data?.item?.totalPrice | price: 'short')
-                        : safeValue(data?.item?.totalPrice)
+                    data?.item?.parcelDetails?.totalNettPrice > 0 ||
+                    data?.item?.parcelDetails?.totalNettPrice == 0
+                        ? (data?.item?.parcelDetails?.totalNettPrice | price: 'short')
+                        : safeValue(data?.item?.parcelDetails?.totalNettPrice)
                 }}
             </p>
         </div>
