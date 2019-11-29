@@ -2,7 +2,7 @@
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
-    app-merchants {
+    app-in-store-inventories {
         .header {
             .search-wrapper {
                 background: map-get($background, card);

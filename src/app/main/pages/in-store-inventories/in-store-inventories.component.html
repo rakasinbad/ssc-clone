@@ -8,10 +8,10 @@
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="end center">
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
                 <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
                     <mat-icon>add</mat-icon>
 
@@ -21,7 +21,7 @@
                 <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button> -->
-            </div>
+            <!-- </div> -->
 
             <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
                 <!-- <button mat-flat-button class="grey-600">
@@ -33,15 +33,17 @@
                     Group By
                 </button> -->
             <!-- </div> -->
-            <!-- SEARCH -->
-            <div class="search-wrapper mx-12">
-                    <!-- mx-12 -->
-                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                    <mat-icon>search</mat-icon>
-                    <input [formControl]="search" placeholder="Cari Disini" />
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                        <!-- mx-12 -->
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Cari Disini" />
+                    </div>
                 </div>
+                <!-- / SEARCH -->
             </div>
-            <!-- / SEARCH -->
         </div>
         <!-- / CONTENT HEADER -->
 
