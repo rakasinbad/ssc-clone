@@ -5,9 +5,10 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    SecurityContext
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -29,6 +30,7 @@ import { StoreCatalogueApiService } from './services';
 import { StoreCatalogueActions } from './store/actions';
 import { fromStoreCatalogue } from './store/reducers';
 import { StoreCatalogueSelectors } from './store/selectors';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-in-store-inventories',
@@ -60,6 +62,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
     dataSource$: Observable<Array<any>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    public readonly today: Date = new Date();
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -78,7 +81,8 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$log: LogService,
         private _$storeCatalogueApi: StoreCatalogueApiService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private sanitizer: DomSanitizer
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         
@@ -112,7 +116,23 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
+        this.search = new FormControl('' , [
+            Validators.required,
+            control => {
+                const value = control.value;
+                const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+
+                if (sanitized) {
+                    return null;
+                } else {
+                    if (value.length === 0) {
+                        return null;
+                    } else {
+                        return { unsafe: true };
+                    }
+                }
+            }
+        ]);
         this.paginator.pageSize = 5;
         this.sort.sort({
             id: 'id',
@@ -145,11 +165,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 
         this.search.valueChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                if (v) {
-                    localStorage.setItem('filter.store', v);
-                }
-
+            .subscribe(() => {
                 this.onRefreshTable();
             });
 
@@ -206,7 +222,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         this.paginator.pageIndex = 0;
         this.initTable();
     }
-
+// 
     private initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
@@ -215,18 +231,19 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 
         data['paginate'] = true;
 
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
-        }
+        // if (this.sort.direction) {
+        //     data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+        //     data['sortBy'] = this.sort.active;
+        // }
 
-        if (this.search.value) {
-            const query = this.search.value;
+        data['sort'] = 'desc';
+        data['sortBy'] = 'id';
 
+        if (this.search.status === 'VALID') {
             data['search'] = [
                 {
                     fieldName: 'keyword',
-                    keyword: query
+                    keyword: this.search.value
                 }
             ];
         }
