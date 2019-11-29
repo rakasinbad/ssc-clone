@@ -22,7 +22,7 @@ import { CatalogueEffects } from './store/effects';
 import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { BrandEffects } from './store/effects/brand.effects';
-import { style } from '@angular/animations';
+// import { style } from '@angular/animations';
 
 @NgModule({
     declarations: [
