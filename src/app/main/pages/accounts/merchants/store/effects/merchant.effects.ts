@@ -1412,7 +1412,7 @@ export class MerchantEffects {
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([payload, { supplierId }]) => {
-                if (!supplierId) {
+                if (isNaN(+supplierId)) {
                     return of(
                         StoreActions.fetchStoresFailure({
                             payload: { id: 'fetchStoresFailure', errors: 'Not Found!' }

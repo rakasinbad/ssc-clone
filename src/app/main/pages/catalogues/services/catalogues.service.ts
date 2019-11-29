@@ -50,9 +50,21 @@ export class CataloguesService {
         private translate: TranslateService
     ) {}
 
-    fetchTotalCatalogueStatuses() {
+    fetchTotalCatalogueStatuses(params: IQueryParams) {
+        const newArgs = [];
+
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+        delete params['paginate'];
+
         this._url = this._$helper.handleApiRouter('/calculate-catalogue');
-        return this.http.get<{ total: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; }>(this._url);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<{ total: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; }>(this._url, { params: newParams });
     }
 
     getCatalogueStatuses(data: ICatalogueTitleParameter) {
@@ -95,6 +107,13 @@ export class CataloguesService {
             newArgs.push({
                 key: 'status',
                 value: params['status']
+            });
+        }
+
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
             });
         }
 

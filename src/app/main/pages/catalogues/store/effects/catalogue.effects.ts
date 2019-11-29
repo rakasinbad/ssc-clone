@@ -28,6 +28,8 @@ import { CatalogueActions } from '../actions';
 import { fromCatalogue } from '../reducers';
 import { state } from '@angular/animations';
 import { Update } from '@ngrx/entity';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { IQueryParams } from 'app/shared/models';
 
 @Injectable()
 export class CatalogueEffects {
@@ -140,9 +142,23 @@ export class CatalogueEffects {
     fetchTotalCatalogueStatuses = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.fetchTotalCatalogueStatusRequest),
-            switchMap(_ => {
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                /** NO SUPPLIER ID! */
+                if (!supplierId) {
+                    return of(CatalogueActions.fetchCataloguesFailure({
+                        payload: {
+                            id: 'fetchCataloguesFailure',
+                            errors: 'Not authenticated'
+                        }
+                    }));
+                }
+
+                const params: IQueryParams = {};
+                params['supplierId'] = supplierId;
+
                 return this._$catalogueApi
-                    .fetchTotalCatalogueStatuses()
+                    .fetchTotalCatalogueStatuses(params)
                     .pipe(
                         map(({ total: totalAllStatus, totalEmptyStock, totalActive, totalInactive, totalBanned }) => {
                             return CatalogueActions.fetchTotalCatalogueStatusSuccess({
@@ -269,9 +285,25 @@ export class CatalogueEffects {
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCataloguesRequest),
             map(action => action.payload),
-            switchMap(payload => {
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([payload, { supplierId }]) => {
+                /** NO SUPPLIER ID! */
+                if (!supplierId) {
+                    return of(CatalogueActions.fetchCataloguesFailure({
+                        payload: {
+                            id: 'fetchCataloguesFailure',
+                            errors: 'Not authenticated'
+                        }
+                    }));
+                }
+
+                const newPayload: IQueryParams = {
+                    ...payload
+                };
+                newPayload['supplierId'] = supplierId;
+
                 return this._$catalogueApi
-                    .findAll(payload)
+                    .findAll(newPayload)
                     .pipe(
                         catchOffline(),
                         map(resp => {

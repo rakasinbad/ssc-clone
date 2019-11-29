@@ -173,7 +173,7 @@ export class StoreCatalogueEffects {
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([catalogueId, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
-                if (!supplierId) {
+                if (isNaN(+supplierId)) {
                     return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
                         payload: {
                             id: 'fetchStoreCatalogueFailure',
@@ -214,7 +214,7 @@ export class StoreCatalogueEffects {
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([queryParams, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
-                if (!supplierId) {
+                if (isNaN(+supplierId)) {
                     return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
                         payload: {
                             id: 'fetchStoreCataloguesFailure',
