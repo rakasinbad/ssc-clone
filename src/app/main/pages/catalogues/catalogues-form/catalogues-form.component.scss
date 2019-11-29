@@ -2,8 +2,9 @@
 //     flex: 0 0 25%;
 // }
 app-catalogues-form {
-    #catalogues {
+    #catalogues-form {
         quill-editor {
+            max-width: 100%;
             min-width: 100%;
         }
     }
