@@ -15,27 +15,37 @@ export class PricePipe implements PipeTransform {
         display: 'wide' | 'narrow' = 'narrow',
         digitsInfo?: string
     ): string | number | null {
-        switch (type) {
-            case 'short':
-                if (Number.isInteger(value)) {
-                    return numeral(+value).format('($0 a)');
-                } else {
-                    return numeral(+value).format('($0.00 a)', Math.floor);
-                }
-                break;
+        let newValue;
 
-            case 'full':
-                return formatCurrency(
+        switch (type) {
+            case 'short': {
+                if (Number.isInteger(value)) {
+                    newValue = numeral(+value).format('($0 a)');
+                } else {
+                    newValue = numeral(+value).format('($0.00 a)', Math.floor);
+                }
+
+                break;
+            }
+
+            case 'full': {
+                newValue = formatCurrency(
                     +value,
                     this.locale,
                     getCurrencySymbol(currencyCode, display),
                     currencyCode,
                     digitsInfo
                 );
+                break;
+            }
 
-            default:
-                return value;
+            default: {
+                newValue = value;
+                break;
+            }
         }
+
+        return newValue;
 
         // return value.length ? value.replace(/([A-Z][a-z])/g, '$1 ').trim() : value;
     }

@@ -238,6 +238,10 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             <ng-container [ngSwitch]="row?.status">
+                                <ng-container *ngSwitchCase="'checkout'">
+                                    Quotation
+                                </ng-container>
+
                                 <ng-container *ngSwitchCase="'confirm'">
                                     Order Baru
                                 </ng-container>
@@ -264,6 +268,10 @@
 
                                 <ng-container *ngSwitchCase="'cancel'">
                                     Batal
+                                </ng-container>
+
+                                <ng-container *ngSwitchDefault>
+                                    -
                                 </ng-container>
                             </ng-container>
                         </p>
@@ -330,7 +338,11 @@
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
-                                *ngIf="row?.status !== 'done' && row?.status !== 'cancel'"
+                                *ngIf="
+                                    row?.status !== 'done' &&
+                                    row?.status !== 'cancel' &&
+                                    row?.status !== 'checkout'
+                                "
                                 (click)="$event.stopPropagation()"
                             >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
@@ -342,7 +354,11 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Send"
-                                    *ngIf="row?.status !== 'done' && row?.status !== 'cancel'"
+                                    *ngIf="
+                                        row?.status !== 'done' &&
+                                        row?.status !== 'cancel' &&
+                                        row?.status !== 'checkout'
+                                    "
                                     (click)="onChangeStatus(row)"
                                 >
                                     <mat-icon>send</mat-icon>
