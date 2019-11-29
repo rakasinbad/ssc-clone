@@ -61,7 +61,7 @@
                 >
                     <!-- NAMA TOKO -->
                     <div fxLayout="row" fxLayoutGap="20px">
-                        <label fxFlex="20">
+                        <label fxFlex="15">
                             <strong>Nama Toko</strong>
                         </label>
                         <span>
@@ -72,7 +72,7 @@
 
                     <!-- ALAMAT TOKO -->
                     <div fxLayout="row" fxLayoutGap="20px">
-                        <label fxFlex="20">
+                        <label fxFlex="15">
                             <strong>Alamat</strong>
                         </label>
                         <span>
@@ -96,11 +96,8 @@
             <!-- / MARGIN LEFT ADJUSMENT -->
         </div>
         <!-- / CONTENT CARD -->
-    </div>
-    <!-- / CENTER -->
 
-    <div class="p-32">
-        <div class="sinbad-content mat-elevation-z1 fuse-white">
+        <div class="sinbad-content mat-elevation-z1 fuse-white mt-32">
             <!-- CONTENT -->
             <div class="mt-20">
                 <mat-table
@@ -113,7 +110,7 @@
                 >
                     <!-- SKU Name Column -->
                     <ng-container matColumnDef="skuName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Name</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>SKU Name</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p>{{ row?.storeCatalogue?.catalogue?.name }}</p>
                         </mat-cell>
@@ -121,7 +118,7 @@
 
                     <!-- SKU ID Column -->
                     <ng-container matColumnDef="skuId">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>SKU ID</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>SKU Code</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p>{{ row?.storeCatalogue?.catalogue?.sku }}</p>
                         </mat-cell>
@@ -129,39 +126,39 @@
 
                     <!-- Price Column -->
                     <ng-container matColumnDef="price">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Price</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeCatalogue?.catalogue?.suggestRetailPrice | price: 'full':'IDR':'symbol':'3.0-2' }}</p>
+                            <p>{{ row?.storeCatalogue?.catalogue?.suggestRetailPrice | price: 'full':'IDR':'narrow':'1.0-2' }}</p>
                         </mat-cell>
                     </ng-container>
                     
                     <!-- Addition Column -->
                     <ng-container matColumnDef="addition">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Addition</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Addition" matTooltipPosition="above">Add (+)</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.addition ? row?.addition : '-' }}</p>
+                            <p>{{ row?.addition ? (row?.addition | number) : '-' }}</p>
                         </mat-cell>
                     </ng-container>
 
                     <!-- Subtraction Column -->
                     <ng-container matColumnDef="subtraction">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Subtraction</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header matTooltip="Subtraction" matTooltipPosition="above">Sub (-)</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.subtraction ? row?.subtraction : '-' }}</p>
+                            <p>{{ row?.subtraction ? (row?.subtraction | number) : '-' }}</p>
                         </mat-cell>
                     </ng-container>
 
                     <!-- Stock on Hand Column -->
                     <ng-container matColumnDef="stockOnHand">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Stock on Hand</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef matTooltip="Stock on Hand" matTooltipPosition="above">SoH</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeCatalogue?.catalogue?.stock }}</p>
+                            <p>{{ row?.storeCatalogue?.catalogue?.stock | number }}</p>
                         </mat-cell>
                     </ng-container>
 
                     <!-- Stock Type Column -->
                     <ng-container matColumnDef="stockType">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p>{{ row?.addition ? 'Stock In' : 'Stock Out' }}</p>
                         </mat-cell>
@@ -169,7 +166,7 @@
 
                     <!-- Catalogue Condition Column -->
                     <ng-container matColumnDef="condition">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Condition</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Condition</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p>{{ row?.condition?.name }}</p>
                         </mat-cell>
@@ -177,7 +174,7 @@
 
                     <!-- Employee Name Column -->
                     <ng-container matColumnDef="employeeName">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Employee Name</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Employee Name</mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p>{{ row?.creator?.fullName }}</p>
                         </mat-cell>
@@ -185,7 +182,7 @@
     
                     <!-- Role Column -->
                     <ng-container matColumnDef="role">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Role</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
     
                         <mat-cell *matCellDef="let row" fxLayout="column" fxLayoutAlign="center start">
                             <div *ngFor="let role of row?.creator?.roles; last as $last;">
@@ -247,7 +244,6 @@
                     <mat-row
                         *matRowDef="let row; columns: displayedColumns"
                         class="catalogue-detail-row"
-                        matRipple
                     >
                     </mat-row>
                 </mat-table>
@@ -264,6 +260,7 @@
             <!-- / CONTENT -->
         </div>
     </div>
+    <!-- / CENTER -->
 </div>
 
 

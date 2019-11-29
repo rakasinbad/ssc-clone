@@ -66,6 +66,8 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     /** Menyimpan ID store yang sedang dibuka. */
+    storeId: string;
+    /** Menyimpan ID catalogue yang sedang dibuka. */
     catalogueId: string;
 
     selectedStore$: Observable<any>;
@@ -78,8 +80,8 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
 
     /** Field-field table yang akan ditampilkan di view. */
     public displayedColumns = [
-        'skuId',
         'skuName',
+        'skuId',
         'price',
         'addition',
         'subtraction',
@@ -119,10 +121,11 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
-        const { catalogueId } = this.route.snapshot.params;
+        const { catalogueId, storeId } = this.route.snapshot.params;
 
-        /** Menyimpan ID store-nya. */
+        /** Menyimpan ID catlaogue dan store-nya. */
         this.catalogueId = catalogueId;
+        this.storeId = storeId;
 
         /** Melakukan request data Store berdasarkan ID nya melalui dispatch action. */
         this._fromStoreCatalogue.dispatch(StoreCatalogueActions.fetchStoreCatalogueRequest({
@@ -138,7 +141,8 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
                     },
                     {
                         title: 'Inventory',
-                        translate: 'BREADCRUMBS.INVENTORY'
+                        translate: 'BREADCRUMBS.INVENTORY',
+                        url: '/pages/in-store-inventories'
                     },
                     {
                         title: 'In-Store Inventory',
@@ -294,6 +298,7 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
 
         /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
         data['catalogueId'] = this.catalogueId;
+        data['storeId'] = this.storeId;
 
         /** Mengambil arah sortir dan data yang ingin disotir. */
         if (this.sort.direction) {
