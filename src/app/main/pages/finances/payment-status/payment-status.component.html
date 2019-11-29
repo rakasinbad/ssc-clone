@@ -133,9 +133,10 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                safeValue(row?.totalPrice) !== '-'
-                                    ? (+row?.totalPrice | price: 'short')
-                                    : +row?.totalPrice
+                                row?.parcelDetails?.totalNettPrice > 0 ||
+                                row?.parcelDetails?.totalNettPrice == 0
+                                    ? (row?.parcelDetails?.totalNettPrice | price: 'short')
+                                    : safeValue(row?.parcelDetails?.totalNettPrice)
                             }}
                         </p>
                     </mat-cell>

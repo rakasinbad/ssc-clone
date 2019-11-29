@@ -9,7 +9,7 @@ export class PricePipe implements PipeTransform {
     constructor(@Inject(LOCALE_ID) public locale: string) {}
 
     transform(
-        value: string,
+        value: number,
         type: 'full' | 'short' = 'full',
         currencyCode: string = 'IDR',
         display: 'wide' | 'narrow' = 'narrow',
@@ -17,7 +17,12 @@ export class PricePipe implements PipeTransform {
     ): string | number | null {
         switch (type) {
             case 'short':
-                return numeral(+value).format('($0 a)');
+                if (Number.isInteger(value)) {
+                    return numeral(+value).format('($0 a)');
+                } else {
+                    return numeral(+value).format('($0.00 a)', Math.floor);
+                }
+                break;
 
             case 'full':
                 return formatCurrency(
