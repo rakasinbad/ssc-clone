@@ -79,7 +79,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                     },
                     {
                         title: 'Order Managements',
-                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
+                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
+                        url: '/pages/orders'
                     },
                     {
                         title: 'Order Details',
