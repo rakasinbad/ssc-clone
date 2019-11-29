@@ -259,6 +259,10 @@
                                             <td class="info-title">Order Status</td>
                                             <td>
                                                 <ng-container [ngSwitch]="(order$ | async)?.status">
+                                                    <ng-container *ngSwitchCase="'checkout'">
+                                                        Quotation
+                                                    </ng-container>
+
                                                     <ng-container *ngSwitchCase="'confirm'">
                                                         Order Baru
                                                     </ng-container>
@@ -281,6 +285,10 @@
 
                                                     <ng-container *ngSwitchCase="'cancel'">
                                                         Batal
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchDefault>
+                                                        -
                                                     </ng-container>
                                                 </ng-container>
                                             </td>
@@ -364,6 +372,10 @@
                                 Status Pengiriman -
 
                                 <ng-container [ngSwitch]="(order$ | async)?.status">
+                                    <ng-container *ngSwitchCase="'checkout'">
+                                        Quotation
+                                    </ng-container>
+
                                     <ng-container *ngSwitchCase="'confirm'">
                                         Order Baru
                                     </ng-container>
@@ -383,11 +395,26 @@
                                     <ng-container *ngSwitchCase="'done'">
                                         Selesai
                                     </ng-container>
+
+                                    <ng-container *ngSwitchCase="'cancel'">
+                                        Batal
+                                    </ng-container>
+
+                                    <ng-container *ngSwitchDefault>
+                                        -
+                                    </ng-container>
                                 </ng-container>
                             </div>
                         </header>
 
                         <div class="content">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'checkout'"
+                            >
+                                <div class="header">Quotation</div>
+                            </div>
+
                             <div
                                 class="status secondary-text"
                                 [class.active]="(order$ | async)?.status === 'confirm'"
@@ -713,6 +740,13 @@
                             >
                                 <div class="header">Selesai</div>
                             </div>
+
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'cancel'"
+                            >
+                                <div class="header">Batal</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -727,6 +761,10 @@
 
                 <span class="h4">
                     <ng-container [ngSwitch]="(order$ | async)?.status">
+                        <ng-container *ngSwitchCase="'checkout'">
+                            Quotation
+                        </ng-container>
+
                         <ng-container *ngSwitchCase="'confirm'">
                             Order Baru
                         </ng-container>
@@ -746,6 +784,14 @@
                         <ng-container *ngSwitchCase="'done'">
                             Selesai
                         </ng-container>
+
+                        <ng-container *ngSwitchCase="'cancel'">
+                            Batal
+                        </ng-container>
+
+                        <ng-container *ngSwitchDefault>
+                            -
+                        </ng-container>
                     </ng-container>
                 </span>
 
@@ -754,6 +800,29 @@
                         <div class="content">
                             <div class="status secondary-text">
                                 <div class="detail" fxLayout="row" fxFlex="70">
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'checkout'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Quotation
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div
                                         class="step"
                                         [class.active]="(order$ | async)?.status === 'confirm'"
@@ -865,6 +934,29 @@
 
                                             <div class="time line-height-8">
                                                 <!-- <small>-</small> -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'cancel'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
+                                        <div class="indicator" fxLayout="column">
+                                            <div class="circle"></div>
+                                        </div>
+
+                                        <div class="v-line"></div>
+
+                                        <div class="content" fxFlex="90">
+                                            <div class="label">
+                                                Batal
+                                            </div>
+
+                                            <div class="time line-height-8">
+                                                <!-- <small>07-02-2019 20:11</small> -->
                                             </div>
                                         </div>
                                     </div>
@@ -1120,9 +1212,9 @@
                                 (click)="onChangeQty(row, 'delivered')"
                             >
                                 {{
-                                    +row?.deliveredQty > 0 || row?.deliveredQty !== null
+                                    row?.deliveredQty > 0 || row?.deliveredQty !== null
                                         ? (+row?.deliveredQty | number)
-                                        : safeValue(+row?.deliveredQty)
+                                        : safeValue(row?.deliveredQty)
                                 }}
                             </p>
                         </mat-cell>
@@ -1140,9 +1232,9 @@
                                 (click)="onChangeQty(row, 'invoiced')"
                             >
                                 {{
-                                    +row?.invoicedQty > 0 || row?.deliveredQty !== null
+                                    row?.invoicedQty > 0 || row?.deliveredQty !== null
                                         ? (+row?.invoicedQty | number)
-                                        : safeValue(+row?.invoicedQty)
+                                        : safeValue(row?.invoicedQty)
                                 }}
                             </p>
                         </mat-cell>
