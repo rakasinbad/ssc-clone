@@ -22,6 +22,7 @@ import { CatalogueEffects } from './store/effects';
 import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { BrandEffects } from './store/effects/brand.effects';
+import { style } from '@angular/animations';
 
 @NgModule({
     declarations: [
@@ -43,7 +44,15 @@ import { BrandEffects } from './store/effects/brand.effects';
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
-        QuillModule.forRoot(),
+        QuillModule.forRoot({
+            modules: {
+                toolbar: [
+                    ['bold'],
+                    [{ list: 'ordered'}, { list: 'bullet' }],
+                ]
+            },
+            placeholder: '',
+        }),
 
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
