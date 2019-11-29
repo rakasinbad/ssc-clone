@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
@@ -21,7 +22,7 @@ import { IQueryParams, Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
 
 // import { StoreCatalogue } from '../models';
@@ -61,7 +62,7 @@ import { MerchantActions } from '../../attendances/store/actions';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CatalogueDetailComponent implements OnInit, OnDestroy {
+export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
@@ -265,6 +266,18 @@ export class CatalogueDetailComponent implements OnInit, OnDestroy {
 
         /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
         this.onChangePage();
+    }
+
+    ngAfterViewInit(): void {
+        this.sort.sortChange
+        .pipe(takeUntil(this._unSubs$))
+        .subscribe(() => (this.paginator.pageIndex = 0));
+
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => {
+                this.onChangePage();
+            });
     }
 
     ngOnDestroy(): void {
