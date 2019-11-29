@@ -170,7 +170,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             )
             .subscribe(v => {
                 if (v) {
-                    localStorage.setItem('filter.search.order', v);
+                    // localStorage.setItem('filter.search.order', v);
                 }
 
                 this.onRefreshTable();
@@ -223,6 +223,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         localStorage.removeItem('filter.order');
+        localStorage.removeItem('filter.search.order');
 
         // Reset breadcrumb state
         this.store.dispatch(UiActions.resetBreadcrumb());
@@ -250,6 +251,15 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get searchStatus(): string {
         return localStorage.getItem('filter.order') || '';
+    }
+
+    onChangeCancelStatus(item: any): void {
+        if (!item || !item.id || item.status !== 'confirm') {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(OrderActions.confirmChangeCancelStatusOrder({ payload: item }));
     }
 
     onChangePage(ev: PageEvent): void {
@@ -330,12 +340,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (this.filterStatus) {
             if (
-                this.filterStatus === 'checkout' ||
-                this.filterStatus === 'packing' ||
                 this.filterStatus === 'confirm' ||
-                this.filterStatus === 'delivery' ||
-                this.filterStatus === 'arrived' ||
-                this.filterStatus === 'done'
+                this.filterStatus === 'packing' ||
+                this.filterStatus === 'shipping' ||
+                this.filterStatus === 'delivered' ||
+                this.filterStatus === 'done' ||
+                this.filterStatus === 'cancel'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({

@@ -5,15 +5,15 @@
 @import 'app/app.theme';
 
 /* mat-editor should be applied to the container of contenteditable (<mat-form-field>)*/
-.mat-editor .mat-form-field-wrapper,
-.mat-editor .mat-form-field-infix {
-    padding-top: 0;
-    padding-bottom: 0;
-}
+// .mat-editor .mat-form-field-wrapper,
+// .mat-editor .mat-form-field-infix {
+//     padding-top: 0;
+//     padding-bottom: 0;
+// }
 
-.mat-editor .mat-form-field-flex {
-    align-items: center;
-}
+// .mat-editor .mat-form-field-flex {
+//     align-items: center;
+// }
 
 /* https://github.com/angular/material2/issues/13322 */
 .mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,
@@ -26,16 +26,16 @@
 }
 
 // Reference https://stackoverflow.com/a/20402340
-@media all and (min-width: 0px) and (max-width: 320px) {
-    .mat-datetimepicker-calendar-header-date-time {
-        font-size: 25px !important;
-    }
+// @media all and (min-width: 0px) and (max-width: 320px) {
+//     .mat-datetimepicker-calendar-header-date-time {
+//         font-size: 25px !important;
+//     }
 
-    .mat-datetimepicker-calendar {
-        width: inherit !important;
-        height: inherit !important;
-    }
-}
+//     .mat-datetimepicker-calendar {
+//         width: inherit !important;
+//         height: inherit !important;
+//     }
+// }
 
 quill-editor {
     display: block;

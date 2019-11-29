@@ -6,8 +6,9 @@ import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
+import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
-import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { PaymentStatusApiService } from '../../services';
 import { PaymentStatusActions } from '../actions';
@@ -15,6 +16,121 @@ import { fromPaymentStatus } from '../reducers';
 
 @Injectable()
 export class PaymentEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [UPDATE - REQUEST] Payment Status
+     * @memberof PaymentEffects
+     */
+    updatePaymentStatusRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PaymentStatusActions.updatePaymentStatusRequest),
+            map(action => action.payload),
+            switchMap(({ id, body }) => {
+                return this._$paymentStatusApi.patch(body, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(
+                            'RESPONSE REQUEST UPDATE PAYMENT STATUS',
+                            {
+                                payload: {
+                                    type: 'log',
+                                    value: body
+                                },
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                }
+                            },
+                            'groupCollapsed'
+                        );
+
+                        return PaymentStatusActions.updatePaymentStatusSuccess({
+                            payload: {
+                                id,
+                                changes: resp
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            PaymentStatusActions.updatePaymentStatusFailure({
+                                payload: { id: 'updatePaymentStatusFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Payment Status
+     * @memberof PaymentEffects
+     */
+    updatePaymentStatusFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.updatePaymentStatusFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        'REQUEST UPDATE PAYMENT STATUS FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data gagal diubah', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Payment Status
+     * @memberof PaymentEffects
+     */
+    updatePaymentStatusSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.updatePaymentStatusSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        'REQUEST UPDATE PAYMENT STATUS SUCCESS',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Data berhasil diubah', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
@@ -42,7 +158,7 @@ export class PaymentEffects {
                     catchOffline(),
                     map(resp => {
                         this._$log.generateGroup(
-                            '[RESPONSE REQUEST FETCH PAYMENT STATUSES]',
+                            'RESPONSE REQUEST FETCH PAYMENT STATUSES',
                             {
                                 payload: {
                                     type: 'log',

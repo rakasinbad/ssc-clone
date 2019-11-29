@@ -25,7 +25,7 @@ interface ICreditLimitStore extends ITimestamp {
 interface ICreditLimitGroup extends ITimestamp {
     id: string;
     supplierId: string;
-    customerHierarchyId: string;
+    hierarchyId: string;
     storeSegmentId: string;
     name: string;
     defaultCreditLimit: string;
@@ -78,7 +78,7 @@ export class CreditLimitStore extends Timestamp implements ICreditLimitStore {
             ? new CreditLimitGroup(
                   creditLimitGroup.id,
                   creditLimitGroup.supplierId,
-                  creditLimitGroup.customerHierarchyId,
+                  creditLimitGroup.hierarchyId,
                   creditLimitGroup.storeSegmentId,
                   creditLimitGroup.name,
                   creditLimitGroup.defaultCreditLimit,
@@ -169,7 +169,7 @@ export class CreditLimitGroup extends Timestamp implements ICreditLimitGroup {
     constructor(
         public id: string,
         public supplierId: string,
-        public customerHierarchyId: string,
+        public hierarchyId: string,
         public storeSegmentId: string,
         public name: string,
         public defaultCreditLimit: string,
@@ -220,7 +220,7 @@ export type CreditLimitGroupForm = Pick<
     CreditLimitGroup,
     | 'name'
     | 'supplierId'
-    | 'customerHierarchyId'
+    | 'hierarchyId'
     | 'storeSegmentId'
     | 'defaultCreditLimit'
     | 'defaultBalanceAmount'

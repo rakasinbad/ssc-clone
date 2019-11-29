@@ -43,6 +43,66 @@ export const fetchOrderSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE DELIVERED QTY] Order Detail
+// -----------------------------------------------------------------------------------------------------
+
+export const updateDeliveredQtyRequest = createAction(
+    '[Order Details API] Update Delivered Qty Request',
+    props<{ payload: { body: number; id: string } }>()
+);
+
+export const updateDeliveredQtyFailure = createAction(
+    '[Order Details API] Update Delivered Qty Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateDeliveredQtySuccess = createAction(
+    '[Order Details API] Update Delivered Qty Success'
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE INVOICED QTY] Order Detail
+// -----------------------------------------------------------------------------------------------------
+
+export const updateInvoicedQtyRequest = createAction(
+    '[Order Details API] Update Invoiced Qty Request',
+    props<{ payload: { body: number; id: string } }>()
+);
+
+export const updateInvoicedQtyFailure = createAction(
+    '[Order Details API] Update Invoiced Qty Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateInvoicedQtySuccess = createAction(
+    '[Order Details API] Update Invoiced Qty Success'
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE CANCEL STATUS ORDER] Orders
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeCancelStatusOrder = createAction(
+    '[Orders Page] Confirm Change Cancel Status Order',
+    props<{ payload: any }>()
+);
+
+export const updateCancelStatusRequest = createAction(
+    '[Orders API] Update Cancel Status Order Request',
+    props<{ payload: { body: string; id: string } }>()
+);
+
+export const updateCancelStatusFailure = createAction(
+    '[Orders API] Update Cancel Status Order Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateCancelStatusSuccess = createAction(
+    '[Orders API] Update Cancel Status Order Success',
+    props<{ payload: Update<any> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - CHANGE STATUS ORDER] Orders
 // -----------------------------------------------------------------------------------------------------
 

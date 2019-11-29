@@ -288,13 +288,55 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         return !item ? null : item.id;
     }
 
-    onUpdate(): void {
-        this.matDialog.open(PaymentStatusFormComponent, {
+    onUpdate(item: any): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+
+        const dialogRef = this.matDialog.open<
+            PaymentStatusFormComponent,
+            any,
+            { action: string; payload: any }
+        >(PaymentStatusFormComponent, {
             data: {
-                title: 'Review'
+                title: 'Review',
+                id: item.id,
+                item: item
             },
             disableClose: true
         });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(({ action, payload }) => {
+                this._$log.generateGroup(
+                    '[AFTER CLOSED DIALOG] EDIT PAYMENT STATUS',
+                    {
+                        action: {
+                            type: 'log',
+                            value: action
+                        },
+                        payload: {
+                            type: 'log',
+                            value: payload
+                        }
+                    },
+                    'groupCollapsed'
+                );
+
+                if (action === 'edit' && payload) {
+                    this.store.dispatch(
+                        PaymentStatusActions.updatePaymentStatusRequest({
+                            payload: { id: item.id, body: payload }
+                        })
+                    );
+                } else {
+                    this.store.dispatch(UiActions.resetHighlightRow());
+                }
+            });
     }
 
     safeValue(item: any): any {
@@ -343,7 +385,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
         if (this.filterStatus) {
             if (
-                this.filterStatus === 'waiting-for-payment' ||
+                this.filterStatus === 'waiting_for_payment' ||
                 this.filterStatus === 'paid' ||
                 this.filterStatus === 'overdue'
             ) {

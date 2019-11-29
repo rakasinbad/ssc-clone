@@ -1,7 +1,15 @@
 <h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
-    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+    <form
+        id="payment-status-form"
+        class="w-100-p"
+        [formGroup]="form"
+        (ngSubmit)="onSubmit(pageType)"
+        fxLayout="column"
+        fxFlex
+        novalidate
+    >
         <!-- <div fxLayout="row" fxLayoutAlign="start end" fxLayoutGap="15px">
             <div class="default-img-sinbad" fxFlex="30">
                 <div class="bg-icon">
@@ -22,7 +30,13 @@
         <div class="mt-12">
             <span class="mat-subheading-2">Account Receivable</span>
 
-            <p>Rp 5.000.000</p>
+            <p>
+                {{
+                    +data?.item?.totalPrice > 0 || data?.item?.totalPrice == 0
+                        ? (+data?.item?.totalPrice | price: 'short')
+                        : safeValue(data?.item?.totalPrice)
+                }}
+            </p>
         </div>
 
         <span class="mat-subheading-2">Update Status</span>
@@ -31,28 +45,37 @@
             <label
                 fxFlex="25"
                 [class.mat-error]="
-                    form.get('status').errors &&
-                    !form.get('status').untouched &&
-                    (form.get('status').dirty || form.get('status').touched)
+                    form.get('statusPayment').errors &&
+                    !form.get('statusPayment').untouched &&
+                    (form.get('statusPayment').dirty || form.get('statusPayment').touched)
                 "
             >
                 Status
             </label>
 
             <mat-form-field appearance="outline" fxFlex="80">
-                <mat-select formControlName="status" placeholder="Choose status...">
-                    <mat-option>-</mat-option>
-                </mat-select>
+                <ng-container *ngIf="paymentStatuses; else noPaymentStatuses">
+                    <mat-select formControlName="statusPayment" placeholder="Choose status">
+                        <mat-option *ngFor="let row of paymentStatuses" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-option>
+                    </mat-select>
+                </ng-container>
 
-                <!-- <mat-error
-                                    *ngIf="
-                                        form.get('status').errors &&
-                                        (form.get('status').dirty ||
-                                            form.get('status').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('status') }}
-                                </mat-error> -->
+                <ng-template #noPaymentStatuses>
+                    <mat-select placeholder="Choose status" disabled>
+                        <mat-option>Status not found</mat-option>
+                    </mat-select>
+                </ng-template>
+
+                <mat-error
+                    *ngIf="
+                        form.get('statusPayment').errors &&
+                        (form.get('statusPayment').dirty || form.get('statusPayment').touched)
+                    "
+                >
+                    {{ getErrorMessage('statusPayment') }}
+                </mat-error>
             </mat-form-field>
         </div>
 
@@ -120,7 +143,7 @@
             </mat-form-field>
         </div>
 
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
             <label
                 fxFlex="25"
                 [class.mat-error]="
@@ -137,17 +160,16 @@
                     <mat-option>-</mat-option>
                 </mat-select>
 
-                <!-- <mat-error
-                                    *ngIf="
-                                        form.get('paymentMethod').errors &&
-                                        (form.get('paymentMethod').dirty ||
-                                            form.get('paymentMethod').touched)
-                                    "
-                                >
-                                    {{ getErrorMessage('paymentMethod') }}
-                                </mat-error> -->
+                <mat-error
+                    *ngIf="
+                        form.get('paymentMethod').errors &&
+                        (form.get('paymentMethod').dirty || form.get('paymentMethod').touched)
+                    "
+                >
+                    {{ getErrorMessage('paymentMethod') }}
+                </mat-error>
             </mat-form-field>
-        </div>
+        </div> -->
     </form>
     <!-- <p [innerHTML]="data?.message"></p>
     <form [formGroup]="form">
@@ -200,7 +222,16 @@
 
 <mat-dialog-actions align="end">
     <span fxLayout="row" fxLayoutGap="10px">
-        <button mat-flat-button color="accent" cdkFocusInitial>Simpan</button>
+        <button
+            mat-flat-button
+            type="submit"
+            color="accent"
+            [attr.cdkFocusInitial]="form.valid"
+            [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
+            form="payment-status-form"
+        >
+            Simpan
+        </button>
         <button mat-stroked-button mat-dialog-close>Tutup</button>
     </span>
 </mat-dialog-actions>

@@ -12,12 +12,12 @@ export const statusPayment: FuseNavigation[] = [
         }
     },
     {
-        id: 'waiting-for-payment',
+        id: 'waiting_for_payment',
         title: 'Waiting for Payment',
         translate: 'STATUS.PAYMENT.WAITING_FOR_PAYMENT.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'waiting-for-payment' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'waiting_for_payment' }));
         }
     },
     // {

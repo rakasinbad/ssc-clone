@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { MatTableDataSource, MatDialog } from '@angular/material';
+import { MatDialog, MatTableDataSource } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -15,15 +16,14 @@ import { IBreadcrumbs } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, takeUntil, tap, filter } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { OrderQtyFormComponent } from '../order-qty-form/order-qty-form.component';
 import { OrderActions } from '../store/actions';
 import { fromOrder } from '../store/reducers';
 import { OrderSelectors } from '../store/selectors';
-import { ActivatedRoute } from '@angular/router';
-import { tap } from 'rxjs/operators';
-import { OrderQtyFormComponent } from '../order-qty-form/order-qty-form.component';
 
 @Component({
     selector: 'app-order-detail',
@@ -54,6 +54,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     order$: Observable<any>;
     selectedRowIndex$: Observable<string>;
     smallBreadcrumbs$: Observable<IBreadcrumbs[]>;
+    isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
 
@@ -115,59 +116,26 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        // this.dataSource = new MatTableDataSource([
-        //     {
-        //         id: '1',
-        //         product: 'Whiskas Pouch Tuna 85gr',
-        //         bonus: false,
-        //         orderQty: 24,
-        //         delivered: 24,
-        //         invoiced: 24,
-        //         unitOfMeasured: 24,
-        //         unitPrice: 10000,
-        //         gross: 240000,
-        //         amountDisc1: 0,
-        //         amountDisc2: 0,
-        //         amountDisc3: 0,
-        //         promo: 0,
-        //         amountPromo: 0
-        //     },
-        //     {
-        //         id: '2',
-        //         product: 'Whiskas Pouch Salmon 150gr',
-        //         bonus: false,
-        //         orderQty: 24,
-        //         delivered: 24,
-        //         invoiced: 24,
-        //         unitOfMeasured: 24,
-        //         unitPrice: 12000,
-        //         gross: 288000,
-        //         amountDisc1: 0,
-        //         amountDisc2: 0,
-        //         amountDisc3: 0,
-        //         promo: 0,
-        //         amountPromo: 0
-        //     }
-        // ]);
-
         this._unSubs$ = new Subject<void>();
 
-        const { id } = this.route.snapshot.params;
+        this.initSource();
 
-        this.order$ = this.store.select(OrderSelectors.getSelectedOrder).pipe(
-            tap(data => {
-                if (data && data.orderBrands && data.orderBrands.length > 0) {
-                    this.dataSource = new MatTableDataSource(
-                        data.orderBrands[0].orderBrandCatalogues
-                    );
-                }
-            })
-        );
-        this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id }));
+        this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
 
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
 
         this.smallBreadcrumbs$ = this.store.select(UiSelectors.getSmallBreadcrumbs);
+
+        // Trigger refresh
+        this.store
+            .select(OrderSelectors.getIsRefresh)
+            .pipe(
+                filter(v => !!v),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isRefresh => {
+                this.initSource();
+            });
     }
 
     ngOnDestroy(): void {
@@ -208,18 +176,76 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
 
-        const dialogRef = this.matDialog.open(OrderQtyFormComponent, {
+        const dialogRef = this.matDialog.open<
+            OrderQtyFormComponent,
+            any,
+            { action: string; payload: number }
+        >(OrderQtyFormComponent, {
             data: {
                 title: `Set ${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
                 id: item.id,
                 label: `${type === 'delivered' ? 'Delivered' : 'Invoiced'} Qty`,
-                qty: type === 'delivered' ? item.deliveredQty : item.invoicedQty
+                qty: type === 'delivered' ? +item.deliveredQty : +item.invoicedQty
             },
             disableClose: true
         });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(resp => {
+                this._$log.generateGroup(
+                    'AFTER CLOSED DIALOG EDIT QTY',
+                    {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    },
+                    'groupCollapsed'
+                );
+
+                if (resp.action === 'edit' && typeof resp.payload === 'number') {
+                    if (type === 'delivered') {
+                        this.store.dispatch(
+                            OrderActions.updateDeliveredQtyRequest({
+                                payload: { id: item.id, body: resp.payload }
+                            })
+                        );
+                    } else if (type === 'invoiced') {
+                        this.store.dispatch(
+                            OrderActions.updateInvoicedQtyRequest({
+                                payload: { id: item.id, body: resp.payload }
+                            })
+                        );
+                    }
+                }
+
+                this.store.dispatch(UiActions.resetHighlightRow());
+            });
     }
 
     safeValue(item: any): any {
         return item ? item : '-';
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
+    private initSource(): void {
+        const { id } = this.route.snapshot.params;
+
+        this.order$ = this.store.select(OrderSelectors.getSelectedOrder).pipe(
+            tap(data => {
+                if (data && data.orderBrands && data.orderBrands.length > 0) {
+                    this.dataSource = new MatTableDataSource(
+                        data.orderBrands[0].orderBrandCatalogues
+                    );
+                }
+            })
+        );
+
+        this.store.dispatch(OrderActions.fetchOrderRequest({ payload: id }));
     }
 }

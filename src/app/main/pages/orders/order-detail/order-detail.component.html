@@ -259,7 +259,7 @@
                                             <td class="info-title">Order Status</td>
                                             <td>
                                                 <ng-container [ngSwitch]="(order$ | async)?.status">
-                                                    <ng-container *ngSwitchCase="'checkout'">
+                                                    <ng-container *ngSwitchCase="'confirm'">
                                                         Order Baru
                                                     </ng-container>
 
@@ -267,20 +267,20 @@
                                                         Dikemas
                                                     </ng-container>
 
-                                                    <ng-container *ngSwitchCase="'confirm'">
-                                                        Siap Dikirim
-                                                    </ng-container>
-
-                                                    <ng-container *ngSwitchCase="'delivery'">
+                                                    <ng-container *ngSwitchCase="'shipping'">
                                                         Dikirim
                                                     </ng-container>
 
-                                                    <ng-container *ngSwitchCase="'arrived'">
+                                                    <ng-container *ngSwitchCase="'delivered'">
                                                         Diterima
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'done'">
                                                         Selesai
+                                                    </ng-container>
+
+                                                    <ng-container *ngSwitchCase="'cancel'">
+                                                        Batal
                                                     </ng-container>
                                                 </ng-container>
                                             </td>
@@ -364,7 +364,7 @@
                                 Status Pengiriman -
 
                                 <ng-container [ngSwitch]="(order$ | async)?.status">
-                                    <ng-container *ngSwitchCase="'checkout'">
+                                    <ng-container *ngSwitchCase="'confirm'">
                                         Order Baru
                                     </ng-container>
 
@@ -372,15 +372,11 @@
                                         Dikemas
                                     </ng-container>
 
-                                    <ng-container *ngSwitchCase="'confirm'">
-                                        Siap Dikirim
-                                    </ng-container>
-
-                                    <ng-container *ngSwitchCase="'delivery'">
+                                    <ng-container *ngSwitchCase="'shipping'">
                                         Dikirim
                                     </ng-container>
 
-                                    <ng-container *ngSwitchCase="'arrived'">
+                                    <ng-container *ngSwitchCase="'delivered'">
                                         Diterima
                                     </ng-container>
 
@@ -394,7 +390,7 @@
                         <div class="content">
                             <div
                                 class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'checkout'"
+                                [class.active]="(order$ | async)?.status === 'confirm'"
                             >
                                 <div class="header">Order Baru</div>
                                 <!-- <div class="header">Verifikasi</div> -->
@@ -557,16 +553,16 @@
                                 </div> -->
                             </div>
 
-                            <div
+                            <!-- <div
                                 class="status secondary-text"
                                 [class.active]="(order$ | async)?.status === 'confirm'"
                             >
                                 <div class="header">Siap Dikirim</div>
-                            </div>
+                            </div> -->
 
                             <div
                                 class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'delivery'"
+                                [class.active]="(order$ | async)?.status === 'shipping'"
                             >
                                 <div class="header">Dikirim</div>
 
@@ -706,7 +702,7 @@
 
                             <div
                                 class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'arrived'"
+                                [class.active]="(order$ | async)?.status === 'delivered'"
                             >
                                 <div class="header">Diterima</div>
                             </div>
@@ -731,7 +727,7 @@
 
                 <span class="h4">
                     <ng-container [ngSwitch]="(order$ | async)?.status">
-                        <ng-container *ngSwitchCase="'checkout'">
+                        <ng-container *ngSwitchCase="'confirm'">
                             Order Baru
                         </ng-container>
 
@@ -739,15 +735,11 @@
                             Dikemas
                         </ng-container>
 
-                        <ng-container *ngSwitchCase="'confirm'">
-                            Siap Dikirim
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'delivery'">
+                        <ng-container *ngSwitchCase="'shipping'">
                             Dikirim
                         </ng-container>
 
-                        <ng-container *ngSwitchCase="'arrived'">
+                        <ng-container *ngSwitchCase="'delivered'">
                             Diterima
                         </ng-container>
 
@@ -764,7 +756,7 @@
                                 <div class="detail" fxLayout="row" fxFlex="70">
                                     <div
                                         class="step"
-                                        [class.active]="(order$ | async)?.status === 'checkout'"
+                                        [class.active]="(order$ | async)?.status === 'confirm'"
                                         fxLayout="column"
                                         fxFlex
                                     >
@@ -810,30 +802,7 @@
 
                                     <div
                                         class="step"
-                                        [class.active]="(order$ | async)?.status === 'confirm'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
-                                        <div class="indicator" fxLayout="column">
-                                            <div class="circle"></div>
-                                        </div>
-
-                                        <div class="v-line"></div>
-
-                                        <div class="content" fxFlex="90">
-                                            <div class="label">
-                                                Siap Dikirim
-                                            </div>
-
-                                            <div class="time line-height-8">
-                                                <!-- <small>-</small> -->
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'delivery'"
+                                        [class.active]="(order$ | async)?.status === 'shipping'"
                                         fxLayout="column"
                                         fxFlex
                                     >
@@ -856,7 +825,7 @@
 
                                     <div
                                         class="step"
-                                        [class.active]="(order$ | async)?.status === 'arrived'"
+                                        [class.active]="(order$ | async)?.status === 'delivered'"
                                         fxLayout="column"
                                         fxFlex
                                     >
@@ -1130,7 +1099,11 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
-                                {{ +row?.qty | number }}
+                                {{
+                                    +row?.qty > 0 || +row?.qty === 0
+                                        ? (+row?.qty | number)
+                                        : safeValue(+row?.qty)
+                                }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -1146,7 +1119,11 @@
                                 style="word-break: break-word;cursor: pointer"
                                 (click)="onChangeQty(row, 'delivered')"
                             >
-                                {{ +row?.deliveredQty | number }}
+                                {{
+                                    +row?.deliveredQty > 0 || row?.deliveredQty !== null
+                                        ? (+row?.deliveredQty | number)
+                                        : safeValue(+row?.deliveredQty)
+                                }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -1162,7 +1139,11 @@
                                 style="word-break: break-word;cursor: pointer"
                                 (click)="onChangeQty(row, 'invoiced')"
                             >
-                                {{ +row?.invoicedQty | number }}
+                                {{
+                                    +row?.invoicedQty > 0 || row?.deliveredQty !== null
+                                        ? (+row?.invoicedQty | number)
+                                        : safeValue(+row?.invoicedQty)
+                                }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -1558,4 +1539,8 @@
         </mat-card> -->
     </div>
     <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
 </div>

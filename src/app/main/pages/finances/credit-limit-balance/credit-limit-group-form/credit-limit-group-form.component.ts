@@ -2,6 +2,7 @@ import {
     ChangeDetectionStrategy,
     Component,
     Inject,
+    OnDestroy,
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
@@ -16,8 +17,9 @@ import { GeoParameter, GeoParameterType, Hierarchy, StoreSegment } from 'app/sha
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import { Observable, of, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, takeUntil, tap } from 'rxjs/operators';
 
+import { CreditLimitGroupForm } from '../models';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
 
@@ -28,7 +30,7 @@ import { CreditLimitBalanceSelectors } from '../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreditLimitGroupFormComponent implements OnInit {
+export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
     unitParameters: { id: string; label: string }[];
@@ -122,6 +124,14 @@ export class CreditLimitGroupFormComponent implements OnInit {
         this.initForm();
     }
 
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._unSubs$.next();
+        this._unSubs$.complete();
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -170,7 +180,16 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
         return this.store.select(DropdownSelectors.getIsError, { errorId: id }).pipe(
             tap(x => {
-                console.log('ERROR DROPDOWN', x);
+                this._$log.generateGroup(
+                    'ERROR DROPDOWN',
+                    {
+                        error: {
+                            type: 'log',
+                            value: x
+                        }
+                    },
+                    'groupCollapsed'
+                );
             })
         );
     }
@@ -246,7 +265,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
 
     onSubmit(action: string): void {
         this._$log.generateGroup(
-            `[SUBMIT ${action.toUpperCase()}]`,
+            `SUBMIT ${action.toUpperCase()}`,
             {
                 form: {
                     type: 'log',
@@ -264,7 +283,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
                 .pipe(takeUntil(this._unSubs$))
                 .subscribe(({ supplierId }) => {
                     this._$log.generateGroup(
-                        `[AUTH SELECTORS]`,
+                        'AUTH SELECTORS',
                         {
                             supplierId: {
                                 type: 'log',
@@ -277,7 +296,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
                     if (supplierId) {
                         const payload = {
                             supplierId,
-                            hierarchyId: body.customerHierarchy,
+                            hierarchyId: body.hierarchy,
                             storeSegmentId: body.storeSegment,
                             name: body.groupName,
                             defaultCreditLimit: body.creditAmount,
@@ -301,7 +320,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
                         }
 
                         this._$log.generateGroup(
-                            `[SUBMIT CREATE CREDIT LIMIT GROUP]`,
+                            'SUBMIT CREATE CREDIT LIMIT GROUP',
                             {
                                 body: {
                                     type: 'log',
@@ -318,6 +337,71 @@ export class CreditLimitGroupFormComponent implements OnInit {
                         this.dialogRef.close({ action, payload });
                     }
                 });
+        } else if (action === 'edit') {
+            const payload: Partial<CreditLimitGroupForm> = {
+                hierarchyId: body.hierarchy,
+                storeSegmentId: body.storeSegment,
+                name: body.groupName,
+                defaultCreditLimit: body.creditAmount,
+                defaultBalanceAmount: body.startingBalance,
+                termOfPayment: body.termOfPayment,
+                creditLimitArea: body.creditLimitArea
+            };
+
+            if (!body.hierarchy) {
+                delete payload.hierarchyId;
+            }
+
+            if (!body.storeSegment) {
+                delete payload.storeSegmentId;
+            }
+
+            if (!body.groupName) {
+                delete payload.name;
+            }
+
+            if (!body.creditAmount) {
+                delete payload.defaultCreditLimit;
+            }
+
+            if (!body.startingBalance) {
+                delete payload.defaultBalanceAmount;
+            }
+
+            if (!body.termOfPayment) {
+                delete payload.termOfPayment;
+            }
+
+            if (
+                !body.creditLimitArea ||
+                ((body.creditLimitArea as Array<{
+                    unitType: string;
+                    unitValue: string;
+                }>).length > 0 &&
+                    !(body.creditLimitArea as Array<{
+                        unitType: string;
+                        unitValue: string;
+                    }>)[0].unitType)
+            ) {
+                delete payload.creditLimitArea;
+            }
+
+            this._$log.generateGroup(
+                'SUBMIT UPDATE CREDIT LIMIT GROUP',
+                {
+                    body: {
+                        type: 'log',
+                        value: body
+                    },
+                    payload: {
+                        type: 'log',
+                        value: payload
+                    }
+                },
+                'groupCollapsed'
+            );
+
+            this.dialogRef.close({ action, payload });
         }
     }
 
@@ -380,7 +464,7 @@ export class CreditLimitGroupFormComponent implements OnInit {
                     })
                 ]
             ],
-            customerHierarchy: [
+            hierarchy: [
                 '',
                 [
                     RxwebValidators.required({
@@ -398,5 +482,153 @@ export class CreditLimitGroupFormComponent implements OnInit {
             ],
             creditLimitArea: this.formBuilder.array([this.createGeoForm()])
         });
+
+        if (this.pageType === 'edit') {
+            this.store
+                .select(CreditLimitBalanceSelectors.getSelectedCreditLimitGroup)
+                .pipe(
+                    filter(data => !!data),
+                    takeUntil(this._unSubs$)
+                )
+                .subscribe(data => {
+                    if (data.name) {
+                        this.form.get('groupName').patchValue(data.name);
+                        this.form.get('groupName').markAsTouched();
+                    }
+
+                    if (data.defaultCreditLimit) {
+                        this.form
+                            .get('creditAmount')
+                            .patchValue(data.defaultCreditLimit.replace('.', ','));
+                        this.form.get('creditAmount').markAsTouched();
+                    }
+
+                    if (data.defaultBalanceAmount) {
+                        this.form
+                            .get('startingBalance')
+                            .patchValue(data.defaultBalanceAmount.replace('.', ','));
+                        this.form.get('startingBalance').markAsTouched();
+                    }
+
+                    if (data.storeSegmentId) {
+                        this.form.get('storeSegment').patchValue(data.storeSegmentId);
+                        this.form.get('storeSegment').markAsTouched();
+                    }
+
+                    if (data.hierarchyId) {
+                        this.form.get('hierarchy').patchValue(data.hierarchyId);
+                        this.form.get('hierarchy').markAsTouched();
+                    }
+
+                    if (data.termOfPayment) {
+                        this.form.get('termOfPayment').patchValue(data.termOfPayment);
+                        this.form.get('termOfPayment').markAsTouched();
+                    }
+
+                    if (data.creditLimitAreas) {
+                        if (data.creditLimitAreas.length > 0) {
+                            const creditLimitAreas = data.creditLimitAreas;
+
+                            creditLimitAreas.forEach((geo, index) => {
+                                if (geo.unitType && geo.unitValue) {
+                                    this.initSource(geo.unitType, index);
+
+                                    if (index > 0) {
+                                        this.formGeographics.push(
+                                            this.formBuilder.group({
+                                                unitType: [geo.unitType],
+                                                unitValue: [
+                                                    { value: geo.unitValue, disabled: true },
+                                                    [
+                                                        RxwebValidators.unique({
+                                                            message: this._$errorMessage.getErrorMessageNonState(
+                                                                'default',
+                                                                'is_unique'
+                                                            )
+                                                        })
+                                                    ]
+                                                ]
+                                            })
+                                        );
+                                    } else {
+                                        this.formGeographics
+                                            .at(index)
+                                            .get('unitType')
+                                            .patchValue(geo.unitType);
+
+                                        this.formGeographics
+                                            .at(index)
+                                            .get('unitValue')
+                                            .patchValue(geo.unitValue);
+                                    }
+
+                                    this.form.get(['creditLimitArea', index, 'unitValue']).enable();
+
+                                    this.formGeographics
+                                        .at(index)
+                                        .get('unitType')
+                                        .markAsTouched();
+
+                                    this.formGeographics
+                                        .at(index)
+                                        .get('unitValue')
+                                        .markAsTouched();
+                                }
+                            });
+                        }
+                    }
+                });
+        }
+    }
+
+    private initSource(value: string, idx: number): void {
+        if (!value) {
+            return;
+        }
+
+        switch (value) {
+            case GeoParameterType.PROVINCE:
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterProvince)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
+                break;
+
+            case GeoParameterType.CITY:
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterCity)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
+                break;
+
+            case GeoParameterType.DISTRICT:
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterDistrict)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
+                break;
+
+            case GeoParameterType.URBAN:
+                this.geoParameterSource$[idx] = this.store
+                    .select(DropdownSelectors.getGeoParameterUrban)
+                    .pipe(
+                        map(state => {
+                            return state && state.source.length > 0 ? state : null;
+                        })
+                    );
+                break;
+
+            default:
+                break;
+        }
     }
 }

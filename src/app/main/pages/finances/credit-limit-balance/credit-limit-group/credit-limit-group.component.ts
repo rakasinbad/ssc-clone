@@ -15,7 +15,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { CreditLimitGroupFormComponent } from '../credit-limit-group-form/credit-limit-group-form.component';
-import { CreditLimitArea, CreditLimitGroup } from '../models';
+import { CreditLimitArea, CreditLimitGroup, CreditLimitGroupForm } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
@@ -74,7 +74,8 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
 
     joinCreditLimitAreas(creditLimitAreas: CreditLimitArea[]): string {
         if (creditLimitAreas && creditLimitAreas.length > 0) {
-            return creditLimitAreas.map(i => i.unitType).join(',<br>');
+            // return creditLimitAreas.map(i => i.unitValue).join(',<br>');
+            return creditLimitAreas.map(i => i.unitValue).join(', ');
         }
 
         return '-';
@@ -107,10 +108,16 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
     }
 
     onSetup(id?: string): void {
+        if (id) {
+            this.store.dispatch(
+                CreditLimitBalanceActions.fetchCreditLimitGroupRequest({ payload: id })
+            );
+        }
+
         const dialogRef = this.matDialog.open<
             CreditLimitGroupFormComponent,
             any,
-            { action: string; payload: any }
+            { action: string; payload: Partial<CreditLimitGroupForm> | CreditLimitGroupForm }
         >(CreditLimitGroupFormComponent, {
             data: {
                 title: 'Set Credit Limit',
@@ -122,30 +129,35 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
         dialogRef
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(resp => {
+            .subscribe(({ action, payload }) => {
                 this._$log.generateGroup(
-                    `[AFTER CLOSED DIALOG ${resp &&
-                        resp.action &&
-                        resp.action.toUpperCase()} CREDIT LIMIT GROUP]`,
+                    `[AFTER CLOSED DIALOG ${action && action.toUpperCase()} CREDIT LIMIT GROUP]`,
                     {
-                        response: {
+                        action: {
                             type: 'log',
-                            value: resp
+                            value: action
+                        },
+                        payload: {
+                            type: 'log',
+                            value: payload
                         }
                     },
                     'groupCollapsed'
                 );
 
-                if (resp.action === 'new' && resp.payload) {
+                if (action === 'new' && payload) {
                     this.store.dispatch(
                         CreditLimitBalanceActions.createCreditLimitGroupRequest({
-                            payload: resp.payload
+                            payload: payload
                         })
                     );
-                } else if (resp.action === 'edit' && resp.payload) {
+                } else if (action === 'edit' && payload) {
                     this.store.dispatch(
                         CreditLimitBalanceActions.updateCreditLimitGroupRequest({
-                            payload: resp.payload
+                            payload: {
+                                id,
+                                body: payload
+                            }
                         })
                     );
                 }

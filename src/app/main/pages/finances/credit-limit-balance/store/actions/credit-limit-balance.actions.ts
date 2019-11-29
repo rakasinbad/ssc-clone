@@ -116,6 +116,25 @@ export const fetchCreditLimitGroupsSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Fetch Credit Limit Group
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCreditLimitGroupRequest = createAction(
+    '[Credit Limit Group API] Fetch Credit Limit Group Request',
+    props<{ payload: string }>()
+);
+
+export const fetchCreditLimitGroupFailure = createAction(
+    '[Credit Limit Group API] Fetch Credit Limit Group Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCreditLimitGroupSuccess = createAction(
+    '[Credit Limit Group API] Fetch Credit Limit Group Success',
+    props<{ payload: { data: Update<CreditLimitGroup>; id: string } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - CREATE CREDIT LIMIT GROUP] Credit Limit Groups
 // -----------------------------------------------------------------------------------------------------
 
@@ -150,7 +169,7 @@ export const updateCreditLimitGroupFailure = createAction(
 
 export const updateCreditLimitGroupSuccess = createAction(
     '[Credit Limit Groups API] Update Credit Limit Group Success',
-    props<{ payload: CreditLimitGroup }>()
+    props<{ payload: Update<CreditLimitGroup> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

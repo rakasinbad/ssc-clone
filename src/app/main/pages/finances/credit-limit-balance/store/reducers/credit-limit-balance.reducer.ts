@@ -1,3 +1,4 @@
+import { getSelectedCreditLimitGroupId } from './../selectors/credit-limit-balance.selectors';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
@@ -64,11 +65,13 @@ const creditLimitBalanceReducer = createReducer(
     initialState,
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreRequest,
+        CreditLimitBalanceActions.updateCreditLimitGroupRequest,
         CreditLimitBalanceActions.updateStatusFreezeBalanceRequest,
         CreditLimitBalanceActions.createCreditLimitGroupRequest,
         CreditLimitBalanceActions.deleteCreditLimitGroupRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoreRequest,
         CreditLimitBalanceActions.fetchCreditLimitStoresRequest,
+        CreditLimitBalanceActions.fetchCreditLimitGroupRequest,
         CreditLimitBalanceActions.fetchCreditLimitGroupsRequest,
         (state, { payload }) => ({
             ...state,
@@ -82,11 +85,13 @@ const creditLimitBalanceReducer = createReducer(
     // })),
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreFailure,
+        CreditLimitBalanceActions.updateCreditLimitGroupFailure,
         CreditLimitBalanceActions.updateStatusFreezeBalanceFailure,
         CreditLimitBalanceActions.createCreditLimitGroupFailure,
         CreditLimitBalanceActions.deleteCreditLimitGroupFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoreFailure,
         CreditLimitBalanceActions.fetchCreditLimitStoresFailure,
+        CreditLimitBalanceActions.fetchCreditLimitGroupFailure,
         CreditLimitBalanceActions.fetchCreditLimitGroupsFailure,
         (state, { payload }) => ({
             ...state,
@@ -124,6 +129,15 @@ const creditLimitBalanceReducer = createReducer(
         ),
         errors: adapterError.removeOne('fetchCreditLimitGroupsFailure', state.errors)
     })),
+    on(CreditLimitBalanceActions.fetchCreditLimitGroupSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceGroups: adapterCreditLimitGroup.updateOne(payload.data, {
+            ...state.creditLimitBalanceGroups,
+            selectedCreditLimitGroupId: payload.id
+        }),
+        errors: adapterError.removeOne('fetchCreditLimitGroupFailure', state.errors)
+    })),
     on(CreditLimitBalanceActions.updateCreditLimitStoreSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -132,6 +146,15 @@ const creditLimitBalanceReducer = createReducer(
             selectedCreditLimitStoreId: null
         }),
         errors: adapterError.removeOne('updateCreditLimitStoreFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.updateCreditLimitGroupSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceGroups: adapterCreditLimitGroup.updateOne(payload, {
+            ...state.creditLimitBalanceGroups,
+            selectedCreditLimitGroupId: null
+        }),
+        errors: adapterError.removeOne('updateCreditLimitGroupFailure', state.errors)
     })),
     // on(CreditLimitBalanceActions.updateStatusFreezeBalanceFailure, (state, { payload }) => ({
     //     ...state,

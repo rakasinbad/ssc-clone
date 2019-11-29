@@ -39,43 +39,6 @@
                     </mat-error>
                 </mat-form-field>
             </div>
-
-            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
-                <label
-                    fxFlexAlign="center"
-                    fxFlex="15"
-                    [class.mat-error]="
-                        form.get('content').errors &&
-                        !form.get('content').untouched &&
-                        (form.get('content').dirty || form.get('content').touched)
-                    "
-                >
-                    Content
-                </label>
-
-                <quill-editor
-                    fxFlex="70"
-                    formControlName="content"
-                    [modules]="editorConfig.modules"
-                ></quill-editor>
-
-                <!-- <mat-form-field appearance="outline" fxFlex="70">
-                    <quill-editor
-                        matCkeditor
-                        formControlName="content"
-                        [customOptions]="editorConfig"
-                    ></quill-editor>
-
-                    <mat-error
-                        *ngIf="
-                            form.get('content').invalid &&
-                            (form.get('content').dirty || form.get('content').touched)
-                        "
-                    >
-                        {{ getErrorMessage('content') }}
-                    </mat-error>
-                </mat-form-field> -->
-            </div>
         </div>
     </form>
 </mat-dialog-content>
@@ -88,10 +51,10 @@
             color="accent"
             [attr.cdkFocusInitial]="form.valid"
             [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
-            form="credit-limit-group-form"
+            form="order-qty-form"
         >
             Simpan
         </button>
-        <button mat-stroked-button mat-dialog-close>Tutup</button>
+        <button mat-stroked-button mat-dialog-close>Batal</button>
     </span>
 </mat-dialog-actions>

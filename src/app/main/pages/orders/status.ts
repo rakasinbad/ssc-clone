@@ -13,13 +13,13 @@ export const statusOrder: FuseNavigation[] = [
         }
     },
     {
-        id: 'checkout',
+        id: 'confirm',
         title: 'Order Baru',
         // title: 'New Order',
         // translate: 'STATUS.ORDER.NEW_ORDER.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'checkout' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'confirm' }));
         }
     },
     {
@@ -43,23 +43,23 @@ export const statusOrder: FuseNavigation[] = [
     //     }
     // },
     {
-        id: 'delivery',
+        id: 'shipping',
         title: 'Dikirim',
         //    title: 'Shipped',
         //    translate: 'STATUS.ORDER.SHIPPED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'delivery' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'shipping' }));
         }
     },
     {
-        id: 'arrived',
+        id: 'delivered',
         title: 'Diterima',
         //    title: 'Received',
         //    translate: 'STATUS.ORDER.RECEIVED.TITLE',
         type: 'item',
         function: store => {
-            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'arrived' }));
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'delivered' }));
         }
     },
     {
@@ -70,6 +70,16 @@ export const statusOrder: FuseNavigation[] = [
         type: 'item',
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'done' }));
+        }
+    },
+    {
+        id: 'cancel',
+        title: 'Batal',
+        // title: 'Completed',
+        // translate: 'STATUS.ORDER.COMPLETED.TITLE',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'cancel' }));
         }
     }
 ];

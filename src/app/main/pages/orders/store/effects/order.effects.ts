@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService } from 'app/shared/helpers';
+import { LogService, NoticeService, OrderBrandCatalogueApiService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
@@ -36,6 +36,324 @@ export class OrderEffects {
 
     /**
      *
+     * [UPDATE - REQUEST] Delivered Qty
+     * @memberof OrderEffects
+     */
+    updateDeliveredQtyRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.updateDeliveredQtyRequest),
+            map(action => action.payload),
+            switchMap(({ id, body }) => {
+                return this._$orderBrandCatalogueApi.patch({ deliveredQty: body }, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup('RESPONSE REQUEST UPDATE DELIVERED QTY', {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return OrderActions.updateDeliveredQtySuccess();
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.updateDeliveredQtyFailure({
+                                payload: { id: 'updateDeliveredQtyFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Delivered Qty
+     * @memberof OrderEffects
+     */
+    updateDeliveredQtyFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateDeliveredQtyFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('REQUEST UPDATE DELIVERED QTY FAILURE', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update delivered qty gagal', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Delivered Qty
+     * @memberof OrderEffects
+     */
+    updateDeliveredQtySuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateDeliveredQtySuccess),
+                tap(resp => {
+                    this._$log.generateGroup('REQUEST UPDATE DELIVERED QTY SUCCESS', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update delivered qty berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - REQUEST] Invoiced Qty
+     * @memberof OrderEffects
+     */
+    updateInvoicedQtyRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.updateInvoicedQtyRequest),
+            map(action => action.payload),
+            switchMap(({ id, body }) => {
+                return this._$orderBrandCatalogueApi.patch({ invoicedQty: body }, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup('RESPONSE REQUEST UPDATE INVOICED QTY', {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        });
+
+                        return OrderActions.updateInvoicedQtySuccess();
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.updateInvoicedQtyFailure({
+                                payload: { id: 'updateInvoicedQtyFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Invoiced Qty
+     * @memberof OrderEffects
+     */
+    updateInvoicedQtyFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateInvoicedQtyFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('REQUEST UPDATE INVOICED QTY FAILURE', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update invoiced qty gagal', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Invoiced Qty
+     * @memberof OrderEffects
+     */
+    updateInvoicedQtySuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateInvoicedQtySuccess),
+                tap(resp => {
+                    this._$log.generateGroup('REQUEST UPDATE INVOICED QTY SUCCESS', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update invoiced qty berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - DIALOG] Cancel Status Order
+     * @memberof OrderEffects
+     */
+    confirmChangeCancelStatusOrder$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.confirmChangeCancelStatusOrder),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: string }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: 'Set Cancel',
+                        message: `Are you sure want to cancel <strong>${params.orderCode}</strong> ?`,
+                        id: params.id,
+                        change: 'cancel'
+                    },
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return OrderActions.updateCancelStatusRequest({
+                        payload: { id, body: change }
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - REQUEST] Cancel Status Order
+     * @memberof OrderEffects
+     */
+    updateCancelStatusRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.updateCancelStatusRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                const change = { status: body };
+
+                return this._$orderApi.patch(change, id).pipe(
+                    map(resp => {
+                        this._$log.generateGroup(
+                            'RESPONSE REQUEST UPDATE CANCEL STATUS ORDER',
+                            {
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                }
+                            },
+                            'groupCollapsed'
+                        );
+
+                        return OrderActions.updateCancelStatusSuccess({
+                            payload: {
+                                id,
+                                changes: {
+                                    ...change,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.updateCancelStatusFailure({
+                                payload: { id: 'updateCancelStatusFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Cancel Status Order
+     * @memberof OrderEffects
+     */
+    updateCancelStatusFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateCancelStatusFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup(
+                        'REQUEST UPDATE CANCEL STATUS ORDER FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
+
+                    this._$notice.open('Update status gagal', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Cancel Status Order
+     * @memberof OrderEffects
+     */
+    updateCancelStatusSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.updateCancelStatusSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$log.generateGroup('REQUEST UPDATE CANCEL STATUS ORDER SUCCESS', {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    });
+
+                    this._$notice.open('Update status berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
      * [UPDATE - DIALOG] Status Order
      * @memberof OrderEffects
      */
@@ -44,57 +362,26 @@ export class OrderEffects {
             ofType(OrderActions.confirmChangeStatusOrder),
             map(action => action.payload),
             exhaustMap(params => {
-                /*  <ng-container [ngSwitch]="(order$ | async)?.status">
-                        <ng-container *ngSwitchCase="'checkout'">
-                            Order Baru
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'packing'">
-                            Dikemas
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'confirm'">
-                            Siap Dikirim
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'delivery'">
-                            Dikirim
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'arrived'">
-                            Diterima
-                        </ng-container>
-
-                        <ng-container *ngSwitchCase="'done'">
-                            Selesai
-                        </ng-container>
-                    </ng-container> */
-
                 let title: string;
                 let body: string;
 
                 switch (params.status) {
-                    case 'checkout':
+                    case 'confirm':
                         title = 'Dikemas';
                         body = 'packing';
                         break;
 
                     case 'packing':
-                        title = 'Siap Dikirim';
-                        body = 'confirm';
-                        break;
-
-                    case 'confirm':
                         title = 'Dikirim';
-                        body = 'delivery';
+                        body = 'shipping';
                         break;
 
-                    case 'delivery':
+                    case 'shipping':
                         title = 'Diterima';
-                        body = 'arrived';
+                        body = 'delivered';
                         break;
 
-                    case 'arrived':
+                    case 'delivered':
                         title = 'Selesai';
                         body = 'done';
                         break;
@@ -394,6 +681,7 @@ export class OrderEffects {
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
-        private _$orderApi: OrderApiService
+        private _$orderApi: OrderApiService,
+        private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService
     ) {}
 }

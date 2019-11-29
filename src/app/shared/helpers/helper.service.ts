@@ -178,6 +178,27 @@ export class HelperService {
         ];
     }
 
+    paymentStatus(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'waiting_for_payment',
+                label: 'Waiting for Payment'
+            },
+            {
+                id: 'not_paid',
+                label: 'Not Paid'
+            },
+            {
+                id: 'paid',
+                label: 'Paid'
+            },
+            {
+                id: 'overdue',
+                label: 'Overdue'
+            }
+        ];
+    }
+
     stockType(): { id: boolean; label: string }[] {
         return [
             {

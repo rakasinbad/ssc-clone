@@ -20,6 +20,8 @@ import { locale as indonesian } from '../i18n/id';
 import { SupplierInventoryActions } from '../store/actions';
 import { fromSupplierInventory } from '../store/reducers';
 import { SupplierInventorySelectors } from '../store/selectors';
+import { MatSelectChange } from '@angular/material';
+import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
 
 @Component({
     selector: 'app-supplier-inventory-form',
@@ -135,6 +137,14 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    onSelectType(ev: MatSelectChange): void {
+        if (typeof ev.value !== 'boolean') {
+            return;
+        }
+
+        this.handleStockRule(ev.value);
+    }
+
     onSubmit(): void {
         if (this.form.invalid) {
             return;
@@ -155,12 +165,20 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
                 delete body.name;
             }
 
-            this._$log.generateGroup('[SUBMIT EDIT]', {
-                body: {
-                    type: 'log',
-                    value: body
-                }
-            });
+            if (body.unlimitedStock) {
+                body.stock = 0;
+            }
+
+            this._$log.generateGroup(
+                'SUBMIT EDIT',
+                {
+                    body: {
+                        type: 'log',
+                        value: body
+                    }
+                },
+                'groupCollapsed'
+            );
 
             this.store.dispatch(
                 SupplierInventoryActions.updateSupplierInventoryRequest({
@@ -178,8 +196,27 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         this.form = this.formBuilder.group({
             // id: [{ value: '', disabled: true }],
             name: [{ value: '', disabled: true }],
-            unlimitedStock: [''],
-            stock: [''],
+            unlimitedStock: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            stock: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: false,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
             displayStock: ['']
         });
 
@@ -194,29 +231,50 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(catalog => {
                 if (catalog) {
-                    this._$log.generateGroup(`[SELECTED SUPPLIER INVENTORY]`, {
-                        response: {
-                            type: 'log',
-                            value: catalog
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'SELECTED SUPPLIER INVENTORY',
+                        {
+                            response: {
+                                type: 'log',
+                                value: catalog
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
                     if (catalog.name) {
                         this.form.get('name').patchValue(catalog.name);
+                        this.form.get('name').markAsTouched();
                     }
 
                     if (typeof catalog.unlimitedStock === 'boolean') {
                         this.form.get('unlimitedStock').patchValue(catalog.unlimitedStock);
-                    }
+                        this.form.get('unlimitedStock').markAsTouched();
 
-                    if (typeof catalog.stock === 'number') {
-                        this.form.get('stock').patchValue(catalog.stock);
+                        if (catalog.unlimitedStock === true) {
+                            this.handleStockRule(catalog.unlimitedStock);
+                        } else {
+                            if (typeof catalog.stock === 'number') {
+                                this.form.get('stock').patchValue(catalog.stock);
+                                this.form.get('stock').markAsTouched();
+                            }
+                        }
                     }
 
                     if (typeof catalog.displayStock === 'boolean') {
                         this.form.get('displayStock').patchValue(catalog.displayStock);
+                        this.form.get('displayStock').markAsTouched();
                     }
                 }
             });
+    }
+
+    private handleStockRule(isLimited: boolean): void {
+        if (isLimited === true) {
+            this.form.get('stock').patchValue(0);
+            this.form.get('stock').disable();
+        } else {
+            this.form.get('stock').enable();
+        }
     }
 }

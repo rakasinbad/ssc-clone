@@ -169,7 +169,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(resp => {
                 this._$log.generateGroup(
-                    '[AFTER CLOSED DIALOG EDIT CREDIT LIMIT]',
+                    '[AFTER CLOSED DIALOG] EDIT CREDIT LIMIT',
                     {
                         response: {
                             type: 'log',

@@ -92,7 +92,7 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
 
     onSubmit(action: string): void {
         this._$log.generateGroup(
-            `[SUBMIT ${action.toUpperCase()}]`,
+            `SUBMIT ${action.toUpperCase()}`,
             {
                 form: {
                     type: 'log',
@@ -150,8 +150,8 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                         }
                     >(ChangeConfirmationComponent, {
                         data: {
-                            title: `Confirmation`,
-                            message: `Are you sure want to change ?`,
+                            title: 'Confirmation',
+                            message: 'Are you sure want to change ?',
                             id: this.data.id,
                             change: payload
                         },
@@ -163,7 +163,7 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe(resp => {
                             this._$log.generateGroup(
-                                '[AFTER CLOSED DIALOG CONFIRMATION EDIT CREDIT LIMIT]',
+                                'AFTER CLOSED DIALOG CONFIRMATION EDIT CREDIT LIMIT',
                                 {
                                     response: {
                                         type: 'log',

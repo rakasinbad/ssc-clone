@@ -1,3 +1,4 @@
+import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
@@ -20,6 +21,30 @@ export const fetchPaymentStatusesFailure = createAction(
 export const fetchPaymentStatusesSuccess = createAction(
     '[Payment Statuses API] Fetch Payment Statuses Success',
     props<{ payload: { data: any; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE PAYMENT STATUS] Payment Statuses
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmUpdatePaymentStatus = createAction(
+    '[Payment Statuses API] Confirm Update Payment Status Request',
+    props<{ payload: any }>()
+);
+
+export const updatePaymentStatusRequest = createAction(
+    '[Payment Statuses API] Update Payment Status Request',
+    props<{ payload: { id: string; body: any } }>()
+);
+
+export const updatePaymentStatusFailure = createAction(
+    '[Payment Statuses API] Update Payment Status Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updatePaymentStatusSuccess = createAction(
+    '[Payment Statuses API] Update Payment Status Success',
+    props<{ payload: Update<any> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -57,7 +57,7 @@
                             <!-- {{ searchStatus | titlecase | replace: '-':' ' }} -->
 
                             <ng-container [ngSwitch]="searchStatus">
-                                <ng-container *ngSwitchCase="'checkout'">
+                                <ng-container *ngSwitchCase="'confirm'">
                                     Order Baru
                                 </ng-container>
 
@@ -65,20 +65,24 @@
                                     Dikemas
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'confirm'">
+                                <!-- <ng-container *ngSwitchCase="'confirm'">
                                     Siap Dikirim
-                                </ng-container>
+                                </ng-container> -->
 
-                                <ng-container *ngSwitchCase="'delivery'">
+                                <ng-container *ngSwitchCase="'shipping'">
                                     Dikirim
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'arrived'">
+                                <ng-container *ngSwitchCase="'delivered'">
                                     Diterima
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'done'">
                                     Selesai
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'cancel'">
+                                    Batal
                                 </ng-container>
                             </ng-container>
 
@@ -87,8 +91,8 @@
                             </mat-icon>
                         </mat-chip>
 
-                        <mat-chip *ngIf="searchOrder || search.value">
-                            {{ searchOrder || search.value }}
+                        <mat-chip *ngIf="search.value">
+                            {{ search.value }}
 
                             <mat-icon matChipRemove (click)="onRemoveSearchOrder()">
                                 cancel
@@ -187,7 +191,7 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                safeValue(row?.totalPrice) !== '-'
+                                safeValue(+row?.totalPrice) !== '-'
                                     ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                     : +row?.totalPrice
                             }}
@@ -215,7 +219,7 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{
-                                safeValue(row?.totalQty) !== '-'
+                                safeValue(+row?.totalQty) !== '-'
                                     ? (+row?.totalQty | number)
                                     : +row?.totalQty
                             }}
@@ -231,7 +235,7 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             <ng-container [ngSwitch]="row?.status">
-                                <ng-container *ngSwitchCase="'checkout'">
+                                <ng-container *ngSwitchCase="'confirm'">
                                     Order Baru
                                 </ng-container>
 
@@ -239,20 +243,24 @@
                                     Dikemas
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'confirm'">
+                                <!-- <ng-container *ngSwitchCase="'confirm'">
                                     Siap Dikirim
-                                </ng-container>
+                                </ng-container> -->
 
-                                <ng-container *ngSwitchCase="'delivery'">
+                                <ng-container *ngSwitchCase="'shipping'">
                                     Dikirim
                                 </ng-container>
 
-                                <ng-container *ngSwitchCase="'arrived'">
+                                <ng-container *ngSwitchCase="'delivered'">
                                     Diterima
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'done'">
                                     Selesai
+                                </ng-container>
+
+                                <ng-container *ngSwitchCase="'cancel'">
+                                    Batal
                                 </ng-container>
                             </ng-container>
                         </p>
@@ -279,7 +287,7 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                safeValue(row?.totalPrice) !== '-'
+                                safeValue(+row?.totalPrice) !== '-'
                                     ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
                                     : +row?.totalPrice
                             }}
@@ -306,9 +314,9 @@
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        <button mat-icon-button *ngIf="hasSelected">
+                        <!-- <button mat-icon-button *ngIf="hasSelected">
                             <mat-icon class="secondary-text">delete</mat-icon>
-                        </button>
+                        </button> -->
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -317,6 +325,7 @@
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
+                                *ngIf="row?.status !== 'done' && row?.status !== 'cancel'"
                                 (click)="$event.stopPropagation()"
                             >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
@@ -327,34 +336,43 @@
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
-                                    aria-label="send"
+                                    aria-label="Send"
+                                    *ngIf="row?.status !== 'done' && row?.status !== 'cancel'"
                                     (click)="onChangeStatus(row)"
                                 >
                                     <mat-icon>send</mat-icon>
                                     <span>
                                         <ng-container [ngSwitch]="row?.status">
-                                            <ng-container *ngSwitchCase="'checkout'">
+                                            <ng-container *ngSwitchCase="'confirm'">
                                                 Dikemas
                                             </ng-container>
 
                                             <ng-container *ngSwitchCase="'packing'">
-                                                Siap Dikirim
-                                            </ng-container>
-
-                                            <ng-container *ngSwitchCase="'confirm'">
                                                 Dikirim
                                             </ng-container>
 
-                                            <ng-container *ngSwitchCase="'delivery'">
+                                            <ng-container *ngSwitchCase="'shipping'">
                                                 Diterima
                                             </ng-container>
 
-                                            <ng-container *ngSwitchCase="'arrived'">
+                                            <ng-container *ngSwitchCase="'delivered'">
                                                 Selesai
                                             </ng-container>
                                         </ng-container>
                                         <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
                                     </span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Cancel"
+                                    *ngIf="row?.status === 'confirm'"
+                                    (click)="onChangeCancelStatus(row)"
+                                >
+                                    <mat-icon>send</mat-icon>
+                                    <span>Cancel</span>
                                 </button>
 
                                 <!-- <button
@@ -409,7 +427,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="order"
                     matRipple
-                    [routerLink]="['/pages/orders/' + row.id + '/detail']"
+                    [routerLink]="['/pages/orders', row.id, 'detail']"
                 >
                 </mat-row>
             </mat-table>

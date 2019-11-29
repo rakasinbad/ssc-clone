@@ -190,10 +190,9 @@
                     fxFlexAlign="center"
                     fxFlex="15"
                     [class.mat-error]="
-                        form.get('customerHierarchy').errors &&
-                        !form.get('customerHierarchy').untouched &&
-                        (form.get('customerHierarchy').dirty ||
-                            form.get('customerHierarchy').touched)
+                        form.get('hierarchy').errors &&
+                        !form.get('hierarchy').untouched &&
+                        (form.get('hierarchy').dirty || form.get('hierarchy').touched)
                     "
                 >
                     Customer Hierarchy
@@ -217,10 +216,7 @@
                         <ng-container
                             *ngIf="hierarchies$ | async as hierarchies; else noHierarchies"
                         >
-                            <mat-select
-                                formControlName="customerHierarchy"
-                                placeholder="Choose Hierarchy"
-                            >
+                            <mat-select formControlName="hierarchy" placeholder="Choose Hierarchy">
                                 <mat-option *ngFor="let row of hierarchies" [value]="row?.id">
                                     {{ row?.name | uppercase }}
                                 </mat-option>
@@ -242,12 +238,11 @@
 
                     <mat-error
                         *ngIf="
-                            form.get('customerHierarchy').errors &&
-                            (form.get('customerHierarchy').dirty ||
-                                form.get('customerHierarchy').touched)
+                            form.get('hierarchy').errors &&
+                            (form.get('hierarchy').dirty || form.get('hierarchy').touched)
                         "
                     >
-                        {{ getErrorMessage('customerHierarchy') }}
+                        {{ getErrorMessage('hierarchy') }}
                     </mat-error>
                 </mat-form-field>
             </div>

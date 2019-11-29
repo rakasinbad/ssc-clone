@@ -149,6 +149,27 @@ export interface IFooterActionConfig {
     };
 }
 
+export enum EStatus {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive'
+}
+
+export enum EStatusOrder {
+    CONFIRM = 'confirm',
+    PACKING = 'packing',
+    SHIPPING = 'shipping',
+    DELIVERED = 'delivered',
+    DONE = 'done'
+}
+
+export enum EStatusPayment {
+    WAITING_FOR_PAYMENT = 'waiting_form_payment',
+    NOT_PAID = 'not_paid',
+    UNPAID = 'unpaid',
+    PAID = 'paid',
+    OVERDUE = 'overdue'
+}
+
 export type FilterUrban = 'city' | 'district' | 'urban';
 
 export enum GeoParameterType {

@@ -4,7 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { CreditLimitGroup } from '../models';
+import { CreditLimitGroup, CreditLimitGroupForm } from '../models';
 
 /**
  *
@@ -70,6 +70,17 @@ export class CreditLimitGroupApiService {
     /**
      *
      *
+     * @param {string} id
+     * @returns {Observable<CreditLimitGroup>}
+     * @memberof CreditLimitGroupApiService
+     */
+    findById(id: string): Observable<CreditLimitGroup> {
+        return this.http.get<CreditLimitGroup>(`${this._url}/${id}`);
+    }
+
+    /**
+     *
+     *
      * @template T
      * @param {T} body
      * @returns {Observable<CreditLimitGroup>}
@@ -77,6 +88,18 @@ export class CreditLimitGroupApiService {
      */
     create<T>(body: T): Observable<CreditLimitGroup> {
         return this.http.post<CreditLimitGroup>(this._url, body);
+    }
+
+    /**
+     *
+     *
+     * @param {Partial<CreditLimitGroupForm>} body
+     * @param {string} id
+     * @returns {Observable<CreditLimitGroup>}
+     * @memberof CreditLimitGroupApiService
+     */
+    patch(body: Partial<CreditLimitGroupForm>, id: string): Observable<CreditLimitGroup> {
+        return this.http.patch<CreditLimitGroup>(`${this._url}/${id}`, body);
     }
 
     /**

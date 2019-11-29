@@ -44,6 +44,7 @@ const initialState: State = {
 const orderReducer = createReducer(
     initialState,
     on(
+        OrderActions.updateCancelStatusRequest,
         OrderActions.updateStatusOrderRequest,
         OrderActions.fetchOrderRequest,
         OrderActions.fetchOrdersRequest,
@@ -53,6 +54,7 @@ const orderReducer = createReducer(
         })
     ),
     on(
+        OrderActions.updateCancelStatusFailure,
         OrderActions.updateStatusOrderFailure,
         OrderActions.fetchOrderFailure,
         OrderActions.fetchOrdersFailure,
@@ -60,6 +62,21 @@ const orderReducer = createReducer(
             ...state,
             isLoading: false,
             isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(OrderActions.updateDeliveredQtyRequest, OrderActions.updateInvoicedQtyRequest, state => ({
+        ...state,
+        isLoading: true,
+        isRefresh: false
+    })),
+    on(
+        OrderActions.updateDeliveredQtyFailure,
+        OrderActions.updateInvoicedQtyFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: true,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
@@ -76,6 +93,26 @@ const orderReducer = createReducer(
         isRefresh: undefined,
         orders: adapterOrder.addAll(payload.data, { ...state.orders, total: payload.total }),
         errors: adapterError.removeOne('fetchOrdersFailure', state.errors)
+    })),
+    on(OrderActions.updateDeliveredQtySuccess, state => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        orders: initialState.orders,
+        errors: adapterError.removeOne('updateDeliveredQtyFailure', state.errors)
+    })),
+    on(OrderActions.updateInvoicedQtySuccess, state => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        orders: initialState.orders,
+        errors: adapterError.removeOne('updateInvoicedQtyFailure', state.errors)
+    })),
+    on(OrderActions.updateCancelStatusSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        orders: adapterOrder.updateOne(payload, state.orders),
+        errors: adapterError.removeOne('updateCancelStatusFailure', state.errors)
     })),
     on(OrderActions.updateStatusOrderSuccess, (state, { payload }) => ({
         ...state,

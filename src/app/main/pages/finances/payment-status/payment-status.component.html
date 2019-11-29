@@ -63,7 +63,7 @@
                         </mat-chip> -->
 
                         <mat-chip *ngIf="searchPaymentStatus || filterStatus">
-                            Status: {{ searchPaymentStatus | titlecase | replace: '-':' ' }}
+                            Status: {{ searchPaymentStatus | titlecase | replace: '_':' ' }}
 
                             <mat-icon matChipRemove (click)="onRemoveSearchPaymentStatus()">
                                 cancel
@@ -152,7 +152,7 @@
                             style="word-break: break-word;"
                         >
                             <ng-container [ngSwitch]="row?.statusPayment">
-                                <ng-container *ngSwitchCase="'waiting for payment'">
+                                <ng-container *ngSwitchCase="'waiting_for_payment'">
                                     Waiting for Payment
                                 </ng-container>
 
@@ -321,12 +321,12 @@
                                     type="button"
                                     class="sinbad-mat-menu-item"
                                     aria-label="Update Status"
-                                    (click)="onUpdate()"
+                                    (click)="onUpdate(row)"
                                 >
                                     <span>Update Status</span>
                                 </button>
 
-                                <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -334,7 +334,7 @@
                                     (click)="onProofPayment()"
                                 >
                                     <span>Proof of Payment</span>
-                                </button>
+                                </button> -->
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -342,7 +342,11 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="payment"></mat-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="payment"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                ></mat-row>
 
                 <!-- <mat-row
                     *matRowDef="let row; columns: displayedColumns"

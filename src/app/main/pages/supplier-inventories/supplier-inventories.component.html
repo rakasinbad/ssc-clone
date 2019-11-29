@@ -177,7 +177,11 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.totalOrderStock) }}
+                            {{
+                                +row?.totalOrderStock > 0 || row?.totalOrderStock === 0
+                                    ? +row?.totalOrderStock
+                                    : safeValue(row?.totalOrderStock)
+                            }}
                         </p>
                     </mat-cell>
                 </ng-container>

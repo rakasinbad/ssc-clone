@@ -166,6 +166,7 @@
                                 <mat-select
                                     formControlName="unlimitedStock"
                                     placeholder="Choose Stock Type"
+                                    (selectionChange)="onSelectType($event)"
                                 >
                                     <mat-option *ngFor="let row of stockTypes" [value]="row?.id">
                                         {{ row?.label }}
@@ -192,12 +193,29 @@
                     </div>
 
                     <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                        <label fxFlexAlign="center" fxFlex="12">
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="12"
+                            [class.mat-error]="
+                                form.get('stock').errors &&
+                                !form.get('stock').untouched &&
+                                (form.get('stock').dirty || form.get('stock').touched)
+                            "
+                        >
                             Stock on Hand
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="30">
                             <input matInput name="stock" formControlName="stock" />
+
+                            <mat-error
+                                *ngIf="
+                                    form.get('stock').errors &&
+                                    (form.get('stock').dirty || form.get('stock').touched)
+                                "
+                            >
+                                {{ getErrorMessage('stock') }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
 
