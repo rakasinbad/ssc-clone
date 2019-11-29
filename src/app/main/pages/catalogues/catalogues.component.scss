@@ -94,7 +94,7 @@ app-catalogues {
         }
 
         .mat-column-name {
-            flex: 0 1 60%;
+            flex: 0 1 50%;
             padding-left: 10px;
         }
 
@@ -114,7 +114,16 @@ app-catalogues {
             flex: 0 1 16.5%;
         }
 
+        .mat-column-lastUpdate,
+        .mat-column-timeLimit,
+        .mat-column-blockType,
+        .mat-column-blockReason,
+        .mat-column-blockSuggest {
+            flex: 0 1 12.5%;
+        }
+
         .mat-column-actions {
+            display: flex;
             flex: 0 1 12.5%;
             justify-content: flex-end;
         }

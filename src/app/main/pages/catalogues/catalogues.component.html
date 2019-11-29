@@ -182,44 +182,44 @@
 
                 <!-- Time Limit Column -->
                 <ng-container matColumnDef="timeLimit">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Batas Waktu
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.timeLimit | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
+                        <p>{{ row?.timeLimit ? (row?.timeLimit | date: 'dd/MM/yyyy HH:mm:ss') : '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Block Type Column -->
                 <ng-container matColumnDef="blockType">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Tipe Pelanggaran
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.blockType }}</p>
+                        <p>{{ row?.violationType ? row?.violationType : '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Block Reason Column -->
                 <ng-container matColumnDef="blockReason">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Alasan Pelanggaran
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.blockReason }}</p>
+                        <p>{{ row?.violationReason ? row?.violationReason : '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Block Suggest Column -->
                 <ng-container matColumnDef="blockSuggest">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Saran
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.blockSuggest }}</p>
+                        <p>{{ row?.violationSuggestion ? row?.violationSuggestion : '-' }}</p>
                     </mat-cell>
                 </ng-container>
 

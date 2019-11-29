@@ -240,6 +240,29 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             takeUntil(this._unSubs$)
         ).subscribe(index => {
             // console.log('INDEX', index);
+            if (index === 'blocked') {
+                this.displayedColumns = [
+                    'name',
+                    'lastUpdate',
+                    'timeLimit',
+                    'blockType',
+                    'blockReason',
+                    'blockSuggest',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'name',
+                    'sku',
+                    // 'variant',
+                    'price',
+                    'stock',
+                    // 'sales',
+                    'actions'
+                ];
+            }
+
             if (index === 'all-type') {
                 this.findCatalogueMode = 'all';
                 // this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
@@ -414,6 +437,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 
                 if (this.sort.active === 'price') {
                     data['sortBy'] = 'suggest_retail_price';
+                } else if (this.sort.active === 'lastUpdate') {
+                    data['sortBy'] = 'updated_at';
                 } else {
                     data['sortBy'] = this.sort.active;
                 }
