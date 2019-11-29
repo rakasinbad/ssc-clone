@@ -11,7 +11,7 @@
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
                 <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
                     <mat-icon>add</mat-icon>
 
@@ -21,7 +21,7 @@
                 <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button> -->
-            </div>
+            <!-- </div> -->
 
             <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
                 <!-- <button mat-flat-button class="grey-600">
@@ -33,25 +33,28 @@
                     Group By
                 </button> -->
             <!-- </div> -->
-            <!-- SEARCH -->
-            <div class="search-wrapper mx-12">
-                    <!-- mx-12 -->
-                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                    <mat-icon>search</mat-icon>
-                    <input [formControl]="search" placeholder="Cari Disini" />
+            <div fxFlex="grow" fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- TODAY DATE -->
+                <p>Today : {{ today | date: 'dd-MMMM-yyyy' }}</p>
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [formControl]='search' placeholder="Cari di sini"/>
+                    </div>
                 </div>
+                <!-- / SEARCH -->
             </div>
-            <!-- / SEARCH -->
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24" *ngIf="search.value">
+        <!-- <mat-card class="mb-24" *ngIf="search.value">
             <div fxLayout="column" fxLayoutGap="10px">
-                <!-- <small>
+                <small>
                     Filter & Group By
-                </small> -->
+                </small>
 
-                <!-- <div>
+                <div>
                     <mat-chip-list aria-label="Filter">
                         <mat-chip *ngIf="searchStore || search.value">
                             {{ searchStore || search.value }}
@@ -62,9 +65,9 @@
                         </mat-chip>
 
                     </mat-chip-list>
-                </div> -->
+                </div>
             </div>
-        </mat-card>
+        </mat-card> -->
 
         <!-- CONTENT CARD -->
         <!-- <div class="content-card"></div> -->
@@ -80,7 +83,7 @@
             >
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="storeId">
+                    <mat-header-cell *matHeaderCellDef>
                         Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -309,7 +312,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="merchant"
                     matRipple
-                    [routerLink]="['/pages/in-store-inventories/' + row?.catalogueId + '/detail']"
+                    [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']"
                 >
                 </mat-row>
             </mat-table>
