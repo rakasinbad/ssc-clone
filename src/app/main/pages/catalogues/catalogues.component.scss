@@ -109,6 +109,7 @@ app-catalogues {
 
         .mat-column-actions {
             flex: 0 1 12.5%;
+            justify-content: flex-end;
         }
 
         .quantity-indicator {
