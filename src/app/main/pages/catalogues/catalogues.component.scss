@@ -60,6 +60,12 @@ app-catalogues {
         //     height: 84px;
         // }
 
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            // padding-right: 8px;
+        }
+
         .catalogue {
             position: relative;
             // cursor: pointer;

@@ -119,9 +119,15 @@ app-attendances {
             }
         }
 
-        mat-header-cell.mat-column-actions {
-            flex: 0 1 10%;
-            justify-content: flex-end;
+        mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            // padding-right: 8px;
+
+            .mat-column-actions {
+                flex: 0 1 10%;
+                justify-content: flex-end;
+            }
         }
 
         .mat-column-image {

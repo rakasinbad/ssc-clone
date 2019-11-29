@@ -74,6 +74,12 @@
             min-height: 64px;
         }
 
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            // padding-right: 8px;
+        }
+
         .attendance {
             position: relative;
             // cursor: pointer;
