@@ -85,6 +85,7 @@
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
+                        style="margin-bottom: 21.5px;"
                     >
                         <label
                             fxFlex="12"
@@ -93,6 +94,7 @@
                                 !form.get('productInfo.description').untouched &&
                                 (form.get('productInfo.description').dirty || form.get('productInfo.description').touched)
                             "
+                            [class.margin-top]="'14px'"
                         >
                             Deskripsi Produk
                         </label>
