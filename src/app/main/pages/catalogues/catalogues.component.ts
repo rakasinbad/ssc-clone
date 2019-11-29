@@ -121,17 +121,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     this.statusCatalogue = statusCatalogue;
 
-    // Set default first status active
-    this.store.dispatch(
-        UiActions.setCustomToolbarActive({
-            payload: 'all-type'
-        })
-    );
-
-    this._fuseNavigationService.register('customNavigation', this.statusCatalogue);
     this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-
-    this.store.dispatch(UiActions.showCustomToolbar());
     this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
@@ -204,6 +194,16 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Need for demo
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
+        // Set default first status active
+        this.store.dispatch(
+            UiActions.setCustomToolbarActive({
+                payload: 'all-type'
+            })
+        );
+
+        this._fuseNavigationService.register('customNavigation', this.statusCatalogue);
+        
+        this.store.dispatch(UiActions.showCustomToolbar());
 
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
