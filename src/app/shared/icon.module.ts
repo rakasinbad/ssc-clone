@@ -48,5 +48,11 @@ export class IconModule {
             'icons8-coin',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/icons8/coin.svg')
         );
+
+        // Open Box
+        this.matIconRegistry.addSvgIcon(
+            'icons8-open-box',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/icons8/open-box.svg')
+        );
     }
 }

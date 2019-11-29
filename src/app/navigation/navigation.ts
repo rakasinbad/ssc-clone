@@ -37,7 +37,7 @@ export const navigation: FuseNavigation[] = [
         title: 'Catalogue',
         translate: 'NAV.CATALOGUES.TITLE',
         type: 'collapsable',
-        icon: 'people',
+        icon: 'custom-icons8-open-box',
         children: [
             {
                 id: 'addProduct',
