@@ -414,11 +414,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         this.form.get('productShipment').pristine
                     ];
 
-                    if (this.form.status === 'VALID') {
+                    if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
                         this.store.dispatch(FormActions.setFormStatusValid());
-                    }
-    
-                    if (this.form.status === 'INVALID' || !pristineStatuses.includes(true) || !this.form.dirty || this.form.untouched) {
+                    } else if (this.form.status === 'INVALID') {
                         this.store.dispatch(FormActions.setFormStatusInvalid());
                     }
 

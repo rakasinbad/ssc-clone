@@ -1,3 +1,10 @@
-.mat-column-name, .mat-column-price, .mat-column-stock, .mat-column-sku {
-    flex: 0 0 25%;
+// .mat-column-name, .mat-column-price, .mat-column-stock, .mat-column-sku {
+//     flex: 0 0 25%;
+// }
+app-catalogues-form {
+    #catalogues {
+        quill-editor {
+            min-width: 100%;
+        }
+    }
 }
