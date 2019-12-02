@@ -28,12 +28,12 @@
                             fxFlexAlign="center"
                             fxFlex="12"
                             [class.mat-error]="
-                                form.get('productInfo.sku').errors &&
-                                !form.get('productInfo.sku').untouched &&
-                                (form.get('productInfo.sku').dirty || form.get('productInfo.sku').touched)
+                                form.get('productInfo.externalId').errors &&
+                                !form.get('productInfo.externalId').untouched &&
+                                (form.get('productInfo.externalId').dirty || form.get('productInfo.externalId').touched)
                             "
                         >
-                            *SKU Code
+                            *External ID
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -45,8 +45,8 @@
                             />
                             <input
                                 matInput
-                                name="sku"
-                                formControlName="sku"
+                                name="externalId"
+                                formControlName="externalId"
                             />
                         </mat-form-field>
                     </div>
@@ -83,18 +83,17 @@
                     <div
                         class="custom-field"
                         fxLayout="row"
-                        fxLayoutAlign="space-between start"
+                        fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
                         style="margin-bottom: 21.5px;"
                     >
                         <label
-                            fxFlex="12"
+                            fxFlex="20"
                             [class.mat-error]="
                                 form.get('productInfo.description').errors &&
                                 !form.get('productInfo.description').untouched &&
                                 (form.get('productInfo.description').dirty || form.get('productInfo.description').touched)
                             "
-                            [class.margin-top]="'14px'"
                         >
                             Deskripsi Produk
                         </label>
@@ -291,7 +290,7 @@
                                 (form.get('productInfo.minQty').dirty || form.get('productInfo.minQty').touched)
                             "
                         >
-                            Minimum Quantity
+                            *Min. Order Quantity
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -321,7 +320,7 @@
                                 (form.get('productInfo.packagedQty').dirty || form.get('productInfo.packagedQty').touched)
                             "
                         >
-                            Packaged Quantity
+                            *Add Per Convertion Unit
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -351,7 +350,7 @@
                                 (form.get('productInfo.multipleQty').dirty || form.get('productInfo.multipleQty').touched)
                             "
                         >
-                            Multiple Quantity
+                            *Multiplication Quantity
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -394,7 +393,7 @@
                                 (form.get('productSale.productPrice').dirty || form.get('productSale.productPrice').touched)
                             "
                         >
-                            *Harga Produk
+                            *Sale Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -425,7 +424,7 @@
                                 (form.get('productSale.retailPrice').dirty || form.get('productSale.retailPrice').touched)
                             "
                         >
-                            *Harga Retail
+                            *Suggested Retail Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">

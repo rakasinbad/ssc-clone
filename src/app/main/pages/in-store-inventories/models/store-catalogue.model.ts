@@ -106,6 +106,7 @@ export class StoreCatalogue implements IStoreCatalogue {
                 this.catalogue.catalogueType,
                 this.catalogue.catalogueUnit,
                 this.catalogue.catalogueVariant,
+                this.catalogue.externalId
             );
         }
     }

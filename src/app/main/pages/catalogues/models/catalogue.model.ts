@@ -112,6 +112,7 @@ export interface ICatalogue {
     color: string;
     weight: number;
     dimension: number;
+    externalId: string;
     sku: string;
     skuRef: string;
     productPrice: number;
@@ -460,12 +461,13 @@ export class CatalogueVariant extends Timestamp {
     }
 }
 
-export class Catalogue extends Timestamp {
+export class Catalogue extends Timestamp implements ICatalogue {
     id: string;
     name: string;
     barcode: string;
     information: string;
     description: string;
+    externalId: string;
     detail: string;
     color: string;
     weight: number;
@@ -556,7 +558,8 @@ export class Catalogue extends Timestamp {
         catalogueKeywordCatalogues: Array<CatalogueKeywordCatalogue>,
         catalogueType: CatalogueType,
         catalogueUnit: CatalogueUnit,
-        catalogueVariant: CatalogueVariant
+        catalogueVariant: CatalogueVariant,
+        externalId: string
     ) {
         super(createdAt, updatedAt, deletedAt);
 
@@ -592,6 +595,7 @@ export class Catalogue extends Timestamp {
         this.catalogueTypeId = catalogueTypeId;
         this.catalogueCategoryId = catalogueCategoryId;
         this.catalogueUnitId = catalogueUnitId;
+        this.externalId = externalId;
 
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8 

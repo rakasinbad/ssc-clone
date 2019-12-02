@@ -45,10 +45,10 @@ import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
 
 interface IMatDialogData {
-    catalogueId: string;
+    catalogue: Catalogue;
     editMode: 'price' | 'stock';
-    price?: string;
-    stock?: string;
+    // price?: string;
+    // stock?: string;
 }
 
 interface ISelectedCategory {
@@ -71,6 +71,10 @@ interface ISelectedCategoryForm {
 })
 export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
 
+    /** Untuk menampilkan margin. */
+    public oldMargin: number;
+    public newMargin: number;
+    
     /** Untuk menyimpan nilai yang akan dikirim ke back-end. */
     public form: FormGroup;
 
@@ -97,8 +101,8 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                 this.store.dispatch(
                     CatalogueActions.patchCatalogueRequest({
                         payload: {
-                            id: this.data.catalogueId,
-                            data: Catalogue.patch({ suggestRetailPrice: this.form.get('price').value }),
+                            id: this.data.catalogue.id,
+                            data: Catalogue.patch({ suggestRetailPrice: this.form.get('retailPrice').value, productPrice: this.form.get('salePrice').value }),
                             source: 'list'
                         }
                     })
@@ -107,7 +111,7 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                 this.store.dispatch(
                     CatalogueActions.patchCatalogueRequest({
                         payload: {
-                            id: this.data.catalogueId,
+                            id: this.data.catalogue.id,
                             data: Catalogue.patch({ stock: this.form.get('stock').value }),
                             source: 'list'
                         }
@@ -128,12 +132,16 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
 
         if (this.data.editMode === 'price') {
             /** Memasukkan FormControl untuk price JIKA mode-nya adalah price. */
-            this.form.addControl('price', this.fb.control('', Validators.required));
-            this.form.addControl('oldPrice', this.fb.control({ value: this.data.price, disabled: true }));
+            this.form.addControl('salePrice', this.fb.control('0', Validators.required));
+            this.form.addControl('retailPrice', this.fb.control('0', Validators.required));
+            this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.productPrice, disabled: true }));
+            this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.suggestRetailPrice, disabled: true }));
+
+            this.oldMargin = (1 - ((+this.data.catalogue.productPrice) / (+this.data.catalogue.suggestRetailPrice))) * 100;
         } else if (this.data.editMode === 'stock') {
             /** Memasukkan FormControl untuk stock JIKA mode-nya adalah stock. */
             this.form.addControl('stock', this.fb.control('', Validators.required));
-            this.form.addControl('oldStock', this.fb.control({ value: this.data.stock, disabled: true }));
+            // this.form.addControl('oldStock', this.fb.control({ value: this.data.stock, disabled: true }));
         }
 
         /** Subscribe ke selector updating activity. */
@@ -142,6 +150,20 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
             .pipe(
                 takeUntil(this._unSubs$)
             ).subscribe(isUpdating => this.isUpdating = isUpdating);
+
+        this.form
+            .valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(200),
+                takeUntil(this._unSubs$)
+            ).subscribe(value => {
+                if (this.data.editMode === 'price') {
+                    this.newMargin = (1 - ((+value.salePrice) / (+value.retailPrice))) * 100;
+                }
+
+                this._cd.markForCheck();
+            });
     }
 
     ngOnDestroy(): void {

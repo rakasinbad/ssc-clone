@@ -1,83 +1,176 @@
 <h2 mat-dialog-title>{{ data.editMode === 'price' ? 'Edit Harga' : 'Edit Stock' }}</h2>
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
-    <div class="p-16 pt-0 line-height-1.75">
-        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
-            <!-- OLD VALUE -->
-            <div class="custom-field" fxLayoutAlign="space-between stretch">
-                <label
-                    fxFlex="20"
-                    fxFlexAlign="center"
-                >
-                    {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Sekarang
-                </label>
-                <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
-                    <ng-container *ngIf="data.editMode === 'price'; else oldStock;">
+    <div class="line-height-1.75">
+        <ng-container *ngIf="data.editMode === 'price'; else editStock;">
+            <form class="w-100-p" [formGroup]="form" fxLayout="row" fxLayoutGap="10px" novalidate>
+                <div fxFlex="25" fxLayout="column" fxLayoutAlign="space-between end">
+                    <!-- FORM INPUT LABEL -->
+                    <p fxFlex="20"></p>
+                    <p fxFlex="40">Harga Sekarang</p>
+                    <p fxFlex="25">Harga Baru</p>
+                    <!-- / FORM INPUT LABEL -->
+                </div>
+                <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
+                    <p><strong>Suggested Retail Price</strong></p>
+                    <!-- SUGGESTED RETAIL PRICE (NOW) -->
+                    <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             [hidden]="true"
                             matInput
-                            name="price"
+                            name="oldRetailPrice"
                             prefix="Rp"
                             mask="separator"
                             thousandSeparator="."
-                            formControlName="oldPrice"
+                            formControlName="oldRetailPrice"
                         />
-                        {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
-                    </ng-container>
-                    <ng-template #oldStock>
+                        <span class="grey-500-fg">
+                            {{ data?.catalogue?.suggestRetailPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        </span>
+                    </mat-form-field>
+                    <!-- / SUGGESTED RETAIL PRICE (NOW) -->
+                    <!-- SUGGESTED RETAIL PRICE (NEW) -->
+                    <mat-form-field fxFlex="80" appearance="outline">
+                        <input
+                            matInput
+                            type="text"
+                            name="retailPrice"
+                            prefix="Rp"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="retailPrice"
+                        />
+                    </mat-form-field>
+                    <!-- / SUGGESTED RETAIL PRICE (NEW) -->
+                </div>
+                <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
+                    <p><strong>Sale Price</strong></p>
+                    <!-- SALE PRICE (NOW) -->
+                    <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             [hidden]="true"
                             matInput
-                            type="text"
-                            name="stock"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="oldStock"
-                        />
-                        {{ data?.stock | number:'1.0-2' }}
-                    </ng-template>
-                </mat-form-field>
-            </div>
-            <!-- / OLD VALUE -->
-            <!-- NEW VALUE -->
-            <div class="custom-field" fxLayoutAlign="space-between stretch">
-                <label
-                    fxFlex="20"
-                    fxFlexAlign="center"
-                    [class.mat-error]="
-                        form.errors &&
-                        !form.untouched &&
-                        (form.dirty || form.touched)
-                    "
-                >
-                    {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Baru
-                </label>
-                <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
-                    <ng-container *ngIf="data.editMode === 'price'; else inputStock;">
-                        <input
-                            matInput
-                            type="text"
-                            name="price"
+                            name="oldSalePrice"
                             prefix="Rp"
                             mask="separator"
                             thousandSeparator="."
-                            formControlName="price"
+                            formControlName="oldSalePrice"
                         />
-                    </ng-container>
-                    <ng-template #inputStock>
+                        <span class="grey-500-fg">
+                            {{ data?.catalogue?.productPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        </span>
+                    </mat-form-field>
+                    <!-- / SALE PRICE (NOW) -->
+                    <!-- SALE PRICE (NEW) -->
+                    <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             matInput
                             type="text"
-                            name="stock"
+                            name="salePrice"
+                            prefix="Rp"
                             mask="separator"
                             thousandSeparator="."
-                            formControlName="stock"
+                            formControlName="salePrice"
                         />
-                    </ng-template>
-                </mat-form-field>
-            </div>
-            <!-- / NEW VALUE -->
-        </form>
+                    </mat-form-field>
+                    <!-- / SALE PRICE (NEW) -->
+                </div>
+                <div fxFlex="15" fxLayout="column" fxLayoutAlign="center center">
+                    <!-- MARGIN (?) -->
+                    <p fxFlex="20"><strong>Discount (%)</strong></p>
+                    <p fxFlex="40" [class.green-900-fg]="oldMargin > 0.00" [class.orange-700-fg]="oldMargin === 0.00" [class.red-800-fg]="oldMargin < 0.00">
+                        {{ !oldMargin && oldMargin !== 0 ? '-' : (oldMargin | number: '1.0-2') }} %
+                    </p>
+                    <p fxFlex="25" [class.green-900-fg]="newMargin > 0.00" [class.orange-700-fg]="newMargin === 0.00" [class.red-800-fg]="newMargin < 0.00">
+                        {{ !newMargin && newMargin !== 0 ? '-' : (newMargin | number: '1.0-2') }} %
+                    </p>
+                    <!-- / MARGIN (?) -->
+                </div>
+                
+                
+                
+                
+                
+                <!-- OLD VALUE -->
+                <!-- <div class="custom-field" fxLayoutAlign="space-between stretch">
+                    <label
+                        fxFlex="20"
+                        fxFlexAlign="center"
+                    >
+                        Harga Sekarang
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                        <ng-container *ngIf="data.editMode === 'price'; else oldStock;">
+                            <input
+                                [hidden]="true"
+                                matInput
+                                name="price"
+                                prefix="Rp"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="oldPrice"
+                            />
+                            {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        </ng-container>
+                        <ng-template #oldStock>
+                            <input
+                                [hidden]="true"
+                                matInput
+                                type="text"
+                                name="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="oldStock"
+                            />
+                            {{ data?.stock | number:'1.0-2' }}
+                        </ng-template>
+                    </mat-form-field>
+                </div> -->
+                <!-- / OLD VALUE -->
+                <!-- NEW VALUE -->
+                <!-- <div class="custom-field" fxLayoutAlign="space-between stretch">
+                    <label
+                        fxFlex="20"
+                        fxFlexAlign="center"
+                        [class.mat-error]="
+                            form.errors &&
+                            !form.untouched &&
+                            (form.dirty || form.touched)
+                        "
+                    >
+                        {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Baru
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                        <ng-container *ngIf="data.editMode === 'price'; else inputStock;">
+                            <input
+                                matInput
+                                type="text"
+                                name="price"
+                                prefix="Rp"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="price"
+                            />
+                        </ng-container>
+                        <ng-template #inputStock>
+                            <input
+                                matInput
+                                type="text"
+                                name="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="stock"
+                            />
+                        </ng-template>
+                    </mat-form-field>
+                </div> -->
+                <!-- / NEW VALUE -->
+            </form>
+        </ng-container>
+        <ng-template #editStock>
+
+        </ng-template>
+
     </div>
 </mat-dialog-content>
 

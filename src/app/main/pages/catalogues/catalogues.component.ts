@@ -60,7 +60,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     displayedColumns = [
         // 'checkbox',
         'name',
-        'sku',
+        // 'sku',
+        'externalId',
         // 'variant',
         'price',
         'stock',
@@ -254,7 +255,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.displayedColumns = [
                     // 'checkbox',
                     'name',
-                    'sku',
+                    // 'sku',
+                    'externalId',
                     // 'variant',
                     'price',
                     'stock',
@@ -404,10 +406,11 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     editCatalogue(editMode: 'price' | 'stock', catalogue: Catalogue): void {
         this.matDialog.open(CataloguesEditPriceStockComponent, {
             data: {
-                catalogueId: catalogue.id,
+                // catalogueId: catalogue.id,
+                catalogue,
                 editMode,
-                price: catalogue.suggestRetailPrice,
-                stock: catalogue.stock
+                // price: catalogue.suggestRetailPrice,
+                // stock: catalogue.stock
             },
             disableClose: false
         });
@@ -439,9 +442,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     data['sortBy'] = 'suggest_retail_price';
                 } else if (this.sort.active === 'lastUpdate') {
                     data['sortBy'] = 'updated_at';
+                } else if (this.sort.active === 'externalId') {
+                    data['sortBy'] = 'external_id';
                 } else {
                     data['sortBy'] = this.sort.active;
                 }
+            } else {
+                data['sort'] = 'desc';
+                data['sortBy'] = 'id';
             }
     
             switch (this.findCatalogueMode) {

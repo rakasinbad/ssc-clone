@@ -193,7 +193,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         const oldPhotos = formValues.productMedia.oldPhotos;
 
         const catalogueData: Partial<Catalogue> = {
-            sku: formValues.productInfo.sku,
+            externalId: formValues.productInfo.externalId,
             name: formValues.productInfo.name,
             description: formValues.productInfo.description,
             information: formValues.productInfo.description,
@@ -268,7 +268,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
-                sku: ['', Validators.required],
+                externalId: ['', Validators.required],
                 name: ['', Validators.required],
                 description: [''],
                 // variant: ['', Validators.required],
@@ -526,7 +526,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         this.form.patchValue({
                             productInfo: {
                                 id: catalogue.id,
-                                sku: catalogue.sku,
+                                externalId: catalogue.externalId,
                                 name: catalogue.name,
                                 description: catalogue.description,
                                 // variant: ['', Validators.required],

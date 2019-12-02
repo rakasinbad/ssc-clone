@@ -75,11 +75,11 @@
                         Nama Produk
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-                            <div fxLayout="row" fxFlex="20" fxLayoutAlign="center">
-                                <img [src]="(row?.catalogueImages)[0]?.imageUrl" />
+                        <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
+                            <div class="img-container">
+                                <img class="fit-image" [src]="(row?.catalogueImages)[0]?.imageUrl" />
                             </div>
-                            <div fxLayout="row" fxFlex="80">
+                            <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
                                     <p>
                                         {{ row?.name }}
@@ -121,6 +121,14 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Code</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="text-truncate">{{ row?.sku }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- External ID's Product Column -->
+                <ng-container matColumnDef="externalId">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>External ID</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.externalId }}</p>
                     </mat-cell>
                 </ng-container>
 

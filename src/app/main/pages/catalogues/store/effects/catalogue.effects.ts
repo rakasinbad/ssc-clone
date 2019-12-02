@@ -80,12 +80,11 @@ export class CatalogueEffects {
                 } else if (source === 'list') {
                     this.matDialog.closeAll();
                     // this.router.navigate(['pages', 'catalogues']);
+                    const changes = { ...catalogue };
+
                     const updatedCatalogue: Update<Catalogue> = {
                         id: catalogue.id,
-                        changes: {
-                            suggestRetailPrice: catalogue.suggestRetailPrice,
-                            stock: catalogue.stock
-                        }
+                        changes
                     };
 
                     this.store.dispatch(CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue }));
@@ -361,7 +360,8 @@ export class CatalogueEffects {
                                                     catalogue.catalogueKeywordCatalogues,
                                                     catalogue.catalogueType,
                                                     catalogue.catalogueUnit,
-                                                    catalogue.catalogueVariant
+                                                    catalogue.catalogueVariant,
+                                                    catalogue.externalId
                                                 )
                                             };
                                         })
@@ -439,7 +439,8 @@ export class CatalogueEffects {
                                         resp.catalogueKeywordCatalogues,
                                         resp.catalogueType,
                                         resp.catalogueUnit,
-                                        resp.catalogueVariant
+                                        resp.catalogueVariant,
+                                        resp.externalId
                                     )
                                 },
                                 source: 'fetch'
