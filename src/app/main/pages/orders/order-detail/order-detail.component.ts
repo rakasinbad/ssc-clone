@@ -66,10 +66,12 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         public translate: TranslateService,
         private _$log: LogService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
         this.dataSource = new MatTableDataSource();
 
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -79,8 +81,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
                     },
                     {
                         title: 'Order Managements',
-                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS',
-                        url: '/pages/orders'
+                        translate: 'BREADCRUMBS.ORDER_MANAGEMENTS'
                     },
                     {
                         title: 'Order Details',
@@ -91,6 +92,7 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             })
         );
 
+        // Set small breadcrumbs
         this.store.dispatch(
             UiActions.createSmallBreadcrumb({
                 payload: [

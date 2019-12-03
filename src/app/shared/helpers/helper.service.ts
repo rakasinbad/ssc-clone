@@ -157,6 +157,8 @@ export class HelperService {
             );
     }
 
+    // buildingType(): { id: string; label: string }[] {}
+
     numberOfEmployee(): { id: string; label: string }[] {
         return [
             {
@@ -215,20 +217,33 @@ export class HelperService {
     unitParameter(): { id: string; label: string }[] {
         return [
             {
-                id: 'Provinsi',
+                id: 'province',
                 label: 'Provinsi'
             },
             {
-                id: 'Kota/Kabupaten',
+                id: 'city',
                 label: 'Kota/Kabupaten'
             },
             {
-                id: 'Kecamatan',
+                id: 'district',
                 label: 'Kecamatan'
             },
             {
-                id: 'Kelurahan',
+                id: 'urban',
                 label: 'Kelurahan'
+            }
+        ];
+    }
+
+    unitParameterType(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'all',
+                label: 'Select All'
+            },
+            {
+                id: 'manually',
+                label: 'Select Manually'
             }
         ];
     }

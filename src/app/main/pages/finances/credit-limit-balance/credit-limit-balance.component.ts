@@ -20,6 +20,7 @@ import { locale as indonesian } from './i18n/id';
 import { CreditLimitBalanceActions } from './store/actions';
 import { fromCreditLimitBalance } from './store/reducers';
 import { CreditLimitBalanceSelectors } from './store/selectors';
+import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-credit-limit-balance',
@@ -30,6 +31,7 @@ import { CreditLimitBalanceSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
+    search: FormControl;
     links = [
         {
             path: 'stores',
@@ -41,6 +43,7 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
         }
     ];
     urlActive: boolean;
+    today = new Date();
 
     fuseConfig$: Observable<FuseConfig>;
     totalDataSource$: Observable<number>;
@@ -55,9 +58,12 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
-        this.fuseConfig$ = this._fuseConfigService.config;
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        this.fuseConfig$ = this._fuseConfigService.config;
+
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -88,6 +94,7 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.search = new FormControl('');
         this.urlActive = false;
 
         // { outlets: { 'credit-limit-balance': 'stores' } }

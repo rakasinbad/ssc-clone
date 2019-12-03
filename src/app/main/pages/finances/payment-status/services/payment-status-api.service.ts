@@ -51,12 +51,20 @@ export class PaymentStatusApiService {
                   {
                       key: 'type',
                       value: 'payment'
+                  },
+                  {
+                      key: 'statusNe',
+                      value: 'checkout'
                   }
               ]
             : [
                   {
                       key: 'type',
                       value: 'payment'
+                  },
+                  {
+                      key: 'statusNe',
+                      value: 'checkout'
                   }
               ];
 

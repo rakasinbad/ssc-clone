@@ -3,6 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+    pageSize: 100,
     production: false,
     staging: false,
     hmr: false,

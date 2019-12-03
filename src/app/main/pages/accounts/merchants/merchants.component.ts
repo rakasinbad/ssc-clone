@@ -18,6 +18,7 @@ import { LogService } from 'app/shared/helpers';
 import { IQueryParams, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -27,7 +28,6 @@ import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
-import { Auth } from '../../core/auth/models';
 
 @Component({
     selector: 'app-merchants',
@@ -38,10 +38,11 @@ import { Auth } from '../../core/auth/models';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     total: number;
     displayedColumns = [
-        'id',
+        'store-code',
         'name',
         'city',
         'address',
@@ -76,7 +77,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         private _$merchantApi: MerchantApiService,
         public translate: TranslateService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -108,7 +112,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',

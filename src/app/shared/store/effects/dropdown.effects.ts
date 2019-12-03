@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import {
     ClusterApiService,
     HierarchyApiService,
+    InvoiceGroupApiService,
     LogService,
     ProvinceApiService,
     StoreClusterApiService,
@@ -18,6 +20,7 @@ import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import {
     Cluster,
     Hierarchy,
+    InvoiceGroup,
     Province,
     Role,
     StoreGroup,
@@ -29,7 +32,7 @@ import {
 import * as fromRoot from 'app/store/app.reducer';
 import { sortBy } from 'lodash';
 import { of } from 'rxjs';
-import { catchError, map, retry, switchMap } from 'rxjs/operators';
+import { catchError, map, retry, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { DropdownActions } from '../actions';
 
@@ -217,13 +220,14 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH HIERARCHY DROPDOWN]',
+                                '[RESPONSE REQUEST] FETCH HIERARCHY DROPDOWN',
                                 {
                                     response: {
                                         type: 'log',
                                         value: resp
                                     }
-                                }
+                                },
+                                'groupCollapsed'
                             );
 
                             const newResp =
@@ -255,6 +259,83 @@ export class DropdownEffects {
                             )
                         )
                     );
+            })
+        )
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Invoice Group]
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Invoice Group
+     * @memberof DropdownEffects
+     */
+    fetchDropdownInvoiceGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownInvoiceGroupRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownInvoiceGroupFailure({
+                            payload: {
+                                id: 'fetchDropdownInvoiceGroupFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$invoiceGroupApi.findAll({ paginate: false }, supplierId).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map(resp => {
+                        const sources = (resp as Array<InvoiceGroup>).map(
+                            (row: Partial<InvoiceGroup>) => {
+                                const newInvoiceGroup = new InvoiceGroup(
+                                    row.id,
+                                    row.name,
+                                    row.minimumOrder,
+                                    row.status,
+                                    row.supplierId,
+                                    row.createdAt,
+                                    row.updatedAt,
+                                    row.deletedAt
+                                );
+
+                                return newInvoiceGroup;
+                            }
+                        );
+
+                        this._$log.generateGroup(
+                            '[RESPONSE REQUEST] FETCH INVOICE GROUP DROPDOWN',
+                            {
+                                response: {
+                                    type: 'log',
+                                    value: resp
+                                },
+                                sources: {
+                                    type: 'log',
+                                    value: sources
+                                }
+                            },
+                            'groupCollapsed'
+                        );
+
+                        return DropdownActions.fetchDropdownInvoiceGroupSuccess({
+                            payload: sortBy(sources, ['name'], ['asc'])
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDropdownInvoiceGroupFailure({
+                                payload: { id: 'fetchDropdownInvoiceGroupFailure', errors: err }
+                            })
+                        )
+                    )
+                );
             })
         )
     );
@@ -519,7 +600,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH STORE GROUP DROPDOWN]',
+                                '[RESPONSE REQUEST] FETCH STORE GROUP DROPDOWN',
                                 {
                                     response: {
                                         type: 'log',
@@ -581,7 +662,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH STORE SEGMENT DROPDOWN]',
+                                '[RESPONSE REQUEST] FETCH STORE SEGMENT DROPDOWN',
                                 {
                                     response: {
                                         type: 'log',
@@ -643,7 +724,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH STORE TYPE DROPDOWN]',
+                                '[RESPONSE REQUEST] FETCH STORE TYPE DROPDOWN',
                                 {
                                     response: {
                                         type: 'log',
@@ -705,7 +786,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH VEHICLE ACCESSIBILITY DROPDOWN]',
+                                '[RESPONSE REQUEST] FETCH VEHICLE ACCESSIBILITY DROPDOWN',
                                 {
                                     response: {
                                         type: 'log',
@@ -864,6 +945,7 @@ export class DropdownEffects {
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
         private _$hierarchyApi: HierarchyApiService,
+        private _$invoiceGroupApi: InvoiceGroupApiService,
         private _$provinceApi: ProvinceApiService,
         private _$roleApi: RoleApiService,
         private _$storeClusterApi: StoreClusterApiService,

@@ -58,8 +58,12 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.fuseConfig$ = this._fuseConfigService.config;
+
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -69,8 +73,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                     },
                     {
                         title: 'Account',
-                        translate: 'BREADCRUMBS.ACCOUNT',
-                        url: '/pages/account/stores'
+                        translate: 'BREADCRUMBS.ACCOUNT'
                     },
                     {
                         title: 'Store',
@@ -92,6 +95,8 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
 
         this._unSubs$ = new Subject<void>();
         this.urlActive = false;
+
+        // Only show loading when url is active "(store-detail:employee)"
         this.router.events
             .pipe(
                 filter(ev => ev instanceof NavigationEnd),
@@ -101,6 +106,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                 this.urlActive = this.router.url.endsWith('(store-detail:employee)');
             });
 
+        // Handle nav tab change
         this.store
             .select(StoreSelectors.getGoPage)
             .pipe(
@@ -116,7 +122,6 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                 }
             });
 
-        // this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
     }
 

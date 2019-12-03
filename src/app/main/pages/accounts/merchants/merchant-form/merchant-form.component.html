@@ -144,8 +144,15 @@
                                     Upload your file
                                 </button>
 
-                                <ng-container *ngIf="pageType === 'edit' && (stores$ | async) as stores">
-                                    <a [href]="stores?.imageUrl" target="_blank" *ngIf="stores?.imageUrl" style="position: relative;top: -0.78em">
+                                <ng-container
+                                    *ngIf="pageType === 'edit' && (stores$ | async) as stores"
+                                >
+                                    <a
+                                        [href]="stores?.imageUrl"
+                                        target="_blank"
+                                        *ngIf="stores?.imageUrl"
+                                        style="position: relative;top: -0.78em"
+                                    >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
                                 </ng-container>
@@ -1149,6 +1156,7 @@
                             </mat-form-field>
                         </div>
 
+                        <!-- Store Segment Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
@@ -1209,6 +1217,60 @@
                                             'storeInfo.storeClassification.storeSegment'
                                         )
                                     }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- Customer Hierarchy Field -->
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.hierarchy').errors &&
+                                    !form.get('storeInfo.storeClassification.hierarchy')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.hierarchy').dirty ||
+                                        form.get('storeInfo.storeClassification.hierarchy').touched)
+                                "
+                            >
+                                Hierarchy
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container
+                                    *ngIf="hierarchies$ | async as hierarchies; else noHierarchies"
+                                >
+                                    <mat-select
+                                        formControlName="hierarchy"
+                                        placeholder="Choose Hierarchy"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of hierarchies"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | uppercase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noHierarchies>
+                                    <mat-select placeholder="Choose Hierarchy" disabled>
+                                        <mat-option>Hierarchy not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.hierarchy')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.hierarchy')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.hierarchy')
+                                                .touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.storeClassification.hierarchy') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>

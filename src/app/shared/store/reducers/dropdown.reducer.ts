@@ -1,4 +1,3 @@
-import { fetchDropdownGeoParameterDistrictSuccess } from './../actions/dropdown.actions';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import {
@@ -6,6 +5,7 @@ import {
     GeoParameter,
     Hierarchy,
     IErrorHandler,
+    InvoiceGroup,
     Province,
     Role,
     StoreGroup,
@@ -36,6 +36,7 @@ interface ErrorState extends EntityState<IErrorHandler> {
 export interface State {
     // search: SearchState;
     hierarchies?: Hierarchy[];
+    invoiceGroups?: InvoiceGroup[];
     roles?: Role[];
     provinces?: Province[];
     storeClusters?: Cluster[];
@@ -83,6 +84,7 @@ const dropdownReducer = createReducer(
         DropdownActions.fetchDropdownGeoParameterDistrictFailure,
         DropdownActions.fetchDropdownGeoParameterUrbanFailure,
         DropdownActions.fetchDropdownHierarchyFailure,
+        DropdownActions.fetchDropdownInvoiceGroupFailure,
         DropdownActions.fetchDropdownProvinceFailure,
         DropdownActions.fetchDropdownRoleFailure,
         DropdownActions.fetchDropdownStoreClusterFailure,
@@ -120,6 +122,11 @@ const dropdownReducer = createReducer(
         ...state,
         hierarchies: payload,
         errors: adapterError.removeOne('fetchDropdownHierarchyFailure', state.errors)
+    })),
+    on(DropdownActions.fetchDropdownInvoiceGroupSuccess, (state, { payload }) => ({
+        ...state,
+        invoiceGroups: payload,
+        errors: adapterError.removeOne('fetchDropdownInvoiceGroupFailure', state.errors)
     })),
     on(DropdownActions.fetchDropdownProvinceSuccess, (state, { payload }) => ({
         ...state,

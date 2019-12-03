@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -40,21 +41,22 @@ import { OrderSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     filterStatus: string;
     total: number;
     displayedColumns = [
         // 'checkbox',
         'origins',
-        'orderCode',
-        'orderDate',
-        'storeName',
-        'trxAmount',
-        'paymentMethod',
-        'totalProduct',
+        'order-code',
+        'order-date',
+        'store-name',
+        'trx-amount',
+        'payment-method',
+        'total-product',
         'status',
         // 'deliveredOn',
-        'actualAmountDelivered',
+        'actual-amount-delivered',
         'actions'
     ];
     hasSelected: boolean;
@@ -83,8 +85,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         public translate: TranslateService,
         private _$log: LogService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -99,6 +103,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 ]
             })
         );
+
         this.statusOrder = statusOrder;
     }
 
@@ -114,7 +119,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.search = new FormControl('');
         this.filterStatus = '';
         this.hasSelected = false;
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -260,10 +265,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
         this.store.dispatch(OrderActions.confirmChangeCancelStatusOrder({ payload: item }));
-    }
-
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
     }
 
     onChangeStatus(item: any): void {

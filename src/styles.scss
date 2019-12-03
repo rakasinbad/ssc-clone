@@ -223,8 +223,10 @@ body.theme-sinbad-light {
     }
 
     .page-layout.carded.fullwidth > .center > .header.sinbad {
-        height: 80px !important;
-        min-height: 80px !important;
+        // height: 80px !important;
+        // min-height: 80px !important;
+        height: 70px !important;
+        min-height: 65px !important;
     }
 
     .header.sinbad {
@@ -351,6 +353,10 @@ body.theme-sinbad-light {
     }
 
     // Sinbad tab
+    nav.sinbad-tab {
+        border-bottom: none;
+    }
+
     .sinbad-tab {
         a:hover,
         a:visited,

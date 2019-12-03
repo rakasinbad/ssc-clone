@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -40,6 +41,7 @@ import { PaymentStatusSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     filterStatus: string;
     total: number;
@@ -90,8 +92,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         public translate: TranslateService,
         private _$log: LogService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -111,6 +115,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
                 ]
             })
         );
+
         this.statusPayment = statusPayment;
     }
 
@@ -126,7 +131,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         this.search = new FormControl('');
         this.filterStatus = '';
         this.hasSelected = false;
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',

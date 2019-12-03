@@ -1486,14 +1486,20 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoresFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH STORES FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'REQUEST FETCH STORES FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    const message = resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -1515,7 +1521,7 @@ export class MerchantEffects {
                 return this._$merchantApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH STORE]', {
+                        this._$log.generateGroup('RESPONSE REQUEST FETCH STORE', {
                             response: {
                                 type: 'log',
                                 value: resp
@@ -1569,14 +1575,20 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH STORE FAILURE]', {
-                        payload: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'REQUEST FETCH STORE FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    const message = resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -1694,14 +1706,20 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreEditFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH STORE EDIT FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'REQUEST FETCH STORE EDIT FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    const message = resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -1825,14 +1843,20 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreEmployeesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH STORE EMPLOYEES FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'REQUEST FETCH STORE EMPLOYEES FAILURE',
+                        {
+                            response: {
+                                type: 'log',
+                                value: resp
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    const message = resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

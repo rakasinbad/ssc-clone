@@ -55,10 +55,16 @@ app-orders {
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: rgba(0, 0, 0, 0.15) !important;
 
         // .mat-header-row {
         //     min-height: 64px;
         // }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+        }
 
         .order {
             position: relative;
@@ -85,58 +91,6 @@ app-orders {
         .mat-column-checkbox {
             flex: 0 1 64px;
             padding-left: 18px;
-        }
-
-        .mat-column-id {
-            flex: 0 1 84px;
-        }
-
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .account-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
-        }
-
-        .mat-column-phone {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-roles {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-totalProduct {
-            flex: 0 1 80px;
-        }
-
-        .mat-column-odooid {
-            flex: 0 1 120px;
-        }
-
-        .mat-column-active {
-            flex: 0 1 80px;
-        }
-
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
-
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
-        }
-
-        .active-icon {
-            border-radius: 50%;
         }
 
         .mat-column-actions {
