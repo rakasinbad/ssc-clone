@@ -78,11 +78,53 @@
                 <div fxFlex="15" fxLayout="column" fxLayoutAlign="center center">
                     <!-- MARGIN (?) -->
                     <p fxFlex="20"><strong>Discount (%)</strong></p>
-                    <p fxFlex="40" [class.green-900-fg]="oldMargin > 0.00" [class.orange-700-fg]="oldMargin === 0.00" [class.red-800-fg]="oldMargin < 0.00">
-                        {{ !oldMargin && oldMargin !== 0 ? '-' : (oldMargin | number: '1.0-2') }} %
+                    <p
+                        fxFlex="40"
+                        fxLayout="row"
+                        fxLayoutAlign="center center"
+                        [class.green-900-fg]="oldMargin > 0.00"
+                        [class.orange-700-fg]="oldMargin === 0.00"
+                        [class.red-800-fg]="oldMargin < 0.00"
+                    >
+                        <ng-container *ngIf="oldMargin < 0.00; else oldHasDiscount;">
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </ng-container>
+                        <ng-template #oldHasDiscount>
+                            <ng-container *ngIf="oldMargin > 0.00; else oldSamePrice;">
+                                <mat-icon>arrow_drop_up</mat-icon>
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #oldSamePrice>
+                            <mat-icon>remove</mat-icon>
+                        </ng-template>
+
+                        <span>
+                            {{ !oldMargin && oldMargin !== 0 ? '-' : (oldMargin | number: '1.0-2') }} %
+                        </span>
                     </p>
-                    <p fxFlex="25" [class.green-900-fg]="newMargin > 0.00" [class.orange-700-fg]="newMargin === 0.00" [class.red-800-fg]="newMargin < 0.00">
-                        {{ !newMargin && newMargin !== 0 ? '-' : (newMargin | number: '1.0-2') }} %
+                    <p
+                        fxFlex="40"
+                        fxLayout="row"
+                        fxLayoutAlign="center center"
+                        [class.green-900-fg]="newMargin > 0.00"
+                        [class.orange-700-fg]="newMargin === 0.00"
+                        [class.red-800-fg]="newMargin < 0.00"
+                    >
+                        <ng-container *ngIf="newMargin < 0.00; else newHasDiscount;">
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </ng-container>
+                        <ng-template #newHasDiscount>
+                            <ng-container *ngIf="newMargin > 0.00; else newSamePrice;">
+                                <mat-icon>arrow_drop_up</mat-icon>
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #newSamePrice>
+                            <mat-icon>remove</mat-icon>
+                        </ng-template>
+
+                        <span>
+                            {{ !newMargin && newMargin !== 0 ? '-' : (newMargin | number: '1.0-2') }} %
+                        </span>
                     </p>
                     <!-- / MARGIN (?) -->
                 </div>
@@ -168,7 +210,166 @@
             </form>
         </ng-container>
         <ng-template #editStock>
+            <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="10px" novalidate>
+                <!-- PROCESSED STOCK INFORMATION -->
+                <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="30px">
+                    <!-- RESERVED STOCK -->
+                    <div class="custom-field" fxLayout="row" fxLayoutGap="35px">
+                        <label fxFlexAlign="center">
+                            Reserved Stock
+                        </label>
+                        <mat-form-field appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                            <input
+                                [hidden]="true"
+                                matInput
+                                name="reservedStock"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="reservedStock"
+                            />
+                            <span class="grey-500-fg">
+                                100 (static)
+                            </span>
+                            <!-- {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }} -->
+                        </mat-form-field>
+                    </div>
+                    <!-- / RESERVED STOCK -->
+                    <!-- STOCK EN ROUTE -->
+                    <div class="custom-field" fxLayout="row" fxLayoutGap="10px">
+                        <label fxFlexAlign="center">
+                            Stock en route
+                        </label>
+                        <mat-form-field appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                            <input
+                                [hidden]="true"
+                                matInput
+                                name="stockEnroute"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="stockEnroute"
+                            />
+                            <span class="grey-500-fg">
+                                50 (static)
+                            </span>
+                            <!-- {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }} -->
+                        </mat-form-field>
+                    </div>
+                    <!-- / STOCK EN ROUTE -->
+                </div>
+                <!-- / PROCESSED STOCK INFORMATION -->
+                <!-- AVAILABLE STOCK INFORMATION -->
+                <div class="custom-field" fxLayout="row">
+                    <label fxFlex="20" fxFlexAlign="center">
+                        Stock Sekarang
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                        <input
+                            [hidden]="true"
+                            matInput
+                            name="oldStock"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="oldStock"
+                        />
+                        <span class="grey-500-fg">
+                            {{ data?.catalogue?.stock | number: '1.0-2' }}
+                        </span>
+                    </mat-form-field>
+                </div>
+                <!-- / AVAILABLE STOCK INFORMATION -->
+                <!-- NEW STOCK -->
+                <div class="custom-field" fxLayout="row">
+                    <label fxFlex="20" fxFlexAlign="center">
+                        Stock Baru
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline">
+                        <input
+                            matInput
+                            type="text"
+                            name="stock"
+                            mask="separator"
+                            thousandSeparator="."
+                            formControlName="stock"
+                        />
+                    </mat-form-field>
+                </div>
+                <!-- / NEW STOCK -->
 
+                <!-- OLD VALUE -->
+                <!-- <div class="custom-field" fxLayoutAlign="space-between stretch">
+                    <label
+                        fxFlex="20"
+                        fxFlexAlign="center"
+                    >
+                        Harga Sekarang
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                        <ng-container *ngIf="data.editMode === 'price'; else oldStock;">
+                            <input
+                                [hidden]="true"
+                                matInput
+                                name="price"
+                                prefix="Rp"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="oldPrice"
+                            />
+                            {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        </ng-container>
+                        <ng-template #oldStock>
+                            <input
+                                [hidden]="true"
+                                matInput
+                                type="text"
+                                name="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="oldStock"
+                            />
+                            {{ data?.stock | number:'1.0-2' }}
+                        </ng-template>
+                    </mat-form-field>
+                </div> -->
+                <!-- / OLD VALUE -->
+                <!-- NEW VALUE -->
+                <!-- <div class="custom-field" fxLayoutAlign="space-between stretch">
+                    <label
+                        fxFlex="20"
+                        fxFlexAlign="center"
+                        [class.mat-error]="
+                            form.errors &&
+                            !form.untouched &&
+                            (form.dirty || form.touched)
+                        "
+                    >
+                        {{ data.editMode === 'price' ? 'Harga' : 'Stock' | titlecase }} Baru
+                    </label>
+                    <mat-form-field fxFlex="80" appearance="outline" fxLayout="row" fxLayoutAlign="start">
+                        <ng-container *ngIf="data.editMode === 'price'; else inputStock;">
+                            <input
+                                matInput
+                                type="text"
+                                name="price"
+                                prefix="Rp"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="price"
+                            />
+                        </ng-container>
+                        <ng-template #inputStock>
+                            <input
+                                matInput
+                                type="text"
+                                name="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                                formControlName="stock"
+                            />
+                        </ng-template>
+                    </mat-form-field>
+                </div> -->
+                <!-- / NEW VALUE -->
+            </form>
         </ng-template>
 
     </div>
@@ -185,7 +386,7 @@
     <button
         mat-button
         class="warn-900"
-        [disabled]="form.status === 'INVALID' || isUpdating"
+        [disabled]="form.status === 'INVALID' || isUpdating || form.untouched || data.editMode === 'stock'"
         (click)="updateData()"
     >
         OK

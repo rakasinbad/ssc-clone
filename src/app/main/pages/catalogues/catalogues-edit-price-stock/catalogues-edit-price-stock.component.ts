@@ -132,16 +132,18 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
 
         if (this.data.editMode === 'price') {
             /** Memasukkan FormControl untuk price JIKA mode-nya adalah price. */
-            this.form.addControl('salePrice', this.fb.control('0', Validators.required));
-            this.form.addControl('retailPrice', this.fb.control('0', Validators.required));
+            this.form.addControl('salePrice', this.fb.control('', [Validators.required, Validators.min(1)]));
+            this.form.addControl('retailPrice', this.fb.control('', Validators.required));
             this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.productPrice, disabled: true }));
             this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.suggestRetailPrice, disabled: true }));
 
             this.oldMargin = (1 - ((+this.data.catalogue.productPrice) / (+this.data.catalogue.suggestRetailPrice))) * 100;
         } else if (this.data.editMode === 'stock') {
             /** Memasukkan FormControl untuk stock JIKA mode-nya adalah stock. */
+            this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
+            this.form.addControl('stockEnroute', this.fb.control({ value: '', disabled: true }));
+            this.form.addControl('oldStock', this.fb.control({ value: this.data.catalogue.stock, disabled: true }));
             this.form.addControl('stock', this.fb.control('', Validators.required));
-            // this.form.addControl('oldStock', this.fb.control({ value: this.data.stock, disabled: true }));
         }
 
         /** Subscribe ke selector updating activity. */
