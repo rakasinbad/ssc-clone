@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -6,7 +6,7 @@ import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpe
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 @Component({
     templateUrl: './payment-status-form.component.html',
@@ -18,9 +18,14 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     pageType: string;
     paymentStatuses: Array<{ id: string; label: string }>;
 
+    isDisabled = true;
+    minDate: Date;
+    maxDate: Date;
+
     private _unSubs$: Subject<void>;
 
     constructor(
+        private _cd: ChangeDetectorRef,
         private dialogRef: MatDialogRef<PaymentStatusFormComponent>,
         private formBuilder: FormBuilder,
         private matDialog: MatDialog,
@@ -37,6 +42,8 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+        this.minDate = moment(this.data.item.createdAt).toDate();
+        this.maxDate = moment().toDate();
 
         this._unSubs$ = new Subject<void>();
 
@@ -76,6 +83,8 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+
 
     onSubmit(action: string): void {
         if (this.form.invalid) {
@@ -183,7 +192,7 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                 ]
             ],
             // amount: [''],
-            paidDate: [{ value: '', disabled: true }]
+            paidDate: [{ value: '', disabled: true }, RxwebValidators.required]
             // paymentMethod: ['']
         });
 
@@ -202,5 +211,24 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                 this.form.get('paidDate').markAsTouched();
             }
         }
+
+        this.form.valueChanges
+        .pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            takeUntil(this._unSubs$)
+        ).subscribe(value => {
+            if (this.pageType === 'edit') {
+                if (value.statusPayment !== 'paid') {
+                    this.isDisabled = this.form.invalid || this.form.pristine;
+                } else {
+                    this.isDisabled = !(moment(this.form.get('paidDate').value).isValid());
+                }
+            } else {
+                this.isDisabled = this.form.invalid;
+            }
+
+            this._cd.markForCheck();
+        });
     }
 }

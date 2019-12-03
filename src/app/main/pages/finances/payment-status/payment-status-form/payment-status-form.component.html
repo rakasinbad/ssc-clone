@@ -114,7 +114,8 @@
             </mat-form-field>
         </div> -->
 
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px"
+            *ngIf="form.get('statusPayment').value === 'paid'">
             <label
                 fxFlex="25"
                 [class.mat-error]="
@@ -127,7 +128,7 @@
             </label>
 
             <mat-form-field appearance="outline" fxFlex="30">
-                <input matInput [matDatepicker]="dpPaidDate" formControlName="paidDate" />
+                <input matInput [matDatepicker]="dpPaidDate" [min]="minDate" [max]="maxDate" formControlName="paidDate" />
 
                 <mat-datepicker-toggle matSuffix [for]="dpPaidDate"></mat-datepicker-toggle>
                 <mat-datepicker touchUi #dpPaidDate disabled="false"></mat-datepicker>
@@ -228,7 +229,7 @@
             type="submit"
             color="accent"
             [attr.cdkFocusInitial]="form.valid"
-            [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
+            [disabled]="isDisabled"
             form="payment-status-form"
         >
             Simpan
