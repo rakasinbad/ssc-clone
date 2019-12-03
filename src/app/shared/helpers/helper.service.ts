@@ -184,10 +184,10 @@ export class HelperService {
                 id: 'waiting_for_payment',
                 label: 'Waiting for Payment'
             },
-            {
-                id: 'not_paid',
-                label: 'Not Paid'
-            },
+            // {
+            //     id: 'not_paid',
+            //     label: 'Not Paid'
+            // },
             {
                 id: 'paid',
                 label: 'Paid'
