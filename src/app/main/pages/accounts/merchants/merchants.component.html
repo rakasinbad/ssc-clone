@@ -12,7 +12,12 @@
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
+                <button
+                    type="button"
+                    mat-flat-button
+                    color="accent"
+                    [routerLink]="['/pages/account/stores/new']"
+                >
                     <mat-icon>add</mat-icon>
 
                     TAMBAH TOKO
@@ -46,7 +51,7 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24" *ngIf="search.value">
+        <!-- <mat-card class="mb-24" *ngIf="search.value">
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -62,19 +67,17 @@
                             </mat-icon>
                         </mat-chip>
 
-                        <!-- <mat-chip>
+                        <mat-chip>
                             Geo Coverage
                             <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip> -->
+                        </mat-chip>
                     </mat-chip-list>
                 </div>
             </div>
-        </mat-card>
+        </mat-card> -->
 
         <!-- CONTENT CARD -->
-        <!-- <div class="content-card"></div> -->
-
-        <div class="sinbad-content mat-elevation-z1">
+        <div class="content-card">
             <mat-table
                 class="merchants-table"
                 #table
@@ -85,20 +88,14 @@
                 fusePerfectScrollbar
             >
                 <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
+                <ng-container matColumnDef="store-code">
+                    <mat-header-cell *matHeaderCellDef>
                         Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.id }}
+                            {{ safeValue(row?.store?.externalId) }}
                         </p>
-                        <!-- <div *ngIf="!row?.id" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.id" class="skeleton"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -109,14 +106,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.name }}
+                            {{ safeValue(row?.store?.name) }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.name" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -127,14 +118,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.urban?.urban }}
+                            {{ safeValue(row?.store?.urban?.urban) }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.urban?.urban" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.urban?.urban" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -145,14 +130,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.address }}
+                            {{ safeValue(row?.store?.address) }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.address" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.address" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -163,14 +142,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.phoneNo }}
+                            {{ safeValue(row?.store?.phoneNo) }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.phoneNo" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.phoneNo" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -181,14 +154,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeSegment?.name }}
+                            {{ safeValue(row?.store?.storeSegment?.name) }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.storeSegment?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.storeSegment?.name" class="skeleton"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -199,14 +166,12 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeType?.name | titlecase }}
+                            {{
+                                safeValue(row?.store?.storeType?.name) !== '-'
+                                    ? (row?.store?.storeType?.name | titlecase)
+                                    : safeValue(row?.store?.storeType?.name)
+                            }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.storeType?.name" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.storeType?.name" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -217,14 +182,12 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.status | uppercase }}
+                            {{
+                                safeValue(row?.status) !== '-'
+                                    ? (row?.status | uppercase)
+                                    : safeValue(row?.status)
+                            }}
                         </p>
-                        <!-- <div *ngIf="!row?.store?.status" fxFlex>
-                            <ngx-skeleton-loader
-                                [theme]="{ width: '100%', 'margin-top': '10px' }"
-                            ></ngx-skeleton-loader>
-                        </div> -->
-                        <!-- <div *ngIf="!row?.store?.status" class="skeleton w-100-p"></div> -->
                     </mat-cell>
                 </ng-container>
 
@@ -232,7 +195,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Action
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
@@ -342,7 +304,7 @@
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
+                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons
@@ -353,6 +315,8 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>
+
+        <!-- <div class="sinbad-content mat-elevation-z1"></div> -->
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->

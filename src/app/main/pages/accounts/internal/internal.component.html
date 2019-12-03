@@ -49,7 +49,7 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card class="mb-24" *ngIf="search.value">
+        <!-- <mat-card class="mb-24" *ngIf="search.value">
             <div fxLayout="column" fxLayoutGap="10px">
                 <small>
                     Filter & Group By
@@ -67,12 +67,10 @@
                     </mat-chip-list>
                 </div>
             </div>
-        </mat-card>
+        </mat-card> -->
 
         <!-- CONTENT CARD -->
-        <!-- <div class="content-card"></div> -->
-
-        <div class="sinbad-content mat-elevation-z1">
+        <div class="content-card">
             <mat-table
                 class="internals-table"
                 #table
@@ -82,18 +80,6 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
-                <!-- ID Column -->
-                <ng-container matColumnDef="id">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                        ID
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.id) }}
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
                 <!-- User Column -->
                 <ng-container matColumnDef="user">
                     <mat-header-cell *matHeaderCellDef>
@@ -111,7 +97,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Email
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ safeValue(row?.user?.email) }}
@@ -124,7 +109,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Role
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <p
                             style="word-break: break-word;"
@@ -137,7 +121,6 @@
                     <mat-header-cell *matHeaderCellDef>
                         Action
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
@@ -240,7 +223,7 @@
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
+                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons

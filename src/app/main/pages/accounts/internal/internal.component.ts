@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { IQueryParams, Role, UserSupplier } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -33,9 +34,10 @@ import { InternalSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     total: number;
-    displayedColumns = ['id', 'user', 'email', 'role', 'actions'];
+    displayedColumns = ['user', 'email', 'role', 'actions'];
 
     dataSource$: Observable<UserSupplier[]>;
     selectedRowIndex$: Observable<string>;
@@ -57,8 +59,10 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -90,7 +94,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',

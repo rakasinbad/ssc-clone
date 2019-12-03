@@ -175,15 +175,15 @@
                                 <td>
                                     <ng-container
                                         *ngIf="
-                                            (store$ | async)?.store?.storeCode ||
+                                            (store$ | async)?.store?.externalId ||
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.storeCode) }}
+                                        {{ safeValue((store$ | async)?.store?.externalId) }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
-                                            !(store$ | async)?.store?.storeCode &&
+                                            !(store$ | async)?.store?.externalId &&
                                             (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"

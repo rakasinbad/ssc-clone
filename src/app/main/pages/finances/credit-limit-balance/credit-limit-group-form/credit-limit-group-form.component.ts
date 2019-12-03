@@ -34,6 +34,7 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
     unitParameters: { id: string; label: string }[];
+    unitParameterTypes: { id: string; label: string }[];
 
     storeSegments$: Observable<StoreSegment[]>;
     hierarchies$: Observable<Hierarchy[]>;
@@ -120,6 +121,7 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
         this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
 
         this.unitParameters = this._$helper.unitParameter();
+        this.unitParameterTypes = this._$helper.unitParameterType();
 
         this.initForm();
     }
@@ -480,6 +482,7 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
+            unitParameterType: ['all'],
             creditLimitArea: this.formBuilder.array([this.createGeoForm()])
         });
 

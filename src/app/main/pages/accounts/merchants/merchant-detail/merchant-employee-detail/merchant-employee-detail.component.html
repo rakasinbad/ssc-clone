@@ -1,177 +1,157 @@
-<mat-card class="inner-scroll">
-    <mat-table
-        class="merchant-employees-table"
-        #table
-        [dataSource]="dataSource$ | async"
-        [trackBy]="onTrackBy"
-        matSort
-        [@animateStagger]="{ value: '50' }"
-        fusePerfectScrollbar
-    >
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef mat-sort-header="id">
-                ID
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ safeValue(row?.id) }}
-                </p>
-            </mat-cell>
-        </ng-container>
+<mat-table
+    class="merchant-employees-table"
+    #table
+    [dataSource]="dataSource$ | async"
+    [trackBy]="onTrackBy"
+    matSort
+    [@animateStagger]="{ value: '50' }"
+    fusePerfectScrollbar
+>
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>
+            Nama
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ safeValue(row?.user?.fullName) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Name Column -->
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>
-                Nama
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ safeValue(row?.user?.fullName) }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Role Column -->
+    <ng-container matColumnDef="role">
+        <mat-header-cell *matHeaderCellDef>
+            Role
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;" [innerHTML]="joinRoles(row?.user?.roles)"></p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Role Column -->
-        <ng-container matColumnDef="role">
-            <mat-header-cell *matHeaderCellDef>
-                Role
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;" [innerHTML]="joinRoles(row?.user?.roles)"></p>
-            </mat-cell>
-        </ng-container>
+    <!-- Phone Number Column -->
+    <ng-container matColumnDef="phone-no">
+        <mat-header-cell *matHeaderCellDef>
+            Phone Number
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ safeValue(row?.user?.mobilePhoneNo) }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-        <!-- Phone Number Column -->
-        <ng-container matColumnDef="phone-no">
-            <mat-header-cell *matHeaderCellDef>
-                Phone Number
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{ safeValue(row?.user?.mobilePhoneNo) }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <!-- Last Check In Column -->
+    <ng-container matColumnDef="last-check-in">
+        <mat-header-cell *matHeaderCellDef>
+            Last Checked-in
+        </mat-header-cell>
 
-        <!-- Last Check In Column -->
-        <ng-container matColumnDef="last-check-in">
-            <mat-header-cell *matHeaderCellDef>
-                Last Checked-in
-            </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{
+                    safeValue((row?.user?.attendances)[0]?.checkIn) !== '-'
+                        ? ((row?.user?.attendances)[0]?.checkIn | date: 'dd/MM/yyyy HH:mm:ss')
+                        : safeValue((row?.user?.attendances)[0]?.checkIn)
+                }}
+            </p>
+        </mat-cell>
+    </ng-container>
 
-            <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
-                    {{
-                        safeValue((row?.user?.attendances)[0]?.checkIn) !== '-'
-                            ? ((row?.user?.attendances)[0]?.checkIn | date: 'dd/MM/yyyy HH:mm:ss')
-                            : safeValue((row?.user?.attendances)[0]?.checkIn)
-                    }}
-                </p>
-            </mat-cell>
-        </ng-container>
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>
+            Action
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button
+                    mat-icon-button
+                    [matMenuTriggerFor]="moreMenu"
+                    aria-label="More"
+                    (click)="$event.stopPropagation()"
+                >
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
 
-        <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef>
-                Action
-            </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <div fxFlex="row" fxLayoutAlign="end center">
+                <mat-menu #moreMenu="matMenu">
                     <button
-                        mat-icon-button
-                        [matMenuTriggerFor]="moreMenu"
-                        aria-label="More"
-                        (click)="$event.stopPropagation()"
+                        mat-menu-item
+                        type="button"
+                        class="sinbad-mat-menu-item"
+                        aria-label="Edit"
+                        [routerLink]="[
+                            '/pages/account/stores',
+                            row?.storeId,
+                            row?.userId,
+                            'employee'
+                        ]"
                     >
-                        <mat-icon class="secondary-text">more_vert</mat-icon>
+                        <mat-icon>edit</mat-icon>
+                        <span>Edit</span>
                     </button>
 
-                    <mat-menu #moreMenu="matMenu">
-                        <button
-                            mat-menu-item
-                            type="button"
-                            class="sinbad-mat-menu-item"
-                            aria-label="Edit"
-                            [routerLink]="[
-                                '/pages/account/stores',
-                                row?.storeId,
-                                row?.userId,
-                                'employee'
-                            ]"
-                        >
-                            <mat-icon>edit</mat-icon>
-                            <span>Edit</span>
-                        </button>
+                    <button
+                        mat-menu-item
+                        type="button"
+                        class="sinbad-mat-menu-item"
+                        aria-label="Delete"
+                        (click)="onDelete(row)"
+                    >
+                        <mat-icon>delete</mat-icon>
+                        <span>Remove</span>
+                    </button>
 
-                        <button
-                            mat-menu-item
-                            type="button"
-                            class="sinbad-mat-menu-item"
-                            aria-label="Delete"
-                            (click)="onDelete(row)"
-                        >
-                            <mat-icon>delete</mat-icon>
-                            <span>Remove</span>
-                        </button>
+                    <button
+                        mat-menu-item
+                        type="button"
+                        class="sinbad-mat-menu-item"
+                        [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
+                        (click)="onChangeStatus(row)"
+                    >
+                        <mat-icon>
+                            {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
+                        </mat-icon>
+                        <span>
+                            {{
+                                (row?.status === 'active' ? 'ACTION.INACTIVE' : 'ACTION.ACTIVE')
+                                    | translate
+                            }}
+                        </span>
+                    </button>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
 
-                        <button
-                            mat-menu-item
-                            type="button"
-                            class="sinbad-mat-menu-item"
-                            [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
-                            (click)="onChangeStatus(row)"
-                        >
-                            <mat-icon>
-                                {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
-                            </mat-icon>
-                            <span>
-                                {{
-                                    (row?.status === 'active'
-                                        ? 'ACTION.INACTIVE'
-                                        : 'ACTION.ACTIVE'
-                                    ) | translate
-                                }}
-                            </span>
-                        </button>
-                    </mat-menu>
-                </div>
-            </mat-cell>
-        </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-
-        <mat-row
-            *matRowDef="let row; columns: displayedColumns"
-            class="merchant-employee"
-            [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.userId }"
-            matRipple
-            [routerLink]="['/pages/account/stores', row?.storeId, row?.userId, 'employee']"
-        >
-        </mat-row>
-    </mat-table>
-
-    <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
-        <mat-spinner color="accent"></mat-spinner>
-    </div>
-
-    <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
-        No records found
-    </div>
-
-    <mat-paginator
-        [fxHide]="
-            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
-            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-        "
-        [length]="totalDataSource$ | async"
-        [pageSize]="5"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        (page)="onChangePage($event)"
-        showFirstLastButtons
+    <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="merchant-employee"
+        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.userId }"
+        matRipple
+        [routerLink]="['/pages/account/stores', row?.storeId, row?.userId, 'employee']"
     >
-    </mat-paginator>
+    </mat-row>
+</mat-table>
 
-    <!--  <div class="loader" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) > 0">
-        <mat-spinner color="accent"></mat-spinner>
-    </div> -->
-</mat-card>
+<div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div>
+
+<mat-paginator
+    [fxHide]="
+        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+    "
+    [length]="totalDataSource$ | async"
+    [pageSize]="defaultPageSize"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    (page)="onChangePage($event)"
+    showFirstLastButtons
+>
+</mat-paginator>

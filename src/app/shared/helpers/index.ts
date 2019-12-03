@@ -7,6 +7,7 @@ export * from './notice.service';
 
 export * from './cluster-api.service';
 export * from './hierarchy-api.service';
+export * from './invoice-group-api.service';
 export * from './order-brand-catalogue-api.service';
 export * from './province-api.service';
 export * from './store-api.service';

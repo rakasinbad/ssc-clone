@@ -17,6 +17,7 @@ import { LogService } from 'app/shared/helpers';
 import { IQueryParams, Role } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -33,15 +34,16 @@ import { StoreSelectors } from '../../store/selectors';
     templateUrl: './merchant-employee-detail.component.html',
     styleUrls: ['./merchant-employee-detail.component.scss'],
     // tslint:disable-next-line: no-host-metadata-property
-    // host: {
-    //     class: 'content-card'
-    // },
+    host: {
+        class: 'content-card'
+    },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-    displayedColumns = ['id', 'name', 'role', 'phone-no', 'last-check-in', 'actions'];
+    readonly defaultPageSize = environment.pageSize;
+    displayedColumns = ['name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
     dataSource$: Observable<UserStore[]>;
     selectedRowIndex$: Observable<string>;
@@ -66,6 +68,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         private _$log: LogService,
         private _$merchantApi: MerchantApiService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
@@ -78,7 +81,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',

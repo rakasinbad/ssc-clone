@@ -329,7 +329,7 @@ export class CreditLimitBalanceEffects {
                 return this._$creditLimitStoreApi.patch(body, id).pipe(
                     map(resp => {
                         this._$log.generateGroup(
-                            'RESPONSE REQUEST UPDATE CREDIT LIMIT STORE',
+                            '[RESPONSE REQUEST] UPDATE CREDIT LIMIT STORE',
                             {
                                 payload: {
                                     type: 'log',
@@ -766,7 +766,7 @@ export class CreditLimitBalanceEffects {
                         catchOffline(),
                         map(resp => {
                             this._$log.generateGroup(
-                                'RESPONSE REQUEST FETCH CREDIT LIMIT STORES',
+                                '[RESPONSE REQUEST] FETCH CREDIT LIMIT STORES',
                                 {
                                     response: {
                                         type: 'log',

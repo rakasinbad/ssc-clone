@@ -62,20 +62,21 @@ app-merchants {
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: rgba(0, 0, 0, 0.15) !important;
 
         // .mat-header-row {
         //     min-height: 64px;
         // }
 
-        // .merchant {
-        //     position: relative;
-        //     cursor: pointer;
-        //     height: 84px;
-        // }
+        .mat-header-row,
+        .mat-row {
+            background: white;
+        }
 
         .merchant {
             position: relative;
             cursor: pointer;
+            // height: 84px;
         }
 
         .mat-header-cell {

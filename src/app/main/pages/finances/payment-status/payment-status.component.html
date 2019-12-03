@@ -75,11 +75,7 @@
         </mat-card>
 
         <!-- CONTENT CARD -->
-        <!--  <mat-card>
-
-        </mat-card> -->
-
-        <div class="sinbad-content mat-elevation-z1">
+        <div class="content-card">
             <mat-table
                 class="payments-table"
                 #table
@@ -375,9 +371,8 @@
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
+                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
-                (page)="onChangePage($event)"
                 showFirstLastButtons
             >
             </mat-paginator>

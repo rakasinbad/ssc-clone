@@ -62,20 +62,21 @@ app-internal {
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: rgba(0, 0, 0, 0.15) !important;
 
         // .mat-header-row {
         //     min-height: 64px;
         // }
 
-        // .internal {
-        //     position: relative;
-        //     cursor: pointer;
-        //     height: 84px;
-        // }
+        .mat-header-row,
+        .mat-row {
+            background: white;
+        }
 
         .internal {
             position: relative;
             // cursor: pointer;
+            // height: 84px;
         }
 
         .mat-header-cell {
@@ -89,25 +90,14 @@ app-internal {
             min-width: 0;
             display: flex;
             align-items: center;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
         }
 
         .mat-column-checkbox {
             flex: 0 1 64px;
             padding-left: 18px;
-        }
-
-        .mat-column-id {
-            flex: 0 1 84px;
-        }
-
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .account-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
         }
 
         .mat-column-phone {
@@ -116,36 +106,6 @@ app-internal {
 
         .mat-column-roles {
             flex: 0 1 160px;
-        }
-
-        .mat-column-totalProduct {
-            flex: 0 1 80px;
-        }
-
-        .mat-column-odooid {
-            flex: 0 1 120px;
-        }
-
-        .mat-column-active {
-            flex: 0 1 80px;
-        }
-
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
-
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
-        }
-
-        .active-icon {
-            border-radius: 50%;
         }
 
         .mat-column-actions {

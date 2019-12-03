@@ -173,10 +173,10 @@ export enum EStatusPayment {
 export type FilterUrban = 'city' | 'district' | 'urban';
 
 export enum GeoParameterType {
-    PROVINCE = 'Provinsi',
-    CITY = 'Kota/Kabupaten',
-    DISTRICT = 'Kecamatan',
-    URBAN = 'Kelurahan'
+    PROVINCE = 'province',
+    CITY = 'city',
+    DISTRICT = 'district',
+    URBAN = 'urban'
 }
 
 interface IGeoParameter {

@@ -6,10 +6,16 @@ app-merchant-employee-detail {
         border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+        background: rgba(0, 0, 0, 0.15) !important;
 
         // .mat-header-row {
         //     min-height: 64px;
         // }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+        }
 
         .merchant-employee {
             position: relative;
@@ -32,21 +38,6 @@ app-merchant-employee-detail {
             padding-bottom: 8px;
             padding-right: 8px;
         }
-
-        .mat-column-no,
-        .mat-column-id {
-            flex: 0 1 70px;
-        }
-
-        /* .mat-column-image {
-            flex: 0 1 84px;
-
-            .account-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
-        } */
 
         .mat-column-phone-no {
             flex: 0 1 160px;

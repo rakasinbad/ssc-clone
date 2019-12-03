@@ -9,28 +9,41 @@
 
     <!-- CENTER -->
     <div class="center">
-        <!-- CONTENT HEADER -->
+        <!-- CONTENT HEADER fxLayout="column" fxLayoutAlign="center stretch" -->
         <div class="header sinbad" fxLayout="column" fxLayoutAlign="center stretch">
-            <nav
-                mat-tab-nav-bar
-                class="mat-elevation-z1 sinbad-tab"
-                [ngClass]="(fuseConfig$ | async)?.layout?.toolbar?.background"
-            >
-                <a
-                    mat-tab-link
-                    *ngFor="let link of links"
-                    [routerLink]="[{ outlets: { 'store-detail': [link?.path] } }]"
-                    routerLinkActive
-                    #rla="routerLinkActive"
-                    [active]="rla?.isActive"
-                    skipLocationChange
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    type="button"
+                    [routerLink]="['/pages/account/stores']"
                 >
-                    <div fxLayout="column" fxLayoutAlign="center center">
-                        <span class="label">{{ link?.label }}</span>
-                        <span class="indicator" fxFlex="70" *ngIf="rla?.isActive"></span>
-                    </div>
-                </a>
-            </nav>
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div fxFlex>
+                    <nav
+                        mat-tab-nav-bar
+                        class="mat-elevation-z1 sinbad-tab"
+                        [ngClass]="(fuseConfig$ | async)?.layout?.toolbar?.background"
+                    >
+                        <a
+                            mat-tab-link
+                            *ngFor="let link of links"
+                            [routerLink]="[{ outlets: { 'store-detail': [link?.path] } }]"
+                            routerLinkActive
+                            #rla="routerLinkActive"
+                            [active]="rla?.isActive"
+                            skipLocationChange
+                        >
+                            <div fxLayout="column" fxLayoutAlign="center center">
+                                <span class="label">{{ link?.label }}</span>
+                                <span class="indicator" fxFlex="70" *ngIf="rla?.isActive"></span>
+                            </div>
+                        </a>
+                    </nav>
+                </div>
+            </div>
         </div>
         <!-- / CONTENT HEADER -->
 

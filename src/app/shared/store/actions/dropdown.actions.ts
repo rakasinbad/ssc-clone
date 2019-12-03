@@ -4,6 +4,7 @@ import {
     GeoParameter,
     Hierarchy,
     IErrorHandler,
+    InvoiceGroup,
     IQueryParams,
     Province,
     Role,
@@ -127,6 +128,24 @@ export const fetchDropdownHierarchyFailure = createAction(
 export const fetchDropdownHierarchySuccess = createAction(
     '[Helper Dropdown] Fetch Hierarchy Success',
     props<{ payload: Hierarchy[] }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Invoice Group
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownInvoiceGroupRequest = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Request'
+);
+
+export const fetchDropdownInvoiceGroupFailure = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownInvoiceGroupSuccess = createAction(
+    '[Helper Dropdown] Fetch Invoice Group Success',
+    props<{ payload: InvoiceGroup[] }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

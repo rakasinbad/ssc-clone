@@ -5,7 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -16,6 +16,7 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
 import {
     Cluster,
+    Hierarchy,
     Province,
     StoreGroup,
     StoreSegment,
@@ -61,6 +62,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     storeGroups$: Observable<StoreGroup[]>;
     storeSegments$: Observable<StoreSegment[]>;
     storeTypes$: Observable<StoreType[]>;
+    hierarchies$: Observable<Hierarchy[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
 
     isLoading$: Observable<boolean>;
@@ -76,8 +78,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         private _$helper: HelperService,
         private _$log: LogService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        // Set footer action
         this.store.dispatch(
             UiActions.setFooterActionConfig({
                 payload: {
@@ -119,6 +123,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         const { id } = this.route.snapshot.params;
 
         if (id === 'new') {
+            // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
@@ -138,8 +143,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     ]
                 })
             );
+
             this.pageType = 'new';
         } else {
+            // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
@@ -159,6 +166,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     ]
                 })
             );
+
             this.pageType = 'edit';
         }
     }
@@ -182,47 +190,74 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         this.initForm();
 
+        // Get selector dropdown province
         this.provinces$ = this.store.select(DropdownSelectors.getProvinceDropdownState);
+        // Fetch request province
         this.store.dispatch(DropdownActions.fetchDropdownProvinceRequest());
 
+        // Get selector dropdown store type
         this.storeTypes$ = this.store.select(DropdownSelectors.getStoreTypeDropdownState);
+        // Fetch request store stype
         this.store.dispatch(DropdownActions.fetchDropdownStoreTypeRequest());
 
+        // Get selector dropdown store group
         this.storeGroups$ = this.store.select(DropdownSelectors.getStoreGroupDropdownState);
+        // Fetch request store group
         this.store.dispatch(DropdownActions.fetchDropdownStoreGroupRequest());
 
+        // Get selector dropdown store cluster
         this.storeClusters$ = this.store.select(DropdownSelectors.getStoreClusterDropdownState);
+        // Fetch request store cluster
         this.store.dispatch(DropdownActions.fetchDropdownStoreClusterRequest());
 
+        // Get selector dropdown store segment
         this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
+        // Fetch request store segment
         this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
 
+        // Get selector dropdown hierarcy
+        this.hierarchies$ = this.store.select(DropdownSelectors.getHierarchyDropdownState);
+        // Fetch request hierarchy
+        this.store.dispatch(DropdownActions.fetchDropdownHierarchyRequest());
+
+        // Get selector dropdown vehicle accessibility
         this.vehicleAccessibilities$ = this.store.select(
             DropdownSelectors.getVehicleAccessibilityDropdownState
         );
+        // Fetch request vehicle accessibility
         this.store.dispatch(DropdownActions.fetchDropdownVehicleAccessibilityRequest());
+
+        // Fetch request invoice group
+        this.store.dispatch(DropdownActions.fetchDropdownInvoiceGroupRequest());
 
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
+        // Get data number of employee (local)
         this.numberOfEmployees = this._$helper.numberOfEmployee();
 
         this.store.dispatch(FormActions.resetFormStatus());
+
+        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
         this.form.statusChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(status => {
                 // console.log('FORM STATUS 1', status);
                 // console.log('FORM STATUS 2', this.form);
 
-                this._$log.generateGroup(`[FORM STATUS]`, {
-                    status: {
-                        type: 'log',
-                        value: status
+                this._$log.generateGroup(
+                    'FORM STATUS',
+                    {
+                        status: {
+                            type: 'log',
+                            value: status
+                        },
+                        form: {
+                            type: 'log',
+                            value: this.form
+                        }
                     },
-                    form: {
-                        type: 'log',
-                        value: this.form
-                    }
-                });
+                    'groupCollapsed'
+                );
 
                 if (status === 'VALID' && this.addressValid()) {
                     this.store.dispatch(FormActions.setFormStatusValid());
@@ -233,6 +268,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }
             });
 
+        // Handle reset button action (footer)
         this.store
             .select(FormSelectors.getIsClickResetButton)
             .pipe(
@@ -242,12 +278,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .subscribe(isClick => {
                 // console.log('CLICK RESET', isClick);
 
-                this._$log.generateGroup(`[CLICK RESET]`, {
-                    isClick: {
-                        type: 'log',
-                        value: isClick
-                    }
-                });
+                this._$log.generateGroup(
+                    'CLICK RESET',
+                    {
+                        isClick: {
+                            type: 'log',
+                            value: isClick
+                        }
+                    },
+                    'groupCollapsed'
+                );
 
                 if (isClick) {
                     this.form.reset();
@@ -256,6 +296,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }
             });
 
+        // Handle save button action (footer)
         this.store
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
@@ -263,12 +304,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                this._$log.generateGroup(`[CLICK SUBMIT]`, {
-                    isClick: {
-                        type: 'log',
-                        value: isClick
-                    }
-                });
+                this._$log.generateGroup(
+                    'CLICK SUBMIT',
+                    {
+                        isClick: {
+                            type: 'log',
+                            value: isClick
+                        }
+                    },
+                    'groupCollapsed'
+                );
 
                 if (isClick) {
                     this.onSubmit();
@@ -295,6 +340,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    get formCreditLimits(): FormArray {
+        return this.form.get('storeInfo.payment.creditLimit') as FormArray;
+    }
+
+    get creditLimitControls(): AbstractControl[] {
+        return (this.form.get('storeInfo.payment.creditLimit') as FormArray).controls;
+    }
 
     getErrorMessage(field: string): string {
         if (field) {
@@ -571,6 +624,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private createCreditLimitForm(): FormGroup {
+        return this.formBuilder.group({
+            invoiceGroup: [''],
+            creditLimitGroup: [''],
+            creditLimitAmount: [''],
+            termOfPayment: ['']
+        });
+    }
 
     private initForm(): void {
         this.tmpPhoto = new FormControl({ value: '', disabled: true });
@@ -903,7 +965,12 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                     )
                                 })
                             ]
-                        ]
+                        ],
+                        hierarchy: ['']
+                    }),
+                    payment: this.formBuilder.group({
+                        allowCredit: [false],
+                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
                     })
                 })
             });
@@ -1141,7 +1208,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                     )
                                 })
                             ]
-                        ]
+                        ],
+                        hierarchy: ['']
                     })
                 })
             });
@@ -1429,7 +1497,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 }
             };
 
-            this._$log.generateGroup(`[SUBMIT UPDATE STORE]`, {
+            this._$log.generateGroup('[SUBMIT UPDATE STORE]', {
                 body: {
                     type: 'log',
                     value: body

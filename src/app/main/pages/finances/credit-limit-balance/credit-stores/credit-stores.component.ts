@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -28,11 +29,16 @@ import { LogService } from 'app/shared/helpers';
     selector: 'app-credit-stores',
     templateUrl: './credit-stores.component.html',
     styleUrls: ['./credit-stores.component.scss'],
+    // tslint:disable-next-line: no-host-metadata-property
+    host: {
+        class: 'content-card'
+    },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     displayedColumns = [
         // 'order',
         'name',
@@ -79,7 +85,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -131,10 +137,6 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
-
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-    }
 
     onDelete(item): void {
         if (!item) {

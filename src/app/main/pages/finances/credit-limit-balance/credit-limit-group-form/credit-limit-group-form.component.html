@@ -284,156 +284,173 @@
         </div>
 
         <div class="form-box dynamic">
-            <span class="mat-subheading-2">
-                Geographic
-            </span>
+            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                <span class="mat-subheading-2" fxFlex="15">
+                    Geographic
+                </span>
 
-            <div
-                class="custom-field dynamic"
-                fxLayout="row"
-                fxLayoutAlign="space-between stretch"
-                formArrayName="creditLimitArea"
-                *ngFor="let creditLimitArea of geoControls; index as i"
-            >
-                <ng-container [formGroupName]="i">
-                    <label
-                        fxFlex="15"
-                        [class.mat-error]="
-                            formGeographics.controls[i].get('unitType').errors &&
-                            !formGeographics.controls[i].get('unitType').untouched &&
-                            (formGeographics.controls[i].get('unitType').dirty ||
-                                formGeographics.controls[i].get('unitType').touched)
-                        "
-                    >
-                        Geographic {{ i + 1 }}
-                    </label>
-
-                    <div
-                        class="bg-f9f9f9 px-4"
-                        fxLayout="column"
-                        fxLayoutAlign="center stretch"
-                        fxFlex="70"
-                    >
-                        <button
-                            mat-icon-button
-                            matTooltip="Block"
-                            color="accent"
-                            style="position: relative;align-self: flex-end;"
-                            *ngIf="!i"
-                            disabled
-                        >
-                            <mat-icon>block</mat-icon>
-                        </button>
-
-                        <button
-                            mat-icon-button
-                            type="button"
-                            matTooltip="Delete"
-                            color="accent"
-                            style="position: relative;align-self: flex-end;"
-                            *ngIf="i"
-                            (click)="onDeleteGeoParameter(i)"
-                        >
-                            <mat-icon>remove_circle_outline</mat-icon>
-                        </button>
-
-                        <div
-                            fxLayout="row"
-                            fxLayoutAlign="start center"
-                            fxLayoutGap="15px"
-                            fxFlex="70"
-                        >
-                            <label fxFlexAlign="center" fxFlex="15">
-                                Set Unit
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="70">
-                                <ng-container *ngIf="unitParameters; else noUnitParameters">
-                                    <mat-select
-                                        formControlName="unitType"
-                                        placeholder="Pick your parameter"
-                                        (selectionChange)="onSelectUnit($event, i)"
-                                    >
-                                        <mat-option
-                                            *ngFor="let row of unitParameters"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.label }}
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
-
-                                <ng-template #noUnitParameters>
-                                    <mat-select placeholder="Pick your parameter" disabled>
-                                        <mat-option>Parameter not found</mat-option>
-                                    </mat-select>
-                                </ng-template>
-
-                                <mat-error
-                                    *ngIf="
-                                        formGeographics.controls[i].get('unitType').errors &&
-                                        (formGeographics.controls[i].get('unitType').dirty ||
-                                            formGeographics.controls[i].get('unitType').touched)
-                                    "
-                                >
-                                    {{ getErrorMessageArray('creditLimitArea', 'unitType', i) }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-
-                        <div
-                            fxLayout="row"
-                            fxLayoutAlign="start center"
-                            fxLayoutGap="15px"
-                            fxFlex="70"
-                        >
-                            <label fxFlexAlign="center" fxFlex="15">
-                                Set Value
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="70">
-                                <ng-container
-                                    *ngIf="
-                                        geoParameterSource$[i] | async as parameterSources;
-                                        else noSources
-                                    "
-                                >
-                                    <mat-select
-                                        formControlName="unitValue"
-                                        placeholder="Pick your parameter"
-                                    >
-                                        <mat-option
-                                            *ngFor="let value of parameterSources?.source"
-                                            [value]="value"
-                                        >
-                                            {{ value }}
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
-
-                                <ng-template #noSources>
-                                    <mat-select placeholder="Pick your parameter" disabled>
-                                        <mat-option>Parameter not found</mat-option>
-                                    </mat-select>
-                                </ng-template>
-
-                                <mat-error
-                                    *ngIf="
-                                        formGeographics.controls[i].get('unitValue').errors &&
-                                        (formGeographics.controls[i].get('unitValue').dirty ||
-                                            formGeographics.controls[i].get('unitValue').touched)
-                                    "
-                                >
-                                    {{ getErrorMessageArray('creditLimitArea', 'unitValue', i) }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </ng-container>
+                <mat-radio-group
+                    formControlName="unitParameterType"
+                    aria-label="Select an option"
+                    fxFlex="70"
+                >
+                    <mat-radio-button *ngFor="let row of unitParameterTypes" [value]="row?.id">
+                        {{ row?.label }}
+                    </mat-radio-button>
+                </mat-radio-group>
             </div>
+
+            <ng-container *ngIf="form.get('unitParameterType').value !== 'all'">
+                <div
+                    class="custom-field dynamic"
+                    fxLayout="row"
+                    fxLayoutAlign="space-between stretch"
+                    formArrayName="creditLimitArea"
+                    *ngFor="let creditLimitArea of geoControls; index as i"
+                >
+                    <ng-container [formGroupName]="i">
+                        <label
+                            fxFlex="15"
+                            [class.mat-error]="
+                                formGeographics.controls[i].get('unitType').errors &&
+                                !formGeographics.controls[i].get('unitType').untouched &&
+                                (formGeographics.controls[i].get('unitType').dirty ||
+                                    formGeographics.controls[i].get('unitType').touched)
+                            "
+                        >
+                            Geographic {{ i + 1 }}
+                        </label>
+
+                        <div
+                            class="bg-f9f9f9 px-4"
+                            fxLayout="column"
+                            fxLayoutAlign="center stretch"
+                            fxFlex="70"
+                        >
+                            <button
+                                mat-icon-button
+                                matTooltip="Block"
+                                color="accent"
+                                style="position: relative;align-self: flex-end;"
+                                *ngIf="!i"
+                                disabled
+                            >
+                                <mat-icon>block</mat-icon>
+                            </button>
+
+                            <button
+                                mat-icon-button
+                                type="button"
+                                matTooltip="Delete"
+                                color="accent"
+                                style="position: relative;align-self: flex-end;"
+                                *ngIf="i"
+                                (click)="onDeleteGeoParameter(i)"
+                            >
+                                <mat-icon>remove_circle_outline</mat-icon>
+                            </button>
+
+                            <div
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                                fxFlex="70"
+                            >
+                                <label fxFlexAlign="center" fxFlex="15">
+                                    Set Unit
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="70">
+                                    <ng-container *ngIf="unitParameters; else noUnitParameters">
+                                        <mat-select
+                                            formControlName="unitType"
+                                            placeholder="Pick your parameter"
+                                            (selectionChange)="onSelectUnit($event, i)"
+                                        >
+                                            <mat-option
+                                                *ngFor="let row of unitParameters"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+
+                                    <ng-template #noUnitParameters>
+                                        <mat-select placeholder="Pick your parameter" disabled>
+                                            <mat-option>Parameter not found</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+
+                                    <mat-error
+                                        *ngIf="
+                                            formGeographics.controls[i].get('unitType').errors &&
+                                            (formGeographics.controls[i].get('unitType').dirty ||
+                                                formGeographics.controls[i].get('unitType').touched)
+                                        "
+                                    >
+                                        {{ getErrorMessageArray('creditLimitArea', 'unitType', i) }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                                fxLayoutGap="15px"
+                                fxFlex="70"
+                            >
+                                <label fxFlexAlign="center" fxFlex="15">
+                                    Set Value
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="70">
+                                    <ng-container
+                                        *ngIf="
+                                            geoParameterSource$[i] | async as parameterSources;
+                                            else noSources
+                                        "
+                                    >
+                                        <mat-select
+                                            formControlName="unitValue"
+                                            placeholder="Pick your parameter"
+                                        >
+                                            <mat-option
+                                                *ngFor="let value of parameterSources?.source"
+                                                [value]="value"
+                                            >
+                                                {{ value }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+
+                                    <ng-template #noSources>
+                                        <mat-select placeholder="Pick your parameter" disabled>
+                                            <mat-option>Parameter not found</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+
+                                    <mat-error
+                                        *ngIf="
+                                            formGeographics.controls[i].get('unitValue').errors &&
+                                            (formGeographics.controls[i].get('unitValue').dirty ||
+                                                formGeographics.controls[i].get('unitValue')
+                                                    .touched)
+                                        "
+                                    >
+                                        {{
+                                            getErrorMessageArray('creditLimitArea', 'unitValue', i)
+                                        }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </ng-container>
         </div>
 
-        <div class="form-box mb-4">
+        <div class="form-box mb-4" *ngIf="form.get('unitParameterType').value !== 'all'">
             <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <div fxFlex="15"></div>
 
