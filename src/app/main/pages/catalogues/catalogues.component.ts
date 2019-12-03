@@ -473,7 +473,15 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     {
                         fieldName: 'name',
                         keyword: searchValue
-                    }
+                    },
+                    {
+                        fieldName: 'sku',
+                        keyword: searchValue
+                    },
+                    // {
+                    //     fieldName: 'external_id',
+                    //     keyword: searchValue
+                    // }
                 ];
             }
     
