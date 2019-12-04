@@ -147,66 +147,7 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
         super(createdAt, updatedAt, deletedAt);
 
         if (store) {
-            const newStore = new Merchant(
-                store.id,
-                store.storeCode,
-                store.name,
-                store.address,
-                store.taxNo,
-                store.longitude,
-                store.latitude,
-                store.largeArea,
-                store.phoneNo,
-                store.imageUrl,
-                store.taxImageUrl,
-                store.status,
-                store.reason,
-                store.parent,
-                store.parentId,
-                store.numberOfEmployee,
-                store.externalId,
-                store.storeTypeId,
-                store.storeGroupId,
-                store.storeSegmentId,
-                store.urbanId,
-                store.vehicleAccessibilityId,
-                store.warehouseId,
-                store.userStores,
-                store.storeType,
-                store.storeGroup,
-                store.storeSegment,
-                store.urban,
-                store.storeConfig,
-                store.createdAt,
-                store.updatedAt,
-                store.deletedAt
-            );
-
-            if (store.supplierStores) {
-                newStore.setSupplierStores = store.supplierStores;
-            }
-
-            if (store.vehicleAccessibility) {
-                newStore.setVehicleAccessibility = store.vehicleAccessibility;
-            }
-
-            if (store.customerHierarchies) {
-                newStore.setCustomerHierarchies = store.customerHierarchies;
-            }
-
-            if (store.storeClusters) {
-                newStore.setStoreClusters = store.storeClusters;
-            }
-
-            if (store.legalInfo) {
-                newStore.setLegalInfo = store.legalInfo;
-            }
-
-            if (store.owner) {
-                newStore.setOwner = store.owner;
-            }
-
-            this.store = newStore;
+            this.store = new Merchant(store);
         } else {
             this.store = null;
         }

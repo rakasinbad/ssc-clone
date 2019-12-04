@@ -91,24 +91,14 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
     }
 
     onSubmit(action: string): void {
-        this._$log.generateGroup(
-            `SUBMIT ${action.toUpperCase()}`,
-            {
-                form: {
-                    type: 'log',
-                    value: this.form
-                }
-            },
-            'groupCollapsed'
-        );
-
-        const { limit: creditLimit, balance: balanceAmount, top: termOfPayment } = this.form.value;
+        // const { limit: creditLimit, balance: balanceAmount, top: termOfPayment } = this.form.value;
+        const { limit: creditLimit, top: termOfPayment } = this.form.value;
         const payload = CreditLimitStore.patch({
             creditLimit,
-            balanceAmount,
             termOfPayment
         });
-        const { limit: limitField, balance: balanceField, top: topField } = this.form.controls;
+        // const { limit: limitField, balance: balanceField, top: topField } = this.form.controls;
+        const { limit: limitField, top: topField } = this.form.controls;
 
         if (action === 'edit') {
             this.storage.get('selected.credit.limit.store').subscribe({
@@ -121,13 +111,13 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                         delete payload.creditLimit;
                     }
 
-                    if (
-                        (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
-                        (balanceField.touched && balanceField.value === prev.balanceAmount) ||
-                        (balanceField.pristine && balanceField.value === prev.balanceAmount)
-                    ) {
-                        delete payload.balanceAmount;
-                    }
+                    // if (
+                    //     (balanceField.dirty && balanceField.value === prev.balanceAmount) ||
+                    //     (balanceField.touched && balanceField.value === prev.balanceAmount) ||
+                    //     (balanceField.pristine && balanceField.value === prev.balanceAmount)
+                    // ) {
+                    //     delete payload.balanceAmount;
+                    // }
 
                     if (
                         (topField.dirty && topField.value === prev.termOfPayment) ||
@@ -162,17 +152,6 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                         .afterClosed()
                         .pipe(takeUntil(this._unSubs$))
                         .subscribe(resp => {
-                            this._$log.generateGroup(
-                                'AFTER CLOSED DIALOG CONFIRMATION EDIT CREDIT LIMIT',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             if (resp.id && resp.change) {
                                 this.dialogRef.close({ action, payload });
                             }
@@ -206,16 +185,16 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            balance: [
-                '',
-                [
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
-            ],
+            // balance: [
+            //     '',
+            //     [
+            //         RxwebValidators.numeric({
+            //             acceptValue: NumericValueType.PositiveNumber,
+            //             allowDecimal: true,
+            //             message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //         })
+            //     ]
+            // ],
             top: [
                 '',
                 [
@@ -241,10 +220,10 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                         this.form.get('limit').markAsTouched();
                     }
 
-                    if (data.balanceAmount) {
-                        this.form.get('balance').patchValue(data.balanceAmount.replace('.', ','));
-                        this.form.get('balance').markAsTouched();
-                    }
+                    // if (data.balanceAmount) {
+                    //     this.form.get('balance').patchValue(data.balanceAmount.replace('.', ','));
+                    //     this.form.get('balance').markAsTouched();
+                    // }
 
                     if (data.termOfPayment) {
                         this.form.get('top').patchValue(data.termOfPayment);

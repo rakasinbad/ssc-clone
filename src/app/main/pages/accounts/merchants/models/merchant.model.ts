@@ -1,3 +1,4 @@
+import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     CustomerHierarchy,
     StoreCluster,
@@ -10,12 +11,13 @@ import {
     TStatus,
     Urban,
     User,
-    VehicleAccessibility
+    VehicleAccessibility,
+    Hierarchy
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 
 interface IStore extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     storeCode: string;
     name: string;
     address: string;
@@ -44,111 +46,204 @@ interface IStore extends ITimestamp {
     storeType: StoreType;
     storeGroup: StoreGroup;
     storeSegment: StoreSegment;
+    hierarchy: Hierarchy;
     urban: Urban;
     customerHierarchies?: CustomerHierarchy[];
     storeConfig: StoreConfig;
     storeClusters?: StoreCluster[];
+    creditLimitStores?: CreditLimitStore[];
     legalInfo?: User;
     owner?: User;
 }
 
-export class Store extends Timestamp implements IStore {
-    public supplierStores?: SupplierStore[];
-    public vehicleAccessibility?: VehicleAccessibility;
-    public customerHierarchies?: CustomerHierarchy[];
-    public storeClusters?: StoreCluster[];
-    public legalInfo?: User;
-    public owner?: User;
+export class Store implements IStore {
+    readonly id: NonNullable<string>;
+    storeCode: string;
+    name: string;
+    address: string;
+    taxNo: string;
+    longitude: number;
+    latitude: number;
+    largeArea: string;
+    phoneNo: string;
+    imageUrl: TNullable<string>;
+    taxImageUrl: TNullable<string>;
+    status: TStatus;
+    reason: string;
+    parent: boolean;
+    parentId: string;
+    numberOfEmployee: TNullable<string>;
+    externalId: string;
+    storeTypeId: string;
+    storeGroupId: string;
+    storeSegmentId: string;
+    urbanId: string;
+    vehicleAccessibilityId: string;
+    warehouseId: string;
+    userStores: UserStore[];
+    supplierStores?: SupplierStore[];
+    vehicleAccessibility?: VehicleAccessibility;
+    storeType: StoreType;
+    storeGroup: StoreGroup;
+    storeSegment: StoreSegment;
+    hierarchy: Hierarchy;
+    urban: Urban;
+    customerHierarchies?: CustomerHierarchy[];
+    storeConfig: StoreConfig;
+    storeClusters?: StoreCluster[];
+    creditLimitStores?: CreditLimitStore[];
+    legalInfo?: User;
+    owner?: User;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        public id: string,
-        public storeCode: string,
-        public name: string,
-        public address: string,
-        public taxNo: string,
-        public longitude: number,
-        public latitude: number,
-        public largeArea: string,
-        public phoneNo: string,
-        public imageUrl: TNullable<string>,
-        public taxImageUrl: TNullable<string>,
-        public status: TStatus,
-        public reason: string,
-        public parent: boolean,
-        public parentId: string,
-        public numberOfEmployee: TNullable<string>,
-        public externalId: string,
-        public storeTypeId: string,
-        public storeGroupId: string,
-        public storeSegmentId: string,
-        public urbanId: string,
-        public vehicleAccessibilityId: string,
-        public warehouseId: string,
-        public userStores: UserStore[],
-        public storeType: StoreType,
-        public storeGroup: StoreGroup,
-        public storeSegment: StoreSegment,
-        public urban: Urban,
-        public storeConfig: StoreConfig,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: Store) {
+        const {
+            id,
+            storeCode,
+            name,
+            address,
+            taxNo,
+            longitude,
+            latitude,
+            largeArea,
+            phoneNo,
+            imageUrl,
+            taxImageUrl,
+            status,
+            reason,
+            parent,
+            parentId,
+            numberOfEmployee,
+            externalId,
+            storeTypeId,
+            storeGroupId,
+            storeSegmentId,
+            urbanId,
+            vehicleAccessibilityId,
+            warehouseId,
+            userStores,
+            supplierStores,
+            vehicleAccessibility,
+            storeType,
+            storeGroup,
+            storeSegment,
+            hierarchy,
+            urban,
+            customerHierarchies,
+            storeConfig,
+            storeClusters,
+            creditLimitStores,
+            legalInfo,
+            owner,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-        this.storeCode = storeCode ? storeCode.trim() : null;
-        this.name = name ? name.trim() : null;
-        this.address = address ? address.trim() : null;
-        this.taxNo = taxNo ? taxNo.trim() : null;
-        this.largeArea = largeArea ? largeArea.trim() : null;
-        this.phoneNo = phoneNo ? phoneNo.trim() : null;
-        this.imageUrl = imageUrl ? imageUrl.trim() : null;
-        this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
-        this.reason = reason ? reason.trim() : null;
-        this.numberOfEmployee = numberOfEmployee ? numberOfEmployee.trim() : '0';
+        this.id = id;
+        this.storeCode = storeCode ? String(storeCode).trim() : null;
+        this.name = name ? String(name).trim() : null;
+        this.address = address ? String(address).trim() : null;
+        this.taxNo = taxNo ? String(taxNo).trim() : null;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.largeArea = largeArea ? String(largeArea).trim() : null;
+        this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
+        this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
+        this.status = status;
+        this.reason = reason ? String(reason).trim() : null;
+        this.parent = parent;
+        this.parentId = parentId;
+        this.numberOfEmployee = numberOfEmployee ? String(numberOfEmployee).trim() : null;
+        this.externalId = externalId ? String(externalId).trim() : null;
+        this.storeTypeId = storeTypeId;
+        this.storeGroupId = storeGroupId;
+        this.storeSegmentId = storeSegmentId;
+        this.urbanId = urbanId;
+        this.vehicleAccessibilityId = vehicleAccessibilityId;
+        this.warehouseId = warehouseId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
 
         this.userStores =
             userStores && userStores.length > 0
                 ? userStores.map(row => {
-                    const newUserStore = new UserStore(
-                        row.id,
-                        row.userId,
-                        row.storeId,
-                        row.status,
-                        row.createdAt,
-                        row.updatedAt,
-                        row.deletedAt
-                    );
+                      const newUserStore = new UserStore(
+                          row.id,
+                          row.userId,
+                          row.storeId,
+                          row.status,
+                          row.createdAt,
+                          row.updatedAt,
+                          row.deletedAt
+                      );
 
-                    if (row.user) {
-                        newUserStore.setUser = row.user;
-                    }
+                      if (row.user) {
+                          newUserStore.setUser = row.user;
+                      }
 
-                    if (row.store) {
-                        newUserStore.setStore = row.store;
-                    }
+                      if (row.store) {
+                          newUserStore.setStore = row.store;
+                      }
 
-                    return newUserStore;
-                }) : [];
+                      return newUserStore;
+                  })
+                : [];
+
+        if (supplierStores) {
+            this.setSupplierStores = supplierStores;
+        }
+
+        if (vehicleAccessibility) {
+            this.setVehicleAccessibility = vehicleAccessibility;
+        }
 
         this.storeType = storeType
             ? new StoreType(
-                storeType.id,
-                storeType.name,
-                storeType.createdAt,
-                storeType.updatedAt,
-                storeType.deletedAt
-            ) : null;
+                  storeType.id,
+                  storeType.name,
+                  storeType.createdAt,
+                  storeType.updatedAt,
+                  storeType.deletedAt
+              )
+            : null;
+
+        this.storeGroup = storeGroup
+            ? new StoreGroup(
+                  storeGroup.id,
+                  storeGroup.name,
+                  storeGroup.createdAt,
+                  storeGroup.updatedAt,
+                  storeGroup.deletedAt
+              )
+            : null;
 
         this.storeSegment = storeSegment
             ? new StoreSegment(
-                storeSegment.id,
-                storeSegment.name,
-                storeSegment.createdAt,
-                storeSegment.updatedAt,
-                storeSegment.deletedAt
-            ) : null;
-        
+                  storeSegment.id,
+                  storeSegment.name,
+                  storeSegment.createdAt,
+                  storeSegment.updatedAt,
+                  storeSegment.deletedAt
+              )
+            : null;
+
+        this.hierarchy = hierarchy
+            ? new Hierarchy(
+                  hierarchy.id,
+                  hierarchy.name,
+                  hierarchy.status,
+                  hierarchy.supplierId,
+                  hierarchy.createdAt,
+                  hierarchy.updatedAt,
+                  hierarchy.deletedAt
+              )
+            : null;
+
         // this.userStores = Array.isArray(userStores) ?
         //     userStores.map(userStore => new UserStore(
         //         userStore.id,
@@ -186,17 +281,50 @@ export class Store extends Timestamp implements IStore {
             this.urban = null;
         }
 
+        if (customerHierarchies) {
+            this.setCustomerHierarchies = customerHierarchies;
+        }
+
         this.storeConfig = storeConfig
             ? new StoreConfig(
-                storeConfig.id,
-                storeConfig.startingWorkHour,
-                storeConfig.finishedWorkHour,
-                storeConfig.status,
-                storeConfig.storeId,
-                storeConfig.createdAt,
-                storeConfig.updatedAt,
-                storeConfig.deletedAt
-            ) : null;
+                  storeConfig.id,
+                  storeConfig.startingWorkHour,
+                  storeConfig.finishedWorkHour,
+                  storeConfig.status,
+                  storeConfig.storeId,
+                  storeConfig.createdAt,
+                  storeConfig.updatedAt,
+                  storeConfig.deletedAt
+              )
+            : null;
+
+        if (storeClusters) {
+            this.setStoreClusters = storeClusters;
+        }
+
+        if (creditLimitStores) {
+            this.setCreditLimitStores = creditLimitStores;
+        }
+
+        if (legalInfo) {
+            this.setLegalInfo = legalInfo;
+        }
+
+        if (owner) {
+            this.setOwner = owner;
+        }
+    }
+
+    set setCreditLimitStores(value: CreditLimitStore[]) {
+        if (value && value.length > 0) {
+            const newCreditLimitStores = value.map(row => {
+                return new CreditLimitStore(row);
+            });
+
+            this.creditLimitStores = newCreditLimitStores;
+        } else {
+            this.creditLimitStores = [];
+        }
     }
 
     set setSupplierStores(value: SupplierStore[]) {
@@ -223,12 +351,13 @@ export class Store extends Timestamp implements IStore {
     set setVehicleAccessibility(value: VehicleAccessibility) {
         this.vehicleAccessibility = value
             ? new VehicleAccessibility(
-                value.id,
-                value.name,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            ) : null;
+                  value.id,
+                  value.name,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
+              )
+            : null;
     }
 
     set setCustomerHierarchies(value: CustomerHierarchy[]) {
@@ -449,66 +578,7 @@ export class UserStore extends Timestamp implements IUserStore {
 
     set setStore(value: Store) {
         if (value) {
-            const newStore = new Store(
-                value.id,
-                value.storeCode,
-                value.name,
-                value.address,
-                value.taxNo,
-                value.longitude,
-                value.latitude,
-                value.largeArea,
-                value.phoneNo,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.status,
-                value.reason,
-                value.parent,
-                value.parentId,
-                value.numberOfEmployee,
-                value.externalId,
-                value.storeTypeId,
-                value.storeGroupId,
-                value.storeSegmentId,
-                value.urbanId,
-                value.vehicleAccessibilityId,
-                value.warehouseId,
-                value.userStores,
-                value.storeType,
-                value.storeGroup,
-                value.storeSegment,
-                value.urban,
-                value.storeConfig,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            );
-
-            if (value.supplierStores) {
-                newStore.setSupplierStores = value.supplierStores;
-            }
-
-            if (value.vehicleAccessibility) {
-                newStore.setVehicleAccessibility = value.vehicleAccessibility;
-            }
-
-            if (value.customerHierarchies) {
-                newStore.setCustomerHierarchies = value.customerHierarchies;
-            }
-
-            if (value.storeClusters) {
-                newStore.setStoreClusters = value.storeClusters;
-            }
-
-            if (value.legalInfo) {
-                newStore.setLegalInfo = value.legalInfo;
-            }
-
-            if (value.owner) {
-                newStore.setOwner = value.owner;
-            }
-
-            this.store = newStore;
+            this.store = new Store(value);
         } else {
             this.store = null;
         }

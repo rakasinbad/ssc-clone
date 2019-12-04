@@ -440,49 +440,9 @@ export class CreditLimitBalanceEffects {
             ofType(CreditLimitBalanceActions.updateCreditLimitGroupRequest),
             map(action => action.payload),
             switchMap(({ body, id }) => {
-                this._$log.generateGroup(
-                    'UPDATE CREDIT LIMIT GROUP',
-                    {
-                        payload: {
-                            type: 'log',
-                            value: body
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 return this._$creditLimitGroupApi.patch(body, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST UPDATE CREDIT LIMIT GROUP',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: body
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
-                        const newResp = new CreditLimitGroup(
-                            resp.id,
-                            resp.supplierId,
-                            resp.hierarchyId,
-                            resp.storeSegmentId,
-                            resp.name,
-                            resp.defaultCreditLimit,
-                            resp.defaultBalanceAmount,
-                            resp.termOfPayment,
-                            resp.creditLimitAreas,
-                            resp.storeSegment,
-                            resp.createdAt,
-                            resp.updatedAt,
-                            resp.deletedAt
-                        );
+                        const newResp = new CreditLimitGroup(resp);
 
                         return CreditLimitBalanceActions.updateCreditLimitGroupSuccess({
                             payload: {
@@ -781,23 +741,7 @@ export class CreditLimitBalanceEffects {
                                 data:
                                     resp && resp.data && resp.data.length > 0
                                         ? resp.data.map(row => {
-                                              return new CreditLimitStore(
-                                                  row.id,
-                                                  row.storeId,
-                                                  row.creditLimitGroupId,
-                                                  row.creditLimit,
-                                                  row.balanceAmount,
-                                                  row.freezeStatus,
-                                                  row.termOfPayment,
-                                                  row.creditLimitStoreId,
-                                                  row.creditLimitGroup,
-                                                  row.store,
-                                                  row.averageOrder,
-                                                  row.totalOrder,
-                                                  row.createdAt,
-                                                  row.updatedAt,
-                                                  row.deletedAt
-                                              );
+                                              return new CreditLimitStore(row);
                                           })
                                         : []
                             };
@@ -990,21 +934,7 @@ export class CreditLimitBalanceEffects {
                             const newCreditLimitGroup =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
-                                          return new CreditLimitGroup(
-                                              row.id,
-                                              row.supplierId,
-                                              row.hierarchyId,
-                                              row.storeSegmentId,
-                                              row.name,
-                                              row.defaultCreditLimit,
-                                              row.defaultBalanceAmount,
-                                              row.termOfPayment,
-                                              row.creditLimitAreas,
-                                              row.storeSegment,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
+                                          return new CreditLimitGroup(row);
                                       })
                                     : [];
 

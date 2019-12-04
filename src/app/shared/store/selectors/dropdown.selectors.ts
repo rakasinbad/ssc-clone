@@ -22,6 +22,31 @@ export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDr
 // );
 
 // -----------------------------------------------------------------------------------------------------
+// Credit Limit Groups State
+// -----------------------------------------------------------------------------------------------------
+
+export const getCreditLimitGroupDropdownState = createSelector(getDropdownState, state => {
+    return state.creditLimitGroups && state.creditLimitGroups.length > 0
+        ? state.creditLimitGroups
+        : [];
+});
+
+export const getCreditLimitGroupState = createSelector(
+    getDropdownState,
+    (state: fromDropdown.State, { id }) => {
+        if (state.creditLimitGroups && state.creditLimitGroups.length > 0 && id) {
+            const idx = state.creditLimitGroups.findIndex(row => row.id === id);
+
+            if (idx !== -1) {
+                return state.creditLimitGroups[idx];
+            }
+        }
+
+        return null;
+    }
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Geo Parameters State [Province]
 // -----------------------------------------------------------------------------------------------------
 
@@ -79,6 +104,14 @@ export const getHierarchyDropdownState = createSelector(getDropdownState, state 
     return state.hierarchies && state.hierarchies.length > 0
         ? sortBy(state.hierarchies, ['name'], ['asc'])
         : [];
+});
+
+// -----------------------------------------------------------------------------------------------------
+// Invoice Groups State
+// -----------------------------------------------------------------------------------------------------
+
+export const getInvoiceGroupDropdownState = createSelector(getDropdownState, state => {
+    return state.invoiceGroups && state.invoiceGroups.length > 0 ? state.invoiceGroups : [];
 });
 
 // -----------------------------------------------------------------------------------------------------

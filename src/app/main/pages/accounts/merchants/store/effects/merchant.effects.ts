@@ -1412,7 +1412,7 @@ export class MerchantEffects {
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             switchMap(([payload, { supplierId }]) => {
-                if (isNaN(+supplierId)) {
+                if (!supplierId) {
                     return of(
                         StoreActions.fetchStoresFailure({
                             payload: { id: 'fetchStoresFailure', errors: 'Not Found!' }
@@ -1606,78 +1606,24 @@ export class MerchantEffects {
         this.actions$.pipe(
             ofType(StoreActions.fetchStoreEditRequest),
             map(action => action.payload),
-            switchMap(id => {
-                return this._$storeApi.findById(id).pipe(
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([id, { supplierId }]) => {
+                if (!id || !supplierId) {
+                    return of(
+                        StoreActions.fetchStoreEditFailure({
+                            payload: {
+                                id: 'fetchStoreEditFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$storeApi.findById(id, supplierId).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH STORE EDIT]', {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
-                        const newStore = new Merchant(
-                            resp.id,
-                            resp.storeCode,
-                            resp.name,
-                            resp.address,
-                            resp.taxNo,
-                            resp.longitude,
-                            resp.latitude,
-                            resp.largeArea,
-                            resp.phoneNo,
-                            resp.imageUrl,
-                            resp.taxImageUrl,
-                            resp.status,
-                            resp.reason,
-                            resp.parent,
-                            resp.parentId,
-                            resp.numberOfEmployee,
-                            resp.externalId,
-                            resp.storeTypeId,
-                            resp.storeGroupId,
-                            resp.storeSegmentId,
-                            resp.urbanId,
-                            resp.vehicleAccessibilityId,
-                            resp.warehouseId,
-                            resp.userStores,
-                            resp.storeType,
-                            resp.storeGroup,
-                            resp.storeSegment,
-                            resp.urban,
-                            resp.storeConfig,
-                            resp.createdAt,
-                            resp.updatedAt,
-                            resp.deletedAt
-                        );
-
-                        if (resp.supplierStores) {
-                            newStore.setSupplierStores = resp.supplierStores;
-                        }
-
-                        if (resp.vehicleAccessibility) {
-                            newStore.setVehicleAccessibility = resp.vehicleAccessibility;
-                        }
-
-                        if (resp.customerHierarchies) {
-                            newStore.setCustomerHierarchies = resp.customerHierarchies;
-                        }
-
-                        if (resp.storeClusters) {
-                            newStore.setStoreClusters = resp.storeClusters;
-                        }
-
-                        if (resp.legalInfo) {
-                            newStore.setLegalInfo = resp.legalInfo;
-                        }
-
-                        if (resp.owner) {
-                            newStore.setOwner = resp.owner;
-                        }
-
                         return StoreActions.fetchStoreEditSuccess({
-                            payload: newStore
+                            payload: new Merchant(resp)
                         });
                     }),
                     catchError(err =>

@@ -1,5 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     Cluster,
     GeoParameter,
@@ -35,6 +36,7 @@ interface ErrorState extends EntityState<IErrorHandler> {
 
 export interface State {
     // search: SearchState;
+    creditLimitGroups?: CreditLimitGroup[];
     hierarchies?: Hierarchy[];
     invoiceGroups?: InvoiceGroup[];
     roles?: Role[];
@@ -79,6 +81,7 @@ const dropdownReducer = createReducer(
     //     errors: adapterError.removeOne('fetchAccountSearchFailure', state.errors)
     // })),
     on(
+        DropdownActions.fetchDropdownCreditLimitGroupFailure,
         DropdownActions.fetchDropdownGeoParameterProvinceFailure,
         DropdownActions.fetchDropdownGeoParameterCityFailure,
         DropdownActions.fetchDropdownGeoParameterDistrictFailure,
@@ -98,6 +101,11 @@ const dropdownReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
+    on(DropdownActions.fetchDropdownCreditLimitGroupSuccess, (state, { payload }) => ({
+        ...state,
+        creditLimitGroups: payload,
+        errors: adapterError.removeOne('fetchDropdownCreditLimitGroupFailure', state.errors)
+    })),
     on(DropdownActions.fetchDropdownGeoParameterProvinceSuccess, (state, { payload }) => ({
         ...state,
         geoParameters: adapterGeoParameter.upsertOne(payload, state.geoParameters),
@@ -162,6 +170,10 @@ const dropdownReducer = createReducer(
         ...state,
         vehicleAccessibilities: payload,
         errors: adapterError.removeOne('fetchDropdownVehicleAccessibilityFailure', state.errors)
+    })),
+    on(DropdownActions.resetInvoiceGroupState, state => ({
+        ...state,
+        invoiceGroups: undefined
     }))
 );
 

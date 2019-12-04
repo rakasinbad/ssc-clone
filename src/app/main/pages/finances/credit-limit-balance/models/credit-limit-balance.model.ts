@@ -1,29 +1,33 @@
 import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 import {
+    InvoiceGroup,
     IResponsePaginate,
     ITimestamp,
     StoreSegment,
-    Timestamp,
     TNullable
 } from 'app/shared/models';
 
 interface ICreditLimitStore extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     storeId: string;
+    invoiceGroupId: string;
     creditLimitGroupId: string;
     creditLimit: string;
     balanceAmount: string;
     freezeStatus: boolean;
+    allowCreditLimit: boolean;
     termOfPayment: number;
-    creditLimitStoreId: string;
+    creditLimitGroupChanged: string;
+    updatedCreditLimit: string;
     creditLimitGroup: CreditLimitGroup;
-    store: Merchant;
+    invoiceGroup: InvoiceGroup;
+    store?: Merchant;
     averageOrder: number;
     totalOrder: number;
 }
 
 interface ICreditLimitGroup extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     supplierId: string;
     hierarchyId: string;
     storeSegmentId: string;
@@ -36,7 +40,7 @@ interface ICreditLimitGroup extends ITimestamp {
 }
 
 interface ICreditLimitArea extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     creditLimitGroupId: string;
     unitType: string;
     unitValue: string;
@@ -54,108 +58,72 @@ export interface ICreditLimitAreaResponse extends IResponsePaginate {
     data: ICreditLimitArea[];
 }
 
-export class CreditLimitStore extends Timestamp implements ICreditLimitStore {
-    constructor(
-        public id: string,
-        public storeId: string,
-        public creditLimitGroupId: string,
-        public creditLimit: string,
-        public balanceAmount: string,
-        public freezeStatus: boolean,
-        public termOfPayment: number,
-        public creditLimitStoreId: string,
-        public creditLimitGroup: CreditLimitGroup,
-        public store: Merchant,
-        public averageOrder: number,
-        public totalOrder: number,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class CreditLimitStore implements ICreditLimitStore {
+    readonly id: NonNullable<string>;
+    storeId: string;
+    invoiceGroupId: string;
+    creditLimitGroupId: string;
+    creditLimit: string;
+    balanceAmount: string;
+    freezeStatus: boolean;
+    allowCreditLimit: boolean;
+    termOfPayment: number;
+    creditLimitGroupChanged: string;
+    updatedCreditLimit: string;
+    creditLimitGroup: CreditLimitGroup;
+    invoiceGroup: InvoiceGroup;
+    store?: Merchant;
+    averageOrder: number;
+    totalOrder: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.creditLimitGroup = creditLimitGroup
-            ? new CreditLimitGroup(
-                  creditLimitGroup.id,
-                  creditLimitGroup.supplierId,
-                  creditLimitGroup.hierarchyId,
-                  creditLimitGroup.storeSegmentId,
-                  creditLimitGroup.name,
-                  creditLimitGroup.defaultCreditLimit,
-                  creditLimitGroup.defaultBalanceAmount,
-                  creditLimitGroup.termOfPayment,
-                  creditLimitGroup.creditLimitAreas,
-                  creditLimitGroup.storeSegment,
-                  creditLimitGroup.createdAt,
-                  creditLimitGroup.updatedAt,
-                  creditLimitGroup.deletedAt
-              )
-            : null;
+    constructor(data: CreditLimitStore) {
+        const {
+            id,
+            storeId,
+            invoiceGroupId,
+            creditLimitGroupId,
+            creditLimit,
+            balanceAmount,
+            freezeStatus,
+            allowCreditLimit,
+            termOfPayment,
+            creditLimitGroupChanged,
+            updatedCreditLimit,
+            creditLimitGroup,
+            invoiceGroup,
+            store,
+            averageOrder,
+            totalOrder,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-        if (store) {
-            const newStore = new Merchant(
-                store.id,
-                store.storeCode,
-                store.name,
-                store.address,
-                store.taxNo,
-                store.longitude,
-                store.latitude,
-                store.largeArea,
-                store.phoneNo,
-                store.imageUrl,
-                store.taxImageUrl,
-                store.status,
-                store.reason,
-                store.parent,
-                store.parentId,
-                store.numberOfEmployee,
-                store.externalId,
-                store.storeTypeId,
-                store.storeGroupId,
-                store.storeSegmentId,
-                store.urbanId,
-                store.vehicleAccessibilityId,
-                store.warehouseId,
-                store.userStores,
-                store.storeType,
-                store.storeGroup,
-                store.storeSegment,
-                store.urban,
-                store.storeConfig,
-                store.createdAt,
-                store.updatedAt,
-                store.deletedAt
-            );
+        this.id = id;
+        this.storeId = storeId;
+        this.invoiceGroupId = invoiceGroupId;
+        this.creditLimitGroupId = creditLimitGroupId;
+        this.creditLimit = creditLimit;
+        this.balanceAmount = balanceAmount;
+        this.freezeStatus = freezeStatus;
+        this.allowCreditLimit = allowCreditLimit;
+        this.termOfPayment = termOfPayment;
+        this.creditLimitGroupChanged = creditLimitGroupChanged;
+        this.updatedCreditLimit = updatedCreditLimit;
+        this.creditLimitGroup = creditLimitGroup;
+        this.invoiceGroup = invoiceGroup;
+        this.averageOrder = averageOrder;
+        this.totalOrder = totalOrder;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
 
-            if (store.supplierStores) {
-                newStore.setSupplierStores = store.supplierStores;
-            }
-
-            if (store.vehicleAccessibility) {
-                newStore.setVehicleAccessibility = store.vehicleAccessibility;
-            }
-
-            if (store.customerHierarchies) {
-                newStore.setCustomerHierarchies = store.customerHierarchies;
-            }
-
-            if (store.storeClusters) {
-                newStore.setStoreClusters = store.storeClusters;
-            }
-
-            if (store.legalInfo) {
-                newStore.setLegalInfo = store.legalInfo;
-            }
-
-            if (store.owner) {
-                newStore.setOwner = store.owner;
-            }
-
-            this.store = newStore;
-        } else {
-            this.store = null;
-        }
+        this.creditLimitGroup = creditLimitGroup ? new CreditLimitGroup(creditLimitGroup) : null;
+        this.invoiceGroup = invoiceGroup ? new InvoiceGroup(invoiceGroup) : null;
+        this.store = store ? new Merchant(store) : null;
     }
 
     static patch(body: CreditLimitStoreOptions): CreditLimitStoreOptions {
@@ -165,36 +133,54 @@ export class CreditLimitStore extends Timestamp implements ICreditLimitStore {
 
 export type CreditLimitStoreOptions = Partial<CreditLimitStore>;
 
-export class CreditLimitGroup extends Timestamp implements ICreditLimitGroup {
-    constructor(
-        public id: string,
-        public supplierId: string,
-        public hierarchyId: string,
-        public storeSegmentId: string,
-        public name: string,
-        public defaultCreditLimit: string,
-        public defaultBalanceAmount: string,
-        public termOfPayment: number,
-        public creditLimitAreas: CreditLimitArea[],
-        public storeSegment: StoreSegment,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class CreditLimitGroup implements ICreditLimitGroup {
+    readonly id: NonNullable<string>;
+    supplierId: string;
+    hierarchyId: string;
+    storeSegmentId: string;
+    name: string;
+    defaultCreditLimit: string;
+    defaultBalanceAmount: string;
+    termOfPayment: number;
+    creditLimitAreas: CreditLimitArea[];
+    storeSegment: StoreSegment;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+
+    constructor(data: CreditLimitGroup) {
+        const {
+            id,
+            supplierId,
+            hierarchyId,
+            storeSegmentId,
+            name,
+            defaultCreditLimit,
+            defaultBalanceAmount,
+            termOfPayment,
+            creditLimitAreas,
+            storeSegment,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id;
+        this.supplierId = supplierId;
+        this.hierarchyId = hierarchyId;
+        this.storeSegmentId = storeSegmentId;
+        this.name = name ? String(name).trim() : null;
+        this.defaultCreditLimit = defaultCreditLimit;
+        this.defaultBalanceAmount = defaultBalanceAmount;
+        this.termOfPayment = termOfPayment;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
 
         this.creditLimitAreas =
             creditLimitAreas && creditLimitAreas.length > 0
                 ? creditLimitAreas.map(row => {
-                      return new CreditLimitArea(
-                          row.id,
-                          row.creditLimitGroupId,
-                          row.unitType,
-                          row.unitValue,
-                          row.createdAt,
-                          row.updatedAt,
-                          row.deletedAt
-                      );
+                      return new CreditLimitArea(row);
                   })
                 : [];
 
@@ -228,20 +214,33 @@ export type CreditLimitGroupForm = Pick<
 > &
     ICreditLimitAreaForm;
 
-export class CreditLimitArea extends Timestamp implements ICreditLimitArea {
-    constructor(
-        public id: string,
-        public creditLimitGroupId: string,
-        public unitType: string,
-        public unitValue: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class CreditLimitArea implements ICreditLimitArea {
+    readonly id: NonNullable<string>;
+    creditLimitGroupId: string;
+    unitType: string;
+    unitValue: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.unitType = unitType ? unitType.trim() : unitType;
-        this.unitValue = unitValue ? unitValue.trim() : unitValue;
+    constructor(data: CreditLimitArea) {
+        const {
+            id,
+            creditLimitGroupId,
+            unitType,
+            unitValue,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id;
+        this.creditLimitGroupId = creditLimitGroupId;
+        this.unitType = unitType ? String(unitType).trim() : null;
+        this.unitValue = unitValue ? String(unitValue).trim() : null;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 }
 

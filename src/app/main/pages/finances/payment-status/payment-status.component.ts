@@ -392,7 +392,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             if (
                 this.filterStatus === 'waiting_for_payment' ||
                 this.filterStatus === 'paid' ||
-                this.filterStatus === 'overdue'
+                this.filterStatus === 'overdue' ||
+                this.filterStatus === 'payment_failed'
             ) {
                 if (data['search'] && data['search'].length > 0) {
                     data['search'].push({

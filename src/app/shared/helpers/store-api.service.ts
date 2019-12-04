@@ -46,11 +46,23 @@ export class StoreApiService {
      *
      *
      * @param {string} id
+     * @param {string} [supplierId]
      * @returns {Observable<Merchant>}
      * @memberof StoreApiService
      */
-    findById(id: string): Observable<Merchant> {
-        return this.http.get<Merchant>(`${this._url}/${id}`);
+    findById(id: string, supplierId?: string): Observable<Merchant> {
+        const newArg = supplierId
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<Merchant>(`${this._url}/${id}`, { params: newParams });
     }
 
     /**

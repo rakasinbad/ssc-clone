@@ -27,26 +27,17 @@ import { Store, Attendance } from './models';
 /**
  * ACTIONS
  */
-import {
-    AttendanceActions,
-    MerchantActions
-} from './store/actions';
+import { AttendanceActions, MerchantActions } from './store/actions';
 
 /**
  * REDUCERS
  */
-import {
-    fromAttendance,
-    fromMerchant
-} from './store/reducers';
+import { fromAttendance, fromMerchant } from './store/reducers';
 
 /**
  * SELECTORS
  */
-import {
-    AttendanceSelectors,
-    MerchantSelectors
-} from './store/selectors';
+import { AttendanceSelectors, MerchantSelectors } from './store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 import { Router } from '@angular/router';
 import { FormControl, Validators } from '@angular/forms';
@@ -126,7 +117,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('' , [
+        this.search = new FormControl('', [
             Validators.required,
             control => {
                 const value = control.value;
@@ -145,53 +136,13 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         ]);
         this.paginator.pageSize = 5;
 
-        this.dataSource$ 
-            = this._fromStore
-                .select(MerchantSelectors.getAllMerchant)
-                .pipe(
-                    map(stores => stores.map(store => {
-                        const newStore = new Store(
-                            store.id,
-                            store.storeCode,
-                            store.name,
-                            store.address,
-                            store.taxNo,
-                            store.longitude,
-                            store.latitude,
-                            store.largeArea,
-                            store.phoneNo,
-                            store.imageUrl,
-                            store.taxImageUrl,
-                            store.status,
-                            store.reason,
-                            store.parent,
-                            store.parentId,
-                            store.numberOfEmployee,
-                            store.externalId,
-                            store.storeTypeId,
-                            store.storeGroupId,
-                            store.storeSegmentId,
-                            store.urbanId,
-                            store.vehicleAccessibilityId,
-                            store.warehouseId,
-                            store.userStores,
-                            store.storeType,
-                            store.storeGroup,
-                            store.storeSegment,
-                            store.urban,
-                            store.storeConfig,
-                            store.createdAt,
-                            store.updatedAt,
-                            store.deletedAt
-                        );
-
-                        newStore.setLegalInfo = store.legalInfo;
-                        newStore.setCustomerHierarchies = store.customerHierarchies;
-
-                        return newStore;
-                    })
-                )
-            );
+        this.dataSource$ = this._fromStore.select(MerchantSelectors.getAllMerchant).pipe(
+            map(stores =>
+                stores.map(store => {
+                    return new Store(store);
+                })
+            )
+        );
 
         this.totalDataSource$ = this._fromStore.pipe(
             select(MerchantSelectors.getTotalMerchant),
@@ -204,11 +155,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             takeUntil(this._unSubs$)
         );
         this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                takeUntil(this._unSubs$)
-            )
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(() => {
                 this.onChangePage();
             });
@@ -311,9 +258,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     public openStoreAttendanceDetail(data: Store): void {
-        this._fromStore.dispatch(
-            MerchantActions.setSelectedStore({ payload: data })
-        );
+        this._fromStore.dispatch(MerchantActions.setSelectedStore({ payload: data }));
 
         this.router.navigate(['/pages/attendances/' + data.id + '/detail']);
     }

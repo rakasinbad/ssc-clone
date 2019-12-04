@@ -65,66 +65,7 @@ export class CustomerHierarchy extends Timestamp implements ICustomerHierarchy {
 
     set setStore(value: Merchant) {
         if (value) {
-            const newStore = new Merchant(
-                value.id,
-                value.storeCode,
-                value.name,
-                value.address,
-                value.taxNo,
-                value.longitude,
-                value.latitude,
-                value.largeArea,
-                value.phoneNo,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.status,
-                value.reason,
-                value.parent,
-                value.parentId,
-                value.numberOfEmployee,
-                value.externalId,
-                value.storeTypeId,
-                value.storeGroupId,
-                value.storeSegmentId,
-                value.urbanId,
-                value.vehicleAccessibilityId,
-                value.warehouseId,
-                value.userStores,
-                value.storeType,
-                value.storeGroup,
-                value.storeSegment,
-                value.urban,
-                value.storeConfig,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            );
-
-            if (value.supplierStores) {
-                newStore.setSupplierStores = value.supplierStores;
-            }
-
-            if (value.vehicleAccessibility) {
-                newStore.setVehicleAccessibility = value.vehicleAccessibility;
-            }
-
-            if (value.customerHierarchies) {
-                newStore.setCustomerHierarchies = value.customerHierarchies;
-            }
-
-            if (value.storeClusters) {
-                newStore.setStoreClusters = value.storeClusters;
-            }
-
-            if (value.legalInfo) {
-                newStore.setLegalInfo = value.legalInfo;
-            }
-
-            if (value.owner) {
-                newStore.setOwner = value.owner;
-            }
-
-            this.store = newStore;
+            this.store = new Merchant(value);
         } else {
             this.store = null;
         }

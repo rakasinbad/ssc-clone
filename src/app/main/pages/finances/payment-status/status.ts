@@ -73,5 +73,14 @@ export const statusPayment: FuseNavigation[] = [
         function: store => {
             store.dispatch(UiActions.setCustomToolbarActive({ payload: 'd-0' }));
         }
+    },
+    {
+        id: 'payment_failed',
+        title: 'Cancel',
+        //    translate: 'STATUS.PAYMENT.WAITING_FOR_PAYMENT.TITLE',
+        type: 'item',
+        function: store => {
+            store.dispatch(UiActions.setCustomToolbarActive({ payload: 'payment_failed' }));
+        }
     }
 ];

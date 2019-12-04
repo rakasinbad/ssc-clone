@@ -43,7 +43,7 @@
         </div>
         <!-- / CONTENT HEADER -->
 
-        <mat-card
+        <!-- <mat-card
             class="mb-24"
             *ngIf="search.value || (filterStatus && filterStatus !== 'all-status')"
         >
@@ -54,13 +54,13 @@
 
                 <div>
                     <mat-chip-list aria-label="Filter">
-                        <!-- <mat-chip *ngIf="searchInternalEmployee || search.value">
+                        <mat-chip *ngIf="searchInternalEmployee || search.value">
                             {{ searchInternalEmployee || search.value }}
 
                             <mat-icon matChipRemove (click)="onRemoveSearchInternalEmployee()">
                                 cancel
                             </mat-icon>
-                        </mat-chip> -->
+                        </mat-chip>
 
                         <mat-chip *ngIf="searchPaymentStatus || filterStatus">
                             Status: {{ searchPaymentStatus | titlecase | replace: '_':' ' }}
@@ -72,7 +72,7 @@
                     </mat-chip-list>
                 </div>
             </div>
-        </mat-card>
+        </mat-card> -->
 
         <!-- CONTENT CARD -->
         <div class="content-card">
@@ -224,7 +224,19 @@
                         Due Date
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p
+                            class="indicator-green"
+                            style="word-break: break-word;"
+                            *ngIf="row?.estDueDate && !row?.dueDate"
+                        >
+                            {{
+                                safeValue(row?.estDueDate) !== '-'
+                                    ? (row?.estDueDate | date: 'dd MMM yyyy')
+                                    : safeValue(row?.estDueDate)
+                            }}
+                        </p>
+
+                        <p style="word-break: break-word;" *ngIf="!row?.estDueDate && row?.dueDate">
                             {{
                                 safeValue(row?.dueDate) !== '-'
                                     ? (row?.dueDate | date: 'dd MMM yyyy')
@@ -237,10 +249,10 @@
                 <!-- Paid On Column -->
                 <ng-container matColumnDef="paid-on">
                     <mat-header-cell *matHeaderCellDef>
-                        <span class="text-left">Paid On</span>
+                        Paid On
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p style="word-break: break-word;" [class.indicator-green]="row?.paidTime">
                             {{
                                 safeValue(row?.paidTime) !== '-'
                                     ? (row?.paidTime | date: 'dd MMM yyyy')
@@ -302,7 +314,11 @@
                         Action
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxFlex="row" fxLayoutAlign="end center">
+                        <div
+                            fxFlex="row"
+                            fxLayoutAlign="end center"
+                            *ngIf="row?.statusPayment !== 'paid'"
+                        >
                             <button
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"
