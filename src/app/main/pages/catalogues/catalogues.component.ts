@@ -60,8 +60,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     displayedColumns = [
         // 'checkbox',
         'name',
-        // 'sku',
-        'externalId',
+        'sku',
+        // 'externalId',
         // 'variant',
         'price',
         'stock',
