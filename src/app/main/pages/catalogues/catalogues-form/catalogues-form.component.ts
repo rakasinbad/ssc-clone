@@ -17,10 +17,10 @@ import { FuseNavigationService } from '@fuse/components/navigation/navigation.se
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { GeneratorService } from 'app/shared/helpers';
+import { HelperService } from 'app/shared/helpers';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
-import { merge, of, Observable, Subject, Subscription } from 'rxjs';
+import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
 import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
     FormArray,
@@ -41,7 +41,7 @@ import { CatalogueActions, BrandActions } from '../store/actions';
 import { CatalogueSelectors, BrandSelectors } from '../store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { MatTableDataSource, MatDialog } from '@angular/material';
-import { Catalogue, CatalogueUnit } from '../models';
+import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { IQueryParams, Brand } from 'app/shared/models';
@@ -60,6 +60,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
 
+    quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;
     variantForm: FormGroup;
     productPhotos: FormArray;
@@ -96,8 +97,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _cd: ChangeDetectorRef,
         public translate: TranslateService,
-        private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer,
+        private $helper: HelperService
     ) {
+        this.quantityChoices = this.$helper.getQuantityChoices();
+
         const breadcrumbs = [
             {
                 title: 'Home',
@@ -188,11 +192,18 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     }
 
     private onSubmit(): void {
+        /** Membuat status form menjadi invalid. (Tidak bisa submit lagi) */
         this.store.dispatch(FormActions.setFormStatusInvalid());
+        /** Mendapatkan seluruh nilai dari form. */
         const formValues = this.form.getRawValue();
+        /** Mengambil foto-foto produk yang diperoleh dari back-end. */
         const oldPhotos = formValues.productMedia.oldPhotos;
 
+        /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: Partial<Catalogue> = {
+            /**
+             * INFORMASI PRODUK
+             */
             externalId: formValues.productInfo.externalId,
             name: formValues.productInfo.name,
             description: formValues.productInfo.description,
@@ -205,53 +216,68 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                                         : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
             stock: formValues.productInfo.stock,
             unitOfMeasureId:  formValues.productInfo.uom,
+            /**
+             * INFORMASI PENJUALAN
+             */
             suggestRetailPrice: formValues.productSale.retailPrice,
             productPrice: formValues.productSale.productPrice,
-            weight: isNaN(Number(formValues.productShipment.weight)) ? null : Number(formValues.productShipment.weight),
-            height: isNaN(Number(formValues.productSize.height)) ? null : Number(formValues.productSize.height),
-            width: isNaN(Number(formValues.productSize.width)) ? null : Number(formValues.productSize.width),
-            length: isNaN(Number(formValues.productSize.length)) ? null : Number(formValues.productSize.length),
-            minQty: formValues.productInfo.minQty,
-            packagedQty: formValues.productInfo.packagedQty,
-            multipleQty: formValues.productInfo.multipleQty,
-            displayStock: true,
-            catalogueTaxId: 1,
-            dangerItem: false,
-            unlimitedStock: false,
             catalogueKeywords: formValues.productSale.tags,
+            /**
+             * PENGATURAN MEDIA
+             */
             catalogueImages: formValues.productMedia.photos
                             .filter(photo => photo)
-                            .map(photo => ({ base64: photo }))
+                            .map(photo => ({ base64: photo })),
+            /**
+             * PENGIRIMAN
+             */
+            catalogueDimension: isNaN(Number(formValues.productShipment.catalogueDimension)) ? null : Number(formValues.productShipment.catalogueDimension),
+            catalogueWeight: isNaN(Number(formValues.productShipment.catalogueWeight)) ? null : Number(formValues.productShipment.catalogueWeight),
+            packagedDimension: isNaN(Number(formValues.productShipment.packagedDimension)) ? null : Number(formValues.productShipment.packagedDimension),
+            packagedWeight: isNaN(Number(formValues.productShipment.packagedWeight)) ? null : Number(formValues.productShipment.packagedWeight),
+            dangerItem: false,
+            /** 
+             * PENGATURAN JUMLAH
+             */
+            packagedQty: formValues.productCount.qtyPerMasterBox,
+            minQty: formValues.productCount.minQtyValue,
+            minQtyType: formValues.productCount.minQtyOption,
+            multipleQty: formValues.productCount.additionalQtyValue,
+            multipleQtyType: formValues.productCount.additionalQtyOption,
+            /**
+             * LAINNYA
+             */
+            displayStock: true,
+            catalogueTaxId: 1,
+            unlimitedStock: false,
         };
 
         if (this.isEditMode) {
-            catalogueData.catalogueImages 
-            = formValues.productMedia.photos
-                .filter((photo, idx) => {
-                    const check = photo !== oldPhotos[idx].value && (!oldPhotos[idx].id || photo);
+            /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
+            const filterPhoto = (photo, idx) => {
+                const check = photo !== oldPhotos[idx].value && (!oldPhotos[idx].id || photo);
 
-                    if (check) {
-                        if (!catalogueData.deletedImages) {
-                            catalogueData.deletedImages = [];
-                        }
-
-                        if (!catalogueData.uploadedImages) {
-                            catalogueData.uploadedImages = [];
-                        }
-                        
-                        if (oldPhotos[idx].id) {
-                            catalogueData.deletedImages.push(oldPhotos[idx].id);
-                        }
-
-                        catalogueData.uploadedImages.push({ base64: photo });
+                if (check) {
+                    if (!catalogueData.deletedImages) {
+                        catalogueData.deletedImages = [];
                     }
 
-                    return check; 
-                });
-        }
+                    if (!catalogueData.uploadedImages) {
+                        catalogueData.uploadedImages = [];
+                    }
+                    
+                    if (oldPhotos[idx].id) {
+                        catalogueData.deletedImages.push(oldPhotos[idx].id);
+                    }
 
-        // delete catalogueData.catalogueImages;
-        // console.log(catalogueData);
+                    catalogueData.uploadedImages.push({ base64: photo });
+                }
+
+                return check; 
+            };
+
+            catalogueData.catalogueImages = formValues.productMedia.photos.filter(filterPhoto);
+        }
 
         if (!this.isEditMode) {
             this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
@@ -277,9 +303,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 category: ['', Validators.required],
                 stock: [''],
                 uom: [''],
-                minQty: ['', [Validators.required, Validators.min(1)]],
-                packagedQty: ['', [Validators.required, Validators.min(1)]],
-                multipleQty: ['', [Validators.required, Validators.min(1)]]
+                // minQty: ['', [Validators.required, Validators.min(1)]],
+                // packagedQty: ['', [Validators.required, Validators.min(1)]],
+                // multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
                 retailPrice: ['', Validators.required],
@@ -305,13 +331,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     this.fb.group({ id: [null], value: [null] }),
                 ])
             }),
-            productSize: this.fb.group({
-                length: [''],
-                width: [''],
-                height: ['']
-            }),
             productShipment: this.fb.group({
-                weight: [''],
+                catalogueWeight: ['', [Validators.required, Validators.min(1)]],
+                packagedWeight: ['', [Validators.required, Validators.min(1)]],
+                catalogueDimension: ['', [Validators.required, Validators.min(1)]],
+                packagedDimension: ['', [Validators.required, Validators.min(1)]],
                 isDangerous: [''],
                 couriers: this.fb.array([
                     this.fb.control({
@@ -327,6 +351,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         disabled: this.fb.control(false)
                     })
                 ])
+            }),
+            productCount: this.fb.group({
+                qtyPerMasterBox: ['', [Validators.required, Validators.min(1)]],
+                minQtyOption: ['pcs'],
+                minQtyValue: ['1', [Validators.required, Validators.min(1)]],
+                additionalQtyOption: ['pcs'],
+                additionalQtyValue: ['1', [Validators.required, Validators.min(1)]],
             })
         });
 
@@ -347,6 +378,47 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'variants'
         ) as FormArray).controls;
 
+        // this.store.select(CatalogueSelectors.getCategoryTree)
+        //     .pipe(
+        //         withLatestFrom(this.store.select(CatalogueSelectors.getSelectedCatalogue)),
+        //         takeUntil(this._unSubs$)
+        //     )
+        //     .subscribe(([categories, catalogue]) => {
+        //         if (categories.length === 0) {
+        //             this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
+        //         } else if (catalogue) {
+        //             const searchCategory = (id, selectedCategories: Array<CatalogueCategory> ) => {
+        //                 const selectedCategory = selectedCategories.filter(category => category.id === id);
+
+        //                 return {
+        //                     id: selectedCategory[0].id,
+        //                     name: selectedCategory[0].category,
+        //                     parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
+        //                     children: selectedCategory[0].children
+        //                 };
+        //             };
+
+        //             const newCategories = [];
+        //             let isFirst = true;
+        //             do {
+        //                 if (isFirst) {
+        //                     newCategories.push(searchCategory(catalogue.firstCatalogueCategoryId, categories));
+        //                     isFirst = false;
+        //                 } else {
+        //                     const lastCategory = newCategories[newCategories.length - 1];
+        //                     newCategories.push(searchCategory(lastCategory.id, lastCategory.children));
+        //                 }
+        //             } while (newCategories[newCategories.length - 1].children.length > 0);
+
+
+        //             this.store.dispatch(CatalogueActions.setSelectedCategories({
+        //                 payload: [
+        //                     ...newCategories.map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent }))
+        //                 ]
+        //             }));
+        //         }
+        //     });
+
         this.store.select(CatalogueSelectors.getSelectedCategories)
             .pipe(
                 withLatestFrom(
@@ -364,55 +436,83 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     }
 
                     return of([data.auth, data.categories, data.productName]);
+                    // return of({
+                    //     auth: data.auth,
+                    //     categories: data.categories,
+                    //     productName: data.productName
+                    // });
                 }),
                 takeUntil(this._unSubs$)
             ).subscribe(data => {
-                let categories;
+                const auth = data[0];
+                const categories = data[1];
+                const productName = data[2];
 
-                if (data[1][0]) {
-                    categories = (!this.isEditMode || !data[1][0].parent) ? data[1] : Array(...data[1]).reverse();
-                }
+                // if (categories[0]) {
+                //     categories = (!this.isEditMode || !categories[0].parent) ? categories[1] : Array(...categories[1]).reverse();
+                // }
 
                 // this.brandUser$.id = auth.data.userBrands[0].brand.id;
                 // this.brandUser$.name = auth.data.userBrands[0].brand.name;
-                this.form.get('productInfo.brandId').patchValue(data[0].user.userSuppliers[0].id);
-                this.form.get('productInfo.brandName').patchValue(data[0].user.userSuppliers[0].name);
-
+                this.form.get('productInfo.brandId').patchValue(auth.user.userSuppliers[0].id);
+                this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
                 this.form.get('productInfo.category').patchValue(categories);
 
-                this.startFetchBrands(data[0].user.userSuppliers[0].id);
+                this.startFetchBrands(auth.user.userSuppliers[0].id);
+
+
+                // const uniqCategoryIds = (categories as Array<{ id: string; name: string; parent: string; }>)
+                //                             .map(category => category.id)
+                //                             .filter((categoryId, _, self) => {
+                //                                 return self.filter(s => s === categoryId).length > 0;
+                //                             });
+                // const newCategories = [];
+                // const uniqueCategoryIds = new Set(categories.map(category => category.id));
+                // for (const [_, id] of uniqueCategoryIds.entries()) {
+                //     const category = categories.filter(cat => cat.id === id);
+
+                //     if (category.length > 0) {
+                //         newCategories.push(category[0]);
+                //     }
+                // }
+
                 
                 if (!this.isEditMode) {
-                    this.form.get('productInfo.name').patchValue(data[2]);
+                    this.form.get('productInfo.name').patchValue(productName);
                 }
 
-                if (Array.isArray(categories)) {
-                    this.productCategory$ = categories.map(category => category.name).join(' > ');
-                }
+                // if (Array.isArray(categories)) {
+                //     if (this.isEditMode) {
+                //         this.productCategory$ = newCategories.reverse().map(category => category['name']).join(' > ');
+                //     } else {
+                //         this.productCategory$ = newCategories.map(category => category['name']).join(' > ');
+                //     }
+                // }
+                this.productCategory$ = categories.map(category => category['name']).join(' > ');
 
                 this._cd.markForCheck();
-                console.log(this.form.getRawValue());
+                // console.log(this.form.getRawValue());
             });
 
         this.subs.add(
             this.form
-                .valueChanges
+                .statusChanges
                 .pipe(
                     distinctUntilChanged(),
-                    debounceTime(1000)
+                    debounceTime(100)
                 )
                 .subscribe(() => {
-                    console.log('FORM', this.form);
-                    console.log('FORM VALUE', this.form.getRawValue());
+                    // console.log('FORM', this.form);
+                    // console.log('FORM VALUE', this.form.getRawValue());
                     // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
 
-                    const pristineStatuses = [
-                        this.form.get('productInfo').pristine,
-                        this.form.get('productSale').pristine,
-                        this.form.get('productMedia').pristine,
-                        this.form.get('productSize').pristine,
-                        this.form.get('productShipment').pristine
-                    ];
+                    // const pristineStatuses = [
+                    //     this.form.get('productInfo').pristine,
+                    //     this.form.get('productSale').pristine,
+                    //     this.form.get('productMedia').pristine,
+                    //     this.form.get('productSize').pristine,
+                    //     this.form.get('productShipment').pristine
+                    // ];
 
                     if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
                         this.store.dispatch(FormActions.setFormStatusValid());
@@ -421,6 +521,87 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     }
 
                     this._cd.markForCheck();
+                })
+        );
+
+        this.subs.add(
+            this.form.get('productCount.minQtyOption')
+                .valueChanges
+                .pipe(
+                    distinctUntilChanged(),
+                    debounceTime(100)
+                )
+                .subscribe(value => {
+                    const minQtyValueController = this.form.get('productCount.minQtyValue');
+                    const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
+
+                    switch (value) {
+                        case 'master_box':
+                            minQtyValueController.disable();
+                            minQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                            break;
+                        case 'custom':
+                            minQtyValueController.enable();
+                            // minQtyValueController.patchValue(1);
+                            break;
+                        case 'pcs':
+                        default:
+                            minQtyValueController.disable();
+                            minQtyValueController.patchValue(1);
+                            break;
+                    }
+                })
+        );
+
+        this.subs.add(
+            this.form.get('productCount.additionalQtyOption')
+                .valueChanges
+                .pipe(
+                    distinctUntilChanged(),
+                    debounceTime(100)
+                )
+                .subscribe(value => {
+                    const additionalQtyValueController = this.form.get('productCount.additionalQtyValue');
+                    const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
+
+                    switch (value) {
+                        case 'master_box':
+                            additionalQtyValueController.disable();
+                            additionalQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                            break;
+                        case 'custom':
+                            additionalQtyValueController.enable();
+                            // minQtyValueController.patchValue(1);
+                            break;
+                        case 'pcs':
+                        default:
+                            additionalQtyValueController.disable();
+                            additionalQtyValueController.patchValue(1);
+                            break;
+                    }
+                })
+        );
+
+        this.subs.add(
+            this.form.get('productCount.qtyPerMasterBox')
+                .valueChanges
+                .pipe(
+                    distinctUntilChanged(),
+                    debounceTime(100)
+                )
+                .subscribe(value => {
+                    const minQtyOption = this.form.get('productCount.minQtyOption');
+                    const minQtyValue = this.form.get('productCount.minQtyValue');
+                    const additionalQtyOption = this.form.get('productCount.additionalQtyOption');
+                    const additionalQtyValue = this.form.get('productCount.additionalQtyValue');
+
+                    if (minQtyOption.value === 'master_box') {
+                        minQtyValue.setValue(value);
+                    }
+
+                    if (additionalQtyOption.value === 'master_box') {
+                        additionalQtyValue.setValue(value);
+                    }
                 })
         );
 
@@ -507,90 +688,137 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this
                 .store
                 .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
-            this
-                .store
-                .select(CatalogueSelectors.getSelectedCatalogue)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe(catalogue => {
-                    if (catalogue) {
-                        for (const keyword of catalogue.catalogueKeywordCatalogues) {
-                            if ((this.form.get('productSale.tags') as FormArray).controls.length > catalogue.catalogueKeywordCatalogues.length) {
-                                (this.form.get('productSale.tags') as FormArray).clear();
-                            }
+            
+            combineLatest([
+                this.store.select(CatalogueSelectors.getSelectedCatalogue),
+                this.store.select(CatalogueSelectors.getCatalogueCategories)
+            ]).pipe(
+                takeUntil(this._unSubs$)
+            ).subscribe(([catalogue, categories]) => {
+                if (categories.length === 0) {
+                    this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
+                } else if (categories.length > 0 && catalogue) {
+                    const searchCategory = (catalogueId, selectedCategories: Array<CatalogueCategory> ) => {
+                        const selectedCategory = selectedCategories.filter(category => category.id === catalogueId);
 
-                            (this.form.get('productSale.tags') as FormArray).push(
-                                this.fb.control(keyword.catalogueKeyword.tag)
-                            );
+                        return {
+                            id: selectedCategory[0].id,
+                            name: selectedCategory[0].category,
+                            parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
+                            children: selectedCategory[0].children
+                        };
+                    };
+
+                    const newCategories = [];
+                    let isFirst = true;
+                    do {
+                        if (isFirst) {
+                            newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
+                            isFirst = false;
+                        } else {
+                            const lastCategory = newCategories[newCategories.length - 1];
+                            newCategories.push(searchCategory(lastCategory.parent, categories));
                         }
+                    } while (newCategories[newCategories.length - 1].parent);
 
-                        this.form.patchValue({
-                            productInfo: {
-                                id: catalogue.id,
-                                externalId: catalogue.externalId,
-                                name: catalogue.name,
-                                description: catalogue.description,
-                                // variant: ['', Validators.required],
-                                brandId: catalogue.brandId,
-                                // brandName: 'ini cuma unusued brand',
-                                // category: ['', Validators.required],
-                                stock: catalogue.stock,
-                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                                minQty: catalogue.minQty,
-                                packagedQty: catalogue.packagedQty,
-                                multipleQty: catalogue.multipleQty
-                            }, productSale: {
-                                retailPrice: catalogue.suggestRetailPrice.toString().replace('.', ','),
-                                productPrice: catalogue.productPrice.toString().replace('.', ','),
-                                // variants: this.fb.array([])
-                            }, productMedia: {
-                                photos: [
-                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
-                                ],
-                                oldPhotos: [
-                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
-                                ]
-                            },
-                            productSize: {
-                                length: catalogue.length,
-                                width: catalogue.width,
-                                height: catalogue.height
-                            },
-                            productShipment: {
-                                weight: catalogue.weight,
-                                // isDangerous: [''],
-                                // couriers: this.fb.array([
-                                //     this.fb.control({
-                                //         name: 'SiCepat REG (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     }),
-                                //     this.fb.control({
-                                //         name: 'JNE REG (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     }),
-                                //     this.fb.control({
-                                //         name: 'SiCepat Cargo (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     })
-                                // ])
-                            }
-                        });
 
-                        this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
+                    this.store.dispatch(CatalogueActions.setSelectedCategories({
+                        payload: [
+                            ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent }))
+                        ]
+                    }));
 
-                        for (const [idx, image] of catalogue.catalogueImages.entries()) {
-                            this.productPhotos.controls[idx].setValue(image.imageUrl);
-                            this.productOldPhotos.controls[idx].get('id').setValue(image.id);
-                            this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
-                        }
-
-                        this.store.dispatch(
-                            CatalogueActions
-                                .fetchCatalogueCategoryRequest({
-                                    payload: String(catalogue.lastCatalogueCategoryId)
-                                })
-                            );
+                    const keywords = catalogue.catalogueKeywordCatalogues.map(keyword => keyword.catalogueKeyword.tag);
+                    (this.form.get('productSale.tags') as FormArray).clear();
+                    for (const keyword of keywords) {
+                        (this.form.get('productSale.tags') as FormArray).push(this.fb.control(keyword));
                     }
-                });
+
+                    this.form.patchValue({
+                        productInfo: {
+                            id: catalogue.id,
+                            externalId: catalogue.externalId,
+                            name: catalogue.name,
+                            description: catalogue.description,
+                            // variant: ['', Validators.required],
+                            brandId: catalogue.brandId,
+                            // brandName: 'ini cuma unusued brand',
+                            // category: ['', Validators.required],
+                            stock: catalogue.stock,
+                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                            minQty: catalogue.minQty,
+                            packagedQty: catalogue.packagedQty,
+                            multipleQty: catalogue.multipleQty
+                        }, productSale: {
+                            retailPrice: catalogue.suggestRetailPrice.toString().replace('.', ','),
+                            productPrice: catalogue.productPrice.toString().replace('.', ','),
+                            // variants: this.fb.array([])
+                        }, productMedia: {
+                            photos: [
+                                ...catalogue.catalogueImages.map(image => image.imageUrl)
+                            ],
+                            oldPhotos: [
+                                ...catalogue.catalogueImages.map(image => image.imageUrl)
+                            ]
+                        },
+                        productShipment: {
+                            catalogueWeight: catalogue.catalogueWeight,
+                            packagedWeight: catalogue.packagedWeight,
+                            catalogueDimension: catalogue.catalogueDimension,
+                            packagedDimension: catalogue.packagedDimension,
+                            // isDangerous: [''],
+                            // couriers: this.fb.array([
+                            //     this.fb.control({
+                            //         name: 'SiCepat REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'JNE REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'SiCepat Cargo (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     })
+                            // ])
+                        },
+                        productCount: {
+                            qtyPerMasterBox: catalogue.packagedQty,
+                            minQtyOption: catalogue.minQtyType,
+                            minQtyValue: catalogue.minQty,
+                            additionalQtyOption: catalogue.multipleQtyType,
+                            additionalQtyValue: catalogue.multipleQty,
+                        }
+                    });
+
+                    if (catalogue.minQtyType !== 'custom') {
+                        this.form.get('productCount.minQtyValue').disable();
+                    } else {
+                        this.form.get('productCount.minQtyValue').enable();
+                    }
+
+                    if (catalogue.multipleQtyType !== 'custom') {
+                        this.form.get('productCount.additionalQtyValue').disable();
+                    } else {
+                        this.form.get('productCount.additionalQtyValue').enable();
+                    }
+
+                    // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
+
+                    for (const [idx, image] of catalogue.catalogueImages.entries()) {
+                        this.productPhotos.controls[idx].setValue(image.imageUrl);
+                        this.productOldPhotos.controls[idx].get('id').setValue(image.id);
+                        this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
+                    }
+
+                    // this.store.dispatch(
+                    //     CatalogueActions
+                    //         .fetchCatalogueCategoryRequest({
+                    //             payload: String(catalogue.lastCatalogueCategoryId)
+                    //         })
+                    //     );
+                }
+            });
         }
     }
 

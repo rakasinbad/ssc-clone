@@ -33,7 +33,7 @@
                                 (form.get('productInfo.externalId').dirty || form.get('productInfo.externalId').touched)
                             "
                         >
-                            *External ID
+                            *Produk ID
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -89,6 +89,7 @@
                     >
                         <label
                             fxFlex="20"
+                            style="padding-top: 1.5em;"
                             [class.mat-error]="
                                 form.get('productInfo.description').errors &&
                                 !form.get('productInfo.description').untouched &&
@@ -274,96 +275,6 @@
                         </mat-form-field>
                     </div>
                     <!-- / UOM -->
-                    <!-- MINIMUM QUANTITY -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between start"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="12"
-                            [class.mat-error]="
-                                form.get('productInfo.minQty').errors &&
-                                !form.get('productInfo.minQty').untouched &&
-                                (form.get('productInfo.minQty').dirty || form.get('productInfo.minQty').touched)
-                            "
-                        >
-                            *Min. Order Quantity
-                        </label>
-                
-                        <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="minQty"
-                                formControlName="minQty"
-                                mask="separator"
-                                thousandSeparator="."
-                            />
-                        </mat-form-field>
-                    </div>
-                    <!-- / MINIMUM QUANTITY -->
-                    <!-- PACKAGED QUANTITY -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between start"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="12"
-                            [class.mat-error]="
-                                form.get('productInfo.packagedQty').errors &&
-                                !form.get('productInfo.packagedQty').untouched &&
-                                (form.get('productInfo.packagedQty').dirty || form.get('productInfo.packagedQty').touched)
-                            "
-                        >
-                            *Add Per Convertion Unit
-                        </label>
-                
-                        <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="packagedQty"
-                                formControlName="packagedQty"
-                                mask="separator"
-                                thousandSeparator="."
-                            />
-                        </mat-form-field>
-                    </div>
-                    <!-- / PACKAGED QUANTITY -->
-                    <!-- MULTIPLE QUANTITY -->
-                    <div
-                        class="custom-field"
-                        fxLayout="row"
-                        fxLayoutAlign="space-between start"
-                        formGroupName="productInfo"
-                    >
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="12"
-                            [class.mat-error]="
-                                form.get('productInfo.multipleQty').errors &&
-                                !form.get('productInfo.multipleQty').untouched &&
-                                (form.get('productInfo.multipleQty').dirty || form.get('productInfo.multipleQty').touched)
-                            "
-                        >
-                            *Multiplication Quantity
-                        </label>
-                
-                        <mat-form-field appearance="outline" fxFlex="80">
-                            <input
-                                matInput
-                                name="multipleQty"
-                                formControlName="multipleQty"
-                                mask="separator"
-                                thousandSeparator="."
-                            />
-                        </mat-form-field>
-                    </div>
-                    <!-- / MULTIPLE QUANTITY -->
                 </form>
             </div>
         </div>
@@ -379,14 +290,15 @@
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
                     <!-- HARGA PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productSale"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productSale.productPrice').errors &&
                                 !form.get('productSale.productPrice').untouched &&
@@ -410,21 +322,22 @@
                     <!-- / HARGA PRODUK -->
                     <!-- HARGA RETAIL -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productSale"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productSale.retailPrice').errors &&
                                 !form.get('productSale.retailPrice').untouched &&
                                 (form.get('productSale.retailPrice').dirty || form.get('productSale.retailPrice').touched)
                             "
                         >
-                            *Suggested Retail Price
+                            *Suggested <br/>Retail Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -441,14 +354,15 @@
                     <!-- / HARGA RETAIL -->
                     <!-- TAG PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productSale"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productSale.tags').errors &&
                                 !form.get('productSale.tags').untouched &&
@@ -798,21 +712,12 @@
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
-                            *ngIf="form.get('productMedia.photos').errors"
+                            fxFlex="20"
                             [class.mat-error]="
                                 form.get('productMedia.photos').errors &&
                                 !form.get('productMedia.photos').untouched &&
                                 (form.get('productMedia.photos').dirty || form.get('productMedia.photos').touched)
                             "
-                        >
-                            
-                        </label>
-
-                        <label
-                            fxFlexAlign="center"
-                            fxFlex="12"
-                            *ngIf="!form.get('productMedia.photos').errors"
                         >
                             Foto Produk
                         </label>
@@ -920,98 +825,134 @@
         
             <div class="p-16 pt-0 line-height-1.75">
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
-                    <!-- BERAT PRODUK -->
+                    <!-- BERAT PER PCS PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productShipment"
                     >
                         <label
+                            class="pr-0"
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
                             [class.mat-error]="
-                                form.get('productShipment.weight').errors &&
-                                !form.get('productShipment.weight').untouched &&
-                                (form.get('productShipment.weight').dirty || form.get('productSale.price').touched)
+                                form.get('productShipment.catalogueWeight').errors &&
+                                !form.get('productShipment.catalogueWeight').untouched &&
+                                (form.get('productShipment.catalogueWeight').dirty || form.get('productShipment.catalogueWeight').touched)
                             "
                         >
-                            Berat
+                            Berat per Pcs
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
                                 matInput
                                 name="weight"
-                                formControlName="weight"
+                                formControlName="catalogueWeight"
                                 mask="separator"
                                 thousandSeparator="."
                                 placeholder="in gram(s)"
                             />
                         </mat-form-field>
                     </div>
-                    <!-- / HARGA PRODUK -->
-                    <!-- UKURAN PRODUK -->
+                    <!-- / BERAT PER PCS PRODUK -->
+                    <!-- BERAT PER MASTER BOX PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
-                        formGroupName="productSize"
+                        formGroupName="productShipment"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="
+                                form.get('productShipment.packagedWeight').errors &&
+                                !form.get('productShipment.packagedWeight').untouched &&
+                                (form.get('productShipment.packagedWeight').dirty || form.get('productShipment.packagedWeight').touched)
+                            "
+                        >
+                            Berat per <br/>Master Box
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="weight"
+                                formControlName="packagedWeight"
+                                mask="separator"
+                                thousandSeparator="."
+                                placeholder="in gram(s)"
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / BERAT PER MASTER BOX PRODUK -->
+                    <!-- DIMENSI PER PCS PRODUK -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="
+                                form.get('productShipment.catalogueDimension').errors &&
+                                form.get('productShipment.catalogueDimension').touched &&
+                                (form.get('productShipment.catalogueDimension').dirty || form.get('productShipment.catalogueDimension').touched)
+                            "
+                        >
+                            Dimensi per <br/>Pcs
+                        </label>
+
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input matInput
+                                name="width"
+                                formControlName="catalogueDimension"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                            <!-- <p matSuffix>cm³</p> -->
+                            <p matSuffix>cm<sup>3</sup></p>
+                        </mat-form-field>
+                    </div>
+                    <!-- / DIMENSI PER PCS PRODUK -->
+                    <!-- DIMENSI PER MASTER BOX PRODUK -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productShipment"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
-                                form.get('productSize.length').errors &&
-                                form.get('productSize.width').errors &&
-                                form.get('productSize.height').errors &&
-                                !form.get('productSize.length').untouched &&
-                                !form.get('productSize.width').untouched &&
-                                !form.get('productSize.height').untouched &&
-                                (form.get('productSize.length').dirty || form.get('productSize.length').touched) &&
-                                (form.get('productSize.width').dirty || form.get('productSize.width').touched) &&
-                                (form.get('productSize.height').dirty || form.get('productSize.height').touched)
+                                form.get('productShipment.packagedDimension').errors &&
+                                form.get('productShipment.packagedDimension').touched &&
+                                (form.get('productShipment.packagedDimension').dirty || form.get('productShipment.packagedDimension').touched)
                             "
                         >
-                            Ukuran Paket
+                            Dimensi per <br/>Master Box
                         </label>
 
-                        <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
-                            <mat-form-field appearance="outline">
-                                <input matInput
-                                    name="width"
-                                    formControlName="width"
-                                    placeholder="L"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                />
-                                <p matSuffix>cm</p>
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline">
-                                <input matInput
-                                    name="height"
-                                    formControlName="height"
-                                    placeholder="P"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                />
-                                <p matSuffix>cm</p>
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline">
-                                <input matInput
-                                    name="width"
-                                    formControlName="width"
-                                    placeholder="T"
-                                    mask="separator"
-                                    thousandSeparator="."
-                                />
-                                <p matSuffix>cm</p>
-                            </mat-form-field>
-                        </div>
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input matInput
+                                name="width"
+                                formControlName="packagedDimension"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                            <!-- <p matSuffix>cm³</p> -->
+                            <p matSuffix>cm<sup>3</sup></p>
+                        </mat-form-field>
                     </div>
-                    <!-- / TAG PRODUK -->
+                    <!-- / DIMENSI PER MASTER BOX PRODUK -->
                     <!-- VARIASI PRODUK -->
                     <!-- <div
                         class="custom-field"
@@ -1078,6 +1019,133 @@
                         </div>
                     </div> -->
                     <!-- / SERVICE PENGIRIMAN -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (PENGIRIMAN PRODUK) -->
+        <!-- CONTENT CARD (PENGATURAN JUMLAH PRODUK) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="h1">Pengaturan Jumlah</div>
+            </div>
+        
+            <div class="p-16 pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                    <!-- QUANTITY PER MASTER BOX -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between center"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            fxLayout="column"
+                            fxLayoutAlign="center end"
+                            [class.mat-error]="
+                                form.get('productCount.qtyPerMasterBox').errors &&
+                                !form.get('productCount.qtyPerMasterBox').untouched &&
+                                (form.get('productCount.qtyPerMasterBox').dirty || form.get('productCount.qtyPerMasterBox').touched)
+                            "
+                        >
+                            Quantity <br/>per Master Box
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="qtyPerMasterBox"
+                                formControlName="qtyPerMasterBox"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                        </mat-form-field>
+                    </div>
+                    <!-- / QUANTITY PER MASTER BOX -->
+                    <!-- MINIMUM OF QUANTITY -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            fxLayout="column"
+                            fxLayoutAlign="center end"
+                            [class.mat-error]="
+                                form.get('productCount.minQtyValue').errors &&
+                                !form.get('productCount.minQtyValue').untouched &&
+                                (form.get('productCount.minQtyValue').dirty || form.get('productCount.minQtyValue').touched)
+                            "
+                        >
+                            Minimum of <br/>Quantity
+                        </label>
+
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <mat-radio-group formControlName="minQtyOption">
+                                <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices;" [value]="choice.id">{{ choice.label }}</mat-radio-button>
+                            </mat-radio-group>
+                            <!-- / RADIO BUTTON SELECT TYPE -->
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input matInput
+                                    name="minQtyValue"
+                                    formControlName="minQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                />
+                            </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
+                        </div>
+                    </div>
+                    <!-- / MINIMUM OF QUANTITY -->
+                    <!-- ADDITIONAL QUANTITY -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productCount"
+                    >
+                        <label
+                            class="pr-0"
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            fxLayout="column"
+                            fxLayoutAlign="center end"
+                            [class.mat-error]="
+                                form.get('productCount.additionalQtyValue').errors &&
+                                !form.get('productCount.additionalQtyValue').untouched &&
+                                (form.get('productCount.additionalQtyValue').dirty || form.get('productCount.additionalQtyValue').touched)
+                            "
+                        >
+                            Additional <br/>Quantity
+                        </label>
+
+                        <div fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="5px" fxFlex="80">
+                            <!-- RADIO BUTTON SELECT TYPE -->
+                            <mat-radio-group formControlName="additionalQtyOption">
+                                <mat-radio-button class="pr-36" *ngFor="let choice of quantityChoices;" [value]="choice.id">{{ choice.label }}</mat-radio-button>
+                            </mat-radio-group>
+                            <!-- / RADIO BUTTON SELECT TYPE -->
+                            <!-- INPUT TEXT BOX -->
+                            <mat-form-field appearance="outline">
+                                <input matInput
+                                    name="additionalQtyValue"
+                                    formControlName="additionalQtyValue"
+                                    mask="separator"
+                                    thousandSeparator="."
+                                />
+                            </mat-form-field>
+                            <!-- / INPUT TEXT BOX -->
+                        </div>
+                    </div>
+                    <!-- / ADDITIONAL QUANTITY -->
                 </form>
             </div>
         </div>

@@ -7,5 +7,9 @@ app-catalogues-form {
             max-width: 100%;
             min-width: 100%;
         }
+
+        mat-radio-group {
+            padding-top: 0.75em;
+        }
     }
 }
