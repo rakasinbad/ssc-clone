@@ -1,4 +1,5 @@
 import {
+    Brand,
     IResponsePaginate,
     ITimestamp,
     Timestamp,
@@ -20,6 +21,17 @@ $$$$$$/ $$/   $$/    $$$$/   $$$$$$$/ $$/       $$/      $$$$$$$/  $$$$$$$/  $$$
                                                                                                 
                                                                                                 
 */
+
+type TCatalogueStatus = 'active' | 'inactive' | 'banned';
+type TQuantityType = 'pcs' | 'master_box' | 'custom';
+
+export interface IViolationType {
+    id: number;
+    type: string;
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt: TNullable<Date>;
+}
 
 export interface ICatalogueCategory {
     id: string;
@@ -102,51 +114,68 @@ export interface ICatalogueVariant {
     deletedAt: TNullable<string>;
 }
 
-export interface ICatalogue {
+export interface ICatalogue extends ITimestamp {
     id: string;
     name: string;
+    externalId: string;
     barcode: string;
     information: string;
     description: string;
     detail: string;
-    color: string;
-    weight: number;
-    dimension: number;
-    externalId: string;
+    // color: string;
+    catalogueWeight: TNullable<number>;
+    catalogueDimension: TNullable<number>;
+    packagedWeight: TNullable<number>;
+    packagedDimension: TNullable<number>;
     sku: string;
-    skuRef: string;
+    // skuRef: string;
     productPrice: number;
     suggestRetailPrice: number;
     minQty: number;
-    packagedQty: number;
-    multipleQty: number;
+    minQtyType: TQuantityType;
+    packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
+    multipleQty: number; // Additional Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
+    multipleQtyType: TQuantityType; // Additional Quantity Type
     displayStock: boolean;
     stock: number;
-    hazardLevel: number;
-    forSale: boolean;
+    unlimitedStock: boolean;
+    // hazardLevel: number;
+    dangerItem: boolean;
+    // forSale: boolean;
     unitOfMeasureId: number;
-    purchaseUnitOfMeasure: number;
-    status: 'active' | 'inactive' | 'banned';
-    principalId: number;
+    status: TCatalogueStatus;
+    // purchaseUnitOfMeasure: number;
+    // principalId: number;
     catalogueTaxId: number;
-    catalogueVariantId: number;
+    // catalogueVariantId: number;
     brandId: number;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
-    catalogueTypeId: number;
+    violationTypeId: TNullable<number>;
+    violationSuggestion: TNullable<string>;
+    violationReason: TNullable<string>;
+    // catalogueTypeId: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
     catalogueCategoryId: TNullable<number>;
     catalogueUnitId: TNullable<number>;
-    catalogueImages: Array<ICatalogueImage>;
-    catalogueTax: ICatalogueTax;
-    firstCatalogueCategory: ICatalogueCategory;
-    lastCatalogueCategory: ICatalogueCategory;
-    catalogueKeywordCatalogues: Array<ICatalogueKeywordCatalogue>;
-    catalogueType: ICatalogueType;
-    catalogueUnit: ICatalogueUnit;
-    catalogueVariant: ICatalogueVariant;
+    catalogueImages: Array<CatalogueImage>;
+    catalogueTax: CatalogueTax;
+    firstCatalogueCategory: CatalogueCategory;
+    lastCatalogueCategory: CatalogueCategory;
+    catalogueKeywordCatalogues: Array<CatalogueKeywordCatalogue>;
+    // catalogueType: ICatalogueType;
+    catalogueUnit: CatalogueUnit;
+    violationType: TNullable<ViolationType>;
+    brand: Brand;
+    // catalogueVariant: ICatalogueVariant;
+    /**
+     * LAINNYA (DIBUTUHKAN KETIKA ADA HAL-HAL KHUSUS)
+     */
+    catalogueKeywords?: Array<CatalogueKeyword>;
+    deletedImages?: Array<number>;
+    uploadedImages?: Array<{ base64: string }>;
 }
 
 export interface ICatalogueUnitResponse extends IResponsePaginate {
@@ -186,6 +215,28 @@ $$ \__/  |$$ |/$$$$$$$ | $$$$$$  |$$$$$$  |$$$$$$$$/  $$$$$$  |
 $$    $$/ $$ |$$    $$ |/     $$//     $$/ $$       |/     $$/ 
  $$$$$$/  $$/  $$$$$$$/ $$$$$$$/ $$$$$$$/   $$$$$$$/ $$$$$$$/  
 */
+
+export class ViolationType implements IViolationType {
+    id: number;
+    type: string;
+    createdAt: Date;
+    updatedAt: Date;
+    deletedAt: TNullable<Date>;
+
+    constructor(
+        id: number,
+        type: string,
+        createdAt: Date,
+        updatedAt: Date,
+        deletedAt: TNullable<Date>,
+    ) {
+        this.id = id;
+        this.type = type;
+        this.createdAt = new Date(createdAt);
+        this.updatedAt = new Date(updatedAt);
+        this.deletedAt = deletedAt ? new Date(deletedAt) : null;
+    }
+}
 
 export class CatalogueCategory extends Timestamp {
     id: string;
@@ -461,45 +512,47 @@ export class CatalogueVariant extends Timestamp {
     }
 }
 
-export class Catalogue extends Timestamp implements ICatalogue {
+export class Catalogue implements ICatalogue {
     id: string;
     name: string;
+    externalId: string;
     barcode: string;
     information: string;
     description: string;
-    externalId: string;
     detail: string;
-    color: string;
-    weight: number;
-    length: TNullable<number>;
-    width: TNullable<number>;
-    height: TNullable<number>;
-    dimension: number;
+    // color: string;
+    catalogueWeight: TNullable<number>;
+    catalogueDimension: TNullable<number>;
+    packagedWeight: TNullable<number>;
+    packagedDimension: TNullable<number>;
     sku: string;
-    skuRef: string;
+    // skuRef: string;
     productPrice: number;
     suggestRetailPrice: number;
     minQty: number;
-    packagedQty: number;
-    multipleQty: number;
+    minQtyType: TQuantityType;
+    packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
+    multipleQty: number; // Additional Quantity (Nilai pertambahan saat ingin membeli dengan menekan tombol "+" di aplikasi mobile)
+    multipleQtyType: TQuantityType; // Additional Quantity Type
     displayStock: boolean;
     stock: number;
-    hazardLevel: number;
-    forSale: boolean;
+    unlimitedStock: boolean;
+    // hazardLevel: number;
+    dangerItem: boolean;
+    // forSale: boolean;
     unitOfMeasureId: number;
-    purchaseUnitOfMeasure: number;
-    status: 'active' | 'inactive' | 'banned';
-    principalId: number;
+    status: TCatalogueStatus;
+    // purchaseUnitOfMeasure: number;
+    // principalId: number;
     catalogueTaxId: number;
-    catalogueVariantId: number;
+    // catalogueVariantId: number;
     brandId: number;
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
-    catalogueTypeId: number;
-    dangerItem?: boolean;
-    unlimitedStock?: boolean;
-    deletedImages?: Array<number>;
-    uploadedImages?: Array<{ base64: string }>;
+    violationTypeId: TNullable<number>;
+    violationSuggestion: TNullable<string>;
+    violationReason: TNullable<string>;
+    // catalogueTypeId: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -509,101 +562,113 @@ export class Catalogue extends Timestamp implements ICatalogue {
     catalogueTax: CatalogueTax;
     firstCatalogueCategory: CatalogueCategory;
     lastCatalogueCategory: CatalogueCategory;
-    catalogueKeywords?: Array<CatalogueKeywordCatalogue>;
     catalogueKeywordCatalogues: Array<CatalogueKeywordCatalogue>;
-    catalogueType: CatalogueType;
+    // catalogueType: ICatalogueType;
     catalogueUnit: CatalogueUnit;
-    catalogueVariant: CatalogueVariant;
+    violationType: TNullable<ViolationType>;
+    brand: Brand;
+    // catalogueVariant: ICatalogueVariant;
+    catalogueKeywords: Array<CatalogueKeyword>;
+    deletedImages: Array<number>;
+    uploadedImages: Array<{ base64: string }>;
 
-    constructor(
-        id: string,
-        name: string,
-        barcode: string,
-        information: string,
-        description: string,
-        detail: string,
-        color: string,
-        weight: number,
-        dimension: number,
-        sku: string,
-        skuRef: string,
-        productPrice: number,
-        suggestRetailPrice: number,
-        minQty: number,
-        packagedQty: number,
-        multipleQty: number,
-        displayStock: boolean,
-        stock: number,
-        hazardLevel: number,
-        forSale: boolean,
-        unitOfMeasureId: number,
-        purchaseUnitOfMeasure: number,
-        status: 'active' | 'inactive' | 'banned',
-        principalId: number,
-        catalogueTaxId: number,
-        catalogueVariantId: number,
-        brandId: number,
-        firstCatalogueCategoryId: number,
-        lastCatalogueCategoryId: number,
-        catalogueTypeId: number,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>,
-        catalogueCategoryId: TNullable<number>,
-        catalogueUnitId: TNullable<number>,
-        catalogueImages: Array<CatalogueImage>,
-        catalogueTax: CatalogueTax,
-        firstCatalogueCategory: CatalogueCategory,
-        lastCatalogueCategory: CatalogueCategory,
-        catalogueKeywordCatalogues: Array<CatalogueKeywordCatalogue>,
-        catalogueType: CatalogueType,
-        catalogueUnit: CatalogueUnit,
-        catalogueVariant: CatalogueVariant,
-        externalId: string
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: ICatalogue) {
+        const {
+            id,
+            name,
+            externalId,
+            barcode,
+            information,
+            description,
+            detail,
+            catalogueWeight,
+            catalogueDimension,
+            packagedWeight,
+            packagedDimension,
+            sku,
+            productPrice,
+            suggestRetailPrice,
+            minQty,
+            minQtyType,
+            packagedQty,
+            multipleQty,
+            multipleQtyType,
+            displayStock,
+            stock,
+            unlimitedStock,
+            dangerItem,
+            unitOfMeasureId,
+            status,
+            catalogueTaxId,
+            brandId,
+            firstCatalogueCategoryId,
+            lastCatalogueCategoryId,
+            violationTypeId,
+            violationSuggestion,
+            violationReason,
+            createdAt,
+            updatedAt,
+            deletedAt,
+            catalogueCategoryId,
+            catalogueUnitId,
+            catalogueImages,
+            catalogueTax,
+            firstCatalogueCategory,
+            lastCatalogueCategory,
+            catalogueKeywordCatalogues,
+            catalogueUnit,
+            violationType,
+            brand,
+        } = data;
 
         this.id = id;
-        this.name = name ? name.trim() : name;
-        this.barcode = barcode ? barcode.trim() : barcode;
-        this.information = information ? information.trim() : information;
-        this.description = description ? description.trim() : description;
-        this.detail = detail ? detail.trim() : detail;
-        this.color = color ? color.trim() : color;
-        this.weight = weight;
-        this.dimension = dimension;
-        this.sku = sku ? sku.trim() : sku;
-        this.skuRef = skuRef ? skuRef.trim() : skuRef;
+        this.name = name;
+        this.externalId = externalId;
+        this.barcode = barcode;
+        this.information = information;
+        this.description = description;
+        this.detail = detail;
+        this.catalogueWeight = catalogueWeight ? catalogueWeight : null;
+        this.catalogueDimension = catalogueDimension ? catalogueDimension : null;
+        this.packagedWeight = packagedWeight ? packagedWeight : null;
+        this.packagedDimension = packagedDimension ? packagedDimension : null;
+        this.sku = sku;
         this.productPrice = productPrice;
         this.suggestRetailPrice = suggestRetailPrice;
         this.minQty = minQty;
+        this.minQtyType = minQtyType;
         this.packagedQty = packagedQty;
         this.multipleQty = multipleQty;
+        this.multipleQtyType = multipleQtyType;
         this.displayStock = displayStock;
         this.stock = stock;
-        this.hazardLevel = hazardLevel;
-        this.forSale = forSale;
+        this.unlimitedStock = unlimitedStock;
+        this.dangerItem = dangerItem;
         this.unitOfMeasureId = unitOfMeasureId;
-        this.purchaseUnitOfMeasure = purchaseUnitOfMeasure;
-        this.status = !status ? 'inactive' : status;
-        this.principalId = principalId;
+        this.status = status;
         this.catalogueTaxId = catalogueTaxId;
-        this.catalogueVariantId = catalogueVariantId;
         this.brandId = brandId;
         this.firstCatalogueCategoryId = firstCatalogueCategoryId;
         this.lastCatalogueCategoryId = lastCatalogueCategoryId;
-        this.catalogueTypeId = catalogueTypeId;
-        this.catalogueCategoryId = catalogueCategoryId;
-        this.catalogueUnitId = catalogueUnitId;
-        this.externalId = externalId;
-
+        this.violationTypeId = violationTypeId ? violationTypeId : null;
+        this.violationSuggestion = violationSuggestion ? violationSuggestion : null;
+        this.violationReason = violationReason ? violationReason : null;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt ? deletedAt : null;
+        this.catalogueCategoryId = catalogueCategoryId ? catalogueCategoryId : null;
+        this.catalogueUnitId = catalogueUnitId ? catalogueUnitId : null;
+        this.catalogueUnit = catalogueUnit;
+        this.violationType = violationType ? violationType : null;
+        this.brand = brand;
+        
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88 88b  d88   dPYb   dP   `" 88__   `Ybo." 
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88 88YbdP88  dP__Yb  Yb  "88 88""   o.`Y8b 
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88 88 YY 88 dP""""Yb  YboodP 888888 8bodP' 
         */
-        this.catalogueImages = catalogueImages && catalogueImages.length > 0 ? [
+        this.catalogueImages = Array.isArray(catalogueImages) ? [
             ...catalogueImages.map(catalogueImage => ({
                 ...new CatalogueImage(
                     catalogueImage.id,
@@ -641,49 +706,45 @@ export class Catalogue extends Timestamp implements ICatalogue {
         Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88""   88 88"Yb  o.`Y8b   88    dP 
          YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88     88 88  Yb 8bodP'   88   dP  
         */
-        this.firstCatalogueCategory = firstCatalogueCategory ? {
-            ...new CatalogueCategory(
-                firstCatalogueCategory.id,
-                firstCatalogueCategory.parentId,
-                firstCatalogueCategory.category,
-                firstCatalogueCategory.iconHome,
-                firstCatalogueCategory.iconTree,
-                firstCatalogueCategory.sequence,
-                firstCatalogueCategory.hasChild,
-                firstCatalogueCategory.status,
-                firstCatalogueCategory.createdAt,
-                firstCatalogueCategory.updatedAt,
-                firstCatalogueCategory.deletedAt
-            )
-        } : null;
+        this.firstCatalogueCategory = firstCatalogueCategory ? new CatalogueCategory(
+            firstCatalogueCategory.id,
+            firstCatalogueCategory.parentId,
+            firstCatalogueCategory.category,
+            firstCatalogueCategory.iconHome,
+            firstCatalogueCategory.iconTree,
+            firstCatalogueCategory.sequence,
+            firstCatalogueCategory.hasChild,
+            firstCatalogueCategory.status,
+            firstCatalogueCategory.createdAt,
+            firstCatalogueCategory.updatedAt,
+            firstCatalogueCategory.deletedAt
+        ) : null;
         /*
          dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 88        db    .dP"Y8 888888 Yb  
         dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88       dPYb   `Ybo."   88    Yb 
         Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88  .o  dP__Yb  o.`Y8b   88    dP 
          YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88ood8 dP""""Yb 8bodP'   88   dP  
         */
-        this.lastCatalogueCategory = lastCatalogueCategory ? {
-            ...new CatalogueCategory(
-                lastCatalogueCategory.id,
-                lastCatalogueCategory.parentId,
-                lastCatalogueCategory.category,
-                lastCatalogueCategory.iconHome,
-                lastCatalogueCategory.iconTree,
-                lastCatalogueCategory.sequence,
-                lastCatalogueCategory.hasChild,
-                lastCatalogueCategory.status,
-                lastCatalogueCategory.createdAt,
-                lastCatalogueCategory.updatedAt,
-                lastCatalogueCategory.deletedAt
-            )
-        } : null;
+        this.lastCatalogueCategory = lastCatalogueCategory ? new CatalogueCategory(
+            lastCatalogueCategory.id,
+            lastCatalogueCategory.parentId,
+            lastCatalogueCategory.category,
+            lastCatalogueCategory.iconHome,
+            lastCatalogueCategory.iconTree,
+            lastCatalogueCategory.sequence,
+            lastCatalogueCategory.hasChild,
+            lastCatalogueCategory.status,
+            lastCatalogueCategory.createdAt,
+            lastCatalogueCategory.updatedAt,
+            lastCatalogueCategory.deletedAt
+        ) : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88  dP 888888 Yb  dP Yb        dP  dP"Yb  88""Yb 8888b.  .dP"Y8 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88odP  88__    YbdP   Yb  db  dP  dP   Yb 88__dP  8I  Yb `Ybo." 
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88"Yb  88""     8P     YbdPYbdP   Yb   dP 88"Yb   8I  dY o.`Y8b 
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88  Yb 888888  dP       YP  YP     YbodP  88  Yb 8888Y"  8bodP' 
         */
-        this.catalogueKeywordCatalogues = catalogueKeywordCatalogues && catalogueKeywordCatalogues.length > 0 ?
+        this.catalogueKeywordCatalogues = Array.isArray(catalogueKeywordCatalogues) ?
         [
             ...catalogueKeywordCatalogues.map(catalogueKeywordCatalogue => ({
                 ...new CatalogueKeywordCatalogue(
@@ -706,54 +767,51 @@ export class Catalogue extends Timestamp implements ICatalogue {
                     } : null
                 )
             }))
-        ]
-        : [];
+        ] : [];
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888 Yb  dP 88""Yb 888888 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88    YbdP  88__dP 88__   
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88     8P   88"""  88""   
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88    dP    88     888888 
         */
-        this.catalogueType = catalogueType ? {
-            ...new CatalogueType(
-                catalogueType.id,
-                catalogueType.type,
-                catalogueType.createdAt,
-                catalogueType.updatedAt,
-                catalogueType.deletedAt
-            ) 
-        } : null;
+        // this.catalogueType = catalogueType ? {
+        //     ...new CatalogueType(
+        //         catalogueType.id,
+        //         catalogueType.type,
+        //         catalogueType.createdAt,
+        //         catalogueType.updatedAt,
+        //         catalogueType.deletedAt
+        //     ) 
+        // } : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88   88 88b 88 88 888888 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88   88 88Yb88 88   88   
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       Y8   8P 88 Y88 88   88   
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     `YbodP' 88  Y8 88   88   
         */
-        this.catalogueUnit = catalogueUnit ? {
-            ...new  CatalogueUnit(
-                catalogueUnit.id,
-                catalogueUnit.unit,
-                catalogueUnit.status,
-                catalogueUnit.createdAt,
-                catalogueUnit.updatedAt,
-                catalogueUnit.deletedAt
-            )
-        } : null
+        this.catalogueUnit = catalogueUnit ? new  CatalogueUnit(
+            catalogueUnit.id,
+            catalogueUnit.unit,
+            catalogueUnit.status,
+            catalogueUnit.createdAt,
+            catalogueUnit.updatedAt,
+            catalogueUnit.deletedAt
+        ) : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     Yb    dP    db    88""Yb 88    db    88b 88 888888 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__        Yb  dP    dPYb   88__dP 88   dPYb   88Yb88   88   
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         YbdP    dP__Yb  88"Yb  88  dP__Yb  88 Y88   88   
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888        YP    dP""""Yb 88  Yb 88 dP""""Yb 88  Y8   88   
         */;
-        this.catalogueVariant = catalogueVariant ? {
-            ...new CatalogueVariant(
-                catalogueVariant.id,
-                catalogueVariant.variant,
-                catalogueVariant.createdAt,
-                catalogueVariant.updatedAt,
-                catalogueVariant.deletedAt
-            )
-        } : null;
+        // this.catalogueVariant = catalogueVariant ? {
+        //     ...new CatalogueVariant(
+        //         catalogueVariant.id,
+        //         catalogueVariant.variant,
+        //         catalogueVariant.createdAt,
+        //         catalogueVariant.updatedAt,
+        //         catalogueVariant.deletedAt
+        //     )
+        // } : null;
     }
 
     static patch(catalogue: Partial<Catalogue>): Partial<Catalogue> {
