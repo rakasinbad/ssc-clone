@@ -35,6 +35,7 @@ export class CataloguesService {
      * @memberof MerchantApiService
      */
     private readonly _endpoint = '/catalogues';
+    private readonly _catalogueCategoriesEndpoint = '/catalogue-categories';
     private readonly _categoryTreeEndpoint = '/categories-tree';
 
     /**
@@ -158,6 +159,15 @@ export class CataloguesService {
     setCatalogueToInactive(id: string | number): Observable<Catalogue> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.patch<Catalogue>(`${this._url}/${id}`, { status: 'inactive' });
+    }
+
+    getCatalogueCategories(params: IQueryParams): Observable<Array<CatalogueCategory>> {
+        const newArgs = [];
+
+        this._url = this._$helper.handleApiRouter(this._catalogueCategoriesEndpoint);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, { params: newParams });
     }
 
     getCategoryTree(): Observable<Array<CatalogueCategory>> {
