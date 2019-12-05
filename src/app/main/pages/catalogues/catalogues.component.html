@@ -77,7 +77,7 @@
                     <mat-cell *matCellDef="let row">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
                             <div class="img-container">
-                                <img class="fit-image" [src]="(row?.catalogueImages)[0]?.imageUrl" />
+                                <img class="fit-image" [src]="(row?.catalogueImages)[row?.catalogueImages.length - 1]?.imageUrl" />
                             </div>
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
