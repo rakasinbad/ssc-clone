@@ -10,13 +10,28 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- <button mat-flat-button color="accent">
+                <button type="button" mat-flat-button color="accent" (click)="onDownload()">
                     EXPORT
                 </button>
 
-                <button mat-stroked-button color="accent" class="sinbad">
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="accent"
+                    class="sinbad"
+                    (click)="filePicker.click()"
+                >
                     IMPORT
-                </button> -->
+                </button>
+
+                <form>
+                    <input
+                        type="file"
+                        #filePicker
+                        class="custom-file"
+                        (change)="onFileBrowse($event, 'docs')"
+                    />
+                </form>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -123,26 +138,26 @@
                     </mat-cell>
                 </ng-container> -->
 
-                <!-- Origins Column -->
-                <ng-container matColumnDef="origins">
+                <!-- SNB Order ID Column -->
+                <ng-container matColumnDef="order-code">
                     <mat-header-cell *matHeaderCellDef>
-                        Order Origins
+                        SNB Order ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.order?.originOrderCode) }}
+                            {{ safeValue(row?.order?.orderCode) }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Faktur Code Column -->
-                <ng-container matColumnDef="order-code">
+                <!-- SUP Order ID Column -->
+                <ng-container matColumnDef="order-ref">
                     <mat-header-cell *matHeaderCellDef>
-                        Faktur Code
+                        SUP Order ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.orderCode) }}
+                            {{ safeValue(row?.orderRef) }}
                         </p>
                     </mat-cell>
                 </ng-container>

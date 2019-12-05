@@ -84,6 +84,39 @@ export class AuthEffects {
         )
     );
 
+    // authAutoLogin$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(AuthActions.authAutoLogin),
+    //         exhaustMap(() => {
+    //             return this.storage.get('user').toPromise();
+    //         }),
+    //         map((session: Auth) => {
+    //             if (session && session.user && session.token) {
+    //                 this._$log.generateGroup('[REQUEST AUTO LOGIN]', {
+    //                     session: {
+    //                         type: 'log',
+    //                         value: session
+    //                     },
+    //                     user: {
+    //                         type: 'log',
+    //                         value: session.user
+    //                     },
+    //                     token: {
+    //                         type: 'log',
+    //                         value: session.token
+    //                     }
+    //                 });
+
+    //                 return AuthActions.authAutoLoginSuccess({
+    //                     payload: new Auth(session.user, session.token)
+    //                 });
+    //             }
+
+    //             return AuthActions.authLogout();
+    //         })
+    //     )
+    // );
+
     authAutoLoginSuccess$ = createEffect(
         () =>
             this.actions$.pipe(

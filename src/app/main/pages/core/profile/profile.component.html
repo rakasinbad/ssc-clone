@@ -17,7 +17,7 @@
                     class="product-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
-                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'" />
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
                 </div>
 
                 <div
@@ -25,15 +25,12 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <!-- <div class="h2" *ngIf="pageType ==='edit'">
-                        {{product.name}}
-                    </div>
-                    <div class="h2" *ngIf="pageType ==='new'">
-                        New Product
+                    <div class="h2" *ngIf="profile$ | async as profile">
+                        {{ (profile?.userSuppliers)[0]?.user?.fullName }}
                     </div>
                     <div class="subtitle secondary-text">
-                        <span>Product Detail</span>
-                    </div> -->
+                        <span>Supplier Detail</span>
+                    </div>
                 </div>
             </div>
             <!-- / APP TITLE -->
@@ -59,8 +56,141 @@
             <!-- CONTENT -->
             <div class="content">
                 <mat-tab-group>
-                    <mat-tab label="Informasi Supplier">
-                        <div class="tab-content p-24" fusePerfectScrollbar></div>
+                    <mat-tab label="Informasi Bisnis">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="mb-12">
+                                <span class="mat-headline" *ngIf="!(isLoading$ | async)">
+                                    Informasi Bisnis
+                                </span>
+
+                                <ngx-skeleton-loader
+                                    *ngIf="isLoading$ | async"
+                                    [theme]="{ width: '150px', height: '40px' }"
+                                ></ngx-skeleton-loader>
+                            </div>
+
+                            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="25px">
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Nama Legal/Nama Kantor
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.name }}
+                                    </div>
+                                </div>
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Formulir Legal
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Negara
+                                    </div>
+
+                                    <div class="info">
+                                        Indonesia
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Provinsi
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.province?.name }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kota
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.city }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kecamatan
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.district }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kelurahan
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.urban }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kode Pos
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.zipCode }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Alamat
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.address }}
+                                    </div>
+                                </div>
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Penanggung Jawab
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Nomor KTP
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Foto
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
                     </mat-tab>
 
                     <!-- <mat-tab label="Product Images">

@@ -18,6 +18,7 @@ import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpe
 import {
     Cluster,
     Hierarchy,
+    InvoiceGroup,
     Province,
     StoreGroup,
     StoreSegment,
@@ -52,6 +53,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     tmpIdentityPhotoSelfie: FormControl;
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
+    tempInvoiceGroupName: Array<string>;
     tempCreditLimitAmount: Array<boolean>;
     tempTermOfPayment: Array<boolean>;
 
@@ -184,6 +186,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];
         this.tempTermOfPayment = [false];
 
@@ -305,8 +308,18 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Reset form status state
         this.store.dispatch(FormActions.resetFormStatus());
 
+        // Reset click reset button state
+        this.store.dispatch(FormActions.resetClickResetButton());
+
+        // Reset click save button state
+        this.store.dispatch(FormActions.resetClickSaveButton());
+
         // Reset invoice group state
         this.store.dispatch(DropdownActions.resetInvoiceGroupState());
+
+        this.tempInvoiceGroupName = ['-'];
+        this.tempCreditLimitAmount = [false];
+        this.tempTermOfPayment = [false];
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -1019,15 +1032,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     ],
                     photos: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
+                        ''
+                        // [
+                        //     RxwebValidators.required({
+                        //         message: this._$errorMessage.getErrorMessageNonState(
+                        //             'default',
+                        //             'required'
+                        //         )
+                        //     })
+                        // ]
                     ],
                     npwpId: [
                         '',
@@ -1277,26 +1290,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             ]
                         ],
                         storeGroup: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeCluster: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeSegment: [
                             '',
@@ -1324,6 +1337,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     if (data && data.length > 0) {
                         for (const [idx, row] of data.entries()) {
                             if (row.id) {
+                                this.tempInvoiceGroupName[idx] = row.name || '-';
+
                                 if (idx > 0) {
                                     this.formCreditLimits.push(
                                         this.formBuilder.group({
@@ -1420,15 +1435,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     ],
                     photos: [
-                        '',
-                        [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            })
-                        ]
+                        ''
+                        // [
+                        //     RxwebValidators.required({
+                        //         message: this._$errorMessage.getErrorMessageNonState(
+                        //             'default',
+                        //             'required'
+                        //         )
+                        //     })
+                        // ]
                     ],
                     npwpId: [
                         '',
@@ -1586,26 +1601,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             ]
                         ],
                         storeGroup: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeCluster: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeSegment: [
                             '',
@@ -1803,6 +1818,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                             for (const [idx, row] of creditLimitStores.entries()) {
                                 if (typeof row.allowCreditLimit === 'boolean') {
+                                    this.tempInvoiceGroupName[idx] = row.invoiceGroup.name || '-';
+
                                     if (idx > 0) {
                                         if (row.allowCreditLimit) {
                                             this.formCreditLimits.push(

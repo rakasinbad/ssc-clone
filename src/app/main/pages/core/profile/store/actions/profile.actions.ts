@@ -1,14 +1,24 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
+import { ErrorHandler } from 'app/shared/models';
 
-export enum ProfileActionTypes {
-  LoadProfiles = '[Profile] Load Profiles',
-  
-  
-}
+// -----------------------------------------------------------------------------------------------------
+// Fetch Profile
+// -----------------------------------------------------------------------------------------------------
 
-export class LoadProfiles implements Action {
-  readonly type = ProfileActionTypes.LoadProfiles;
-}
+export const fetchProfileRequest = createAction('[Profile API] Fetch Profile Request');
 
+export const fetchProfileFailure = createAction(
+    '[Proflie API] Fetch Profile Failure',
+    props<{ payload: ErrorHandler }>()
+);
 
-export type ProfileActions = LoadProfiles;
+export const fetchProfileSuccess = createAction(
+    '[Profile API] Fetch Profile Success',
+    props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Reset Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const resetProfile = createAction('[Profile Page] Reset Profile State');

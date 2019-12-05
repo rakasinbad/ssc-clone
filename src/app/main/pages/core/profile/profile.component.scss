@@ -85,6 +85,13 @@ app-profile {
                 height: 64px;
             }
 
+            .mat-tab-group.mat-primary .mat-ink-bar,
+            .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+                background: #f0444c;
+                height: 4px;
+                border-radius: 4px;
+            }
+
             .product-image {
                 overflow: hidden;
                 width: 128px;
@@ -186,6 +193,16 @@ app-profile {
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+    }
+
+    .box-info {
+        .label {
+            font-weight: 600;
+        }
+
+        .info {
+            color: #828282;
         }
     }
 }
