@@ -107,6 +107,25 @@ export const fetchCatalogueCategorySuccess = createAction(
 );
 
 /**
+ * FETCH CATALOGUE CATEGORIES
+ */
+
+export const fetchCatalogueCategoriesRequest = createAction(
+    '[Catalogues API] Fetch Catalogue Categories Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchCatalogueCategoriesFailure = createAction(
+    '[Catalogues API] Fetch Catalogue Categories Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCatalogueCategoriesSuccess = createAction(
+    '[Catalogues API] Fetch Catalogue Categories Success',
+    props<{ payload: { categories?: Array<CatalogueCategory>; source: TSource } }>()
+);
+
+/**
  * FETCH CATALOGUE UNIT
  */
 
@@ -138,7 +157,7 @@ export const fetchCategoryTreeFailure = createAction(
 
 export const fetchCategoryTreeSuccess = createAction(
     '[Catalogues API] Fetch Category Tree Success',
-    props<{ payload: { categories?: Array<CatalogueCategory>; source: TSource } }>()
+    props<{ payload: { categoryTree?: Array<CatalogueCategory>; source: TSource } }>()
 );
 
 /**
@@ -152,7 +171,7 @@ export const fetchTotalCatalogueStatusFailure = createAction(
 );
 
 export const fetchTotalCatalogueStatusSuccess = createAction(
-    '[Catalogues API] Fetch Total Catalogue Status Failure',
+    '[Catalogues API] Fetch Total Catalogue Status Success',
     props<{ payload: { totalAllStatus: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; } }>()
 );
 

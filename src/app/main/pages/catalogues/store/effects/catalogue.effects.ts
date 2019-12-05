@@ -235,6 +235,54 @@ export class CatalogueEffects {
 
     fetchCatalogueCategoriesRequest$ = createEffect(() =>
     this.actions$.pipe(
+        ofType(CatalogueActions.fetchCatalogueCategoriesRequest),
+        map(action => action.payload),
+        switchMap(payload => {
+            return this._$catalogueApi
+                .getCatalogueCategories(payload)
+                .pipe(
+                    catchOffline(),
+                    map<Array<CatalogueCategory>, any>(categories => {
+                        if (categories.length > 0) {
+                            return CatalogueActions.fetchCatalogueCategoriesSuccess({
+                                payload: {
+                                    categories: [
+                                        ...categories.map(category => ({
+                                            ...new CatalogueCategory(
+                                                category.id,
+                                                category.parentId,
+                                                category.category,
+                                                category.iconHome,
+                                                category.iconTree,
+                                                category.sequence,
+                                                category.hasChild,
+                                                category.status,
+                                                category.createdAt,
+                                                category.updatedAt,
+                                                category.deletedAt,
+                                                category.children
+                                            )
+                                        }))
+                                    ],
+                                    source: 'fetch'
+                                }
+                            });
+                        }
+                    }),
+                    catchError(err =>
+                        of(
+                            CatalogueActions.fetchCatalogueCategoryFailure({
+                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchCategoryTreeRequest$ = createEffect(() =>
+    this.actions$.pipe(
         ofType(CatalogueActions.fetchCategoryTreeRequest),
         switchMap(_ => {
             return this._$catalogueApi
@@ -245,7 +293,7 @@ export class CatalogueEffects {
                         if (categories.length > 0) {
                             return CatalogueActions.fetchCategoryTreeSuccess({
                                 payload: {
-                                    categories: [
+                                    categoryTree: [
                                         ...categories.map(category => ({
                                             ...new CatalogueCategory(
                                                 category.id,
@@ -315,56 +363,7 @@ export class CatalogueEffects {
                                 newResp = {
                                     total: resp.total,
                                     data: [
-                                        ...resp.data.map(catalogue => {
-                                            return {
-                                                ...new Catalogue(
-                                                    catalogue.id,
-                                                    catalogue.name,
-                                                    catalogue.barcode,
-                                                    catalogue.information,
-                                                    catalogue.description,
-                                                    catalogue.detail,
-                                                    catalogue.color,
-                                                    catalogue.weight,
-                                                    catalogue.dimension,
-                                                    catalogue.sku,
-                                                    catalogue.skuRef,
-                                                    catalogue.productPrice,
-                                                    catalogue.suggestRetailPrice,
-                                                    catalogue.minQty,
-                                                    catalogue.packagedQty,
-                                                    catalogue.multipleQty,
-                                                    catalogue.displayStock,
-                                                    catalogue.stock,
-                                                    catalogue.hazardLevel,
-                                                    catalogue.forSale,
-                                                    catalogue.unitOfMeasureId,
-                                                    catalogue.purchaseUnitOfMeasure,
-                                                    catalogue.status,
-                                                    catalogue.principalId,
-                                                    catalogue.catalogueTaxId,
-                                                    catalogue.catalogueVariantId,
-                                                    catalogue.brandId,
-                                                    catalogue.firstCatalogueCategoryId,
-                                                    catalogue.lastCatalogueCategoryId,
-                                                    catalogue.catalogueTypeId,
-                                                    catalogue.createdAt,
-                                                    catalogue.updatedAt,
-                                                    catalogue.deletedAt,
-                                                    catalogue.catalogueCategoryId,
-                                                    catalogue.catalogueUnitId,
-                                                    catalogue.catalogueImages,
-                                                    catalogue.catalogueTax,
-                                                    catalogue.firstCatalogueCategory,
-                                                    catalogue.lastCatalogueCategory,
-                                                    catalogue.catalogueKeywordCatalogues,
-                                                    catalogue.catalogueType,
-                                                    catalogue.catalogueUnit,
-                                                    catalogue.catalogueVariant,
-                                                    catalogue.externalId
-                                                )
-                                            };
-                                        })
+                                        ...resp.data.map(catalogue => new Catalogue(catalogue))
                                     ]
                                 };
                             }
@@ -395,54 +394,7 @@ export class CatalogueEffects {
                     map(resp =>
                         CatalogueActions.fetchCatalogueSuccess({
                             payload: {
-                                catalogue: {
-                                    ...new Catalogue(
-                                        resp.id,
-                                        resp.name,
-                                        resp.barcode,
-                                        resp.information,
-                                        resp.description,
-                                        resp.detail,
-                                        resp.color,
-                                        resp.weight,
-                                        resp.dimension,
-                                        resp.sku,
-                                        resp.skuRef,
-                                        resp.productPrice,
-                                        resp.suggestRetailPrice,
-                                        resp.minQty,
-                                        resp.packagedQty,
-                                        resp.multipleQty,
-                                        resp.displayStock,
-                                        resp.stock,
-                                        resp.hazardLevel,
-                                        resp.forSale,
-                                        resp.unitOfMeasureId,
-                                        resp.purchaseUnitOfMeasure,
-                                        resp.status,
-                                        resp.principalId,
-                                        resp.catalogueTaxId,
-                                        resp.catalogueVariantId,
-                                        resp.brandId,
-                                        resp.firstCatalogueCategoryId,
-                                        resp.lastCatalogueCategoryId,
-                                        resp.catalogueTypeId,
-                                        resp.createdAt,
-                                        resp.updatedAt,
-                                        resp.deletedAt,
-                                        resp.catalogueCategoryId,
-                                        resp.catalogueUnitId,
-                                        resp.catalogueImages,
-                                        resp.catalogueTax,
-                                        resp.firstCatalogueCategory,
-                                        resp.lastCatalogueCategory,
-                                        resp.catalogueKeywordCatalogues,
-                                        resp.catalogueType,
-                                        resp.catalogueUnit,
-                                        resp.catalogueVariant,
-                                        resp.externalId
-                                    )
-                                },
+                                catalogue: new Catalogue(resp),
                                 source: 'fetch'
                             }
                         })
@@ -663,7 +615,7 @@ export class CatalogueEffects {
     $$ |   $$    $$ |$$ |$$ |$$    $$/ $$ |      $$       |/     $$/ 
     $$/     $$$$$$$/ $$/ $$/  $$$$$$/  $$/        $$$$$$$/ $$$$$$$/                                                           
     */
-   fetchCatalogueCategoriesFailure$ = createEffect(
+   fetchCategoryTreeFailure$ = createEffect(
     () =>
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCategoryTreeFailure),
@@ -677,6 +629,21 @@ export class CatalogueEffects {
         ),
         { dispatch: false }
     );
+
+    fetchCatalogueCategoriesFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CatalogueActions.fetchCatalogueCategoryFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open(resp.errors.error.message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+            { dispatch: false }
+        );
 
     fetchCatalogueFailure$ = createEffect(
         () =>

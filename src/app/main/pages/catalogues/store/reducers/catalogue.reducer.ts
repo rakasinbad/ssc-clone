@@ -27,6 +27,7 @@ export interface State {
     productName: string;
     category?: CatalogueCategory;
     categories: Array<CatalogueCategory>;
+    categoryTree: Array<CatalogueCategory>;
     units?: Array<CatalogueUnit>;
     source: TSource;
     catalogue?: Catalogue;
@@ -61,6 +62,7 @@ const initialState: State = {
     selectedCategories: [],
     productName: '',
     categories: [],
+    categoryTree: [],
     source: 'fetch',
     units: [],
     catalogues: initialCatalogueState,
@@ -118,6 +120,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCategoryTreeRequest,
         CatalogueActions.fetchCatalogueUnitRequest,
         CatalogueActions.fetchCatalogueCategoryRequest,
+        CatalogueActions.fetchCatalogueCategoriesRequest,
         CatalogueActions.fetchTotalCatalogueStatusRequest,
         (state) => ({
             ...state,
@@ -151,6 +154,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCategoryTreeFailure,
         CatalogueActions.fetchCatalogueUnitFailure,
         CatalogueActions.fetchCatalogueCategoryFailure,
+        CatalogueActions.fetchCatalogueCategoriesFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -198,8 +202,17 @@ const catalogueReducer = createReducer(
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            categories: payload.categories,
+            categoryTree: payload.categoryTree,
             errors: adapterError.removeOne('fetchCategoryTreeFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.fetchCatalogueCategoriesSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            categories: payload.categories,
+            errors: adapterError.removeOne('fetchCatalogueCategoriesFailure', state.errors)
         })
     ),
     on(

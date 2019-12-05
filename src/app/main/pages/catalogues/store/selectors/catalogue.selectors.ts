@@ -45,9 +45,14 @@ export const getProductName = createSelector(
     state => state.productName
 );
 
-export const getCategoryTree = createSelector(
+export const getCatalogueCategories = createSelector(
     getCatalogueState,
     state => state.categories
+);
+
+export const getCategoryTree = createSelector(
+    getCatalogueState,
+    state => state.categoryTree
 );
 
 export const getSelectedCatalogue = createSelector(
