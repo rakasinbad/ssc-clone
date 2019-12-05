@@ -725,10 +725,16 @@ export class OrderEffects {
                 ofType(OrderActions.importFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    let message;
+
+                    if (typeof resp.errors === 'string') {
+                        message = resp.errors;
+                    } else {
+                        message =
+                            resp.errors.error && resp.errors.error.message
+                                ? resp.errors.error.message
+                                : resp.errors.message;
+                    }
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',

@@ -320,8 +320,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
         }
-
-        return;
     }
 
     onRemoveSearchStatus(): void {
