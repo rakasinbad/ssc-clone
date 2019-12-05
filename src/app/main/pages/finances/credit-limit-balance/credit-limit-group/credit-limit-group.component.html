@@ -87,13 +87,9 @@
                             <span class="ml-4">{{ +row?.termOfPayment | number }} Days</span>
                         </div>
 
-                        <div style="position: absolute; overflow: auto; height: 20px;">
+                        <div class="text-truncate">
                             <span>Geograph:</span>
-                            <span
-                                [matTooltip]="joinCreditLimitAreas(row?.creditLimitAreas)"
-                                class="ml-4 inner-scroll"
-                                fusePerfectScrollbar
-                            >
+                            <span [matTooltip]="joinCreditLimitAreas(row?.creditLimitAreas)">
                                 {{ joinCreditLimitAreas(row?.creditLimitAreas) }}
                             </span>
                         </div>

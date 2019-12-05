@@ -70,10 +70,10 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
                         title: 'Home',
                         translate: 'BREADCRUMBS.HOME'
                     },
-                    {
-                        title: 'Account',
-                        translate: 'BREADCRUMBS.ACCOUNT'
-                    },
+                    // {
+                    //     title: 'Account',
+                    //     translate: 'BREADCRUMBS.ACCOUNT'
+                    // },
                     {
                         title: 'Internal',
                         translate: 'BREADCRUMBS.INTERNAL',

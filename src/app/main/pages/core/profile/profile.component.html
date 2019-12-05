@@ -1,1 +1,76 @@
-<p>profile works!</p>
+<div id="profile" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button mat-icon-button class="mr-0 mr-sm-16">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    class="product-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img [src]="'assets/images/ecommerce/product-image-placeholder.png'" />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <!-- <div class="h2" *ngIf="pageType ==='edit'">
+                        {{product.name}}
+                    </div>
+                    <div class="h2" *ngIf="pageType ==='new'">
+                        New Product
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Product Detail</span>
+                    </div> -->
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- <button mat-raised-button
+                    class="save-product-button"
+                    [disabled]="productForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addProduct()">
+                <span>ADD</span>
+            </button>
+
+            <button mat-raised-button
+                    class="save-product-button"
+                    [disabled]="productForm.invalid || productForm.pristine"
+                    *ngIf="pageType ==='edit'" (click)="saveProduct()">
+                <span>SAVE</span>
+            </button> -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <mat-tab-group>
+                    <mat-tab label="Informasi Supplier">
+                        <div class="tab-content p-24" fusePerfectScrollbar></div>
+                    </mat-tab>
+
+                    <!-- <mat-tab label="Product Images">
+                        <div class="tab-content p-24" fusePerfectScrollbar></div>
+                    </mat-tab> -->
+                </mat-tab-group>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

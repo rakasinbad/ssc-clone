@@ -27,7 +27,7 @@
                         (form.get('groupName').dirty || form.get('groupName').touched)
                     "
                 >
-                    Credit Limit Group Name
+                    *Credit Limit Group Name
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
@@ -60,7 +60,7 @@
                         (form.get('creditAmount').dirty || form.get('creditAmount').touched)
                     "
                 >
-                    Credit Limit Amount
+                    *Credit Limit Amount
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
@@ -86,7 +86,7 @@
                 </mat-form-field>
             </div>
 
-            <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <label
                     fxFlexAlign="center"
                     fxFlex="15"
@@ -100,7 +100,6 @@
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
-                    <!-- <span matPrefix>Rp &nbsp;</span> -->
                     <input
                         matInput
                         name="startingBalance"
@@ -121,7 +120,7 @@
                         {{ getErrorMessage('startingBalance') }}
                     </mat-error>
                 </mat-form-field>
-            </div>
+            </div> -->
 
             <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <label
@@ -133,7 +132,7 @@
                         (form.get('storeSegment').dirty || form.get('storeSegment').touched)
                     "
                 >
-                    Segment
+                    *Segment
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
@@ -195,7 +194,7 @@
                         (form.get('hierarchy').dirty || form.get('hierarchy').touched)
                     "
                 >
-                    Customer Hierarchy
+                    *Customer Hierarchy
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
@@ -257,7 +256,7 @@
                         (form.get('termOfPayment').dirty || form.get('termOfPayment').touched)
                     "
                 >
-                    Term of Payment
+                    *Term of Payment
                 </label>
 
                 <mat-form-field appearance="outline" fxFlex="70">
@@ -286,13 +285,14 @@
         <div class="form-box dynamic">
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
                 <span class="mat-subheading-2" fxFlex="15">
-                    Geographic
+                    *Geographic
                 </span>
 
                 <mat-radio-group
                     formControlName="unitParameterType"
                     aria-label="Select an option"
                     fxFlex="70"
+                    (change)="onChangeGeoStatus($event)"
                 >
                     <mat-radio-button *ngFor="let row of unitParameterTypes" [value]="row?.id">
                         {{ row?.label }}

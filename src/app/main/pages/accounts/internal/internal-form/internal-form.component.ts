@@ -56,6 +56,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         private _$errorMessage: ErrorMessageService,
         private _$log: LogService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         /* this.store.dispatch(
             UiActions.setFooterActionConfig({
@@ -94,6 +95,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         if (id === 'new') {
             this.pageType = 'new';
         } else {
+            // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
@@ -101,10 +103,10 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                             title: 'Home',
                             translate: 'BREADCRUMBS.HOME'
                         },
-                        {
-                            title: 'Account',
-                            translate: 'BREADCRUMBS.ACCOUNT'
-                        },
+                        //    {
+                        //        title: 'Account',
+                        //        translate: 'BREADCRUMBS.ACCOUNT'
+                        //    },
                         {
                             title: 'Internal',
                             translate: 'BREADCRUMBS.INTERNAL'
@@ -117,6 +119,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                     ]
                 })
             );
+
             this.pageType = 'edit';
         }
     }
@@ -490,16 +493,13 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             this.form.get('email').disable();
             this.form.get('phoneNumber').disable();
 
+            // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
                         {
                             title: 'Home',
                             translate: 'BREADCRUMBS.HOME'
-                        },
-                        {
-                            title: 'Account',
-                            translate: 'BREADCRUMBS.ACCOUNT'
                         },
                         {
                             title: 'Internal',
@@ -521,16 +521,13 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             this.form.get('email').enable();
             this.form.get('phoneNumber').enable();
 
+            // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
                         {
                             title: 'Home',
                             translate: 'BREADCRUMBS.HOME'
-                        },
-                        {
-                            title: 'Account',
-                            translate: 'BREADCRUMBS.ACCOUNT'
                         },
                         {
                             title: 'Internal',

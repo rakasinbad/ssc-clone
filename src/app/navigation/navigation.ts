@@ -22,14 +22,14 @@ export const navigation: FuseNavigation[] = [
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
                 url: '/pages/account/stores'
-            },
-            {
-                id: 'accountsInternal',
-                title: 'Internal',
-                translate: 'NAV.ACCOUNTS_INTERNAL.TITLE',
-                type: 'item',
-                url: '/pages/account/internal'
             }
+            // {
+            //     id: 'accountsInternal',
+            //     title: 'Internal',
+            //     translate: 'NAV.ACCOUNTS_INTERNAL.TITLE',
+            //     type: 'item',
+            //     url: '/pages/account/internal'
+            // }
         ]
     },
     {

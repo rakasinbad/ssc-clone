@@ -82,21 +82,6 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
     }
 
     onDelete(item: CreditLimitGroup): void {
-        this._$log.generateGroup(
-            'DELETE CREDIT LIMIT GROUP',
-            {
-                id: {
-                    type: 'log',
-                    value: item.id || null
-                },
-                item: {
-                    type: 'log',
-                    value: item
-                }
-            },
-            'groupCollapsed'
-        );
-
         if (!item || !item.id) {
             return;
         }
@@ -130,27 +115,12 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
             .afterClosed()
             .pipe(takeUntil(this._unSubs$))
             .subscribe(({ action, payload }) => {
-                this._$log.generateGroup(
-                    `[AFTER CLOSED DIALOG ${action && action.toUpperCase()} CREDIT LIMIT GROUP]`,
-                    {
-                        action: {
-                            type: 'log',
-                            value: action
-                        },
-                        payload: {
-                            type: 'log',
-                            value: payload
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 if (action === 'new' && payload) {
-                    this.store.dispatch(
-                        CreditLimitBalanceActions.createCreditLimitGroupRequest({
-                            payload: payload
-                        })
-                    );
+                    // this.store.dispatch(
+                    //     CreditLimitBalanceActions.createCreditLimitGroupRequest({
+                    //         payload: payload
+                    //     })
+                    // );
                 } else if (action === 'edit' && payload) {
                     this.store.dispatch(
                         CreditLimitBalanceActions.updateCreditLimitGroupRequest({
@@ -173,11 +143,10 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     private initList(): void {
-        const data: IQueryParams = {};
-        data['paginate'] = false;
-
         this.store.dispatch(
-            CreditLimitBalanceActions.fetchCreditLimitGroupsRequest({ payload: data })
+            CreditLimitBalanceActions.fetchCreditLimitGroupsRequest({
+                payload: { paginate: false }
+            })
         );
     }
 }

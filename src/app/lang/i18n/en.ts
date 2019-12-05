@@ -70,7 +70,8 @@ export const globalEnLang = {
         TO_BE_SHIPPED: 'To be shipped'
     },
     ERROR: {
-        ALPHA_PATTERN: '{{ fieldName }} field must alphabets.',
+        ALPHA_PATTERN: '{{ fieldName }} field may only contain letters.',
+        ALPHA_NUM_PATTERN: '{{ fieldName }} field may only contain letters and numbers.',
         CONFIRM: '{{ fieldName }} field does not match the {{ fieldNameCompare }} field.',
         CONFIRM_UNKNOWN: '{{ fieldName }} field does not match the other fields.',
         DEFAULT: '{{ fieldName }} field is required or selected.',
@@ -87,8 +88,8 @@ export const globalEnLang = {
             '{{ fieldName }} field must contain a valid (prefix: {{ prefix }}, length: {{ length }}).',
         MOBILE_PHONE_PATTERN: '{{ fieldName }} field must contain a valid (prefix: {{ prefix }}).',
         NOT_FOUND: '{{ fieldName }} field not found.',
-        NUMERIC: '{{ fieldName }} field must number.',
-        PATTERN: '{{ fieldName }} field must valid.',
+        NUMERIC: '{{ fieldName }} field must be a number.',
+        PATTERN: '{{ fieldName }} field format is invalid.',
         REQUIRED: '{{ fieldName }} field is required.',
         SELECTED: '{{ fieldName }} field must be selected.',
         TYPE_EMAIL: '{{ fieldName }} field must contain a valid email address.',

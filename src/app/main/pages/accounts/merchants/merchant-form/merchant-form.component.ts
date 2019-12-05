@@ -254,24 +254,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.form.statusChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(status => {
-                // console.log('FORM STATUS 1', status);
-                // console.log('FORM STATUS 2', this.form);
-
-                this._$log.generateGroup(
-                    'FORM STATUS',
-                    {
-                        status: {
-                            type: 'log',
-                            value: status
-                        },
-                        form: {
-                            type: 'log',
-                            value: this.form
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 if (status === 'VALID' && this.addressValid()) {
                     this.store.dispatch(FormActions.setFormStatusValid());
                 }
@@ -289,19 +271,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                // console.log('CLICK RESET', isClick);
-
-                this._$log.generateGroup(
-                    'CLICK RESET',
-                    {
-                        isClick: {
-                            type: 'log',
-                            value: isClick
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 if (isClick) {
                     this.form.reset();
                     this.tmpPhoto.reset();
@@ -317,17 +286,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                this._$log.generateGroup(
-                    'CLICK SUBMIT',
-                    {
-                        isClick: {
-                            type: 'log',
-                            value: isClick
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 if (isClick) {
                     this.onSubmit();
                 }
@@ -515,23 +473,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        console.log('SELECT LIMIT GROUP', ev);
-
         this.store
             .select(DropdownSelectors.getCreditLimitGroupState, { id: ev.value })
             .pipe(takeUntil(this._unSubs$))
             .subscribe(resp => {
-                this._$log.generateGroup(
-                    'SELECTED CREDIT LIMIT GROUP',
-                    {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
                 if (resp) {
                     // Handle credit limit amount
                     if (resp.defaultCreditLimit) {
@@ -576,36 +521,12 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this._$log.generateGroup(
-            'SELECT PROVINCE',
-            {
-                selectedProvince: {
-                    type: 'log',
-                    value: ev
-                }
-            },
-            'groupCollapsed'
-        );
-
         this.cities$ = this.store
             .select(DropdownSelectors.getCityDropdownState, {
                 provinceId: ev.value
             })
             .pipe(
                 tap(hasCity => {
-                    // console.log('LIST CITIES', hasCity);
-
-                    this._$log.generateGroup(
-                        'LIST CITIES',
-                        {
-                            cities: {
-                                type: 'log',
-                                value: hasCity
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     if (hasCity && hasCity.length > 0) {
                         this.form.get('storeInfo.address.city').enable();
                     }
@@ -624,23 +545,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // console.log('SELECT CITY', ev, provinceId);
-
-        this._$log.generateGroup(
-            'SELECT CITY',
-            {
-                selectedCity: {
-                    type: 'log',
-                    value: ev
-                },
-                provinceId: {
-                    type: 'log',
-                    value: provinceId
-                }
-            },
-            'groupCollapsed'
-        );
-
         this.districts$ = this.store
             .select(DropdownSelectors.getDistrictDropdownState, {
                 provinceId: provinceId,
@@ -649,19 +553,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(
                 tap(hasDistrict => {
                     if (hasDistrict && hasDistrict.length > 0) {
-                        // console.log('LIST DISTRICTS', hasDistrict);
-
-                        this._$log.generateGroup(
-                            'LIST DISTRICTS',
-                            {
-                                districts: {
-                                    type: 'log',
-                                    value: hasDistrict
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         this.form.get('storeInfo.address.district').enable();
                     }
                 })
@@ -679,27 +570,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // console.log('SELECT DISTRICT', ev, provinceId, city);
-
-        this._$log.generateGroup(
-            'SELECT DISTRICT',
-            {
-                selectedDistrict: {
-                    type: 'log',
-                    value: ev
-                },
-                provinceId: {
-                    type: 'log',
-                    value: provinceId
-                },
-                city: {
-                    type: 'log',
-                    value: city
-                }
-            },
-            'groupCollapsed'
-        );
-
         this.urbans$ = this.store
             .select(DropdownSelectors.getUrbanDropdownState, {
                 provinceId: provinceId,
@@ -709,17 +579,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(
                 tap(hasUrban => {
                     if (hasUrban && hasUrban.length > 0) {
-                        this._$log.generateGroup(
-                            'LIST URBANS',
-                            {
-                                urbans: {
-                                    type: 'log',
-                                    value: hasUrban
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         this.form.get('storeInfo.address.urban').enable();
                     }
                 })
@@ -737,31 +596,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // console.log('SELECT URBAN', ev, provinceId, city, district);
-
-        this._$log.generateGroup(
-            'SELECT URBAN',
-            {
-                selectedUrban: {
-                    type: 'log',
-                    value: ev
-                },
-                provinceId: {
-                    type: 'log',
-                    value: provinceId
-                },
-                city: {
-                    type: 'log',
-                    value: city
-                },
-                district: {
-                    type: 'log',
-                    value: district
-                }
-            },
-            'groupCollapsed'
-        );
-
         this.store
             .select(DropdownSelectors.getPostcodeDropdownState, {
                 provinceId: provinceId,
@@ -772,19 +606,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(postcode => {
                 if (postcode) {
-                    // this.form.get('storeInfo.address.postcode').enable();
-
-                    this._$log.generateGroup(
-                        'POST CODE',
-                        {
-                            postcode: {
-                                type: 'log',
-                                value: postcode
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this.form.get('storeInfo.address.postcode').patchValue(postcode);
                 }
             });
@@ -813,7 +634,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 { value: '', disabled: true },
                 [
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
                     })
                 ]
             ]
@@ -1047,7 +868,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 .get('termOfPayment')
                 .setValidators([
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
                     })
                 ]);
         } else {
@@ -1059,7 +880,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     }),
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
                     })
                 ]);
         }
@@ -2010,7 +1831,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                                             RxwebValidators.digit({
                                                                 message: this._$errorMessage.getErrorMessageNonState(
                                                                     'default',
-                                                                    'pattern'
+                                                                    'numeric'
                                                                 )
                                                             })
                                                         ]
