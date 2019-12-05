@@ -6,13 +6,14 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatSelectChange } from '@angular/material';
+import { MatSelectChange, MatSlideToggleChange } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
 import {
     Cluster,
@@ -51,6 +52,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     tmpIdentityPhotoSelfie: FormControl;
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
+    tempCreditLimitAmount: Array<boolean>;
+    tempTermOfPayment: Array<boolean>;
 
     stores$: Observable<Merchant>;
     provinces$: Observable<Province[]>;
@@ -64,6 +67,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     storeTypes$: Observable<StoreType[]>;
     hierarchies$: Observable<Hierarchy[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
+    creditLimitGroups$: Observable<CreditLimitGroup[]>;
 
     isLoading$: Observable<boolean>;
 
@@ -180,6 +184,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+        this.tempCreditLimitAmount = [false];
+        this.tempTermOfPayment = [false];
 
         if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
@@ -229,6 +235,13 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         // Fetch request invoice group
         this.store.dispatch(DropdownActions.fetchDropdownInvoiceGroupRequest());
+
+        // Get selector dropdown credit limit group
+        this.creditLimitGroups$ = this.store.select(
+            DropdownSelectors.getCreditLimitGroupDropdownState
+        );
+        // Fetch request credit limit group
+        this.store.dispatch(DropdownActions.fetchDropdownCreditLimitGroupRequest());
 
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
@@ -319,19 +332,23 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     this.onSubmit();
                 }
             });
-
-        this._$log.generateGroup('INIT STORE FORM', '', 'default');
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this._$log.generateGroup('DESTROY STORE FORM', '', 'default');
-
+        // Hide footer action
         this.store.dispatch(UiActions.hideFooterAction());
+
+        // Reset breadcrumb state
         this.store.dispatch(UiActions.resetBreadcrumb());
+
+        // Reset form status state
         this.store.dispatch(FormActions.resetFormStatus());
+
+        // Reset invoice group state
+        this.store.dispatch(DropdownActions.resetInvoiceGroupState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -360,6 +377,48 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     return errors[type].message;
                 }
             }
+        }
+    }
+
+    getErrorMessageArray(parent: string, field: string, idx: number): string {
+        if (!parent && !field && typeof idx !== 'number') {
+            return;
+        }
+
+        const parentArr = parent.split('.');
+
+        if (parentArr.length > 1) {
+            const { errors } = (this.form.get(parent) as FormArray).at(idx).get(field);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        } else {
+            const { errors } = this.form.get([parent, idx, field]);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        }
+    }
+
+    onChangeAllowCredit(ev: MatSlideToggleChange, idx: number): void {
+        if (typeof ev.checked !== 'boolean' || typeof idx !== 'number') {
+            return;
+        }
+
+        if (ev.checked) {
+            this.handleAllowCredit(idx);
+        } else {
+            this.handleNotAllowCredit(idx);
         }
     }
 
@@ -424,6 +483,89 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         return;
     }
 
+    onResetCreditLimitGroup(idx: number): void {
+        const allowCredit = this.formCreditLimits.at(idx).get('allowCreditLimit').value;
+
+        if (typeof idx !== 'number' || typeof allowCredit !== 'boolean') {
+            return;
+        }
+
+        if (allowCredit) {
+            this.handleAllowCredit(idx);
+        } else {
+            this.handleNotAllowCredit(idx);
+        }
+
+        // this.tempCreditLimitAmount[idx] = true;
+        // this.tempTermOfPayment[idx] = true;
+
+        // this.formCreditLimits
+        //     .at(idx)
+        //     .get('termOfPayment')
+        //     .reset();
+
+        // this.formCreditLimits
+        //     .at(idx)
+        //     .get('creditLimitGroup')
+        //     .reset();
+    }
+
+    onSelectCreditLimitGroup(ev: MatSelectChange, idx: number): void {
+        if (!ev.value || typeof idx !== 'number') {
+            return;
+        }
+
+        console.log('SELECT LIMIT GROUP', ev);
+
+        this.store
+            .select(DropdownSelectors.getCreditLimitGroupState, { id: ev.value })
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(resp => {
+                this._$log.generateGroup(
+                    'SELECTED CREDIT LIMIT GROUP',
+                    {
+                        response: {
+                            type: 'log',
+                            value: resp
+                        }
+                    },
+                    'groupCollapsed'
+                );
+
+                if (resp) {
+                    // Handle credit limit amount
+                    if (resp.defaultCreditLimit) {
+                        this.formCreditLimits
+                            .at(idx)
+                            .get('creditLimit')
+                            .patchValue(resp.defaultCreditLimit.replace('.', ','));
+                    }
+
+                    this.tempCreditLimitAmount[idx] = false;
+
+                    this.formCreditLimits
+                        .at(idx)
+                        .get('creditLimit')
+                        .disable();
+
+                    // Handle term of payment
+                    if (resp.termOfPayment) {
+                        this.formCreditLimits
+                            .at(idx)
+                            .get('termOfPayment')
+                            .patchValue(resp.termOfPayment);
+                    }
+
+                    this.tempTermOfPayment[idx] = false;
+
+                    this.formCreditLimits
+                        .at(idx)
+                        .get('termOfPayment')
+                        .disable();
+                }
+            });
+    }
+
     onSelectProvince(ev: MatSelectChange): void {
         this.form.get('storeInfo.address.city').reset();
         this.form.get('storeInfo.address.district').reset();
@@ -434,14 +576,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // console.log('SELECT PROVINCE', ev);
-
-        this._$log.generateGroup(`[SELECT PROVINCE]`, {
-            selectedProvince: {
-                type: 'log',
-                value: ev
-            }
-        });
+        this._$log.generateGroup(
+            'SELECT PROVINCE',
+            {
+                selectedProvince: {
+                    type: 'log',
+                    value: ev
+                }
+            },
+            'groupCollapsed'
+        );
 
         this.cities$ = this.store
             .select(DropdownSelectors.getCityDropdownState, {
@@ -451,12 +595,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 tap(hasCity => {
                     // console.log('LIST CITIES', hasCity);
 
-                    this._$log.generateGroup(`[LIST CITIES]`, {
-                        cities: {
-                            type: 'log',
-                            value: hasCity
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'LIST CITIES',
+                        {
+                            cities: {
+                                type: 'log',
+                                value: hasCity
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
                     if (hasCity && hasCity.length > 0) {
                         this.form.get('storeInfo.address.city').enable();
@@ -478,16 +626,20 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         // console.log('SELECT CITY', ev, provinceId);
 
-        this._$log.generateGroup(`[SELECT CITY]`, {
-            selectedCity: {
-                type: 'log',
-                value: ev
+        this._$log.generateGroup(
+            'SELECT CITY',
+            {
+                selectedCity: {
+                    type: 'log',
+                    value: ev
+                },
+                provinceId: {
+                    type: 'log',
+                    value: provinceId
+                }
             },
-            provinceId: {
-                type: 'log',
-                value: provinceId
-            }
-        });
+            'groupCollapsed'
+        );
 
         this.districts$ = this.store
             .select(DropdownSelectors.getDistrictDropdownState, {
@@ -499,12 +651,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     if (hasDistrict && hasDistrict.length > 0) {
                         // console.log('LIST DISTRICTS', hasDistrict);
 
-                        this._$log.generateGroup(`[LIST DISTRICTS]`, {
-                            districts: {
-                                type: 'log',
-                                value: hasDistrict
-                            }
-                        });
+                        this._$log.generateGroup(
+                            'LIST DISTRICTS',
+                            {
+                                districts: {
+                                    type: 'log',
+                                    value: hasDistrict
+                                }
+                            },
+                            'groupCollapsed'
+                        );
 
                         this.form.get('storeInfo.address.district').enable();
                     }
@@ -525,20 +681,24 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         // console.log('SELECT DISTRICT', ev, provinceId, city);
 
-        this._$log.generateGroup(`[SELECT DISTRICT]`, {
-            selectedDistrict: {
-                type: 'log',
-                value: ev
+        this._$log.generateGroup(
+            'SELECT DISTRICT',
+            {
+                selectedDistrict: {
+                    type: 'log',
+                    value: ev
+                },
+                provinceId: {
+                    type: 'log',
+                    value: provinceId
+                },
+                city: {
+                    type: 'log',
+                    value: city
+                }
             },
-            provinceId: {
-                type: 'log',
-                value: provinceId
-            },
-            city: {
-                type: 'log',
-                value: city
-            }
-        });
+            'groupCollapsed'
+        );
 
         this.urbans$ = this.store
             .select(DropdownSelectors.getUrbanDropdownState, {
@@ -549,14 +709,16 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(
                 tap(hasUrban => {
                     if (hasUrban && hasUrban.length > 0) {
-                        // console.log('LIST URBANS', hasUrban);
-
-                        this._$log.generateGroup(`[LIST URBANS]`, {
-                            urbans: {
-                                type: 'log',
-                                value: hasUrban
-                            }
-                        });
+                        this._$log.generateGroup(
+                            'LIST URBANS',
+                            {
+                                urbans: {
+                                    type: 'log',
+                                    value: hasUrban
+                                }
+                            },
+                            'groupCollapsed'
+                        );
 
                         this.form.get('storeInfo.address.urban').enable();
                     }
@@ -577,24 +739,28 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         // console.log('SELECT URBAN', ev, provinceId, city, district);
 
-        this._$log.generateGroup(`[SELECT URBAN]`, {
-            selectedUrban: {
-                type: 'log',
-                value: ev
+        this._$log.generateGroup(
+            'SELECT URBAN',
+            {
+                selectedUrban: {
+                    type: 'log',
+                    value: ev
+                },
+                provinceId: {
+                    type: 'log',
+                    value: provinceId
+                },
+                city: {
+                    type: 'log',
+                    value: city
+                },
+                district: {
+                    type: 'log',
+                    value: district
+                }
             },
-            provinceId: {
-                type: 'log',
-                value: provinceId
-            },
-            city: {
-                type: 'log',
-                value: city
-            },
-            district: {
-                type: 'log',
-                value: district
-            }
-        });
+            'groupCollapsed'
+        );
 
         this.store
             .select(DropdownSelectors.getPostcodeDropdownState, {
@@ -606,15 +772,18 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(postcode => {
                 if (postcode) {
-                    // console.log('POST CODE', postcode);
                     // this.form.get('storeInfo.address.postcode').enable();
 
-                    this._$log.generateGroup(`[POST CODE]`, {
-                        postcode: {
-                            type: 'log',
-                            value: postcode
-                        }
-                    });
+                    this._$log.generateGroup(
+                        'POST CODE',
+                        {
+                            postcode: {
+                                type: 'log',
+                                value: postcode
+                            }
+                        },
+                        'groupCollapsed'
+                    );
 
                     this.form.get('storeInfo.address.postcode').patchValue(postcode);
                 }
@@ -627,11 +796,365 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
     private createCreditLimitForm(): FormGroup {
         return this.formBuilder.group({
-            invoiceGroup: [''],
-            creditLimitGroup: [''],
-            creditLimitAmount: [''],
-            termOfPayment: ['']
+            allowCreditLimit: false,
+            invoiceGroup: [{ value: '', disabled: true }],
+            creditLimitGroup: [{ value: '', disabled: true }],
+            creditLimit: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
+            termOfPayment: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ]
         });
+    }
+
+    private handleAllowCredit(idx: number): void {
+        if (typeof idx !== 'number') {
+            return;
+        }
+
+        this.tempCreditLimitAmount[idx] = true;
+        this.tempTermOfPayment[idx] = true;
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .enable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                })
+            ]);
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .enable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                }),
+                RxwebValidators.digit({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                })
+            ]);
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .enable();
+    }
+
+    private handleNotAllowCredit(idx: number): void {
+        if (typeof idx !== 'number') {
+            return;
+        }
+
+        this.tempCreditLimitAmount[idx] = false;
+        this.tempTermOfPayment[idx] = false;
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .disable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .clearValidators();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .disable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .clearValidators();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .disable();
+    }
+
+    private handleAllowCreditPatch(idx: number, item: any): void {
+        if (typeof idx !== 'number') {
+            return;
+        }
+
+        this.tempCreditLimitAmount[idx] = item.creditLimitGroupId ? false : true;
+        this.tempTermOfPayment[idx] = item.creditLimitGroupId ? false : true;
+
+        // Handle allowCreditLimit Field
+        this.formCreditLimits
+            .at(idx)
+            .get('allowCreditLimit')
+            .patchValue(true);
+
+        if (this.formCreditLimits.at(idx).get('allowCreditLimit').invalid) {
+            this.formCreditLimits
+                .at(idx)
+                .get('allowCreditLimit')
+                .markAsTouched();
+        }
+
+        // Handle creditLimit Field
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .enable();
+
+        if (item.creditLimitGroupId) {
+            this.formCreditLimits
+                .at(idx)
+                .get('creditLimit')
+                .setValidators([
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]);
+        } else {
+            this.formCreditLimits
+                .at(idx)
+                .get('creditLimit')
+                .setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]);
+        }
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .patchValue(item.creditLimit.replace('.', ','));
+
+        if (this.formCreditLimits.at(idx).get('creditLimit').invalid) {
+            this.formCreditLimits
+                .at(idx)
+                .get('creditLimit')
+                .markAsTouched();
+        }
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .updateValueAndValidity();
+
+        // Handle termOfPayment Field
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .enable();
+
+        if (item.creditLimitGroupId) {
+            this.formCreditLimits
+                .at(idx)
+                .get('termOfPayment')
+                .setValidators([
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]);
+        } else {
+            this.formCreditLimits
+                .at(idx)
+                .get('termOfPayment')
+                .setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]);
+        }
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .patchValue(item.termOfPayment);
+
+        if (this.formCreditLimits.at(idx).get('termOfPayment').invalid) {
+            this.formCreditLimits
+                .at(idx)
+                .get('termOfPayment')
+                .markAsTouched();
+        }
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .updateValueAndValidity();
+
+        // Handle creditLimitGroup Field
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .enable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .patchValue(item.creditLimitGroupId);
+    }
+
+    private handleNotAllowCreditPatch(idx: number): void {
+        if (typeof idx !== 'number') {
+            return;
+        }
+
+        this.tempCreditLimitAmount[idx] = false;
+        this.tempTermOfPayment[idx] = false;
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .disable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .clearValidators();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimit')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .disable();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .clearValidators();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('termOfPayment')
+            .updateValueAndValidity();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .reset();
+
+        this.formCreditLimits
+            .at(idx)
+            .get('creditLimitGroup')
+            .disable();
     }
 
     private initForm(): void {
@@ -917,7 +1440,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     }),
                     physicalStoreInfo: this.formBuilder.group({
-                        physicalStoreInfo: [''],
                         numberOfEmployee: [''],
                         vehicleAccessibility: ['']
                     }),
@@ -969,12 +1491,79 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         hierarchy: ['']
                     }),
                     payment: this.formBuilder.group({
-                        allowCredit: [false],
                         creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
                     })
                 })
             });
-        } else {
+
+            this.store
+                .select(DropdownSelectors.getInvoiceGroupDropdownState)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(data => {
+                    if (data && data.length > 0) {
+                        for (const [idx, row] of data.entries()) {
+                            if (row.id) {
+                                if (idx > 0) {
+                                    this.formCreditLimits.push(
+                                        this.formBuilder.group({
+                                            allowCreditLimit: false,
+                                            invoiceGroup: row.id,
+                                            creditLimitGroup: [
+                                                {
+                                                    value: '',
+                                                    disabled: true
+                                                }
+                                            ],
+                                            creditLimit: [
+                                                {
+                                                    value: '',
+                                                    disabled: true
+                                                }
+                                            ],
+                                            termOfPayment: [
+                                                {
+                                                    value: '',
+                                                    disabled: true
+                                                }
+                                            ]
+                                        })
+                                    );
+                                } else {
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('allowCreditLimit')
+                                        .reset();
+
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('allowCreditLimit')
+                                        .patchValue(false);
+
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('invoiceGroup')
+                                        .patchValue(row.id);
+
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('creditLimit')
+                                        .reset();
+
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('termOfPayment')
+                                        .reset();
+
+                                    this.formCreditLimits
+                                        .at(idx)
+                                        .get('creditLimitGroup')
+                                        .reset();
+                                }
+                            }
+                        }
+                    }
+                });
+        } else if (this.pageType === 'edit') {
             this.form = this.formBuilder.group({
                 profileInfo: this.formBuilder.group({
                     // username: [
@@ -1160,7 +1749,6 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     }),
                     physicalStoreInfo: this.formBuilder.group({
-                        physicalStoreInfo: [''],
                         numberOfEmployee: [''],
                         vehicleAccessibility: ['']
                     }),
@@ -1210,6 +1798,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             ]
                         ],
                         hierarchy: ['']
+                    }),
+                    payment: this.formBuilder.group({
+                        creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
                     })
                 })
             });
@@ -1221,7 +1812,10 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     if (data) {
                         if (data.phoneNo) {
                             this.form.get('profileInfo.phoneNumber').patchValue(data.phoneNo);
-                            this.form.get('profileInfo.phoneNumber').markAsTouched();
+
+                            if (this.form.get('profileInfo.phoneNumber').invalid) {
+                                this.form.get('profileInfo.phoneNumber').markAsTouched();
+                            }
                         }
 
                         if (data.imageUrl) {
@@ -1231,14 +1825,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                         if (data.taxNo) {
                             this.form.get('profileInfo.npwpId').patchValue(data.taxNo);
+
+                            if (this.form.get('profileInfo.npwpId').invalid) {
+                                this.form.get('profileInfo.npwpId').markAsTouched();
+                            }
                         }
 
-                        if (data.storeCode) {
-                            this.form.get('storeInfo.storeId.id').patchValue(data.storeCode);
+                        if (data.externalId) {
+                            this.form.get('storeInfo.storeId.id').patchValue(data.externalId);
+
+                            if (this.form.get('storeInfo.storeId.id').invalid) {
+                                this.form.get('storeInfo.storeId.id').markAsTouched();
+                            }
                         }
 
                         if (data.name) {
                             this.form.get('storeInfo.storeId.storeName').patchValue(data.name);
+
+                            if (this.form.get('storeInfo.storeId.storeName').invalid) {
+                                this.form.get('storeInfo.storeId.storeName').markAsTouched();
+                            }
                         }
 
                         if (data.urban) {
@@ -1274,13 +1880,17 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                         if (data.address) {
                             this.form.get('storeInfo.address.notes').patchValue(data.address);
+
+                            if (this.form.get('storeInfo.address.notes').invalid) {
+                                this.form.get('storeInfo.address.notes').markAsTouched();
+                            }
                         }
 
-                        if (data.largeArea) {
-                            this.form
-                                .get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                .patchValue(data.largeArea);
-                        }
+                        // if (data.largeArea) {
+                        //     this.form
+                        //         .get('storeInfo.physicalStoreInfo.physicalStoreInfo')
+                        //         .patchValue(data.largeArea);
+                        // }
 
                         if (data.numberOfEmployee) {
                             this.form
@@ -1292,30 +1902,171 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             this.form
                                 .get('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                 .patchValue(data.vehicleAccessibilityId);
+
+                            if (
+                                this.form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
+                                    .invalid
+                            ) {
+                                this.form
+                                    .get('storeInfo.physicalStoreInfo.vehicleAccessibility')
+                                    .markAsTouched();
+                            }
                         }
 
                         if (data.storeType && data.storeType.id) {
                             this.form
                                 .get('storeInfo.storeClassification.storeType')
                                 .patchValue(data.storeType.id);
+
+                            if (this.form.get('storeInfo.storeClassification.storeType').invalid) {
+                                this.form
+                                    .get('storeInfo.storeClassification.storeType')
+                                    .markAsTouched();
+                            }
                         }
 
                         if (data.storeGroup && data.storeGroup.id) {
                             this.form
                                 .get('storeInfo.storeClassification.storeGroup')
                                 .patchValue(data.storeGroup.id);
+
+                            if (this.form.get('storeInfo.storeClassification.storeGroup').invalid) {
+                                this.form
+                                    .get('storeInfo.storeClassification.storeGroup')
+                                    .markAsTouched();
+                            }
                         }
 
                         if (data.storeClusters && data.storeClusters.length > 0) {
                             this.form
                                 .get('storeInfo.storeClassification.storeCluster')
                                 .patchValue(data.storeClusters[0].cluster.id);
+
+                            if (
+                                this.form.get('storeInfo.storeClassification.storeCluster').invalid
+                            ) {
+                                this.form
+                                    .get('storeInfo.storeClassification.storeCluster')
+                                    .markAsTouched();
+                            }
                         }
 
                         if (data.storeSegment && data.storeSegment.id) {
                             this.form
                                 .get('storeInfo.storeClassification.storeSegment')
                                 .patchValue(data.storeSegment.id);
+
+                            if (
+                                this.form.get('storeInfo.storeClassification.storeSegment').invalid
+                            ) {
+                                this.form
+                                    .get('storeInfo.storeClassification.storeSegment')
+                                    .markAsTouched();
+                            }
+                        }
+
+                        if (data.hierarchy && data.hierarchy.id) {
+                            this.form
+                                .get('storeInfo.storeClassification.hierarchy')
+                                .patchValue(data.hierarchy.id);
+
+                            if (this.form.get('storeInfo.storeClassification.hierarchy').invalid) {
+                                this.form
+                                    .get('storeInfo.storeClassification.hierarchy')
+                                    .markAsTouched();
+                            }
+                        }
+
+                        if (data.creditLimitStores && data.creditLimitStores.length > 0) {
+                            const creditLimitStores = data.creditLimitStores;
+
+                            for (const [idx, row] of creditLimitStores.entries()) {
+                                if (typeof row.allowCreditLimit === 'boolean') {
+                                    if (idx > 0) {
+                                        if (row.allowCreditLimit) {
+                                            this.formCreditLimits.push(
+                                                this.formBuilder.group({
+                                                    allowCreditLimit: true,
+                                                    creditLimitStoreId: row.id,
+                                                    invoiceGroup: row.invoiceGroupId,
+                                                    creditLimitGroup: row.creditLimitGroupId,
+                                                    creditLimit: [
+                                                        row.creditLimit.replace('.', ','),
+                                                        [
+                                                            RxwebValidators.numeric({
+                                                                acceptValue:
+                                                                    NumericValueType.PositiveNumber,
+                                                                allowDecimal: true,
+                                                                message: this._$errorMessage.getErrorMessageNonState(
+                                                                    'default',
+                                                                    'pattern'
+                                                                )
+                                                            })
+                                                        ]
+                                                    ],
+                                                    termOfPayment: [
+                                                        row.termOfPayment,
+                                                        [
+                                                            RxwebValidators.digit({
+                                                                message: this._$errorMessage.getErrorMessageNonState(
+                                                                    'default',
+                                                                    'pattern'
+                                                                )
+                                                            })
+                                                        ]
+                                                    ]
+                                                })
+                                            );
+
+                                            this.handleAllowCreditPatch(idx, row);
+                                        } else {
+                                            this.formCreditLimits.push(
+                                                this.formBuilder.group({
+                                                    allowCreditLimit: false,
+                                                    creditLimitStoreId: row.id,
+                                                    invoiceGroup: row.invoiceGroupId,
+                                                    creditLimitGroup: [
+                                                        {
+                                                            value: '',
+                                                            disabled: true
+                                                        }
+                                                    ],
+                                                    creditLimit: [
+                                                        {
+                                                            value: '',
+                                                            disabled: true
+                                                        }
+                                                    ],
+                                                    termOfPayment: [
+                                                        {
+                                                            value: '',
+                                                            disabled: true
+                                                        }
+                                                    ]
+                                                })
+                                            );
+
+                                            this.handleNotAllowCreditPatch(idx);
+                                        }
+                                    } else {
+                                        (this.formCreditLimits.at(idx) as FormGroup).addControl(
+                                            'creditLimitStoreId',
+                                            this.formBuilder.control(row.id)
+                                        );
+
+                                        this.formCreditLimits
+                                            .at(idx)
+                                            .get('invoiceGroup')
+                                            .patchValue(row.invoiceGroupId);
+
+                                        if (row.allowCreditLimit) {
+                                            this.handleAllowCreditPatch(idx, row);
+                                        } else {
+                                            this.handleNotAllowCreditPatch(idx);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 });
@@ -1327,22 +2078,13 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const body = this.form.value;
+        const body = this.form.getRawValue();
 
         if (this.pageType === 'new') {
             this.store
                 .select(AuthSelectors.getUserSupplier)
                 .pipe(takeUntil(this._unSubs$))
                 .subscribe(({ supplierId }) => {
-                    // console.log('AUTH SELECTORS', user);
-
-                    this._$log.generateGroup(`[AUTH SELECTORS]`, {
-                        supplierId: {
-                            type: 'log',
-                            value: supplierId
-                        }
-                    });
-
                     if (supplierId) {
                         // const createUser = new FormUser(
                         //     body.storeInfo.legalInfo.name,
@@ -1380,15 +2122,28 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         // console.log('SUBMIT CREATE 1', body);
                         // console.log('SUBMIT CREATE 2', payload);
 
+                        const newCreditLimit =
+                            body.storeInfo.payment.creditLimit &&
+                            body.storeInfo.payment.creditLimit.length > 0
+                                ? body.storeInfo.payment.creditLimit.map(row => {
+                                      return {
+                                          allowCreditLimit: row.allowCreditLimit,
+                                          invoiceGroupId: row.invoiceGroup,
+                                          creditLimitGroupId: row.creditLimitGroup,
+                                          creditLimit: row.creditLimit,
+                                          termOfPayment: row.termOfPayment
+                                      };
+                                  })
+                                : [];
+
                         const payload = {
+                            externalId: body.storeInfo.storeId.id,
                             name: body.storeInfo.storeId.storeName,
-                            storeCode: body.storeInfo.storeId.id,
                             image: body.profileInfo.photos,
                             taxNo: body.profileInfo.npwpId,
                             address: body.storeInfo.address.notes,
                             phoneNo: body.profileInfo.phoneNumber,
                             numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                            largeArea: body.storeInfo.physicalStoreInfo.physicalStoreInfo,
                             status: 'active',
                             storeTypeId: body.storeInfo.storeClassification.storeType,
                             storeGroupId: body.storeInfo.storeClassification.storeGroup,
@@ -1409,14 +2164,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             cluster: {
                                 clusterId: body.storeInfo.storeClassification.storeCluster
                             },
+                            hierarchy: {
+                                hierarchyId: body.storeInfo.storeClassification.hierarchy
+                            },
                             supplier: {
                                 supplierId: supplierId
-                            }
+                            },
+                            creditLimit: newCreditLimit
                         };
-
-                        if (!body.storeInfo.physicalStoreInfo.physicalStoreInfo) {
-                            delete payload.largeArea;
-                        }
 
                         if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
                             delete payload.numberOfEmployee;
@@ -1426,16 +2181,28 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             delete payload.vehicleAccessibilityId;
                         }
 
-                        this._$log.generateGroup(`[SUBMIT CREATE STORE]`, {
-                            body: {
-                                type: 'log',
-                                value: body
-                            },
-                            payload: {
-                                type: 'log',
-                                value: payload
+                        if (!body.storeInfo.storeClassification.hierarchy) {
+                            delete payload.hierarchy;
+                        }
+
+                        if (payload.creditLimit && payload.creditLimit.length > 0) {
+                            for (const [idx, row] of payload.creditLimit.entries()) {
+                                const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+
+                                if (
+                                    (typeof allowCredit === 'boolean' && !allowCredit) ||
+                                    typeof allowCredit !== 'boolean'
+                                ) {
+                                    // delete payload.creditLimit[idx].creditLimitGroupId;
+                                    // delete payload.creditLimit[idx].creditLimit;
+                                    // delete payload.creditLimit[idx].termOfPayment;
+
+                                    payload.creditLimit[idx].creditLimitGroupId = null;
+                                    payload.creditLimit[idx].creditLimit = 0;
+                                    payload.creditLimit[idx].termOfPayment = 0;
+                                }
                             }
-                        });
+                        }
 
                         this.store.dispatch(StoreActions.createStoreRequest({ payload }));
                     }
@@ -1478,15 +2245,28 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             // console.log('SUBMIT UPDATE 1', body);
             // console.log('SUBMIT UPDATE 2', payload);
 
+            const newCreditLimit =
+                body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
+                    ? body.storeInfo.payment.creditLimit.map(row => {
+                          return {
+                              allowCreditLimit: row.allowCreditLimit,
+                              id: row.creditLimitStoreId,
+                              invoiceGroupId: row.invoiceGroup,
+                              creditLimitGroupId: row.creditLimitGroup,
+                              creditLimit: row.creditLimit,
+                              termOfPayment: row.termOfPayment
+                          };
+                      })
+                    : [];
+
             const payload = {
-                storeCode: body.storeInfo.storeId.id,
+                externalId: body.storeInfo.storeId.id,
                 name: body.storeInfo.storeId.storeName,
                 image: body.profileInfo.photos,
                 taxNo: body.profileInfo.npwpId,
                 address: body.storeInfo.address.notes,
                 phoneNo: body.profileInfo.phoneNumber,
                 numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                largeArea: body.storeInfo.physicalStoreInfo.physicalStoreInfo,
                 storeTypeId: body.storeInfo.storeClassification.storeType,
                 storeGroupId: body.storeInfo.storeClassification.storeGroup,
                 storeSegmentId: body.storeInfo.storeClassification.storeSegment,
@@ -1494,26 +2274,48 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 urbanId: body.storeInfo.address.urban,
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster
-                }
+                },
+                hierarchy: {
+                    hierarchyId: body.storeInfo.storeClassification.hierarchy
+                },
+                creditLimit: newCreditLimit
             };
 
-            this._$log.generateGroup('[SUBMIT UPDATE STORE]', {
-                body: {
-                    type: 'log',
-                    value: body
-                },
-                payload: {
-                    type: 'log',
-                    value: payload
+            if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
+                delete payload.numberOfEmployee;
+            }
+
+            if (!body.storeInfo.physicalStoreInfo.vehicleAccessibility) {
+                delete payload.vehicleAccessibilityId;
+            }
+
+            if (!body.storeInfo.storeClassification.hierarchy) {
+                delete payload.hierarchy;
+            }
+
+            if (payload.creditLimit && payload.creditLimit.length > 0) {
+                for (const [idx, row] of payload.creditLimit.entries()) {
+                    const allowCredit = payload.creditLimit[idx].allowCreditLimit;
+
+                    if (
+                        (typeof allowCredit === 'boolean' && !allowCredit) ||
+                        typeof allowCredit !== 'boolean'
+                    ) {
+                        // delete payload.creditLimit[idx].creditLimitGroupId;
+                        // delete payload.creditLimit[idx].creditLimit;
+                        // delete payload.creditLimit[idx].termOfPayment;
+
+                        payload.creditLimit[idx].creditLimitGroupId = null;
+                        payload.creditLimit[idx].creditLimit = 0;
+                        payload.creditLimit[idx].termOfPayment = 0;
+                    }
                 }
-            });
+            }
 
             this.store.dispatch(
                 StoreActions.updateStoreRequest({ payload: { id, body: payload } })
             );
         }
-
-        console.log(this.form.value);
     }
 
     private addressValid(): boolean {

@@ -322,7 +322,7 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
                         }
 
                         this._$log.generateGroup(
-                            'SUBMIT CREATE CREDIT LIMIT GROUP',
+                            '[SUBMIT CREATE] CREDIT LIMIT GROUP',
                             {
                                 body: {
                                     type: 'log',
@@ -389,7 +389,7 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
             }
 
             this._$log.generateGroup(
-                'SUBMIT UPDATE CREDIT LIMIT GROUP',
+                '[SUBMIT UPDATE] CREDIT LIMIT GROUP',
                 {
                     body: {
                         type: 'log',

@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     Cluster,
     GeoParameter,
@@ -16,6 +17,24 @@ import {
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Credit Limit Group
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchDropdownCreditLimitGroupRequest = createAction(
+    '[Helper Dropdown] Fetch Credit Limit Group Request'
+);
+
+export const fetchDropdownCreditLimitGroupFailure = createAction(
+    '[Helper Dropdown] Fetch Credit Limit Group Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDropdownCreditLimitGroupSuccess = createAction(
+    '[Helper Dropdown] Fetch Credit Limit Group Success',
+    props<{ payload: CreditLimitGroup[] }>()
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Geo Parameter
@@ -295,3 +314,9 @@ export const fetchSearchAccountSuccess = createAction(
     '[Helper Search] Fetch Account Success',
     props<{ payload: Account[] }>()
 );
+
+// -----------------------------------------------------------------------------------------------------
+// Helper Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const resetInvoiceGroupState = createAction('[Helper Dropdown] Reset Invoice Group State');

@@ -114,6 +114,7 @@ $typography: mat-typography-config(
 @import 'src/app/layout/components/toolbar/toolbar.theme';
 
 @import 'src/app/main/pages/core/auth/login/login.theme';
+@import 'src/app/main/pages/core/profile/profile.theme';
 @import 'src/app/main/pages/accounts/accounts.theme';
 @import 'src/app/main/pages/catalogues/catalogues.theme';
 @import 'src/app/main/pages/accounts/merchants/merchants.theme';
@@ -149,6 +150,7 @@ $typography: mat-typography-config(
     @include merchants-theme($theme);
     @include orders-theme($theme);
     @include payment-status-theme($theme);
+    @include profile-theme($theme);
     @include supplier-inventories-theme($theme);
 
     // Plugin

@@ -98,6 +98,11 @@ const routes: Routes = [
     {
         path: 'auth',
         loadChildren: () => import('./main/pages/core/auth/auth.module').then(m => m.AuthModule)
+    },
+    {
+        path: 'profile',
+        loadChildren: () =>
+            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule)
     }
 ];
 

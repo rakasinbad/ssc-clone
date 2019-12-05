@@ -32,28 +32,17 @@ import { locale as indonesian } from 'app/navigation/i18n/id';
 /**
  * ACTIONS
  */
-import {
-    AttendanceActions,
-    MerchantActions,
-    UserActions
-} from '../store/actions';
+import { AttendanceActions, MerchantActions, UserActions } from '../store/actions';
 
 /**
  * REDUCERS
  */
-import {
-    fromAttendance,
-    fromMerchant,
-    fromUser
-} from '../store/reducers';
+import { fromAttendance, fromMerchant, fromUser } from '../store/reducers';
 
 /**
  * SELECTORS
  */
-import {
-    AttendanceSelectors,
-    MerchantSelectors
-} from '../store/selectors';
+import { AttendanceSelectors, MerchantSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-attendance-store-detail',
@@ -112,7 +101,7 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromUser: NgRxStore<fromUser.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
         const { id } = this.route.snapshot.params;
@@ -121,9 +110,11 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         this.storeId = id;
 
         /** Melakukan request data Store berdasarkan ID nya melalui dispatch action. */
-        this._fromMerchant.dispatch(MerchantActions.fetchStoreRequest({
-            payload: id
-        }));
+        this._fromMerchant.dispatch(
+            MerchantActions.fetchStoreRequest({
+                payload: id
+            })
+        );
 
         this._fromMerchant.dispatch(
             UiActions.createBreadcrumb({
@@ -156,85 +147,43 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         this.paginator.pageSize = 5;
 
         /** Mendapatkan status loading dari store-nya Attendance. */
-        this.isAttendanceLoading$ = this._fromAttendance.select(AttendanceSelectors.getIsLoading)
-        .pipe(
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+        this.isAttendanceLoading$ = this._fromAttendance
+            .select(AttendanceSelectors.getIsLoading)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$));
 
         /** Mendapatkan status loading dari store-nya Store. */
-        this.isStoreLoading$ = this._fromMerchant.select(MerchantSelectors.getIsLoading)
-        .pipe(
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+        this.isStoreLoading$ = this._fromMerchant
+            .select(MerchantSelectors.getIsLoading)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$));
 
         /** Mendapatkan store yang telah dipilih dari halaman depan. */
-        this.selectedStore$ = this._fromMerchant.select(MerchantSelectors.getMerchant)
-        .pipe(
+        this.selectedStore$ = this._fromMerchant.select(MerchantSelectors.getMerchant).pipe(
             map(merchant => {
                 if (merchant) {
-                    const newMerchant = new Merchant(
-                        merchant.id,
-                        merchant.storeCode,
-                        merchant.name,
-                        merchant.address,
-                        merchant.taxNo,
-                        merchant.longitude,
-                        merchant.latitude,
-                        merchant.largeArea,
-                        merchant.phoneNo,
-                        merchant.imageUrl,
-                        merchant.taxImageUrl,
-                        merchant.status,
-                        merchant.reason,
-                        merchant.parent,
-                        merchant.parentId,
-                        merchant.numberOfEmployee,
-                        merchant.externalId,
-                        merchant.storeTypeId,
-                        merchant.storeGroupId,
-                        merchant.storeSegmentId,
-                        merchant.urbanId,
-                        merchant.vehicleAccessibilityId,
-                        merchant.warehouseId,
-                        merchant.userStores,
-                        merchant.storeType,
-                        merchant.storeGroup,
-                        merchant.storeSegment,
-                        merchant.urban,
-                        merchant.storeConfig,
-                        merchant.createdAt,
-                        merchant.updatedAt,
-                        merchant.deletedAt
-                    );
-
-                    return newMerchant;
+                    return new Merchant(merchant);
                 }
-
             }),
             tap(merchant => {
                 if (!merchant) {
-                    this._fromMerchant.dispatch(MerchantActions.fetchStoreRequest({
-                        payload: this.storeId
-                    }));
+                    this._fromMerchant.dispatch(
+                        MerchantActions.fetchStoreRequest({
+                            payload: this.storeId
+                        })
+                    );
                 }
             }),
             takeUntil(this._unSubs$)
-
         );
 
         /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */
-        this.employeesActivities$ = this._fromAttendance.select(AttendanceSelectors.getAllAttendance)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
+        this.employeesActivities$ = this._fromAttendance
+            .select(AttendanceSelectors.getAllAttendance)
+            .pipe(takeUntil(this._unSubs$));
 
         /** Mendapatkan jumlah aktivitas karyawan dari store yang telah dipilih. */
-        this.totalEmployeesActivities$ = this._fromAttendance.select(AttendanceSelectors.getTotalAttendance)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
+        this.totalEmployeesActivities$ = this._fromAttendance
+            .select(AttendanceSelectors.getTotalAttendance)
+            .pipe(takeUntil(this._unSubs$));
 
         /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
         this.onChangePage();
@@ -299,9 +248,7 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
     }
 
     public openEmployeeAttendanceDetail(data: Attendance): void {
-        this._fromUser.dispatch(
-            UserActions.setSelectedUser({ payload: data.user })
-        );
+        this._fromUser.dispatch(UserActions.setSelectedUser({ payload: data.user }));
 
         this.router.navigate([
             `/pages/attendances/${this.storeId}/employee/${data.user.id}/detail`

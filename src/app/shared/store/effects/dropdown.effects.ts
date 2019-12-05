@@ -3,6 +3,8 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
+import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
 import {
     ClusterApiService,
     HierarchyApiService,
@@ -48,6 +50,77 @@ import { DropdownActions } from '../actions';
 @Injectable()
 export class DropdownEffects {
     private _isOnline = this.network.online;
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH dropdown methods [Credit Limit Group]
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Credit Limit Group
+     * @memberof DropdownEffects
+     */
+    fetchDropdownCreditLimitGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDropdownCreditLimitGroupRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                            payload: {
+                                id: 'fetchDropdownCreditLimitGroupFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$creditLimitGroupApi
+                    .findAll<Array<CreditLimitGroup>>({ paginate: false }, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map(resp => {
+                            const sources = resp.map(row => {
+                                const newCreditLimitGroup = new CreditLimitGroup(row);
+
+                                return newCreditLimitGroup;
+                            });
+
+                            this._$log.generateGroup(
+                                '[RESPONSE REQUEST] FETCH CREDIT LIMIT GROUP DROPDOWN',
+                                {
+                                    response: {
+                                        type: 'log',
+                                        value: resp
+                                    },
+                                    sources: {
+                                        type: 'log',
+                                        value: sources
+                                    }
+                                },
+                                'groupCollapsed'
+                            );
+
+                            return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
+                                payload: sortBy(sources, ['name'], ['asc'])
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                DropdownActions.fetchDropdownCreditLimitGroupFailure({
+                                    payload: {
+                                        id: 'fetchDropdownCreditLimitGroupFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Geo Parameter]
@@ -292,37 +365,11 @@ export class DropdownEffects {
                     catchOffline(),
                     retry(3),
                     map(resp => {
-                        const sources = (resp as Array<InvoiceGroup>).map(
-                            (row: Partial<InvoiceGroup>) => {
-                                const newInvoiceGroup = new InvoiceGroup(
-                                    row.id,
-                                    row.name,
-                                    row.minimumOrder,
-                                    row.status,
-                                    row.supplierId,
-                                    row.createdAt,
-                                    row.updatedAt,
-                                    row.deletedAt
-                                );
+                        const sources = (resp as Array<InvoiceGroup>).map(row => {
+                            const newInvoiceGroup = new InvoiceGroup(row);
 
-                                return newInvoiceGroup;
-                            }
-                        );
-
-                        this._$log.generateGroup(
-                            '[RESPONSE REQUEST] FETCH INVOICE GROUP DROPDOWN',
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                },
-                                sources: {
-                                    type: 'log',
-                                    value: sources
-                                }
-                            },
-                            'groupCollapsed'
-                        );
+                            return newInvoiceGroup;
+                        });
 
                         return DropdownActions.fetchDropdownInvoiceGroupSuccess({
                             payload: sortBy(sources, ['name'], ['asc'])
@@ -944,6 +991,7 @@ export class DropdownEffects {
         private _$log: LogService,
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
+        private _$creditLimitGroupApi: CreditLimitGroupApiService,
         private _$hierarchyApi: HierarchyApiService,
         private _$invoiceGroupApi: InvoiceGroupApiService,
         private _$provinceApi: ProvinceApiService,

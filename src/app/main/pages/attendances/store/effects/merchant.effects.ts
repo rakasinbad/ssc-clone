@@ -23,8 +23,6 @@ export class MerchantEffects {
     // @ CRUD methods
     // -----------------------------------------------------------------------------------------------------
 
-
-
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------
@@ -37,50 +35,14 @@ export class MerchantEffects {
                 return this.merchantApiSvc.findById(queryParams).pipe(
                     catchOffline(),
                     map(merchant => {
-                        const newResponse = new Merchant(
-                            merchant.id,
-                            merchant.storeCode,
-                            merchant.name,
-                            merchant.address,
-                            merchant.taxNo,
-                            merchant.longitude,
-                            merchant.latitude,
-                            merchant.largeArea,
-                            merchant.phoneNo,
-                            merchant.imageUrl,
-                            merchant.taxImageUrl,
-                            merchant.status,
-                            merchant.reason,
-                            merchant.parent,
-                            merchant.parentId,
-                            merchant.numberOfEmployee,
-                            merchant.externalId,
-                            merchant.storeTypeId,
-                            merchant.storeGroupId,
-                            merchant.storeSegmentId,
-                            merchant.urbanId,
-                            merchant.vehicleAccessibilityId,
-                            merchant.warehouseId,
-                            merchant.userStores,
-                            merchant.storeType,
-                            merchant.storeGroup,
-                            merchant.storeSegment,
-                            merchant.urban,
-                            merchant.storeConfig,
-                            merchant.createdAt,
-                            merchant.updatedAt,
-                            merchant.deletedAt
-                        );
+                        const newResponse = new Merchant(merchant);
 
-                        this.logSvc.generateGroup(
-                            '[FETCH RESPONSE MERCHANT REQUEST] ONLINE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: newResponse
-                                }
+                        this.logSvc.generateGroup('[FETCH RESPONSE MERCHANT REQUEST] ONLINE', {
+                            payload: {
+                                type: 'log',
+                                value: newResponse
                             }
-                        );
+                        });
 
                         return MerchantActions.fetchStoreSuccess({
                             payload: {
@@ -118,96 +80,27 @@ export class MerchantEffects {
                         };
 
                         if (queryParams.paginate) {
-                            const newResponse = (resp as IPaginatedResponse<Merchant>);
+                            const newResponse = resp as IPaginatedResponse<Merchant>;
 
                             newResp = {
                                 total: newResponse.total,
-                                data: newResponse.data.map(merchant => new Merchant(
-                                    merchant.id,
-                                    merchant.storeCode,
-                                    merchant.name,
-                                    merchant.address,
-                                    merchant.taxNo,
-                                    merchant.longitude,
-                                    merchant.latitude,
-                                    merchant.largeArea,
-                                    merchant.phoneNo,
-                                    merchant.imageUrl,
-                                    merchant.taxImageUrl,
-                                    merchant.status,
-                                    merchant.reason,
-                                    merchant.parent,
-                                    merchant.parentId,
-                                    merchant.numberOfEmployee,
-                                    merchant.externalId,
-                                    merchant.storeTypeId,
-                                    merchant.storeGroupId,
-                                    merchant.storeSegmentId,
-                                    merchant.urbanId,
-                                    merchant.vehicleAccessibilityId,
-                                    merchant.warehouseId,
-                                    merchant.userStores,
-                                    merchant.storeType,
-                                    merchant.storeGroup,
-                                    merchant.storeSegment,
-                                    merchant.urban,
-                                    merchant.storeConfig,
-                                    merchant.createdAt,
-                                    merchant.updatedAt,
-                                    merchant.deletedAt
-                                ))
+                                data: newResponse.data.map(merchant => new Merchant(merchant))
                             };
                         } else {
-                            const newResponse = (resp as Array<Merchant>);
+                            const newResponse = resp as Array<Merchant>;
 
                             newResp = {
                                 total: newResponse.length,
-                                data: newResponse.map(merchant => new Merchant(
-                                    merchant.id,
-                                    merchant.storeCode,
-                                    merchant.name,
-                                    merchant.address,
-                                    merchant.taxNo,
-                                    merchant.longitude,
-                                    merchant.latitude,
-                                    merchant.largeArea,
-                                    merchant.phoneNo,
-                                    merchant.imageUrl,
-                                    merchant.taxImageUrl,
-                                    merchant.status,
-                                    merchant.reason,
-                                    merchant.parent,
-                                    merchant.parentId,
-                                    merchant.numberOfEmployee,
-                                    merchant.externalId,
-                                    merchant.storeTypeId,
-                                    merchant.storeGroupId,
-                                    merchant.storeSegmentId,
-                                    merchant.urbanId,
-                                    merchant.vehicleAccessibilityId,
-                                    merchant.warehouseId,
-                                    merchant.userStores,
-                                    merchant.storeType,
-                                    merchant.storeGroup,
-                                    merchant.storeSegment,
-                                    merchant.urban,
-                                    merchant.storeConfig,
-                                    merchant.createdAt,
-                                    merchant.updatedAt,
-                                    merchant.deletedAt
-                                ))
+                                data: newResponse.map(merchant => new Merchant(merchant))
                             };
                         }
 
-                        this.logSvc.generateGroup(
-                            '[FETCH RESPONSE MERCHANTS REQUEST] ONLINE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: resp
-                                }
+                        this.logSvc.generateGroup('[FETCH RESPONSE MERCHANTS REQUEST] ONLINE', {
+                            payload: {
+                                type: 'log',
+                                value: resp
                             }
-                        );
+                        });
 
                         return MerchantActions.fetchStoresSuccess({
                             payload: {

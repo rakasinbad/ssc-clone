@@ -17,7 +17,7 @@ import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -67,8 +67,10 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         private store: Store<fromSupplierInventory.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
+        // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -110,6 +112,12 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         this.isLoading$ = this.store.select(SupplierInventorySelectors.getIsLoading);
 
         this.initTable();
+
+        this.search.valueChanges
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.onRefreshTable();
+            });
 
         this.store
             .select(SupplierInventorySelectors.getIsRefresh)
@@ -187,6 +195,17 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
             data['sortBy'] = this.sort.active;
+        }
+
+        if (this.search.value) {
+            const query = this.search.value;
+
+            data['search'] = [
+                {
+                    fieldName: 'keyword',
+                    keyword: query
+                }
+            ];
         }
 
         this.store.dispatch(

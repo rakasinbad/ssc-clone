@@ -44,14 +44,10 @@ export const initialState: State = {
 
 const merchantReducer = createReducer(
     initialState,
-    on(
-        MerchantActions.fetchStoreRequest,
-        MerchantActions.fetchStoresRequest,
-        state => ({
-            ...state,
-            isLoading: true
-        })
-    ),
+    on(MerchantActions.fetchStoreRequest, MerchantActions.fetchStoresRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
     on(MerchantActions.fetchStoresFailure, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -97,53 +93,14 @@ const merchantReducer = createReducer(
 
         return newState;
     }),
-    on(
-        MerchantActions.setSelectedStore,
-        (state, { payload }) => ({
-            ...state,
-            merchant: new Merchant(
-                payload.id,
-                payload.storeCode,
-                payload.name,
-                payload.address,
-                payload.taxNo,
-                payload.longitude,
-                payload.latitude,
-                payload.largeArea,
-                payload.phoneNo,
-                payload.imageUrl,
-                payload.taxImageUrl,
-                payload.status,
-                payload.reason,
-                payload.parent,
-                payload.parentId,
-                payload.numberOfEmployee,
-                payload.externalId,
-                payload.storeTypeId,
-                payload.storeGroupId,
-                payload.storeSegmentId,
-                payload.urbanId,
-                payload.vehicleAccessibilityId,
-                payload.warehouseId,
-                payload.userStores,
-                payload.storeType,
-                payload.storeGroup,
-                payload.storeSegment,
-                payload.urban,
-                payload.storeConfig,
-                payload.createdAt,
-                payload.updatedAt,
-                payload.deletedAt
-            )
-        })
-    ),
-    on(
-        MerchantActions.resetSelectedStore,
-        (state) => ({
-            ...state,
-            merchant: null
-        })
-    )
+    on(MerchantActions.setSelectedStore, (state, { payload }) => ({
+        ...state,
+        merchant: new Merchant(payload)
+    })),
+    on(MerchantActions.resetSelectedStore, state => ({
+        ...state,
+        merchant: null
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

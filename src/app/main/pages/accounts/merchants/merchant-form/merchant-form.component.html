@@ -804,51 +804,6 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                        .errors &&
-                                    !form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                        .untouched &&
-                                    (form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                        .dirty ||
-                                        form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                            .touched)
-                                "
-                            >
-                                Physical Store Information
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <input
-                                    matInput
-                                    name="physicalStoreInfo"
-                                    formControlName="physicalStoreInfo"
-                                />
-
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                            .errors &&
-                                        (form.get('storeInfo.physicalStoreInfo.physicalStoreInfo')
-                                            .dirty ||
-                                            form.get(
-                                                'storeInfo.physicalStoreInfo.physicalStoreInfo'
-                                            ).touched)
-                                    "
-                                >
-                                    {{
-                                        getErrorMessage(
-                                            'storeInfo.physicalStoreInfo.physicalStoreInfo'
-                                        )
-                                    }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="12"
-                                [class.mat-error]="
                                     form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
                                         .errors &&
                                     !form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
@@ -974,9 +929,11 @@
                         </div>
                     </div>
 
+                    <!-- Store Classification Group -->
                     <div class="form-box" formGroupName="storeClassification">
                         <span class="mat-subheading-2">Store Classification</span>
 
+                        <!-- Store Type Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
@@ -1033,6 +990,7 @@
                             </mat-form-field>
                         </div>
 
+                        <!-- Store Group Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
@@ -1092,6 +1050,7 @@
                             </mat-form-field>
                         </div>
 
+                        <!-- Store Cluster Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
@@ -1274,6 +1233,457 @@
                                 </mat-error>
                             </mat-form-field>
                         </div>
+                    </div>
+
+                    <!-- Payment Group -->
+                    <div class="form-box" formGroupName="payment">
+                        <span class="mat-subheading-2">Payment</span>
+
+                        <!-- Credit Limit Form Array -->
+                        <ng-container
+                            formArrayName="creditLimit"
+                            *ngFor="
+                                let creditLimit of creditLimitControls;
+                                index as i;
+                                odd as odd;
+                                even as even
+                            "
+                        >
+                            <ng-container [formGroupName]="i">
+                                <div class="px-4 py-4" [class.bg-f9f9f9-simple]="odd">
+                                    <!-- Allow Credit Field -->
+                                    <div
+                                        class="custom-field-right"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                    >
+                                        <div style="margin-left: 50px; margin-top: 10px">
+                                            <mat-slide-toggle
+                                                [labelPosition]="'before'"
+                                                formControlName="allowCreditLimit"
+                                                (change)="onChangeAllowCredit($event, i)"
+                                            >
+                                                Allow Credit
+                                            </mat-slide-toggle>
+                                        </div>
+                                    </div>
+
+                                    <!-- Credit Limit Field -->
+                                    <div
+                                        class="custom-field-right"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                    >
+                                        <label
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                formCreditLimits.controls[i].get('creditLimit')
+                                                    .errors &&
+                                                !formCreditLimits.controls[i].get('creditLimit')
+                                                    .untouched &&
+                                                (formCreditLimits.controls[i].get('creditLimit')
+                                                    .dirty ||
+                                                    formCreditLimits.controls[i].get('creditLimit')
+                                                        .touched)
+                                            "
+                                            [attr.disabled]="
+                                                formCreditLimits.controls[i].get('creditLimit')
+                                                    .disabled
+                                                    ? true
+                                                    : null
+                                            "
+                                        >
+                                            {{ tempCreditLimitAmount[i] ? '*' : '' }}Value
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input
+                                                matInput
+                                                name="creditLimit"
+                                                formControlName="creditLimit"
+                                                mask="separator.2"
+                                                thousandSeparator="."
+                                                prefix="Rp"
+                                                placeholder="Rp"
+                                            />
+
+                                            <mat-error
+                                                *ngIf="
+                                                    formCreditLimits.controls[i].get('creditLimit')
+                                                        .errors &&
+                                                    (formCreditLimits.controls[i].get('creditLimit')
+                                                        .dirty ||
+                                                        formCreditLimits.controls[i].get(
+                                                            'creditLimit'
+                                                        ).touched)
+                                                "
+                                            >
+                                                {{
+                                                    getErrorMessageArray(
+                                                        'storeInfo.payment.creditLimit',
+                                                        'creditLimit',
+                                                        i
+                                                    )
+                                                }}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <!-- Term of Payment Field -->
+                                    <div
+                                        class="custom-field-right"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                    >
+                                        <label
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                formCreditLimits.controls[i].get('termOfPayment')
+                                                    .errors &&
+                                                !formCreditLimits.controls[i].get('termOfPayment')
+                                                    .untouched &&
+                                                (formCreditLimits.controls[i].get('termOfPayment')
+                                                    .dirty ||
+                                                    formCreditLimits.controls[i].get(
+                                                        'termOfPayment'
+                                                    ).touched)
+                                            "
+                                            [attr.disabled]="
+                                                formCreditLimits.controls[i].get('termOfPayment')
+                                                    .disabled
+                                                    ? true
+                                                    : null
+                                            "
+                                        >
+                                            {{ tempTermOfPayment[i] ? '*' : '' }}ToP
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input
+                                                matInput
+                                                name="termOfPayment"
+                                                formControlName="termOfPayment"
+                                                suffix=" days"
+                                                mask="0*"
+                                                placeholder="days"
+                                            />
+
+                                            <mat-error
+                                                *ngIf="
+                                                    formCreditLimits.controls[i].get(
+                                                        'termOfPayment'
+                                                    ).errors &&
+                                                    (formCreditLimits.controls[i].get(
+                                                        'termOfPayment'
+                                                    ).dirty ||
+                                                        formCreditLimits.controls[i].get(
+                                                            'termOfPayment'
+                                                        ).touched)
+                                                "
+                                            >
+                                                {{
+                                                    getErrorMessageArray(
+                                                        'storeInfo.payment.creditLimit',
+                                                        'termOfPayment',
+                                                        i
+                                                    )
+                                                }}
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <!-- Credit Limit Group Field -->
+                                    <div
+                                        class="custom-field-right"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                    >
+                                        <label
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                formCreditLimits.controls[i].get('creditLimitGroup')
+                                                    .errors &&
+                                                !formCreditLimits.controls[i].get(
+                                                    'creditLimitGroup'
+                                                ).untouched &&
+                                                (formCreditLimits.controls[i].get(
+                                                    'creditLimitGroup'
+                                                ).dirty ||
+                                                    formCreditLimits.controls[i].get(
+                                                        'creditLimitGroup'
+                                                    ).touched)
+                                            "
+                                            [attr.disabled]="
+                                                formCreditLimits.controls[i].get('creditLimitGroup')
+                                                    .disabled
+                                                    ? true
+                                                    : null
+                                            "
+                                        >
+                                            Set Credit Limit Group
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <ng-container
+                                                *ngIf="
+                                                    creditLimitGroups$ | async as creditLimitGroups;
+                                                    else noCreditLimitGroups
+                                                "
+                                            >
+                                                <mat-select
+                                                    formControlName="creditLimitGroup"
+                                                    placeholder="Choose Credit Limit Group"
+                                                    (selectionChange)="
+                                                        onSelectCreditLimitGroup($event, i)
+                                                    "
+                                                >
+                                                    <mat-option
+                                                        *ngFor="let row of creditLimitGroups"
+                                                        [value]="row?.id"
+                                                    >
+                                                        {{ row?.name }}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </ng-container>
+
+                                            <ng-template #noCreditLimitGroups>
+                                                <mat-select
+                                                    placeholder="Choose Credit Limit Group"
+                                                    disabled
+                                                >
+                                                    <mat-option>
+                                                        Credit Limit Group not found
+                                                    </mat-option>
+                                                </mat-select>
+                                            </ng-template>
+
+                                            <mat-error
+                                                *ngIf="
+                                                    formCreditLimits.controls[i].get(
+                                                        'creditLimitGroup'
+                                                    ).errors &&
+                                                    (formCreditLimits.controls[i].get(
+                                                        'creditLimitGroup'
+                                                    ).dirty ||
+                                                        formCreditLimits.controls[i].get(
+                                                            'creditLimitGroup'
+                                                        ).touched)
+                                                "
+                                            >
+                                                {{
+                                                    getErrorMessageArray(
+                                                        'storeInfo.payment.creditLimit',
+                                                        'creditLimitGroup',
+                                                        i
+                                                    )
+                                                }}
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <button
+                                            type="button"
+                                            mat-icon-button
+                                            color="accent"
+                                            aria-label="Reset"
+                                            style="position: relative;top: -0.78em"
+                                            (click)="onResetCreditLimitGroup(i)"
+                                            *ngIf="
+                                                formCreditLimits.controls[i].get('creditLimitGroup')
+                                                    .value
+                                            "
+                                        >
+                                            <mat-icon>refresh</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeCluster').errors &&
+                                    !form.get('storeInfo.storeClassification.storeCluster')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeCluster').dirty ||
+                                        form.get('storeInfo.storeClassification.storeCluster')
+                                            .touched)
+                                "
+                            >
+                                *Store Cluster
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container
+                                    *ngIf="
+                                        storeClusters$ | async as storeClusters;
+                                        else noStoreClusters
+                                    "
+                                >
+                                    <mat-select
+                                        formControlName="storeCluster"
+                                        placeholder="Choose Store Cluster"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeClusters"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreClusters>
+                                    <mat-select
+                                        formControlName="storeCluster"
+                                        placeholder="Choose Store Cluster"
+                                    >
+                                        <mat-option>Store Cluster not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeCluster')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeCluster')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeCluster')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeCluster'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div> -->
+
+                        <!-- Store Segment Field -->
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.storeSegment').errors &&
+                                    !form.get('storeInfo.storeClassification.storeSegment')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.storeSegment').dirty ||
+                                        form.get('storeInfo.storeClassification.storeSegment')
+                                            .touched)
+                                "
+                            >
+                                *Store Segment
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container
+                                    *ngIf="
+                                        storeSegments$ | async as storeSegments;
+                                        else noStoreSegments
+                                    "
+                                >
+                                    <mat-select
+                                        formControlName="storeSegment"
+                                        placeholder="Choose Store Segment"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of storeSegments"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | uppercase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noStoreSegments>
+                                    <mat-select
+                                        formControlName="storeSegment"
+                                        placeholder="Choose Store Segment"
+                                    >
+                                        <mat-option>Store Segment not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.storeSegment')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.storeSegment')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.storeSegment')
+                                                .touched)
+                                    "
+                                >
+                                    {{
+                                        getErrorMessage(
+                                            'storeInfo.storeClassification.storeSegment'
+                                        )
+                                    }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div> -->
+
+                        <!-- Customer Hierarchy Field -->
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    form.get('storeInfo.storeClassification.hierarchy').errors &&
+                                    !form.get('storeInfo.storeClassification.hierarchy')
+                                        .untouched &&
+                                    (form.get('storeInfo.storeClassification.hierarchy').dirty ||
+                                        form.get('storeInfo.storeClassification.hierarchy').touched)
+                                "
+                            >
+                                Hierarchy
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container
+                                    *ngIf="hierarchies$ | async as hierarchies; else noHierarchies"
+                                >
+                                    <mat-select
+                                        formControlName="hierarchy"
+                                        placeholder="Choose Hierarchy"
+                                    >
+                                        <mat-option
+                                            *ngFor="let row of hierarchies"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name | uppercase }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noHierarchies>
+                                    <mat-select placeholder="Choose Hierarchy" disabled>
+                                        <mat-option>Hierarchy not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('storeInfo.storeClassification.hierarchy')
+                                            .errors &&
+                                        (form.get('storeInfo.storeClassification.hierarchy')
+                                            .dirty ||
+                                            form.get('storeInfo.storeClassification.hierarchy')
+                                                .touched)
+                                    "
+                                >
+                                    {{ getErrorMessage('storeInfo.storeClassification.hierarchy') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div> -->
                     </div>
                 </div>
             </mat-card>

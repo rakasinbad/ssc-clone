@@ -145,6 +145,11 @@ quill-editor {
     padding: 10px;
 }
 
+.bg-f9f9f9-simple {
+    background-color: #f9f9f9;
+    border-radius: 4px;
+}
+
 .bg-f9f9f9 {
     background-color: #f9f9f9;
     border-radius: 4px;
@@ -217,6 +222,10 @@ quill-editor {
 }
 
 body.theme-sinbad-light {
+    label[disabled] {
+        color: rgba(0, 0, 0, 0.38);
+    }
+
     .mat-stroked-button.sinbad:not([disabled]),
     .mat-stroked-button.sinbad {
         border-color: #f0444c;
