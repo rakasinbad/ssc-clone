@@ -92,6 +92,14 @@ const routes: Routes = [
                         m => m.SupplierInventoriesModule
                     ),
                 canLoad: [AuthGuard]
+            },
+            {
+                path: 'settings',
+                loadChildren: () => 
+                    import('./main/pages/settings/settings.module').then(
+                        m => m.SettingsModule
+                    ),
+                canLoad: [AuthGuard]
             }
         ]
     },
@@ -103,7 +111,7 @@ const routes: Routes = [
         path: 'profile',
         loadChildren: () =>
             import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule)
-    }
+    },
 ];
 
 /**
