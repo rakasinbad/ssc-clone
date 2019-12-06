@@ -116,11 +116,11 @@ export class CreditLimitGroupComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe(({ action, payload }) => {
                 if (action === 'new' && payload) {
-                    // this.store.dispatch(
-                    //     CreditLimitBalanceActions.createCreditLimitGroupRequest({
-                    //         payload: payload
-                    //     })
-                    // );
+                    this.store.dispatch(
+                        CreditLimitBalanceActions.createCreditLimitGroupRequest({
+                            payload: payload
+                        })
+                    );
                 } else if (action === 'edit' && payload) {
                     this.store.dispatch(
                         CreditLimitBalanceActions.updateCreditLimitGroupRequest({

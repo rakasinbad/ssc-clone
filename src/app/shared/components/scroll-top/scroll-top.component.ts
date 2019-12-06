@@ -12,7 +12,7 @@ export class ScrollTopComponent implements OnInit {
 
     constructor(@Inject(DOCUMENT) private document: Document) {}
 
-    @HostListener('scroll', ['$event'])
+    @HostListener('window:scroll', ['$event'])
     onWindowScroll(e: Event): void {
         alert('ABC');
         console.log('WINDOW SCROLL 1');

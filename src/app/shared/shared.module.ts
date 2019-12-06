@@ -86,8 +86,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         WarningNoticeComponent,
         ShowImageComponent,
         DeleteConfirmationComponent,
-        ChangeConfirmationComponent,
-        ScrollTopComponent
+        ChangeConfirmationComponent
+        // ScrollTopComponent
     ]
 })
 export class SharedModule {}
