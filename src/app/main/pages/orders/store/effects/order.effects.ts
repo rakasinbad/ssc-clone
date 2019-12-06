@@ -4,7 +4,12 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService, OrderBrandCatalogueApiService } from 'app/shared/helpers';
+import {
+    LogService,
+    NoticeService,
+    OrderBrandCatalogueApiService,
+    UploadApiService
+} from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
@@ -675,6 +680,79 @@ export class OrderEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ IMPORT methods
+    // -----------------------------------------------------------------------------------------------------
+
+    importRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.importRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([{ file, type }, { supplierId }]) => {
+                if (!supplierId || !file || !type) {
+                    return of(
+                        OrderActions.importFailure({
+                            payload: { id: 'importFailure', errors: 'Not Found!' }
+                        })
+                    );
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('supplierId', supplierId);
+                formData.append('type', type);
+
+                return this._$uploadApi.uploadFormData('import-order-parcels', formData).pipe(
+                    map(resp => {
+                        return OrderActions.importSuccess();
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.importFailure({
+                                payload: { id: 'importFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    importFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.importFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -682,6 +760,7 @@ export class OrderEffects {
         private _$log: LogService,
         private _$notice: NoticeService,
         private _$orderApi: OrderApiService,
-        private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService
+        private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService,
+        private _$uploadApi: UploadApiService
     ) {}
 }

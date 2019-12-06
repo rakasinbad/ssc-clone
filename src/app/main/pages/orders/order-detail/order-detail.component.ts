@@ -39,8 +39,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         'product',
         // 'bonus',
         'order-qty',
-        'delivered-qty',
-        'invoiced-qty',
+        // 'delivered-qty',
+        // 'invoiced-qty',
         // 'unitOfMeasured',
         'unit-price',
         'gross'

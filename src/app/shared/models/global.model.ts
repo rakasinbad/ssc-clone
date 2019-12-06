@@ -105,6 +105,18 @@ export interface IErrorHandler {
     errors: any;
 }
 
+export class ErrorHandler implements IErrorHandler {
+    id: string;
+    errors: any;
+
+    constructor(data: ErrorHandler) {
+        const { id, errors } = data;
+
+        this.id = id;
+        this.errors = errors;
+    }
+}
+
 export interface ILog {
     [key: string]: {
         type: LogTypeString;

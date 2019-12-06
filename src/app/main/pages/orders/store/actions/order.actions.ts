@@ -43,6 +43,22 @@ export const fetchOrderSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// IMPORT Order
+// -----------------------------------------------------------------------------------------------------
+
+export const importRequest = createAction(
+    '[Order Page] Import Request',
+    props<{ payload: { file: File; type: string } }>()
+);
+
+export const importFailure = createAction(
+    '[Order Page] Import Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const importSuccess = createAction('[Order Page] Import Success');
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - UPDATE DELIVERED QTY] Order Detail
 // -----------------------------------------------------------------------------------------------------
 

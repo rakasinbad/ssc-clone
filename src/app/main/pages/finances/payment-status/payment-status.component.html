@@ -252,12 +252,16 @@
                         Paid On
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;" [class.indicator-green]="row?.paidTime">
+                        <p style="word-break: break-word;" *ngIf="row?.statusPayment === 'paid'">
                             {{
                                 safeValue(row?.paidTime) !== '-'
                                     ? (row?.paidTime | date: 'dd MMM yyyy')
                                     : safeValue(row?.paidTime)
                             }}
+                        </p>
+
+                        <p style="word-break: break-word;" *ngIf="row?.statusPayment !== 'paid'">
+                            -
                         </p>
                     </mat-cell>
                 </ng-container>

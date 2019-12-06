@@ -101,7 +101,7 @@
                                         form.get('profileInfo.photos').touched)
                                 "
                             >
-                                *Store Photo
+                                Store Photo
                             </label>
 
                             <div fxLayout="row" fxFlex="100" fxLayoutAlign="start center">
@@ -579,7 +579,7 @@
                                         form.get('storeInfo.legalInfo.name').touched)
                                 "
                             >
-                                *Name
+                                *Owner Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1004,7 +1004,7 @@
                                             .touched)
                                 "
                             >
-                                *Store Group
+                                Store Group
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1064,7 +1064,7 @@
                                             .touched)
                                 "
                             >
-                                *Store Cluster
+                                Store Cluster
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -1251,6 +1251,12 @@
                         >
                             <ng-container [formGroupName]="i">
                                 <div class="px-4 py-4" [class.bg-f9f9f9-simple]="odd">
+                                    <div class="mb-8">
+                                        <span class="text-boxed">
+                                            {{ tempInvoiceGroupName[i] }}
+                                        </span>
+                                    </div>
+
                                     <!-- Allow Credit Field -->
                                     <div
                                         class="custom-field-right"

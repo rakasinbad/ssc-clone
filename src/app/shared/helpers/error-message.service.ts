@@ -35,6 +35,9 @@ export class ErrorMessageService {
             case 'alpha_pattern':
                 return this.translate.instant('ERROR.ALPHA_PATTERN', { fieldName: labelName });
 
+            case 'alpha_num_pattern':
+                return this.translate.instant('ERROR.ALPHA_NUM_PATTERN', { fieldName: labelName });
+
             case 'email_pattern':
                 return this.translate.instant('ERROR.EMAIL_PATTERN', { fieldName: labelName });
 
@@ -58,6 +61,9 @@ export class ErrorMessageService {
                     fieldName: labelName,
                     prefix: args
                 });
+
+            case 'numeric':
+                return this.translate.instant('ERROR.NUMERIC', { fieldName: labelName });
 
             case 'pattern':
                 return this.translate.instant('ERROR.PATTERN', { fieldName: labelName });

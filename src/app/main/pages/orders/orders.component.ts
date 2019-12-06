@@ -43,12 +43,13 @@ import { OrderSelectors } from './store/selectors';
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     search: FormControl;
+
     filterStatus: string;
     total: number;
     displayedColumns = [
         // 'checkbox',
-        'origins',
         'order-code',
+        'order-ref',
         'order-date',
         'store-name',
         'trx-amount',
@@ -62,7 +63,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     hasSelected: boolean;
     statusOrder: any;
 
-    dataSource$: Observable<IOrderDemo[]>;
+    dataSource$: Observable<any>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -279,6 +280,45 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     onDelete(item): void {
         if (!item) {
             return;
+        }
+    }
+
+    onDownload(): void {
+        window.open(
+            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/order_parcels/update_order_parcel_by_status.csv',
+            '_blank'
+        );
+    }
+
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'docs':
+                        this.store.dispatch(
+                            OrderActions.importRequest({
+                                payload: { file, type: 'update_order_status' }
+                            })
+                        );
+                        // {
+                        //     const photoField = this.form.get('profileInfo.photos');
+                        //     const fileReader = new FileReader();
+                        //     fileReader.onload = () => {
+                        //         photoField.patchValue(fileReader.result);
+                        //         this.tmpPhoto.patchValue(file.name);
+                        //     };
+                        //     fileReader.readAsDataURL(file);
+                        // }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 

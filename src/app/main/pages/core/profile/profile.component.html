@@ -1,1 +1,206 @@
-<p>profile works!</p>
+<div id="profile" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <!-- APP TITLE -->
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <!-- <button mat-icon-button class="mr-0 mr-sm-16">
+                    <mat-icon>arrow_back</mat-icon>
+                </button> -->
+
+                <div
+                    class="product-image mr-8 mr-sm-16"
+                    [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+                >
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                </div>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2" *ngIf="profile$ | async as profile">
+                        {{ (profile?.userSuppliers)[0]?.user?.fullName }}
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>Supplier Detail</span>
+                    </div>
+                </div>
+            </div>
+            <!-- / APP TITLE -->
+
+            <!-- <button mat-raised-button
+                    class="save-product-button"
+                    [disabled]="productForm.invalid"
+                    *ngIf="pageType ==='new'" (click)="addProduct()">
+                <span>ADD</span>
+            </button>
+
+            <button mat-raised-button
+                    class="save-product-button"
+                    [disabled]="productForm.invalid || productForm.pristine"
+                    *ngIf="pageType ==='edit'" (click)="saveProduct()">
+                <span>SAVE</span>
+            </button> -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT -->
+            <div class="content">
+                <mat-tab-group>
+                    <mat-tab label="Informasi Bisnis">
+                        <div class="tab-content p-24" fusePerfectScrollbar>
+                            <div class="mb-12">
+                                <span class="mat-headline" *ngIf="!(isLoading$ | async)">
+                                    Informasi Bisnis
+                                </span>
+
+                                <ngx-skeleton-loader
+                                    *ngIf="isLoading$ | async"
+                                    [theme]="{ width: '150px', height: '40px' }"
+                                ></ngx-skeleton-loader>
+                            </div>
+
+                            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="25px">
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Nama Legal/Nama Kantor
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.name }}
+                                    </div>
+                                </div>
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Formulir Legal
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Negara
+                                    </div>
+
+                                    <div class="info">
+                                        Indonesia
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Provinsi
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.province?.name }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kota
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.city }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kecamatan
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.district }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kelurahan
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.urban }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Kode Pos
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.urban?.zipCode }}
+                                    </div>
+                                </div>
+
+                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Alamat
+                                    </div>
+
+                                    <div class="info">
+                                        {{ (profile$ | async)?.address }}
+                                    </div>
+                                </div>
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Penanggung Jawab
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Nomor KTP
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+
+                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <div class="label" fxFlex="12">
+                                        Foto
+                                    </div>
+
+                                    <div>
+                                        -
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                    </mat-tab>
+
+                    <!-- <mat-tab label="Product Images">
+                        <div class="tab-content p-24" fusePerfectScrollbar></div>
+                    </mat-tab> -->
+                </mat-tab-group>
+            </div>
+            <!-- / CONTENT -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

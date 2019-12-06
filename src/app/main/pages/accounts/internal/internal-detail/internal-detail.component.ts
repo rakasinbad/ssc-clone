@@ -32,6 +32,7 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
     private _unSubs$: Subject<void>;
 
     constructor(private formBuilder: FormBuilder, private store: Store<fromInternal.FeatureState>) {
+        // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -39,10 +40,10 @@ export class InternalDetailComponent implements OnInit, OnDestroy {
                         title: 'Home',
                         translate: 'BREADCRUMBS.HOME'
                     },
-                    {
-                        title: 'Account',
-                        translate: 'BREADCRUMBS.ACCOUNT'
-                    },
+                    // {
+                    //     title: 'Account',
+                    //     translate: 'BREADCRUMBS.ACCOUNT'
+                    // },
                     {
                         title: 'Internal',
                         translate: 'BREADCRUMBS.INTERNAL'
