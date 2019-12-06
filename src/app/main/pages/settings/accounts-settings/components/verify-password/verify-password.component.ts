@@ -89,6 +89,6 @@ export class VerifyPasswordComponent implements OnDestroy, OnInit {
                     update: 'information'
                 }
             })
-        )
+        );
     }
 }
