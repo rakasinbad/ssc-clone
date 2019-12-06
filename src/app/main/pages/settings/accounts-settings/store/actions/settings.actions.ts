@@ -7,6 +7,7 @@ import {
     TSource
 } from 'app/shared/models';
 import {
+    IUserResponseUpdatePassword,
     UpdateUser,
     User
 } from '../../models';
@@ -60,7 +61,7 @@ export const patchUserFailure = createAction(
  */
 export const patchUserSuccess = createAction(
     '[Users API] Patch User Success',
-    props<{ payload: { user: User; } }>()
+    props<{ payload: { user?: User; response?: IUserResponseUpdatePassword; } }>()
 );
 
 /**
