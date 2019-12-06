@@ -1,0 +1,197 @@
+<div class="content-card mt-16">
+    <div
+        fxLayout="column"
+        fxLayoutAlign="start stretch"
+        class="pt-8 pl-40"
+    >
+        <!-- TITLE -->
+        <div class="h1 pb-40">
+            Informasi Diri
+        </div>
+        <!-- / TITLE -->
+
+        <div class="p-16 pt-0 pl-0 line-height-1.75">
+            <!-- FORM -->
+            <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="space-between stretch"
+                    fxLayoutGap="80px"
+                >
+                    <!-- PICTURE PLACEHOLDER -->
+                    <div
+                        id="imageSection"
+                        class="grey-300"
+                        fxFlex="25"
+                        fxLayout="column"
+                        fxLayoutAlign="end stretch"
+                    >
+                        <input
+                            hidden
+                            #photo
+                            type="file"
+                            accept="image/x-png,image/jpeg"
+                            (change)="onFileBrowse($event)"
+                        />
+                        <div class="img-container" *ngIf="photo.value">
+                            <img class="fit-image ml-20" [src]="form.get('photo').value"/>
+                        </div>
+                        <button
+                            mat-flat-button
+                            class="grey-400"
+                            (click)="photo.click()"
+                        >
+                            {{ photo.value ? 'Ganti Foto' : 'Tambah Foto' }}
+                        </button>
+                        <!-- TODO -->
+                    </div>
+                    <!-- / PICTURE PLACEHOLDER -->
+                    <!-- USER INFORMATION FORM -->
+                    <div
+                        fxFlex="75"
+                        fxLayout="column"
+                        fxLayoutAlign="space-between stretch"
+                        fxLayoutGap="10px"
+                    >
+                        <!-- OLD E-MAIL -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="18"
+                            >
+                                Email
+                            </label>
+                    
+                            <!-- <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    hidden
+                                    matInput
+                                    name="oldEmail"
+                                    formControlName="oldEmail"
+                                />
+                                {{ form.get('oldEmail').value }}
+                            </mat-form-field> -->
+                            <span fxFlex="80" class="pb-20">
+                                {{ form.get('oldEmail').value }}
+                            </span>
+                        </div>
+                        <!-- / OLD E-MAIL -->
+                        <!-- NEW E-MAIL -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="18"
+                                [class.mat-error]="
+                                    form.get('newEmail').errors && form.get('newEmail').dirty
+                                "
+                            >
+                                Alamat Email Baru
+                            </label>
+                    
+                            <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    matInput
+                                    type="email"
+                                    name="newEmail"
+                                    formControlName="newEmail"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('newEmail').errors && form.get('newEmail').dirty
+                                    "
+                                >
+                                    {{ getErrorMessage('newEmail') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / NEW E-MAIL -->
+                        <!-- OLD PHONE NUMBER -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="18"
+                            >
+                                Nomor Telepon
+                            </label>
+                    
+                            <!-- <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    hidden
+                                    matInput
+                                    name="oldPhone"
+                                    formControlName="oldPhone"
+                                />
+                            </mat-form-field> -->
+                            <span fxFlex="80" class="pb-20">
+                                {{ form.get('oldPhone').value }}
+                            </span>
+                        </div>
+                        <!-- / OLD PHONE NUMBER -->
+                        <!-- NEW PHONE NUMBER -->
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="space-between center"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="18"
+                                [class.mat-error]="
+                                    form.get('newPhone').errors && form.get('newPhone').dirty
+                                "
+                            >
+                                Nomor Telepon Baru
+                            </label>
+                    
+                            <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    matInput
+                                    type="tel"
+                                    name="newPhone"
+                                    formControlName="newPhone"
+                                    [maxlength]="12"
+                                />
+
+                                <mat-error
+                                    *ngIf="
+                                        form.get('newPhone').errors && form.get('newPhone').dirty
+                                    "
+                                >
+                                    {{ getErrorMessage('newPhone') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- / NEW PHONE NUMBER -->
+                        <!-- SUBMIT BUTTON -->
+                        <button
+                            color="warn"
+                            mat-flat-button
+                            type="button"
+                            fxFlexAlign="end"
+                            [disabled]="form.invalid || form.pristine"
+                            (click)="onSubmit()"
+                        >
+                            Simpan
+                        </button>
+                        <!-- / SUBMIT BUTTON -->
+                    </div>
+                    <!-- / USER INFORMATION FORM -->
+                </div>
+            </form>
+            <!-- / FORM -->
+        </div>
+    </div>
+</div>
