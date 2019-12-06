@@ -20,6 +20,11 @@ interface IUser extends ITimestamp {
     urbanId: string;
 }
 
+export interface IUserResponseUpdatePassword {
+    success: boolean;
+    message: string;
+}
+
 export class User implements IUser {
     id: string;
     fullName: string;
