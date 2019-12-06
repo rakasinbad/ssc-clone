@@ -10,6 +10,7 @@ export const globalEnLang = {
     BREADCRUMBS: {
         ACCOUNTS: 'Accounts',
         ACCOUNT: 'Account',
+        ACCOUNTS_SETTINGS: 'Account Settings',
         ADD_PRODUCT: 'Add Product',
         ADD_STORE: 'Add Store',
         ATTENDANCES: 'Attendances',

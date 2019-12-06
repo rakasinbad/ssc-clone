@@ -10,6 +10,7 @@ export const globalIdLang = {
     BREADCRUMBS: {
         ACCOUNTS: 'Account',
         ACCOUNT: 'Account',
+        ACCOUNTS_SETTINGS: 'Pengaturan Akun',
         ADD_PRODUCT: 'Tambah Produk',
         ADD_STORE: 'Add Toko',
         ATTENDANCES: 'Attendances',
