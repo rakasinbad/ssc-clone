@@ -62,7 +62,7 @@ export class AccountsSettingsApiService {
     }
 
     updatePassword(userId: string, data: Partial<UpdateUser>): Observable<IUserResponseUpdatePassword> {
-        this._url = this._$helper.handleApiRouter(this._userEndpoint);
+        this._url = this._$helper.handleApiRouter(this._changePasswordEndpoint);
         return this.http.patch<IUserResponseUpdatePassword>(String(this._url).concat(userId), data);
     }
 }
