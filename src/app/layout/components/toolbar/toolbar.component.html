@@ -109,16 +109,21 @@
                 <mat-icon class="secondary-text">notifications</mat-icon>
             </button>
 
+            -->
             <div class="toolbar-separator"></div>
 
             <button
                 mat-icon-button
-                class="quick-panel-toggle-button"
-                (click)="toggleSidebarOpen('quickPanel')"
+                class="quick-panel-toggle-button ml-20 mr-32"
                 aria-label="Settings"
+                [routerLink]="['/pages/settings/accounts']"
             >
-                <mat-icon class="secondary-text">settings</mat-icon>
-            </button> -->
+                <div fxLayout="row" fxLayoutAlign="center center">
+                    <mat-icon class="secondary-text mr-12">settings</mat-icon>
+                    <span fxHide fxShow.gt-sm>Settings</span>
+                </div>
+
+            </button>
 
             <!-- <div class="toolbar-separator"></div>
 
