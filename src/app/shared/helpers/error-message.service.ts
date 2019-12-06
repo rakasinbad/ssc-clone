@@ -11,6 +11,7 @@ export class ErrorMessageService {
 
     getErrorMessageNonState(field: string, type: string, args?: any): string {
         const labelName = this.translate.instant(`FORM.${field.toUpperCase()}`);
+        const labelConfirmPassword = this.translate.instant(`FORM.NEW_PASSWORD`);
 
         this.logSvc.generateGroup(
             '[ERROR MESSAGE NON STATE]',
@@ -38,6 +39,9 @@ export class ErrorMessageService {
             case 'alpha_num_pattern':
                 return this.translate.instant('ERROR.ALPHA_NUM_PATTERN', { fieldName: labelName });
 
+            case 'confirm_password':
+                return this.translate.instant('ERROR.CONFIRM', { fieldName: labelName, fieldNameCompare: labelConfirmPassword });
+
             case 'email_pattern':
                 return this.translate.instant('ERROR.EMAIL_PATTERN', { fieldName: labelName });
 
@@ -64,6 +68,9 @@ export class ErrorMessageService {
 
             case 'numeric':
                 return this.translate.instant('ERROR.NUMERIC', { fieldName: labelName });
+
+            case 'password_unmeet_specification':
+                return this.translate.instant('ERROR.PASS_UNMEET_SPEC', { fieldName: labelName });
 
             case 'pattern':
                 return this.translate.instant('ERROR.PATTERN', { fieldName: labelName });
