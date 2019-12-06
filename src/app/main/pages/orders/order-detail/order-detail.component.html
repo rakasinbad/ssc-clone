@@ -4,67 +4,108 @@
     fusePerfectScrollbar
 >
     <!-- TOP BACKGROUND -->
-    <div class="accent"></div>
+    <div class="top-bg accent with-navigation"></div>
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+        <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/orders']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        Rincian Order
+                    </div>
+                    <div class="subtitle secondary-text">
+                        <span>{{ (order$ | async)?.orderRef }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header sinbad" fxLayout="column" fxLayoutAlign="space-around stretch">
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button type="button" mat-flat-button [routerLink]="['/pages/orders']">
-                    Kembali
-                </button>
-
-                <!-- <button mat-flat-button color="accent">
-                    EXPORT
-                </button>
-
-                <button mat-stroked-button color="accent" class="sinbad">
-                    IMPORT
-                </button> -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-icon-button
+                        class="mr-0 mr-sm-16"
+                        [routerLink]="['/pages/orders']"
+                    >
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+                </div> -->
             </div>
 
-            <!-- SMALL BREADCRUMBS -->
-            <div
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb"
-            >
-                <!-- <span class="secondary-text">Quotations</span>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                    <!-- <button type="button" mat-flat-button [routerLink]="['/pages/orders']">
+                            Kembali
+                        </button> -->
+
+                    <!-- <button mat-flat-button color="accent">
+                        EXPORT
+                    </button> -->
+
+                    <!-- <button mat-stroked-button color="accent" class="sinbad">
+                            IMPORT
+                        </button> -->
+                </div>
+
+                <!-- SMALL BREADCRUMBS -->
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb"
+                >
+                    <!-- <span class="secondary-text">Quotations</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Quotations Send</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Sales Order</span> -->
-                <ng-container *ngFor="let smallBreadcrumb of smallBreadcrumbs; last as isLast">
-                    <span
-                        [class.secondary-text]="!smallBreadcrumb?.active"
-                        [class.active]="smallBreadcrumb?.active"
-                        *ngIf="!smallBreadcrumb?.url; else breadWithUrl"
-                    >
-                        {{
-                            smallBreadcrumb?.translate
-                                ? (smallBreadcrumb?.translate | translate | titlecase)
-                                : (smallBreadcrumb?.title | titlecase)
-                        }}
-                    </span>
-                    <ng-template #breadWithUrl>
-                        <a href>
-                            <span [class.secondary]="!smallBreadcrumb?.active">
-                                {{ smallBreadcrumb?.title | titlecase }}
-                            </span>
-                        </a>
-                    </ng-template>
-                    <mat-icon class="secondary-text s-16" *ngIf="!isLast">
-                        chevron_right
-                    </mat-icon>
-                </ng-container>
-            </div>
-            <!-- / SMALL BREADCRUMBS -->
+                    <ng-container *ngFor="let smallBreadcrumb of smallBreadcrumbs; last as isLast">
+                        <span
+                            [class.secondary-text]="!smallBreadcrumb?.active"
+                            [class.active]="smallBreadcrumb?.active"
+                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl"
+                        >
+                            {{
+                                smallBreadcrumb?.translate
+                                    ? (smallBreadcrumb?.translate | translate | titlecase)
+                                    : (smallBreadcrumb?.title | titlecase)
+                            }}
+                        </span>
+                        <ng-template #breadWithUrl>
+                            <a href>
+                                <span [class.secondary]="!smallBreadcrumb?.active">
+                                    {{ smallBreadcrumb?.title | titlecase }}
+                                </span>
+                            </a>
+                        </ng-template>
+                        <mat-icon class="secondary-text s-16" *ngIf="!isLast">
+                            chevron_right
+                        </mat-icon>
+                    </ng-container>
+                </div>
+                <!-- / SMALL BREADCRUMBS -->
 
-            <ng-template #noSmallBreadcrumb></ng-template>
+                <ng-template #noSmallBreadcrumb></ng-template>
+            </div>
         </div>
         <!-- / CONTENT HEADER -->
 
@@ -76,7 +117,7 @@
                     </span>
 
                     <span class="mt-0" fxLayout="row" fxLayoutAlign="start end">
-                        <span class="h4">{{ (order$ | async)?.orderCode }}</span>
+                        <span class="h4">{{ (order$ | async)?.orderRef }}</span>
                         <!-- <span class="h5">&nbsp;/ {{ (order$ | async)?.id }}</span> -->
                     </span>
 
@@ -115,7 +156,7 @@
                                             <td>
                                                 {{
                                                     safeValue(
-                                                        (order$ | async)?.order?.store?.storeCode
+                                                        (order$ | async)?.order?.store?.externalId
                                                     )
                                                 }}
                                             </td>
@@ -1640,3 +1681,5 @@
 <div class="loader" *ngIf="isLoading$ | async">
     <mat-spinner color="accent"></mat-spinner>
 </div>
+
+<!-- <app-scroll-top></app-scroll-top> -->

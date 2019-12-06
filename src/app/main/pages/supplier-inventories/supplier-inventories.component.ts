@@ -202,7 +202,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
 
             data['search'] = [
                 {
-                    fieldName: 'keyword',
+                    fieldName: 'name',
                     keyword: query
                 }
             ];

@@ -10,7 +10,7 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button type="button" mat-flat-button color="accent" (click)="onDownload()">
+                <button type="button" mat-flat-button color="accent" (click)="onExport()">
                     EXPORT
                 </button>
 
@@ -31,6 +31,10 @@
                     (click)="filePicker.value = null"
                     (change)="onFileBrowse($event, 'docs')"
                 />
+
+                <button type="button" mat-raised-button color="primary" (click)="onDownload()">
+                    <span>DOWNLOAD TEMPLATE</span>
+                </button>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -144,7 +148,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.order?.orderCode) }}
+                            {{ safeValue(row?.orderCode) }}
                         </p>
                     </mat-cell>
                 </ng-container>

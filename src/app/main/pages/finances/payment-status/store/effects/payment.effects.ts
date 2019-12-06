@@ -5,7 +5,12 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService } from 'app/shared/helpers';
+import {
+    DownloadApiService,
+    LogService,
+    NoticeService,
+    UploadApiService
+} from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import { catchError, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -230,6 +235,206 @@ export class PaymentEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ EXPORT methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Export
+     * @memberof PaymentEffects
+     */
+    exportRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PaymentStatusActions.exportRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        PaymentStatusActions.exportFailure({
+                            payload: { id: 'exportFailure', errors: 'Not Found!' }
+                        })
+                    );
+                }
+
+                return this._$downloadApi.download('export-orders').pipe(
+                    map(resp => {
+                        return PaymentStatusActions.exportSuccess({
+                            payload: resp.url
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            PaymentStatusActions.exportFailure({
+                                payload: { id: 'exportFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Export
+     * @memberof PaymentEffects
+     */
+    exportFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.exportFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST - SUCCESS] Export
+     * @memberof PaymentEffects
+     */
+    exportSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.exportSuccess),
+                map(action => action.payload),
+                tap(url => {
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ IMPORT methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Import
+     * @memberof PaymentEffects
+     */
+    importRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PaymentStatusActions.importRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([{ file, type }, { supplierId }]) => {
+                if (!supplierId || !file || !type) {
+                    return of(
+                        PaymentStatusActions.importFailure({
+                            payload: { id: 'importFailure', errors: 'Not Found!' }
+                        })
+                    );
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('supplierId', supplierId);
+                formData.append('type', type);
+
+                return this._$uploadApi.uploadFormData('import-order-parcels', formData).pipe(
+                    map(resp => {
+                        return PaymentStatusActions.importSuccess();
+                    }),
+                    catchError(err =>
+                        of(
+                            PaymentStatusActions.importFailure({
+                                payload: { id: 'importFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Import
+     * @memberof PaymentEffects
+     */
+    importFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.importFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST - SUCCESS] Import
+     * @memberof PaymentEffects
+     */
+    importSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.importSuccess),
+                tap(resp => {
+                    this._$notice.open('Import berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -237,6 +442,8 @@ export class PaymentEffects {
         private store: Store<fromPaymentStatus.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
-        private _$paymentStatusApi: PaymentStatusApiService
+        private _$downloadApi: DownloadApiService,
+        private _$paymentStatusApi: PaymentStatusApiService,
+        private _$uploadApi: UploadApiService
     ) {}
 }

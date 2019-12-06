@@ -33,6 +33,18 @@
         </mat-cell>
     </ng-container>
 
+    <!-- Invoice Name Column -->
+    <ng-container matColumnDef="invoice-name">
+        <mat-header-cell *matHeaderCellDef>
+            Invoice Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ safeValue(row?.invoiceGroup?.name) }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
     <!-- Account Receivable Column -->
     <ng-container matColumnDef="receivable">
         <mat-header-cell *matHeaderCellDef>

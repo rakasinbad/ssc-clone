@@ -481,6 +481,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         //     .reset();
     }
 
+    onResetField(field: string): void {
+        if (!field || typeof field !== 'string') {
+            return;
+        }
+
+        this.form.get(field).reset();
+    }
+
     onSelectCreditLimitGroup(ev: MatSelectChange, idx: number): void {
         if (!ev.value || typeof idx !== 'number') {
             return;
@@ -2019,6 +2027,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             delete payload.vehicleAccessibilityId;
                         }
 
+                        if (!body.storeInfo.storeClassification.storeGroup) {
+                            delete payload.storeGroupId;
+                        }
+
+                        if (!body.storeInfo.storeClassification.storeCluster) {
+                            delete payload.cluster;
+                        }
+
                         if (!body.storeInfo.storeClassification.hierarchy) {
                             delete payload.hierarchy;
                         }
@@ -2125,6 +2141,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
             if (!body.storeInfo.physicalStoreInfo.vehicleAccessibility) {
                 delete payload.vehicleAccessibilityId;
+            }
+
+            if (!body.storeInfo.storeClassification.storeGroup) {
+                delete payload.storeGroupId;
+            }
+
+            if (!body.storeInfo.storeClassification.storeCluster) {
+                delete payload.cluster;
             }
 
             if (!body.storeInfo.storeClassification.hierarchy) {

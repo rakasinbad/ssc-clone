@@ -1,4 +1,3 @@
-import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -19,6 +18,7 @@ import { LogService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
@@ -271,6 +271,40 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     onDelete(item): void {
         if (!item) {
             return;
+        }
+    }
+
+    onDownload(): void {
+        window.open(
+            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/order_parcels/update_order_parcel_by_payment_status.csv',
+            '_blank'
+        );
+    }
+
+    onExport(): void {
+        this.store.dispatch(PaymentStatusActions.exportRequest());
+    }
+
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'docs':
+                        this.store.dispatch(
+                            PaymentStatusActions.importRequest({
+                                payload: { file, type: 'update_payment_status' }
+                            })
+                        );
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 

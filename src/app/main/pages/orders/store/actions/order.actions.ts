@@ -1,8 +1,8 @@
+import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
 import { IOrderDemo } from '../../models';
-import { Update } from '@ngrx/entity';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Orders
@@ -41,6 +41,27 @@ export const fetchOrderSuccess = createAction(
     '[Order API] Fetch Order Success',
     props<{ payload: any }>()
 );
+
+// -----------------------------------------------------------------------------------------------------
+// EXPORT Order
+// -----------------------------------------------------------------------------------------------------
+
+export const exportRequest = createAction('[Order Page] Export Request');
+
+export const exportFailure = createAction(
+    '[Order Page] Export Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const exportSuccess = createAction(
+    '[Order Page] Export Success',
+    props<{ payload: string }>()
+);
+
+// export const exportSuccess = createAction(
+//     '[Order Page] Export Success',
+//     props<{ payload: { file: Blob; name: string } }>()
+// );
 
 // -----------------------------------------------------------------------------------------------------
 // IMPORT Order

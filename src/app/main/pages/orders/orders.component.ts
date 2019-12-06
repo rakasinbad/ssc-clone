@@ -290,6 +290,10 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
+    onExport(): void {
+        this.store.dispatch(OrderActions.exportRequest());
+    }
+
     onFileBrowse(ev: Event, type: string): void {
         const inputEl = ev.target as HTMLInputElement;
 

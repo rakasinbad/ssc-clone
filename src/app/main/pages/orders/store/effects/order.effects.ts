@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import {
+    DownloadApiService,
     LogService,
     NoticeService,
     OrderBrandCatalogueApiService,
@@ -681,9 +682,131 @@ export class OrderEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
+    // @ EXPORT methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     * [REQUEST] Export
+     * @memberof OrderEffects
+     */
+    exportRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.exportRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            switchMap(([_, { supplierId }]) => {
+                if (!supplierId) {
+                    return of(
+                        OrderActions.exportFailure({
+                            payload: { id: 'exportFailure', errors: 'Not Found!' }
+                        })
+                    );
+                }
+
+                return this._$downloadApi.download('export-orders').pipe(
+                    map(resp => {
+                        // const contentType = resp.headers.get('Content-Type');
+                        // const contentDisposition = resp.headers.get('Content-Disposition');
+                        // const fileName = contentDisposition
+                        //     .replace(new RegExp(/;|"/g), '')
+                        //     .split(' ')[1]
+                        //     .split('=')[1];
+
+                        // return OrderActions.exportSuccess({
+                        //     payload: {
+                        //         file: new Blob([resp.body], { type: contentType }),
+                        //         name: fileName
+                        //     }
+                        // });
+
+                        return OrderActions.exportSuccess({
+                            payload: resp.url
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.exportFailure({
+                                payload: { id: 'exportFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Export
+     * @memberof OrderEffects
+     */
+    exportFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.exportFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST - SUCCESS] Export
+     * @memberof OrderEffects
+     */
+    exportSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.exportSuccess),
+                map(action => action.payload),
+                tap(url => {
+                    if (url) {
+                        window.open(url, '_blank');
+                    }
+                })
+                // tap(({ file, name }) => {
+                //     if (file && name) {
+                //         saveAs(file, name);
+                //     }
+                // })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
     // @ IMPORT methods
     // -----------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     * [REQUEST] Import
+     * @memberof OrderEffects
+     */
     importRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(OrderActions.importRequest),
@@ -719,6 +842,11 @@ export class OrderEffects {
         )
     );
 
+    /**
+     *
+     * [REQUEST - FAILURE] Import
+     * @memberof OrderEffects
+     */
     importFailure$ = createEffect(
         () =>
             this.actions$.pipe(
@@ -753,12 +881,32 @@ export class OrderEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [REQUEST - SUCCESS] Import
+     * @memberof OrderEffects
+     */
+    importSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.importSuccess),
+                tap(resp => {
+                    this._$notice.open('Import berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
+        private _$downloadApi: DownloadApiService,
         private _$orderApi: OrderApiService,
         private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService,
         private _$uploadApi: UploadApiService

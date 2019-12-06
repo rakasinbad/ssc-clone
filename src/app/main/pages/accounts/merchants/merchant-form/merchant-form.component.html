@@ -1048,6 +1048,18 @@
                                     }}
                                 </mat-error>
                             </mat-form-field>
+
+                            <button
+                                type="button"
+                                mat-icon-button
+                                color="accent"
+                                aria-label="Reset"
+                                style="position: relative;top: -0.78em"
+                                (click)="onResetField('storeInfo.storeClassification.storeGroup')"
+                                *ngIf="form.get('storeInfo.storeClassification.storeGroup').value"
+                            >
+                                <mat-icon>refresh</mat-icon>
+                            </button>
                         </div>
 
                         <!-- Store Cluster Field -->
@@ -1113,6 +1125,18 @@
                                     }}
                                 </mat-error>
                             </mat-form-field>
+
+                            <button
+                                type="button"
+                                mat-icon-button
+                                color="accent"
+                                aria-label="Reset"
+                                style="position: relative;top: -0.78em"
+                                (click)="onResetField('storeInfo.storeClassification.storeCluster')"
+                                *ngIf="form.get('storeInfo.storeClassification.storeCluster').value"
+                            >
+                                <mat-icon>refresh</mat-icon>
+                            </button>
                         </div>
 
                         <!-- Store Segment Field -->

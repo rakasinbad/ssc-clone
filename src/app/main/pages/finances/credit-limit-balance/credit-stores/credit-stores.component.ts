@@ -43,6 +43,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'order',
         'name',
         'credit-limit',
+        'invoice-name',
         'receivable',
         'balance',
         'avg-monthly',
@@ -195,6 +196,10 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onTrackBy(index: number, item: CreditLimitStore): string {
         return !item ? null : item.id;
+    }
+
+    safeValue(item: string): string {
+        return item ? item : '-';
     }
 
     // -----------------------------------------------------------------------------------------------------

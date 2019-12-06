@@ -2,6 +2,18 @@
 
 app-order-detail {
     #order-detail {
+        > .top-bg.with-navigation {
+            height: 70px !important;
+        }
+
+        > .center {
+            > .header.sinbad.with-navigation {
+                height: 210px !important;
+                max-height: 150px !important;
+                min-height: 140px !important;
+            }
+        }
+
         .order-box {
             // border: 1px solid black;
 

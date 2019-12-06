@@ -35,6 +35,14 @@
             </div>
             <!-- / APP TITLE -->
 
+            <!-- <button type="button" mat-raised-button (click)="onEdit(isEdit)" *ngIf="!isEdit">
+                <span>EDIT</span>
+            </button>
+
+            <button type="submit" mat-raised-button *ngIf="isEdit">
+                <span>SAVE</span>
+            </button> -->
+
             <!-- <button mat-raised-button
                     class="save-product-button"
                     [disabled]="productForm.invalid"
@@ -59,14 +67,17 @@
                     <mat-tab label="Informasi Bisnis">
                         <div class="tab-content p-24" fusePerfectScrollbar>
                             <div class="mb-12">
-                                <span class="mat-headline" *ngIf="!(isLoading$ | async)">
+                                <span class="mat-headline">
+                                    Informasi Bisnis
+                                </span>
+                                <!-- <span class="mat-headline" *ngIf="!(isLoading$ | async)">
                                     Informasi Bisnis
                                 </span>
 
                                 <ngx-skeleton-loader
                                     *ngIf="isLoading$ | async"
                                     [theme]="{ width: '150px', height: '40px' }"
-                                ></ngx-skeleton-loader>
+                                ></ngx-skeleton-loader> -->
                             </div>
 
                             <div class="box-info horizontal" fxLayout="column" fxLayoutGap="25px">

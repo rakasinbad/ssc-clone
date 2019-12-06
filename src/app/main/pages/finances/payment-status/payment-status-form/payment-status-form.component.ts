@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, Inject, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Inject,
+    OnDestroy,
+    OnInit
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
@@ -6,7 +13,7 @@ import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpe
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
-import { takeUntil, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 @Component({
     templateUrl: './payment-status-form.component.html',
@@ -84,23 +91,10 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         }
     }
 
-
-
     onSubmit(action: string): void {
         if (this.form.invalid) {
             return;
         }
-
-        this._$log.generateGroup(
-            `SUBMIT ${action.toUpperCase()}`,
-            {
-                form: {
-                    type: 'log',
-                    value: this.form
-                }
-            },
-            'groupCollapsed'
-        );
 
         const { statusPayment, paidDate } = this.form.getRawValue();
 
@@ -149,21 +143,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                     .afterClosed()
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(({ id, change }) => {
-                        this._$log.generateGroup(
-                            '[AFTER CLOSED DIALOG CONFIRMATION] EDIT PAYMENT STATUS',
-                            {
-                                id: {
-                                    type: 'log',
-                                    value: id
-                                },
-                                payload: {
-                                    type: 'log',
-                                    value: change
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         if (id && change) {
                             this.dialogRef.close({ action, payload });
                         }
@@ -213,22 +192,19 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         }
 
         this.form.valueChanges
-        .pipe(
-            distinctUntilChanged(),
-            debounceTime(100),
-            takeUntil(this._unSubs$)
-        ).subscribe(value => {
-            if (this.pageType === 'edit') {
-                if (value.statusPayment !== 'paid') {
-                    this.isDisabled = this.form.invalid || this.form.pristine;
+            .pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (this.pageType === 'edit') {
+                    if (value.statusPayment !== 'paid') {
+                        this.isDisabled = this.form.invalid || this.form.pristine;
+                    } else {
+                        this.isDisabled = !moment(this.form.get('paidDate').value).isValid();
+                    }
                 } else {
-                    this.isDisabled = !(moment(this.form.get('paidDate').value).isValid());
+                    this.isDisabled = this.form.invalid;
                 }
-            } else {
-                this.isDisabled = this.form.invalid;
-            }
 
-            this._cd.markForCheck();
-        });
+                this._cd.markForCheck();
+            });
     }
 }

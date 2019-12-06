@@ -24,6 +24,38 @@ export const fetchPaymentStatusesSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// EXPORT Payment
+// -----------------------------------------------------------------------------------------------------
+
+export const exportRequest = createAction('[Payment Status Page] Export Request');
+
+export const exportFailure = createAction(
+    '[Payment Status Page] Export Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const exportSuccess = createAction(
+    '[Payment Status Page] Export Success',
+    props<{ payload: string }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// IMPORT Payment
+// -----------------------------------------------------------------------------------------------------
+
+export const importRequest = createAction(
+    '[Payment Status Page] Import Request',
+    props<{ payload: { file: File; type: string } }>()
+);
+
+export const importFailure = createAction(
+    '[Payment Status Page] Import Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const importSuccess = createAction('[Payment Status Page] Import Success');
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - UPDATE PAYMENT STATUS] Payment Statuses
 // -----------------------------------------------------------------------------------------------------
 

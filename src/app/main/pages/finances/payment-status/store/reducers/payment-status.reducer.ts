@@ -49,15 +49,36 @@ export const initialState: State = {
 
 const paymentStatusReducer = createReducer(
     initialState,
-    on(PaymentStatusActions.fetchPaymentStatusesRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(PaymentStatusActions.fetchPaymentStatusesFailure, (state, { payload }) => ({
+    on(
+        PaymentStatusActions.fetchPaymentStatusesRequest,
+        PaymentStatusActions.exportRequest,
+        PaymentStatusActions.importRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        PaymentStatusActions.fetchPaymentStatusesFailure,
+        PaymentStatusActions.exportFailure,
+        PaymentStatusActions.importFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(PaymentStatusActions.exportSuccess, state => ({
         ...state,
         isLoading: false,
-        isRefresh: undefined,
-        errors: adapterError.upsertOne(payload, state.errors)
+        errors: adapterError.removeOne('exportFailure', state.errors)
+    })),
+    on(PaymentStatusActions.importSuccess, state => ({
+        ...state,
+        isLoading: false,
+        isRefresh: true,
+        errors: adapterError.removeOne('importFailure', state.errors)
     })),
     on(PaymentStatusActions.updatePaymentStatusRequest, state => ({
         ...state,

@@ -12,13 +12,31 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- <button mat-flat-button color="accent">
+                <button type="button" mat-flat-button color="accent" (click)="onExport()">
                     EXPORT
                 </button>
 
-                <button mat-stroked-button color="accent" class="sinbad">
+                <button
+                    type="button"
+                    mat-stroked-button
+                    color="accent"
+                    class="sinbad"
+                    (click)="filePicker.click()"
+                >
                     IMPORT
-                </button> -->
+                </button>
+
+                <input
+                    type="file"
+                    #filePicker
+                    class="custom-file"
+                    (click)="filePicker.value = null"
+                    (change)="onFileBrowse($event, 'docs')"
+                />
+
+                <button type="button" mat-raised-button color="primary" (click)="onDownload()">
+                    <span>DOWNLOAD TEMPLATE</span>
+                </button>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -227,7 +245,7 @@
                         <p
                             class="indicator-green"
                             style="word-break: break-word;"
-                            *ngIf="row?.estDueDate && !row?.dueDate"
+                            *ngIf="!row?.dueDate"
                         >
                             {{
                                 safeValue(row?.estDueDate) !== '-'
@@ -236,7 +254,7 @@
                             }}
                         </p>
 
-                        <p style="word-break: break-word;" *ngIf="!row?.estDueDate && row?.dueDate">
+                        <p style="word-break: break-word;" *ngIf="row?.dueDate">
                             {{
                                 safeValue(row?.dueDate) !== '-'
                                     ? (row?.dueDate | date: 'dd MMM yyyy')
