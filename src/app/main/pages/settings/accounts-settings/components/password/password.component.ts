@@ -79,6 +79,16 @@ export class PasswordComponent implements OnInit, OnDestroy {
                         'required'
                     )
                 }),
+                RxwebValidators.different({
+                    fieldName: 'oldPassword',
+                    message: this._$errorMessage.getErrorMessageNonState(
+                        'new_password',
+                        'different',
+                        {
+                            fieldComparedName: 'password'
+                        }
+                    )
+                }),
                 RxwebValidators.password({
                     validation: {
                         alphabet: true,

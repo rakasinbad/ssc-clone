@@ -78,6 +78,7 @@ export const globalEnLang = {
         CONFIRM: '{{ fieldName }} field does not match the {{ fieldNameCompare }} field.',
         CONFIRM_UNKNOWN: '{{ fieldName }} field does not match the other fields.',
         DEFAULT: '{{ fieldName }} field is required or selected.',
+        DIFFERENT: '{{ fieldName }} field cannot as same as {{ fieldComparedName }}.',
         DIGIT: '{{ fieldName }} field must digit.',
         EMAIL_PATTERN: '{{ fieldName }} field must contain a valid email address.',
         FORMAT: '{{ fieldName }} field only with the following extensions are allowed: {{ ext }}.',

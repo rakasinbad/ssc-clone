@@ -42,6 +42,12 @@ export class ErrorMessageService {
             case 'confirm_password':
                 return this.translate.instant('ERROR.CONFIRM', { fieldName: labelName, fieldNameCompare: labelConfirmPassword });
 
+            case 'different':
+                let { fieldComparedName } = args;
+                fieldComparedName = this.translate.instant(`FORM.${fieldComparedName.toUpperCase()}`);
+
+                return this.translate.instant('ERROR.DIFFERENT', { fieldName: labelName, fieldComparedName });
+
             case 'email_pattern':
                 return this.translate.instant('ERROR.EMAIL_PATTERN', { fieldName: labelName });
 
