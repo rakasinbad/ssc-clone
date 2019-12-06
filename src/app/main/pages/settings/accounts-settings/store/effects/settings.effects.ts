@@ -89,25 +89,48 @@ export class AccountsSettingsEffects {
                     }));
                 }
 
-                return this._$accountsSettingsApi.updateUser(payload.id, payload.data)
-                    .pipe(
-                        catchOffline(),
-                        map(user => SettingsActions.patchUserSuccess({
-                            payload: {
-                                user: new User(user)
-                            }
-                        })),
-                        catchError(err =>
-                            of(
-                                SettingsActions.patchUserFailure({
-                                    payload: {
-                                        id: 'patchUserFailure',
-                                        errors: err
-                                    }
-                                })
+                if (payload.update === 'information') {
+                    return this._$accountsSettingsApi.updateUser(payload.id, payload.data)
+                        .pipe(
+                            catchOffline(),
+                            map(user => SettingsActions.patchUserSuccess({
+                                payload: {
+                                    user: new User(user)
+                                }
+                            })),
+                            catchError(err =>
+                                of(
+                                    SettingsActions.patchUserFailure({
+                                        payload: {
+                                            id: 'patchUserFailure',
+                                            errors: err
+                                        }
+                                    })
+                                )
                             )
-                        )
-                    );
+                        );
+                } else if (payload.update === 'password') {
+                    return this._$accountsSettingsApi.updatePassword(payload.id, payload.data)
+                        .pipe(
+                            catchOffline(),
+                            map(response => SettingsActions.patchUserSuccess({
+                                payload: {
+                                    response 
+                                }
+                            })),
+                            catchError(err =>
+                                of(
+                                    SettingsActions.patchUserFailure({
+                                        payload: {
+                                            id: 'patchUserFailure',
+                                            errors: err
+                                        }
+                                    })
+                                )
+                            )
+                        );
+                }
+                
             })
         )
     );
