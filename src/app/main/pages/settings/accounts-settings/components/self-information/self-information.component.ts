@@ -1,21 +1,21 @@
-import { environment } from 'environments/environment';
+// import { environment } from 'environments/environment';
 import {
-    AfterViewInit,
+    // AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
-    ViewChild,
+    // ViewChild,
     ViewEncapsulation,
     ChangeDetectorRef
 } from '@angular/core';
-import { MatDialog, MatPaginator, MatSort } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { IQueryParams } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { merge, Observable, Subject } from 'rxjs';
+// import { IQueryParams } from 'app/shared/models';
+// import { UiActions } from 'app/shared/store/actions';
+// import { UiSelectors } from 'app/shared/store/selectors';
+import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil, withLatestFrom, debounceTime } from 'rxjs/operators';
 
 import { UpdateUser, User } from '../../models';
@@ -40,7 +40,7 @@ import { VerifyPasswordComponent } from '../verify-password/verify-password.comp
     },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush   
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelfInformationComponent implements OnInit, OnDestroy {
 
