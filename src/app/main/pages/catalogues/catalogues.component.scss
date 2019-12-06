@@ -70,7 +70,7 @@ app-catalogues {
             position: relative;
             // cursor: pointer;
             padding: 10px 0px;
-            min-height: 100px;
+            min-height: 70px;
         }
 
         .clickable {
@@ -98,8 +98,8 @@ app-catalogues {
             padding-left: 10px;
 
             .img-container {
-                width: 100px; /*any size*/
-                height: 100px; /*any size*/
+                width: 70px; /*any size*/
+                height: 70px; /*any size*/
 
                 .fit-image {
                     width: 100%;
@@ -110,7 +110,8 @@ app-catalogues {
         }
 
         .mat-column-sku, .mat-column-externalId {
-            flex: 0 1 12.5%;
+            flex: 0 1 10%;
+            margin-right: 50px;
         }
 
         .mat-column-variant {

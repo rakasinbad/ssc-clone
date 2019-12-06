@@ -57,7 +57,7 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dataSource: MatTableDataSource<Catalogue>;
-    displayedColumns = [
+    initialDisplayedColumns = [
         // 'checkbox',
         'name',
         'sku',
@@ -68,6 +68,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'sales',
         'actions'
     ];
+    displayedColumns = this.initialDisplayedColumns;
     hasSelected: boolean;
     search: FormControl;
     statusCatalogue: any;
@@ -252,17 +253,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     'actions'
                 ];
             } else {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'name',
-                    // 'sku',
-                    'externalId',
-                    // 'variant',
-                    'price',
-                    'stock',
-                    // 'sales',
-                    'actions'
-                ];
+                this.displayedColumns = this.initialDisplayedColumns;
             }
 
             if (index === 'all-type') {
