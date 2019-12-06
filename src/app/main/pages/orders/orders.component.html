@@ -24,14 +24,13 @@
                     IMPORT
                 </button>
 
-                <form>
-                    <input
-                        type="file"
-                        #filePicker
-                        class="custom-file"
-                        (change)="onFileBrowse($event, 'docs')"
-                    />
-                </form>
+                <input
+                    type="file"
+                    #filePicker
+                    class="custom-file"
+                    (click)="filePicker.value = null"
+                    (change)="onFileBrowse($event, 'docs')"
+                />
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">

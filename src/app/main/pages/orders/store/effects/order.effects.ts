@@ -727,13 +727,21 @@ export class OrderEffects {
                 tap(resp => {
                     let message;
 
-                    if (typeof resp.errors === 'string') {
-                        message = resp.errors;
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
                     } else {
-                        message =
-                            resp.errors.error && resp.errors.error.message
-                                ? resp.errors.error.message
-                                : resp.errors.message;
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
                     }
 
                     this._$notice.open(message, 'error', {

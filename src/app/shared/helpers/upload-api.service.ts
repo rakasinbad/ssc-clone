@@ -16,10 +16,9 @@ export class UploadApiService {
 
     uploadFormData(endpoint: string, formData: FormData): Observable<any> {
         // const headers = new HttpHeaders().append('Content-Type', undefined);
-        const headers = new HttpHeaders().append('Content-Type', 'multipart/form-data');
+        // const headers = new HttpHeaders().append('Content-Type', 'multipart/form-data');
 
         return this.http.post(`${this._url}/${endpoint}`, formData, {
-            headers,
             reportProgress: true
         });
     }

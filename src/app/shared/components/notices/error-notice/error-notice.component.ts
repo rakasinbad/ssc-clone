@@ -10,7 +10,7 @@ import { MAT_SNACK_BAR_DATA } from '@angular/material';
             </div>
 
             <div>
-                <p>{{ data?.message }}</p>
+                <p [innerHtml]="data?.message"></p>
             </div>
         </div>
     `,
