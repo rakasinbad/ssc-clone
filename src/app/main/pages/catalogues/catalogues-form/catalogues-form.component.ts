@@ -69,7 +69,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
     brands$: Observable<Array<Brand>>;
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
-    productCategory$: string;
+    productCategory$: SafeHtml;
 
     catalogueUnits$: Observable<Array<CatalogueUnit>>;
 
@@ -488,11 +488,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 //         this.productCategory$ = newCategories.map(category => category['name']).join(' > ');
                 //     }
                 // }
-                this.productCategory$ = categories.map(category => category['name']).join(' > ');
+                this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
+                    categories.map(category => category['name']).join(`
+                        <span class="mx-20">></span>
+                    `)
+                );
 
                 this._cd.markForCheck();
                 // console.log(this.form.getRawValue());
             });
+
+        this.subs.add(
+            merge(
+                this.form.get('productInfo').valueChanges,
+                this.form.get('productSale').valueChanges,
+                this.form.get('productMedia').valueChanges,
+                this.form.get('productShipment').valueChanges
+            ).pipe(
+                distinctUntilChanged(),
+                debounceTime(100)
+            ).subscribe(() => {
+                if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
+                    this.store.dispatch(FormActions.setFormStatusValid());
+                } else if (this.form.status === 'INVALID') {
+                    this.store.dispatch(FormActions.setFormStatusInvalid());
+                }
+
+                this._cd.markForCheck();
+            })
+        );
 
         this.subs.add(
             this.form
