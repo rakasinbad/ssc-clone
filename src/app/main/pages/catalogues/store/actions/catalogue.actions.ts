@@ -29,9 +29,17 @@ export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empt
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
 export const filterInactiveCatalogues = createAction('[Catalogues Page] Filter Inactive Catalogues');
 
+/**
+ * CATALOGUE - ADD
+ */
+export const startAddNewCatalogue = createAction(
+    '[Catalogues API] Start to Add New Catalogue',
+    props<{ payload: Partial<Catalogue> }>()
+);
+
 export const addNewCatalogueRequest = createAction(
     '[Catalogues API] Add New Catalogue Request',
-    props<{ payload: any }>()
+    props<{ payload: Partial<Catalogue> }>()
 );
 
 export const addNewCatalogueFailure = createAction(
@@ -44,10 +52,19 @@ export const addNewCatalogueSuccess = createAction(
     props<{ payload: Catalogue }>()
 );
 
+/**
+ * CATALOGUE - PATCH
+ */
+export const startPatchCatalogue = createAction(
+    '[Catalogues API] Start to Patch Catalogue',
+    props<{ payload: { id: string; data: Partial<Catalogue>; source: TSourceEdit } }>()
+);
+
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
     props<{ payload: { id: string; data: Partial<Catalogue>; source: TSourceEdit } }>()
 );
+
 
 export const patchCatalogueFailure = createAction(
     '[Catalogues API] Patch Catalogue Failure',
@@ -60,8 +77,12 @@ export const patchCatalogueSuccess = createAction(
 );
 
 /**
- * FETCH CATALOGUE
+ * CATALOGUE - FETCH
  */
+export const prepareFetchCatalogue = createAction(
+    '[Catalogues API] Prepare to Fetch Catalogue Request',
+    props<{ payload: string }>()
+);
 
 export const fetchCatalogueRequest = createAction(
     '[Catalogues API] Fetch Catalogue Request',
@@ -91,6 +112,11 @@ export const updateCatalogue = createAction(
  * FETCH CATALOGUE CATEGORY
  */
 
+export const prepareFetchCatalogueCategory = createAction(
+    '[Catalogues API] Prepare to Fetch Catalogue Category',
+    props<{ payload: string }>()
+);
+
 export const fetchCatalogueCategoryRequest = createAction(
     '[Catalogues API] Fetch Catalogue Category Request',
     props<{ payload: string }>()
@@ -109,6 +135,10 @@ export const fetchCatalogueCategorySuccess = createAction(
 /**
  * FETCH CATALOGUE CATEGORIES
  */
+export const prepareFetchCatalogueCategories = createAction(
+    '[Catalogues API] Prepare to Fetch Catalogue Categories',
+    props<{ payload: IQueryParams }>()
+);
 
 export const fetchCatalogueCategoriesRequest = createAction(
     '[Catalogues API] Fetch Catalogue Categories Request',
@@ -128,6 +158,10 @@ export const fetchCatalogueCategoriesSuccess = createAction(
 /**
  * FETCH CATALOGUE UNIT
  */
+export const prepareFetchCatalogueUnit = createAction(
+    '[Catalogues API] Prepare to Fetch Catalogue Unit',
+    props<{ payload: IQueryParams }>()
+);
 
 export const fetchCatalogueUnitRequest = createAction(
     '[Catalogues API] Fetch Catalogue Unit Request',
@@ -147,8 +181,13 @@ export const fetchCatalogueUnitSuccess = createAction(
 /**
  * FETCH CATEGORY TREE
  */
+export const prepareFetchCategoryTree = createAction(
+    '[Catalogues API] Prepare to Fetch Category Tree'
+);
 
-export const fetchCategoryTreeRequest = createAction('[Catalogues API] Fetch Category Tree Request');
+export const fetchCategoryTreeRequest = createAction(
+    '[Catalogues API] Fetch Category Tree Request'
+);
 
 export const fetchCategoryTreeFailure = createAction(
     '[Catalogues API] Fetch Category Tree Failure',
@@ -163,7 +202,13 @@ export const fetchCategoryTreeSuccess = createAction(
 /**
  * FETCH TOTAL CATALOGUE STATUS
  */
-export const fetchTotalCatalogueStatusRequest = createAction('[Catalogues API] Fetch Total Catalogue Status Request');
+export const prepareFetchTotalCatalogueStatus = createAction(
+    '[Catalogues API] Prepare to Fetch Total Catalogue Status'
+);
+
+export const fetchTotalCatalogueStatusRequest = createAction(
+    '[Catalogues API] Fetch Total Catalogue Status Request'
+);
 
 export const fetchTotalCatalogueStatusFailure = createAction(
     '[Catalogues API] Fetch Total Catalogue Status Failure',
@@ -178,6 +223,10 @@ export const fetchTotalCatalogueStatusSuccess = createAction(
 /**
  * FETCH CATALOGUES
  */
+export const prepareFetchCatalogues = createAction(
+    '[Catalogues API] Prepare to Fetch Catalogues',
+    props<{ payload: IQueryParams }>()
+);
 
 export const fetchCataloguesRequest = createAction(
     '[Catalogues API] Fetch Catalogues Request',
@@ -216,6 +265,10 @@ export const confirmRemoveCatalogue = createAction(
 /**
  * SET STATUS
  */
+export const prepareSetCatalogueToActive = createAction(
+    '[Catalogues API] Prepare to Set Catalogue to Active',
+    props<{ payload: string }>()
+);
 
 export const setCatalogueToActiveRequest = createAction(
     '[Catalogues API] Set Catalogue to Active Request',
@@ -230,6 +283,11 @@ export const setCatalogueToActiveSuccess = createAction(
 export const setCatalogueToActiveFailure = createAction(
     '[Catalogues API] Set Catalogue to Active Failure',
     props<{ payload: IErrorHandler }>()
+);
+
+export const prepareSetCatalogueToInactive = createAction(
+    '[Catalogues API] Prepare to Set Catalogue to Inactive',
+    props<{ payload: string }>()
 );
 
 export const setCatalogueToInactiveRequest = createAction(
@@ -247,13 +305,18 @@ export const setCatalogueToInactiveFailure = createAction(
     props<{ payload: IErrorHandler }>()
 );
 
+export const prepareRemoveCatalogue = createAction(
+    '[Catalogues API] Prepare to Remove Catalogue',
+    props<{ payload: string }>()
+);
+
 export const removeCatalogueRequest = createAction(
-    '[Catalogues API Remove Catalogue Request',
+    '[Catalogues API] Remove Catalogue Request',
     props<{ payload: string }>()
 );
 
 export const removeCatalogueSuccess = createAction(
-    '[Catalogues API Remove Catalogue Success',
+    '[Catalogues API] Remove Catalogue Success',
     props<{ payload: Catalogue }>()
 );
 
