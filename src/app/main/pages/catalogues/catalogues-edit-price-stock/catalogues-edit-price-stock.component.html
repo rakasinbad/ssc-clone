@@ -386,7 +386,7 @@
     <button
         mat-button
         class="warn-900"
-        [disabled]="form.status === 'INVALID' || isUpdating || form.untouched || data.editMode === 'stock'"
+        [disabled]="form.invalid || isUpdating"
         (click)="updateData()"
     >
         OK
