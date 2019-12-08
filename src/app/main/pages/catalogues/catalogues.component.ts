@@ -61,7 +61,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'checkbox',
         'name',
         'sku',
-        // 'externalId',
+        'externalId',
         // 'variant',
         'price',
         'stock',
@@ -74,6 +74,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     statusCatalogue: any;
     findCatalogueMode: TFindCatalogueMode = 'all';
 
+    defaultPageSize = 100;
     dataSource$: Observable<Array<Catalogue>>;
     isLoading$: Observable<boolean>;
 
@@ -184,7 +185,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // ]).pipe(takeUntil(this._unSubs$));
 
         // this.dataSource$ = this.store.select(OrderSelectors.getAllOrder);
-        this.paginator.pageSize = 10;
+        this.paginator.pageSize = this.defaultPageSize;
 
         // this._$catalogue.getCatalogueStatuses({ allCount: 40, blockedCount: 5, emptyCount: 10, liveCount: 25 });
     }
@@ -420,7 +421,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.paginator) {
             
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || 10,
+                limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0
             };
     
