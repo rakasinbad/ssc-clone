@@ -225,7 +225,12 @@ export class StoreCatalogueEffects {
 
                 /** WITH PAGINATION */
                 if (queryParams.paginate) {
-                    return this.storeCatalogueApiSvc.find<IPaginatedResponse<any>>(queryParams).pipe(
+                    const newQuery = {
+                        ...queryParams,
+                        supplierId
+                    };
+
+                    return this.storeCatalogueApiSvc.find<IPaginatedResponse<any>>(newQuery).pipe(
                         catchOffline(),
                         map(resp => {
                             let newResp = {
