@@ -506,11 +506,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 this.form.get('productShipment').valueChanges
             ).pipe(
                 distinctUntilChanged(),
-                debounceTime(100)
+                debounceTime(500)
             ).subscribe(() => {
-                if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
+                if (this.form.status === 'VALID' && !this.form.pristine) {
                     this.store.dispatch(FormActions.setFormStatusValid());
-                } else if (this.form.status === 'INVALID') {
+                } else {
                     this.store.dispatch(FormActions.setFormStatusInvalid());
                 }
 
@@ -518,35 +518,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.subs.add(
-            this.form
-                .statusChanges
-                .pipe(
-                    distinctUntilChanged(),
-                    debounceTime(100)
-                )
-                .subscribe(() => {
-                    // console.log('FORM', this.form);
-                    // console.log('FORM VALUE', this.form.getRawValue());
-                    // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
+        // this.subs.add(
+        //     this.form
+        //         .statusChanges
+        //         .pipe(
+        //             distinctUntilChanged(),
+        //             debounceTime(100)
+        //         )
+        //         .subscribe(() => {
+        //             // console.log('FORM', this.form);
+        //             // console.log('FORM VALUE', this.form.getRawValue());
+        //             // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
 
-                    // const pristineStatuses = [
-                    //     this.form.get('productInfo').pristine,
-                    //     this.form.get('productSale').pristine,
-                    //     this.form.get('productMedia').pristine,
-                    //     this.form.get('productSize').pristine,
-                    //     this.form.get('productShipment').pristine
-                    // ];
+        //             // const pristineStatuses = [
+        //             //     this.form.get('productInfo').pristine,
+        //             //     this.form.get('productSale').pristine,
+        //             //     this.form.get('productMedia').pristine,
+        //             //     this.form.get('productSize').pristine,
+        //             //     this.form.get('productShipment').pristine
+        //             // ];
 
-                    if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
-                        this.store.dispatch(FormActions.setFormStatusValid());
-                    } else if (this.form.status === 'INVALID') {
-                        this.store.dispatch(FormActions.setFormStatusInvalid());
-                    }
+        //             if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
+        //                 this.store.dispatch(FormActions.setFormStatusValid());
+        //             } else if (this.form.status === 'INVALID') {
+        //                 this.store.dispatch(FormActions.setFormStatusInvalid());
+        //             }
 
-                    this._cd.markForCheck();
-                })
-        );
+        //             this._cd.markForCheck();
+        //         })
+        // );
 
         this.subs.add(
             this.form.get('productCount.minQtyOption')
@@ -835,6 +835,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
                     }
 
+                    this.form.markAsPristine();
                     // this.store.dispatch(
                     //     CatalogueActions
                     //         .fetchCatalogueCategoryRequest({
