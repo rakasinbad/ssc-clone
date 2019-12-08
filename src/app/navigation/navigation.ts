@@ -121,7 +121,7 @@ export const navigation: FuseNavigation[] = [
                 translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/in-store-inventories',
-                exactMatch: true
+                exactMatch: false
             }
         ]
     }
