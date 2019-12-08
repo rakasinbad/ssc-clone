@@ -6,7 +6,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CatalogueActions } from '../actions';
 
-export const FEATURE_KEY = 'catalogues';
+export const FEATURE_KEY = 'settings';
 
 export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
