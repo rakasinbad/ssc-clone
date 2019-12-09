@@ -33,6 +33,10 @@ export interface IViolationType {
     deletedAt: TNullable<Date>;
 }
 
+export interface ICatalogueStockResponse {
+    stockEnRoute: number;
+}
+
 export interface ICatalogueCategory {
     id: string;
     parentId: TNullable<string>;
@@ -129,8 +133,9 @@ export interface ICatalogue extends ITimestamp {
     packagedDimension: TNullable<number>;
     sku: string;
     // skuRef: string;
-    productPrice: number;
-    suggestRetailPrice: number;
+    retailBuyingPrice: number; // Harga yang dibeli dari supplier.
+    suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
+    discountedRetailBuyingPrice: number; // Harga potongan yang diberikan oleh supplier untuk dijual ke toko.
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
@@ -173,6 +178,7 @@ export interface ICatalogue extends ITimestamp {
     /**
      * LAINNYA (DIBUTUHKAN KETIKA ADA HAL-HAL KHUSUS)
      */
+    stockEnRoute?: number;
     catalogueKeywords?: Array<CatalogueKeyword>;
     deletedImages?: Array<number>;
     uploadedImages?: Array<{ base64: string }>;
@@ -527,8 +533,9 @@ export class Catalogue implements ICatalogue {
     packagedDimension: TNullable<number>;
     sku: string;
     // skuRef: string;
-    productPrice: number;
-    suggestRetailPrice: number;
+    retailBuyingPrice: number; // Harga yang dibeli dari supplier.
+    suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
+    discountedRetailBuyingPrice: number; // Harga potongan untuk konsumen.
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
@@ -571,6 +578,7 @@ export class Catalogue implements ICatalogue {
     catalogueKeywords: Array<CatalogueKeyword>;
     deletedImages: Array<number>;
     uploadedImages: Array<{ base64: string }>;
+    stockEnRoute: number;
 
     constructor(data: ICatalogue) {
         const {
@@ -586,8 +594,9 @@ export class Catalogue implements ICatalogue {
             packagedWeight,
             packagedDimension,
             sku,
-            productPrice,
-            suggestRetailPrice,
+            retailBuyingPrice,
+            suggestedConsumerBuyingPrice,
+            discountedRetailBuyingPrice,
             minQty,
             minQtyType,
             packagedQty,
@@ -619,6 +628,7 @@ export class Catalogue implements ICatalogue {
             catalogueUnit,
             violationType,
             brand,
+            stockEnRoute
         } = data;
 
         this.id = id;
@@ -633,8 +643,9 @@ export class Catalogue implements ICatalogue {
         this.packagedWeight = packagedWeight ? packagedWeight : null;
         this.packagedDimension = packagedDimension ? packagedDimension : null;
         this.sku = sku;
-        this.productPrice = productPrice;
-        this.suggestRetailPrice = suggestRetailPrice;
+        this.retailBuyingPrice = retailBuyingPrice;
+        this.suggestedConsumerBuyingPrice = suggestedConsumerBuyingPrice;
+        this.discountedRetailBuyingPrice = discountedRetailBuyingPrice;
         this.minQty = minQty;
         this.minQtyType = minQtyType;
         this.packagedQty = packagedQty;
@@ -661,6 +672,7 @@ export class Catalogue implements ICatalogue {
         this.catalogueUnit = catalogueUnit;
         this.violationType = violationType ? violationType : null;
         this.brand = brand;
+        this.stockEnRoute = stockEnRoute;
         
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8 
@@ -802,7 +814,7 @@ export class Catalogue implements ICatalogue {
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__        Yb  dP    dPYb   88__dP 88   dPYb   88Yb88   88   
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         YbdP    dP__Yb  88"Yb  88  dP__Yb  88 Y88   88   
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888        YP    dP""""Yb 88  Yb 88 dP""""Yb 88  Y8   88   
-        */;
+        */
         // this.catalogueVariant = catalogueVariant ? {
         //     ...new CatalogueVariant(
         //         catalogueVariant.id,
