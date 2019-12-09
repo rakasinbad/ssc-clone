@@ -22,7 +22,7 @@
                         [src]="(attendance$ | async)?.user?.imageUrl"
                     />
                     <img
-                        *ngIf="!(attendance$ | async)?.user?.image"
+                        *ngIf="!(attendance$ | async)?.user?.imageUrl"
                         [src]="'assets/images/avatars/profile.jpg'"
                     />
                 </div>
