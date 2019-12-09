@@ -2,12 +2,32 @@ import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 import { LogService } from './log.service';
+import { FormControl, FormGroup, FormArray } from '@angular/forms';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ErrorMessageService {
     constructor(private translate: TranslateService, private logSvc: LogService) {}
+
+    getFormError(form: FormControl | FormGroup | FormArray, field: string): string {
+        const Form = form.get(field);
+        if (!Form) {
+            return '';
+        }
+        
+        const { errors } = form.get(field);
+        if (!errors) {
+            return '';
+        }
+
+        const errorType = Object.keys(errors)[0];
+        if (!errorType) {
+            return '';
+        }
+
+        return errors[errorType].message;
+    }
 
     getErrorMessageNonState(field: string, type: string, args?: any): string {
         const labelName = this.translate.instant(`FORM.${field.toUpperCase()}`);
@@ -41,6 +61,10 @@ export class ErrorMessageService {
 
             case 'confirm_password':
                 return this.translate.instant('ERROR.CONFIRM', { fieldName: labelName, fieldNameCompare: labelConfirmPassword });
+
+            case 'min_number':
+                const { minValue = 0 } = args;
+                return this.translate.instant('ERROR.MIN', { fieldName: labelName, minValue });
 
             case 'different':
                 let { fieldComparedName } = args;
