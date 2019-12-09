@@ -19,14 +19,15 @@
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
                     <!-- PRODUCT ID -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.externalId').errors &&
                                 !form.get('productInfo.externalId').untouched &&
@@ -53,14 +54,15 @@
                     <!-- / PRODUCT ID -->
                     <!-- NAMA PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.name').errors &&
                                 !form.get('productInfo.name').untouched &&
@@ -81,14 +83,15 @@
                     <!-- / NAMA PRODUK -->
                     <!-- DESKRIPSI PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
                         style="margin-bottom: 21.5px;"
                     >
                         <label
-                            fxFlex="20"
+                            fxFlex="18"
+                            class="pr-0"
                             style="padding-top: 1.5em;"
                             [class.mat-error]="
                                 form.get('productInfo.description').errors &&
@@ -144,14 +147,15 @@
                     <!-- / VARIAN PRODUK -->
                     <!-- BRAND PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.brandId').errors &&
                                 !form.get('productInfo.brandId').untouched &&
@@ -178,14 +182,15 @@
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="start center"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="20"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.category').errors &&
                                 !form.get('productInfo.category').untouched &&
@@ -194,8 +199,8 @@
                         >
                             *Kategori
                         </label>
-                
-                        <label>
+
+                        <label class="ml-20 grey-600-fg">
                             <strong fxFlexAlign="center" [innerHTML]="productCategory$"></strong>
                             <button
                                 class="red-fg"
@@ -213,14 +218,15 @@
                     <!-- / KATEGORI PRODUK -->
                     <!-- PRODUK STOK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.stock').errors &&
                                 !form.get('productInfo.stock').untouched &&
@@ -243,14 +249,15 @@
                     <!-- / PRODUK STOK -->
                     <!-- UOM -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
-                            fxFlex="12"
+                            fxFlex="18"
+                            class="pr-0"
                             [class.mat-error]="
                                 form.get('productInfo.uom').errors &&
                                 !form.get('productInfo.uom').untouched &&
@@ -305,7 +312,7 @@
                                 (form.get('productSale.productPrice').dirty || form.get('productSale.productPrice').touched)
                             "
                         >
-                            *Sale Price
+                            *Retailer <br/>Buying Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -337,7 +344,7 @@
                                 (form.get('productSale.retailPrice').dirty || form.get('productSale.retailPrice').touched)
                             "
                         >
-                            *Suggested <br/>Retail Price
+                            *Discounted Retailer <br/>Buying Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">

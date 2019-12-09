@@ -219,8 +219,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             /**
              * INFORMASI PENJUALAN
              */
-            suggestRetailPrice: formValues.productSale.retailPrice,
-            productPrice: formValues.productSale.productPrice,
+            discountedRetailBuyingPrice: formValues.productSale.retailPrice,
+            retailBuyingPrice: formValues.productSale.productPrice,
             catalogueKeywords: formValues.productSale.tags,
             /**
              * PENGATURAN MEDIA
@@ -781,8 +781,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                             packagedQty: catalogue.packagedQty,
                             multipleQty: catalogue.multipleQty
                         }, productSale: {
-                            retailPrice: catalogue.suggestRetailPrice.toString().replace('.', ','),
-                            productPrice: catalogue.productPrice.toString().replace('.', ','),
+                            retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                            productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
                             // variants: this.fb.array([])
                         }, productMedia: {
                             photos: [
