@@ -1,8 +1,10 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
@@ -18,7 +20,6 @@ import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpe
 import {
     Cluster,
     Hierarchy,
-    InvoiceGroup,
     Province,
     StoreGroup,
     StoreSegment,
@@ -74,6 +75,11 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
+
+    @ViewChild('cdkProvince', { static: false }) cdkProvince: CdkVirtualScrollViewport;
+    @ViewChild('cdkCity', { static: false }) cdkCity: CdkVirtualScrollViewport;
+    @ViewChild('cdkDistrict', { static: false }) cdkDistrict: CdkVirtualScrollViewport;
+    @ViewChild('cdkUrban', { static: false }) cdkUrban: CdkVirtualScrollViewport;
 
     constructor(
         private formBuilder: FormBuilder,
@@ -452,6 +458,34 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         }
 
         return;
+    }
+
+    onOpenChangeProvince(ev: boolean): void {
+        if (ev) {
+            this.cdkProvince.scrollToIndex(0);
+            this.cdkProvince.checkViewportSize();
+        }
+    }
+
+    onOpenChangeCity(ev: boolean): void {
+        if (ev) {
+            this.cdkCity.scrollToIndex(0);
+            this.cdkCity.checkViewportSize();
+        }
+    }
+
+    onOpenChangeDistrict(ev: boolean): void {
+        if (ev) {
+            this.cdkDistrict.scrollToIndex(0);
+            this.cdkDistrict.checkViewportSize();
+        }
+    }
+
+    onOpenChangeUrban(ev: boolean): void {
+        if (ev) {
+            this.cdkUrban.scrollToIndex(0);
+            this.cdkUrban.checkViewportSize();
+        }
     }
 
     onResetCreditLimitGroup(idx: number): void {

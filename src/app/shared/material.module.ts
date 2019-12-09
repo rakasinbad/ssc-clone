@@ -1,3 +1,4 @@
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgModule } from '@angular/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -26,9 +27,9 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatTreeModule } from '@angular/material/tree';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTreeModule } from '@angular/material/tree';
 import { MAT_DATETIME_FORMATS, MatDatetimepickerModule } from '@mat-datetimepicker/core';
 import { MatMomentDatetimeModule } from '@mat-datetimepicker/moment';
 
@@ -83,7 +84,8 @@ const matModule = [
     MatToolbarModule,
     MatTooltipModule,
     MatDatetimepickerModule,
-    MatMomentDatetimeModule
+    MatMomentDatetimeModule,
+    ScrollingModule
 ];
 
 @NgModule({

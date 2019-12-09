@@ -1,30 +1,32 @@
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
     ChangeDetectionStrategy,
     Component,
     Inject,
     OnDestroy,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { MatSelectChange, MatRadioChange } from '@angular/material';
+import { MatRadioChange, MatSelectChange } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
 import { GeoParameter, GeoParameterType, Hierarchy, StoreSegment } from 'app/shared/models';
 import { DropdownActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import { Observable, of, Subject } from 'rxjs';
-import { filter, map, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 
 import { CreditLimitGroupForm } from '../models';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
 
 @Component({
-    selector: 'app-credit-limit-group-form',
+    // selector: 'app-credit-limit-group-form',
     templateUrl: './credit-limit-group-form.component.html',
     styleUrls: ['./credit-limit-group-form.component.scss'],
     encapsulation: ViewEncapsulation.None,
@@ -44,6 +46,9 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
+
+    @ViewChild(CdkVirtualScrollViewport, { static: false })
+    cdkVirtualScrollViewPort: CdkVirtualScrollViewport;
 
     constructor(
         private dialogRef: MatDialogRef<CreditLimitGroupFormComponent>,
@@ -224,6 +229,13 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
         if (idx > 0) {
             this.formGeographics.removeAt(idx);
             this.geoParameterSource$.splice(idx, 1);
+        }
+    }
+
+    onOpenChangeUnitValue(ev: boolean): void {
+        if (ev) {
+            this.cdkVirtualScrollViewPort.scrollToIndex(0);
+            this.cdkVirtualScrollViewPort.checkViewportSize();
         }
     }
 
@@ -435,6 +447,10 @@ export class CreditLimitGroupFormComponent implements OnInit, OnDestroy {
 
             this.dialogRef.close({ action, payload });
         }
+    }
+
+    onTrackBy(idx: number): number {
+        return idx;
     }
 
     // -----------------------------------------------------------------------------------------------------

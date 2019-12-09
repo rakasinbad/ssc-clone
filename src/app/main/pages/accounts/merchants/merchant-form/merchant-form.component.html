@@ -283,18 +283,48 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select
-                                    formControlName="province"
-                                    placeholder="Choose Province"
-                                    (selectionChange)="onSelectProvince($event)"
+                                <ng-container
+                                    *ngIf="provinces$ | async as provinces; else noProvinces"
                                 >
-                                    <mat-option
-                                        *ngFor="let row of provinces$ | async"
-                                        [value]="row?.id"
+                                    <mat-select
+                                        formControlName="province"
+                                        placeholder="Choose Province"
+                                        (openedChange)="onOpenChangeProvince($event)"
+                                        (selectionChange)="onSelectProvince($event)"
                                     >
-                                        {{ row?.name }}
-                                    </mat-option>
-                                </mat-select>
+                                        <cdk-virtual-scroll-viewport
+                                            #cdkProvince
+                                            itemSize="5"
+                                            minBufferPx="200"
+                                            maxBufferPx="400"
+                                            class="viewport-select"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *cdkVirtualFor="let row of provinces"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.name }}
+                                            </mat-option>
+                                            <mat-option
+                                                *ngIf="
+                                                    form.get('storeInfo.address.province')?.value
+                                                "
+                                                [value]="
+                                                    form.get('storeInfo.address.province')?.value
+                                                "
+                                            >
+                                                {{ form.get('storeInfo.address.province')?.value }}
+                                            </mat-option>
+                                        </cdk-virtual-scroll-viewport>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noProvinces>
+                                    <mat-select placeholder="Choose Province" disabled>
+                                        <mat-option>Province not found</mat-option>
+                                    </mat-select>
+                                </ng-template>
 
                                 <mat-error
                                     *ngIf="
@@ -327,16 +357,35 @@
                                     <mat-select
                                         formControlName="city"
                                         placeholder="Choose City"
+                                        (openedChange)="onOpenChangeCity($event)"
                                         (selectionChange)="onSelectCity($event)"
                                     >
-                                        <mat-option *ngFor="let row of cities" [value]="row?.city">
-                                            {{ row?.city }}
-                                        </mat-option>
+                                        <cdk-virtual-scroll-viewport
+                                            #cdkCity
+                                            itemSize="5"
+                                            minBufferPx="200"
+                                            maxBufferPx="400"
+                                            class="viewport-select"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *cdkVirtualFor="let row of cities"
+                                                [value]="row?.city"
+                                            >
+                                                {{ row?.city }}
+                                            </mat-option>
+                                            <mat-option
+                                                *ngIf="form.get('storeInfo.address.city')?.value"
+                                                [value]="form.get('storeInfo.address.city')?.value"
+                                            >
+                                                {{ form.get('storeInfo.address.city')?.value }}
+                                            </mat-option>
+                                        </cdk-virtual-scroll-viewport>
                                     </mat-select>
                                 </ng-container>
 
                                 <ng-template #noCities>
-                                    <mat-select formControlName="city" placeholder="Choose City">
+                                    <mat-select placeholder="Choose City" disabled>
                                         <mat-option>City not found</mat-option>
                                     </mat-select>
                                 </ng-template>
@@ -374,22 +423,39 @@
                                     <mat-select
                                         formControlName="district"
                                         placeholder="Choose District"
+                                        (openedChange)="onOpenChangeDistrict($event)"
                                         (selectionChange)="onSelectDistrict($event)"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of districts"
-                                            [value]="row?.district"
+                                        <cdk-virtual-scroll-viewport
+                                            #cdkDistrict
+                                            itemSize="5"
+                                            minBufferPx="200"
+                                            maxBufferPx="400"
+                                            class="viewport-select"
                                         >
-                                            {{ row?.district }}
-                                        </mat-option>
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *cdkVirtualFor="let row of districts"
+                                                [value]="row?.district"
+                                            >
+                                                {{ row?.district }}
+                                            </mat-option>
+                                            <mat-option
+                                                *ngIf="
+                                                    form.get('storeInfo.address.district')?.value
+                                                "
+                                                [value]="
+                                                    form.get('storeInfo.address.district')?.value
+                                                "
+                                            >
+                                                {{ form.get('storeInfo.address.district')?.value }}
+                                            </mat-option>
+                                        </cdk-virtual-scroll-viewport>
                                     </mat-select>
                                 </ng-container>
 
                                 <ng-template #noDistricts>
-                                    <mat-select
-                                        formControlName="district"
-                                        placeholder="Choose District"
-                                    >
+                                    <mat-select placeholder="Choose District" disabled>
                                         <mat-option>District not found</mat-option>
                                     </mat-select>
                                 </ng-template>
@@ -425,16 +491,35 @@
                                     <mat-select
                                         formControlName="urban"
                                         placeholder="Choose Urban"
+                                        (openedChange)="onOpenChangeUrban($event)"
                                         (selectionChange)="onSelectUrban($event)"
                                     >
-                                        <mat-option *ngFor="let row of urbans" [value]="row?.id">
-                                            {{ row?.urban }}
-                                        </mat-option>
+                                        <cdk-virtual-scroll-viewport
+                                            #cdkUrban
+                                            itemSize="5"
+                                            minBufferPx="200"
+                                            maxBufferPx="400"
+                                            class="viewport-select"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *cdkVirtualFor="let row of urbans"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.urban }}
+                                            </mat-option>
+                                            <mat-option
+                                                *ngIf="form.get('storeInfo.address.urban')?.value"
+                                                [value]="form.get('storeInfo.address.urban')?.value"
+                                            >
+                                                {{ form.get('storeInfo.address.urban')?.value }}
+                                            </mat-option>
+                                        </cdk-virtual-scroll-viewport>
                                     </mat-select>
                                 </ng-container>
 
                                 <ng-template #noUrbans>
-                                    <mat-select formControlName="urban" placeholder="Choose Urban">
+                                    <mat-select placeholder="Choose Urban" disabled>
                                         <mat-option>Urban not found</mat-option>
                                     </mat-select>
                                 </ng-template>
@@ -957,6 +1042,7 @@
                                         formControlName="storeType"
                                         placeholder="Choose Store Type"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of storeTypes"
                                             [value]="row?.id"
@@ -1015,6 +1101,7 @@
                                         formControlName="storeGroup"
                                         placeholder="Choose Store Group"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of storeGroups"
                                             [value]="row?.id"
@@ -1090,6 +1177,7 @@
                                         formControlName="storeCluster"
                                         placeholder="Choose Store Cluster"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of storeClusters"
                                             [value]="row?.id"
@@ -1167,6 +1255,7 @@
                                         formControlName="storeSegment"
                                         placeholder="Choose Store Segment"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of storeSegments"
                                             [value]="row?.id"
@@ -1228,6 +1317,7 @@
                                         formControlName="hierarchy"
                                         placeholder="Choose Hierarchy"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of hierarchies"
                                             [value]="row?.id"
