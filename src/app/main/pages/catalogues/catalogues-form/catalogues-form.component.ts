@@ -59,7 +59,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     isEditMode = false;
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
-    cmCubic: SafeHtml = 'cm<sup>3</sup>';
 
     quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;

@@ -161,7 +161,7 @@ export class HelperService {
 
     getQuantityChoices(): Array<{ id: string; label: string }> {
         return [
-            { id: 'pcs', label: 'Pcs' },
+            { id: 'pcs', label: 'per Piece' },
             { id: 'master_box', label: 'Master Box' },
             { id: 'custom', label: 'Custom' },
         ];

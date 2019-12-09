@@ -852,6 +852,7 @@
                                 formControlName="catalogueWeight"
                                 mask="separator"
                                 thousandSeparator="."
+                                suffix=" gr"
                                 placeholder="in gram(s)"
                             />
                         </mat-form-field>
@@ -884,6 +885,7 @@
                                 formControlName="packagedWeight"
                                 mask="separator"
                                 thousandSeparator="."
+                                suffix=" gr"
                                 placeholder="in gram(s)"
                             />
                         </mat-form-field>
@@ -914,10 +916,12 @@
                                 name="width"
                                 formControlName="catalogueDimension"
                                 mask="separator"
+                                placeholder="cm³"
+                                suffix=" cm³"
                                 thousandSeparator="."
                             />
                             <!-- <p matSuffix>cm³</p> -->
-                            <p matSuffix>cm<sup>3</sup></p>
+                            <!-- <p matSuffix>cm<sup>3</sup></p> -->
                         </mat-form-field>
                     </div>
                     <!-- / DIMENSI PER PCS PRODUK -->
@@ -947,9 +951,11 @@
                                 formControlName="packagedDimension"
                                 mask="separator"
                                 thousandSeparator="."
+                                placeholder="cm³"
+                                suffix=" cm³"
                             />
                             <!-- <p matSuffix>cm³</p> -->
-                            <p matSuffix>cm<sup>3</sup></p>
+                            <!-- <p matSuffix>cm<sup>3</sup></p> -->
                         </mat-form-field>
                     </div>
                     <!-- / DIMENSI PER MASTER BOX PRODUK -->
