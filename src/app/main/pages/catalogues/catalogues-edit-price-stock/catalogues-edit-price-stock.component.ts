@@ -224,16 +224,5 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
 
     getFormError(form: FormControl | FormGroup | FormArray, field: string): string {
         return this.errorMessageSvc.getFormError(form, field);
-        // const { errors = null } = form.get(field);
-        // if (!errors) {
-        //     return '';
-        // }
-
-        // const errorType = Object.keys(errors)[0];
-        // if (!errorType) {
-        //     return '';
-        // }
-
-        // return errors[errorType].message;
     }
 }
