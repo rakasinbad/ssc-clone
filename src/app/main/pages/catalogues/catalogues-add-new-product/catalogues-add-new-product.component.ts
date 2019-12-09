@@ -45,6 +45,450 @@ interface ISelectedCategory {
     data: Array<CatalogueCategory>;
 }
 
+const CATALOGUE_CATEGORIES_DUMMY: Array<CatalogueCategory> = [
+    {
+        'id': '1',
+        'parentId': null,
+        'category': 'Mandi & Perawatan Tubuh',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/mandi%20dan%20perawatan%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Mandi.png',
+        'sequence': null,
+        'hasChild': true,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': [
+            {
+                'id': '2',
+                'parentId': '1',
+                'category': 'Deodorant Shampo',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/deodorant.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/deodorant.png',
+                'sequence': null,
+                'hasChild': true,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': [
+                    {
+                        'id': '9',
+                        'parentId': '2',
+                        'category': 'Anak',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/pasta+gigi+-+pastagigianak.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/pasta+gigi+-+pastagigianak.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    },
+                    {
+                        'id': '10',
+                        'parentId': '2',
+                        'category': 'Dewasa',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/sikat+gigi+-+5-9.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/sikat+gigi+-+5-9.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    },
+                    {
+                        'id': '11',
+                        'parentId': '2',
+                        'category': 'Sangat Uzur Sekali',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/sikat+gigi+-+5-9.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/sikat+gigi+-+5-9.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    },
+                    {
+                        'id': '31',
+                        'parentId': '2',
+                        'category': 'Makanan Binatang',
+                        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/makanan%20hewan%403x.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Hewan.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    }
+                ]
+            },
+            {
+                'id': '3',
+                'parentId': '1',
+                'category': 'Shampoo',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/shampoo+-+dove.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/shampoo+-+dove.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            },
+            {
+                'id': '4',
+                'parentId': '1',
+                'category': 'Mouthwash',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/mouthwash.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/mouthwash.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            }
+        ]
+    },
+    {
+        'id': '5',
+        'parentId': null,
+        'category': 'Makanan',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/makanan%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Makanan.png',
+        'sequence': 2,
+        'hasChild': true,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': [
+            {
+                'id': '6',
+                'parentId': '5',
+                'category': 'Mentega',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/mentega+-+blueband.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/mentega+-+blueband.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            },
+            {
+                'id': '7',
+                'parentId': '5',
+                'category': 'Sereal',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/makanan+-+sereal.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/makanan+-+sereal.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            },
+            {
+                'id': '8',
+                'parentId': '5',
+                'category': 'Makanan Kaleng',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/Makanan+-+sarden+kaleng.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/Makanan+-+sarden+kaleng.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            }
+        ]
+    },
+    {
+        'id': '12',
+        'parentId': null,
+        'category': 'Susu',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/susu%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Susu.png',
+        'sequence': null,
+        'hasChild': true,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': [
+            {
+                'id': '13',
+                'parentId': '12',
+                'category': 'Susu Bayi',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+0-6.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+0-6.png',
+                'sequence': null,
+                'hasChild': true,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': [
+                    {
+                        'id': '15',
+                        'parentId': '13',
+                        'category': '0 - 6 Bulan',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+0-6.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+0-6.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    },
+                    {
+                        'id': '16',
+                        'parentId': '13',
+                        'category': '6 - 12 Bulan',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+6-12.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/bayi+-+6-12.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    }
+                ]
+            },
+            {
+                'id': '14',
+                'parentId': '12',
+                'category': 'Susu Balita',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+1-3tahun.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+1-3tahun.png',
+                'sequence': null,
+                'hasChild': true,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': [
+                    {
+                        'id': '17',
+                        'parentId': '14',
+                        'category': '1 - 3 Tahun',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+1-3tahun.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+1-3tahun.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    },
+                    {
+                        'id': '18',
+                        'parentId': '14',
+                        'category': '3 - 5 Tahun',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+3-5tahun.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/tigaraksa/anak+-+3-5tahun.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        'id': '19',
+        'parentId': null,
+        'category': 'Pembersih Pakaian',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/pembersih%20pakaian%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/pembersihpakaian.png',
+        'sequence': null,
+        'hasChild': true,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': [
+            {
+                'id': '20',
+                'parentId': '19',
+                'category': 'Pewangi',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/pewangi+-+molto.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/pewangi+-+molto.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            },
+            {
+                'id': '21',
+                'parentId': '19',
+                'category': 'Softener',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/softener+-+molto.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/softener+-+molto.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': []
+            },
+            {
+                'id': '22',
+                'parentId': '19',
+                'category': 'Deterjen',
+                'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/deterjen+bubuk+-+rinso.png',
+                'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/deterjen+bubuk+-+rinso.png',
+                'sequence': null,
+                'hasChild': false,
+                'status': 'active',
+                'createdAt': '2019-11-06T03:23:05.751Z',
+                'updatedAt': '2019-11-06T03:23:05.751Z',
+                'deletedAt': null,
+                'children': [
+                    {
+                        'id': '23',
+                        'parentId': '22',
+                        'category': 'Deterjen Bubuk',
+                        'iconHome': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/deterjen+bubuk+-+rinso.png',
+                        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/bukalapak+kategori/deterjen+bubuk+-+rinso.png',
+                        'sequence': null,
+                        'hasChild': false,
+                        'status': 'active',
+                        'createdAt': '2019-11-06T03:23:05.751Z',
+                        'updatedAt': '2019-11-06T03:23:05.751Z',
+                        'deletedAt': null,
+                        'children': []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        'id': '24',
+        'parentId': null,
+        'category': 'Kosmetik',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/kosmetik%403x.png',
+        'iconTree': 'https://s3.amazonaws.com/sinbad-website/odoo_img/kategori/Kecantikan.png',
+        'sequence': 1,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '25',
+        'parentId': null,
+        'category': 'Rokok',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/rokok%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/rokok.png',
+        'sequence': 3,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '26',
+        'parentId': null,
+        'category': 'Permen',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/permen%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Permen.png',
+        'sequence': null,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '27',
+        'parentId': null,
+        'category': 'Perlengkapan Rumah Tangga',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/perlengkapan%20rumah%20tangga%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/perlengkapanrumahtangga.png',
+        'sequence': null,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '28',
+        'parentId': null,
+        'category': 'Pakaian',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/pakaian%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/pakaian.png',
+        'sequence': null,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '29',
+        'parentId': null,
+        'category': 'Minuman',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/minuman%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Minuman.png',
+        'sequence': null,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    },
+    {
+        'id': '30',
+        'parentId': null,
+        'category': 'Makanan Hewan',
+        'iconHome': 'https://sinbad-website-sg.s3.ap-southeast-1.amazonaws.com/dev/category_home_icon/makanan%20hewan%403x.png',
+        'iconTree': 'https://sinbad-website.s3.amazonaws.com/odoo_img/kategori/Hewan.png',
+        'sequence': null,
+        'hasChild': false,
+        'status': 'active',
+        'createdAt': '2019-11-06T03:23:05.751Z',
+        'updatedAt': '2019-11-06T03:23:05.751Z',
+        'deletedAt': null,
+        'children': []
+    }
+];
 // 
 @Component({
     selector: 'app-catalogues-add-new-product',
@@ -233,12 +677,12 @@ export class CataloguesAddNewProductComponent implements OnInit {
             this.isFulfilled = false;
 
             // Jika parentId nya null, berarti dia induk kategori.
-            // if (!data.parentId) {
-            //     const idx = CATALOGUE_CATEGORIES_DUMMY.findIndex(category => category.id === data.id);
-            //     this.selectedCategories[level + 1].data = this.categoryTree[idx].children;
-            // } else {
-            //     this.selectedCategories[level + 1].data = data.children;
-            // }
+            if (!data.parentId) {
+                const idx = CATALOGUE_CATEGORIES_DUMMY.findIndex(category => category.id === data.id);
+                this.selectedCategories[level + 1].data = this.categoryTree[idx].children;
+            } else {
+                this.selectedCategories[level + 1].data = data.children;
+            }
             resetTree(level + 2);
         } else {
             this.isFulfilled = true;
