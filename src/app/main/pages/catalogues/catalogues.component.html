@@ -128,7 +128,7 @@
                 <ng-container matColumnDef="externalId">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Supplier</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.externalId }}</p>
+                        <p class="word-wrap">{{ row?.externalId }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -150,7 +150,7 @@
                             (click)="editCatalogue('price', row)"
                         >
                             <p class="text-truncate">
-                                {{ row?.suggestRetailPrice | price: 'full':'IDR':'narrow':'3.0-2' }}
+                                {{ row?.suggestedConsumerBuyingPrice | price: 'full':'IDR':'narrow':'3.0-2' }}
                             </p>
                         </a>
                     </mat-cell>

@@ -396,16 +396,20 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     editCatalogue(editMode: 'price' | 'stock', catalogue: Catalogue): void {
-        this.matDialog.open(CataloguesEditPriceStockComponent, {
-            data: {
-                // catalogueId: catalogue.id,
-                catalogue,
-                editMode,
-                // price: catalogue.suggestRetailPrice,
-                // stock: catalogue.stock
-            },
-            disableClose: false
-        });
+        this.store.dispatch(CatalogueActions.setSelectedCatalogue({ payload: catalogue.id }));
+
+        setTimeout(() =>
+            this.matDialog.open(CataloguesEditPriceStockComponent, {
+                data: {
+                    // catalogueId: catalogue.id,
+                    catalogue,
+                    editMode,
+                    // price: catalogue.suggestRetailPrice,
+                    // stock: catalogue.stock
+                },
+                disableClose: false
+            })
+        , 100);
     }
 
     // -----------------------------------------------------------------------------------------------------
