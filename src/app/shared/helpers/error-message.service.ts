@@ -10,23 +10,41 @@ import { FormControl, FormGroup, FormArray } from '@angular/forms';
 export class ErrorMessageService {
     constructor(private translate: TranslateService, private logSvc: LogService) {}
 
-    getFormError(form: FormControl | FormGroup | FormArray, field: string): string {
-        const Form = form.get(field);
-        if (!Form) {
-            return '';
-        }
-        
-        const { errors } = form.get(field);
-        if (!errors) {
-            return '';
-        }
+    getFormError(form: FormControl | FormGroup | FormArray, field?: string): string {
+        if (!field) {
+            if (!form) {
+                return '';
+            }
+            
+            const { errors } = form;
+            if (!errors) {
+                return '';
+            }
 
-        const errorType = Object.keys(errors)[0];
-        if (!errorType) {
-            return '';
-        }
+            const errorType = Object.keys(errors)[0];
+            if (!errorType) {
+                return '';
+            }
 
-        return errors[errorType].message;
+            return errors[errorType].message;
+        } else {
+            const Form = form.get(field);
+            if (!Form) {
+                return '';
+            }
+            
+            const { errors } = form.get(field);
+            if (!errors) {
+                return '';
+            }
+    
+            const errorType = Object.keys(errors)[0];
+            if (!errorType) {
+                return '';
+            }
+
+            return errors[errorType].message;
+        }
     }
 
     getErrorMessageNonState(field: string, type: string, args?: any): string {
