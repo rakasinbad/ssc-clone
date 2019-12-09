@@ -355,9 +355,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             productCount: this.fb.group({
                 qtyPerMasterBox: ['', [Validators.required, Validators.min(1)]],
                 minQtyOption: ['pcs'],
-                minQtyValue: ['1', [Validators.required, Validators.min(1)]],
+                minQtyValue: [{ value: '1', disabled: true }, [Validators.required, Validators.min(1)]],
                 additionalQtyOption: ['pcs'],
-                additionalQtyValue: ['1', [Validators.required, Validators.min(1)]],
+                additionalQtyValue: [{ value: '1', disabled: true }, [Validators.required, Validators.min(1)]],
             })
         });
 
