@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { IQueryParams } from 'app/shared/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
 
-import { Catalogue, CatalogueCategory, ICatalogueUnitResponse, ICatalogue, ICataloguesResponse } from '../models';
+import { Catalogue, CatalogueCategory, ICatalogueUnitResponse, ICatalogue, ICataloguesResponse, ICatalogueStockResponse } from '../models';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -36,6 +36,7 @@ export class CataloguesService {
      */
     private readonly _endpoint = '/catalogues';
     private readonly _catalogueCategoriesEndpoint = '/catalogue-categories';
+    private readonly _catalogueStockEndpoint = '/get-stocks';
     private readonly _categoryTreeEndpoint = '/categories-tree';
 
     /**
@@ -144,6 +145,11 @@ export class CataloguesService {
     findById(id: string): Observable<ICatalogue> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.get<ICatalogue>(`${this._url}/${id}`);
+    }
+
+    getStock(id: string): Observable<ICatalogueStockResponse> {
+        this._url = this._$helper.handleApiRouter(this._catalogueStockEndpoint);
+        return this.http.get<ICatalogueStockResponse>(`${this._url}/${id}`);
     }
 
     removeCatalogue(id: string | number): Observable<any> {
