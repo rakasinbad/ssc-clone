@@ -11,18 +11,20 @@
 
     <!-- CENTER -->
     <div class="center">
-        <div class="mt-16">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
+        <!-- <div class="mt-16">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div> -->
 
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- <button mat-flat-button color="accent">
                     EXPORT
-                </button>
+                </button> -->
 
-                <button mat-stroked-button color="accent" class="sinbad">
+                <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button> -->
+
+                Today: {{ today | date: 'dd-MMMM-yyyy' }}
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">

@@ -4,14 +4,61 @@
     fusePerfectScrollbar
 >
     <!-- TOP BACKGROUND -->
-    <div class="accent"></div>
+    <div class="top-bg accent with-navigation"></div>
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
     <div class="center">
+        <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center">
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/account/stores']"
+                >
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    <div class="h2">
+                        Rincian Store
+                    </div>
+                    <!-- <div class="subtitle secondary-text">
+                        <span>{{ (order$ | async)?.orderRef }}</span>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
         <!-- CONTENT HEADER fxLayout="column" fxLayoutAlign="center stretch" -->
         <div class="header sinbad" fxLayout="column" fxLayoutAlign="center stretch">
-            <div fxLayout="row" fxLayoutAlign="start center">
+            <nav
+                mat-tab-nav-bar
+                class="mat-elevation-z1 sinbad-tab"
+                [ngClass]="(fuseConfig$ | async)?.layout?.toolbar?.background"
+            >
+                <a
+                    mat-tab-link
+                    *ngFor="let link of links"
+                    [routerLink]="[{ outlets: { 'store-detail': [link?.path] } }]"
+                    routerLinkActive
+                    #rla="routerLinkActive"
+                    [active]="rla?.isActive"
+                    skipLocationChange
+                >
+                    <div fxLayout="column" fxLayoutAlign="center center">
+                        <span class="label">{{ link?.label }}</span>
+                        <span class="indicator" fxFlex="70" *ngIf="rla?.isActive"></span>
+                    </div>
+                </a>
+            </nav>
+
+            <!-- <div fxLayout="row" fxLayoutAlign="start center">
                 <button
                     mat-icon-button
                     class="mr-0 mr-sm-16"
@@ -43,7 +90,7 @@
                         </a>
                     </nav>
                 </div>
-            </div>
+            </div> -->
         </div>
         <!-- / CONTENT HEADER -->
 

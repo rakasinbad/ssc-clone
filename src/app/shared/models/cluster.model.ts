@@ -1,28 +1,33 @@
 import { TNullable } from './global.model';
 import { Supplier } from './supplier.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
 interface ICluster extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     name: string;
     supplierId: string;
     supplier?: Supplier;
 }
 
-export class Cluster extends Timestamp implements ICluster {
-    public supplier?: Supplier;
+export class Cluster implements ICluster {
+    readonly id: NonNullable<string>;
+    name: string;
+    supplierId: string;
+    supplier?: Supplier;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        public id: string,
-        public name: string,
-        public supplierId: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: Cluster) {
+        const { id, name, supplierId, supplier, createdAt, updatedAt, deletedAt } = data;
 
-        this.name = name ? name.trim() : null;
+        this.id = id;
+        this.name = name ? String(name).trim() : null;
+        this.supplierId = supplierId;
+        this.setSupplier = supplier;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     set setSupplier(value: Supplier) {

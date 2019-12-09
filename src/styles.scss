@@ -231,6 +231,11 @@ body.theme-sinbad-light {
         border-color: #f0444c;
     }
 
+    .page-layout.carded.fullwidth > .center {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
     .page-layout.carded.fullwidth > .center > .header.sinbad {
         // height: 80px !important;
         // min-height: 80px !important;

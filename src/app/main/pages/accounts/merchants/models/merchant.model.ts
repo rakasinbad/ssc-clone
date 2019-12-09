@@ -1,6 +1,7 @@
 import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     CustomerHierarchy,
+    Hierarchy,
     StoreCluster,
     StoreConfig,
     StoreGroup,
@@ -11,8 +12,7 @@ import {
     TStatus,
     Urban,
     User,
-    VehicleAccessibility,
-    Hierarchy
+    VehicleAccessibility
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 
@@ -232,32 +232,7 @@ export class Store implements IStore {
               )
             : null;
 
-        this.hierarchy = hierarchy
-            ? new Hierarchy(
-                  hierarchy.id,
-                  hierarchy.name,
-                  hierarchy.status,
-                  hierarchy.supplierId,
-                  hierarchy.createdAt,
-                  hierarchy.updatedAt,
-                  hierarchy.deletedAt
-              )
-            : null;
-
-        // this.userStores = Array.isArray(userStores) ?
-        //     userStores.map(userStore => new UserStore(
-        //         userStore.id,
-        //         userStore.userId,
-        //         userStore.storeId,
-        //         userStore.status,
-        //         // userStore.store,
-        //         // userStore.user,
-        //         // userStore.totalCheckIn,
-        //         // userStore.totalCheckOut,
-        //         userStore.createdAt,
-        //         userStore.updatedAt,
-        //         userStore.deletedAt
-        //     )) : [];
+        this.setHierarchy = hierarchy;
 
         if (urban) {
             const newUrban = new Urban(
@@ -327,6 +302,10 @@ export class Store implements IStore {
         }
     }
 
+    set setHierarchy(value: Hierarchy) {
+        this.hierarchy = value ? new Hierarchy(value) : null;
+    }
+
     set setSupplierStores(value: SupplierStore[]) {
         if (value && value.length > 0) {
             const newSupplierStores = value.map(row => {
@@ -362,24 +341,8 @@ export class Store implements IStore {
 
     set setCustomerHierarchies(value: CustomerHierarchy[]) {
         if (value && value.length > 0) {
-            const newCustomerHierarchies = value.map(row => {
-                const newCustomerHierarchy = new CustomerHierarchy(
-                    row.id,
-                    row.storeId,
-                    row.hierarchyId,
-                    row.status,
-                    row.hierarchy,
-                    row.createdAt,
-                    row.updatedAt,
-                    row.deletedAt
-                );
+            const newCustomerHierarchies = value.map(row => new CustomerHierarchy(row));
 
-                if (row.store) {
-                    newCustomerHierarchy.setStore = row.store;
-                }
-
-                return newCustomerHierarchy;
-            });
             this.customerHierarchies = newCustomerHierarchies;
         } else {
             this.customerHierarchies = [];
@@ -388,23 +351,7 @@ export class Store implements IStore {
 
     set setStoreClusters(value: StoreCluster[]) {
         if (value && value.length > 0) {
-            const newStoreClusters = value.map(row => {
-                const newStoreCluster = new StoreCluster(
-                    row.id,
-                    row.storeId,
-                    row.clusterId,
-                    row.status,
-                    row.createdAt,
-                    row.updatedAt,
-                    row.deletedAt
-                );
-
-                if (row.cluster) {
-                    newStoreCluster.setCluster = row.cluster;
-                }
-
-                return newStoreCluster;
-            });
+            const newStoreClusters = value.map(row => new StoreCluster(row));
 
             this.storeClusters = newStoreClusters;
         } else {

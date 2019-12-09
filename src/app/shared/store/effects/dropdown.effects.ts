@@ -313,21 +313,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          const newHierarchy = new Hierarchy(
-                                              row.id,
-                                              row.name,
-                                              row.status,
-                                              row.supplierId,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-
-                                          return newHierarchy;
-                                      })
-                                    : [];
+                                resp && resp.length > 0 ? resp.map(row => new Hierarchy(row)) : [];
 
                             return DropdownActions.fetchDropdownHierarchySuccess({
                                 payload: newResp
@@ -576,24 +562,7 @@ export class DropdownEffects {
                         retry(3),
                         map(resp => {
                             const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          const newCluster = new Cluster(
-                                              row.id,
-                                              row.name,
-                                              row.supplierId,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-
-                                          if (row.supplier) {
-                                              newCluster.supplier = row.supplier;
-                                          }
-
-                                          return newCluster;
-                                      })
-                                    : [];
+                                resp && resp.length > 0 ? resp.map(row => new Cluster(row)) : [];
 
                             return DropdownActions.fetchDropdownStoreClusterSuccess({
                                 payload: newResp
