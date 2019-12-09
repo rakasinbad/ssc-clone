@@ -28,7 +28,8 @@ import {
     map,
     takeUntil,
     distinctUntilChanged,
-    debounceTime
+    debounceTime,
+    filter
 } from 'rxjs/operators';
 
 /** Models */
@@ -102,7 +103,11 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                     CatalogueActions.patchCatalogueRequest({
                         payload: {
                             id: this.data.catalogue.id,
-                            data: Catalogue.patch({ suggestRetailPrice: this.form.get('retailPrice').value, productPrice: this.form.get('salePrice').value }),
+                            data: Catalogue.patch({
+                                discountedRetailBuyingPrice: this.form.get('discountPrice').value,
+                                retailBuyingPrice: this.form.get('retailPrice').value,
+                                suggestedConsumerBuyingPrice: this.form.get('salePrice').value,
+                            }),
                             source: 'list'
                         }
                     })
@@ -132,18 +137,38 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
 
         if (this.data.editMode === 'price') {
             /** Memasukkan FormControl untuk price JIKA mode-nya adalah price. */
-            this.form.addControl('salePrice', this.fb.control('', [Validators.required, Validators.min(1)]));
+            //
+            // this.form.addControl('oldDiscountPrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
+            // this.form.addControl('discountPrice', this.fb.control('', [Validators.min(0)]));
+            //
+            this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.retailBuyingPrice, disabled: true }));
             this.form.addControl('retailPrice', this.fb.control('', Validators.required));
-            this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.productPrice, disabled: true }));
-            this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.suggestRetailPrice, disabled: true }));
+            //
+            this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
+            this.form.addControl('salePrice', this.fb.control('', [Validators.required, Validators.min(1)]));
 
-            this.oldMargin = (1 - ((+this.data.catalogue.productPrice) / (+this.data.catalogue.suggestRetailPrice))) * 100;
+            this.oldMargin = (1 - ((+this.data.catalogue.discountedRetailBuyingPrice) / (+this.data.catalogue.suggestedConsumerBuyingPrice))) * 100;
         } else if (this.data.editMode === 'stock') {
             /** Memasukkan FormControl untuk stock JIKA mode-nya adalah stock. */
-            this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
+            // this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
             this.form.addControl('stockEnroute', this.fb.control({ value: '', disabled: true }));
             this.form.addControl('oldStock', this.fb.control({ value: this.data.catalogue.stock, disabled: true }));
-            this.form.addControl('stock', this.fb.control('', Validators.required));
+            this.form.addControl('stock', this.fb.control('', [Validators.required, Validators.min(0)]));
+
+            /** Mendapatkan stock en route dari state. */
+            this.store
+                .select(CatalogueSelectors.getSelectedCatalogueEntity)
+                .pipe(
+                    takeUntil(this._unSubs$)
+                ).subscribe(catalogue => {
+                    if (isNaN(catalogue.stockEnRoute)) {
+                        this.store.dispatch(CatalogueActions.fetchCatalogueStockRequest({
+                            payload: catalogue.id
+                        }));
+                    } else {
+                        this.form.get('stockEnroute').patchValue(String(catalogue.stockEnRoute));
+                    }
+                });
         }
 
         /** Subscribe ke selector updating activity. */

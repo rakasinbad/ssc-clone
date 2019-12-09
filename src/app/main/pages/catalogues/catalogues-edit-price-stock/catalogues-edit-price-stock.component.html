@@ -7,13 +7,13 @@
                 <div fxFlex="25" fxLayout="column" fxLayoutAlign="space-between end">
                     <!-- FORM INPUT LABEL -->
                     <p fxFlex="20"></p>
-                    <p fxFlex="40">Harga Sekarang</p>
+                    <p fxFlex="25">Harga Sekarang</p>
                     <p fxFlex="25">Harga Baru</p>
                     <!-- / FORM INPUT LABEL -->
                 </div>
                 <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
-                    <p><strong>Suggested Retail Price</strong></p>
-                    <!-- SUGGESTED RETAIL PRICE (NOW) -->
+                    <p class="mb-36"><strong>Retailer Buying Price</strong></p>
+                    <!-- RETAILER BUYING PRICE (NOW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             [hidden]="true"
@@ -25,11 +25,11 @@
                             formControlName="oldRetailPrice"
                         />
                         <span class="grey-500-fg">
-                            {{ data?.catalogue?.suggestRetailPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                            {{ data?.catalogue?.retailBuyingPrice  | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </span>
                     </mat-form-field>
-                    <!-- / SUGGESTED RETAIL PRICE (NOW) -->
-                    <!-- SUGGESTED RETAIL PRICE (NEW) -->
+                    <!-- / RETAILER BUYING PRICE (NOW) -->
+                    <!-- RETAILER BUYING PRICE (NEW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             matInput
@@ -41,11 +41,11 @@
                             formControlName="retailPrice"
                         />
                     </mat-form-field>
-                    <!-- / SUGGESTED RETAIL PRICE (NEW) -->
+                    <!-- / RETAILER BUYING PRICE (NEW) -->
                 </div>
                 <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
-                    <p><strong>Sale Price</strong></p>
-                    <!-- SALE PRICE (NOW) -->
+                    <p class="text-center"><strong>Discounted Retailer<br/>Buying Price</strong></p>
+                    <!-- DISCOUNTED PRICE FOR RETAILER (SALE PRICE) (NOW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             [hidden]="true"
@@ -57,11 +57,11 @@
                             formControlName="oldSalePrice"
                         />
                         <span class="grey-500-fg">
-                            {{ data?.catalogue?.productPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                            {{ data?.catalogue?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </span>
                     </mat-form-field>
-                    <!-- / SALE PRICE (NOW) -->
-                    <!-- SALE PRICE (NEW) -->
+                    <!-- / DISCOUNTED FOR RETAILER (SALE PRICE) (NOW) -->
+                    <!-- DISCOUNTED FOR RETAILER (SALE PRICE) (NEW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
                         <input
                             matInput
@@ -73,7 +73,7 @@
                             formControlName="salePrice"
                         />
                     </mat-form-field>
-                    <!-- / SALE PRICE (NEW) -->
+                    <!-- / DISCOUNTED FOR RETAILER (SALE PRICE) (NEW) -->
                 </div>
                 <div fxFlex="15" fxLayout="column" fxLayoutAlign="center center">
                     <!-- MARGIN (?) -->
@@ -246,10 +246,11 @@
                                 name="stockEnroute"
                                 mask="separator"
                                 thousandSeparator="."
+                                placeholder="Loading ..."
                                 formControlName="stockEnroute"
                             />
                             <span class="grey-500-fg">
-                                50 (static)
+                                {{ form.get('stockEnroute').value || 'Loading ...'  }}
                             </span>
                             <!-- {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }} -->
                         </mat-form-field>
