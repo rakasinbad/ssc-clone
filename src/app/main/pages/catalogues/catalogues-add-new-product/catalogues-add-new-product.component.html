@@ -33,7 +33,6 @@
                         fxFlex="12"
                         [class.mat-error]="
                             productName.errors &&
-                            productName.untouched &&
                             (productName.dirty || productName.touched)
                         "
                     >
@@ -48,6 +47,14 @@
                             [formControl]="productName"
                             cdkFocusInitial
                         />
+                        <mat-error
+                            *ngIf="
+                                productName.errors &&
+                                (productName.dirty || productName.touched)
+                            "
+                        >
+                            {{ getFormError(productName) }}
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <!-- / NAMA PRODUK -->
