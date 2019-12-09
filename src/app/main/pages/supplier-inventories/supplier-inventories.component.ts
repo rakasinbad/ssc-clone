@@ -1,3 +1,4 @@
+import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -34,6 +35,7 @@ import { SupplierInventorySelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     displayedColumns = [
         'id',
@@ -103,6 +105,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
         this.hasSelected = false;
+        this.paginator.pageSize = this.defaultPageSize;
 
         this.dataSource$ = this.store.select(SupplierInventorySelectors.getAllSupplierInventory);
         this.totalDataSource$ = this.store.select(

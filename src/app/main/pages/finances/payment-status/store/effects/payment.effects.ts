@@ -257,7 +257,7 @@ export class PaymentEffects {
                     );
                 }
 
-                return this._$downloadApi.download('export-orders').pipe(
+                return this._$downloadApi.download('export-payments').pipe(
                     map(resp => {
                         return PaymentStatusActions.exportSuccess({
                             payload: resp.url

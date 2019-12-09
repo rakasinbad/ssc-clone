@@ -154,6 +154,7 @@
                                 formControlName="storeSegment"
                                 placeholder="Choose Store Segment"
                             >
+                                <mat-option>None</mat-option>
                                 <mat-option *ngFor="let row of storeSegments" [value]="row?.id">
                                     {{ row?.name | uppercase }}
                                 </mat-option>
@@ -216,6 +217,7 @@
                             *ngIf="hierarchies$ | async as hierarchies; else noHierarchies"
                         >
                             <mat-select formControlName="hierarchy" placeholder="Choose Hierarchy">
+                                <mat-option>None</mat-option>
                                 <mat-option *ngFor="let row of hierarchies" [value]="row?.id">
                                     {{ row?.name | uppercase }}
                                 </mat-option>
@@ -367,6 +369,7 @@
                                             placeholder="Pick your parameter"
                                             (selectionChange)="onSelectUnit($event, i)"
                                         >
+                                            <mat-option>None</mat-option>
                                             <mat-option
                                                 *ngFor="let row of unitParameters"
                                                 [value]="row?.id"
@@ -414,13 +417,48 @@
                                         <mat-select
                                             formControlName="unitValue"
                                             placeholder="Pick your parameter"
+                                            (openedChange)="onOpenChangeUnitValue($event)"
+                                            class="virtual-scroll"
                                         >
-                                            <mat-option
+                                            <cdk-virtual-scroll-viewport
+                                                itemSize="5"
+                                                minBufferPx="200"
+                                                maxBufferPx="400"
+                                                class="viewport-select"
+                                            >
+                                                <mat-option>None</mat-option>
+                                                <mat-option
+                                                    *cdkVirtualFor="
+                                                        let value of parameterSources?.source;
+                                                        trackBy: onTrackBy
+                                                    "
+                                                    [value]="value"
+                                                >
+                                                    {{ value }}
+                                                </mat-option>
+                                                <mat-option
+                                                    *ngIf="
+                                                        formGeographics.controls[i].get('unitValue')
+                                                            ?.value
+                                                    "
+                                                    [value]="
+                                                        formGeographics.controls[i].get('unitValue')
+                                                            ?.value
+                                                    "
+                                                >
+                                                    {{
+                                                        formGeographics.controls[i].get('unitValue')
+                                                            ?.value
+                                                    }}
+                                                </mat-option>
+                                            </cdk-virtual-scroll-viewport>
+
+                                            <!-- <mat-option
                                                 *ngFor="let value of parameterSources?.source"
                                                 [value]="value"
                                             >
                                                 {{ value }}
-                                            </mat-option>
+                                            </mat-option> -->
                                         </mat-select>
                                     </ng-container>
 

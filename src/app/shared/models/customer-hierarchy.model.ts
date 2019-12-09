@@ -1,17 +1,39 @@
 import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable, TStatus } from './global.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
 interface IHierarchy extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     name: string;
     status: TStatus;
     supplierId: string;
 }
 
+export class Hierarchy implements IHierarchy {
+    readonly id: NonNullable<string>;
+    name: string;
+    status: TStatus;
+    supplierId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+
+    constructor(data: Hierarchy) {
+        const { id, name, status, supplierId, createdAt, updatedAt, deletedAt } = data;
+
+        this.id = id;
+        this.name = name ? String(name).trim() : null;
+        this.status = status;
+        this.supplierId = supplierId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
+}
+
 interface ICustomerHierarchy extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     storeId: string;
     hierarchyId: string;
     status: TStatus;
@@ -19,56 +41,44 @@ interface ICustomerHierarchy extends ITimestamp {
     store?: Merchant;
 }
 
-export class Hierarchy extends Timestamp implements IHierarchy {
-    constructor(
-        public id: string,
-        public name: string,
-        public status: TStatus,
-        public supplierId: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class CustomerHierarchy implements ICustomerHierarchy {
+    readonly id: NonNullable<string>;
+    storeId: string;
+    hierarchyId: string;
+    status: TStatus;
+    hierarchy: Hierarchy;
+    store?: Merchant;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.name = name ? name.trim() : null;
-    }
-}
+    constructor(data: CustomerHierarchy) {
+        const {
+            id,
+            storeId,
+            hierarchyId,
+            status,
+            hierarchy,
+            store,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-export class CustomerHierarchy extends Timestamp implements ICustomerHierarchy {
-    public store?: Merchant;
+        this.id = id;
+        this.storeId = storeId;
+        this.hierarchyId = hierarchyId;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
 
-    constructor(
-        public id: string,
-        public storeId: string,
-        public hierarchyId: string,
-        public status: TStatus,
-        public hierarchy: Hierarchy,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
-
-        this.hierarchy = hierarchy
-            ? new Hierarchy(
-                  hierarchy.id,
-                  hierarchy.name,
-                  hierarchy.status,
-                  hierarchy.supplierId,
-                  hierarchy.createdAt,
-                  hierarchy.updatedAt,
-                  hierarchy.deletedAt
-              )
-            : null;
+        this.hierarchy = hierarchy ? new Hierarchy(hierarchy) : null;
+        this.setStore = store;
     }
 
     set setStore(value: Merchant) {
-        if (value) {
-            this.store = new Merchant(value);
-        } else {
-            this.store = null;
-        }
+        this.store = value ? new Merchant(value) : null;
     }
 }
 

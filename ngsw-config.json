@@ -25,32 +25,382 @@
     ],
     "dataGroups": [
         {
-            "name": "api.accounts",
-            "urls": [
-                "https://kong-dev.sinbad.web.id/users",
-                "https://medea-stg.sinbad.web.id/users",
-                "https://medea.sinbad.web.id/users"
-            ],
+            "name": "api.performance",
+            "urls": ["https://kong-dev.sinbad.web.id/**", "https://kong-stg.sinbad.web.id/**"],
             "cacheConfig": {
-                "maxSize": 5,
-                "maxAge": "6h",
-                "timeout": "10s",
-                "strategy": "freshness"
-            }
+                "strategy": "performance",
+                "maxSize": 100,
+                "maxAge": "3s"
+            },
+            "version": 1
         },
         {
-            "name": "api.account-brand-stores",
+            "name": "api.account.supplier-stores",
             "urls": [
-                "https://kong-dev.sinbad.web.id/brand-stores",
-                "https://medea-stg.sinbad.web.id/brand-stores",
-                "https://medea.sinbad.web.id/brand-stores"
+                "https://kong-dev.sinbad.web.id/supplier-stores",
+                "https://kong-dev.sinbad.web.id/supplier-stores/**",
+                "https://kong-stg.sinbad.web.id/supplier-stores",
+                "https://kong-stg.sinbad.web.id/supplier-stores/**"
             ],
             "cacheConfig": {
                 "maxSize": 5,
                 "maxAge": "6h",
                 "timeout": "10s",
                 "strategy": "freshness"
-            }
+            },
+            "version": 1
+        },
+        {
+            "name": "api.account.user-stores",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/user-stores",
+                "https://kong-dev.sinbad.web.id/user-stores/**",
+                "https://kong-stg.sinbad.web.id/user-stores",
+                "https://kong-stg.sinbad.web.id/user-stores/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.account.users",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/users",
+                "https://kong-dev.sinbad.web.id/users/**",
+                "https://kong-stg.sinbad.web.id/users",
+                "https://kong-stg.sinbad.web.id/users/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.account.user-suppliers",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/user-suppliers",
+                "https://kong-dev.sinbad.web.id/user-suppliers/**",
+                "https://kong-stg.sinbad.web.id/user-suppliers",
+                "https://kong-stg.sinbad.web.id/user-suppliers/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.suppliers",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/suppliers",
+                "https://kong-dev.sinbad.web.id/suppliers/**",
+                "https://kong-stg.sinbad.web.id/suppliers",
+                "https://kong-stg.sinbad.web.id/suppliers/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.finance.credit-limit-stores",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/credit-limit-stores",
+                "https://kong-dev.sinbad.web.id/credit-limit-stores/**",
+                "https://kong-stg.sinbad.web.id/credit-limit-stores",
+                "https://kong-stg.sinbad.web.id/credit-limit-stores/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.finance.credit-limit-groups",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/credit-limit-groups",
+                "https://kong-dev.sinbad.web.id/credit-limit-groups/**",
+                "https://kong-stg.sinbad.web.id/credit-limit-groups",
+                "https://kong-stg.sinbad.web.id/credit-limit-groups/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.roles",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/roles",
+                "https://kong-dev.sinbad.web.id/roles/**",
+                "https://kong-stg.sinbad.web.id/roles",
+                "https://kong-stg.sinbad.web.id/roles/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.store-segments",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/store-segments",
+                "https://kong-dev.sinbad.web.id/store-segments/**",
+                "https://kong-stg.sinbad.web.id/store-segments",
+                "https://kong-stg.sinbad.web.id/store-segments/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.provinces",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/provinces",
+                "https://kong-dev.sinbad.web.id/provinces/**",
+                "https://kong-stg.sinbad.web.id/provinces",
+                "https://kong-stg.sinbad.web.id/provinces/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.villages",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/urbans",
+                "https://kong-dev.sinbad.web.id/urbans/**",
+                "https://kong-stg.sinbad.web.id/urbans",
+                "https://kong-stg.sinbad.web.id/urbans/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.hierarchies",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/hierarchies",
+                "https://kong-dev.sinbad.web.id/hierarchies/**",
+                "https://kong-stg.sinbad.web.id/hierarchies",
+                "https://kong-stg.sinbad.web.id/hierarchies/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.order-parcels",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/order-parcels",
+                "https://kong-dev.sinbad.web.id/order-parcels/**",
+                "https://kong-stg.sinbad.web.id/order-parcels",
+                "https://kong-stg.sinbad.web.id/order-parcels/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.catalogues",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/catalogues",
+                "https://kong-dev.sinbad.web.id/catalogues/**",
+                "https://kong-stg.sinbad.web.id/catalogues",
+                "https://kong-stg.sinbad.web.id/catalogues/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.store-catalogues",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/store-catalogues",
+                "https://kong-dev.sinbad.web.id/store-catalogues/**",
+                "https://kong-stg.sinbad.web.id/store-catalogues",
+                "https://kong-stg.sinbad.web.id/store-catalogues/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.store-history-inventories",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/store-history-inventories",
+                "https://kong-dev.sinbad.web.id/store-history-inventories/**",
+                "https://kong-stg.sinbad.web.id/store-history-inventories",
+                "https://kong-stg.sinbad.web.id/store-history-inventories/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.stores",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/stores",
+                "https://kong-dev.sinbad.web.id/stores/**",
+                "https://kong-stg.sinbad.web.id/stores",
+                "https://kong-stg.sinbad.web.id/stores/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.attendances",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/attendances",
+                "https://kong-dev.sinbad.web.id/attendances/**",
+                "https://kong-stg.sinbad.web.id/attendances",
+                "https://kong-stg.sinbad.web.id/attendances/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.categories-tree",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/categories-tree",
+                "https://kong-dev.sinbad.web.id/categories-tree/**",
+                "https://kong-stg.sinbad.web.id/categories-tree",
+                "https://kong-stg.sinbad.web.id/categories-tree/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.calculate-catalogue",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/calculate-catalogue",
+                "https://kong-dev.sinbad.web.id/calculate-catalogue/**",
+                "https://kong-stg.sinbad.web.id/calculate-catalogue",
+                "https://kong-stg.sinbad.web.id/calculate-catalogue/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.catalogue-units",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/catalogue-units",
+                "https://kong-dev.sinbad.web.id/catalogue-units/**",
+                "https://kong-stg.sinbad.web.id/catalogue-units",
+                "https://kong-stg.sinbad.web.id/catalogue-units/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.brands",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/brands",
+                "https://kong-dev.sinbad.web.id/brands/**",
+                "https://kong-stg.sinbad.web.id/brands",
+                "https://kong-stg.sinbad.web.id/brands/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
+        },
+        {
+            "name": "api.catalogue-categories",
+            "urls": [
+                "https://kong-dev.sinbad.web.id/catalogue-categories",
+                "https://kong-dev.sinbad.web.id/catalogue-categories/**",
+                "https://kong-stg.sinbad.web.id/catalogue-categories",
+                "https://kong-stg.sinbad.web.id/catalogue-categories/**"
+            ],
+            "cacheConfig": {
+                "maxSize": 5,
+                "maxAge": "6h",
+                "timeout": "10s",
+                "strategy": "freshness"
+            },
+            "version": 1
         }
     ]
 }

@@ -47,21 +47,6 @@ export class CreditLimitBalanceEffects {
             switchMap(payload => {
                 return this._$creditLimitGroupApi.create(payload).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST CREATE CREDIT LIMIT GROUP',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: payload
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         return CreditLimitBalanceActions.createCreditLimitGroupSuccess({
                             payload: resp
                         });
@@ -89,17 +74,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.createCreditLimitGroupFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST CREATE CREDIT LIMIT GROUP FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data gagal ditambah', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -120,17 +94,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.createCreditLimitGroupSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST CREATE CREDIT LIMIT GROUP SUCCESS',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data berhasil ditambah', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -186,17 +149,6 @@ export class CreditLimitBalanceEffects {
             switchMap(params => {
                 return this._$creditLimitGroupApi.delete(params).pipe(
                     map(({ id }) => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST DELETE CREDIT LIMIT GROUP',
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: id
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         return CreditLimitBalanceActions.deleteCreditLimitGroupSuccess({
                             payload: id
                         });
@@ -227,17 +179,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.deleteCreditLimitGroupFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST DELETE CREDIT LIMIT GROUP FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data gagal dihapus', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -258,17 +199,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.deleteCreditLimitGroupSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST DELETE CREDIT LIMIT GROUP SUCCESS',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data berhasil dihapus', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -328,26 +258,12 @@ export class CreditLimitBalanceEffects {
             switchMap(({ body, id }) => {
                 return this._$creditLimitStoreApi.patch(body, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            '[RESPONSE REQUEST] UPDATE CREDIT LIMIT STORE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: body
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         return CreditLimitBalanceActions.updateCreditLimitStoreSuccess({
                             payload: {
                                 id,
                                 changes: {
                                     ...body,
+                                    balanceAmount: resp.balanceAmount,
                                     updatedAt: resp.updatedAt
                                 }
                             }
@@ -379,17 +295,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateCreditLimitStoreFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE CREDIT LIMIT STORE FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data gagal diubah', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -410,17 +315,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateCreditLimitStoreSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE CREDIT LIMIT STORE SUCCESS',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data berhasil diubah', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -474,17 +368,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateCreditLimitGroupFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE CREDIT LIMIT GROUP FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data gagal diubah', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -505,17 +388,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateCreditLimitGroupSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE CREDIT LIMIT GROUP SUCCESS',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this._$notice.open('Data berhasil diubah', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -581,17 +453,6 @@ export class CreditLimitBalanceEffects {
 
                 return this._$creditLimitBalanceApi.updatePatch(change, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST UPDATE STATUS FREEZE BALANCE',
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         return CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess({
                             payload: {
                                 id: id,
@@ -631,17 +492,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateStatusFreezeBalanceFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE STATUS FREEZE BALANCE FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     let title = 'Update Freeze/Unfreeze Balance';
 
                     if (typeof resp.errors.body.freezeStatus === 'boolean') {
@@ -670,17 +520,6 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST UPDATE STATUS FREEZE BALANCE SUCCESS',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     const title = resp.changes.freezeStatus ? 'Freeze Balance' : 'Unfreeze Balance';
 
                     this._$notice.open(`${title} berhasil`, 'success', {
@@ -725,17 +564,6 @@ export class CreditLimitBalanceEffects {
                     .pipe(
                         catchOffline(),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH CREDIT LIMIT STORES',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp = {
                                 total: resp.total,
                                 data:
@@ -776,18 +604,10 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.fetchCreditLimitStoresFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST FETCH CREDIT LIMIT STORES FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -811,25 +631,6 @@ export class CreditLimitBalanceEffects {
                 return this._$creditLimitStoreApi.findById(id).pipe(
                     catchOffline(),
                     map(({ creditLimit, balanceAmount, termOfPayment }) => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST FETCH CREDIT LIMIT STORE',
-                            {
-                                creditLimit: {
-                                    type: 'log',
-                                    value: creditLimit
-                                },
-                                balanceAmount: {
-                                    type: 'log',
-                                    value: balanceAmount
-                                },
-                                termOfPayment: {
-                                    type: 'log',
-                                    value: termOfPayment
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         const change = CreditLimitStore.patch({
                             creditLimit,
                             balanceAmount,
@@ -869,18 +670,10 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.fetchCreditLimitStoreFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST FETCH CREDIT LIMIT STORE FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -920,17 +713,6 @@ export class CreditLimitBalanceEffects {
                     .pipe(
                         catchOffline(),
                         map(resp => {
-                            this._$log.generateGroup(
-                                'RESPONSE REQUEST FETCH CREDIT LIMIT GROUPS',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newCreditLimitGroup =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -968,18 +750,10 @@ export class CreditLimitBalanceEffects {
                 ofType(CreditLimitBalanceActions.fetchCreditLimitGroupsFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST FETCH CREDIT LIMIT GROUPS FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -998,17 +772,6 @@ export class CreditLimitBalanceEffects {
                 return this._$creditLimitGroupApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup(
-                            'RESPONSE REQUEST FETCH CREDIT LIMIT GROUP',
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         return CreditLimitBalanceActions.fetchCreditLimitGroupSuccess({
                             payload: {
                                 id,

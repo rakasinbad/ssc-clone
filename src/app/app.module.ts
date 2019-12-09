@@ -74,10 +74,12 @@ registerLocaleData(localId, 'id');
         AppRoutingModule,
 
         TranslateModule.forRoot({}),
-        InMemoryWebApiModule.forRoot(FakeDbService, {
-            delay: 0,
-            passThruUnknownUrl: true
-        }),
+        environment.production
+            ? []
+            : InMemoryWebApiModule.forRoot(FakeDbService, {
+                  delay: 0,
+                  passThruUnknownUrl: true
+              }),
 
         // Material
         MaterialModule,

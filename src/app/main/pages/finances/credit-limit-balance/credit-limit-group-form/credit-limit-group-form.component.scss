@@ -1,29 +1,81 @@
-app-credit-limit-group-form {
-    mat-dialog-content {
-        .form-box {
-            .custom-field {
-                &:first-of-type {
-                    margin-top: 10px;
-                }
-            }
-        }
+// app-credit-limit-group-form {
+//     mat-dialog-content {
+//         .form-box {
+//             .custom-field {
+//                 &:first-of-type {
+//                     margin-top: 10px;
+//                 }
+//             }
+//         }
 
-        .form-box.dynamic {
-            .custom-field {
-                &:first-of-type {
-                    margin-top: 20px;
-                }
-            }
+//         .form-box.dynamic {
+//             .custom-field {
+//                 &:first-of-type {
+//                     margin-top: 20px;
+//                 }
+//             }
 
-            .custom-field.dynamic {
-                &:not(:first-of-type) {
-                    margin-top: 10px;
-                }
-            }
-        }
+//             .custom-field.dynamic {
+//                 &:not(:first-of-type) {
+//                     margin-top: 10px;
+//                 }
+//             }
+//         }
 
-        .mat-radio-button ~ .mat-radio-button {
-            margin-left: 16px;
+//         .mat-radio-button ~ .mat-radio-button {
+//             margin-left: 16px;
+//         }
+//     }
+// }
+
+mat-dialog-content {
+    .form-box {
+        .custom-field {
+            &:first-of-type {
+                margin-top: 10px;
+            }
         }
     }
+
+    .form-box.dynamic {
+        .custom-field {
+            &:first-of-type {
+                margin-top: 20px;
+            }
+        }
+
+        .custom-field.dynamic {
+            &:not(:first-of-type) {
+                margin-top: 10px;
+            }
+
+            > label {
+                top: 0em;
+            }
+        }
+    }
+
+    .mat-radio-button ~ .mat-radio-button {
+        margin-left: 16px;
+    }
+}
+
+.mat-select-panel.virtual-scroll {
+    max-height: 100% !important;
+    overflow: inherit !important;
+}
+
+.mat-select-panel .cdk-virtual-scroll-viewport {
+    max-height: 240px !important;
+}
+
+.mat-select-panel .cdk-virtual-scroll-content-wrapper {
+    position: inherit !important;
+    top: inherit !important;
+    left: 0;
+}
+
+.viewport-select {
+    height: 250px;
+    // width: 100%;
 }
