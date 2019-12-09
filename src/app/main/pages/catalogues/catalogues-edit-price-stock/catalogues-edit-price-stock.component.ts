@@ -12,7 +12,8 @@ import {
     FormArray,
     FormBuilder,
     Validators,
-    FormGroup
+    FormGroup,
+    FormControl
 } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -44,6 +45,8 @@ import { CatalogueActions } from '../store/actions';
 /** Reducers */
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService } from 'app/shared/helpers';
 
 interface IMatDialogData {
     catalogue: Catalogue;
@@ -94,6 +97,7 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
         private _cd: ChangeDetectorRef,
         private fb: FormBuilder,
         private store: Store<fromCatalogue.FeatureState>,
+        private errorMessageSvc: ErrorMessageService
     ) {}
 
     public updateData(): void {
@@ -142,10 +146,22 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
             // this.form.addControl('discountPrice', this.fb.control('', [Validators.min(0)]));
             //
             this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.retailBuyingPrice, disabled: true }));
-            this.form.addControl('retailPrice', this.fb.control('', Validators.required));
+            this.form.addControl('retailPrice', this.fb.control('', [
+                RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                })
+            ]));
             //
             this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
-            this.form.addControl('salePrice', this.fb.control('', [Validators.required, Validators.min(1)]));
+            this.form.addControl('salePrice', this.fb.control('', [
+                RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                }),
+                RxwebValidators.minNumber({
+                    value: 1,
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                })
+            ]));
 
             this.oldMargin = (1 - ((+this.data.catalogue.discountedRetailBuyingPrice) / (+this.data.catalogue.suggestedConsumerBuyingPrice))) * 100;
         } else if (this.data.editMode === 'stock') {
@@ -153,7 +169,15 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
             // this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
             this.form.addControl('stockEnroute', this.fb.control({ value: '', disabled: true }));
             this.form.addControl('oldStock', this.fb.control({ value: this.data.catalogue.stock, disabled: true }));
-            this.form.addControl('stock', this.fb.control('', [Validators.required, Validators.min(0)]));
+            this.form.addControl('stock', this.fb.control('', [
+                RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                }),
+                RxwebValidators.minNumber({
+                    value: 0,
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 0 })
+                })
+            ]));
 
             /** Mendapatkan stock en route dari state. */
             this.store
@@ -196,5 +220,20 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
     ngOnDestroy(): void {
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    getFormError(form: FormControl | FormGroup | FormArray, field: string): string {
+        return this.errorMessageSvc.getFormError(form, field);
+        // const { errors = null } = form.get(field);
+        // if (!errors) {
+        //     return '';
+        // }
+
+        // const errorType = Object.keys(errors)[0];
+        // if (!errorType) {
+        //     return '';
+        // }
+
+        // return errors[errorType].message;
     }
 }
