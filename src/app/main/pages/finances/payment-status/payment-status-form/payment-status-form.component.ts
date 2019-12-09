@@ -63,6 +63,8 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         this.paymentStatuses = this._$helper.paymentStatus();
 
         this.initForm();
+
+        // this.onCheckMinDate();
     }
 
     ngOnDestroy(): void {
@@ -88,6 +90,23 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
                     return errors[type].message;
                 }
             }
+        }
+    }
+
+    onCheckMinDate(orderDate: string): Date {
+        if (!orderDate) {
+            return;
+        }
+
+        const passDate = moment()
+            .subtract(5, 'days')
+            .toDate();
+        const momentOrderDate = moment(orderDate);
+
+        if (momentOrderDate.isSameOrAfter(passDate)) {
+            return momentOrderDate.toDate();
+        } else {
+            return passDate;
         }
     }
 

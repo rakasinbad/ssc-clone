@@ -275,7 +275,7 @@
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
+                [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
                 (page)="onChangePage($event)"
                 showFirstLastButtons

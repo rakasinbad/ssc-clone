@@ -19,10 +19,18 @@ export class PricePipe implements PipeTransform {
 
         switch (type) {
             case 'short': {
-                if (Number.isInteger(value)) {
-                    newValue = numeral(+value).format('($0 a)');
-                } else {
+                // if (Number.isInteger(value)) {
+                //     newValue = numeral(+value).format('($0 a)');
+                // } else {
+                //     newValue = numeral(+value).format('($0.00 a)', Math.floor);
+                // }
+
+                const res = +value - Math.floor(+value) !== 0;
+
+                if (res) {
                     newValue = numeral(+value).format('($0.00 a)', Math.floor);
+                } else {
+                    newValue = numeral(+value).format('($0 a)', Math.floor);
                 }
 
                 break;
