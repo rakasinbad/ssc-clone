@@ -41,7 +41,7 @@ import { User } from '../../models';
 import { SettingsActions } from '../actions';
 
 /** FEATURE KEY */
-export const FEATURE_KEY = 'catalogues';
+export const FEATURE_KEY = 'settings';
 
 export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
