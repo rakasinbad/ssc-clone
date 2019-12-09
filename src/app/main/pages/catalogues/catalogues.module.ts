@@ -42,7 +42,7 @@ import { BrandEffects } from './store/effects/brand.effects';
         MaterialModule,
 
         RxReactiveFormsModule,
-        RxReactiveDynamicFormsModule,
+        // RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
         QuillModule.forRoot({
             modules: {
