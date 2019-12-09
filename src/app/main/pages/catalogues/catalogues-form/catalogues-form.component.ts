@@ -59,6 +59,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     isEditMode = false;
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
+    cmCubic: SafeHtml = 'cm<sup>3</sup>';
 
     quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;
@@ -490,7 +491,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // }
                 this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
                     categories.map(category => category['name']).join(`
-                        <span class="mx-20">></span>
+                        <span class="mx-12">
+                            >
+                        </span>
                     `)
                 );
 
@@ -644,6 +647,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             });
 
         this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
+
+        if (!this.isEditMode) {
+            this.form.get('productInfo.description').setValue('---');
+            setTimeout(() => this.form.get('productInfo.description').setValue(''), 100);
+        }
 
         // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
         this.registerQuillFormatting();

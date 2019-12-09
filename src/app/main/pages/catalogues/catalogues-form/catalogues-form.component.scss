@@ -8,6 +8,17 @@ app-catalogues-form {
             min-width: 100%;
         }
 
+        .ql-container {
+            min-height: 100px !important;
+
+            // .ql-editor {
+            //     padding-top: 12px;
+            //     padding-right: 15px;
+            //     padding-left: 15px;
+            //     padding-bottom: 0px;
+            // }
+        }
+
         mat-radio-group {
             padding-top: 0.75em;
         }
