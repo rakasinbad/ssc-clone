@@ -6,6 +6,7 @@ import {
     CatalogueUnit,
     // ICatalogue,
     ICatalogueDemo,
+    ICatalogueStockResponse,
     CatalogueCategory
 } from '../../models';
 
@@ -28,6 +29,14 @@ export const filterLiveCatalogues = createAction('[Catalogues Page] Filter Live 
 export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empty Catalogues');
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
 export const filterInactiveCatalogues = createAction('[Catalogues Page] Filter Inactive Catalogues');
+
+/**
+ * CATALOGUE - SELECTION
+ */
+export const setSelectedCatalogue = createAction(
+    '[Catalogues Page] Set Selected Catalogue',
+    props<{ payload: string }>()
+);
 
 /**
  * CATALOGUE - ADD
@@ -89,14 +98,30 @@ export const fetchCatalogueRequest = createAction(
     props<{ payload: string }>()
 );
 
+
 export const fetchCatalogueFailure = createAction(
     '[Catalogues API] Fetch Catalogue Failure',
     props<{ payload: IErrorHandler }>()
 );
-
+    
 export const fetchCatalogueSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Success',
     props<{ payload: { catalogue?: Catalogue; source: TSource } }>()
+);
+
+export const fetchCatalogueStockRequest = createAction(
+    '[Catalogues API] Fetch Catalogue Stock Request',
+    props<{ payload: string }>()
+);
+
+export const fetchCatalogueStockFailure = createAction(
+    '[Catalogues API] Fetch Catalogue Stock Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCatalogueStockSuccess = createAction(
+    '[Catalogues API] Fetch Catalogue Stock Success',
+    props<{ payload: { catalogueId: string; stock: ICatalogueStockResponse; } }>()
 );
 
 /**

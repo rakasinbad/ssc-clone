@@ -6,7 +6,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CatalogueActions } from '../actions';
 
-export const FEATURE_KEY = 'settings';
+export const FEATURE_KEY = 'catalogues';
 
 export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
@@ -115,6 +115,10 @@ const catalogueReducer = createReducer(
      *  ===================================================================
      */ 
     on(
+        CatalogueActions.fetchCatalogueStockRequest,
+        state => state
+    ),
+    on(
         CatalogueActions.fetchCatalogueRequest,
         CatalogueActions.fetchCataloguesRequest,
         CatalogueActions.fetchCategoryTreeRequest,
@@ -176,6 +180,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueFailure,
         CatalogueActions.fetchCataloguesFailure,
         CatalogueActions.removeCatalogueFailure,
+        CatalogueActions.fetchCatalogueStockFailure,
         (state, { payload }) => ({
             ...state,
             isDeleting: initialState.isDeleting,
@@ -188,6 +193,20 @@ const catalogueReducer = createReducer(
      *  SUCCESSES
      *  ===================================================================
      */ 
+    on(
+        CatalogueActions.fetchCatalogueStockSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            catalogues: adapterCatalogue.updateOne({
+                id: payload.catalogueId,
+                changes: {
+                    stockEnRoute: payload.stock.stockEnRoute
+                }
+            }, state.catalogues),
+            errors: adapterError.removeOne('fetchCatalogueStockFailure', state.errors)
+        })
+    ),
     on(
         CatalogueActions.fetchCatalogueCategorySuccess,
         (state, { payload }) => ({
@@ -303,6 +322,18 @@ const catalogueReducer = createReducer(
     ),
     /** 
      *  ===================================================================
+     *  SETS
+     *  ===================================================================
+     */
+    on(
+        CatalogueActions.setSelectedCatalogue,
+        (state, { payload: selectedCatalogueId }) => ({
+            ...state,
+            selectedCatalogueId
+        })
+    ),
+    /** 
+     *  ===================================================================
      *  RESETS
      *  ===================================================================
      */ 
@@ -334,6 +365,8 @@ const catalogueReducer = createReducer(
 export function reducer(state: State | undefined, action: Action): State {
     return catalogueReducer(state, action);
 }
+
+export const getSelectedCatalogue = (state: State) => state.selectedCatalogueId;
 
 const getListCatalogueState = (state: State) => state.catalogues;
 

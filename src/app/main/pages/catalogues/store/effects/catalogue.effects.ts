@@ -414,6 +414,36 @@ export class CatalogueEffects {
         )
     );
 
+    fetchCatalogueStockRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCatalogueStockRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$catalogueApi.getStock(id).pipe(
+                    catchOffline(),
+                    map(resp =>
+                        this.store.dispatch(CatalogueActions.fetchCatalogueStockSuccess({
+                            payload: {
+                                catalogueId: id,
+                                stock: resp
+                            }
+                        }))
+                    ),
+                    catchError(err =>
+                        of(
+                            CatalogueActions.fetchCatalogueStockFailure({
+                                payload: {
+                                    id: 'fetchCatalogueStockFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        ), { dispatch: false }
+    );
+
     deleteCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.removeCatalogueRequest),

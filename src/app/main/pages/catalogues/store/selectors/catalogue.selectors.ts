@@ -15,6 +15,24 @@ export const getAllTotalCatalogue = createSelector(
     })
 );
 
+export const getCataloguesEntity = createSelector(
+    getCatalogueState,
+    fromCatalogue.selectCatalogueEntities
+);
+
+export const getSelectedCatalogueId = createSelector(
+    getCatalogueState,
+    state => state.selectedCatalogueId
+);
+
+export const getSelectedCatalogueEntity = createSelector(
+    getCataloguesEntity,
+    getSelectedCatalogueId,
+    (catalogue, id) => {
+        return catalogue[id];
+    }
+);
+
 export const getTotalCatalogueByStatusAll = createSelector(
     getCatalogueState,
     state => state.totalAllStatus
