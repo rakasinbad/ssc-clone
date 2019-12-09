@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline, Network } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
@@ -34,7 +36,7 @@ import {
 import * as fromRoot from 'app/store/app.reducer';
 import { sortBy } from 'lodash';
 import { of } from 'rxjs';
-import { catchError, map, retry, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, map, retry, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { DropdownActions } from '../actions';
 
@@ -88,21 +90,6 @@ export class DropdownEffects {
                                 return newCreditLimitGroup;
                             });
 
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH CREDIT LIMIT GROUP DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    },
-                                    sources: {
-                                        type: 'log',
-                                        value: sources
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             return DropdownActions.fetchDropdownCreditLimitGroupSuccess({
                                 payload: sortBy(sources, ['name'], ['asc'])
                             });
@@ -138,6 +125,7 @@ export class DropdownEffects {
             switchMap(({ id, type }) => {
                 return this._$provinceApi.findAll({ paginate: false }).pipe(
                     catchOffline(),
+                    retry(3),
                     map(resp => {
                         const sources = (resp as Array<Province>).map(row => {
                             const newProvince = new Province(
@@ -182,6 +170,7 @@ export class DropdownEffects {
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'city').pipe(
                     catchOffline(),
+                    retry(3),
                     map(resp => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.city;
@@ -218,6 +207,7 @@ export class DropdownEffects {
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'district').pipe(
                     catchOffline(),
+                    retry(3),
                     map(resp => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.district;
@@ -254,6 +244,7 @@ export class DropdownEffects {
             switchMap(({ id, type }) => {
                 return this._$urbanApi.findAll({ paginate: false }, 'urban').pipe(
                     catchOffline(),
+                    retry(3),
                     map(resp => {
                         const sources = (resp as Array<Urban>).map((row: Partial<Urban>) => {
                             return row.urban;
@@ -285,24 +276,42 @@ export class DropdownEffects {
     fetchDropdownHierarchyRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownHierarchyRequest),
-            switchMap(() => {
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([_, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage.get('user').toPromise();
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of(supplierId);
+            }),
+            switchMap(data => {
+                if (!data) {
+                    return of(
+                        DropdownActions.fetchDropdownHierarchyFailure({
+                            payload: {
+                                id: 'fetchDropdownHierarchyFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
                 return this._$hierarchyApi
-                    .findAll<Hierarchy[]>({ paginate: false })
+                    .findAll<Hierarchy[]>({ paginate: false }, supplierId)
                     .pipe(
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH HIERARCHY DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -422,13 +431,6 @@ export class DropdownEffects {
                         retry(3),
                         // map(resp => (!resp['data'] ? (resp as Role[]) : null)),
                         map(resp => {
-                            this._$log.generateGroup('[RESPONSE REQUEST FETCH DROPDOWN ROLE]', {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            });
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -519,13 +521,6 @@ export class DropdownEffects {
                     catchOffline(),
                     retry(3),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH PROVINCE DROPDOWN]', {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         const newResp =
                             resp && resp.length > 0
                                 ? resp.map(row => {
@@ -580,17 +575,6 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH STORE CLUSTER DROPDOWN]',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -646,17 +630,6 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH STORE GROUP DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -708,17 +681,6 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH STORE SEGMENT DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -770,17 +732,6 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH STORE TYPE DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -832,17 +783,6 @@ export class DropdownEffects {
                         catchOffline(),
                         retry(3),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST] FETCH VEHICLE ACCESSIBILITY DROPDOWN',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                },
-                                'groupCollapsed'
-                            );
-
                             const newResp =
                                 resp && resp.length > 0
                                     ? resp.map(row => {
@@ -987,6 +927,7 @@ export class DropdownEffects {
     constructor(
         private actions$: Actions,
         private store: Store<fromRoot.State>,
+        private storage: StorageMap,
         protected network: Network,
         private _$log: LogService,
         // private _$accountApi: AccountApiService,

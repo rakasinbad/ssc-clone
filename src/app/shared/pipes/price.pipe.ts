@@ -25,13 +25,15 @@ export class PricePipe implements PipeTransform {
                 //     newValue = numeral(+value).format('($0.00 a)', Math.floor);
                 // }
 
-                const res = +value - Math.floor(+value) !== 0;
+                // const res = +value - Math.floor(+value) !== 0;
 
-                if (res) {
-                    newValue = numeral(+value).format('($0.00 a)', Math.floor);
-                } else {
-                    newValue = numeral(+value).format('($0 a)', Math.floor);
-                }
+                // if (res) {
+                //     newValue = numeral(+value).format('($0[.]00 a)', Math.floor);
+                // } else {
+                //     newValue = numeral(+value).format('($0 a)', Math.floor);
+                // }
+
+                newValue = numeral(+value).format('($0[.]00 a)', Math.floor);
 
                 break;
             }

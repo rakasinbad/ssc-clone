@@ -47,11 +47,21 @@ export class HierarchyApiService {
      *
      * @template T
      * @param {IQueryParams} params
+     * @param {string} [supplierId]
      * @returns {Observable<T>}
      * @memberof HierarchyApiService
      */
-    findAll<T>(params: IQueryParams): Observable<T> {
-        const newParams = this._$helper.handleParams(this._url, params);
+    findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        const newArg = supplierId
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
+
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
