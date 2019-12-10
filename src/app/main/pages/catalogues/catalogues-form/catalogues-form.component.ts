@@ -378,47 +378,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'variants'
         ) as FormArray).controls;
 
-        // this.store.select(CatalogueSelectors.getCategoryTree)
-        //     .pipe(
-        //         withLatestFrom(this.store.select(CatalogueSelectors.getSelectedCatalogue)),
-        //         takeUntil(this._unSubs$)
-        //     )
-        //     .subscribe(([categories, catalogue]) => {
-        //         if (categories.length === 0) {
-        //             this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
-        //         } else if (catalogue) {
-        //             const searchCategory = (id, selectedCategories: Array<CatalogueCategory> ) => {
-        //                 const selectedCategory = selectedCategories.filter(category => category.id === id);
-
-        //                 return {
-        //                     id: selectedCategory[0].id,
-        //                     name: selectedCategory[0].category,
-        //                     parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
-        //                     children: selectedCategory[0].children
-        //                 };
-        //             };
-
-        //             const newCategories = [];
-        //             let isFirst = true;
-        //             do {
-        //                 if (isFirst) {
-        //                     newCategories.push(searchCategory(catalogue.firstCatalogueCategoryId, categories));
-        //                     isFirst = false;
-        //                 } else {
-        //                     const lastCategory = newCategories[newCategories.length - 1];
-        //                     newCategories.push(searchCategory(lastCategory.id, lastCategory.children));
-        //                 }
-        //             } while (newCategories[newCategories.length - 1].children.length > 0);
-
-
-        //             this.store.dispatch(CatalogueActions.setSelectedCategories({
-        //                 payload: [
-        //                     ...newCategories.map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent }))
-        //                 ]
-        //             }));
-        //         }
-        //     });
-
         this.store.select(CatalogueSelectors.getSelectedCategories)
             .pipe(
                 withLatestFrom(
@@ -436,58 +395,23 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     }
 
                     return of([data.auth, data.categories, data.productName]);
-                    // return of({
-                    //     auth: data.auth,
-                    //     categories: data.categories,
-                    //     productName: data.productName
-                    // });
                 }),
                 takeUntil(this._unSubs$)
             ).subscribe(data => {
                 const auth = data[0];
                 const categories = data[1];
                 const productName = data[2];
-
-                // if (categories[0]) {
-                //     categories = (!this.isEditMode || !categories[0].parent) ? categories[1] : Array(...categories[1]).reverse();
-                // }
-
-                // this.brandUser$.id = auth.data.userBrands[0].brand.id;
-                // this.brandUser$.name = auth.data.userBrands[0].brand.name;
+                
                 this.form.get('productInfo.brandId').patchValue(auth.user.userSuppliers[0].id);
                 this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
                 this.form.get('productInfo.category').patchValue(categories);
 
                 this.startFetchBrands(auth.user.userSuppliers[0].id);
 
-
-                // const uniqCategoryIds = (categories as Array<{ id: string; name: string; parent: string; }>)
-                //                             .map(category => category.id)
-                //                             .filter((categoryId, _, self) => {
-                //                                 return self.filter(s => s === categoryId).length > 0;
-                //                             });
-                // const newCategories = [];
-                // const uniqueCategoryIds = new Set(categories.map(category => category.id));
-                // for (const [_, id] of uniqueCategoryIds.entries()) {
-                //     const category = categories.filter(cat => cat.id === id);
-
-                //     if (category.length > 0) {
-                //         newCategories.push(category[0]);
-                //     }
-                // }
-
-                
                 if (!this.isEditMode) {
                     this.form.get('productInfo.name').patchValue(productName);
                 }
-
-                // if (Array.isArray(categories)) {
-                //     if (this.isEditMode) {
-                //         this.productCategory$ = newCategories.reverse().map(category => category['name']).join(' > ');
-                //     } else {
-                //         this.productCategory$ = newCategories.map(category => category['name']).join(' > ');
-                //     }
-                // }
+                
                 this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
                     categories.map(category => category['name']).join(`
                         <span class="mx-12">
@@ -519,36 +443,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 this._cd.markForCheck();
             })
         );
-
-        // this.subs.add(
-        //     this.form
-        //         .statusChanges
-        //         .pipe(
-        //             distinctUntilChanged(),
-        //             debounceTime(100)
-        //         )
-        //         .subscribe(() => {
-        //             // console.log('FORM', this.form);
-        //             // console.log('FORM VALUE', this.form.getRawValue());
-        //             // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
-
-        //             // const pristineStatuses = [
-        //             //     this.form.get('productInfo').pristine,
-        //             //     this.form.get('productSale').pristine,
-        //             //     this.form.get('productMedia').pristine,
-        //             //     this.form.get('productSize').pristine,
-        //             //     this.form.get('productShipment').pristine
-        //             // ];
-
-        //             if (this.form.status === 'VALID' && this.form.dirty && !this.form.untouched) {
-        //                 this.store.dispatch(FormActions.setFormStatusValid());
-        //             } else if (this.form.status === 'INVALID') {
-        //                 this.store.dispatch(FormActions.setFormStatusInvalid());
-        //             }
-
-        //             this._cd.markForCheck();
-        //         })
-        // );
 
         this.subs.add(
             this.form.get('productCount.minQtyOption')
@@ -666,7 +560,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.store.dispatch(UiActions.hideCustomToolbar());
 
         this.store.dispatch(FormActions.resetFormStatus());
-        
 
         this._unSubs$.next();
         this._unSubs$.complete();

@@ -182,26 +182,25 @@
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
                     <div
-                        class="custom-field-right"
+                        class="custom-field-right pb-20"
                         fxLayout="row"
-                        fxLayoutAlign="start center"
+                        fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlexAlign="center"
                             fxFlex="18"
-                            class="pr-0"
+                            class="pr-0 pt-20"
                             [class.mat-error]="
                                 form.get('productInfo.category').errors &&
-                                !form.get('productInfo.category').untouched &&
                                 (form.get('productInfo.category').dirty || form.get('productInfo.category').touched)
                             "
                         >
                             *Kategori
                         </label>
 
-                        <label class="ml-20 grey-600-fg">
-                            <strong fxFlexAlign="center" [innerHTML]="productCategory$"></strong>
+                        <span class="ml-20 grey-600-fg" fxFlex="80">
+                            <strong [innerHTML]="productCategory$"></strong>
                             <button
                                 class="red-fg"
                                 mat-icon-button
@@ -213,7 +212,7 @@
                             >
                                 <mat-icon>edit</mat-icon>
                             </button>
-                        </label>
+                        </span>
                     </div>
                     <!-- / KATEGORI PRODUK -->
                     <!-- PRODUK STOK -->
@@ -437,7 +436,7 @@
                     </div> -->
                     <!-- / VARIASI PRODUK (NO VARIANT) -->
                     <!-- VARIASI PRODUK (HAS VARIANTS) -->
-                    <ng-template
+                    <!-- <ng-template
                         #hasVariants
                     >
                         <div
@@ -450,17 +449,17 @@
                                 *ngFor="let variant of productVariantControls; index as $index;"
                                 fxLayout="row"
                                 fxLayoutAlign="space-between start"
-                            >
+                            > -->
                                 <!-- VARIATION LABEL -->
-                                <label
+                                <!-- <label
                                     fxFlex="20"
                                     style="margin-top: 45px;"
                                 >
                                     Variasi {{ $index + 1 }}
-                                </label>
+                                </label> -->
                                 <!-- / VARIATION LABEL -->
                                 <!-- PRODUCT VARIATION -->
-                                <div
+                                <!-- <div
                                     fxFlex="80"
                                     fxLayout="row"
                                     fxLayoutAlign="space-around start"
@@ -468,17 +467,17 @@
                                     style="border-radius: 10px; padding: 20px 10px;"
                                     [style.margin-top]="$index > 0 ? '20px' : '0px'"
                                     [style.margin-bottom]="$index === productVariantControls.length - 1 ? '20px' : '0px'"
-                                >
+                                > -->
                                     <!-- LABEL FOR VARIANT SELECTIONS -->
-                                    <label
+                                    <!-- <label
                                         fxFlex="15"
                                         style="margin-top: 25px;"
                                     >
                                         Nama Pilihan
-                                    </label>
+                                    </label> -->
                                     <!-- / LABEL FOR VARIANT SELECTIONS -->
                                     <!-- INPUT FOR VARIANT SELECTION -->
-                                    <div
+                                    <!-- <div
                                         fxFlex="70"
                                         fxLayout="column"
                                         fxLayoutAlign="space-between stretch"
@@ -499,18 +498,18 @@
                                                         placeholder="Masukkan Nama Variasi, contoh: warna, dll."
                                                         [formControl]="variantSelection"
                                                     />
-                                                </mat-form-field>
+                                                </mat-form-field> -->
                                                 <!-- DELETE FOR VARIANT SELECTION -->
-                                                <button
+                                                <!-- <button
                                                     mat-button
                                                     fxFlex
                                                     style="margin-bottom: 20px;"
                                                     (click)="onRemoveVariantSelection($event, $index, $indexSelection)"
                                                 >
                                                     <mat-icon>delete</mat-icon>
-                                                </button>
+                                                </button> -->
                                                 <!-- / DELETE FOR VARIANT SELECTION -->
-                                            </div>
+                                            <!-- </div>
                                             <button
                                                 mat-stroked-button
                                                 style="border-style: dashed; width: 100%;"
@@ -521,13 +520,13 @@
                                                 Tambah Pilihan ({{ productVariantControls[$index].controls.length }} / 20)
                                             </button>
                                         </ng-container>
-                                    </div>
+                                    </div> -->
                                     <!-- / INPUT FOR VARIANT SELECTION -->
-                                </div>
+                                <!-- </div> -->
                                 <!-- / PRODUCT VARIATION -->
-                            </div>
+                            <!-- </div> -->
                             <!-- BUTTON ADD VARIATION -->
-                            <div
+                            <!-- <div
                                 fxFlex
                                 fxLayout="row"
                                 fxLayoutAlign="space-between start"
@@ -543,12 +542,12 @@
                                     <mat-icon>add_circle</mat-icon>
                                     Tambah Variasi
                                 </button>
-                            </div>
-                        </div>
-                    </ng-template>
-                    <!-- / VARIASI PRODUK (HAs VARIANTS) -->
+                            </div> -->
+                        <!-- </div>
+                    </ng-template> -->
+                    <!-- / VARIASI PRODUK (HAS VARIANTS) -->
                     <!-- INFORMASI VARIASI PRODUK -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="column"
                         fxLayoutGap="10px"
@@ -563,22 +562,22 @@
                                 fxLayout="row"
                                 fxFlex novalidate
                                 style="margin-top: 20px;"
-                            >
+                            > -->
                                 <!-- LABEL -->
-                                <label
+                                <!-- <label
                                     fxFlexAlign="center"
                                     fxFlex="20"
                                 >
                                     <p>Daftar Variasi {{ $index + 1 }}</p>
-                                </label>
+                                </label> -->
                                 <!-- / LABEL -->
-                                <div fxFlex="80"
+                                <!-- <div fxFlex="80"
                                     fxLayout="row"
                                     fxLayoutGap="5px"
                                     fxLayoutAlign="space-between start"
-                                >
+                                > -->
                                     <!-- PRICE -->
-                                    <mat-form-field
+                                    <!-- <mat-form-field
                                         fxFlex="20"
                                         appearance="outline"
                                     >
@@ -587,10 +586,10 @@
                                             placeholder="Harga"
                                             [formControl]="variant.get('price')"
                                         />
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                     <!-- / PRICE -->
                                     <!-- STOCK -->
-                                    <mat-form-field
+                                    <!-- <mat-form-field
                                         fxFlex="20"
                                         appearance="outline"
                                     >
@@ -603,10 +602,10 @@
                                             placeholder="Stock"
                                             [formControl]="variant.get('stock')"
                                         />
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                     <!-- / STOCK -->
                                     <!-- SKU -->
-                                    <mat-form-field
+                                    <!-- <mat-form-field
                                         fxFlex="20"
                                         appearance="outline"
                                     >
@@ -615,21 +614,21 @@
                                             placeholder="SKU"
                                             [formControl]="variant.get('sku')"
                                         />
-                                    </mat-form-field>
+                                    </mat-form-field> -->
                                     <!-- / SKU -->
                                     <!-- APPLY BUTTON -->
-                                    <button
+                                    <!-- <button
                                         fxFlex
                                         mat-raised-button
                                         style="margin-top: 5px; width: 100%; height: 60%;"
                                         color="accent"
                                     >
                                         Terapkan ke Semua
-                                    </button>
+                                    </button> -->
                                     <!-- / APPLY BUTTON -->
-                                </div>
-                            </form>
-                            <div
+                                <!-- </div> -->
+                            <!-- </form> -->
+                            <!-- <div
                                 fxLayout="row"
                                 fxLayoutAlign="space-between stretch"
                             >
@@ -638,8 +637,6 @@
                                     style="margin-top: 30px;"
                                 >
                                     Informasi Variasi {{ $index + 1 }}
-                                    <!-- {{ printLog(productVariantControls[$index]) }}
-                                    {{ printLog(productVariantControls[$index]) }} -->
                                 </label>
                                 <table mat-table fxFlex="80" [dataSource]="productVariantSelectionData[$index]" class="mat-elevation-z8">
                                     <ng-container matColumnDef="name">
@@ -677,24 +674,24 @@
                                     <tr mat-header-row *matHeaderRowDef="variantListColumns"></tr>
                                     <tr mat-row *matRowDef="let row; columns: variantListColumns;"></tr>
                                 </table>
-                            </div>
-                        </ng-container>
-                    </div>
+                            </div> -->
+                        <!-- </ng-container> -->
+                    <!-- </div> -->
                     <!-- / INFORMASI VARIASI PRODUK -->
                     <!-- DAFTAR VARIASI PRODUK -->
-                    <div
+                    <!-- <div
                         class="custom-field"
                         fxLayout="column"
                         fxLayoutGap="10px"
                         fxLayoutAlign="space-between stretch"
                         *ngIf="productVariantControls?.length > 0"
                     >
-                        <!-- <ng-container
+                        <ng-container
                             *ngFor="let variant of productVariantFormControls; index as $index;"
                         >
                             
-                        </ng-container> -->
-                    </div>
+                        </ng-container>
+                    </div> -->
                     <!-- / DAFTAR VARIASI PRODUK -->
                 </form>
             </div>
@@ -711,7 +708,7 @@
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
                     <!-- HARGA PRODUK -->
                     <div
-                        class="custom-field"
+                        class="custom-field-right mt-16"
                         fxLayout="row"
                         fxLayoutGap="10px"
                         fxLayoutAlign="space-between stretch"
@@ -722,9 +719,9 @@
                             fxFlex="20"
                             [class.mat-error]="
                                 form.get('productMedia.photos').errors &&
-                                !form.get('productMedia.photos').untouched &&
                                 (form.get('productMedia.photos').dirty || form.get('productMedia.photos').touched)
                             "
+                            class="mb-100"
                         >
                             Foto Produk
                         </label>
@@ -732,13 +729,13 @@
                         <div appearance="outline"
                             fxFlex="80"
                             fxLayout="row"
-                            fxLayoutAlign="space-between start"
-                            *ngFor="let photo of productPhotos.controls; let i = index;"
+                            fxLayoutGap="10px"
+                            fxLayoutAlign="start center"
                         >
                             <div
-                                fxFill
                                 fxLayout="column"
-                                fxLayoutAlign="space-between center"
+                                fxLayoutAlign="start center"
+                                *ngFor="let photo of productPhotos.controls; let i = index;"
                             >
                                 <input
                                     hidden
@@ -746,21 +743,25 @@
                                     type="file"
                                     (change)="onFileBrowse($event, i)"
                                 />
-                                <button
-                                    *ngIf="!photo.value; else hasPhoto;"
-                                    (click)="photos.click()"
-                                    mat-stroked-button
-                                    style="border-style: dashed; width: 100%; min-height: 130px;"
-                                    class="red-fg red-border"
-                                >
-                                    <mat-icon>add_circle</mat-icon>
-                                </button>
+                                <ng-container *ngIf="!photo.value; else hasPhoto;">
+                                    <div class="img-container">
+                                        <button
+                                            (click)="photos.click()"
+                                            mat-stroked-button
+                                            style="border-style: dashed;"
+                                            class="red-fg red-border fit-image"
+                                        >
+                                            <mat-icon>add_circle</mat-icon>
+                                        </button>
+                                    </div>
+                                </ng-container>
                                 <ng-template #hasPhoto>
                                     <div
+                                        class="img-container"
                                         fxLayout="row"
                                         fxLayoutAlign="space-between start"
                                     >
-                                        <img [src]="photo.value"/>
+                                        <img class="fit-image" [src]="photo.value"/>
                                         <button
                                             class="red-fg"
                                             mat-icon-button
@@ -771,30 +772,32 @@
                                         </button>
                                     </div>
                                 </ng-template>
-                                <div *ngIf="i === 0; else optionalPhoto" fxLayout="column" fxLayoutAlign="space-between center">
-                                    <p style="margin-bottom: 0px;">*Foto Utama</p>
-                                    <button
-                                        class="red-fg"
-                                        matTooltip="Reset to original image"
-                                        mat-icon-button
-                                        (click)="onResetImage(i)"
-                                        *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
-                                                && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
-                                    >
-                                        <mat-icon>undo</mat-icon>
-                                    </button>
-                                    <ng-template #noUndo>
+                                <ng-container *ngIf="i === 0; else optionalPhoto;">
+                                    <div fxLayout="column" fxLayoutAlign="space-between center">
+                                        <p class="grey-400-fg" style="margin-bottom: 0px;">*Foto Utama</p>
                                         <button
-                                            disabled
+                                            class="red-fg"
+                                            matTooltip="Reset to original image"
                                             mat-icon-button
+                                            (click)="onResetImage(i)"
+                                            *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                    && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
                                         >
-                                            <mat-icon></mat-icon>
+                                            <mat-icon>undo</mat-icon>
                                         </button>
-                                    </ng-template>
-                                </div>
+                                        <ng-template #noUndo>
+                                            <button
+                                                disabled
+                                                mat-icon-button
+                                            >
+                                                <mat-icon></mat-icon>
+                                            </button>
+                                        </ng-template>
+                                    </div>
+                                </ng-container>
                                 <ng-template #optionalPhoto>
                                     <div>
-                                        <p style="margin-bottom: 0px;">Foto {{ i }}</p>
+                                        <p class="grey-400-fg" style="margin-bottom: 0px;">Foto {{ i }}</p>
                                         <button
                                             class="red-fg"
                                             matTooltip="Reset to original image"
