@@ -149,7 +149,7 @@
                             matTooltip="Click to edit price"
                             (click)="editCatalogue('price', row)"
                         >
-                            <p *ngIf="!!(row?.discountedRetailBuyingPrice); else noDiscount;" class="text-truncate">
+                            <p *ngIf="!!(row?.discountedRetailBuyingPrice) || row?.discountedRetailBuyingPrice === 0; else noDiscount;" class="text-truncate">
                                 {{ row?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
                             </p>
                             <ng-template #noDiscount>
