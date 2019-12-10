@@ -209,7 +209,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             externalId: formValues.productInfo.externalId,
             name: formValues.productInfo.name,
             description: formValues.productInfo.description,
-            information: formValues.productInfo.description,
+            information: formValues.productInfo.information,
             detail: formValues.productInfo.description,
             brandId: formValues.productInfo.brandId,
             firstCatalogueCategoryId: formValues.productInfo.category[0].id,
@@ -307,6 +307,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 description: [''],
+                information: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
                 // variant: ['', Validators.required],
                 brandId: ['', [
                     RxwebValidators.required({
@@ -764,6 +769,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                             externalId: catalogue.externalId,
                             name: catalogue.name,
                             description: catalogue.description,
+                            information: catalogue.information,
                             // variant: ['', Validators.required],
                             brandId: catalogue.brandId,
                             // brandName: 'ini cuma unusued brand',

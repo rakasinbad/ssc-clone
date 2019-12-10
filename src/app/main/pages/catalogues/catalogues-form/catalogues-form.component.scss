@@ -6,6 +6,12 @@ app-catalogues-form {
         quill-editor {
             max-width: 100%;
             min-width: 100%;
+
+            &.ql-error {
+                .ql-toolbar, .ql-container {
+                    border: 1px solid #f44336 !important;
+                }
+            }
         }
 
         .ql-container {

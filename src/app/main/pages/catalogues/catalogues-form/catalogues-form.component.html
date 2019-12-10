@@ -99,15 +99,57 @@
                             Deskripsi Produk
                         </label>
                 
-                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-                            <quill-editor format='html' formControlName="description"></quill-editor>
-                            <!-- <code>
-                                {{ form.get('productInfo.description').value }}
-                            </code> -->
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <textarea
+                                matInput
+                                rows="5"
+                                formControlName="description"
+                            ></textarea>
                             <mat-error
                                 *ngIf="hasError(form.get('productInfo.description'))"
                             >
                                 {{ getFormError(form.get('productInfo.description')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <!-- <mat-form-field appearance="outline" fxFlex="80">
+                            <textarea
+                                matInput
+                                name="description"
+                                formControlName="description"
+                            ></textarea>
+                        </mat-form-field> -->
+                    </div>
+                    <!-- / DESKRIPSI PRODUK -->
+                    <!-- INFORMASI PRODUK -->
+                    <div
+                        class="custom-field-right"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between strectch"
+                        formGroupName="productInfo"
+                        style="margin-bottom: 21.5px;"
+                    >
+                        <label
+                            fxFlex="18"
+                            class="pr-0"
+                            style="padding-top: 1.5em;"
+                            [class.mat-error]="hasError(form.get('productInfo.information'))"
+                        >
+                            *Informasi Produk
+                        </label>
+                
+                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+                            <quill-editor
+                                [class.ql-error]="hasError(form.get('productInfo.information'))"
+                                format='html'
+                                formControlName="information"
+                            ></quill-editor>
+                            <!-- <code>
+                                {{ form.get('productInfo.description').value }}
+                            </code> -->
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.information'))"
+                            >
+                                {{ getFormError(form.get('productInfo.information')) }}
                             </mat-error>
                         </div>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
