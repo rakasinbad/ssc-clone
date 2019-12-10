@@ -119,10 +119,54 @@ export class CataloguesService {
             });
         }
 
+        if (!isNaN(params['externalId'])) {
+            newArgs.push({
+                key: 'externalId',
+                value: params['externalId']
+            });
+        }
+
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<ICataloguesResponse>(this._url, { params: newParams });
+    }
+
+    find<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+        
+        if (params['emptyStock']) {
+            newArgs.push({
+                key: 'emptyStock',
+                value: true
+            });
+        }
+
+        if (params['status']) {
+            newArgs.push({
+                key: 'status',
+                value: params['status']
+            });
+        }
+
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+
+        if (!isNaN(params['externalId'])) {
+            newArgs.push({
+                key: 'externalId',
+                value: params['externalId']
+            });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
     }
 
     patchCatalogue(id: string, data: Partial<Catalogue>): Observable<Catalogue> {

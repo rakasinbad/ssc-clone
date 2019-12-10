@@ -49,6 +49,11 @@
                             >
                                 {{ getFormError(form.get('productInfo.externalId')) }}
                             </mat-error>
+                            <mat-error
+                                *ngIf="$any(form.get('productInfo.externalId').errors)?.skuSupplierExist"
+                            >
+                                SKU already exist.
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / PRODUCT ID -->

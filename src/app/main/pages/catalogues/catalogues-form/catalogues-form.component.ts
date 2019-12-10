@@ -21,15 +21,14 @@ import { HelperService, ErrorMessageService } from 'app/shared/helpers';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
-import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take } from 'rxjs/operators';
 import {
     FormArray,
     FormBuilder,
     FormGroup,
-    Validator,
-    Validators,
-    FormControl,
-    AbstractControl
+    AbstractControl,
+    AsyncValidatorFn,
+    ValidationErrors
 } from '@angular/forms';
 import Quill from 'quill';
 
@@ -47,6 +46,7 @@ import { CataloguesSelectCategoryComponent } from '../catalogues-select-category
 import { IQueryParams, Brand } from 'app/shared/models';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { CataloguesService } from '../services';
 
 @Component({
     selector: 'app-catalogues-form',
@@ -100,7 +100,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         public translate: TranslateService,
         private sanitizer: DomSanitizer,
         private $helper: HelperService,
-        private errorMessageSvc: ErrorMessageService
+        private errorMessageSvc: ErrorMessageService,
+        private catalogueSvc: CataloguesService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
@@ -290,17 +291,69 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.store.dispatch(FormActions.resetClickSaveButton());
     }
 
+    checkExternalId(): AsyncValidatorFn {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
+            return control.valueChanges
+                .pipe(
+                    distinctUntilChanged(),
+                    debounceTime(500),
+                    withLatestFrom(
+                        this.store.select(AuthSelectors.getUserSupplier),
+                        this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
+                    ),
+                    take(1),
+                    switchMap(([value, userSupplier, catalogue]) => {
+                        if (!value) {
+                            return of({
+                                required: true
+                            });
+                        }
+
+                        const params: IQueryParams = {
+                            limit: 1, paginate: true
+                        };
+
+                        params['externalId'] = value;
+                        params['supplierId'] = userSupplier.id;
+
+                        return this.catalogueSvc
+                            .findAll(params)
+                            .pipe(
+                                map(response => {
+                                    if (response.total > 0) {
+                                        if (response.data[0].externalId === catalogue.externalId) {
+                                            return null;
+                                        }
+
+                                        return {
+                                            skuSupplierExist: true
+                                        };
+                                    }
+
+                                    return null;
+                                })
+                            );
+                    })
+                );
+        };
+    }
+
     ngOnInit(): void {
         this._unSubs$ = new Subject<void>();
 
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
-                externalId: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
+                externalId: ['', {
+                    validators: [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                        }),
+                    ],
+                    asyncValidators: [
+                        this.checkExternalId()
+                    ]
+                }],
                 name: ['', [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
@@ -530,7 +583,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 this.form.get('productInfo').valueChanges,
                 this.form.get('productSale').valueChanges,
                 this.form.get('productMedia').valueChanges,
-                this.form.get('productShipment').valueChanges
+                this.form.get('productShipment').valueChanges,
+                this.form.statusChanges,
             ).pipe(
                 distinctUntilChanged(),
                 debounceTime(500)
