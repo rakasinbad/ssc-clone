@@ -318,6 +318,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Delivered Date Column -->
+                <ng-container matColumnDef="delivered-date">
+                        <mat-header-cell *matHeaderCellDef>
+                            Delivered Date
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p class="price" style="word-break: break-word;">
+                                {{ row?.deliveredDate ? (row?.deliveredDate | date: 'dd/MM/yyyy HH:mm:ss') : '-' }}
+                            </p>
+                        </mat-cell>
+                    </ng-container>
+
                 <!-- Active Column -->
                 <!-- <ng-container matColumnDef="active">
                     <mat-header-cell *matHeaderCellDef mat-sort-header fxHide fxShow.gt-xs>

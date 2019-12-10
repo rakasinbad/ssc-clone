@@ -57,7 +57,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         'total-product',
         'status',
         // 'deliveredOn',
-        'actual-amount-delivered',
+        // 'actual-amount-delivered',
+        'delivered-date',
         'actions'
     ];
     hasSelected: boolean;
