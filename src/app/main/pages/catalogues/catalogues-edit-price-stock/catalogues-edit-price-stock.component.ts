@@ -108,9 +108,10 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                         payload: {
                             id: this.data.catalogue.id,
                             data: Catalogue.patch({
-                                discountedRetailBuyingPrice: this.form.get('discountPrice').value,
+                                // discountedRetailBuyingPrice: this.form.get('discountPrice').value,
+                                discountedRetailBuyingPrice: this.form.get('salePrice').value || null,
                                 retailBuyingPrice: this.form.get('retailPrice').value,
-                                suggestedConsumerBuyingPrice: this.form.get('salePrice').value,
+                                // suggestedConsumerBuyingPrice: this.form.get('salePrice').value,
                             }),
                             source: 'list'
                         }
@@ -153,17 +154,10 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
             ]));
             //
             this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
-            this.form.addControl('salePrice', this.fb.control('', [
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                }),
-                RxwebValidators.minNumber({
-                    value: 1,
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                })
-            ]));
+            this.form.addControl('salePrice', this.fb.control(''));
 
-            this.oldMargin = (1 - ((+this.data.catalogue.discountedRetailBuyingPrice) / (+this.data.catalogue.suggestedConsumerBuyingPrice))) * 100;
+            this.oldMargin = !(this.data.catalogue.discountedRetailBuyingPrice) ? null
+                            : (1 - ((+this.data.catalogue.discountedRetailBuyingPrice) / (+this.data.catalogue.retailBuyingPrice))) * 100;
         } else if (this.data.editMode === 'stock') {
             /** Memasukkan FormControl untuk stock JIKA mode-nya adalah stock. */
             // this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
@@ -210,7 +204,7 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                 takeUntil(this._unSubs$)
             ).subscribe(value => {
                 if (this.data.editMode === 'price') {
-                    this.newMargin = (1 - ((+value.salePrice) / (+value.retailPrice))) * 100;
+                    this.newMargin = !value.salePrice ? null : (1 - ((+value.salePrice) / (+value.retailPrice))) * 100;
                 }
 
                 this._cd.markForCheck();

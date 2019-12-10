@@ -221,7 +221,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             /**
              * INFORMASI PENJUALAN
              */
-            discountedRetailBuyingPrice: formValues.productSale.retailPrice,
+            discountedRetailBuyingPrice: formValues.productSale.retailPrice ? formValues.productSale.retailPrice : null,
             retailBuyingPrice: formValues.productSale.productPrice,
             catalogueKeywords: formValues.productSale.tags,
             /**
@@ -335,11 +335,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
-                retailPrice: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
+                retailPrice: [''],
                 productPrice: ['', [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')

@@ -135,7 +135,7 @@ export interface ICatalogue extends ITimestamp {
     // skuRef: string;
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
-    discountedRetailBuyingPrice: number; // Harga potongan yang diberikan oleh supplier untuk dijual ke toko.
+    discountedRetailBuyingPrice: TNullable<number>; // Harga potongan yang diberikan oleh supplier untuk dijual ke toko.
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
@@ -535,7 +535,7 @@ export class Catalogue implements ICatalogue {
     // skuRef: string;
     retailBuyingPrice: number; // Harga yang dibeli dari supplier.
     suggestedConsumerBuyingPrice: number; // Harga yang disarankan oleh supplier untuk dijual ke konsumen.
-    discountedRetailBuyingPrice: number; // Harga potongan untuk konsumen.
+    discountedRetailBuyingPrice: TNullable<number>; // Harga potongan untuk konsumen.
     minQty: number;
     minQtyType: TQuantityType;
     packagedQty: number; // Quantity per Master Box (Jumlah item dalam 1 box)
