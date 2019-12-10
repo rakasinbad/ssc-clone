@@ -959,12 +959,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         console.log(val);
     }
 
-    getFormError(form: FormControl | FormGroup | FormArray): string {
+    getFormError(form: any): string {
         // console.log('get error');
         return this.errorMessageSvc.getFormError(form);
     }
 
-    hasError(form: FormControl | FormGroup | FormArray, args: any = {}): boolean {
+    hasError(form: any, args: any = {}): boolean {
         // console.log('check error');
         const {
             ignoreTouched,
