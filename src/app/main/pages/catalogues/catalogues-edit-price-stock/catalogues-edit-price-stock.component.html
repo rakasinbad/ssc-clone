@@ -92,7 +92,9 @@
                             formControlName="oldSalePrice"
                         />
                         <span class="grey-500-fg">
-                            {{ data?.catalogue?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
+                            {{ !data?.catalogue?.discountedRetailBuyingPrice 
+                                ? ('Rp')
+                                : (data?.catalogue?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2') }}
                         </span>
                     </mat-form-field>
                     <!-- / DISCOUNTED FOR RETAILER (SALE PRICE) (NOW) -->
