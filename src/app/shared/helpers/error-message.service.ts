@@ -84,6 +84,12 @@ export class ErrorMessageService {
                 const { minValue = 0 } = args;
                 return this.translate.instant('ERROR.MIN', { fieldName: labelName, minValue });
 
+            case 'min_1_photo':
+                return this.translate.instant('ERROR.MIN_1_PHOTO', { fieldName: labelName });
+
+            case 'min_1_tag':
+                return this.translate.instant('ERROR.MIN_1_TAG', { fieldName: labelName });
+
             case 'different':
                 let { fieldComparedName } = args;
                 fieldComparedName = this.translate.instant(`FORM.${fieldComparedName.toUpperCase()}`);

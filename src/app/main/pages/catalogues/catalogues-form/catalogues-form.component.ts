@@ -17,7 +17,7 @@ import { FuseNavigationService } from '@fuse/components/navigation/navigation.se
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, ErrorMessageService } from 'app/shared/helpers';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
@@ -46,6 +46,7 @@ import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
 import { IQueryParams, Brand } from 'app/shared/models';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 @Component({
     selector: 'app-catalogues-form',
@@ -98,7 +99,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         private _cd: ChangeDetectorRef,
         public translate: TranslateService,
         private sanitizer: DomSanitizer,
-        private $helper: HelperService
+        private $helper: HelperService,
+        private errorMessageSvc: ErrorMessageService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
@@ -294,13 +296,33 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
-                externalId: ['', Validators.required],
-                name: ['', Validators.required],
+                externalId: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                name: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
                 description: [''],
                 // variant: ['', Validators.required],
-                brandId: ['', Validators.required],
-                brandName: [{ value: '', disabled: true }, Validators.required],
-                category: ['', Validators.required],
+                brandId: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                brandName: [{ value: '', disabled: true }, [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                category: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
                 stock: [''],
                 uom: [''],
                 // minQty: ['', [Validators.required, Validators.min(1)]],
@@ -308,14 +330,36 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
-                retailPrice: ['', Validators.required],
-                productPrice: ['', Validators.required],
-                tags: this.fb.array([], Validators.required),
+                retailPrice: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                productPrice: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                tags: this.fb.array([], [
+                    // RxwebValidators.required({
+                    //     conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
+                    // })
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
+                        message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
+                    })
+                ]),
                 variants: this.fb.array([])
             }),
             productMedia: this.fb.group({
                 photos: this.fb.array([
-                    this.fb.control(null, Validators.required),
+                    this.fb.control(null, [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState('product_photo', 'min_1_photo')
+                        })
+                    ]),
                     this.fb.control(null),
                     this.fb.control(null),
                     this.fb.control(null),
@@ -332,10 +376,42 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 ])
             }),
             productShipment: this.fb.group({
-                catalogueWeight: ['', [Validators.required, Validators.min(1)]],
-                packagedWeight: ['', [Validators.required, Validators.min(1)]],
-                catalogueDimension: ['', [Validators.required, Validators.min(1)]],
-                packagedDimension: ['', [Validators.required, Validators.min(1)]],
+                catalogueWeight: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
+                packagedWeight: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
+                catalogueDimension: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
+                packagedDimension: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
                 isDangerous: [''],
                 couriers: this.fb.array([
                     this.fb.control({
@@ -353,11 +429,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 ])
             }),
             productCount: this.fb.group({
-                qtyPerMasterBox: ['', [Validators.required, Validators.min(1)]],
+                qtyPerMasterBox: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
                 minQtyOption: ['pcs'],
-                minQtyValue: [{ value: '1', disabled: true }, [Validators.required, Validators.min(1)]],
+                minQtyValue: [{ value: '1', disabled: true }, [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
                 additionalQtyOption: ['pcs'],
-                additionalQtyValue: [{ value: '1', disabled: true }, [Validators.required, Validators.min(1)]],
+                additionalQtyValue: [{ value: '1', disabled: true }, [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    })
+                ]],
             })
         });
 
@@ -857,5 +957,33 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
     printLog(val: any): void {
         console.log(val);
+    }
+
+    getFormError(form: FormControl | FormGroup | FormArray): string {
+        // console.log('get error');
+        return this.errorMessageSvc.getFormError(form);
+    }
+
+    hasError(form: FormControl | FormGroup | FormArray, args: any = {}): boolean {
+        // console.log('check error');
+        const {
+            ignoreTouched,
+            ignoreDirty
+        } = args;
+
+        if (ignoreTouched && ignoreDirty) {
+            return !!form.errors;
+        }
+
+        if (ignoreDirty) {
+            return form.errors && form.touched;
+        }
+
+        if (ignoreTouched) {
+            return form.errors && form.dirty;
+        }
+
+
+        return form.errors && (form.dirty || form.touched);
     }
 }

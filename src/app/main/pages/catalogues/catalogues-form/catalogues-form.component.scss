@@ -23,6 +23,12 @@ app-catalogues-form {
             padding-top: 0.75em;
         }
 
+        mat-form-field.no-padding {
+            .mat-form-field-wrapper {
+                padding-bottom: 0px !important;
+            }
+        }
+
         .img-container {
             width: 100px; /*any size*/
             height: 100px; /*any size*/

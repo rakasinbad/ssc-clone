@@ -28,11 +28,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productInfo.externalId').errors &&
-                                !form.get('productInfo.externalId').untouched &&
-                                (form.get('productInfo.externalId').dirty || form.get('productInfo.externalId').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.externalId'))"
                         >
                             *Produk ID
                         </label>
@@ -40,7 +36,6 @@
                         <mat-form-field appearance="outline" fxFlex="80">
                             <input
                                 hidden
-                                matInput
                                 name="id"
                                 formControlName="id"
                             />
@@ -49,6 +44,11 @@
                                 name="externalId"
                                 formControlName="externalId"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.externalId'))"
+                            >
+                                {{ getFormError(form.get('productInfo.externalId')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / PRODUCT ID -->
@@ -63,11 +63,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productInfo.name').errors &&
-                                !form.get('productInfo.name').untouched &&
-                                (form.get('productInfo.name').dirty || form.get('productInfo.name').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.name'))"
                         >
                             *Nama Produk
                         </label>
@@ -78,6 +74,11 @@
                                 name="name"
                                 formControlName="name"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.name'))"
+                            >
+                                {{ getFormError(form.get('productInfo.name')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / NAMA PRODUK -->
@@ -93,11 +94,7 @@
                             fxFlex="18"
                             class="pr-0"
                             style="padding-top: 1.5em;"
-                            [class.mat-error]="
-                                form.get('productInfo.description').errors &&
-                                !form.get('productInfo.description').untouched &&
-                                (form.get('productInfo.description').dirty || form.get('productInfo.description').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.description'))"
                         >
                             Deskripsi Produk
                         </label>
@@ -107,6 +104,11 @@
                             <!-- <code>
                                 {{ form.get('productInfo.description').value }}
                             </code> -->
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.description'))"
+                            >
+                                {{ getFormError(form.get('productInfo.description')) }}
+                            </mat-error>
                         </div>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
@@ -156,11 +158,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productInfo.brandId').errors &&
-                                !form.get('productInfo.brandId').untouched &&
-                                (form.get('productInfo.brandId').dirty || form.get('productInfo.brandId').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.brandId'))"
                         >
                             *Brand
                         </label>
@@ -177,6 +175,11 @@
                                     {{ brand.name }}
                                 </mat-option>
                             </mat-select>
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.brandId'))"
+                            >
+                                {{ getFormError(form.get('productInfo.brandId')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / BRAND PRODUK -->
@@ -191,10 +194,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0 pt-20"
-                            [class.mat-error]="
-                                form.get('productInfo.category').errors &&
-                                (form.get('productInfo.category').dirty || form.get('productInfo.category').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.category'))"
                         >
                             *Kategori
                         </label>
@@ -212,6 +212,11 @@
                             >
                                 <mat-icon>edit</mat-icon>
                             </button>
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.category'))"
+                            >
+                                {{ getFormError(form.get('productInfo.category')) }}
+                            </mat-error>
                         </span>
                     </div>
                     <!-- / KATEGORI PRODUK -->
@@ -226,11 +231,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productInfo.stock').errors &&
-                                !form.get('productInfo.stock').untouched &&
-                                (form.get('productInfo.stock').dirty || form.get('productInfo.stock').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.stock'))"
                         >
                             Product Stock
                         </label>
@@ -243,6 +244,11 @@
                                 mask="separator"
                                 thousandSeparator="."
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.stock'))"
+                            >
+                                {{ getFormError(form.get('productInfo.stock')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / PRODUK STOK -->
@@ -257,11 +263,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productInfo.uom').errors &&
-                                !form.get('productInfo.uom').untouched &&
-                                (form.get('productInfo.uom').dirty || form.get('productInfo.uom').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productInfo.uom'))"
                         >
                             UOM 
                         </label>
@@ -278,6 +280,11 @@
                                     {{ unit.unit }}
                                 </mat-option>
                             </mat-select>
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.uom'))"
+                            >
+                                {{ getFormError(form.get('productInfo.uom')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / UOM -->
@@ -305,11 +312,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productSale.productPrice').errors &&
-                                !form.get('productSale.productPrice').untouched &&
-                                (form.get('productSale.productPrice').dirty || form.get('productSale.productPrice').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productSale.productPrice'))"
                         >
                             *Retailer <br/>Buying Price
                         </label>
@@ -323,6 +326,11 @@
                                 thousandSeparator="."
                                 prefix="Rp"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productSale.productPrice'))"
+                            >
+                                {{ getFormError(form.get('productSale.productPrice')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / HARGA PRODUK -->
@@ -337,11 +345,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productSale.retailPrice').errors &&
-                                !form.get('productSale.retailPrice').untouched &&
-                                (form.get('productSale.retailPrice').dirty || form.get('productSale.retailPrice').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productSale.retailPrice'))"
                         >
                             *Discounted Retailer <br/>Buying Price
                         </label>
@@ -355,6 +359,11 @@
                                 thousandSeparator="."
                                 prefix="Rp"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productSale.retailPrice'))"
+                            >
+                                {{ getFormError(form.get('productSale.retailPrice')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / HARGA RETAIL -->
@@ -362,39 +371,50 @@
                     <div
                         class="custom-field-right"
                         fxLayout="row"
+                        fxLayoutGap="20px"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productSale"
                     >
                         <label
-                            fxFlexAlign="center"
+                            fxFlexAlign="start"
                             fxFlex="18"
-                            class="pr-0"
-                            [class.mat-error]="
-                                form.get('productSale.tags').errors &&
-                                !form.get('productSale.tags').untouched &&
-                                (form.get('productSale.tags').dirty || form.get('productSale.tags').touched)
-                            "
+                            class="pr-0 mt-24"
+                            [class.mat-error]="hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
                         >
                             *Product Tag
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
-                            <mat-chip-list #chipList aria-label="Tags">
-                                <mat-chip *ngFor="let tag of (productTagsControls?.controls); index as $index;"
-                                            selectable="true"
-                                            removable="true"
-                                            (removed)="onRemoveTag($index)">
-                                    {{ tag.value }}
-                                    <mat-icon matChipRemove>cancel</mat-icon>
-                                </mat-chip>
-                                <input
-                                    [matChipInputFor]="chipList"
-                                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                                    [matChipInputAddOnBlur]="true"
-                                    (matChipInputTokenEnd)="onAddTag($event)"
-                                    >
-                            </mat-chip-list>
-                        </mat-form-field>
+                        <div fxFlex fxLayout="column" fxLayoutAlign="start stretch">
+                            <div fxLayout="row">
+                                <mat-form-field
+                                    fxFlex
+                                    appearance="outline"
+                                    [class.mat-form-field-invalid]="hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
+                                    class="no-padding"
+                                >
+                                    <mat-chip-list #chipList aria-label="Tags">
+                                        <mat-chip *ngFor="let tag of (productTagsControls?.controls); index as $index;"
+                                                    selectable="true"
+                                                    removable="true"
+                                                    (removed)="onRemoveTag($index)">
+                                            {{ tag.value }}
+                                            <mat-icon matChipRemove>cancel</mat-icon>
+                                        </mat-chip>
+                                        <input
+                                            [matChipInputFor]="chipList"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="true"
+                                            (matChipInputTokenEnd)="onAddTag($event)"
+                                            >
+                                    </mat-chip-list>
+                                </mat-form-field>
+                            </div>
+                            <mat-error
+                                *ngIf="hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
+                            >
+                                {{ getFormError(form.get('productSale.tags')) }}
+                            </mat-error>
+                        </div>
                     </div>
                     <!-- / TAG PRODUK -->
                     <!-- VARIASI PRODUK (NO VARIANT) -->
@@ -710,115 +730,123 @@
                     <div
                         class="custom-field-right mt-16"
                         fxLayout="row"
-                        fxLayoutGap="10px"
-                        fxLayoutAlign="space-between stretch"
+                        fxLayoutAlign="space-between start"
                         formGroupName="productMedia"
                     >
                         <label
-                            fxFlexAlign="center"
+                            class="pr-16 mt-20"
                             fxFlex="20"
-                            [class.mat-error]="
-                                form.get('productMedia.photos').errors &&
-                                (form.get('productMedia.photos').dirty || form.get('productMedia.photos').touched)
-                            "
-                            class="mb-100"
+                            [class.mat-error]="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
                         >
                             Foto Produk
                         </label>
                                         
                         <div appearance="outline"
                             fxFlex="80"
-                            fxLayout="row"
+                            fxLayout="column"
                             fxLayoutGap="10px"
-                            fxLayoutAlign="start center"
+                            fxLayoutAlign="start start"
                         >
-                            <div
-                                fxLayout="column"
-                                fxLayoutAlign="start center"
-                                *ngFor="let photo of productPhotos.controls; let i = index;"
+                            <div appearance="outline"
+                                fxFlex="80"
+                                fxLayout="row"
+                                fxLayoutGap="10px"
+                                fxLayoutAlign="start start"
                             >
-                                <input
-                                    hidden
-                                    #photos
-                                    type="file"
-                                    (change)="onFileBrowse($event, i)"
-                                />
-                                <ng-container *ngIf="!photo.value; else hasPhoto;">
-                                    <div class="img-container">
-                                        <button
-                                            (click)="photos.click()"
-                                            mat-stroked-button
-                                            style="border-style: dashed;"
-                                            class="red-fg red-border fit-image"
-                                        >
-                                            <mat-icon>add_circle</mat-icon>
-                                        </button>
-                                    </div>
-                                </ng-container>
-                                <ng-template #hasPhoto>
-                                    <div
-                                        class="img-container"
-                                        fxLayout="row"
-                                        fxLayoutAlign="space-between start"
-                                    >
-                                        <img class="fit-image" [src]="photo.value"/>
-                                        <button
-                                            class="red-fg"
-                                            mat-icon-button
-                                            style="bottom: 22px; right: 22px;"
-                                            (click)="onAbortUploadPhoto(photos, i)"
-                                        >
-                                            <mat-icon>remove_circle</mat-icon>
-                                        </button>
-                                    </div>
-                                </ng-template>
-                                <ng-container *ngIf="i === 0; else optionalPhoto;">
-                                    <div fxLayout="column" fxLayoutAlign="space-between center">
-                                        <p class="grey-400-fg" style="margin-bottom: 0px;">*Foto Utama</p>
-                                        <button
-                                            class="red-fg"
-                                            matTooltip="Reset to original image"
-                                            mat-icon-button
-                                            (click)="onResetImage(i)"
-                                            *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
-                                                    && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
-                                        >
-                                            <mat-icon>undo</mat-icon>
-                                        </button>
-                                        <ng-template #noUndo>
+                                <div
+                                    fxLayout="column"
+                                    fxLayoutAlign="start center"
+                                    *ngFor="let photo of productPhotos.controls; let i = index;"
+                                >
+                                    <input
+                                        hidden
+                                        #photos
+                                        type="file"
+                                        (change)="onFileBrowse($event, i)"
+                                    />
+                                    <ng-container *ngIf="!photo.value; else hasPhoto;">
+                                        <div class="img-container">
                                             <button
-                                                disabled
-                                                mat-icon-button
+                                                (click)="photos.click()"
+                                                mat-stroked-button
+                                                style="border-style: dashed;"
+                                                class="red-fg red-border fit-image"
                                             >
-                                                <mat-icon></mat-icon>
+                                                <mat-icon>add_circle</mat-icon>
                                             </button>
-                                        </ng-template>
-                                    </div>
-                                </ng-container>
-                                <ng-template #optionalPhoto>
-                                    <div>
-                                        <p class="grey-400-fg" style="margin-bottom: 0px;">Foto {{ i }}</p>
-                                        <button
-                                            class="red-fg"
-                                            matTooltip="Reset to original image"
-                                            mat-icon-button
-                                            (click)="onResetImage(i)"
-                                            *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
-                                                    && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #hasPhoto>
+                                        <div
+                                            class="img-container"
+                                            fxLayout="row"
+                                            fxLayoutAlign="space-between start"
                                         >
-                                            <mat-icon>undo</mat-icon>
-                                        </button>
-                                        <ng-template #noUndo>
+                                            <img class="fit-image" [src]="photo.value"/>
                                             <button
-                                                disabled
+                                                class="red-fg"
                                                 mat-icon-button
+                                                style="bottom: 22px; right: 22px;"
+                                                (click)="onAbortUploadPhoto(photos, i)"
                                             >
-                                                <mat-icon></mat-icon>
+                                                <mat-icon>remove_circle</mat-icon>
                                             </button>
-                                        </ng-template>
-                                    </div>
-                                </ng-template>
+                                        </div>
+                                    </ng-template>
+                                    <ng-container *ngIf="i === 0; else optionalPhoto;">
+                                        <div fxLayout="column" fxLayoutAlign="space-between center">
+                                            <p class="grey-400-fg" style="margin-bottom: 0px;">*Foto Utama</p>
+                                            <button
+                                                class="red-fg"
+                                                matTooltip="Reset to original image"
+                                                mat-icon-button
+                                                (click)="onResetImage(i)"
+                                                *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                        && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                            >
+                                                <mat-icon>undo</mat-icon>
+                                            </button>
+                                            <ng-template #noUndo>
+                                                <button
+                                                    disabled
+                                                    mat-icon-button
+                                                >
+                                                    <mat-icon></mat-icon>
+                                                </button>
+                                            </ng-template>
+                                        </div>
+                                    </ng-container>
+                                    <ng-template #optionalPhoto>
+                                        <div>
+                                            <p class="grey-400-fg" style="margin-bottom: 0px;">Foto {{ i }}</p>
+                                            <button
+                                                class="red-fg"
+                                                matTooltip="Reset to original image"
+                                                mat-icon-button
+                                                (click)="onResetImage(i)"
+                                                *ngIf="productOldPhotos?.controls[i]?.get('value')?.value
+                                                        && (productPhotos?.controls[i]?.value !== productOldPhotos?.controls[i]?.get('value')?.value); else noUndo;"
+                                            >
+                                                <mat-icon>undo</mat-icon>
+                                            </button>
+                                            <ng-template #noUndo>
+                                                <button
+                                                    disabled
+                                                    mat-icon-button
+                                                >
+                                                    <mat-icon></mat-icon>
+                                                </button>
+                                            </ng-template>
+                                        </div>
+                                    </ng-template>
+                                </div>
                             </div>
+                            <p
+                                fxFlexAlign="start"
+                                [class.mat-error]="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
+                            >
+                                {{ getFormError(form.get('productMedia.photos.0')) }}
+                            </p>
                         </div>
                     </div>
                     <!-- / HARGA PRODUK -->
@@ -846,11 +874,7 @@
                             class="pr-0"
                             fxFlexAlign="center"
                             fxFlex="18"
-                            [class.mat-error]="
-                                form.get('productShipment.catalogueWeight').errors &&
-                                !form.get('productShipment.catalogueWeight').untouched &&
-                                (form.get('productShipment.catalogueWeight').dirty || form.get('productShipment.catalogueWeight').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productShipment.catalogueWeight'))"
                         >
                             Berat per Pcs
                         </label>
@@ -865,6 +889,11 @@
                                 suffix=" gr"
                                 placeholder="in gram(s)"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productShipment.catalogueWeight'))"
+                            >
+                                {{ getFormError(form.get('productShipment.catalogueWeight')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / BERAT PER PCS PRODUK -->
@@ -879,11 +908,7 @@
                             class="pr-0"
                             fxFlexAlign="center"
                             fxFlex="18"
-                            [class.mat-error]="
-                                form.get('productShipment.packagedWeight').errors &&
-                                !form.get('productShipment.packagedWeight').untouched &&
-                                (form.get('productShipment.packagedWeight').dirty || form.get('productShipment.packagedWeight').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productShipment.packagedWeight'))"
                         >
                             Berat per <br/>Master Box
                         </label>
@@ -898,6 +923,11 @@
                                 suffix=" gr"
                                 placeholder="in gram(s)"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productShipment.packagedWeight'))"
+                            >
+                                {{ getFormError(form.get('productShipment.packagedWeight')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / BERAT PER MASTER BOX PRODUK -->
@@ -912,11 +942,7 @@
                             class="pr-0"
                             fxFlexAlign="center"
                             fxFlex="18"
-                            [class.mat-error]="
-                                form.get('productShipment.catalogueDimension').errors &&
-                                form.get('productShipment.catalogueDimension').touched &&
-                                (form.get('productShipment.catalogueDimension').dirty || form.get('productShipment.catalogueDimension').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productShipment.catalogueDimension'))"
                         >
                             Dimensi per <br/>Pcs
                         </label>
@@ -930,6 +956,11 @@
                                 suffix=" cm³"
                                 thousandSeparator="."
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productShipment.catalogueDimension'))"
+                            >
+                                {{ getFormError(form.get('productShipment.catalogueDimension')) }}
+                            </mat-error>
                             <!-- <p matSuffix>cm³</p> -->
                             <!-- <p matSuffix>cm<sup>3</sup></p> -->
                         </mat-form-field>
@@ -946,11 +977,7 @@
                             fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0"
-                            [class.mat-error]="
-                                form.get('productShipment.packagedDimension').errors &&
-                                form.get('productShipment.packagedDimension').touched &&
-                                (form.get('productShipment.packagedDimension').dirty || form.get('productShipment.packagedDimension').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productShipment.packagedDimension'))"
                         >
                             Dimensi per <br/>Master Box
                         </label>
@@ -964,6 +991,11 @@
                                 placeholder="in cm³"
                                 suffix=" cm³"
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productShipment.packagedDimension'))"
+                            >
+                                {{ getFormError(form.get('productShipment.packagedDimension')) }}
+                            </mat-error>
                             <!-- <p matSuffix>cm³</p> -->
                             <!-- <p matSuffix>cm<sup>3</sup></p> -->
                         </mat-form-field>
@@ -1060,11 +1092,7 @@
                             fxFlex="18"
                             fxLayout="column"
                             fxLayoutAlign="center end"
-                            [class.mat-error]="
-                                form.get('productCount.qtyPerMasterBox').errors &&
-                                !form.get('productCount.qtyPerMasterBox').untouched &&
-                                (form.get('productCount.qtyPerMasterBox').dirty || form.get('productCount.qtyPerMasterBox').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productCount.qtyPerMasterBox'))"
                         >
                             Quantity <br/>per Master Box
                         </label>
@@ -1077,6 +1105,11 @@
                                 mask="separator"
                                 thousandSeparator="."
                             />
+                            <mat-error
+                                *ngIf="hasError(form.get('productCount.qtyPerMasterBox'))"
+                            >
+                                {{ getFormError(form.get('productCount.qtyPerMasterBox')) }}
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <!-- / QUANTITY PER MASTER BOX -->
@@ -1093,11 +1126,7 @@
                             fxFlex="18"
                             fxLayout="column"
                             fxLayoutAlign="center end"
-                            [class.mat-error]="
-                                form.get('productCount.minQtyValue').errors &&
-                                !form.get('productCount.minQtyValue').untouched &&
-                                (form.get('productCount.minQtyValue').dirty || form.get('productCount.minQtyValue').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productCount.minQtyValue'))"
                         >
                             Minimum Order <br/>Quantity
                         </label>
@@ -1116,6 +1145,11 @@
                                     mask="separator"
                                     thousandSeparator="."
                                 />
+                                <mat-error
+                                    *ngIf="hasError(form.get('productCount.minQtyValue'))"
+                                >
+                                    {{ getFormError(form.get('productCount.minQtyValue')) }}
+                                </mat-error>
                             </mat-form-field>
                             <!-- / INPUT TEXT BOX -->
                         </div>
@@ -1134,11 +1168,7 @@
                             fxFlex="18"
                             fxLayout="column"
                             fxLayoutAlign="center end"
-                            [class.mat-error]="
-                                form.get('productCount.additionalQtyValue').errors &&
-                                !form.get('productCount.additionalQtyValue').untouched &&
-                                (form.get('productCount.additionalQtyValue').dirty || form.get('productCount.additionalQtyValue').touched)
-                            "
+                            [class.mat-error]="hasError(form.get('productCount.additionalQtyValue'))"
                         >
                             Additional <br/>Quantity
                         </label>
@@ -1157,6 +1187,11 @@
                                     mask="separator"
                                     thousandSeparator="."
                                 />
+                                <mat-error
+                                    *ngIf="hasError(form.get('productCount.additionalQtyValue'))"
+                                >
+                                    {{ getFormError(form.get('productCount.additionalQtyValue')) }}
+                                </mat-error>
                             </mat-form-field>
                             <!-- / INPUT TEXT BOX -->
                         </div>

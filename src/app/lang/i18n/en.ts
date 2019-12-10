@@ -56,6 +56,8 @@ export const globalEnLang = {
         PASSWORD: 'Password',
         PHONE: 'Phone',
         PHONE_NUMBER: 'Phone Number',
+        PRODUCT_PHOTO: 'Product Photo',
+        PRODUCT_TAG: 'Product Tag',
         ROLE: 'Role',
         STATUS: 'Status',
         USERNAME: 'Username'
@@ -87,6 +89,8 @@ export const globalEnLang = {
         MAX: '{{ fieldName }} field may not be greater than {{ maxValue }}.',
         MAX_LENGTH: '{{ fieldName }} field may not be greater than {{ maxValue }} characters.',
         MIN: '{{ fieldName }} field must be at least {{ minValue }}.',
+        MIN_1_PHOTO: '{{ fieldName }} field must have at least 1 photo.',
+        MIN_1_TAG: '{{ fieldName }} field must have at least 1 tag.',
         MIN_LENGTH: '{{ fieldName }} field must be at least {{ minLength }} characters.',
         MOBILE_PHONE_LENGTH_PATTERN:
             '{{ fieldName }} field must contain a valid (prefix: {{ prefix }}, length: {{ length }}).',
