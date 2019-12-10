@@ -109,6 +109,13 @@ const catalogueReducer = createReducer(
             productName: payload
         })
     ),
+    on(
+        CatalogueActions.spliceCatalogue,
+        (state, { payload }) => ({
+            ...state,
+            catalogues: adapterCatalogue.removeOne(payload, state.catalogues)
+        })
+    ),
     /** 
      *  ===================================================================
      *  REQUESTS
@@ -251,6 +258,7 @@ const catalogueReducer = createReducer(
             isLoading: false,
             isDeleting: initialState.isDeleting,
             catalogue: payload.catalogue,
+            catalogues: adapterCatalogue.upsertOne(payload.catalogue, state.catalogues),
             errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
         })
     ),

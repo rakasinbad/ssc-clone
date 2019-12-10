@@ -38,6 +38,11 @@ export const setSelectedCatalogue = createAction(
     props<{ payload: string }>()
 );
 
+export const spliceCatalogue = createAction(
+    '[Catalogues Page] Splice (Remove) Catalogue from Entity',
+    props<{ payload: string }>()
+);
+
 /**
  * CATALOGUE - ADD
  */

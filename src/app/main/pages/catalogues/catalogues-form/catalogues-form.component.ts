@@ -12,12 +12,12 @@ import {
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { fuseAnimations } from '@fuse/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { HelperService, ErrorMessageService } from 'app/shared/helpers';
+import { HelperService, ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
@@ -93,6 +93,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
         private matDialog: MatDialog,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -101,7 +102,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         private sanitizer: DomSanitizer,
         private $helper: HelperService,
         private errorMessageSvc: ErrorMessageService,
-        private catalogueSvc: CataloguesService
+        private catalogueSvc: CataloguesService,
+        private _$notice: NoticeService
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
@@ -769,14 +771,38 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
             
             combineLatest([
-                this.store.select(CatalogueSelectors.getSelectedCatalogue),
-                this.store.select(CatalogueSelectors.getCatalogueCategories)
+                this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
+                this.store.select(CatalogueSelectors.getCatalogueCategories),
+                this.store.select(AuthSelectors.getUserSupplier)
             ]).pipe(
                 takeUntil(this._unSubs$)
-            ).subscribe(([catalogue, categories]) => {
+            ).subscribe(([catalogue, categories, userSupplier]) => {
                 if (categories.length === 0) {
                     this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
+                } else if (!catalogue) {
+                    this.store.dispatch(CatalogueActions.fetchCatalogueRequest({
+                        payload: id
+                    }));
+
+                    this.store.dispatch(CatalogueActions.setSelectedCatalogue({
+                        payload: id
+                    }));
                 } else if (categories.length > 0 && catalogue) {
+                    if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                        this.store.dispatch(CatalogueActions.spliceCatalogue({
+                            payload: id
+                        }));
+
+                        this._$notice.open('Produk tidak ditemukan.', 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+
+                        return this.router.navigate([
+                            'pages', 'catalogues', 'list'
+                        ]);
+                    }
+
                     const searchCategory = (catalogueId, selectedCategories: Array<CatalogueCategory> ) => {
                         const selectedCategory = selectedCategories.filter(category => category.id === catalogueId);
 
