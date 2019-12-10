@@ -4,6 +4,7 @@ export interface ITimestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    fetchedAt?: string;
 }
 
 export class Timestamp implements ITimestamp {
