@@ -213,7 +213,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             name: formValues.productInfo.name,
             description: formValues.productInfo.description,
             information: formValues.productInfo.information,
-            detail: formValues.productInfo.description,
+            detail: formValues.productInfo.information,
             brandId: formValues.productInfo.brandId,
             firstCatalogueCategoryId: formValues.productInfo.category[0].id,
             lastCatalogueCategoryId: formValues.productInfo.category.length === 1 ?
