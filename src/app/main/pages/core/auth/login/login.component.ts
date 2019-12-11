@@ -220,6 +220,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                     });
                 }
             }
+
+            return;
         }
 
         this.store.dispatch(
