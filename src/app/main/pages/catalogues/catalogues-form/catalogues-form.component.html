@@ -232,38 +232,45 @@
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
                     <div
-                        class="custom-field-right pb-20"
+                        class="custom-field-right pb-16"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
                     >
                         <label
-                            fxFlexAlign="center"
+                            fxFlexAlign="start"
                             fxFlex="18"
                             class="pr-0 pt-20"
-                            [class.mat-error]="hasError(form.get('productInfo.category'))"
+                            [class.mat-error]="hasError(form.get('productInfo.category'), { ignoreTouched: true, ignoreDirty: true })"
                         >
                             *Kategori
                         </label>
 
-                        <span class="ml-20 grey-600-fg" fxFlex="80">
-                            <strong [innerHTML]="productCategory$"></strong>
-                            <button
-                                class="red-fg"
-                                mat-icon-button
-                                [disableRipple]="true"
-                                style="margin-left: 10px;"
-                                matTooltip="Change the category"
-                                matTooltipPosition="right"
-                                (click)="onEditCategory(form.get('productInfo.id').value)"
+                        <span class="ml-20 grey-600-fg" fxFlex="80" fxLayout="column" fxLayoutAlign="start start">
+                            <div
+                                fxFlex
+                                fxLayout="row"
                             >
-                                <mat-icon>edit</mat-icon>
-                            </button>
-                            <mat-error
-                                *ngIf="hasError(form.get('productInfo.category'))"
+                                <strong [innerHTML]="productCategory$" fxFlexAlign="center"></strong>
+                                <button
+                                    fxFlexAlign="center"
+                                    class="red-fg"
+                                    mat-icon-button
+                                    [disableRipple]="true"
+                                    style="margin-left: 10px;"
+                                    matTooltip="Change the category"
+                                    matTooltipPosition="right"
+                                    (click)="onEditCategory(form.get('productInfo.id').value)"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </div>
+                            <p
+                                class="mat-error my-0"
+                                *ngIf="hasError(form.get('productInfo.category'), { ignoreTouched: true, ignoreDirty: true })"
                             >
                                 {{ getFormError(form.get('productInfo.category')) }}
-                            </mat-error>
+                            </p>
                         </span>
                     </div>
                     <!-- / KATEGORI PRODUK -->

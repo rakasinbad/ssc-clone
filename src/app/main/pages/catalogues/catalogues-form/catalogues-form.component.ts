@@ -43,7 +43,7 @@ import { MatTableDataSource, MatDialog } from '@angular/material';
 import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
-import { IQueryParams, Brand, UserSupplier } from 'app/shared/models';
+import { IQueryParams, Brand, UserSupplier, TNullable } from 'app/shared/models';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { CataloguesService } from '../services';
@@ -343,6 +343,22 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this._unSubs$ = new Subject<void>();
 
+        /** Mulai mengambil data kategori katalog. */
+        this.store.select(
+            CatalogueSelectors.getCatalogueCategories
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(categories => {
+            /** Minta kategori katalog ke back-end jika belum ada. */
+            if (categories.length === 0) {
+                return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({
+                    payload: {
+                        paginate: false
+                    }
+                }));
+            }
+        });
+
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
@@ -554,7 +570,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 }),
                 takeUntil(this._unSubs$)
             ).subscribe(data => {
-                const categories = data[0];
+                const categories: Array<{
+                    id: string;
+                    name: string;
+                    parent: TNullable<string>;
+                    hasChildren?: boolean;
+                }> = data[0];
                 const userSupplier: UserSupplier = data[1];
                 const productName: string = data[2];
                 const brands: Array<Brand> = data[3];
@@ -574,7 +595,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 
                 // this.form.get('productInfo.brandId').patchValue(userSupplier.);
                 // this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
-                this.form.get('productInfo.category').patchValue(categories);
 
                 // this.startFetchBrands(auth.user.userSuppliers[0].supplierId);
 
@@ -590,7 +610,26 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     `)
                 );
 
+                const lastCategory = categories.length > 0 ? categories[categories.length - 1] : undefined;
+                if (!lastCategory || lastCategory.hasChildren) {
+                    // this.form.get('productInfo.category').setErrors({
+                    //     hasChildren: true
+                    // });
+
+                    this.form.get('productInfo.category').setValue('');
+                    this.form.get('productInfo.category').updateValueAndValidity();
+                } else {
+                    // this.form.get('productInfo.category').setErrors({
+                    //     hasChildren: false
+                    // });
+
+                    this.form.get('productInfo.category').setValue(categories);
+                    this.form.get('productInfo.category').updateValueAndValidity();
+                }
+
                 this._cd.markForCheck();
+                // this.form.markAllAsTouched();
+                // this.form.markAsDirty({ onlySelf: false });
                 // console.log(this.form.getRawValue());
             });
 
@@ -780,9 +819,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             // this.productTagsControls.clear();
             // (this.form.get('productSale.tags') as FormArray).clear();
 
-            this
-                .store
-                .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
+            // this
+            //     .store
+            //     .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
             
             combineLatest([
                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
@@ -827,25 +866,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                             children: selectedCategory[0].children
                         };
                     };
-
-                    const newCategories = [];
-                    let isFirst = true;
-                    do {
-                        if (isFirst) {
-                            newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
-                            isFirst = false;
-                        } else {
-                            const lastCategory = newCategories[newCategories.length - 1];
-                            newCategories.push(searchCategory(lastCategory.parent, categories));
-                        }
-                    } while (newCategories[newCategories.length - 1].parent);
-
-
-                    this.store.dispatch(CatalogueActions.setSelectedCategories({
-                        payload: [
-                            ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent }))
-                        ]
-                    }));
 
                     const keywords = catalogue.catalogueKeywordCatalogues.map(keyword => keyword.catalogueKeyword.tag);
                     (this.form.get('productSale.tags') as FormArray).clear();
@@ -939,6 +959,31 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
                     }
 
+                    if (isNaN(catalogue.lastCatalogueCategoryId) || !catalogue.lastCatalogueCategoryId) {
+                        this.store.dispatch(CatalogueActions.resetSelectedCategories());
+                    } else {
+                        const newCategories = [];
+                        let isFirst = true;
+                        do {
+                            if (isFirst) {
+                                newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
+                                isFirst = false;
+                            } else {
+                                const lastCategory = newCategories[newCategories.length - 1];
+                                newCategories.push(searchCategory(lastCategory.parent, categories));
+                            }
+                        } while (newCategories[newCategories.length - 1].parent);
+    
+    
+                        this.store.dispatch(CatalogueActions.setSelectedCategories({
+                            payload: [
+                                ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent, hasChildren: (newCat.children.length > 0) }))
+                            ]
+                        }));
+                    }
+
+                    this.form.markAsDirty({ onlySelf: false });
+                    this.form.markAllAsTouched();
                     this.form.markAsPristine();
                     // this.store.dispatch(
                     //     CatalogueActions

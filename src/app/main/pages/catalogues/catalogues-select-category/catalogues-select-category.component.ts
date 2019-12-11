@@ -214,6 +214,7 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
 
         this.selectedCategoriesForm.controls[level].get('id').setValue(id);
         this.selectedCategoriesForm.controls[level].get('name').setValue(name);
+        this.selectedCategoriesForm.controls[level].get('hasChild').setValue(!!hasChild);
     }
 
     public selectCategory(): void {
@@ -224,7 +225,8 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
                     .map((control, idx, controls) => ({
                         id: control.get('id').value,
                         name: control.get('name').value,
-                        parent: idx === 0 ? null : controls[idx - 1].get('id').value
+                        parent: idx === 0 ? null : controls[idx - 1].get('id').value,
+                        hasChildren: !!control.get('hasChild').value
                     })
                 )
             ]
@@ -252,25 +254,29 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
             this.fb.group({
                 id: this.fb.control(null, Validators.required),
                 idx: this.fb.control(null, Validators.required),
-                name: this.fb.control(null, Validators.required)
+                name: this.fb.control(null, Validators.required),
+                hasChild: false,
             }, Validators.required),
             // Level 2
             this.fb.group({
                 id: this.fb.control(null),
                 idx: this.fb.control(null),
-                name: this.fb.control(null)
+                name: this.fb.control(null),
+                hasChild: false
             }),
             // Level 3
             this.fb.group({
                 id: this.fb.control(null),
                 idx: this.fb.control(null),
-                name: this.fb.control(null)
+                name: this.fb.control(null),
+                hasChild: false
             }),
             // Level 4
             this.fb.group({
                 id: this.fb.control(null),
                 idx: this.fb.control(null),
-                name: this.fb.control(null)
+                name: this.fb.control(null),
+                hasChild: false
             }),
         ], Validators.required);
 

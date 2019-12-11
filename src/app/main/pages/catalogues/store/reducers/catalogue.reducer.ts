@@ -23,7 +23,7 @@ export interface State {
     isUpdating?: boolean;
     isLoading: boolean;
     selectedCatalogueId: string | number;
-    selectedCategories: Array<{ id: string; name: string; parent: TNullable<string>; }>;
+    selectedCategories: Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>;
     productName: string;
     category?: CatalogueCategory;
     categories: Array<CatalogueCategory>;
@@ -90,9 +90,15 @@ const catalogueReducer = createReducer(
         CatalogueActions.addSelectedCategory,
         (state, { payload }) => ({
             ...state,
-            selectedCategories: [...state.selectedCategories, {
-                id: payload.id, name: payload.name, parent: payload.parent
-            }]
+            selectedCategories: [
+                ...state.selectedCategories,
+                {
+                    id: payload.id,
+                    name: payload.name,
+                    parent: payload.parent,
+                    hasChildren: payload.hasChildren
+                }
+            ]
         })
     ),
     on(

@@ -378,12 +378,12 @@ export const setProductName = createAction(
 
 export const addSelectedCategory = createAction(
     '[Catalogues Page] Add Selected Category',
-    props<{ payload: { id: string, name: string, parent: TNullable<string> } }>()
+    props<{ payload: { id: string, name: string, parent: TNullable<string>, hasChildren?: boolean } }>()
     );
 
 export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
-    props<{ payload: Array<{ id: string, name: string, parent: TNullable<string> }> }>()
+    props<{ payload: Array<{ id: string, name: string, parent: TNullable<string>, hasChildren?: boolean }> }>()
     );
 
 export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
