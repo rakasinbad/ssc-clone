@@ -295,7 +295,9 @@
 
                                         <div class="info" fxFlex="100">
                                             <ng-container
-                                                *ngIf="(!form.get('city')?.value && !isEdit) || !isEdit"
+                                                *ngIf="
+                                                    (!form.get('city')?.value && !isEdit) || !isEdit
+                                                "
                                             >
                                                 {{ (profile$ | async)?.urban?.city }}
                                             </ng-container>
@@ -377,7 +379,10 @@
 
                                         <div class="info" fxFlex="100">
                                             <ng-container
-                                                *ngIf="(!form.get('district')?.value && !isEdit) || !isEdit"
+                                                *ngIf="
+                                                    (!form.get('district')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
                                             >
                                                 {{ (profile$ | async)?.urban?.district }}
                                             </ng-container>
@@ -471,7 +476,10 @@
 
                                         <div class="info" fxFlex="100">
                                             <ng-container
-                                                *ngIf="(!form.get('urban')?.value && !isEdit) || !isEdit"
+                                                *ngIf="
+                                                    (!form.get('urban')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
                                             >
                                                 {{ (profile$ | async)?.urban?.urban }}
                                             </ng-container>
@@ -555,7 +563,10 @@
 
                                         <div class="info" fxFlex="100">
                                             <ng-container
-                                                *ngIf="(!form.get('postcode')?.value && !isEdit) || !isEdit"
+                                                *ngIf="
+                                                    (!form.get('postcode')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
                                             >
                                                 {{ (profile$ | async)?.urban?.zipCode }}
                                             </ng-container>
@@ -668,7 +679,7 @@
             </div>
             <!-- / CONTENT -->
 
-            <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) || !(provinces$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

@@ -276,7 +276,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
 
     onDownload(): void {
         window.open(
-            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/order_parcels/update_order_parcel_by_payment_status.csv',
+            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Payment+Status.zip',
             '_blank'
         );
     }

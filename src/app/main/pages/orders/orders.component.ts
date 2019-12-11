@@ -286,7 +286,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onDownload(): void {
         window.open(
-            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/order_parcels/update_order_parcel_by_status.csv',
+            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Order+Status.zip',
             '_blank'
         );
     }
