@@ -698,7 +698,7 @@ export class OrderEffects {
                     );
                 }
 
-                return this._$downloadApi.download('export-orders').pipe(
+                return this._$downloadApi.download('export-orders', supplierId).pipe(
                     map(resp => {
                         // const contentType = resp.headers.get('Content-Type');
                         // const contentDisposition = resp.headers.get('Content-Disposition');

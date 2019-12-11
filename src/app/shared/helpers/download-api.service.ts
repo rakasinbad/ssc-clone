@@ -15,9 +15,21 @@ export class DownloadApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
-    download(endpoint: string): Observable<any> {
+    download(endpoint: string, supplierId?: string): Observable<any> {
+        const newArg = supplierId
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
         return this.http.get(`${this._url}/${endpoint}`, {
-            reportProgress: true
+            reportProgress: true,
+            params: newParams
         });
     }
 }
