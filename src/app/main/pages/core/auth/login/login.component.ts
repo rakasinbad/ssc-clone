@@ -1,5 +1,5 @@
-import { isPlatformBrowser } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
+import { isPlatformBrowser } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -175,63 +175,16 @@ export class LoginComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (isPlatformBrowser(this.platformId)) {
-            if (this.platform.FIREFOX) {
-                const db = indexedDB.open('test');
-
-                db.onerror = () => {
-                    /* Firefox PB enabled */
-                    this._$notice.open('Please exit from Private Window', 'warning', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
-                };
-
-                db.onsuccess = () => {
-                    /* Not enabled */
-                    indexedDB.deleteDatabase('test');
-                };
-            } else if (this.platform.SAFARI) {
-                const storage = window.sessionStorage;
-
-                try {
-                    storage.setItem('someKeyHere', 'test');
-                    storage.removeItem('someKeyHere');
-                } catch (e) {
-                    if (e.code === DOMException.QUOTA_EXCEEDED_ERR && storage.length === 0) {
-                        // Private here
-
-                        this._$notice.open('Please exit from Private Window', 'warning', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
-                        });
-                    }
-                }
-            } else if (this.platform.EDGE) {
-                if (
-                    !window.indexedDB &&
-                    ((window as any).PointerEvent || (window as any).MSPointerEvent)
-                ) {
-                    // Privacy Mode
-
-                    this._$notice.open('Please exit from Private Window', 'warning', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
-                }
-            }
-
-            return;
-        }
-
-        this.store.dispatch(
-            AuthActions.authLoginRequest({
-                payload: {
-                    username: form.value.username,
-                    password: form.value.password
-                }
+        this.handlePrivateWindow()
+            .then(res => {
+                this.handleLogin(form);
             })
-        );
+            .catch(err => {
+                this._$notice.open('Please exit from Private Window', 'warning', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            });
     }
 
     /**
@@ -253,5 +206,64 @@ export class LoginComponent implements OnInit, OnDestroy {
                 }
             }
         }
+    }
+
+    private handleLogin(form: NgForm): void {
+        this.store.dispatch(
+            AuthActions.authLoginRequest({
+                payload: {
+                    username: form.value.username,
+                    password: form.value.password
+                }
+            })
+        );
+    }
+
+    private handlePrivateWindow(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            if (isPlatformBrowser(this.platformId)) {
+                if (this.platform.FIREFOX) {
+                    const db = indexedDB.open('test');
+
+                    db.onerror = () => {
+                        /* Firefox PB enabled */
+                        reject('Private Browser is enable!');
+                    };
+
+                    db.onsuccess = () => {
+                        /* Not enabled */
+                        indexedDB.deleteDatabase('test');
+                        resolve(true);
+                    };
+                } else if (this.platform.SAFARI) {
+                    const storage = window.sessionStorage;
+
+                    try {
+                        storage.setItem('someKeyHere', 'test');
+                        storage.removeItem('someKeyHere');
+                        resolve(true);
+                    } catch (e) {
+                        if (e.code === DOMException.QUOTA_EXCEEDED_ERR && storage.length === 0) {
+                            // Private here
+                            reject('Private Browser is enable!');
+                        }
+                    }
+                } else if (this.platform.EDGE) {
+                    if (
+                        !window.indexedDB &&
+                        ((window as any).PointerEvent || (window as any).MSPointerEvent)
+                    ) {
+                        // Privacy Mode
+                        reject('Private Browser is enable!');
+                    } else {
+                        resolve(true);
+                    }
+                } else {
+                    resolve(true);
+                }
+            } else {
+                resolve(true);
+            }
+        });
     }
 }
