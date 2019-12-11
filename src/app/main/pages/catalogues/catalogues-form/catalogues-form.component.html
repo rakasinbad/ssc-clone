@@ -33,7 +33,7 @@
                             *Produk ID
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                             <input
                                 hidden
                                 name="id"
@@ -55,6 +55,9 @@
                                 SKU already exist.
                             </mat-error>
                         </mat-form-field>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view'">
+                            {{ form.get('productInfo.externalId').value }}
+                        </span>
                     </div>
                     <!-- / PRODUCT ID -->
                     <!-- NAMA PRODUK -->
@@ -73,7 +76,7 @@
                             *Nama Produk
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                             <input
                                 matInput
                                 name="name"
@@ -85,15 +88,19 @@
                                 {{ getFormError(form.get('productInfo.name')) }}
                             </mat-error>
                         </mat-form-field>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view'">
+                            {{ form.get('productInfo.name').value }}
+                        </span>
                     </div>
                     <!-- / NAMA PRODUK -->
                     <!-- DESKRIPSI PRODUK -->
                     <div
                         class="custom-field-right"
+                        [class.h-80]="formMode === 'view'"
+                        [class.mb-20]="formMode !== 'view'"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
-                        style="margin-bottom: 21.5px;"
                     >
                         <label
                             fxFlex="18"
@@ -104,7 +111,7 @@
                             Deskripsi Produk
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                             <textarea
                                 matInput
                                 rows="5"
@@ -116,6 +123,9 @@
                                 {{ getFormError(form.get('productInfo.description')) }}
                             </mat-error>
                         </mat-form-field>
+                        <span class="pt-12" fxFlex="80" *ngIf="formMode === 'view'">
+                            {{ form.get('productInfo.description').value }}
+                        </span>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
                                 matInput
@@ -128,34 +138,46 @@
                     <!-- INFORMASI PRODUK -->
                     <div
                         class="custom-field-right"
+                        [class.h-80]="formMode === 'view'"
+                        [class.mb-20]="formMode !== 'view'"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
-                        style="margin-bottom: 21.5px;"
                     >
                         <label
                             fxFlex="18"
                             class="pr-0"
-                            style="padding-top: 1.5em;"
+                            fxFlexAlign="start"
+                            [class.pt-8]="formMode === 'view'"
+                            [class.pt-20]="formMode !== 'view'"
                             [class.mat-error]="hasError(form.get('productInfo.information'))"
                         >
                             *Informasi Produk
                         </label>
-                
+
                         <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
-                            <quill-editor
-                                [class.ql-error]="hasError(form.get('productInfo.information'))"
-                                format='html'
-                                formControlName="information"
-                            ></quill-editor>
-                            <!-- <code>
-                                {{ form.get('productInfo.description').value }}
-                            </code> -->
-                            <mat-error
-                                *ngIf="hasError(form.get('productInfo.information'))"
+                            <ng-container
+                                *ngIf="formMode !== 'view'"
                             >
-                                {{ getFormError(form.get('productInfo.information')) }}
-                            </mat-error>
+                                <quill-editor
+                                    [class.ql-error]="hasError(form.get('productInfo.information'))"
+                                    format='html'
+                                    formControlName="information"
+                                ></quill-editor>
+                                <!-- <code>
+                                    {{ form.get('productInfo.description').value }}
+                                </code> -->
+                                <mat-error
+                                    *ngIf="hasError(form.get('productInfo.information'))"
+                                >
+                                    {{ getFormError(form.get('productInfo.information')) }}
+                                </mat-error>
+                            </ng-container>
+                            <quill-view-html
+                                theme="snow"
+                                class="view-only"
+                                [content]="form.get('productInfo.information').value"
+                            ></quill-view-html>
                         </div>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
@@ -210,7 +232,7 @@
                             *Brand
                         </label>
 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                             <mat-select
                                 name="brandId"
                                 formControlName="brandId"
@@ -228,6 +250,9 @@
                                 {{ getFormError(form.get('productInfo.brandId')) }}
                             </mat-error>
                         </mat-form-field>
+                        <span fxFlexAlign="center" class="pt-12" fxFlex="80" *ngIf="formMode === 'view'">
+                            {{ form.get('productInfo.brandName').value }}
+                        </span>
                     </div>
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
@@ -246,9 +271,12 @@
                             *Kategori
                         </label>
 
-                        <span class="ml-20 grey-600-fg" fxFlex="80">
-                            <strong [innerHTML]="productCategory$"></strong>
+                        <span class="ml-28 grey-600-fg" [class.pt-12]="formMode === 'view'" fxFlex="80">
+                            <strong
+                                [innerHTML]="productCategory$"
+                            ></strong>
                             <button
+                                *ngIf="formMode !== 'view'"
                                 class="red-fg"
                                 mat-icon-button
                                 [disableRipple]="true"

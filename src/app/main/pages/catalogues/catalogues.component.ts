@@ -317,6 +317,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.router.navigate(['/pages/catalogues/edit', id]);
     }
 
+    viewProduct(id: string): void {
+        this.store.dispatch(CatalogueActions.setSelectedCatalogue({
+            payload: id
+        }));
+        this.router.navigate(['/pages/catalogues/view', id]);
+    }
+
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
 
