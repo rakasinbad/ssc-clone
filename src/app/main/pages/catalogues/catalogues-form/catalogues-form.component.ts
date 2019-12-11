@@ -379,9 +379,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 ]],
                 description: [''],
                 information: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
+                    // RxwebValidators.required({
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    // })
                 ]],
                 // variant: ['', Validators.required],
                 brandId: ['', [
