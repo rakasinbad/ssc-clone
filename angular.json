@@ -194,18 +194,6 @@
                             "serviceWorker": true,
                             "ngswConfigPath": "ngsw-config.json"
                         },
-                        "ec": {
-                            "sourceMap": true,
-                            "extractCss": true
-                        },
-                        "hmr": {
-                            "fileReplacements": [
-                                {
-                                    "replace": "src/environments/environment.ts",
-                                    "with": "src/environments/environment.hmr.ts"
-                                }
-                            ]
-                        },
                         "staging": {
                             "fileReplacements": [
                                 {
@@ -231,6 +219,44 @@
                             ],
                             "serviceWorker": true,
                             "ngswConfigPath": "ngsw-config.json"
+                        },
+                        "development": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.dev.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "4mb",
+                                    "maximumError": "10mb"
+                                }
+                            ],
+                            "serviceWorker": true,
+                            "ngswConfigPath": "ngsw-config.json"
+                        },
+                        "ec": {
+                            "sourceMap": true,
+                            "extractCss": true
+                        },
+                        "hmr": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.hmr.ts"
+                                }
+                            ]
                         }
                     }
                 },
@@ -243,15 +269,18 @@
                         "production": {
                             "browserTarget": "supplier-center:build:production"
                         },
+                        "staging": {
+                            "browserTarget": "supplier-center:build:staging"
+                        },
+                        "development": {
+                            "browserTarget": "supplier-center:build:development"
+                        },
                         "hmr": {
                             "hmr": true,
                             "browserTarget": "supplier-center:build:hmr"
                         },
                         "ec": {
                             "browserTarget": "supplier-center:build:ec"
-                        },
-                        "staging": {
-                            "browserTarget": "supplier-center:build:staging"
                         }
                     }
                 },
