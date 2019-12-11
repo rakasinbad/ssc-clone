@@ -1,4 +1,3 @@
-import { takeUntil, filter, tap } from 'rxjs/operators';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -7,7 +6,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { LogService } from 'app/shared/helpers';
@@ -36,6 +35,7 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromMerchant.FeatureState>,
         private _$log: LogService
     ) {}
@@ -52,9 +52,20 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.parent.snapshot.params;
 
+        /* .pipe(
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            map(([store, userSupplier]) => {
+                if (!userSupplier) {
+                    this.router.navigateByUrl('/pages/account/stores');
+                }
+
+                return store;
+            })
+        ) */
         this.store$ = this.store.select(StoreSelectors.getSelectedStore);
-        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
         this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
+
+        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
     }
 
     ngOnDestroy(): void {

@@ -36,13 +36,6 @@ export class SupplierInventoryEffects {
             switchMap(({ body, id }) => {
                 return this._$supplierInventoryApi.patchCustom<any>(body, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(`[RESPONSE REQUEST UPDATE SUPPLIER INVENTORY]`, {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         return SupplierInventoryActions.updateSupplierInventorySuccess({
                             payload: resp
                         });
@@ -73,13 +66,6 @@ export class SupplierInventoryEffects {
                 ofType(SupplierInventoryActions.updateSupplierInventoryFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST UPDATE SUPPLIER INVENTORY FAILURE]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Data gagal diupdate', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -100,13 +86,6 @@ export class SupplierInventoryEffects {
                 ofType(SupplierInventoryActions.updateSupplierInventorySuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST UPDATE SUPPLIER INVENTORY SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this.router.navigate(['/pages/supplier-inventories']).finally(() => {
                         this._$notice.open('Data berhasil diupdate', 'success', {
                             verticalPosition: 'bottom',
@@ -147,21 +126,6 @@ export class SupplierInventoryEffects {
                 return this._$supplierInventoryApi.findAll(payload, supplierId).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup(
-                            '[RESPONSE REQUEST FETCH SUPPLIER INVENTORIES]',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: payload
-                                },
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            },
-                            'groupCollapsed'
-                        );
-
                         const newResp = {
                             total: resp.total,
                             data: resp.data
@@ -194,18 +158,12 @@ export class SupplierInventoryEffects {
                 ofType(SupplierInventoryActions.fetchSupplierInventoriesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        '[REQUEST FETCH SUPPLIER INVENTORIES FAILURE]',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -227,13 +185,6 @@ export class SupplierInventoryEffects {
                 return this._$supplierInventoryApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH SUPPLIER INVENTORY]', {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         return SupplierInventoryActions.fetchSupplierInventorySuccess({
                             payload: resp
                         });
@@ -261,16 +212,16 @@ export class SupplierInventoryEffects {
                 ofType(SupplierInventoryActions.fetchSupplierInventoryFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH SUPPLIER INVENTORY FAILURE]', {
-                        resp: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                    this.router.navigate(['/pages/supplier-inventories']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     });
                 })
             ),

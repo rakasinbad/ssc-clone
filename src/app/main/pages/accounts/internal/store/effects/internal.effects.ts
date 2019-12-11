@@ -51,20 +51,6 @@ export class InternalEffects {
                     }>(payload)
                     .pipe(
                         map(resp => {
-                            this._$log.generateGroup(
-                                `[RESPONSE REQUEST CREATE INTERNAL EMPLOYEE]`,
-                                {
-                                    payload: {
-                                        type: 'log',
-                                        value: payload
-                                    },
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                }
-                            );
-
                             return InternalActions.createInternalEmployeeSuccess({ payload: resp });
                         }),
                         catchError(err =>
@@ -90,13 +76,6 @@ export class InternalEffects {
                 ofType(InternalActions.createInternalEmployeeFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST CREATE INTERNAL EMPLOYEE FAILURE]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Data gagal ditambah', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -117,13 +96,6 @@ export class InternalEffects {
                 ofType(InternalActions.createInternalEmployeeSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST CREATE INTERNAL EMPLOYEE SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this.router.navigate(['/pages/account/internal']).finally(() => {
                         this._$notice.open('Data berhasil ditambah', 'success', {
                             verticalPosition: 'bottom',
@@ -154,16 +126,6 @@ export class InternalEffects {
                     }>(body, id)
                     .pipe(
                         map(resp => {
-                            this._$log.generateGroup(
-                                `[RESPONSE REQUEST UPDATE INTERNAL EMPLOYEE]`,
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    }
-                                }
-                            );
-
                             return InternalActions.updateInternalEmployeeSuccess({
                                 payload: resp
                             });
@@ -194,13 +156,6 @@ export class InternalEffects {
                 ofType(InternalActions.updateInternalEmployeeFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST UPDATE INTERNAL EMPLOYEE FAILURE]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Data gagal diupdate', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -221,13 +176,6 @@ export class InternalEffects {
                 ofType(InternalActions.updateInternalEmployeeSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST UPDATE INTERNAL EMPLOYEE SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this.router.navigate(['/pages/account/internal']).finally(() => {
                         this._$notice.open('Data berhasil diupdate', 'success', {
                             verticalPosition: 'bottom',
@@ -264,13 +212,6 @@ export class InternalEffects {
                 return dialogRef.afterClosed();
             }),
             map(id => {
-                this._$log.generateGroup(`[REQUEST CONFIRM DELETE INTERNAL EMPLOYEE]`, {
-                    id: {
-                        type: 'log',
-                        value: id
-                    }
-                });
-
                 if (id) {
                     return InternalActions.deleteInternalEmployeeRequest({ payload: id });
                 } else {
@@ -292,13 +233,6 @@ export class InternalEffects {
             switchMap(id => {
                 return this._$internalApi.delete(id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(`[RESPONSE REQUEST DELETE INTERNAL EMPLOYEE]`, {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         return InternalActions.deleteInternalEmployeeSuccess({ payload: id });
                     }),
                     catchError(err =>
@@ -327,13 +261,6 @@ export class InternalEffects {
                 ofType(InternalActions.deleteInternalEmployeeFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST DELETE INTERNAL EMPLOYEE FAILURE]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Data gagal dihapus', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -354,13 +281,6 @@ export class InternalEffects {
                 ofType(InternalActions.deleteInternalEmployeeSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(`[REQUEST DELETE INTERNAL EMPLOYEE SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Data berhasil dihapus', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -424,16 +344,6 @@ export class InternalEffects {
 
                 return this._$internalApi.patch(change, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            `[RESPONSE REQUEST UPDATE STATUS INTERNAL EMPLOYEE]`,
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            }
-                        );
-
                         return InternalActions.updateStatusInternalEmployeeSuccess({
                             payload: {
                                 id,
@@ -473,13 +383,6 @@ export class InternalEffects {
                 ofType(InternalActions.updateStatusInternalEmployeeFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST UPDATE STATUS INTERNAL EMPLOYEE FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Update status gagal', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -500,13 +403,6 @@ export class InternalEffects {
                 ofType(InternalActions.updateStatusInternalEmployeeSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST UPDATE STATUS INTERNAL EMPLOYEE SUCCESS]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     this._$notice.open('Update status berhasil', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
@@ -547,20 +443,6 @@ export class InternalEffects {
                     .pipe(
                         catchOffline(),
                         map(resp => {
-                            this._$log.generateGroup(
-                                '[RESPONSE REQUEST FETCH INTERNAL EMPLOYEES]',
-                                {
-                                    response: {
-                                        type: 'log',
-                                        value: resp
-                                    },
-                                    params: {
-                                        type: 'log',
-                                        value: params
-                                    }
-                                }
-                            );
-
                             const newResp = {
                                 total: resp.total,
                                 data:
@@ -644,14 +526,12 @@ export class InternalEffects {
                 ofType(InternalActions.fetchInternalEmployeesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH INTERNAL EMPLOYEES FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -673,13 +553,6 @@ export class InternalEffects {
                 return this._$userApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH INTERNAL EMPLOYEE]', {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         const newResp = new User(
                             resp.id,
                             resp.fullName,
@@ -743,16 +616,16 @@ export class InternalEffects {
                 ofType(InternalActions.fetchInternalEmployeeFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH INTERNAL EMPLOYEE FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                    this.router.navigate(['/pages/orders']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     });
                 })
             ),

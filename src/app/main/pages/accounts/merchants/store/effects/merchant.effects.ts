@@ -109,17 +109,6 @@ export class MerchantEffects {
                 ofType(StoreActions.createStoreSuccess),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        `[REQUEST CREATE STORE SUCCESS]`,
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     this.router.navigate(['/pages/account/stores']).finally(() => {
                         this._$notice.open(`${resp.name} berhasil ditambah`, 'success', {
                             verticalPosition: 'bottom',
@@ -580,17 +569,6 @@ export class MerchantEffects {
                 tap(([resp, params]) => {
                     const { storeId } = params;
 
-                    this._$log.generateGroup(`[REQUEST UPDATE STORE EMPLOYEE SUCCESS]`, {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        },
-                        params: {
-                            type: 'log',
-                            value: params
-                        }
-                    });
-
                     this.router
                         .navigate(['/pages/account/stores', storeId, 'detail'])
                         .finally(() => {
@@ -789,16 +767,6 @@ export class MerchantEffects {
 
                 return this._$merchantEmployeeApi.patch(change, id).pipe(
                     map(resp => {
-                        this._$log.generateGroup(
-                            `[RESPONSE REQUEST UPDATE STATUS STORE EMPLOYEE]`,
-                            {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            }
-                        );
-
                         return StoreActions.updateStatusStoreEmployeeSuccess({
                             payload: {
                                 id,
@@ -1652,22 +1620,16 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreEditFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST FETCH STORE EDIT FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    const message = resp.errors.error.message || resp.errors.message;
-
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                    this.router.navigate(['/pages/account/stores']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     });
                 })
             ),
@@ -1697,43 +1659,6 @@ export class MerchantEffects {
                     .pipe(
                         catchOffline(),
                         map(resp => {
-                            this._$log.generateGroup('[RESPONSE REQUEST FETCH STORE EMPLOYEES]', {
-                                response: {
-                                    type: 'log',
-                                    value: resp
-                                },
-                                params: {
-                                    type: 'log',
-                                    value: params
-                                }
-                            });
-
-                            // let newResp = {
-                            //     total: 0,
-                            //     data: []
-                            // };
-
-                            // if (resp.total > 0) {
-                            //     newResp = {
-                            //         total: resp.total,
-                            //         data: resp.data.map(row => {
-                            //             const newUserStore = new UserStore(
-                            //                 row.id,
-                            //                 row.userId,
-                            //                 row.storeId,
-                            //                 row.status,
-                            //                 row.createdAt,
-                            //                 row.updatedAt,
-                            //                 row.deletedAt
-                            //             );
-
-                            //             newUserStore.user = row.user;
-
-                            //             return newUserStore;
-                            //         })
-                            //     };
-                            // }
-
                             const newResp = {
                                 total: resp.total,
                                 data:
@@ -1789,18 +1714,10 @@ export class MerchantEffects {
                 ofType(StoreActions.fetchStoreEmployeesFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup(
-                        'REQUEST FETCH STORE EMPLOYEES FAILURE',
-                        {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -1824,13 +1741,6 @@ export class MerchantEffects {
                 return this._$userApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        this._$log.generateGroup('[RESPONSE REQUEST FETCH STORE EMPLOYEE EDIT]', {
-                            response: {
-                                type: 'log',
-                                value: resp
-                            }
-                        });
-
                         const newResp = new User(
                             resp.id,
                             resp.fullName,
@@ -1893,18 +1803,25 @@ export class MerchantEffects {
             this.actions$.pipe(
                 ofType(StoreActions.fetchStoreEmployeeEditFailure),
                 map(action => action.payload),
-                tap(resp => {
-                    this._$log.generateGroup('[REQUEST FETCH STORE EMPLOYEE EDIT FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
+                withLatestFrom(this.store.select(getParams)),
+                tap(([resp, params]) => {
+                    this.store.dispatch(StoreActions.goPage({ payload: 'employee' }));
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
+                    const { storeId } = params;
+
+                    this.router
+                        .navigate(['/pages/account/stores', storeId, 'detail'])
+                        .finally(() => {
+                            const message =
+                                typeof resp.errors === 'string'
+                                    ? resp.errors
+                                    : resp.errors.error.message || resp.errors.message;
+
+                            this._$notice.open(message, 'error', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right'
+                            });
+                        });
                 })
             ),
         { dispatch: false }

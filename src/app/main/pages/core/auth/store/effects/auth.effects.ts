@@ -357,19 +357,12 @@ export class AuthEffects {
                 ofType(AuthActions.authLoginFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$log.generateGroup('[LOGIN REQUEST FAILURE]', {
-                        resp: {
-                            type: 'log',
-                            value: resp
-                        }
-                    });
-
                     const message =
                         typeof resp.errors === 'string'
                             ? resp.errors
                             : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(resp.errors.error.message, 'error', {
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });

@@ -75,6 +75,8 @@ export const getSelectedCreditLimitGroup = createSelector(
 // Helper State
 // -----------------------------------------------------------------------------------------------------
 
+export const getKeyword = createSelector(getCreditLimitBalanceState, state => state.keyword);
+
 export const getIsRefresh = createSelector(getCreditLimitBalanceState, state => state.isRefresh);
 
 export const getIsLoading = createSelector(getCreditLimitBalanceState, state => state.isLoading);

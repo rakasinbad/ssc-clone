@@ -19,6 +19,8 @@ import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
+import { Auth } from '../../core/auth/models';
+import { AuthSelectors } from '../../core/auth/store/selectors';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { InternalActions } from './store/actions';
@@ -39,6 +41,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     total: number;
     displayedColumns = ['user', 'email', 'role', 'actions'];
 
+    auth$: Observable<Auth>;
     dataSource$: Observable<UserSupplier[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
@@ -103,6 +106,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
         localStorage.removeItem('filter.internal.employee');
 
+        this.auth$ = this.store.select(AuthSelectors.getUserState);
         this.dataSource$ = this.store.select(InternalSelectors.getAllInternalEmployee);
         this.totalDataSource$ = this.store.select(InternalSelectors.getTotalInternalEmployee);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);

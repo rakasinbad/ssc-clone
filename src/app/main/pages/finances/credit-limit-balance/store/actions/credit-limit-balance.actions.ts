@@ -212,6 +212,13 @@ export const resetSelectedCreditLimitStoreState = createAction(
     '[Credit Limit Stores API] Reset Selected Credit Limit Stores State'
 );
 
+export const searchCreditLimitStore = createAction(
+    '[Credit Limit Stores API] Search Credit Limit Stores',
+    props<{ payload: any }>()
+);
+
+export const triggerRefresh = createAction('[Credit Limit Balance Page] Trigger Refresh');
+
 // export const resetCreditLimitBalance
 
 // -----------------------------------------------------------------------------------------------------

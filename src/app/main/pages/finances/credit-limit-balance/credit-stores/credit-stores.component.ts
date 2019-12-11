@@ -39,6 +39,7 @@ import { LogService } from 'app/shared/helpers';
 })
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
+    search: any;
     displayedColumns = [
         // 'order',
         'name',
@@ -101,6 +102,15 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
 
         this.initTable();
+
+        this.store
+            .select(CreditLimitBalanceSelectors.getKeyword)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.search = v;
+
+                this.store.dispatch(CreditLimitBalanceActions.triggerRefresh());
+            });
 
         this.store
             .select(CreditLimitBalanceSelectors.getIsRefresh)
@@ -224,17 +234,16 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sortBy'] = this.sort.active;
         }
 
-        // if (this.search.value) {
-        //     const query = this.search.value;
+        if (typeof this.search !== 'undefined' && this.search) {
+            const query = this.search;
 
-        //     data['search'] = [
-        //         {
-        //             fieldName: 'keyword',
-        //             keyword: query
-        //         }
-        //     ];
-        // }
-
+            data['search'] = [
+                {
+                    fieldName: 'keyword',
+                    keyword: query
+                }
+            ];
+        }
         this.store.dispatch(
             CreditLimitBalanceActions.fetchCreditLimitStoresRequest({
                 payload: data

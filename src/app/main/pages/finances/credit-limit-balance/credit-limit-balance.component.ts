@@ -5,6 +5,7 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
@@ -13,14 +14,13 @@ import { FuseConfig } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { CreditLimitBalanceActions } from './store/actions';
 import { fromCreditLimitBalance } from './store/reducers';
 import { CreditLimitBalanceSelectors } from './store/selectors';
-import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-credit-limit-balance',
@@ -134,7 +134,16 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
         this.totalDataSource$ = this.store.select(
             CreditLimitBalanceSelectors.getTotalCreditLimitStore
         );
+
         this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
+
+        this.search.valueChanges
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.store.dispatch(
+                    CreditLimitBalanceActions.searchCreditLimitStore({ payload: v })
+                );
+            });
     }
 
     ngOnDestroy(): void {

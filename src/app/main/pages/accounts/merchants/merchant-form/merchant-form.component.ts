@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatSelectChange, MatSlideToggleChange } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
@@ -30,7 +30,15 @@ import {
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    takeUntil,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -84,6 +92,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private router: Router,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
@@ -1321,15 +1330,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }),
                     storeClassification: this.formBuilder.group({
                         storeType: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeGroup: [
                             ''
@@ -1354,15 +1363,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             // ]
                         ],
                         storeSegment: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         hierarchy: ['']
                     }),
@@ -1632,15 +1641,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }),
                     storeClassification: this.formBuilder.group({
                         storeType: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         storeGroup: [
                             ''
@@ -1665,15 +1674,15 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             // ]
                         ],
                         storeSegment: [
-                            '',
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
                         ],
                         hierarchy: ['']
                     }),
@@ -1682,6 +1691,25 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     })
                 })
             });
+
+            /* withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                    map(([data, userSupplier]) => {
+                        if (!userSupplier) {
+                            this.router.navigateByUrl('/pages/account/stores');
+                        } else if (userSupplier.supplierId) {
+                            if (data && data.supplierStores) {
+                                const idx = data.supplierStores.findIndex(
+                                    r => r.supplierId === userSupplier.supplierId
+                                );
+
+                                if (idx === -1) {
+                                    this.router.navigateByUrl('/pages/account/stores');
+                                }
+                            }
+                        }
+
+                        return data;
+                    }), */
 
             this.store
                 .select(StoreSelectors.getStoreEdit)
@@ -2061,12 +2089,20 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             delete payload.vehicleAccessibilityId;
                         }
 
+                        if (!body.storeInfo.storeClassification.storeType) {
+                            delete payload.storeTypeId;
+                        }
+
                         if (!body.storeInfo.storeClassification.storeGroup) {
                             delete payload.storeGroupId;
                         }
 
                         if (!body.storeInfo.storeClassification.storeCluster) {
                             delete payload.cluster;
+                        }
+
+                        if (!body.storeInfo.storeClassification.storeSegment) {
+                            delete payload.storeSegmentId;
                         }
 
                         if (!body.storeInfo.storeClassification.hierarchy) {
@@ -2177,12 +2213,20 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 delete payload.vehicleAccessibilityId;
             }
 
+            if (!body.storeInfo.storeClassification.storeType) {
+                delete payload.storeTypeId;
+            }
+
             if (!body.storeInfo.storeClassification.storeGroup) {
                 delete payload.storeGroupId;
             }
 
             if (!body.storeInfo.storeClassification.storeCluster) {
                 delete payload.cluster;
+            }
+
+            if (!body.storeInfo.storeClassification.storeSegment) {
+                delete payload.storeSegmentId;
             }
 
             if (!body.storeInfo.storeClassification.hierarchy) {

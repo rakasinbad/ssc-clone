@@ -122,7 +122,11 @@
                         Action
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxFlex="row" fxLayoutAlign="end center">
+                        <div
+                            fxFlex="row"
+                            fxLayoutAlign="end center"
+                            *ngIf="(auth$ | async)?.user?.id !== row?.userId"
+                        >
                             <button
                                 mat-icon-button
                                 [matMenuTriggerFor]="moreMenu"

@@ -13,6 +13,8 @@ import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { Auth } from 'app/main/pages/core/auth/models';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService } from 'app/shared/helpers';
 import { IQueryParams, Role } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
@@ -45,6 +47,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     readonly defaultPageSize = environment.pageSize;
     displayedColumns = ['name', 'role', 'phone-no', 'last-check-in', 'actions'];
 
+    auth$: Observable<Auth>;
     dataSource$: Observable<UserStore[]>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
@@ -94,6 +97,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             startWith(this._$merchantApi.initStoreEmployee())
         ); */
 
+        this.auth$ = this.store.select(AuthSelectors.getUserState);
         this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
         this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);

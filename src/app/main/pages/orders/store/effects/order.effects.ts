@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
@@ -659,22 +660,16 @@ export class OrderEffects {
                 ofType(OrderActions.fetchOrderFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message = resp.errors.error.message || resp.errors.message;
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-                    this._$log.generateGroup('[REQUEST FETCH ORDER FAILURE]', {
-                        response: {
-                            type: 'log',
-                            value: resp
-                        },
-                        message: {
-                            type: 'log',
-                            value: message
-                        }
-                    });
-
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                    this.router.navigate(['/pages/orders']).finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     });
                 })
             ),
@@ -903,6 +898,7 @@ export class OrderEffects {
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
+        private router: Router,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,

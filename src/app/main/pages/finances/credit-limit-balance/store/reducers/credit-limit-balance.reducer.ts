@@ -21,7 +21,9 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 
 export interface State {
     isRefresh?: boolean;
+    isSearch?: boolean;
     isLoading: boolean;
+    keyword?: any;
     // selectedCreditLimitStoreId?: string | number;
     // selectedCreditLimitGroupId?: string | number;
     source: TSource;
@@ -112,6 +114,7 @@ const creditLimitBalanceReducer = createReducer(
     on(CreditLimitBalanceActions.fetchCreditLimitStoreSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
+        isSearch: undefined,
         creditLimitBalanceStores: adapterCreditLimitStore.updateOne(payload.data, {
             ...state.creditLimitBalanceStores,
             selectedCreditLimitStoreId: payload.id
@@ -198,6 +201,14 @@ const creditLimitBalanceReducer = createReducer(
             ...state.creditLimitBalanceStores,
             selectedCreditLimitStoreId: null
         }
+    })),
+    on(CreditLimitBalanceActions.searchCreditLimitStore, (state, { payload }) => ({
+        ...state,
+        keyword: payload
+    })),
+    on(CreditLimitBalanceActions.triggerRefresh, state => ({
+        ...state,
+        isRefresh: true
     }))
     // on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
     //     ...state,
