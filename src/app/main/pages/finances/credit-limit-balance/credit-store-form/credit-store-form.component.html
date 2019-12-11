@@ -163,7 +163,6 @@
             mat-flat-button
             type="submit"
             color="accent"
-            [attr.cdkFocusInitial]="form.valid"
             [disabled]="pageType === 'edit' ? form.invalid || form.pristine : form.invalid"
             form="credit-limit-form"
         >

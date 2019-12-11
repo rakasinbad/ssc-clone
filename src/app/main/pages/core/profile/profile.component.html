@@ -35,13 +35,41 @@
             </div>
             <!-- / APP TITLE -->
 
-            <!-- <button type="button" mat-raised-button (click)="onEdit(isEdit)" *ngIf="!isEdit">
-                <span>EDIT</span>
-            </button>
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="accent-fg"
+                    (click)="onEdit(isEdit)"
+                    [disabled]="
+                        (isLoading$ | async) || !(profile$ | async) || !(provinces$ | async)
+                    "
+                    *ngIf="!isEdit"
+                >
+                    <span>EDIT</span>
+                </button>
 
-            <button type="submit" mat-raised-button *ngIf="isEdit">
-                <span>SAVE</span>
-            </button> -->
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="accent-fg"
+                    (click)="onEdit(isEdit)"
+                    *ngIf="isEdit"
+                >
+                    <span>BATAL</span>
+                </button>
+
+                <button
+                    type="submit"
+                    mat-raised-button
+                    class="accent-fg"
+                    [disabled]="form.invalid || form.pristine"
+                    form="profile-form"
+                    *ngIf="isEdit"
+                >
+                    <span>SAVE</span>
+                </button>
+            </div>
 
             <!-- <button mat-raised-button
                     class="save-product-button"
@@ -63,14 +91,20 @@
         <div class="content-card">
             <!-- CONTENT -->
             <div class="content">
-                <mat-tab-group>
+                <mat-tab-group color="accent" fxLayout="column" fxFlex>
                     <mat-tab label="Informasi Bisnis">
                         <div class="tab-content p-24" fusePerfectScrollbar>
-                            <div class="mb-12">
-                                <span class="mat-headline">
-                                    Informasi Bisnis
-                                </span>
-                                <!-- <span class="mat-headline" *ngIf="!(isLoading$ | async)">
+                            <form
+                                id="profile-form"
+                                [formGroup]="form"
+                                (ngSubmit)="onSubmit()"
+                                novalidate
+                            >
+                                <div class="mb-12">
+                                    <span class="mat-headline">
+                                        Informasi Bisnis
+                                    </span>
+                                    <!-- <span class="mat-headline" *ngIf="!(isLoading$ | async)">
                                     Informasi Bisnis
                                 </span>
 
@@ -78,20 +112,29 @@
                                     *ngIf="isLoading$ | async"
                                     [theme]="{ width: '150px', height: '40px' }"
                                 ></ngx-skeleton-loader> -->
-                            </div>
-
-                            <div class="box-info horizontal" fxLayout="column" fxLayoutGap="25px">
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Nama Legal/Nama Kantor
-                                    </div>
-
-                                    <div class="info">
-                                        {{ (profile$ | async)?.name }}
-                                    </div>
                                 </div>
 
-                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                <div
+                                    class="box-info horizontal"
+                                    fxLayout="column"
+                                    fxLayoutGap="25px"
+                                >
+                                    <div
+                                        class="custom-field info-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                    >
+                                        <div class="label" fxFlexAlign="center" fxFlex="12">
+                                            Nama Legal/Nama Kantor
+                                        </div>
+
+                                        <div class="info" fxFlex="100">
+                                            {{ (profile$ | async)?.name }}
+                                        </div>
+                                    </div>
+
+                                    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">
                                         Formulir Legal
                                     </div>
@@ -101,77 +144,490 @@
                                     </div>
                                 </div> -->
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Negara
+                                    <div
+                                        class="custom-field info-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                    >
+                                        <div class="label" fxFlexAlign="center" fxFlex="12">
+                                            Negara
+                                        </div>
+
+                                        <div class="info" fxFlex="100">
+                                            {{ (isLoading$ | async) ? '' : 'Indonesia' }}
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        Indonesia
-                                    </div>
-                                </div>
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('province').errors &&
+                                                !form.get('province').untouched &&
+                                                (form.get('province').dirty ||
+                                                    form.get('province').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Provinsi
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Provinsi
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="
+                                                    (!form.get('province')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
+                                            >
+                                                {{ (profile$ | async)?.urban?.province?.name }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('province')?.value && !isEdit"
+                                            >
+                                                <ng-container
+                                                    *ngIf="
+                                                        provinces$ | async as provinces;
+                                                        else noProvinces
+                                                    "
+                                                >
+                                                    <mat-select
+                                                        formControlName="province"
+                                                        placeholder="Choose Province"
+                                                        (openedChange)="
+                                                            onOpenChange($event, 'province')
+                                                        "
+                                                        (selectionChange)="
+                                                            onSelect($event, 'province')
+                                                        "
+                                                    >
+                                                        <cdk-virtual-scroll-viewport
+                                                            #cdkProvince
+                                                            itemSize="5"
+                                                            minBufferPx="200"
+                                                            maxBufferPx="400"
+                                                            class="viewport-select"
+                                                        >
+                                                            <mat-option>None</mat-option>
+                                                            <mat-option
+                                                                *cdkVirtualFor="
+                                                                    let row of provinces
+                                                                "
+                                                                [value]="row?.id"
+                                                            >
+                                                                {{ row?.name }}
+                                                            </mat-option>
+                                                            <mat-option
+                                                                *ngIf="form.get('province')?.value"
+                                                                [value]="
+                                                                    form.get('province')?.value
+                                                                "
+                                                            >
+                                                                {{ form.get('province')?.value }}
+                                                            </mat-option>
+                                                        </cdk-virtual-scroll-viewport>
+                                                    </mat-select>
+                                                </ng-container>
+
+                                                <ng-template #noProvinces>
+                                                    <mat-select
+                                                        placeholder="Choose Province"
+                                                        disabled
+                                                    >
+                                                        <mat-option>Province not found</mat-option>
+                                                    </mat-select>
+                                                </ng-template>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.urban?.province?.name }}
-                                    </div>
-                                </div>
+                                    <!-- <div
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                    >
+                                        <div class="label" fxFlex="12">
+                                            Provinsi
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Kota
+                                        <div class="info">
+                                            {{ (profile$ | async)?.urban?.province?.name }}
+                                        </div>
+                                    </div> -->
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('city').errors &&
+                                                !form.get('city').untouched &&
+                                                (form.get('city').dirty || form.get('city').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Kota
+                                        </div>
+
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="(!form.get('city')?.value && !isEdit) || !isEdit"
+                                            >
+                                                {{ (profile$ | async)?.urban?.city }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('city')?.value && !isEdit"
+                                            >
+                                                <ng-container
+                                                    *ngIf="cities$ | async as cities; else noCities"
+                                                >
+                                                    <mat-select
+                                                        formControlName="city"
+                                                        placeholder="Choose City"
+                                                        (openedChange)="
+                                                            onOpenChange($event, 'city')
+                                                        "
+                                                        (selectionChange)="onSelect($event, 'city')"
+                                                    >
+                                                        <cdk-virtual-scroll-viewport
+                                                            #cdkCity
+                                                            itemSize="5"
+                                                            minBufferPx="200"
+                                                            maxBufferPx="400"
+                                                            class="viewport-select"
+                                                        >
+                                                            <mat-option>None</mat-option>
+                                                            <mat-option
+                                                                *cdkVirtualFor="let row of cities"
+                                                                [value]="row?.city"
+                                                            >
+                                                                {{ row?.city }}
+                                                            </mat-option>
+                                                            <mat-option
+                                                                *ngIf="form.get('city')?.value"
+                                                                [value]="form.get('city')?.value"
+                                                            >
+                                                                {{ form.get('city')?.value }}
+                                                            </mat-option>
+                                                        </cdk-virtual-scroll-viewport>
+                                                    </mat-select>
+                                                </ng-container>
+
+                                                <ng-template #noCities>
+                                                    <mat-select placeholder="Choose City" disabled>
+                                                        <mat-option>City not found</mat-option>
+                                                    </mat-select>
+                                                </ng-template>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.urban?.city }}
-                                    </div>
-                                </div>
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('district').errors &&
+                                                !form.get('district').untouched &&
+                                                (form.get('district').dirty ||
+                                                    form.get('district').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Kecamatan
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Kecamatan
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="(!form.get('district')?.value && !isEdit) || !isEdit"
+                                            >
+                                                {{ (profile$ | async)?.urban?.district }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('district')?.value && !isEdit"
+                                            >
+                                                <ng-container
+                                                    *ngIf="
+                                                        districts$ | async as districts;
+                                                        else noDistricts
+                                                    "
+                                                >
+                                                    <mat-select
+                                                        formControlName="district"
+                                                        placeholder="Choose District"
+                                                        (openedChange)="
+                                                            onOpenChange($event, 'district')
+                                                        "
+                                                        (selectionChange)="
+                                                            onSelect($event, 'district')
+                                                        "
+                                                    >
+                                                        <cdk-virtual-scroll-viewport
+                                                            #cdkDistrict
+                                                            itemSize="5"
+                                                            minBufferPx="200"
+                                                            maxBufferPx="400"
+                                                            class="viewport-select"
+                                                        >
+                                                            <mat-option>None</mat-option>
+                                                            <mat-option
+                                                                *cdkVirtualFor="
+                                                                    let row of districts
+                                                                "
+                                                                [value]="row?.district"
+                                                            >
+                                                                {{ row?.district }}
+                                                            </mat-option>
+                                                            <mat-option
+                                                                *ngIf="form.get('district')?.value"
+                                                                [value]="
+                                                                    form.get('district')?.value
+                                                                "
+                                                            >
+                                                                {{ form.get('district')?.value }}
+                                                            </mat-option>
+                                                        </cdk-virtual-scroll-viewport>
+                                                    </mat-select>
+                                                </ng-container>
+
+                                                <ng-template #noDistricts>
+                                                    <mat-select
+                                                        placeholder="Choose District"
+                                                        disabled
+                                                    >
+                                                        <mat-option>District not found</mat-option>
+                                                    </mat-select>
+                                                </ng-template>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.urban?.district }}
-                                    </div>
-                                </div>
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('urban').errors &&
+                                                !form.get('urban').untouched &&
+                                                (form.get('urban').dirty ||
+                                                    form.get('urban').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Kelurahan
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Kelurahan
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="(!form.get('urban')?.value && !isEdit) || !isEdit"
+                                            >
+                                                {{ (profile$ | async)?.urban?.urban }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('urban')?.value && !isEdit"
+                                            >
+                                                <ng-container
+                                                    *ngIf="urbans$ | async as urbans; else noUrbans"
+                                                >
+                                                    <mat-select
+                                                        formControlName="urban"
+                                                        placeholder="Choose Urban"
+                                                        (openedChange)="
+                                                            onOpenChange($event, 'urban')
+                                                        "
+                                                        (selectionChange)="
+                                                            onSelect($event, 'urban')
+                                                        "
+                                                    >
+                                                        <cdk-virtual-scroll-viewport
+                                                            #cdkUrban
+                                                            itemSize="5"
+                                                            minBufferPx="200"
+                                                            maxBufferPx="400"
+                                                            class="viewport-select"
+                                                        >
+                                                            <mat-option>None</mat-option>
+                                                            <mat-option
+                                                                *cdkVirtualFor="let row of urbans"
+                                                                [value]="row?.id"
+                                                            >
+                                                                {{ row?.urban }}
+                                                            </mat-option>
+                                                            <mat-option
+                                                                *ngIf="form.get('urban')?.value"
+                                                                [value]="form.get('urban')?.value"
+                                                            >
+                                                                {{ form.get('urban')?.value }}
+                                                            </mat-option>
+                                                        </cdk-virtual-scroll-viewport>
+                                                    </mat-select>
+                                                </ng-container>
+
+                                                <ng-template #noUrbans>
+                                                    <mat-select placeholder="Choose Urban" disabled>
+                                                        <mat-option>Urban not found</mat-option>
+                                                    </mat-select>
+                                                </ng-template>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.urban?.urban }}
-                                    </div>
-                                </div>
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('postcode').errors &&
+                                                !form.get('postcode').untouched &&
+                                                (form.get('postcode').dirty ||
+                                                    form.get('postcode').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Kode Pos
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Kode Pos
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="(!form.get('postcode')?.value && !isEdit) || !isEdit"
+                                            >
+                                                {{ (profile$ | async)?.urban?.zipCode }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('postcode')?.value && !isEdit"
+                                            >
+                                                <input
+                                                    matInput
+                                                    formControlName="postcode"
+                                                    mask="00000"
+                                                    [validation]="false"
+                                                />
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.urban?.zipCode }}
-                                    </div>
-                                </div>
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start center"
+                                        fxLayoutGap="15px"
+                                        [class.info-field]="!isEdit"
+                                    >
+                                        <div
+                                            class="label"
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.mat-error]="
+                                                form.get('notes').errors &&
+                                                !form.get('notes').untouched &&
+                                                (form.get('notes').dirty ||
+                                                    form.get('notes').touched)
+                                            "
+                                        >
+                                            <ng-container *ngIf="isEdit">
+                                                *
+                                            </ng-container>
+                                            Alamat
+                                        </div>
 
-                                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-                                    <div class="label" fxFlex="12">
-                                        Alamat
+                                        <div class="info" fxFlex="100">
+                                            <ng-container
+                                                *ngIf="
+                                                    (!form.get('notes')?.value && !isEdit) ||
+                                                    !isEdit
+                                                "
+                                            >
+                                                {{ (profile$ | async)?.address }}
+                                            </ng-container>
+
+                                            <mat-form-field
+                                                appearance="outline"
+                                                fxFlex="50"
+                                                [class.form-info]="!isEdit"
+                                                *ngIf="isEdit"
+                                                [fxHide]="!form.get('notes')?.value && !isEdit"
+                                            >
+                                                <textarea
+                                                    matInput
+                                                    formControlName="notes"
+                                                    rows="5"
+                                                ></textarea>
+                                            </mat-form-field>
+                                        </div>
                                     </div>
 
-                                    <div class="info">
-                                        {{ (profile$ | async)?.address }}
-                                    </div>
-                                </div>
-
-                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">
                                         Penanggung Jawab
                                     </div>
@@ -181,7 +637,7 @@
                                     </div>
                                 </div> -->
 
-                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">
                                         Nomor KTP
                                     </div>
@@ -191,7 +647,7 @@
                                     </div>
                                 </div> -->
 
-                                <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
+                                    <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
                                     <div class="label" fxFlex="12">
                                         Foto
                                     </div>
@@ -200,7 +656,8 @@
                                         -
                                     </div>
                                 </div> -->
-                            </div>
+                                </div>
+                            </form>
                         </div>
                     </mat-tab>
 
@@ -210,6 +667,10 @@
                 </mat-tab-group>
             </div>
             <!-- / CONTENT -->
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

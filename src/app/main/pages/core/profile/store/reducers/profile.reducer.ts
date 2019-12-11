@@ -30,20 +30,30 @@ const initialState: State = {
 
 const profileReducer = createReducer(
     initialState,
-    on(ProfileActions.fetchProfileRequest, state => ({
+    on(ProfileActions.updateProfileRequest, ProfileActions.fetchProfileRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(ProfileActions.fetchProfileFailure, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        errors: adapterError.upsertOne(payload, state.errors)
-    })),
+    on(
+        ProfileActions.updateProfileFailure,
+        ProfileActions.fetchProfileFailure,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(ProfileActions.fetchProfileSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
         profile: payload,
         errors: adapterError.removeOne('fetchProfileFailure', state.errors)
+    })),
+    on(ProfileActions.updateProfileSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        profile: payload,
+        errors: adapterError.removeOne('updateProfileFailure', state.errors)
     })),
     on(ProfileActions.resetProfile, state => ({
         ...state,

@@ -204,6 +204,14 @@ export const resetCoreState = createAction(
     '[Credit Limit Groups API] Reset Core Credit Limit Balance State'
 );
 
+export const resetCreditLimitStoreState = createAction(
+    '[Credit Limit Stores API] Reset Credit Limit Stores State'
+);
+
+export const resetSelectedCreditLimitStoreState = createAction(
+    '[Credit Limit Stores API] Reset Selected Credit Limit Stores State'
+);
+
 // export const resetCreditLimitBalance
 
 // -----------------------------------------------------------------------------------------------------

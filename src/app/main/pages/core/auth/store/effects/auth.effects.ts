@@ -37,6 +37,41 @@ export class AuthEffects {
                 //     .then(user => [isOnline, user]);
             }),
             map((session: Auth) => {
+                // if (typeof session === 'string') {
+                //     const newSession = JSON.parse(session);
+
+                //     if (newSession && newSession.user && newSession.token) {
+                //         return AuthActions.authAutoLoginSuccess({
+                //             payload: new Auth(newSession.user, newSession.token)
+                //         });
+                //     }
+
+                //     return AuthActions.authLogout();
+                // } else {
+                //     if (session && session.user && session.token) {
+                //         this._$log.generateGroup('[REQUEST AUTO LOGIN]', {
+                //             session: {
+                //                 type: 'log',
+                //                 value: session
+                //             },
+                //             user: {
+                //                 type: 'log',
+                //                 value: session.user
+                //             },
+                //             token: {
+                //                 type: 'log',
+                //                 value: session.token
+                //             }
+                //         });
+
+                //         return AuthActions.authAutoLoginSuccess({
+                //             payload: new Auth(session.user, session.token)
+                //         });
+                //     }
+
+                //     return AuthActions.authLogout();
+                // }
+
                 if (session && session.user && session.token) {
                     this._$log.generateGroup('[REQUEST AUTO LOGIN]', {
                         session: {
@@ -328,6 +363,11 @@ export class AuthEffects {
                             value: resp
                         }
                     });
+
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
                     this._$notice.open(resp.errors.error.message, 'error', {
                         verticalPosition: 'bottom',

@@ -11,7 +11,7 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(private store: Store<fromAuth.FeatureState>) {}
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        console.log('AUTH INTERCEPT 1', req.url);
+        // console.log('AUTH INTERCEPT 1', req.url);
 
         if (req.url.endsWith('/auth/login') && req.method === 'POST') {
             const token = btoa(`${req.body.username}:${req.body.password}`);
@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
             return next.handle(req);
         } else {
-            console.log('AUTH INTERCEPT 2', req.url);
+            // console.log('AUTH INTERCEPT 2', req.url);
 
             if (req.url.endsWith('/ping')) {
                 return next.handle(req);
@@ -34,7 +34,7 @@ export class AuthInterceptor implements HttpInterceptor {
             return this.store.select(AuthSelectors.getUserState).pipe(
                 take(1),
                 exhaustMap(user => {
-                    console.log('AUTH INTERCEPTOR 3', user, req.url);
+                    // console.log('AUTH INTERCEPTOR 3', user, req.url);
 
                     if (!user) {
                         return next.handle(req);

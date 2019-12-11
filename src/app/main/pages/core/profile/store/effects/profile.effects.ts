@@ -16,6 +16,69 @@ import { Auth } from '../../../auth/models';
 @Injectable()
 export class ProfileEffects {
     // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods
+    // -----------------------------------------------------------------------------------------------------
+
+    updateProfileRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ProfileActions.updateProfileRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$supplierApi.update(body, id).pipe(
+                    map(resp => {
+                        return ProfileActions.updateProfileSuccess({ payload: resp });
+                    }),
+                    catchError(err =>
+                        of(
+                            ProfileActions.updateProfileFailure({
+                                payload: new ErrorHandler({
+                                    id: 'updateProfileFailure',
+                                    errors: err
+                                })
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    updateProfileFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ProfileActions.updateProfileFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateProfileSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(ProfileActions.updateProfileSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Update data berhasil', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [PROFILE]
     // -----------------------------------------------------------------------------------------------------
 

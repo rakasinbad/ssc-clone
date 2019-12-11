@@ -30,7 +30,7 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
             map(user => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canActive] LOGGED IN GUARD', isLoggedIn, user);
+                // console.log('[canActive] LOGGED IN GUARD', isLoggedIn, user);
 
                 if (!isLoggedIn) {
                     return true;
@@ -51,7 +51,7 @@ export class LoggedInAuthGuard implements CanActivate, CanLoad {
             map(user => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canLoad] LOGGED IN GUARD', isLoggedIn, user);
+                // console.log('[canLoad] LOGGED IN GUARD', isLoggedIn, user);
 
                 return !isLoggedIn;
             })

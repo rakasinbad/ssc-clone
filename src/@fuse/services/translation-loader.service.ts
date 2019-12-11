@@ -45,7 +45,7 @@ export class FuseTranslationLoaderService {
         locales.forEach(locale => {
             // use setTranslation() with the third argument set to true
             // to append translations instead of replacing them
-            console.log(locale.lang, locale.data);
+
             this._translateService.setTranslation(locale.lang, locale.data, true);
         });
     }

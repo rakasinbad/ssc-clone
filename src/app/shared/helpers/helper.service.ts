@@ -105,7 +105,7 @@ export class HelperService {
             }
         }
 
-        console.log('ARGS 1', args);
+        // console.log('ARGS 1', args);
 
         if (args && args.length > 0) {
             args.forEach(arg => {
@@ -115,8 +115,8 @@ export class HelperService {
             });
         }
 
-        console.log(params);
-        console.log(newParams.toString());
+        // console.log(params);
+        // console.log(newParams.toString());
 
         return newParams;
 
@@ -163,7 +163,7 @@ export class HelperService {
         return [
             { id: 'pcs', label: 'per Piece' },
             { id: 'master_box', label: 'Master Box' },
-            { id: 'custom', label: 'Custom' },
+            { id: 'custom', label: 'Custom' }
         ];
     }
 

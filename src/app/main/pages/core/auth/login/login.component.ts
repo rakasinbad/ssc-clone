@@ -1,8 +1,12 @@
+import { isPlatformBrowser } from '@angular/common';
+import { Platform } from '@angular/cdk/platform';
 import {
     ChangeDetectionStrategy,
     Component,
+    Inject,
     OnDestroy,
     OnInit,
+    PLATFORM_ID,
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm } from '@angular/forms';
@@ -11,7 +15,7 @@ import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { Observable, Subject } from 'rxjs';
 
 import { AuthActions } from '../store/actions';
@@ -72,11 +76,14 @@ export class LoginComponent implements OnInit, OnDestroy {
      * @memberof LoginComponent
      */
     constructor(
+        @Inject(PLATFORM_ID) private platformId,
         private formBuilder: FormBuilder,
+        private platform: Platform,
         private store: Store<fromAuth.FeatureState>,
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$notice: NoticeService
     ) {
         // Configure the layout
         this._fuseConfigService.config = {
@@ -166,6 +173,53 @@ export class LoginComponent implements OnInit, OnDestroy {
     onLogin(form: NgForm): void {
         if (form.invalid) {
             return;
+        }
+
+        if (isPlatformBrowser(this.platformId)) {
+            if (this.platform.FIREFOX) {
+                const db = indexedDB.open('test');
+
+                db.onerror = () => {
+                    /* Firefox PB enabled */
+                    this._$notice.open('Please exit from Private Window', 'warning', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                };
+
+                db.onsuccess = () => {
+                    /* Not enabled */
+                    indexedDB.deleteDatabase('test');
+                };
+            } else if (this.platform.SAFARI) {
+                const storage = window.sessionStorage;
+
+                try {
+                    storage.setItem('someKeyHere', 'test');
+                    storage.removeItem('someKeyHere');
+                } catch (e) {
+                    if (e.code === DOMException.QUOTA_EXCEEDED_ERR && storage.length === 0) {
+                        // Private here
+
+                        this._$notice.open('Please exit from Private Window', 'warning', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    }
+                }
+            } else if (this.platform.EDGE) {
+                if (
+                    !window.indexedDB &&
+                    ((window as any).PointerEvent || (window as any).MSPointerEvent)
+                ) {
+                    // Privacy Mode
+
+                    this._$notice.open('Please exit from Private Window', 'warning', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            }
         }
 
         this.store.dispatch(

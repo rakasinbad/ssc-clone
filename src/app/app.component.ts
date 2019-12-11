@@ -102,20 +102,20 @@ export class AppComponent implements OnInit, OnDestroy {
         this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
 
         this.idle.onIdleEnd.subscribe(() => {
-            console.log('No longer idle');
+            // console.log('No longer idle');
             this.idleState = 'No longer idle';
         });
         this.idle.onTimeout.subscribe(() => {
-            console.log('Timed out!');
+            // console.log('Timed out!');
             this.idleState = 'Timed out!';
             this.timedOut = true;
         });
         this.idle.onIdleStart.subscribe(() => {
-            console.log('You gone idle!');
+            // console.log('You gone idle!');
             this.idleState = 'You gone idle!';
         });
         this.idle.onTimeoutWarning.subscribe(countdown => {
-            console.log(`You will timeout in ${countdown} seconds`);
+            // console.log(`You will timeout in ${countdown} seconds`);
             this.idleState = 'You will timeout in ' + countdown + ' seconds';
         });
 
@@ -123,7 +123,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.keepAlive.interval(15);
 
         this.keepAlive.onPing.subscribe(() => {
-            console.log(`Last ping ${new Date()}`);
+            // console.log(`Last ping ${new Date()}`);
             this.lastPing = new Date();
         });
 
@@ -278,7 +278,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private idleReset(): void {
-        console.log('Start/Reset Idle');
+        // console.log('Start/Reset Idle');
 
         this.idle.watch();
         this.idleState = 'Started';

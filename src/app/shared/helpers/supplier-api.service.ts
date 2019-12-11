@@ -44,4 +44,8 @@ export class SupplierApiService {
     findById(id: string): Observable<any> {
         return this.http.get(`${this._url}/${id}`);
     }
+
+    update(body: any, id: string): Observable<any> {
+        return this.http.patch(`${this._url}/${id}`, body);
+    }
 }

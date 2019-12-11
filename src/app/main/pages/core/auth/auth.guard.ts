@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate, CanLoad {
             map(user => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
+                // console.log('[canActivate] AUTH GUARD 1', state.url, isLoggedIn, user);
 
                 if (isLoggedIn) {
                     return true;
@@ -77,26 +77,26 @@ export class AuthGuard implements CanActivate, CanLoad {
             exhaustMap(user => {
                 const isLoggedIn = !!(user && user.token);
 
-                console.log('[canLoad] AUTH GUARD 1', route.path, isLoggedIn, user);
+                // console.log('[canLoad] AUTH GUARD 1', route.path, isLoggedIn, user);
 
                 return this.storage
                     .get('user')
                     .toPromise()
                     .then(session => {
-                        console.log('[canLoad] AUTH GUARD 2', route.path, isLoggedIn, session);
+                        // console.log('[canLoad] AUTH GUARD 2', route.path, isLoggedIn, session);
 
                         return session ? [isLoggedIn, true] : [isLoggedIn, false];
                     });
             }),
             map(([isLoggedIn, session]) => {
-                console.log('[canLoad] AUTH GUARD 3', route.path, isLoggedIn, session);
+                // console.log('[canLoad] AUTH GUARD 3', route.path, isLoggedIn, session);
 
                 if (!isLoggedIn) {
-                    console.log('[canLoad] AUTH GUARD 4', route.path, isLoggedIn, session);
+                    // console.log('[canLoad] AUTH GUARD 4', route.path, isLoggedIn, session);
                     return session;
                 }
 
-                console.log('[canLoad] AUTH GUARD 5', route.path, isLoggedIn, session);
+                // console.log('[canLoad] AUTH GUARD 5', route.path, isLoggedIn, session);
                 return isLoggedIn;
             })
         );

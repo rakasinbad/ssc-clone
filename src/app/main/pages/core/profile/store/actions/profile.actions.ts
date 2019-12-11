@@ -18,6 +18,25 @@ export const fetchProfileSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Profile
+// -----------------------------------------------------------------------------------------------------
+
+export const updateProfileRequest = createAction(
+    '[Profile API] Update Profile Request',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateProfileFailure = createAction(
+    '[Profile API] Update Profile Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateProfileSuccess = createAction(
+    '[Profile API] Update Profile Success',
+    props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Reset Actions
 // -----------------------------------------------------------------------------------------------------
 

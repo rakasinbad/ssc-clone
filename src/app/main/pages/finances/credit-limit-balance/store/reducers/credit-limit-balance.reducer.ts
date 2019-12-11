@@ -1,4 +1,3 @@
-import { getSelectedCreditLimitGroupId } from './../selectors/credit-limit-balance.selectors';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
@@ -188,6 +187,17 @@ const creditLimitBalanceReducer = createReducer(
             state.creditLimitBalanceGroups
         ),
         errors: adapterError.removeOne('deleteCreditLimitGroupFailure', state.errors)
+    })),
+    on(CreditLimitBalanceActions.resetCreditLimitStoreState, state => ({
+        ...state,
+        creditLimitBalanceStores: initialState.creditLimitBalanceStores
+    })),
+    on(CreditLimitBalanceActions.resetSelectedCreditLimitStoreState, state => ({
+        ...state,
+        creditLimitBalanceStores: {
+            ...state.creditLimitBalanceStores,
+            selectedCreditLimitStoreId: null
+        }
     }))
     // on(CreditLimitBalanceActions.generateCreditLimitBalanceDemo, (state, { payload }) => ({
     //     ...state,

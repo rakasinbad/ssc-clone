@@ -17,6 +17,7 @@ import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
 import { CreditLimitStore } from '../models';
+import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
 
@@ -67,6 +68,8 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+
+        this.store.dispatch(CreditLimitBalanceActions.resetSelectedCreditLimitStoreState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -216,8 +219,11 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                     this.storage.set('selected.credit.limit.store', data).subscribe(() => {});
 
                     if (data.creditLimit) {
-                        this.form.get('limit').patchValue(data.creditLimit.replace('.', ','));
-                        this.form.get('limit').markAsTouched();
+                        this.form.get('limit').setValue(data.creditLimit.replace('.', ','));
+
+                        if (this.form.get('limit').invalid) {
+                            this.form.get('limit').markAsTouched();
+                        }
                     }
 
                     // if (data.balanceAmount) {
@@ -226,9 +232,14 @@ export class CreditStoreFormComponent implements OnInit, OnDestroy {
                     // }
 
                     if (data.termOfPayment) {
-                        this.form.get('top').patchValue(data.termOfPayment);
-                        this.form.get('top').markAsTouched();
+                        this.form.get('top').setValue(data.termOfPayment);
+
+                        if (this.form.get('top').invalid) {
+                            this.form.get('top').markAsTouched();
+                        }
                     }
+
+                    this.form.markAsPristine();
                 });
         }
     }
