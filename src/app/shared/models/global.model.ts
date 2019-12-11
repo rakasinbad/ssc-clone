@@ -51,7 +51,8 @@ type LogTypeString = keyof typeof LogType;
 enum StatusError {
     error,
     success,
-    warning
+    warning,
+    info
 }
 
 type StatusErrorString = keyof typeof StatusError;

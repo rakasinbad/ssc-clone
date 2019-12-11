@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarRef } from '@angular/material';
 
 import { ErrorNoticeComponent } from '../components/notices/error-notice/error-notice.component';
+import { InfoNoticeComponent } from '../components/notices/info-notice/info-notice.component';
 import { SuccessNoticeComponent } from '../components/notices/success-notice/success-notice.component';
 import { WarningNoticeComponent } from '../components/notices/warning-notice/warning-notice.component';
 import { TStatusError } from '../models';
@@ -15,14 +16,16 @@ export class NoticeService {
     open(
         message: string,
         status: TStatusError,
-        configCustom?: MatSnackBarConfig<any>
+        configCustom?: MatSnackBarConfig<any>,
+        isNewVersion?: boolean
     ): MatSnackBarRef<any> {
         const config: MatSnackBarConfig<any> = {
             data: {
                 message: message,
-                status: status
+                status: status,
+                isNewVersion: isNewVersion
             },
-            duration: 5000,
+            duration: configCustom.duration || 5000,
             verticalPosition:
                 configCustom && configCustom.verticalPosition
                     ? configCustom.verticalPosition
@@ -46,6 +49,9 @@ export class NoticeService {
 
             case 'warning':
                 return this.matSnackBar.openFromComponent(WarningNoticeComponent, config);
+
+            case 'info':
+                return this.matSnackBar.openFromComponent(InfoNoticeComponent, config);
         }
     }
 }

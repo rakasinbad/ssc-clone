@@ -9,6 +9,7 @@ import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { FilterAdvancedModule } from './components/filter-advanced/filter-advanced.module';
 import { FiltersModule } from './components/filters/filters.module';
 import { ErrorNoticeComponent } from './components/notices/error-notice/error-notice.component';
+import { InfoNoticeComponent } from './components/notices/info-notice/info-notice.component';
 import { SuccessNoticeComponent } from './components/notices/success-notice/success-notice.component';
 import { WarningNoticeComponent } from './components/notices/warning-notice/warning-notice.component';
 import { ScrollTopComponent } from './components/scroll-top/scroll-top.component';
@@ -46,7 +47,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ChangeConfirmationComponent,
         ReplacePipe,
         MaterialElevationDirective,
-        ScrollTopComponent
+        ScrollTopComponent,
+        InfoNoticeComponent
     ],
     imports: [
         MaterialModule,
@@ -76,7 +78,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ChangeConfirmationComponent,
         ReplacePipe,
         MaterialElevationDirective,
-        ScrollTopComponent
+        ScrollTopComponent,
+        InfoNoticeComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -86,7 +89,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         WarningNoticeComponent,
         ShowImageComponent,
         DeleteConfirmationComponent,
-        ChangeConfirmationComponent
+        ChangeConfirmationComponent,
+        InfoNoticeComponent
         // ScrollTopComponent
     ]
 })

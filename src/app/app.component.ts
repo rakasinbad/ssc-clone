@@ -1,6 +1,7 @@
 import { Platform } from '@angular/cdk/platform';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
+    ApplicationRef,
     ChangeDetectionStrategy,
     Component,
     Inject,
@@ -8,6 +9,7 @@ import {
     OnInit,
     PLATFORM_ID
 } from '@angular/core';
+import { MatSnackBarConfig } from '@angular/material';
 import { SwUpdate } from '@angular/service-worker';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
@@ -22,12 +24,13 @@ import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
-import { Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { concat, interval, Subject } from 'rxjs';
+import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
 import { statusOrder } from './main/pages/orders/status';
+import { NoticeService } from './shared/helpers';
 import * as fromRoot from './store/app.reducer';
 
 @Component({
@@ -52,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
         @Inject(PLATFORM_ID) private platformId,
         @Inject(DOCUMENT) private document: any,
         private swUpdate: SwUpdate,
+        private appRef: ApplicationRef,
         private idle: Idle,
         private keepAlive: Keepalive,
         private store: Store<fromRoot.State>,
@@ -61,7 +65,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private _fuseSplashScreenService: FuseSplashScreenService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _translateService: TranslateService,
-        private _platform: Platform
+        private _platform: Platform,
+        private _$notice: NoticeService
     ) {
         // Get default navigation
         this.navigation = navigation;
@@ -171,6 +176,17 @@ export class AppComponent implements OnInit, OnDestroy {
         this._unsubscribeAll = new Subject();
 
         this.isNewVersion = false;
+
+        if (this.swUpdate.isEnabled) {
+            // Allow the app to stabilize first, before starting polling for updates with `interval()`.
+            const appIsStable$ = this.appRef.isStable.pipe(first(isStable => isStable === true));
+            const everySixHours$ = interval(6 * 60 * 60 * 1000);
+            const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
+
+            everySixHoursOnceAppIsStable$
+                .pipe(takeUntil(this._unsubscribeAll))
+                .subscribe(() => this.swUpdate.checkForUpdate());
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -198,7 +214,7 @@ export class AppComponent implements OnInit, OnDestroy {
             });
 
         if (this.swUpdate.isEnabled) {
-            this.swUpdate.available.subscribe(update => {
+            this.swUpdate.available.pipe(takeUntil(this._unsubscribeAll)).subscribe(update => {
                 console.groupCollapsed('SW Update');
                 console.log(update);
                 console.groupEnd();
@@ -208,6 +224,30 @@ export class AppComponent implements OnInit, OnDestroy {
                 // }
 
                 this.isNewVersion = true;
+
+                const matConfig = new MatSnackBarConfig();
+                matConfig.verticalPosition = 'bottom';
+                matConfig.horizontalPosition = 'right';
+
+                this._$notice.open('Update version is available', 'info', matConfig, true);
+
+                const noticeUpdate = this._$notice.open(
+                    'Update version is available',
+                    'info',
+                    {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                        duration: 30000
+                    },
+                    true
+                );
+
+                noticeUpdate
+                    .onAction()
+                    .pipe(takeUntil(this._unsubscribeAll))
+                    .subscribe(() => {
+                        this.onReload();
+                    });
             });
         }
 
@@ -227,7 +267,8 @@ export class AppComponent implements OnInit, OnDestroy {
             }
 
             // Color theme - Use normal for loop for IE11 compatibility
-            for (let i = 0; i < this.document.body.classList.length; i++) {
+            // for (let i = 0; i < this.document.body.classList.length; i++) {
+            for (const [i, v] of this.document.body.classList.entries()) {
                 const className = this.document.body.classList[i];
 
                 if (className.startsWith('theme-')) {
@@ -237,11 +278,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
             this.document.body.classList.add(this.fuseConfig.colorTheme);
         });
-    }
-
-    ngAfterViewInit(): void {
-        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-        // Add 'implements AfterViewInit' to the class.
     }
 
     ngOnDestroy(): void {
@@ -263,14 +299,14 @@ export class AppComponent implements OnInit, OnDestroy {
         this._fuseSidebarService.getSidebar(key).toggleOpen();
     }
 
-    onReload(): void {
+    private onReload(): void {
         if (this.swUpdate.isEnabled) {
-            this.swUpdate.activated.subscribe(update => {
+            this.swUpdate.activated.pipe(takeUntil(this._unsubscribeAll)).subscribe(update => {
                 console.groupCollapsed('SW Activated');
                 console.log(update);
                 console.groupEnd();
 
-                window.location.reload(true);
+                document.location.reload();
             });
 
             this.swUpdate.activateUpdate();
