@@ -886,7 +886,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                                 externalId: catalogue.externalId,
                                 name: catalogue.name,
                                 description: catalogue.description,
-                                information: catalogue.information,
+                                information: catalogue.detail,
                                 // variant: ['', Validators.required],
                                 brandId: catalogue.brandId,
                                 brandName: catalogue.brand.name,
