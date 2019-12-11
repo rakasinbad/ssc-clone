@@ -43,7 +43,7 @@ import { MatTableDataSource, MatDialog } from '@angular/material';
 import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
-import { IQueryParams, Brand } from 'app/shared/models';
+import { IQueryParams, Brand, UserSupplier } from 'app/shared/models';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { CataloguesService } from '../services';
@@ -442,13 +442,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 packagedWeight: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
+                    // RxwebValidators.required({
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    // }),
+                    // RxwebValidators.minNumber({
+                    //     value: 1,
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    // })
                 ]],
                 catalogueDimension: ['', [
                     RxwebValidators.required({
@@ -460,13 +460,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 packagedDimension: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
+                    // RxwebValidators.required({
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    // }),
+                    // RxwebValidators.minNumber({
+                    //     value: 1,
+                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                    // })
                 ]],
                 isDangerous: [''],
                 couriers: this.fb.array([
@@ -537,12 +537,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.store.select(CatalogueSelectors.getSelectedCategories)
             .pipe(
                 withLatestFrom(
-                    this.store.select(AuthSelectors.getUserState),
+                    this.store.select(AuthSelectors.getUserSupplier),
                     this.store.select(CatalogueSelectors.getProductName),
-                    (categories, auth, productName) => ({ categories, auth, productName })
+                    this.store.select(BrandSelectors.getAllBrands),
                 ),
                 switchMap(data => {
-                    if (data.auth.user.userSuppliers.length === 0) {
+                    if (!data[1]) {
                         return of(
                             BrandActions.fetchBrandsFailure({
                                 payload: { id: 'fetchBrandsFailure', errors: 'Not Authenticated' }
@@ -550,19 +550,33 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         );
                     }
 
-                    return of([data.auth, data.categories, data.productName]);
+                    return of(data);
                 }),
                 takeUntil(this._unSubs$)
             ).subscribe(data => {
-                const auth = data[0];
-                const categories = data[1];
-                const productName = data[2];
+                const categories = data[0];
+                const userSupplier: UserSupplier = data[1];
+                const productName: string = data[2];
+                const brands: Array<Brand> = data[3];
+
+                /** Mengambil data brand jika belum ada di state. */
+                if (brands.length === 0) {
+                    const params: IQueryParams = {
+                        paginate: false,
+                    };
+
+                    /** Mengambil brand berdasarkan ID supplier-nya dari state. */
+                    params['supplierId'] = userSupplier.supplierId;
+                    return this.store.dispatch(BrandActions.fetchBrandsRequest({
+                        payload: params
+                    }));
+                }
                 
-                this.form.get('productInfo.brandId').patchValue(auth.user.userSuppliers[0].id);
-                this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
+                // this.form.get('productInfo.brandId').patchValue(userSupplier.);
+                // this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
                 this.form.get('productInfo.category').patchValue(categories);
 
-                this.startFetchBrands(auth.user.userSuppliers[0].id);
+                // this.startFetchBrands(auth.user.userSuppliers[0].supplierId);
 
                 if (!this.isEditMode) {
                     this.form.get('productInfo.name').patchValue(productName);
@@ -773,7 +787,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             combineLatest([
                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
                 this.store.select(CatalogueSelectors.getCatalogueCategories),
-                this.store.select(AuthSelectors.getUserSupplier)
+                this.store.select(AuthSelectors.getUserSupplier),
             ]).pipe(
                 takeUntil(this._unSubs$)
             ).subscribe(([catalogue, categories, userSupplier]) => {
@@ -841,61 +855,69 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
                     this.form.patchValue({
                         productInfo: {
-                            id: catalogue.id,
-                            externalId: catalogue.externalId,
-                            name: catalogue.name,
-                            description: catalogue.description,
-                            information: catalogue.information,
-                            // variant: ['', Validators.required],
-                            brandId: catalogue.brandId,
-                            // brandName: 'ini cuma unusued brand',
-                            // category: ['', Validators.required],
-                            stock: catalogue.stock,
-                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                            minQty: catalogue.minQty,
-                            packagedQty: catalogue.packagedQty,
-                            multipleQty: catalogue.multipleQty
-                        }, productSale: {
-                            retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                            productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
-                            // variants: this.fb.array([])
-                        }, productMedia: {
-                            photos: [
-                                ...catalogue.catalogueImages.map(image => image.imageUrl)
-                            ],
-                            oldPhotos: [
-                                ...catalogue.catalogueImages.map(image => image.imageUrl)
-                            ]
-                        },
-                        productShipment: {
-                            catalogueWeight: catalogue.catalogueWeight,
-                            packagedWeight: catalogue.packagedWeight,
-                            catalogueDimension: catalogue.catalogueDimension,
-                            packagedDimension: catalogue.packagedDimension,
-                            // isDangerous: [''],
-                            // couriers: this.fb.array([
-                            //     this.fb.control({
-                            //         name: 'SiCepat REG (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     }),
-                            //     this.fb.control({
-                            //         name: 'JNE REG (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     }),
-                            //     this.fb.control({
-                            //         name: 'SiCepat Cargo (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     })
-                            // ])
-                        },
-                        productCount: {
-                            qtyPerMasterBox: catalogue.packagedQty,
-                            minQtyOption: catalogue.minQtyType,
-                            minQtyValue: catalogue.minQty,
-                            additionalQtyOption: catalogue.multipleQtyType,
-                            additionalQtyValue: catalogue.multipleQty,
+                            information: '...'
                         }
                     });
+
+                    setTimeout(() =>
+                        this.form.patchValue({
+                            productInfo: {
+                                id: catalogue.id,
+                                externalId: catalogue.externalId,
+                                name: catalogue.name,
+                                description: catalogue.description,
+                                information: catalogue.information,
+                                // variant: ['', Validators.required],
+                                brandId: catalogue.brandId,
+                                brandName: catalogue.brand.name,
+                                // category: ['', Validators.required],
+                                stock: catalogue.stock,
+                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                                minQty: catalogue.minQty,
+                                packagedQty: catalogue.packagedQty,
+                                multipleQty: catalogue.multipleQty
+                            }, productSale: {
+                                retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                                productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
+                                // variants: this.fb.array([])
+                            }, productMedia: {
+                                photos: [
+                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
+                                ],
+                                oldPhotos: [
+                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
+                                ]
+                            },
+                            productShipment: {
+                                catalogueWeight: catalogue.catalogueWeight,
+                                packagedWeight: catalogue.packagedWeight,
+                                catalogueDimension: catalogue.catalogueDimension,
+                                packagedDimension: catalogue.packagedDimension,
+                                // isDangerous: [''],
+                                // couriers: this.fb.array([
+                                //     this.fb.control({
+                                //         name: 'SiCepat REG (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     }),
+                                //     this.fb.control({
+                                //         name: 'JNE REG (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     }),
+                                //     this.fb.control({
+                                //         name: 'SiCepat Cargo (maks 5000g)',
+                                //         disabled: this.fb.control(false)
+                                //     })
+                                // ])
+                            },
+                            productCount: {
+                                qtyPerMasterBox: catalogue.packagedQty,
+                                minQtyOption: catalogue.minQtyType,
+                                minQtyValue: catalogue.minQty,
+                                additionalQtyOption: catalogue.multipleQtyType,
+                                additionalQtyValue: catalogue.multipleQty,
+                            }
+                        }), 100);
+
 
                     if (catalogue.minQtyType !== 'custom') {
                         this.form.get('productCount.minQtyValue').disable();
