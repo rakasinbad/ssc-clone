@@ -7,6 +7,7 @@ export const environment = {
     production: false,
     staging: false,
     hmr: false,
+    freshnessData: 60, // in seconds.
     host: 'https://kong-dev.sinbad.web.id'
 };
 

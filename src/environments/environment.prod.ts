@@ -3,5 +3,6 @@ export const environment = {
     production: true,
     staging: false,
     hmr: false,
+    freshnessData: 60, // in seconds.
     host: 'https://kong-dev.sinbad.web.id'
 };
