@@ -151,7 +151,10 @@ export class MerchantEffects {
                                 payload: { id: 'updateStoreFailure', errors: err }
                             })
                         )
-                    )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                    })
                 );
             })
         )
