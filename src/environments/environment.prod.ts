@@ -4,5 +4,5 @@ export const environment = {
     staging: false,
     hmr: false,
     freshnessData: 60, // in seconds.
-    host: 'https://kong-dev.sinbad.web.id'
+    host: 'https://kong.sinbad.web.id'
 };
