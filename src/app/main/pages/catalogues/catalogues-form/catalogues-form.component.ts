@@ -62,6 +62,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
+    formClass: {
+        'custom-field-right': boolean;
+        'view-field-right': boolean;
+    };
 
     quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;
@@ -562,6 +566,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             } else if (urls.filter(url => url.path === 'add').length > 0) {
                 this.formMode = 'add';
             }
+
+            this.updateFormView();
         });
 
         this.store.select(CatalogueSelectors.getSelectedCategories)
@@ -1145,5 +1151,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
     isViewMode(): boolean {
         return this.formMode === 'view';
+    }
+
+    updateFormView(): void {
+        this.formClass = {
+            'custom-field-right': !this.isViewMode(),
+            'view-field-right': this.isViewMode()
+        };
     }
 }

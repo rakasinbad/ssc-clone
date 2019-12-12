@@ -19,7 +19,7 @@
                 <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
                     <!-- PRODUCT ID -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
@@ -55,14 +55,14 @@
                                 SKU already exist.
                             </mat-error>
                         </mat-form-field>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view'">
+                        <span fxFlex="80" *ngIf="formMode === 'view'">
                             {{ form.get('productInfo.externalId').value }}
                         </span>
                     </div>
                     <!-- / PRODUCT ID -->
                     <!-- NAMA PRODUK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
@@ -88,14 +88,14 @@
                                 {{ getFormError(form.get('productInfo.name')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view'">
+                        <span fxFlex="80" *ngIf="formMode === 'view'">
                             {{ form.get('productInfo.name').value }}
                         </span>
                     </div>
                     <!-- / NAMA PRODUK -->
                     <!-- DETAIL PRODUK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         [class.h-80]="!isViewMode()"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
@@ -126,10 +126,10 @@
                                 {{ getFormError(form.get('productInfo.information')) }}
                             </mat-error>
                         </div>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.information').value">
+                        <span fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.information').value">
                             {{ form.get('productInfo.information').value }}
                         </span>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.information').value">
+                        <span fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.information').value">
                             &nbsp;
                         </span>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
@@ -143,7 +143,7 @@
                     <!-- / DETAIL PRODUK -->
                     <!-- DESKRIPSI PRODUK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         [class.h-80]="!isViewMode()"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
@@ -170,10 +170,10 @@
                                 {{ getFormError(form.get('productInfo.description')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.description').value">
+                        <span fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.description').value">
                             {{ form.get('productInfo.description').value }}
                         </span>
-                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.description').value">
+                        <span fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.description').value">
                             &nbsp;
                         </span>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
@@ -215,7 +215,7 @@
                     <!-- / VARIAN PRODUK -->
                     <!-- BRAND PRODUK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
@@ -247,17 +247,17 @@
                                 {{ getFormError(form.get('productInfo.brandId')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span fxFlexAlign="center" class="pb-20 pt-12" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.brandName').value">
+                        <span fxFlexAlign="center" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.brandName').value">
                             {{ form.get('productInfo.brandName').value }}
                         </span>
-                        <span fxFlexAlign="center" class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.brandName').value">
+                        <span fxFlexAlign="center" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.brandName').value">
                             &nbsp;
                         </span>
                     </div>
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         [class.pb-16]="!isViewMode()"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
@@ -266,13 +266,13 @@
                         <label
                             fxFlexAlign="center"
                             fxFlex="18"
-                            class="pr-0 pt-20"
+                            class="pr-0"
                             [class.mat-error]="hasError(form.get('productInfo.category'), { ignoreTouched: true, ignoreDirty: true })"
                         >
                             *Kategori
                         </label>
 
-                        <span class="ml-20 grey-600-fg" fxFlex="80" fxLayout="column" fxLayoutAlign="start start">
+                        <span class="ml-20 grey-600-fg" fxFlexAlign="center" fxFlex="80" fxLayout="column" fxLayoutAlign="start start">
                             <div
                                 fxFlex
                                 fxLayout="row"
@@ -303,7 +303,7 @@
                     <!-- / KATEGORI PRODUK -->
                     <!-- PRODUK STOK -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
@@ -317,7 +317,7 @@
                             Product Stock
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlexAlign="center" fxFlex="80">
                             <input
                                 matInput
                                 name="stock"
@@ -335,7 +335,7 @@
                     <!-- / PRODUK STOK -->
                     <!-- UOM -->
                     <div
-                        class="custom-field-right"
+                        [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
                         formGroupName="productInfo"
@@ -349,7 +349,7 @@
                             UOM 
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
                             <mat-select
                                 name="uom"
                                 formControlName="uom"
