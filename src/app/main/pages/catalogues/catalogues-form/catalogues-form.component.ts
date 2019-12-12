@@ -567,15 +567,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.store.select(CatalogueSelectors.getSelectedCategories)
             .pipe(
                 withLatestFrom(
-<<<<<<< HEAD
                     this.store.select(AuthSelectors.getUserSupplier),
                     this.store.select(CatalogueSelectors.getProductName),
                     this.store.select(BrandSelectors.getAllBrands),
-=======
-                    this.store.select(AuthSelectors.getUserState),
-                    this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
-                    (categories, auth, catalogue) => ({ categories, auth, catalogue })
->>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
                 ),
                 switchMap(data => {
                     if (!data[1]) {
@@ -586,7 +580,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         );
                     }
 
-<<<<<<< HEAD
                     return of(data);
                 }),
                 takeUntil(this._unSubs$)
@@ -649,35 +642,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // this.form.markAllAsTouched();
                 // this.form.markAsDirty({ onlySelf: false });
                 // console.log(this.form.getRawValue());
-=======
-                    return of([data.auth, data.categories, data.catalogue]);
-                }),
-                takeUntil(this._unSubs$)
-            ).subscribe(data => {
-                const auth = data[0];
-                const categories = data[1];
-                const catalogue: Catalogue = data[2];
-                
-                if (catalogue) {
-                    this.form.get('productInfo.name').patchValue(catalogue.name);
-                    this.form.get('productInfo.brandId').patchValue(auth.user.userSuppliers[0].id);
-                    this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
-                    this.form.get('productInfo.category').patchValue(categories);
-    
-                    this.startFetchBrands(auth.user.userSuppliers[0].id);
-    
-                    this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
-                        categories.map(category => category['name']).join(`
-                            <span class="mx-12">
-                                >
-                            </span>
-                        `)
-                    );
-    
-                    this._cd.markForCheck();
-                    // console.log(this.form.getRawValue());
-                }
->>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
             });
 
         this.subs.add(
@@ -918,63 +882,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
                     this.form.patchValue({
                         productInfo: {
-<<<<<<< HEAD
                             information: '...'
-=======
-                            id: catalogue.id,
-                            externalId: catalogue.externalId,
-                            name: catalogue.name,
-                            description: catalogue.description,
-                            information: catalogue.information,
-                            // variant: ['', Validators.required],
-                            brandId: catalogue.brandId,
-                            brandName: catalogue.brand.name,
-                            // category: ['', Validators.required],
-                            stock: catalogue.stock,
-                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                            minQty: catalogue.minQty,
-                            packagedQty: catalogue.packagedQty,
-                            multipleQty: catalogue.multipleQty
-                        }, productSale: {
-                            retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                            productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
-                            // variants: this.fb.array([])
-                        }, productMedia: {
-                            photos: [
-                                ...catalogue.catalogueImages.map(image => image.imageUrl)
-                            ],
-                            oldPhotos: [
-                                ...catalogue.catalogueImages.map(image => image.imageUrl)
-                            ]
-                        },
-                        productShipment: {
-                            catalogueWeight: catalogue.catalogueWeight,
-                            packagedWeight: catalogue.packagedWeight,
-                            catalogueDimension: catalogue.catalogueDimension,
-                            packagedDimension: catalogue.packagedDimension,
-                            // isDangerous: [''],
-                            // couriers: this.fb.array([
-                            //     this.fb.control({
-                            //         name: 'SiCepat REG (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     }),
-                            //     this.fb.control({
-                            //         name: 'JNE REG (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     }),
-                            //     this.fb.control({
-                            //         name: 'SiCepat Cargo (maks 5000g)',
-                            //         disabled: this.fb.control(false)
-                            //     })
-                            // ])
-                        },
-                        productCount: {
-                            qtyPerMasterBox: catalogue.packagedQty,
-                            minQtyOption: catalogue.minQtyType,
-                            minQtyValue: catalogue.minQty,
-                            additionalQtyOption: catalogue.multipleQtyType,
-                            additionalQtyValue: catalogue.multipleQty,
->>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
                         }
                     });
 
