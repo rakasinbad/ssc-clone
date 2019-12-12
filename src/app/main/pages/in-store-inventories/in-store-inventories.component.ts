@@ -1,3 +1,5 @@
+import { environment } from '../../../../environments/environment';
+
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -58,6 +60,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         'date',
         'actions',
     ];
+    environment = environment;
 
     dataSource$: Observable<Array<any>>;
     totalDataSource$: Observable<number>;
@@ -133,7 +136,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                 }
             }
         ]);
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = environment.pageSize;
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -225,7 +228,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 // 
     private initTable(): void {
         const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
+            limit: this.paginator.pageSize || environment.pageSize,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
         };
 
