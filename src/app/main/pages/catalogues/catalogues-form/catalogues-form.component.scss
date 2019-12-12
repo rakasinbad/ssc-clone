@@ -14,6 +14,18 @@ app-catalogues-form {
             }
         }
 
+        quill-view-html.view-only {
+            .ql-container {
+                .ql-editor {
+                    padding: 0px 0px !important;
+                    font-size: 10pt;
+                    font-family: "Muli", "Helvetica Neue", "Arial", sans-serif;
+                    line-height: 1.4 !important;
+                    letter-spacing: -0.1px !important;
+                }
+            }
+        }
+
         .ql-container {
             min-height: 100px !important;
 

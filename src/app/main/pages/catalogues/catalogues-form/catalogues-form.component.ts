@@ -48,6 +48,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { CataloguesService } from '../services';
 
+type IFormMode = 'add' | 'view' | 'edit';
+
 @Component({
     selector: 'app-catalogues-form',
     templateUrl: './catalogues-form.component.html',
@@ -57,7 +59,7 @@ import { CataloguesService } from '../services';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesFormComponent implements OnInit, OnDestroy {
-    isEditMode = false;
+    formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
 
@@ -257,7 +259,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             unlimitedStock: false,
         };
 
-        if (this.isEditMode) {
+        if (this.formMode === 'edit') {
             /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
             const filterPhoto = (photo, idx) => {
                 const check = photo !== oldPhotos[idx].value && (!oldPhotos[idx].id || photo);
@@ -284,7 +286,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             catalogueData.catalogueImages = formValues.productMedia.photos.filter(filterPhoto);
         }
 
-        if (!this.isEditMode) {
+        if (this.formMode !== 'edit') {
             this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
         } else {
             this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' } }));
@@ -550,12 +552,30 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'variants'
         ) as FormArray).controls;
 
+        this.route.url.pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(urls => {
+            if (urls.filter(url => url.path === 'edit').length > 0) {
+                this.formMode = 'edit';
+            } else if (urls.filter(url => url.path === 'view').length > 0) {
+                this.formMode = 'view';
+            } else if (urls.filter(url => url.path === 'add').length > 0) {
+                this.formMode = 'add';
+            }
+        });
+
         this.store.select(CatalogueSelectors.getSelectedCategories)
             .pipe(
                 withLatestFrom(
+<<<<<<< HEAD
                     this.store.select(AuthSelectors.getUserSupplier),
                     this.store.select(CatalogueSelectors.getProductName),
                     this.store.select(BrandSelectors.getAllBrands),
+=======
+                    this.store.select(AuthSelectors.getUserState),
+                    this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
+                    (categories, auth, catalogue) => ({ categories, auth, catalogue })
+>>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
                 ),
                 switchMap(data => {
                     if (!data[1]) {
@@ -566,6 +586,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                         );
                     }
 
+<<<<<<< HEAD
                     return of(data);
                 }),
                 takeUntil(this._unSubs$)
@@ -597,11 +618,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
 
                 // this.startFetchBrands(auth.user.userSuppliers[0].supplierId);
-
-                if (!this.isEditMode) {
-                    this.form.get('productInfo.name').patchValue(productName);
-                }
                 
+                this.form.get('productInfo.name').patchValue(productName);
                 this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
                     categories.map(category => category['name']).join(`
                         <span class="mx-12">
@@ -631,6 +649,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 // this.form.markAllAsTouched();
                 // this.form.markAsDirty({ onlySelf: false });
                 // console.log(this.form.getRawValue());
+=======
+                    return of([data.auth, data.categories, data.catalogue]);
+                }),
+                takeUntil(this._unSubs$)
+            ).subscribe(data => {
+                const auth = data[0];
+                const categories = data[1];
+                const catalogue: Catalogue = data[2];
+                
+                if (catalogue) {
+                    this.form.get('productInfo.name').patchValue(catalogue.name);
+                    this.form.get('productInfo.brandId').patchValue(auth.user.userSuppliers[0].id);
+                    this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
+                    this.form.get('productInfo.category').patchValue(categories);
+    
+                    this.startFetchBrands(auth.user.userSuppliers[0].id);
+    
+                    this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
+                        categories.map(category => category['name']).join(`
+                            <span class="mx-12">
+                                >
+                            </span>
+                        `)
+                    );
+    
+                    this._cd.markForCheck();
+                    // console.log(this.form.getRawValue());
+                }
+>>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
             });
 
         this.subs.add(
@@ -751,7 +798,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
         this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
 
-        if (!this.isEditMode) {
+        if (this.formMode !== 'edit') {
             this.form.get('productInfo.description').setValue('---');
             setTimeout(() => this.form.get('productInfo.description').setValue(''), 100);
         }
@@ -811,11 +858,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     private _prepareEditCatalogue(): void {
         const { id } = this.route.snapshot.params;
 
-        if (!id) {
-            this.isEditMode = false;
-        } else {
-            this.isEditMode = true;
-
+        if (id && this.formMode !== 'add') {
             // this.productTagsControls.clear();
             // (this.form.get('productSale.tags') as FormArray).clear();
 
@@ -875,7 +918,63 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
                     this.form.patchValue({
                         productInfo: {
+<<<<<<< HEAD
                             information: '...'
+=======
+                            id: catalogue.id,
+                            externalId: catalogue.externalId,
+                            name: catalogue.name,
+                            description: catalogue.description,
+                            information: catalogue.information,
+                            // variant: ['', Validators.required],
+                            brandId: catalogue.brandId,
+                            brandName: catalogue.brand.name,
+                            // category: ['', Validators.required],
+                            stock: catalogue.stock,
+                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                            minQty: catalogue.minQty,
+                            packagedQty: catalogue.packagedQty,
+                            multipleQty: catalogue.multipleQty
+                        }, productSale: {
+                            retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                            productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
+                            // variants: this.fb.array([])
+                        }, productMedia: {
+                            photos: [
+                                ...catalogue.catalogueImages.map(image => image.imageUrl)
+                            ],
+                            oldPhotos: [
+                                ...catalogue.catalogueImages.map(image => image.imageUrl)
+                            ]
+                        },
+                        productShipment: {
+                            catalogueWeight: catalogue.catalogueWeight,
+                            packagedWeight: catalogue.packagedWeight,
+                            catalogueDimension: catalogue.catalogueDimension,
+                            packagedDimension: catalogue.packagedDimension,
+                            // isDangerous: [''],
+                            // couriers: this.fb.array([
+                            //     this.fb.control({
+                            //         name: 'SiCepat REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'JNE REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'SiCepat Cargo (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     })
+                            // ])
+                        },
+                        productCount: {
+                            qtyPerMasterBox: catalogue.packagedQty,
+                            minQtyOption: catalogue.minQtyType,
+                            minQtyValue: catalogue.minQty,
+                            additionalQtyOption: catalogue.multipleQtyType,
+                            additionalQtyValue: catalogue.multipleQty,
+>>>>>>> 7f110ebd117a29fcf2982f81cce4b573f3079998
                         }
                     });
 
