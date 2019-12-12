@@ -140,7 +140,7 @@ export class AccountsSettingsEffects {
             ofType(SettingsActions.patchUserSuccess),
             tap(_ => {
                 this.matDialog.closeAll();
-                this._$notice.open('Berhasil meng-update informasi diri.', 'success', { horizontalPosition: 'center', verticalPosition: 'bottom' });
+                this._$notice.open('Berhasil meng-update informasi diri.', 'success', { horizontalPosition: 'right', verticalPosition: 'bottom' });
             })
         ), { dispatch: false }
     );
@@ -149,7 +149,7 @@ export class AccountsSettingsEffects {
         this.actions$.pipe(
             ofType(SettingsActions.patchUserFailure),
             map(action => action.payload),
-            tap(_ => this._$notice.open(`Gagal meng-update informasi diri.`, 'error', { horizontalPosition: 'center', verticalPosition: 'bottom' }))
+            tap(_ => this._$notice.open(`Gagal meng-update informasi diri.`, 'error', { horizontalPosition: 'right', verticalPosition: 'bottom' }))
         ), { dispatch: false }
     );
 
