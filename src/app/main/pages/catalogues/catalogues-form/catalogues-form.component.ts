@@ -1142,4 +1142,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
         return form.errors && (form.dirty || form.touched);
     }
+
+    isViewMode(): boolean {
+        return this.formMode === 'view';
+    }
 }
