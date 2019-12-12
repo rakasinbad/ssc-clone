@@ -30,7 +30,9 @@
                             class="pr-0"
                             [class.mat-error]="hasError(form.get('productInfo.externalId'))"
                         >
-                            *Produk ID
+                            <span
+                                class="red-500-fg"
+                            >* </span>Produk ID
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -54,6 +56,18 @@
                             >
                                 SKU already exist.
                             </mat-error>
+                            <mat-hint
+                                class="mb-4 primary-fg"
+                                *ngIf="form.get('productInfo.externalId').status === 'PENDING'"
+                            >
+                                Checking ...
+                            </mat-hint>
+                            <mat-hint
+                                class="mb-4 green-800-fg"
+                                *ngIf="form.get('productInfo.externalId').status === 'VALID'"
+                            >
+                                SKU is available.
+                            </mat-hint>
                         </mat-form-field>
                     </div>
                     <!-- / PRODUCT ID -->
@@ -70,7 +84,9 @@
                             class="pr-0"
                             [class.mat-error]="hasError(form.get('productInfo.name'))"
                         >
-                            *Nama Produk
+                            <span
+                                class="red-500-fg"
+                            >* </span>Nama Produk
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -206,7 +222,9 @@
                             class="pr-0"
                             [class.mat-error]="hasError(form.get('productInfo.brandId'))"
                         >
-                            *Brand
+                            <span
+                                class="red-500-fg"
+                            >* </span>Brand
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -242,7 +260,9 @@
                             class="pr-0 pt-20"
                             [class.mat-error]="hasError(form.get('productInfo.category'), { ignoreTouched: true, ignoreDirty: true })"
                         >
-                            *Kategori
+                            <span
+                                class="red-500-fg"
+                            >* </span>Kategori
                         </label>
 
                         <span class="ml-20 grey-600-fg" fxFlex="80" fxLayout="column" fxLayoutAlign="start start">
@@ -367,7 +387,9 @@
                             class="pr-0"
                             [class.mat-error]="hasError(form.get('productSale.productPrice'))"
                         >
-                            *Retailer <br/>Buying Price
+                            <span
+                                class="red-500-fg"
+                            >* </span>Retailer <br/>Buying Price
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -434,7 +456,9 @@
                             class="pr-0 mt-24"
                             [class.mat-error]="hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
                         >
-                            *Product Tag
+                            <span
+                                class="red-500-fg"
+                            >* </span>Product Tag
                         </label>
                 
                         <div fxFlex fxLayout="column" fxLayoutAlign="start stretch">
@@ -848,7 +872,23 @@
                                     </ng-template>
                                     <ng-container *ngIf="i === 0; else optionalPhoto;">
                                         <div fxLayout="column" fxLayoutAlign="space-between center">
-                                            <p class="grey-400-fg" style="margin-bottom: 0px;">*Foto Utama</p>
+                                            <p
+                                                *ngIf="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true }); else noPhotoError;"
+                                                class="mat-error"
+                                                style="margin-bottom: 0px;"
+                                            >    
+                                                * Foto Utama
+                                            </p>
+                                            <ng-template #noPhotoError>
+                                                <p
+                                                    class="grey-400-fg"
+                                                    style="margin-bottom: 0px;"
+                                                >    
+                                                    <span
+                                                        class="red-200-fg"
+                                                    >* </span>Foto Utama
+                                                </p>
+                                            </ng-template>
                                             <button
                                                 class="red-fg"
                                                 matTooltip="Reset to original image"
@@ -896,6 +936,7 @@
                             </div>
                             <p
                                 fxFlexAlign="start"
+                                class="my-0"
                                 [class.mat-error]="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
                             >
                                 {{ getFormError(form.get('productMedia.photos.0')) }}
@@ -929,7 +970,9 @@
                             fxFlex="18"
                             [class.mat-error]="hasError(form.get('productShipment.catalogueWeight'))"
                         >
-                            *Berat per Pcs
+                            <span
+                                class="red-500-fg"
+                            >* </span>Berat per Pcs
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -997,7 +1040,9 @@
                             fxFlex="18"
                             [class.mat-error]="hasError(form.get('productShipment.catalogueDimension'))"
                         >
-                            *Dimensi per <br/>Pcs
+                            <span
+                                class="red-500-fg"
+                            >* </span>Dimensi per <br/>Pcs
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80">
@@ -1143,11 +1188,11 @@
                             class="pr-0"
                             fxFlexAlign="center"
                             fxFlex="18"
-                            fxLayout="column"
-                            fxLayoutAlign="center end"
                             [class.mat-error]="hasError(form.get('productCount.qtyPerMasterBox'))"
                         >
-                            Quantity <br/>per Master Box
+                            <span
+                                class="red-500-fg"
+                            >* </span>Quantity <br/>per Master Box
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80">

@@ -66,7 +66,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     variantForm: FormGroup;
     productPhotos: FormArray;
     productOldPhotos: FormArray;
-    subs: Subscription = new Subscription();
 
     brands$: Observable<Array<Brand>>;
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
@@ -341,6 +340,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        /** Set subject untuk keperluan Subscription. */
         this._unSubs$ = new Subject<void>();
 
         /** Mulai mengambil data kategori katalog. */
@@ -359,6 +359,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             }
         });
 
+        /** Menyiapkan form. */
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
@@ -533,10 +534,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             })
         });
 
+        /** Menyiapkan form untuk varian. */
         this.variantForm = this.fb.group({
             variants: this.fb.array([])
         });
 
+        /** Menyiapkan beberapa variabel untuk mengambil beberapa control dari induk form. */
         this.productPhotos = this.form.get('productMedia.photos') as FormArray;
         this.productOldPhotos = this.form.get('productMedia.oldPhotos') as FormArray;
         this.productTagsControls = (this.form.get('productSale.tags') as FormArray);
@@ -550,241 +553,262 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'variants'
         ) as FormArray).controls;
 
-        this.store.select(CatalogueSelectors.getSelectedCategories)
+        /** Melakukan subscribe ke pengambilan data brand dari state. */
+        combineLatest([
+            this.store.select(BrandSelectors.getAllBrands),
+            this.store.select(CatalogueSelectors.getSelectedCategories),
+        ]).pipe(
+            /** Sambil mengambil dari beberapa Subscription. */
+            withLatestFrom(
+                this.store.select(AuthSelectors.getUserSupplier),
+                this.store.select(CatalogueSelectors.getProductName),
+                ([brands, categories], userSupplier, productName) => [brands, categories, userSupplier, productName]
+            ),
+            switchMap(([
+                brands,
+                categories,
+                userSupplier,
+                productName,
+            ]: [
+                Array<Brand>,
+                Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>,
+                UserSupplier,
+                string,
+            ]) => {
+                if (!userSupplier) {
+                    return of(
+                        BrandActions.fetchBrandsFailure({
+                            payload: { id: 'fetchBrandsFailure', errors: 'Not Authenticated' }
+                        })
+                    );
+                }
+
+                return of([brands, categories, userSupplier, productName]);
+            }),
+            takeUntil(this._unSubs$)
+        ).subscribe(([
+            brands,
+            categories,
+            userSupplier,
+            productName,
+        ]: [
+            Array<Brand>,
+            Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>,
+            UserSupplier,
+            string,
+        ]) => {
+            /** Mengambil data brand jika belum ada di state. */
+            if (!brands || brands.length === 0) {
+                const params: IQueryParams = {
+                    paginate: false,
+                };
+
+                /** Mengambil brand berdasarkan ID supplier-nya dari state. */
+                params['supplierId'] = userSupplier.supplierId;
+                return this.store.dispatch(BrandActions.fetchBrandsRequest({
+                    payload: params
+                }));
+            }
+
+            /** Memasukkan nama produk ke dalam form jika bukan edit mode (nama form yang berasal dari halaman Add Product) */
+            if (!this.isEditMode) {
+                this.form.get('productInfo.name').patchValue(productName);
+            }
+            
+            /** Kategori produk yang ingin ditampilkan di front-end. */
+            this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
+                categories.map(category => category['name']).join(`
+                    <span class="mx-12">
+                        >
+                    </span>
+                `)
+            );
+
+            this.updateSelectedCategories(categories);
+            this._cd.markForCheck();
+        });
+
+        /** Melakukan merge Subscription untuk mendeteksi valid atau tidaknya form katalog. */
+        merge(
+            this.form.get('productInfo').valueChanges,
+            this.form.get('productSale').valueChanges,
+            this.form.get('productMedia').valueChanges,
+            this.form.get('productShipment').valueChanges,
+            this.form.statusChanges,
+        ).pipe(
+            distinctUntilChanged(),
+            debounceTime(500),
+            takeUntil(this._unSubs$),
+        ).subscribe(() => {
+            if (this.form.status === 'VALID') {
+                this.store.dispatch(FormActions.setFormStatusValid());
+            } else {
+                this.store.dispatch(FormActions.setFormStatusInvalid());
+            }
+
+            /** Melakukan update render pada front-end. */
+            this._cd.markForCheck();
+        });
+
+        /** Melakukan subscribe ke perubahan nilai opsi Minimum Quantity Order. */
+        this.form.get('productCount.minQtyOption')
+            .valueChanges
             .pipe(
-                withLatestFrom(
-                    this.store.select(AuthSelectors.getUserSupplier),
-                    this.store.select(CatalogueSelectors.getProductName),
-                    this.store.select(BrandSelectors.getAllBrands),
-                ),
-                switchMap(data => {
-                    if (!data[1]) {
-                        return of(
-                            BrandActions.fetchBrandsFailure({
-                                payload: { id: 'fetchBrandsFailure', errors: 'Not Authenticated' }
-                            })
-                        );
-                    }
+                distinctUntilChanged(),
+                debounceTime(100),
+                takeUntil(this._unSubs$),
+            )
+            .subscribe(value => {
+                /** Mengambil nilai pada input Minimum Order Quantity. */
+                const minQtyValueController = this.form.get('productCount.minQtyValue');
+                /** Mengambil nilai Quantity per Master Box. */
+                const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
 
-                    return of(data);
-                }),
-                takeUntil(this._unSubs$)
-            ).subscribe(data => {
-                const categories: Array<{
-                    id: string;
-                    name: string;
-                    parent: TNullable<string>;
-                    hasChildren?: boolean;
-                }> = data[0];
-                const userSupplier: UserSupplier = data[1];
-                const productName: string = data[2];
-                const brands: Array<Brand> = data[3];
-
-                /** Mengambil data brand jika belum ada di state. */
-                if (brands.length === 0) {
-                    const params: IQueryParams = {
-                        paginate: false,
-                    };
-
-                    /** Mengambil brand berdasarkan ID supplier-nya dari state. */
-                    params['supplierId'] = userSupplier.supplierId;
-                    return this.store.dispatch(BrandActions.fetchBrandsRequest({
-                        payload: params
-                    }));
+                /** Mengubah perilaku Form Control sesuai dengan opsi Minimum Order Quantity. */
+                switch (value) {
+                    case 'master_box':
+                        minQtyValueController.disable();
+                        minQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                        break;
+                    case 'custom':
+                        minQtyValueController.enable();
+                        // minQtyValueController.patchValue(1);
+                        break;
+                    case 'pcs':
+                    default:
+                        minQtyValueController.disable();
+                        minQtyValueController.patchValue(1);
+                        break;
                 }
-                
-                // this.form.get('productInfo.brandId').patchValue(userSupplier.);
-                // this.form.get('productInfo.brandName').patchValue(auth.user.userSuppliers[0].name);
-
-                // this.startFetchBrands(auth.user.userSuppliers[0].supplierId);
-
-                if (!this.isEditMode) {
-                    this.form.get('productInfo.name').patchValue(productName);
-                }
-                
-                this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
-                    categories.map(category => category['name']).join(`
-                        <span class="mx-12">
-                            >
-                        </span>
-                    `)
-                );
-
-                const lastCategory = categories.length > 0 ? categories[categories.length - 1] : undefined;
-                if (!lastCategory || lastCategory.hasChildren) {
-                    // this.form.get('productInfo.category').setErrors({
-                    //     hasChildren: true
-                    // });
-
-                    this.form.get('productInfo.category').setValue('');
-                    this.form.get('productInfo.category').updateValueAndValidity();
-                } else {
-                    // this.form.get('productInfo.category').setErrors({
-                    //     hasChildren: false
-                    // });
-
-                    this.form.get('productInfo.category').setValue(categories);
-                    this.form.get('productInfo.category').updateValueAndValidity();
-                }
-
-                this._cd.markForCheck();
-                // this.form.markAllAsTouched();
-                // this.form.markAsDirty({ onlySelf: false });
-                // console.log(this.form.getRawValue());
             });
 
-        this.subs.add(
-            merge(
-                this.form.get('productInfo').valueChanges,
-                this.form.get('productSale').valueChanges,
-                this.form.get('productMedia').valueChanges,
-                this.form.get('productShipment').valueChanges,
-                this.form.statusChanges,
-            ).pipe(
+        /** Melakukan subscribe ke perubahan nilai opsi Additional Quantity. */
+        this.form.get('productCount.additionalQtyOption')
+            .valueChanges
+            .pipe(
                 distinctUntilChanged(),
-                debounceTime(500)
-            ).subscribe(() => {
-                if (this.form.status === 'VALID' && !this.form.pristine) {
-                    this.store.dispatch(FormActions.setFormStatusValid());
-                } else {
-                    this.store.dispatch(FormActions.setFormStatusInvalid());
+                debounceTime(100),
+                takeUntil(this._unSubs$),
+            )
+            .subscribe(value => {
+                /** Mengambil nilai pada input Additional Quantity. */
+                const additionalQtyValueController = this.form.get('productCount.additionalQtyValue');
+                /** Mengambil nilai Quantity per Master Box. */
+                const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
+
+                /** Mengubah perilaku Form Control sesuai dengan opsi Minimum Order Quantity. */
+                switch (value) {
+                    case 'master_box':
+                        additionalQtyValueController.disable();
+                        additionalQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                        break;
+                    case 'custom':
+                        additionalQtyValueController.enable();
+                        // minQtyValueController.patchValue(1);
+                        break;
+                    case 'pcs':
+                    default:
+                        additionalQtyValueController.disable();
+                        additionalQtyValueController.patchValue(1);
+                        break;
+                }
+            });
+
+            /** Melakukan subscribe ke perubahan nilai input Quantity per Master Box. */
+        this.form.get('productCount.qtyPerMasterBox')
+            .valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
+                takeUntil(this._unSubs$),
+            )
+            .subscribe(value => {
+                /** Mengambil Form Control-nya option dan input Minimum Quantity Order. */
+                const minQtyOption = this.form.get('productCount.minQtyOption');
+                const minQtyValue = this.form.get('productCount.minQtyValue');
+                /** Mengambil Form Control-nya option dan input Additional Quantity. */
+                const additionalQtyOption = this.form.get('productCount.additionalQtyOption');
+                const additionalQtyValue = this.form.get('productCount.additionalQtyValue');
+
+                /** Menetapkan nilai input Minimum Quantity Order sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
+                if (minQtyOption.value === 'master_box') {
+                    minQtyValue.setValue(value);
                 }
 
-                this._cd.markForCheck();
-            })
-        );
+                /** Menetapkan nilai input Additional Quantity sesuai dengan nilai Quantity per Master Box jika opsinya adalah Master Box. */
+                if (additionalQtyOption.value === 'master_box') {
+                    additionalQtyValue.setValue(value);
+                }
+            });
 
-        this.subs.add(
-            this.form.get('productCount.minQtyOption')
-                .valueChanges
-                .pipe(
-                    distinctUntilChanged(),
-                    debounceTime(100)
-                )
-                .subscribe(value => {
-                    const minQtyValueController = this.form.get('productCount.minQtyValue');
-                    const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
-
-                    switch (value) {
-                        case 'master_box':
-                            minQtyValueController.disable();
-                            minQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
-                            break;
-                        case 'custom':
-                            minQtyValueController.enable();
-                            // minQtyValueController.patchValue(1);
-                            break;
-                        case 'pcs':
-                        default:
-                            minQtyValueController.disable();
-                            minQtyValueController.patchValue(1);
-                            break;
-                    }
-                })
-        );
-
-        this.subs.add(
-            this.form.get('productCount.additionalQtyOption')
-                .valueChanges
-                .pipe(
-                    distinctUntilChanged(),
-                    debounceTime(100)
-                )
-                .subscribe(value => {
-                    const additionalQtyValueController = this.form.get('productCount.additionalQtyValue');
-                    const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
-
-                    switch (value) {
-                        case 'master_box':
-                            additionalQtyValueController.disable();
-                            additionalQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
-                            break;
-                        case 'custom':
-                            additionalQtyValueController.enable();
-                            // minQtyValueController.patchValue(1);
-                            break;
-                        case 'pcs':
-                        default:
-                            additionalQtyValueController.disable();
-                            additionalQtyValueController.patchValue(1);
-                            break;
-                    }
-                })
-        );
-
-        this.subs.add(
-            this.form.get('productCount.qtyPerMasterBox')
-                .valueChanges
-                .pipe(
-                    distinctUntilChanged(),
-                    debounceTime(100)
-                )
-                .subscribe(value => {
-                    const minQtyOption = this.form.get('productCount.minQtyOption');
-                    const minQtyValue = this.form.get('productCount.minQtyValue');
-                    const additionalQtyOption = this.form.get('productCount.additionalQtyOption');
-                    const additionalQtyValue = this.form.get('productCount.additionalQtyValue');
-
-                    if (minQtyOption.value === 'master_box') {
-                        minQtyValue.setValue(value);
-                    }
-
-                    if (additionalQtyOption.value === 'master_box') {
-                        additionalQtyValue.setValue(value);
-                    }
-                })
-        );
-
+        /** Melakukan subscribe ketika ada aksi menekan tombol "Simpan" pada form. */
         this.store
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
-                filter(isClick => !!isClick),
+                filter(isClick => isClick),
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                console.log('CLICK SUBMIT', isClick);
-
+                /** Jika menekannya, maka submit data form-nya. */
                 if (isClick) {
                     this.onSubmit();
                 }
             });
 
-        this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
+        /** Melakukan subscribe ketika ada perubahan data daftar brand. */
+        this.brands$ = this.store
+            .select(BrandSelectors.getAllBrands)
+            .pipe(
+                takeUntil(this._unSubs$)
+            );
 
+        /** Ini untuk fixing Quill Editor yang tingginya melewati form input di bawahnya. */
         if (!this.isEditMode) {
-            this.form.get('productInfo.description').setValue('---');
-            setTimeout(() => this.form.get('productInfo.description').setValue(''), 100);
+            this.form.patchValue({
+                productInfo: {
+                    description: '---',
+                    information: '---'
+                }
+            });
+
+            setTimeout(() => {
+                this.form.patchValue({
+                    productInfo: {
+                        description: '',
+                        information: ''
+                    }
+                });
+                this._cd.markForCheck();
+            }, 100);
         }
 
-        // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
+        /** Mendaftarkan toolbox pada Quill Editor yang diperlukan saja */
         this.registerQuillFormatting();
-        this._prepareEditCatalogue();
+
+        /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
+        const { id } = this.route.snapshot.params;
+
+        if (id) {
+            /** Melakukan persiapan data dan form untuk edit katalog. */
+            this.isEditMode = true;
+            this._prepareEditCatalogue();
+        } else {
+            this.isEditMode = false;
+        }
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
         this.store.dispatch(CatalogueActions.resetSelectedCategories());
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.store.dispatch(UiActions.hideCustomToolbar());
-
         this.store.dispatch(FormActions.resetFormStatus());
 
         this._unSubs$.next();
         this._unSubs$.complete();
-
-        this.subs.unsubscribe();
-    }
-
-    private startFetchBrands(supplierId: string): void {
-        const data: IQueryParams = {
-            paginate: false,
-        };
-
-        data['supplierId'] = supplierId;
-
-        this.store.dispatch(BrandActions.fetchBrandsRequest({ payload: data }));
     }
 
     private registerQuillFormatting(): void {
@@ -808,192 +832,203 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         Quill.register(ItalicBlot);
     }
 
-    private _prepareEditCatalogue(): void {
-        const { id } = this.route.snapshot.params;
-
-        if (!id) {
-            this.isEditMode = false;
+    private updateSelectedCategories(categories: Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>): void {
+        /** Mengambil kategori terakhir yang terpilih. */
+        const lastCategory = categories.length > 0 ? categories[categories.length - 1] : undefined;
+                        
+        /** Kategori paling terakhir tidak boleh memiliki sub-kategori. Harus memilih kategori hingga terdalam. */
+        if (!lastCategory || lastCategory.hasChildren) {
+            this.form.get('productInfo.category').setValue('');
+            this.form.get('productInfo.category').updateValueAndValidity();
         } else {
-            this.isEditMode = true;
+            this.form.get('productInfo.category').setValue(categories);
+            this.form.get('productInfo.category').updateValueAndValidity();
+        }
+    }
 
-            // this.productTagsControls.clear();
-            // (this.form.get('productSale.tags') as FormArray).clear();
-
-            // this
-            //     .store
-            //     .dispatch(CatalogueActions.fetchCatalogueRequest({ payload: id }));
+    private _prepareEditCatalogue(): void {
+        combineLatest([
+            this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
+            this.store.select(CatalogueSelectors.getCatalogueCategories),
+            this.store.select(AuthSelectors.getUserSupplier),
+        ]).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(([catalogue, categories, userSupplier]) => {
+            /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
+            const { id } = this.route.snapshot.params;
             
-            combineLatest([
-                this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
-                this.store.select(CatalogueSelectors.getCatalogueCategories),
-                this.store.select(AuthSelectors.getUserSupplier),
-            ]).pipe(
-                takeUntil(this._unSubs$)
-            ).subscribe(([catalogue, categories, userSupplier]) => {
-                if (categories.length === 0) {
-                    this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
-                } else if (!catalogue) {
-                    this.store.dispatch(CatalogueActions.fetchCatalogueRequest({
-                        payload: id
-                    }));
+            /** Butuh fetch kategori katalog jika belum ada di state. */
+            if (categories.length === 0) {
+                return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
+            }
 
-                    this.store.dispatch(CatalogueActions.setSelectedCatalogue({
-                        payload: id
-                    }));
-                } else if (categories.length > 0 && catalogue) {
-                    if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                        this.store.dispatch(CatalogueActions.spliceCatalogue({
-                            payload: id
-                        }));
+            /** Butuh mengambil data katalog jika belum ada di state. */
+            if (!catalogue) {
+                this.store.dispatch(CatalogueActions.fetchCatalogueRequest({
+                    payload: id
+                }));
 
-                        this._$notice.open('Produk tidak ditemukan.', 'error', {
-                            verticalPosition: 'bottom',
-                            horizontalPosition: 'right'
-                        });
+                this.store.dispatch(CatalogueActions.setSelectedCatalogue({
+                    payload: id
+                }));
 
-                        return this.router.navigate([
-                            'pages', 'catalogues', 'list'
-                        ]);
-                    }
+                return;
+            }
 
-                    const searchCategory = (catalogueId, selectedCategories: Array<CatalogueCategory> ) => {
-                        const selectedCategory = selectedCategories.filter(category => category.id === catalogueId);
+            /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
+            if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                this.store.dispatch(CatalogueActions.spliceCatalogue({
+                    payload: id
+                }));
 
-                        return {
-                            id: selectedCategory[0].id,
-                            name: selectedCategory[0].category,
-                            parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
-                            children: selectedCategory[0].children
-                        };
-                    };
+                this._$notice.open('Produk tidak ditemukan.', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
 
-                    const keywords = catalogue.catalogueKeywordCatalogues.map(keyword => keyword.catalogueKeyword.tag);
-                    (this.form.get('productSale.tags') as FormArray).clear();
-                    for (const keyword of keywords) {
-                        (this.form.get('productSale.tags') as FormArray).push(this.fb.control(keyword));
-                    }
+                return setTimeout(() => this.router.navigate([
+                    'pages', 'catalogues', 'list'
+                ]), 1000);
+            }
 
-                    this.form.patchValue({
-                        productInfo: {
-                            information: '...'
-                        }
-                    });
+            /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
+            const searchCategory = (catalogueId, selectedCategories: Array<CatalogueCategory> ) => {
+                const selectedCategory = selectedCategories.filter(category => category.id === catalogueId);
 
-                    setTimeout(() =>
-                        this.form.patchValue({
-                            productInfo: {
-                                id: catalogue.id,
-                                externalId: catalogue.externalId,
-                                name: catalogue.name,
-                                description: catalogue.description,
-                                information: catalogue.detail,
-                                // variant: ['', Validators.required],
-                                brandId: catalogue.brandId,
-                                brandName: catalogue.brand.name,
-                                // category: ['', Validators.required],
-                                stock: catalogue.stock,
-                                uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                                minQty: catalogue.minQty,
-                                packagedQty: catalogue.packagedQty,
-                                multipleQty: catalogue.multipleQty
-                            }, productSale: {
-                                retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                                productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
-                                // variants: this.fb.array([])
-                            }, productMedia: {
-                                photos: [
-                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
-                                ],
-                                oldPhotos: [
-                                    ...catalogue.catalogueImages.map(image => image.imageUrl)
-                                ]
-                            },
-                            productShipment: {
-                                catalogueWeight: catalogue.catalogueWeight,
-                                packagedWeight: catalogue.packagedWeight,
-                                catalogueDimension: catalogue.catalogueDimension,
-                                packagedDimension: catalogue.packagedDimension,
-                                // isDangerous: [''],
-                                // couriers: this.fb.array([
-                                //     this.fb.control({
-                                //         name: 'SiCepat REG (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     }),
-                                //     this.fb.control({
-                                //         name: 'JNE REG (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     }),
-                                //     this.fb.control({
-                                //         name: 'SiCepat Cargo (maks 5000g)',
-                                //         disabled: this.fb.control(false)
-                                //     })
-                                // ])
-                            },
-                            productCount: {
-                                qtyPerMasterBox: catalogue.packagedQty,
-                                minQtyOption: catalogue.minQtyType,
-                                minQtyValue: catalogue.minQty,
-                                additionalQtyOption: catalogue.multipleQtyType,
-                                additionalQtyValue: catalogue.multipleQty,
-                            }
-                        }), 100);
+                return {
+                    id: selectedCategory[0].id,
+                    name: selectedCategory[0].category,
+                    parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
+                    children: selectedCategory[0].children
+                };
+            };
 
+            /** Mengambil data keyword katalog. */
+            const keywords = catalogue.catalogueKeywordCatalogues.map(keyword => keyword.catalogueKeyword.tag);
+            (this.form.get('productSale.tags') as FormArray).clear();
+            for (const keyword of keywords) {
+                (this.form.get('productSale.tags') as FormArray).push(this.fb.control(keyword));
+            }
 
-                    if (catalogue.minQtyType !== 'custom') {
-                        this.form.get('productCount.minQtyValue').disable();
-                    } else {
-                        this.form.get('productCount.minQtyValue').enable();
-                    }
-
-                    if (catalogue.multipleQtyType !== 'custom') {
-                        this.form.get('productCount.additionalQtyValue').disable();
-                    } else {
-                        this.form.get('productCount.additionalQtyValue').enable();
-                    }
-
-                    // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
-
-                    for (const [idx, image] of catalogue.catalogueImages.entries()) {
-                        this.productPhotos.controls[idx].setValue(image.imageUrl);
-                        this.productOldPhotos.controls[idx].get('id').setValue(image.id);
-                        this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
-                    }
-
-                    if (isNaN(catalogue.lastCatalogueCategoryId) || !catalogue.lastCatalogueCategoryId) {
-                        this.store.dispatch(CatalogueActions.resetSelectedCategories());
-                    } else {
-                        const newCategories = [];
-                        let isFirst = true;
-                        do {
-                            if (isFirst) {
-                                newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
-                                isFirst = false;
-                            } else {
-                                const lastCategory = newCategories[newCategories.length - 1];
-                                newCategories.push(searchCategory(lastCategory.parent, categories));
-                            }
-                        } while (newCategories[newCategories.length - 1].parent);
-    
-    
-                        this.store.dispatch(CatalogueActions.setSelectedCategories({
-                            payload: [
-                                ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent, hasChildren: (newCat.children.length > 0) }))
-                            ]
-                        }));
-                    }
-
-                    this.form.markAsDirty({ onlySelf: false });
-                    this.form.markAllAsTouched();
-                    this.form.markAsPristine();
-                    // this.store.dispatch(
-                    //     CatalogueActions
-                    //         .fetchCatalogueCategoryRequest({
-                    //             payload: String(catalogue.lastCatalogueCategoryId)
-                    //         })
-                    //     );
+            /** Memberi nilai sementara sebelum dimasukkan nilai aslinya ke Quill Editor. */
+            this.form.patchValue({
+                productInfo: {
+                    information: '...'
                 }
             });
-        }
+
+            /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
+            setTimeout(() =>
+                this.form.patchValue({
+                    productInfo: {
+                        id: catalogue.id,
+                        externalId: catalogue.externalId,
+                        name: catalogue.name,
+                        description: catalogue.description,
+                        information: catalogue.detail,
+                        // variant: ['', Validators.required],
+                        brandId: catalogue.brandId,
+                        brandName: catalogue.brand.name,
+                        // category: ['', Validators.required],
+                        stock: catalogue.stock,
+                        uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                        minQty: catalogue.minQty,
+                        packagedQty: catalogue.packagedQty,
+                        multipleQty: catalogue.multipleQty
+                    }, productSale: {
+                        retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                        productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
+                        // variants: this.fb.array([])
+                    }, productMedia: {
+                        photos: [
+                            ...catalogue.catalogueImages.map(image => image.imageUrl)
+                        ],
+                        oldPhotos: [
+                            ...catalogue.catalogueImages.map(image => image.imageUrl)
+                        ]
+                    },
+                    productShipment: {
+                        catalogueWeight: catalogue.catalogueWeight,
+                        packagedWeight: catalogue.packagedWeight,
+                        catalogueDimension: catalogue.catalogueDimension,
+                        packagedDimension: catalogue.packagedDimension,
+                        // isDangerous: [''],
+                        // couriers: this.fb.array([
+                        //     this.fb.control({
+                        //         name: 'SiCepat REG (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     }),
+                        //     this.fb.control({
+                        //         name: 'JNE REG (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     }),
+                        //     this.fb.control({
+                        //         name: 'SiCepat Cargo (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     })
+                        // ])
+                    },
+                    productCount: {
+                        qtyPerMasterBox: catalogue.packagedQty,
+                        minQtyOption: catalogue.minQtyType,
+                        minQtyValue: catalogue.minQty,
+                        additionalQtyOption: catalogue.multipleQtyType,
+                        additionalQtyValue: catalogue.multipleQty,
+                    }
+                }), 100);
+
+
+            /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Minimum Quantity Order. */
+            if (catalogue.minQtyType !== 'custom') {
+                this.form.get('productCount.minQtyValue').disable();
+            } else {
+                this.form.get('productCount.minQtyValue').enable();
+            }
+
+            /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Additional Quantity. */
+            if (catalogue.multipleQtyType !== 'custom') {
+                this.form.get('productCount.additionalQtyValue').disable();
+            } else {
+                this.form.get('productCount.additionalQtyValue').enable();
+            }
+
+            /** Menampilkan foto produk pada form beserta menyimpannya di form invisible untuk sewaktu-waktu ingin undo penghapusan foto. */
+            for (const [idx, image] of catalogue.catalogueImages.entries()) {
+                this.productPhotos.controls[idx].setValue(image.imageUrl);
+                this.productOldPhotos.controls[idx].get('id').setValue(image.id);
+                this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
+            }
+
+            if (isNaN(catalogue.lastCatalogueCategoryId) || !catalogue.lastCatalogueCategoryId) {
+                /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
+                this.store.dispatch(CatalogueActions.resetSelectedCategories());
+            } else {
+                /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
+                const newCategories = [];
+                let isFirst = true;
+                do {
+                    if (isFirst) {
+                        newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
+                        isFirst = false;
+                    } else {
+                        const lastCategory = newCategories[newCategories.length - 1];
+                        newCategories.push(searchCategory(lastCategory.parent, categories));
+                    }
+                } while (newCategories[newCategories.length - 1].parent);
+
+
+                this.store.dispatch(CatalogueActions.setSelectedCategories({
+                    payload: [
+                        ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent, hasChildren: (newCat.children.length > 0) }))
+                    ]
+                }));
+            }
+
+            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+            this.form.markAsDirty({ onlySelf: false });
+            this.form.markAllAsTouched();
+            this.form.markAsPristine();
+        });
     }
 
     onAddVariant(): void {

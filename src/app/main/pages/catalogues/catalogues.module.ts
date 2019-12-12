@@ -1,3 +1,5 @@
+import { environment } from '../../../../environments/environment';
+
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
@@ -52,6 +54,7 @@ import { BrandEffects } from './store/effects/brand.effects';
                 ]
             },
             placeholder: '',
+            debug: environment.staging ? 'warn' : environment.production ? false : 'log'
         }),
 
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),

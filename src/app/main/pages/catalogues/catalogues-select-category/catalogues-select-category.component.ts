@@ -1,14 +1,3 @@
-/*
- __        ______  _______   _______    ______   _______   ______  ________   ______  
-/  |      /      |/       \ /       \  /      \ /       \ /      |/        | /      \ 
-$$ |      $$$$$$/ $$$$$$$  |$$$$$$$  |/$$$$$$  |$$$$$$$  |$$$$$$/ $$$$$$$$/ /$$$$$$  |
-$$ |        $$ |  $$ |__$$ |$$ |__$$ |$$ |__$$ |$$ |__$$ |  $$ |  $$ |__    $$ \__$$/ 
-$$ |        $$ |  $$    $$< $$    $$< $$    $$ |$$    $$<   $$ |  $$    |   $$      \ 
-$$ |        $$ |  $$$$$$$  |$$$$$$$  |$$$$$$$$ |$$$$$$$  |  $$ |  $$$$$/     $$$$$$  |
-$$ |_____  _$$ |_ $$ |__$$ |$$ |  $$ |$$ |  $$ |$$ |  $$ | _$$ |_ $$ |_____ /  \__$$ |
-$$       |/ $$   |$$    $$/ $$ |  $$ |$$ |  $$ |$$ |  $$ |/ $$   |$$       |$$    $$/ 
-$$$$$$$$/ $$$$$$/ $$$$$$$/  $$/   $$/ $$/   $$/ $$/   $$/ $$$$$$/ $$$$$$$$/  $$$$$$/  
-*/                                                                                      
 /** Angular Core Libraries */
 import {
     ChangeDetectionStrategy,
@@ -51,17 +40,6 @@ import { CatalogueActions } from '../store/actions';
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
 
-/*
- ______  __    __  ________  ________  _______   ________  ______    ______   ________   ______  
-/      |/  \  /  |/        |/        |/       \ /        |/      \  /      \ /        | /      \ 
-$$$$$$/ $$  \ $$ |$$$$$$$$/ $$$$$$$$/ $$$$$$$  |$$$$$$$$//$$$$$$  |/$$$$$$  |$$$$$$$$/ /$$$$$$  |
-  $$ |  $$$  \$$ |   $$ |   $$ |__    $$ |__$$ |$$ |__   $$ |__$$ |$$ |  $$/ $$ |__    $$ \__$$/ 
-  $$ |  $$$$  $$ |   $$ |   $$    |   $$    $$< $$    |  $$    $$ |$$ |      $$    |   $$      \ 
-  $$ |  $$ $$ $$ |   $$ |   $$$$$/    $$$$$$$  |$$$$$/   $$$$$$$$ |$$ |   __ $$$$$/     $$$$$$  |
- _$$ |_ $$ |$$$$ |   $$ |   $$ |_____ $$ |  $$ |$$ |     $$ |  $$ |$$ \__/  |$$ |_____ /  \__$$ |
-/ $$   |$$ | $$$ |   $$ |   $$       |$$ |  $$ |$$ |     $$ |  $$ |$$    $$/ $$       |$$    $$/ 
-$$$$$$/ $$/   $$/    $$/    $$$$$$$$/ $$/   $$/ $$/      $$/   $$/  $$$$$$/  $$$$$$$$/  $$$$$$/  
-*/
 interface ISelectedCategory {
     data: Array<CatalogueCategory>;
     selected: string;
@@ -73,17 +51,6 @@ interface ISelectedCategoryForm {
     name: string;
 }
 
-/*
-  ______    ______   __       __  _______    ______   __    __  ________  __    __  ________ 
- /      \  /      \ /  \     /  |/       \  /      \ /  \  /  |/        |/  \  /  |/        |
-/$$$$$$  |/$$$$$$  |$$  \   /$$ |$$$$$$$  |/$$$$$$  |$$  \ $$ |$$$$$$$$/ $$  \ $$ |$$$$$$$$/ 
-$$ |  $$/ $$ |  $$ |$$$  \ /$$$ |$$ |__$$ |$$ |  $$ |$$$  \$$ |$$ |__    $$$  \$$ |   $$ |   
-$$ |      $$ |  $$ |$$$$  /$$$$ |$$    $$/ $$ |  $$ |$$$$  $$ |$$    |   $$$$  $$ |   $$ |   
-$$ |   __ $$ |  $$ |$$ $$ $$/$$ |$$$$$$$/  $$ |  $$ |$$ $$ $$ |$$$$$/    $$ $$ $$ |   $$ |   
-$$ \__/  |$$ \__$$ |$$ |$$$/ $$ |$$ |      $$ \__$$ |$$ |$$$$ |$$ |_____ $$ |$$$$ |   $$ |   
-$$    $$/ $$    $$/ $$ | $/  $$ |$$ |      $$    $$/ $$ | $$$ |$$       |$$ | $$$ |   $$ |   
- $$$$$$/   $$$$$$/  $$/      $$/ $$/        $$$$$$/  $$/   $$/ $$$$$$$$/ $$/   $$/    $$/    
-*/
 @Component({
     selector: 'app-catalogues-select-category',
     templateUrl: './catalogues-select-category.component.html',
@@ -91,30 +58,8 @@ $$    $$/ $$    $$/ $$ | $/  $$ |$$ |      $$    $$/ $$ | $$$ |$$       |$$ | $$
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-/*
-  ______   __         ______    ______    ______  
- /      \ /  |       /      \  /      \  /      \ 
-/$$$$$$  |$$ |      /$$$$$$  |/$$$$$$  |/$$$$$$  |
-$$ |  $$/ $$ |      $$ |__$$ |$$ \__$$/ $$ \__$$/ 
-$$ |      $$ |      $$    $$ |$$      \ $$      \ 
-$$ |   __ $$ |      $$$$$$$$ | $$$$$$  | $$$$$$  |
-$$ \__/  |$$ |_____ $$ |  $$ |/  \__$$ |/  \__$$ |
-$$    $$/ $$       |$$ |  $$ |$$    $$/ $$    $$/ 
- $$$$$$/  $$$$$$$$/ $$/   $$/  $$$$$$/   $$$$$$/  
-*/
-export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
 
-    /*
-     __     __   ______   _______   ______   ______   _______   __        ________   ______  
-    /  |   /  | /      \ /       \ /      | /      \ /       \ /  |      /        | /      \ 
-    $$ |   $$ |/$$$$$$  |$$$$$$$  |$$$$$$/ /$$$$$$  |$$$$$$$  |$$ |      $$$$$$$$/ /$$$$$$  |
-    $$ |   $$ |$$ |__$$ |$$ |__$$ |  $$ |  $$ |__$$ |$$ |__$$ |$$ |      $$ |__    $$ \__$$/ 
-    $$  \ /$$/ $$    $$ |$$    $$<   $$ |  $$    $$ |$$    $$< $$ |      $$    |   $$      \ 
-     $$  /$$/  $$$$$$$$ |$$$$$$$  |  $$ |  $$$$$$$$ |$$$$$$$  |$$ |      $$$$$/     $$$$$$  |
-      $$ $$/   $$ |  $$ |$$ |  $$ | _$$ |_ $$ |  $$ |$$ |__$$ |$$ |_____ $$ |_____ /  \__$$ |
-       $$$/    $$ |  $$ |$$ |  $$ |/ $$   |$$ |  $$ |$$    $$/ $$       |$$       |$$    $$/ 
-        $/     $$/   $$/ $$/   $$/ $$$$$$/ $$/   $$/ $$$$$$$/  $$$$$$$$/ $$$$$$$$/  $$$$$$/  
-    */
+export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
     /** Untuk penanda bahwa data yang di-input sudah memenuhi kriteria atau belum. */
     public isFulfilled: boolean;
 
@@ -137,18 +82,7 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
 
     /** Subject, untuk pipe takeUntil-nya Observable biar auto-unsubscribe. */
     private _unSubs$: Subject<void>;
-
-    /*
-      ______    ______   __    __   ______   ________  _______   __    __   ______   ________  ______   _______  
-     /      \  /      \ /  \  /  | /      \ /        |/       \ /  |  /  | /      \ /        |/      \ /       \ 
-    /$$$$$$  |/$$$$$$  |$$  \ $$ |/$$$$$$  |$$$$$$$$/ $$$$$$$  |$$ |  $$ |/$$$$$$  |$$$$$$$$//$$$$$$  |$$$$$$$  |
-    $$ |  $$/ $$ |  $$ |$$$  \$$ |$$ \__$$/    $$ |   $$ |__$$ |$$ |  $$ |$$ |  $$/    $$ |  $$ |  $$ |$$ |__$$ |
-    $$ |      $$ |  $$ |$$$$  $$ |$$      \    $$ |   $$    $$< $$ |  $$ |$$ |         $$ |  $$ |  $$ |$$    $$< 
-    $$ |   __ $$ |  $$ |$$ $$ $$ | $$$$$$  |   $$ |   $$$$$$$  |$$ |  $$ |$$ |   __    $$ |  $$ |  $$ |$$$$$$$  |
-    $$ \__/  |$$ \__$$ |$$ |$$$$ |/  \__$$ |   $$ |   $$ |  $$ |$$ \__$$ |$$ \__/  |   $$ |  $$ \__$$ |$$ |  $$ |
-    $$    $$/ $$    $$/ $$ | $$$ |$$    $$/    $$ |   $$ |  $$ |$$    $$/ $$    $$/    $$ |  $$    $$/ $$ |  $$ |
-     $$$$$$/   $$$$$$/  $$/   $$/  $$$$$$/     $$/    $$/   $$/  $$$$$$/   $$$$$$/     $$/    $$$$$$/  $$/   $$/ 
-    */                                                                                                       
+    
     constructor(
         /**
          * Melakukan injeksi data yang dikirim oleh komponen lain.
@@ -160,17 +94,6 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
         private store: Store<fromCatalogue.FeatureState>,
     ) {}
 
-    /*
-     _______   _______   ______  __     __   ______   ________  ________ 
-    /       \ /       \ /      |/  |   /  | /      \ /        |/        |
-    $$$$$$$  |$$$$$$$  |$$$$$$/ $$ |   $$ |/$$$$$$  |$$$$$$$$/ $$$$$$$$/ 
-    $$ |__$$ |$$ |__$$ |  $$ |  $$ |   $$ |$$ |__$$ |   $$ |   $$ |__    
-    $$    $$/ $$    $$<   $$ |  $$  \ /$$/ $$    $$ |   $$ |   $$    |   
-    $$$$$$$/  $$$$$$$  |  $$ |   $$  /$$/  $$$$$$$$ |   $$ |   $$$$$/    
-    $$ |      $$ |  $$ | _$$ |_   $$ $$/   $$ |  $$ |   $$ |   $$ |_____ 
-    $$ |      $$ |  $$ |/ $$   |   $$$/    $$ |  $$ |   $$ |   $$       |
-    $$/       $$/   $$/ $$$$$$/     $/     $$/   $$/    $$/    $$$$$$$$/ 
-    */                                                                    
     private joinSelectedCategories(categories: Array<ISelectedCategoryForm>): string {
         return categories.filter(c => c.id).map(c => c.name).join(' > ');
     }
@@ -184,18 +107,7 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
             level++;
         }
     }
-
-    /*
-     _______   __    __  _______   __        ______   ______  
-    /       \ /  |  /  |/       \ /  |      /      | /      \ 
-    $$$$$$$  |$$ |  $$ |$$$$$$$  |$$ |      $$$$$$/ /$$$$$$  |
-    $$ |__$$ |$$ |  $$ |$$ |__$$ |$$ |        $$ |  $$ |  $$/ 
-    $$    $$/ $$ |  $$ |$$    $$< $$ |        $$ |  $$ |      
-    $$$$$$$/  $$ |  $$ |$$$$$$$  |$$ |        $$ |  $$ |   __ 
-    $$ |      $$ \__$$ |$$ |__$$ |$$ |_____  _$$ |_ $$ \__/  |
-    $$ |      $$    $$/ $$    $$/ $$       |/ $$   |$$    $$/ 
-    $$/        $$$$$$/  $$$$$$$/  $$$$$$$$/ $$$$$$/  $$$$$$/  
-    */                                     
+    
     public onSelectCategory(_: Event, id: string, data: CatalogueCategory, name: string, level: number, hasChild: any): void {
         if (hasChild) {
             this.isFulfilled = false;
@@ -232,18 +144,7 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
             ]
         }));
     }
-
-    /*    
-     __        ______  ________  ________   ______   __      __  ______   __        ________   ______  
-    /  |      /      |/        |/        | /      \ /  \    /  |/      \ /  |      /        | /      \ 
-    $$ |      $$$$$$/ $$$$$$$$/ $$$$$$$$/ /$$$$$$  |$$  \  /$$//$$$$$$  |$$ |      $$$$$$$$/ /$$$$$$  |
-    $$ |        $$ |  $$ |__    $$ |__    $$ |  $$/  $$  \/$$/ $$ |  $$/ $$ |      $$ |__    $$ \__$$/ 
-    $$ |        $$ |  $$    |   $$    |   $$ |        $$  $$/  $$ |      $$ |      $$    |   $$      \ 
-    $$ |        $$ |  $$$$$/    $$$$$/    $$ |   __    $$$$/   $$ |   __ $$ |      $$$$$/     $$$$$$  |
-    $$ |_____  _$$ |_ $$ |      $$ |_____ $$ \__/  |    $$ |   $$ \__/  |$$ |_____ $$ |_____ /  \__$$ |
-    $$       |/ $$   |$$ |      $$       |$$    $$/     $$ |   $$    $$/ $$       |$$       |$$    $$/ 
-    $$$$$$$$/ $$$$$$/ $$/       $$$$$$$$/  $$$$$$/      $$/     $$$$$$/  $$$$$$$$/ $$$$$$$$/  $$$$$$/  
-    */                                                                                
+    
     ngOnInit(): void {
         /** Inisialisasi Subject. */
         this._unSubs$ = new Subject<void>();
@@ -297,23 +198,17 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
                         console.log(categories);
                     });
 
-        /** Dispatch action untuk request data category tree ke back-end. */
-        this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
-
-        /** Memilih selector untuk melakukan "stream" perubahan category tree. */
-        this.store
-            .select(CatalogueSelectors.getCategoryTree)
-            .pipe(
-                takeUntil(this._unSubs$)
-            ).subscribe(categories => {
-                if (categories) {
-                    /** Mengambil data category tree yang diperoleh dari back-end. */
-                    this.categoryTree = categories;
-                }
-                
-                /** Memaksa ChangeDetection-nya Angular untuk memeriksa perubahan pada view. */
-                this._cd.markForCheck();
-            });
+        this.store.select(CatalogueSelectors.getCategoryTree)
+                    .pipe(
+                        takeUntil(this._unSubs$)
+                    ).subscribe(tree => {
+                        if (tree.length === 0) {
+                            return this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
+                        }
+        
+                        this.categoryTree = tree;
+                        this._cd.markForCheck();
+                    });
     }
 
     ngOnDestroy(): void {

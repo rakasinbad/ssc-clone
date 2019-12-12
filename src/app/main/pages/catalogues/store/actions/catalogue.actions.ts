@@ -388,6 +388,8 @@ export const setSelectedCategories = createAction(
 
 export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
 
+export const resetSelectedCatalogue = createAction('[Catalogue Page] Reset Selected Catalogue');
+
 /**
  * FOR DEMO PURPOSE ONLY
  */

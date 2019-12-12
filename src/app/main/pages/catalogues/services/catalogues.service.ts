@@ -119,7 +119,7 @@ export class CataloguesService {
             });
         }
 
-        if (!isNaN(params['externalId'])) {
+        if (params['externalId']) {
             newArgs.push({
                 key: 'externalId',
                 value: params['externalId']

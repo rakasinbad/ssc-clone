@@ -359,6 +359,13 @@ const catalogueReducer = createReducer(
         })
     ),
     on(
+        CatalogueActions.resetSelectedCatalogue,
+        state => ({
+            ...state,
+            selectedCatalogueId: initialState.selectedCatalogueId
+        })
+    ),
+    on(
         CatalogueActions.resetCatalogue,
         state => ({
             ...state,
