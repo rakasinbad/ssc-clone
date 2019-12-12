@@ -96,22 +96,22 @@
                     <!-- DETAIL PRODUK -->
                     <div
                         class="custom-field-right"
-                        [class.h-80]="formMode === 'view'"
-                        [class.mb-20]="formMode !== 'view'"
+                        [class.h-80]="!isViewMode()"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlex="18"
+                            fxFlexAlign="center"
                             class="pr-0"
-                            style="padding-top: 1.5em;"
+                            [class.pt-20]="formMode !== 'view'"
                             [class.mat-error]="hasError(form.get('productInfo.information'))"
                         >
                             Detail Produk
                         </label>
                 
-                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px">
+                        <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px" *ngIf="formMode !== 'view'">
                             <quill-editor
                                 [class.ql-error]="hasError(form.get('productInfo.information'))"
                                 format='html'
@@ -126,6 +126,12 @@
                                 {{ getFormError(form.get('productInfo.information')) }}
                             </mat-error>
                         </div>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.information').value">
+                            {{ form.get('productInfo.information').value }}
+                        </span>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.information').value">
+                            &nbsp;
+                        </span>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
                                 matInput
@@ -138,22 +144,21 @@
                     <!-- DESKRIPSI PRODUK -->
                     <div
                         class="custom-field-right"
-                        [class.h-80]="formMode === 'view'"
-                        [class.mb-20]="formMode !== 'view'"
+                        [class.h-80]="!isViewMode()"
                         fxLayout="row"
                         fxLayoutAlign="space-between strectch"
                         formGroupName="productInfo"
                     >
                         <label
                             fxFlex="18"
+                            fxFlexAlign="center"
                             class="pr-0"
-                            style="padding-top: 1.5em;"
                             [class.mat-error]="hasError(form.get('productInfo.description'))"
                         >
                             Deskripsi Produk
                         </label>
                 
-                        <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-form-field appearance="outline" fxFlex="80" *ngIf="formMode !== 'view'">
                             <textarea
                                 matInput
                                 rows="5"
@@ -165,6 +170,12 @@
                                 {{ getFormError(form.get('productInfo.description')) }}
                             </mat-error>
                         </mat-form-field>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.description').value">
+                            {{ form.get('productInfo.description').value }}
+                        </span>
+                        <span class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.description').value">
+                            &nbsp;
+                        </span>
                         <!-- <mat-form-field appearance="outline" fxFlex="80">
                             <textarea
                                 matInput
@@ -206,7 +217,7 @@
                     <div
                         class="custom-field-right"
                         fxLayout="row"
-                        fxLayoutAlign="space-between start"
+                        fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
                     >
                         <label
@@ -236,20 +247,24 @@
                                 {{ getFormError(form.get('productInfo.brandId')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span fxFlexAlign="center" class="pt-12" fxFlex="80" *ngIf="formMode === 'view'">
+                        <span fxFlexAlign="center" class="pb-20 pt-12" fxFlex="80" *ngIf="formMode === 'view' && form.get('productInfo.brandName').value">
                             {{ form.get('productInfo.brandName').value }}
+                        </span>
+                        <span fxFlexAlign="center" class="pb-20" fxFlex="80" *ngIf="formMode === 'view' && !form.get('productInfo.brandName').value">
+                            &nbsp;
                         </span>
                     </div>
                     <!-- / BRAND PRODUK -->
                     <!-- KATEGORI PRODUK -->
                     <div
-                        class="custom-field-right pb-16"
+                        class="custom-field-right"
+                        [class.pb-16]="!isViewMode()"
                         fxLayout="row"
-                        fxLayoutAlign="space-between start"
+                        fxLayoutAlign="space-between stretch"
                         formGroupName="productInfo"
                     >
                         <label
-                            fxFlexAlign="start"
+                            fxFlexAlign="center"
                             fxFlex="18"
                             class="pr-0 pt-20"
                             [class.mat-error]="hasError(form.get('productInfo.category'), { ignoreTouched: true, ignoreDirty: true })"
@@ -272,6 +287,7 @@
                                     matTooltip="Change the category"
                                     matTooltipPosition="right"
                                     (click)="onEditCategory(form.get('productInfo.id').value)"
+                                    *ngIf="formMode !== 'view'"
                                 >
                                     <mat-icon>edit</mat-icon>
                                 </button>
