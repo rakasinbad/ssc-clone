@@ -190,6 +190,43 @@ export class HelperService {
         ];
     }
 
+    orderStatus(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'all',
+                label: 'Semua'
+            },
+            {
+                id: 'checkout',
+                label: 'Quotation'
+            },
+            {
+                id: 'confirm',
+                label: 'Order Baru'
+            },
+            {
+                id: 'packing',
+                label: 'Dikemas'
+            },
+            {
+                id: 'shipping',
+                label: 'Dikirim'
+            },
+            {
+                id: 'delivered',
+                label: 'Diterima'
+            },
+            {
+                id: 'done',
+                label: 'Selesai'
+            },
+            {
+                id: 'cancel',
+                label: 'Batal'
+            }
+        ];
+    }
+
     paymentStatus(): { id: string; label: string }[] {
         return [
             {

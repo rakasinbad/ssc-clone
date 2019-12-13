@@ -28,7 +28,7 @@ import { CustomSerializer } from './store/custom-serializer';
             ? StoreDevtoolsModule.instrument({
                   name: 'Sinbad Seller Center',
                   logOnly: environment.production,
-                  maxAge: 25
+                  maxAge: 10
               })
             : StoreDevtoolsModule.instrument({
                   name: 'NgRx Sinbad Seller Center',

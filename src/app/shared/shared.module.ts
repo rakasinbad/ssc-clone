@@ -6,6 +6,7 @@ import { LazyLoadImageModule } from 'ng-lazyload-image';
 import { NgxMaskModule } from 'ngx-mask';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
+import { ExportAdvancedModule } from './components/export-advanced/export-advanced.module';
 import { FilterAdvancedModule } from './components/filter-advanced/filter-advanced.module';
 import { FiltersModule } from './components/filters/filters.module';
 import { ErrorNoticeComponent } from './components/notices/error-notice/error-notice.component';
@@ -33,65 +34,94 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
  */
 @NgModule({
     declarations: [
+        // Pipe
         HighlightPipe,
         PricePipe,
+        ReplacePipe,
         SafePipe,
+
+        // Directive
         ContentDirective,
         CheckboxValidatorDirective,
-        FilterAdvancedFormComponent,
+        MaterialElevationDirective,
+
+        // Component
+        ScrollTopComponent,
+
+        // Component (Dialog, Modal, Snackbar)
         ErrorNoticeComponent,
-        ShowImageComponent,
+        InfoNoticeComponent,
         SuccessNoticeComponent,
         WarningNoticeComponent,
-        DeleteConfirmationComponent,
+
         ChangeConfirmationComponent,
-        ReplacePipe,
-        MaterialElevationDirective,
-        ScrollTopComponent,
-        InfoNoticeComponent
+        DeleteConfirmationComponent,
+
+        FilterAdvancedFormComponent,
+        ShowImageComponent
     ],
     imports: [
-        MaterialModule,
+        // Custom Module
+        ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
+        MaterialModule,
+
+        // Third Party
         TranslateModule.forChild({}),
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+
+        // Fuse Theme
         FuseSharedModule
     ],
     exports: [
+        // Pipe
         HighlightPipe,
         PricePipe,
+        ReplacePipe,
         SafePipe,
-        FiltersModule,
-        FilterAdvancedModule,
+
+        // Directive
         ContentDirective,
         CheckboxValidatorDirective,
+        MaterialElevationDirective,
+
+        // Custom Module
+        ExportAdvancedModule,
+        FiltersModule,
+        FilterAdvancedModule,
+
+        // Third Party
         TranslateModule,
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
-        ShowImageComponent,
+
+        // Fuse Theme
         FuseSharedModule,
+
+        // Component
+        ScrollTopComponent,
+
+        // Component (Dialog, Modal, Snackbar)
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
-        ReplacePipe,
-        MaterialElevationDirective,
-        ScrollTopComponent,
-        InfoNoticeComponent
+        ShowImageComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
-        FilterAdvancedFormComponent,
         ErrorNoticeComponent,
+        InfoNoticeComponent,
         SuccessNoticeComponent,
         WarningNoticeComponent,
-        ShowImageComponent,
-        DeleteConfirmationComponent,
+
         ChangeConfirmationComponent,
-        InfoNoticeComponent
-        // ScrollTopComponent
+        DeleteConfirmationComponent,
+
+        FilterAdvancedFormComponent,
+        ShowImageComponent
     ]
 })
 export class SharedModule {}

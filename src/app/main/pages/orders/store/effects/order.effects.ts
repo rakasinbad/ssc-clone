@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -13,7 +14,7 @@ import {
     UploadApiService
 } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { UiActions } from 'app/shared/store/actions';
+import { UiActions, ProgressActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
     catchError,
@@ -22,12 +23,14 @@ import {
     map,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
+    flatMap
 } from 'rxjs/operators';
 
 import { OrderApiService } from '../../services';
 import { OrderActions } from '../actions';
 import { fromOrder } from '../reducers';
+import { ErrorHandler } from 'app/shared/models';
 
 /**
  *
@@ -685,49 +688,72 @@ export class OrderEffects {
      * [REQUEST] Export
      * @memberof OrderEffects
      */
-    exportRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(OrderActions.exportRequest),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([_, { supplierId }]) => {
-                if (!supplierId) {
-                    return of(
-                        OrderActions.exportFailure({
-                            payload: { id: 'exportFailure', errors: 'Not Found!' }
-                        })
-                    );
-                }
-
-                return this._$downloadApi.download('export-orders', supplierId).pipe(
-                    map(resp => {
-                        // const contentType = resp.headers.get('Content-Type');
-                        // const contentDisposition = resp.headers.get('Content-Disposition');
-                        // const fileName = contentDisposition
-                        //     .replace(new RegExp(/;|"/g), '')
-                        //     .split(' ')[1]
-                        //     .split('=')[1];
-
-                        // return OrderActions.exportSuccess({
-                        //     payload: {
-                        //         file: new Blob([resp.body], { type: contentType }),
-                        //         name: fileName
-                        //     }
-                        // });
-
-                        return OrderActions.exportSuccess({
-                            payload: resp.url
-                        });
-                    }),
-                    catchError(err =>
-                        of(
+    exportRequest$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.exportRequest),
+                map(action => action.payload),
+                withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+                switchMap(([filter, { supplierId }]) => {
+                    if (!supplierId) {
+                        return of(
                             OrderActions.exportFailure({
-                                payload: { id: 'exportFailure', errors: err }
+                                payload: { id: 'exportFailure', errors: 'Not Found!' }
                             })
+                        );
+                    }
+
+                    return this._$downloadApi.download('export-orders', supplierId, filter).pipe(
+                        // switchMap(resp => {
+                        //     console.log('REQUEST 1', resp);
+
+                        //     return this.http.get(resp, { reportProgress: true, observe: 'events' });
+
+                        //     // return this._$downloadApi.handleHttpProgress(resp, 'export-order');
+
+                        //     // return this._$downloadApi.handleHttpProgress(resp).pipe(
+                        //     //     map(x => {
+                        //     //         console.log('REQUEST', x);
+
+                        //     //         return OrderActions.exportSuccess({
+                        //     //             payload: x.url
+                        //     //         });
+                        //     //     })
+                        //     // );
+                        //     // const contentType = resp.headers.get('Content-Type');
+                        //     // const contentDisposition = resp.headers.get('Content-Disposition');
+                        //     // const fileName = contentDisposition
+                        //     //     .replace(new RegExp(/;|"/g), '')
+                        //     //     .split(' ')[1]
+                        //     //     .split('=')[1];
+
+                        //     // return OrderActions.exportSuccess({
+                        //     //     payload: {
+                        //     //         file: new Blob([resp.body], { type: contentType }),
+                        //     //         name: fileName
+                        //     //     }
+                        //     // });
+
+                        //     // return OrderActions.exportSuccess({
+                        //     //     payload: resp.url
+                        //     // });
+                        // }),
+                        map(resp => {
+                            return OrderActions.exportSuccess({
+                                payload: resp.url
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                OrderActions.exportFailure({
+                                    payload: { id: 'exportFailure', errors: err }
+                                })
+                            )
                         )
-                    )
-                );
-            })
-        )
+                    );
+                })
+            )
+        // { dispatch: false }
     );
 
     /**
@@ -741,6 +767,12 @@ export class OrderEffects {
                 ofType(OrderActions.exportFailure),
                 map(action => action.payload),
                 tap(resp => {
+                    this.store.dispatch(
+                        ProgressActions.downloadFailure({
+                            payload: { id: 'export-order', error: new ErrorHandler(resp) }
+                        })
+                    );
+
                     let message;
 
                     if (resp.errors.code === 406) {
@@ -897,6 +929,7 @@ export class OrderEffects {
 
     constructor(
         private actions$: Actions,
+        private http: HttpClient,
         private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromOrder.FeatureState>,

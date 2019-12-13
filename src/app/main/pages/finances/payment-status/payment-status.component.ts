@@ -14,7 +14,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from 'app/shared/helpers';
+import { HelperService, LogService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -44,6 +44,28 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     readonly defaultPageSize = environment.pageSize;
     search: FormControl;
     filterStatus: string;
+    formConfig = {
+        status: {
+            label: 'Payment Status',
+            placeholder: 'Choose Payment Status',
+            sources: this._$helper.paymentStatus(),
+            rules: {
+                required: true
+            }
+        },
+        startDate: {
+            label: 'Start Date',
+            rules: {
+                required: true
+            }
+        },
+        endDate: {
+            label: 'End Date',
+            rules: {
+                required: true
+            }
+        }
+    };
     total: number;
     displayedColumns = [
         'order-reference',
@@ -90,6 +112,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         private store: Store<fromPaymentStatus.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
+        private _$helper: HelperService,
         private _$log: LogService
     ) {
         // Load translate
@@ -281,8 +304,32 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         );
     }
 
-    onExport(): void {
-        this.store.dispatch(PaymentStatusActions.exportRequest());
+    onExport(ev: { action: string; payload: any }): void {
+        if (!ev) {
+            return;
+        }
+
+        const { action, payload } = ev;
+
+        if (action === 'export') {
+            const body = {
+                status: payload.status,
+                dateGte:
+                    moment.isMoment(payload.start) && payload.start
+                        ? (payload.start as moment.Moment).format('YYYY-MM-DD')
+                        : payload.start
+                        ? moment(payload.start).format('YYYY-MM-DD')
+                        : null,
+                dateLte:
+                    moment.isMoment(payload.end) && payload.end
+                        ? (payload.end as moment.Moment).format('YYYY-MM-DD')
+                        : payload.end
+                        ? moment(payload.end).format('YYYY-MM-DD')
+                        : null
+            };
+
+            this.store.dispatch(PaymentStatusActions.exportRequest({ payload: body }));
+        }
     }
 
     onFileBrowse(ev: Event, type: string): void {

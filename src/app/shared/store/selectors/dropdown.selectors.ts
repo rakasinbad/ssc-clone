@@ -139,12 +139,16 @@ export const getProvinceDropdownState = createSelector(getDropdownState, state =
 export const getCityDropdownState = createSelector(
     getDropdownState,
     (state: fromDropdown.State, { provinceId }) => {
-        const idx = state.provinces.findIndex(row => row.id === provinceId);
+        if (state.provinces && state.provinces.length > 0) {
+            const idx = state.provinces.findIndex(row => row.id === provinceId);
 
-        if (idx !== -1) {
-            const selectedProv = state.provinces[idx];
-            return sortBy(uniqBy(selectedProv.urbans, 'city'), ['city'], ['asc']);
+            if (idx !== -1) {
+                const selectedProv = state.provinces[idx];
+                return sortBy(uniqBy(selectedProv.urbans, 'city'), ['city'], ['asc']);
+            }
         }
+
+        return null;
     }
 );
 

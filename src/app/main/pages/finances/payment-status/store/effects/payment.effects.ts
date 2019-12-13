@@ -247,8 +247,9 @@ export class PaymentEffects {
     exportRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(PaymentStatusActions.exportRequest),
+            map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([_, { supplierId }]) => {
+            switchMap(([filter, { supplierId }]) => {
                 if (!supplierId) {
                     return of(
                         PaymentStatusActions.exportFailure({
@@ -257,7 +258,7 @@ export class PaymentEffects {
                     );
                 }
 
-                return this._$downloadApi.download('export-payments', supplierId).pipe(
+                return this._$downloadApi.download('export-payments', supplierId, filter).pipe(
                     map(resp => {
                         return PaymentStatusActions.exportSuccess({
                             payload: resp.url

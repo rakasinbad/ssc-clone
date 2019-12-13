@@ -30,15 +30,7 @@ import {
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    map,
-    takeUntil,
-    tap,
-    withLatestFrom
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -331,6 +323,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         // Reset invoice group state
         this.store.dispatch(DropdownActions.resetInvoiceGroupState());
+
+        // Reset province state
+        this.store.dispatch(DropdownActions.resetProvinceState());
 
         this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];

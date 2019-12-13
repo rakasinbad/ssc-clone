@@ -174,6 +174,14 @@ const dropdownReducer = createReducer(
     on(DropdownActions.resetInvoiceGroupState, state => ({
         ...state,
         invoiceGroups: undefined
+    })),
+    on(DropdownActions.resetProvinceState, state => ({
+        ...state,
+        provinces: undefined
+    })),
+    on(DropdownActions.resetGeoparamsState, state => ({
+        ...state,
+        geoParameters: initialState.geoParameters
     }))
 );
 

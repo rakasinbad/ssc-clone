@@ -320,3 +320,7 @@ export const fetchSearchAccountSuccess = createAction(
 // -----------------------------------------------------------------------------------------------------
 
 export const resetInvoiceGroupState = createAction('[Helper Dropdown] Reset Invoice Group State');
+
+export const resetProvinceState = createAction('[Helper Dropdown] Reset Province State');
+
+export const resetGeoparamsState = createAction('[Helper Dropdown] Reset Geoparams State');

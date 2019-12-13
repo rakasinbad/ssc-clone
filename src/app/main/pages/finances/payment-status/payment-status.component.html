@@ -12,9 +12,17 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button type="button" mat-flat-button color="accent" (click)="onExport()">
+                <!-- <button type="button" mat-flat-button color="accent" (click)="onExport()">
                     EXPORT
-                </button>
+                </button> -->
+
+                <app-export-advanced
+                    title="EXPORT"
+                    color="accent"
+                    action="export"
+                    [formConfig]="formConfig"
+                    (clickExport)="onExport($event)"
+                ></app-export-advanced>
 
                 <button
                     type="button"
