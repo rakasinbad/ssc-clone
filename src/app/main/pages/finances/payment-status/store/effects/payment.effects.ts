@@ -328,6 +328,11 @@ export class PaymentEffects {
                 tap(url => {
                     if (url) {
                         window.open(url, '_blank');
+
+                        this._$notice.open('Export berhasil', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     }
                 })
             ),

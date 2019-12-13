@@ -68,9 +68,10 @@ export function clearState(reducer: ActionReducer<State>): ActionReducer<State> 
     };
 }
 
-export const metaReducers: MetaReducer<State>[] = !environment.production
-    ? [logger, storeFreeze, clearState]
-    : [clearState];
+export const metaReducers: MetaReducer<State>[] =
+    !environment.production && !environment.staging
+        ? [logger, storeFreeze, clearState]
+        : [clearState];
 
 export const getRouterState = createFeatureSelector<RouterReducerState<RouterStateUrl>>('router');
 export const {

@@ -110,8 +110,16 @@ registerLocaleData(localId, 'id');
 
         StorageModule.forRoot({
             IDBNoWrap: true,
-            IDBDBName: environment.production ? 'sellerCenter' : 'sellerCenterDev',
-            LSPrefix: environment.production ? 'sellercenter_' : 'sellercenter_dev_'
+            IDBDBName: environment.production
+                ? 'sellerCenter'
+                : environment.staging
+                ? 'sellerCenterStg'
+                : 'sellerCenterDev',
+            LSPrefix: environment.production
+                ? 'sellercenter_'
+                : environment.staging
+                ? 'sellercenter_stg_'
+                : 'sellercenter_dev_'
         }),
 
         MomentModule,
