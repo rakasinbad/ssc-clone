@@ -60,6 +60,14 @@ app-catalogues {
         //     height: 84px;
         // }
 
+        img.ng-failed-lazyloaded {
+            filter: grayscale(1);
+        }
+
+        .mat-row:hover {
+            background-color: #fafafa;
+        }
+
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
@@ -68,7 +76,7 @@ app-catalogues {
 
         .catalogue {
             position: relative;
-            // cursor: pointer;
+            cursor: pointer;
             padding: 10px 0px;
             min-height: 70px;
         }

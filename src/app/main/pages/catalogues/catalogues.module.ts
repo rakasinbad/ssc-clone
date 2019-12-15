@@ -10,7 +10,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
 
-import { CataloguesRoutingModule } from './catalogues-routing.module';
+import { CataloguesRoutingModule } from './catalogues.routes';
 import { CataloguesComponent } from './catalogues.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';

@@ -45,6 +45,11 @@ const routes: Routes = [
         path: 'edit/:id',
         component: CataloguesFormComponent,
         canActivate: [AuthGuard]
+    },
+    {
+        path: 'view/:id',
+        component: CataloguesFormComponent,
+        canActivate: [AuthGuard]
     }
     // 
 ];
