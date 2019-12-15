@@ -62,6 +62,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
+    catalogueContent: {
+        'content-card': boolean;
+        'mt-16': boolean;
+        'sinbad-content': boolean;
+        'mat-elevation-z1': boolean;
+        'fuse-white': boolean;
+    };
     formClass: {
         'custom-field-right': boolean;
         'view-field-right': boolean;
@@ -188,8 +195,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         );
 
         this.store.dispatch(FormActions.resetFormStatus());
-
-        this.store.dispatch(UiActions.showFooterAction());
     }
 
     private onSubmit(): void {
@@ -319,7 +324,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                             .pipe(
                                 map(response => {
                                     if (response.total > 0) {
-                                        if (response.data[0].externalId === catalogue.externalId) {
+                                        if (response.data[0].id === catalogue.id) {
                                             return null;
                                         }
 
@@ -760,8 +765,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.brands$ = this.store.select(BrandSelectors.getAllBrands).pipe(takeUntil(this._unSubs$));
 
         if (this.formMode !== 'edit') {
-            this.form.get('productInfo.description').setValue('---');
-            setTimeout(() => this.form.get('productInfo.description').setValue(''), 100);
+            this.form.get('productInfo.information').setValue('---');
+            setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
         }
 
         combineLatest([
@@ -792,6 +797,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
                 this._cd.markForCheck();
             });
+
+        if (!this.isViewMode()) {
+            this.store.dispatch(UiActions.showFooterAction());
+        }
 
         // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
         this.registerQuillFormatting();
@@ -1169,8 +1178,22 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         return form.errors && (form.dirty || form.touched);
     }
 
+    isAddMode(): boolean {
+        return this.formMode === 'add';
+    }
+
+    isEditMode(): boolean {
+        return this.formMode === 'edit';
+    }
+
     isViewMode(): boolean {
         return this.formMode === 'view';
+    }
+
+    getCatalogueImage(): string {
+        return this.form.get(['productMedia', 'oldPhotos', '0', 'value'])
+            ? this.form.get(['productMedia', 'oldPhotos', '0', 'value']).value
+            : 'assets/images/logos/sinbad.svg';
     }
 
     updateFormView(): void {
@@ -1178,5 +1201,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'custom-field-right': !this.isViewMode(),
             'view-field-right': this.isViewMode()
         };
+
+        this.catalogueContent = {
+            'mt-16': this.isViewMode(),
+            'content-card': this.isViewMode(),
+            'sinbad-content': this.isAddMode() || this.isEditMode(),
+            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            'fuse-white': this.isAddMode() || this.isEditMode(),
+        }
     }
 }
