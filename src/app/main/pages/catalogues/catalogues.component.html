@@ -77,7 +77,23 @@
                     <mat-cell *matCellDef="let row">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
                             <div class="img-container">
-                                <img class="fit-image" [src]="(row?.catalogueImages)[row?.catalogueImages.length - 1]?.imageUrl" />
+                                <ng-container
+                                    *ngIf="row?.catalogueImages.length > 0; else noPhoto;"
+                                >
+                                    <img
+                                        class="fit-image"
+                                        [defaultImage]="'assets/images/logos/sinbad.svg'"
+                                        [useSrcset]="true"
+                                        [lazyLoad]="row?.catalogueImages[0]?.imageUrl"
+                                        [errorImage]="'assets/images/logos/sinbad.svg'"
+                                    />
+                                </ng-container>
+                                <ng-template #noPhoto>
+                                    <img
+                                        class="fit-image"
+                                        [src]="'assets/images/logos/sinbad.svg'"
+                                    />
+                                </ng-template>
                             </div>
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
