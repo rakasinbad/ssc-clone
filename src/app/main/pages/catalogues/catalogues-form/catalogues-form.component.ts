@@ -21,7 +21,7 @@ import { HelperService, ErrorMessageService, NoticeService } from 'app/shared/he
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
-import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take } from 'rxjs/operators';
+import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take, tap } from 'rxjs/operators';
 import {
     FormArray,
     FormBuilder,
@@ -78,7 +78,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
     productCategory$: SafeHtml;
 
-    catalogueUnits$: Observable<Array<CatalogueUnit>>;
+    catalogueUnits$: Array<CatalogueUnit>;
 
     productTagsControls: FormArray;
     productCourierControls: AbstractControl[];
@@ -190,16 +190,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         this.store.dispatch(FormActions.resetFormStatus());
 
         this.store.dispatch(UiActions.showFooterAction());
-
-        this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
-            payload: {
-                limit: 10,
-                skip: 0,
-                sort: 'asc',
-                sortBy: 'id'
-            }
-        }));
-        this.catalogueUnits$ = this.store.select(CatalogueSelectors.getCatalogueUnits);
     }
 
     private onSubmit(): void {
@@ -407,6 +397,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 ]],
                 stock: [''],
                 uom: [''],
+                uomName : [''],
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
@@ -772,6 +763,35 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this.form.get('productInfo.description').setValue('---');
             setTimeout(() => this.form.get('productInfo.description').setValue(''), 100);
         }
+
+        combineLatest([
+            this.store.select(CatalogueSelectors.getCatalogueUnits),
+            this.form.get('productInfo.uom').valueChanges
+        ]).pipe(
+                takeUntil(this._unSubs$)
+            ).subscribe(([units, uom]) => {
+                if (units.length === 0) {
+                    return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
+                        payload: {
+                            paginate: false,
+                            sort: 'asc',
+                            sortBy: 'id'
+                        }
+                    }));
+                }
+
+                this.catalogueUnits$ = units;
+                const selectedUnit = units.filter(unit => unit.id === uom);
+                if (selectedUnit.length > 0) {
+                    this.form.patchValue({
+                        productInfo: {
+                            uomName: selectedUnit[0].unit
+                        }
+                    });
+                }
+
+                this._cd.markForCheck();
+            });
 
         // this.previewHTML = this.sanitizer.bypassSecurityTrustHtml(this.form.get('productInfo.description').value);
         this.registerQuillFormatting();

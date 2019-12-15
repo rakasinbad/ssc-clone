@@ -60,6 +60,10 @@ app-catalogues {
         //     height: 84px;
         // }
 
+        .mat-row:hover {
+            background-color: #fafafa;
+        }
+
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
