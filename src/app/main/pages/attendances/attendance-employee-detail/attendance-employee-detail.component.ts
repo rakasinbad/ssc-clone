@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
@@ -27,7 +28,7 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs
 import { Attendance } from '../models';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 import { fromAttendance, fromUser } from '../store/reducers';
 import { AttendanceSelectors, UserSelectors } from '../store/selectors';
@@ -45,7 +46,7 @@ import { AttendanceActions, UserActions } from '../store/actions';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
+export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
@@ -70,6 +71,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         'checkDate',
         'checkIn',
         'checkOut',
+        'duration',
         'actions'
     ];
 
@@ -101,22 +103,6 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         this._activityId = this.route.snapshot.params.activityId;
 
         this._fromUser.dispatch(UserActions.fetchUserRequest({ payload: this._employeeId }));
-
-        this._fromAttendance.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Attendances',
-                        translate: 'BREADCRUMBS.ATTENDANCES',
-                        active: true
-                    }
-                ]
-            })
-        );
 
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -173,6 +159,24 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    ngAfterViewInit(): void {
+        this._fromAttendance.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -224,6 +228,14 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         this.router.navigate([
             '/pages', '/attendances/', this._storeId, '/employee/', this._employeeId, '/activity/' , this._activityId, '/detail'
         ]);
+    }
+
+    public getDuration(row: Attendance): string {
+        if (!row.checkIn || !row.checkOut) {
+            return '-';
+        }
+
+        return moment(row.checkIn).to(moment(row.checkOut), true);
     }
 
     // -----------------------------------------------------------------------------------------------------

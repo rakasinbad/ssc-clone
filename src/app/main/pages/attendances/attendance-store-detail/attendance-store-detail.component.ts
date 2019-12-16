@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
@@ -27,7 +28,7 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 
 import { Attendance, Store as Merchant } from '../models';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 /**
  * ACTIONS
@@ -52,7 +53,7 @@ import { AttendanceSelectors, MerchantSelectors } from '../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
+export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, OnDestroy {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
@@ -75,6 +76,7 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         'checkDate',
         'checkIn',
         'checkOut',
+        'duration',
         'actions'
     ];
 
@@ -204,6 +206,24 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    ngAfterViewInit(): void {
+        this._fromMerchant.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -245,6 +265,14 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
 
     public getLocationType(locationType: any): string {
         return Attendance.getLocationType(locationType);
+    }
+
+    public getDuration(row: Attendance): string {
+        if (!row.checkIn || !row.checkOut) {
+            return '-';
+        }
+
+        return moment(row.checkIn).to(moment(row.checkOut), true);
     }
 
     public openEmployeeAttendanceDetail(data: Attendance): void {
