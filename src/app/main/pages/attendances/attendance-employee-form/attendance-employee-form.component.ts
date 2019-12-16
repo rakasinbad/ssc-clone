@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
@@ -17,7 +17,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 import { Attendance } from '../models/attendance.model';
 import { AttendanceActions } from '../store/actions';
@@ -32,7 +32,7 @@ import { AttendanceSelectors } from '../store/selectors';
     animations: fuseAnimations,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
+export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, AfterViewInit {
     storeId: string;
     employeeId: string;
     activityId: string;
@@ -98,22 +98,6 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
         this.activityId = activityId;
 
         this.store.dispatch(AttendanceActions.fetchAttendanceRequest({ payload: this.activityId }));
-
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Attendances',
-                        translate: 'BREADCRUMBS.ATTENDANCES',
-                        active: true
-                    }
-                ]
-            })
-        );
 
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -310,6 +294,24 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+    }
+
+    ngAfterViewInit(): void {
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
     }
 
     // -----------------------------------------------------------------------------------------------------

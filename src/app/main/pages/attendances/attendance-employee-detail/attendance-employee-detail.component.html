@@ -4,7 +4,7 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
+    <div class="center px-32">
         <!-- HEADER -->
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
@@ -129,21 +129,19 @@
             <!-- / MARGIN LEFT ADJUSMENT -->
         </div>
         <!-- / CONTENT CARD -->
-    </div>
-    <!-- / CENTER -->
 
-    <div class="p-32">
-        <div class="sinbad-content mat-elevation-z1 fuse-white">
+        <!-- EMPLOYEE ACTIVITY -->
+        <div class="sinbad-content mat-elevation-z1 fuse-white mt-32">
             <!-- CARD TITLE -->
             <div class="h1 ml-40 py-20">
                 Employee Activity
             </div>
             <!-- / CARD TITLE -->
-
+    
             <!-- DIVIDER -->
             <mat-divider></mat-divider>
             <!-- / DIVIDER -->
-
+    
             <!-- CONTENT -->
             <div>
                 <mat-table
@@ -228,6 +226,17 @@
                         </mat-cell>
                     </ng-container>
     
+                    <!-- Duration Column -->
+                    <ng-container matColumnDef="duration">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Duration
+                        </mat-header-cell>
+    
+                        <mat-cell class="line-breaker" *matCellDef="let row">
+                            {{ getDuration(row) }}
+                        </mat-cell>
+                    </ng-container>
+    
                     <!-- Action Column -->
                     <ng-container matColumnDef="actions">
                         <mat-header-cell *matHeaderCellDef>
@@ -279,6 +288,11 @@
             </div>
             <!-- / CONTENT -->
         </div>
+        <!-- / EMPLOYEE ACTIVITY -->
+    </div>
+    <!-- / CENTER -->
+
+    <div class="p-32">
     </div>
 </div>
 

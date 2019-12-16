@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
@@ -10,7 +10,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
-import { DropdownActions } from 'app/shared/store/actions';
+import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
@@ -18,6 +18,7 @@ import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operato
 
 // import { Account } from '../../accounts/models';
 import { locale as english } from '../i18n/en';
+import { locale as indonesian } from '../i18n/id';
 import { Attendance } from '../models/attendance.model';
 import { AttendanceActions } from '../store/actions';
 import { fromAttendance } from '../store/reducers';
@@ -35,7 +36,7 @@ import { AttendanceSelectors } from '../store/selectors';
     animations: fuseAnimations,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceFormComponent implements OnInit, OnDestroy {
+export class AttendanceFormComponent implements OnInit, OnDestroy, AfterViewInit {
     attendance: Attendance;
     form: FormGroup;
     // locale: LocaleConfig = {
@@ -67,7 +68,7 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private errorMessageSvc: ErrorMessageService
     ) {
-        this._fuseTranslationLoaderService.loadTranslations(english);
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -257,6 +258,24 @@ export class AttendanceFormComponent implements OnInit, OnDestroy {
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+    }
+
+    ngAfterViewInit(): void {
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
     }
 
     // -----------------------------------------------------------------------------------------------------

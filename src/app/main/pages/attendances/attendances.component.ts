@@ -89,22 +89,6 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
-        this._fromStore.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Attendances',
-                        translate: 'BREADCRUMBS.ATTENDANCES',
-                        active: true
-                    }
-                ]
-            })
-        );
-
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
@@ -166,6 +150,21 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
+        this._fromStore.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
 
         this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
