@@ -95,7 +95,7 @@ export const navigation: FuseNavigation[] = [
     },
     {
         id: 'orderManagement',
-        title: 'Order Management',
+        title: 'OMS',
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
         icon: 'shopping_cart',

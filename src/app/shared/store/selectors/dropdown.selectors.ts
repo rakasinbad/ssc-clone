@@ -159,13 +159,16 @@ export const getCityDropdownState = createSelector(
 export const getDistrictDropdownState = createSelector(
     getDropdownState,
     (state: fromDropdown.State, { provinceId, city }) => {
-        const idx = state.provinces.findIndex(row => row.id === provinceId);
+        if (state.provinces && state.provinces.length > 0) {
+            const idx = state.provinces.findIndex(row => row.id === provinceId);
 
-        if (idx !== -1) {
-            const selectedProv = state.provinces[idx];
-            const selectedCity = selectedProv.urbans.filter(row => row.city === city);
-            return sortBy(unionBy(selectedCity, 'district'), ['district'], ['asc']);
+            if (idx !== -1) {
+                const selectedProv = state.provinces[idx];
+                const selectedCity = selectedProv.urbans.filter(row => row.city === city);
+                return sortBy(unionBy(selectedCity, 'district'), ['district'], ['asc']);
+            }
         }
+        return null;
     }
 );
 
@@ -176,15 +179,19 @@ export const getDistrictDropdownState = createSelector(
 export const getUrbanDropdownState = createSelector(
     getDropdownState,
     (state: fromDropdown.State, { provinceId, city, district }) => {
-        const idx = state.provinces.findIndex(row => row.id === provinceId);
+        if (state.provinces && state.provinces.length > 0) {
+            const idx = state.provinces.findIndex(row => row.id === provinceId);
 
-        if (idx !== -1) {
-            const selectedProv = state.provinces[idx];
-            const selectedDistrict = selectedProv.urbans.filter(
-                row => row.city === city && row.district === district
-            );
-            return sortBy(unionBy(selectedDistrict, 'urban'), ['urban'], ['asc']);
+            if (idx !== -1) {
+                const selectedProv = state.provinces[idx];
+                const selectedDistrict = selectedProv.urbans.filter(
+                    row => row.city === city && row.district === district
+                );
+                return sortBy(unionBy(selectedDistrict, 'urban'), ['urban'], ['asc']);
+            }
         }
+
+        return null;
     }
 );
 
@@ -195,18 +202,22 @@ export const getUrbanDropdownState = createSelector(
 export const getPostcodeDropdownState = createSelector(
     getDropdownState,
     (state: fromDropdown.State, { provinceId, city, district, urbanId }) => {
-        const idx = state.provinces.findIndex(row => row.id === provinceId);
+        if (state.provinces && state.provinces.length > 0) {
+            const idx = state.provinces.findIndex(row => row.id === provinceId);
 
-        if (idx !== -1) {
-            const selectedProv = state.provinces[idx];
-            const urbanIdx = selectedProv.urbans.findIndex(
-                row => row.city === city && row.district === district && row.id === urbanId
-            );
+            if (idx !== -1) {
+                const selectedProv = state.provinces[idx];
+                const urbanIdx = selectedProv.urbans.findIndex(
+                    row => row.city === city && row.district === district && row.id === urbanId
+                );
 
-            if (urbanIdx !== -1) {
-                return selectedProv.urbans[urbanIdx].zipCode;
+                if (urbanIdx !== -1) {
+                    return selectedProv.urbans[urbanIdx].zipCode;
+                }
             }
         }
+
+        return null;
     }
 );
 
@@ -282,12 +293,12 @@ export const getSelectedError = createSelector(
 );
 
 export const getSelectedErrorById = createSelector(getErrorEntities, (entities, { errorId }) => {
-    console.log('SELECTOR', errorId, entities);
+    // console.log('SELECTOR', errorId, entities);
     return entities[errorId];
 });
 
 export const getIsError = createSelector(getErrorEntities, (entities, { errorId }) => {
-    console.log('SELECTOR', errorId, entities, entities[errorId]);
+    // console.log('SELECTOR', errorId, entities, entities[errorId]);
     return entities[errorId] ? true : false;
 });
 

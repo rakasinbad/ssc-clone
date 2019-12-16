@@ -610,6 +610,76 @@
                             </mat-form-field>
                         </div>
 
+                        <ng-container formGroupName="geolocation">
+                            <div
+                                class="custom-field-right"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        form.get('storeInfo.address.geolocation.lat').errors &&
+                                        !form.get('storeInfo.address.geolocation.lat').untouched &&
+                                        (form.get('storeInfo.address.geolocation.lat').dirty ||
+                                            form.get('storeInfo.address.geolocation.lat').touched)
+                                    "
+                                >
+                                    Latitude
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input matInput formControlName="lat" />
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('storeInfo.address.geolocation.lat').errors &&
+                                            (form.get('storeInfo.address.geolocation.lat').dirty ||
+                                                form.get('storeInfo.address.geolocation.lat')
+                                                    .touched)
+                                        "
+                                    >
+                                        {{ getErrorMessage('storeInfo.address.geolocation.lat') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div
+                                class="custom-field-right"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        form.get('storeInfo.address.geolocation.lng').errors &&
+                                        !form.get('storeInfo.address.geolocation.lng').untouched &&
+                                        (form.get('storeInfo.address.geolocation.lng').dirty ||
+                                            form.get('storeInfo.address.geolocation.lng').touched)
+                                    "
+                                >
+                                    Longitude
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input matInput formControlName="lng" />
+
+                                    <mat-error
+                                        *ngIf="
+                                            form.get('storeInfo.address.geolocation.lng').errors &&
+                                            (form.get('storeInfo.address.geolocation.lng').dirty ||
+                                                form.get('storeInfo.address.geolocation.lng')
+                                                    .touched)
+                                        "
+                                    >
+                                        {{ getErrorMessage('storeInfo.address.geolocation.lng') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </ng-container>
+
                         <!-- <div
                             class="custom-field-right sinbad-button"
                             fxLayout="row"

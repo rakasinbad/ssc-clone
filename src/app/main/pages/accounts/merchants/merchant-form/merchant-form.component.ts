@@ -1225,11 +1225,31 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                     )
                                 })
                             ]
-                        ]
-                        // geolocation: this.formBuilder.group({
-                        //     lng: [''],
-                        //     lat: ['']
-                        // })
+                        ],
+                        geolocation: this.formBuilder.group({
+                            lng: [
+                                '',
+                                [
+                                    RxwebValidators.longitude({
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'pattern'
+                                        )
+                                    })
+                                ]
+                            ],
+                            lat: [
+                                '',
+                                [
+                                    RxwebValidators.latitude({
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'pattern'
+                                        )
+                                    })
+                                ]
+                            ]
+                        })
                     }),
                     legalInfo: this.formBuilder.group({
                         name: [
@@ -1628,7 +1648,31 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                     )
                                 })
                             ]
-                        ]
+                        ],
+                        geolocation: this.formBuilder.group({
+                            lng: [
+                                '',
+                                [
+                                    RxwebValidators.longitude({
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'pattern'
+                                        )
+                                    })
+                                ]
+                            ],
+                            lat: [
+                                '',
+                                [
+                                    RxwebValidators.latitude({
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'pattern'
+                                        )
+                                    })
+                                ]
+                            ]
+                        })
                     }),
                     physicalStoreInfo: this.formBuilder.group({
                         numberOfEmployee: [''],
@@ -1713,10 +1757,30 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     if (data) {
                         if (data.phoneNo) {
                             this.form.get('profileInfo.phoneNumber').patchValue(data.phoneNo);
+                        }
 
-                            if (this.form.get('profileInfo.phoneNumber').invalid) {
-                                this.form.get('profileInfo.phoneNumber').markAsTouched();
-                            }
+                        if (this.form.get('profileInfo.phoneNumber').invalid) {
+                            this.form.get('profileInfo.phoneNumber').markAsTouched();
+                        }
+
+                        if (data.longitude) {
+                            this.form
+                                .get('storeInfo.address.geolocation.lng')
+                                .patchValue(data.longitude);
+                        }
+
+                        if (this.form.get('storeInfo.address.geolocation.lng').invalid) {
+                            this.form.get('storeInfo.address.geolocation.lng').markAsTouched();
+                        }
+
+                        if (data.latitude) {
+                            this.form
+                                .get('storeInfo.address.geolocation.lat')
+                                .patchValue(data.latitude);
+                        }
+
+                        if (this.form.get('storeInfo.address.geolocation.lat').invalid) {
+                            this.form.get('storeInfo.address.geolocation.lat').markAsTouched();
                         }
 
                         if (data.imageUrl) {
@@ -1726,26 +1790,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                         if (data.taxNo) {
                             this.form.get('profileInfo.npwpId').patchValue(data.taxNo);
+                        }
 
-                            if (this.form.get('profileInfo.npwpId').invalid) {
-                                this.form.get('profileInfo.npwpId').markAsTouched();
-                            }
+                        if (this.form.get('profileInfo.npwpId').invalid) {
+                            this.form.get('profileInfo.npwpId').markAsTouched();
                         }
 
                         if (data.externalId) {
                             this.form.get('storeInfo.storeId.id').patchValue(data.externalId);
+                        }
 
-                            if (this.form.get('storeInfo.storeId.id').invalid) {
-                                this.form.get('storeInfo.storeId.id').markAsTouched();
-                            }
+                        if (this.form.get('storeInfo.storeId.id').invalid) {
+                            this.form.get('storeInfo.storeId.id').markAsTouched();
                         }
 
                         if (data.name) {
                             this.form.get('storeInfo.storeId.storeName').patchValue(data.name);
+                        }
 
-                            if (this.form.get('storeInfo.storeId.storeName').invalid) {
-                                this.form.get('storeInfo.storeId.storeName').markAsTouched();
-                            }
+                        if (this.form.get('storeInfo.storeId.storeName').invalid) {
+                            this.form.get('storeInfo.storeId.storeName').markAsTouched();
                         }
 
                         if (data.urban) {
@@ -2045,6 +2109,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             image: body.profileInfo.photos,
                             taxNo: body.profileInfo.npwpId,
                             address: body.storeInfo.address.notes,
+                            longitude: body.storeInfo.address.geolocation.lng,
+                            latitude: body.storeInfo.address.geolocation.lat,
                             phoneNo: body.profileInfo.phoneNumber,
                             numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
                             status: 'active',
@@ -2075,6 +2141,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             },
                             creditLimit: newCreditLimit
                         };
+
+                        if (!body.storeInfo.address.geolocation.lng) {
+                            delete payload.longitude;
+                        }
+
+                        if (!body.storeInfo.address.geolocation.lat) {
+                            delete payload.latitude;
+                        }
 
                         if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
                             delete payload.numberOfEmployee;
@@ -2184,6 +2258,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 image: body.profileInfo.photos,
                 taxNo: body.profileInfo.npwpId,
                 address: body.storeInfo.address.notes,
+                longitude: body.storeInfo.address.geolocation.lng,
+                latitude: body.storeInfo.address.geolocation.lat,
                 phoneNo: body.profileInfo.phoneNumber,
                 numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
                 storeTypeId: body.storeInfo.storeClassification.storeType,
@@ -2199,6 +2275,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 },
                 creditLimit: newCreditLimit
             };
+
+            if (!body.storeInfo.address.geolocation.lng) {
+                delete payload.longitude;
+            }
+
+            if (!body.storeInfo.address.geolocation.lat) {
+                delete payload.latitude;
+            }
 
             if (!body.storeInfo.physicalStoreInfo.numberOfEmployee) {
                 delete payload.numberOfEmployee;
