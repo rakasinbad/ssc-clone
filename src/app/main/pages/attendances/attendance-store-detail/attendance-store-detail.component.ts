@@ -17,7 +17,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams, Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -72,6 +72,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         'number',
         'employee',
         'role',
+        'attendanceType',
         'locationType',
         'checkDate',
         'checkIn',
@@ -103,7 +104,8 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromUser: NgRxStore<fromUser.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _helper: HelperService
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
         const { id } = this.route.snapshot.params;
@@ -259,12 +261,12 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
         return Attendance.getChainRoles(roles);
     }
 
-    public getAttendanceType(attendanceType: any): string {
-        return Attendance.getAttendanceType(attendanceType);
+    public getAttendanceType(attendanceType: string): string {
+        return this._helper.attendanceType(attendanceType);
     }
 
-    public getLocationType(locationType: any): string {
-        return Attendance.getLocationType(locationType);
+    public getLocationType(locationType: string): string {
+        return this._helper.locationType(locationType);
     }
 
     public getDuration(row: Attendance): string {

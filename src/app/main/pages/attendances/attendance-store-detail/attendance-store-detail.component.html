@@ -159,9 +159,18 @@
                         </mat-cell>
                     </ng-container>
     
-                    <!-- SPV Column -->
+                    <!-- Attendance Column -->
+                    <ng-container matColumnDef="attendanceType">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Attendance</mat-header-cell>
+    
+                        <mat-cell *matCellDef="let row">
+                            <p class="text-truncate">{{ getAttendanceType(row?.attendanceType) }}</p>
+                        </mat-cell>
+                    </ng-container>
+
+                    <!-- Location Column -->
                     <ng-container matColumnDef="locationType">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>Location</mat-header-cell>
     
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">{{ getLocationType(row?.locationType) }}</p>

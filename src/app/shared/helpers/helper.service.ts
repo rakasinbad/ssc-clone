@@ -15,6 +15,34 @@ export class HelperService {
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
+    private _attendanceTypes: Array<{ value: string; text: string; }> = [
+        {
+            value: 'absent',
+            text: 'Tidak Hadir'
+        },
+        {
+            value: 'present',
+            text: 'Hadir'
+        },
+        {
+            value: 'leave',
+            text: 'Cuti'
+        }
+    ];
+    private _locationTypes: Array<{ value: string; text: string; }> = [
+        {
+            value: 'inside',
+            text: 'Kerja di Toko'
+        },
+        {
+            value: 'outside',
+            text: 'Kerja di Luar Toko'
+        },
+        {
+            value: 'others',
+            text: 'Lainnya'
+        }
+    ];
 
     constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient) {
         this._currentHost = this.doc.location.hostname;
@@ -293,5 +321,33 @@ export class HelperService {
                 label: 'Select Manually'
             }
         ];
+    }
+
+    attendanceType(value: string): string {
+        const attendanceType = this._attendanceTypes.filter(attType => attType.value === value);
+
+        if (attendanceType.length === 0) {
+            return '-';
+        }
+
+        return attendanceType[0].text;
+    }
+
+    attendanceTypes(): Array<{ value: string; text: string; }> {
+        return this._attendanceTypes;
+    }
+
+    locationType(value: string): string {
+        const locationType = this._locationTypes.filter(locType => locType.value === value);
+
+        if (locationType.length === 0) {
+            return '-';
+        }
+
+        return locationType[0].text;
+    }
+
+    locationTypes(): Array<{ value: string; text: string; }> {
+        return this._locationTypes;
     }
 }

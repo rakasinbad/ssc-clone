@@ -17,7 +17,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams, User, Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -67,6 +67,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         'number',
         'employee',
         'role',
+        'attendanceType',
         'locationType',
         'checkDate',
         'checkIn',
@@ -96,6 +97,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _helper: HelperService
     ) {
         /** Mendapatkan ID user dan toko dari parameter URL. */
         this._employeeId = this.route.snapshot.params.employeeId;
@@ -213,11 +215,11 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
     }
 
     public getAttendanceType(attendanceType: any): string {
-        return Attendance.getAttendanceType(attendanceType);
+        return this._helper.attendanceType(attendanceType);
     }
 
     public getLocationType(locationType: any): string {
-        return Attendance.getLocationType(locationType);
+        return this._helper.locationType(locationType);
     }
 
     public editEmployeeAttendanceDetail(data: Attendance): void {

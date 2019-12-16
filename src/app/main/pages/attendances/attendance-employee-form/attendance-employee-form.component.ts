@@ -8,7 +8,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -51,35 +51,9 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
     filteredAccounts$: Observable<Account[]>;
     isLoading$: Observable<boolean>;
 
-    attendanceTypes: Array<{ value: string; text: string }> = [
-        {
-            value: 'absent',
-            text: 'Tidak Hadir'
-        },
-        {
-            value: 'present',
-            text: 'Hadir'
-        },
-        {
-            value: 'leave',
-            text: 'Cuti'
-        }
-    ];
+    attendanceTypes: Array<{ value: string; text: string }>;
 
-    locationTypes: Array<{ value: string; text: string }> = [
-        {
-            value: 'inside',
-            text: 'Kerja di Toko'
-        },
-        {
-            value: 'outside',
-            text: 'Kerja di Luar Toko'
-        },
-        {
-            value: 'others',
-            text: 'Lainnya'
-        }
-    ];
+    locationTypes: Array<{ value: string; text: string }>;
 
     private _unSubs$: Subject<void>;
     private _selectedAccount: string;
@@ -90,12 +64,17 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
         private storage: StorageMap,
         private store: Store<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private errorMessageSvc: ErrorMessageService
+        private errorMessageSvc: ErrorMessageService,
+        private helperSvc: HelperService
     ) {
         const { storeId, employeeId, activityId } = this.route.snapshot.params;
         this.storeId = storeId;
         this.employeeId = employeeId;
         this.activityId = activityId;
+
+        this.attendanceTypes = this.helperSvc.attendanceTypes();
+
+        this.locationTypes = this.helperSvc.locationTypes();
 
         this.store.dispatch(AttendanceActions.fetchAttendanceRequest({ payload: this.activityId }));
 

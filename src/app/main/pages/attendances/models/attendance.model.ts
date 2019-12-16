@@ -105,29 +105,29 @@ export class Attendance extends Timestamp {
     }
 
 
-    static getAttendanceType(attendanceType: EAttendanceType): string {
-        if (attendanceType === 'present') {
-            return 'Hadir';
-        } else if (attendanceType === 'absent') {
-            return 'Tidak Hadir';
-        } else if (attendanceType === 'leave') {
-            return 'Cuti';
-        }
+    // static getAttendanceType(attendanceType: EAttendanceType): string {
+    //     if (attendanceType === 'present') {
+    //         return 'Hadir';
+    //     } else if (attendanceType === 'absent') {
+    //         return 'Tidak Hadir';
+    //     } else if (attendanceType === 'leave') {
+    //         return 'Cuti';
+    //     }
 
-        return 'Tidak diketahui';
-    }
+    //     return 'Tidak diketahui';
+    // }
 
-    static getLocationType(locationType: ELocationType): string {
-        if (locationType === 'inside') {
-            return 'Kerja di Toko';
-        } else if (locationType === 'outside') {
-            return 'Kerja di Luar Toko';
-    } else if (locationType === 'others') {
-            return 'Lainnya';
-        }
+    // static getLocationType(locationType: ELocationType): string {
+    //     if (locationType === 'inside') {
+    //         return 'Kerja di Toko';
+    //     } else if (locationType === 'outside') {
+    //         return 'Kerja di Luar Toko';
+    // } else if (locationType === 'others') {
+    //         return 'Lainnya';
+    //     }
 
-        return 'Tidak diketahui';
-    }
+    //     return 'Tidak diketahui';
+    // }
 
     static patch(attendance: Partial<Attendance>): Partial<Attendance> {
         return attendance;
