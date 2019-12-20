@@ -827,4 +827,12 @@ export class Catalogue implements ICatalogue {
     static patch(catalogue: Partial<Catalogue>): Partial<Catalogue> {
         return catalogue;
     }
+
+    static hasDiscountPrice(catalogue: Catalogue): boolean {
+        return (!!(catalogue.discountedRetailBuyingPrice) || catalogue.discountedRetailBuyingPrice === 0);
+    }
+
+    static getCataloguePrice(catalogue: Catalogue): number {
+        return Catalogue.hasDiscountPrice(catalogue) ? catalogue.discountedRetailBuyingPrice : catalogue.retailBuyingPrice;
+    }
 }
