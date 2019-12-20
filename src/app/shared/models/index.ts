@@ -1,10 +1,11 @@
-export * from './brand.model';
-export * from './cluster.model';
-export * from './customer-hierarchy.model';
 export * from './field.model';
 export * from './global.model';
 export * from './progress.model';
 
+export * from './brand.model';
+export * from './cluster.model';
+export * from './customer-hierarchy.model';
+export * from './district.model';
 export * from './invoice-group.model';
 export * from './legal.model';
 export * from './order-parcel.model';

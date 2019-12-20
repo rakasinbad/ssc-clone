@@ -233,28 +233,7 @@ export class Store implements IStore {
             : null;
 
         this.setHierarchy = hierarchy;
-
-        if (urban) {
-            const newUrban = new Urban(
-                urban.id,
-                urban.zipCode,
-                urban.city,
-                urban.district,
-                urban.urban,
-                urban.provinceId,
-                urban.createdAt,
-                urban.updatedAt,
-                urban.deletedAt
-            );
-
-            if (urban.province) {
-                newUrban.province = urban.province;
-            }
-
-            this.urban = newUrban;
-        } else {
-            this.urban = null;
-        }
+        this.setUrban = urban;
 
         if (customerHierarchies) {
             this.setCustomerHierarchies = customerHierarchies;
@@ -445,6 +424,10 @@ export class Store implements IStore {
         } else {
             this.owner = null;
         }
+    }
+
+    set setUrban(value: Urban) {
+        this.urban = value ? new Urban(value) : null;
     }
 
     static patch(body: StoreOptions): StoreOptions {

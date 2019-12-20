@@ -15,7 +15,7 @@ export class HelperService {
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
-    private _attendanceTypes: Array<{ value: string; text: string; }> = [
+    private _attendanceTypes: Array<{ value: string; text: string }> = [
         {
             value: 'absent',
             text: 'Tidak Hadir'
@@ -29,7 +29,7 @@ export class HelperService {
             text: 'Cuti'
         }
     ];
-    private _locationTypes: Array<{ value: string; text: string; }> = [
+    private _locationTypes: Array<{ value: string; text: string }> = [
         {
             value: 'inside',
             text: 'Kerja di Toko'
@@ -46,6 +46,33 @@ export class HelperService {
 
     constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient) {
         this._currentHost = this.doc.location.hostname;
+    }
+
+    static truncateText(value: string, maxLength: number, type: 'start' | 'end'): string {
+        console.log(value.length, maxLength);
+
+        if (value.length > maxLength) {
+            switch (type) {
+                case 'start': {
+                    const ellipsis = '...';
+                    const valueArr = value.split(',');
+
+                    if (valueArr.length > 0) {
+                        return `${ellipsis}, ${valueArr[1]}, ${valueArr[2]}`;
+                    }
+
+                    return `${ellipsis}${value.slice(-(maxLength - ellipsis.length))}`;
+                }
+
+                case 'end':
+                default: {
+                    const ellipsis = '...';
+                    return `${value.slice(0, maxLength - ellipsis.length)}${ellipsis}`;
+                }
+            }
+        }
+
+        return value;
     }
 
     handleApiRouter(endpoint: string): string {
@@ -333,7 +360,7 @@ export class HelperService {
         return attendanceType[0].text;
     }
 
-    attendanceTypes(): Array<{ value: string; text: string; }> {
+    attendanceTypes(): Array<{ value: string; text: string }> {
         return this._attendanceTypes;
     }
 
@@ -347,7 +374,7 @@ export class HelperService {
         return locationType[0].text;
     }
 
-    locationTypes(): Array<{ value: string; text: string; }> {
+    locationTypes(): Array<{ value: string; text: string }> {
         return this._locationTypes;
     }
 }

@@ -1,4 +1,10 @@
 {
     "workbench.iconTheme": "material-icon-theme",
-    "material-icon-theme.activeIconPack": "angular_ngrx"
+    "material-icon-theme.activeIconPack": "angular_ngrx",
+    "files.exclude": {
+        ".vscode": true,
+        "node_modules/": true,
+        "dist/": true,
+        "e2e/": true
+    }
 }

@@ -148,27 +148,7 @@ export class User extends Timestamp implements IUser {
     }
 
     set setUrban(value: Urban) {
-        if (value) {
-            const newUrban = new Urban(
-                value.id,
-                value.zipCode,
-                value.city,
-                value.district,
-                value.urban,
-                value.provinceId,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            );
-
-            if (value.province) {
-                newUrban.setProvince = value.province;
-            }
-
-            this.urban = newUrban;
-        } else {
-            this.urban = null;
-        }
+        this.urban = value ? new Urban(value) : null;
     }
 
     set setAttendances(value: any) {

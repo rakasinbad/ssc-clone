@@ -47,6 +47,63 @@ export const getCreditLimitGroupState = createSelector(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Districts State
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllDistrict = createSelector(getDropdownState, fromDropdown.selectAllDistrict);
+
+export const getDistrictEntities = createSelector(
+    getDropdownState,
+    fromDropdown.selectDistrictEntities
+);
+
+export const getTotalDistrictEntity = createSelector(
+    getDropdownState,
+    fromDropdown.selectDistrictTotal
+);
+
+export const getTotalDistrict = createSelector(getDropdownState, state => state.districts.total);
+
+export const getSelectedDistrictId = createSelector(
+    getDropdownState,
+    state => state.districts.selectedId
+);
+
+export const getSelectedDistrict = createSelector(
+    getDropdownState,
+    getSelectedDistrictId,
+    (entities, id) => entities[id]
+);
+
+export const getIsLoadingDistrict = createSelector(
+    getDropdownState,
+    state => state.districts.isLoading
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Urbans State
+// -----------------------------------------------------------------------------------------------------
+
+export const getAllUrban = createSelector(getDropdownState, fromDropdown.selectAllUrban);
+
+export const getUrbanEntities = createSelector(getDropdownState, fromDropdown.selecteUrbanEntities);
+
+export const getTotalUrbanEntity = createSelector(getDropdownState, fromDropdown.selectUrbanTotal);
+
+export const getSelectedUrbanId = createSelector(
+    getDropdownState,
+    state => state.urbans.selectedId
+);
+
+export const getSelectedUrban = createSelector(
+    getDropdownState,
+    getSelectedUrbanId,
+    (entities, id) => entities[id]
+);
+
+export const getIsLoadingUrban = createSelector(getDropdownState, state => state.urbans.isLoading);
+
+// -----------------------------------------------------------------------------------------------------
 // Geo Parameters State [Province]
 // -----------------------------------------------------------------------------------------------------
 

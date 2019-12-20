@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IProvince, IProvinceResponse, IQueryParams, Province, PaginateResponse } from '../models';
+import { IProvince, IQueryParams, PaginateResponse } from '../models';
 import { HelperService } from './helper.service';
 
 @Injectable({
@@ -16,10 +16,10 @@ export class ProvinceApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
-    findAll(params: IQueryParams): Observable<Array<Province> | PaginateResponse<Province>> {
+    findAll(params: IQueryParams): Observable<Array<IProvince> | PaginateResponse<IProvince>> {
         const newParams = this._$helper.handleParams(this._url, params);
 
-        return this.http.get<Array<Province> | PaginateResponse<Province>>(this._url, {
+        return this.http.get<Array<IProvince> | PaginateResponse<IProvince>>(this._url, {
             params: newParams
         });
     }

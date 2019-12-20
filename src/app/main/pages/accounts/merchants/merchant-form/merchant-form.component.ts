@@ -1,6 +1,8 @@
 import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
@@ -8,7 +10,13 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatSelectChange, MatSlideToggleChange } from '@angular/material';
+import {
+    MatAutocomplete,
+    MatAutocompleteSelectedEvent,
+    MatAutocompleteTrigger,
+    MatSelectChange,
+    MatSlideToggleChange
+} from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -16,10 +24,12 @@ import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
-import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import {
     Cluster,
+    District,
     Hierarchy,
+    IQueryParams,
     Province,
     StoreGroup,
     StoreSegment,
@@ -29,8 +39,18 @@ import {
 } from 'app/shared/models';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
+import { combineLatest, fromEvent, Observable, Subject, of } from 'rxjs';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    takeUntil,
+    tap,
+    withLatestFrom,
+    switchMap,
+    finalize
+} from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -38,6 +58,7 @@ import { Store as Merchant } from '../models';
 import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
+import * as numeral from 'numeral';
 
 @Component({
     selector: 'app-merchant-form',
@@ -47,7 +68,7 @@ import { StoreSelectors } from '../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MerchantFormComponent implements OnInit, OnDestroy {
+export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
     tmpPhoto: FormControl;
     tmpIdentityPhoto: FormControl;
@@ -58,11 +79,19 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     tempCreditLimitAmount: Array<boolean>;
     tempTermOfPayment: Array<boolean>;
 
+    districtHighlight: string;
+    urbanHighlight: string;
+
+    isDistrictTyping: boolean;
+    isUrbanTyping: boolean;
+
     stores$: Observable<Merchant>;
     provinces$: Observable<Province[]>;
     cities$: Observable<Urban[]>;
-    districts$: Observable<Urban[]>;
-    urbans$: Observable<Urban[]>;
+    districts$: Observable<Array<District>>;
+    urbans$: Observable<Array<Urban>>;
+    // districts$: Observable<Urban[]>;
+    // urbans$: Observable<Urban[]>;
     postcode$: Observable<string>;
     storeClusters$: Observable<Cluster[]>;
     storeGroups$: Observable<StoreGroup[]>;
@@ -71,25 +100,39 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
     hierarchies$: Observable<Hierarchy[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
     creditLimitGroups$: Observable<CreditLimitGroup[]>;
+    // d2Source$: DistrictDataSource;
 
     isLoading$: Observable<boolean>;
+    isLoadingDistrict$: Observable<boolean>;
 
     private _unSubs$: Subject<void>;
+    private _selectedDistrict: string;
+    private _selectedUrban: string;
+    private _timer: Array<NodeJS.Timer> = [];
+
+    @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
+    @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
+    triggerDistrict: MatAutocompleteTrigger;
+    @ViewChild('triggerUrban', { static: false, read: MatAutocompleteTrigger })
+    triggerUrban: MatAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger, { static: false })
+    autoCompleteTrigger: MatAutocompleteTrigger;
 
     @ViewChild('cdkProvince', { static: false }) cdkProvince: CdkVirtualScrollViewport;
     @ViewChild('cdkCity', { static: false }) cdkCity: CdkVirtualScrollViewport;
     @ViewChild('cdkDistrict', { static: false }) cdkDistrict: CdkVirtualScrollViewport;
+    @ViewChild('cdkDistrict2', { static: false }) cdkDistrict2: CdkVirtualScrollViewport;
     @ViewChild('cdkUrban', { static: false }) cdkUrban: CdkVirtualScrollViewport;
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
-        private _$helper: HelperService,
-        private _$log: LogService
+        private _$helper: HelperService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -206,10 +249,21 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
         this.initForm();
 
+        this.districts$ = this.store.select(DropdownSelectors.getAllDistrict);
+
+        this.urbans$ = this.store.select(DropdownSelectors.getAllUrban);
+
+        /* this.urbans$ = combineLatest([
+            this.store.select(DropdownSelectors.getAllUrban),
+            this.form.get('storeInfo.address.urban').valueChanges
+        ]).pipe(map(([source, search]) => this._filterUrban(source, search))); */
+
+        // this.d2Source$ = new DistrictDataSource(this.store);
+
         // Get selector dropdown province
-        this.provinces$ = this.store.select(DropdownSelectors.getProvinceDropdownState);
+        // this.provinces$ = this.store.select(DropdownSelectors.getProvinceDropdownState);
         // Fetch request province
-        this.store.dispatch(DropdownActions.fetchDropdownProvinceRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownProvinceRequest());
 
         // Get selector dropdown store type
         this.storeTypes$ = this.store.select(DropdownSelectors.getStoreTypeDropdownState);
@@ -253,12 +307,58 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Fetch request credit limit group
         this.store.dispatch(DropdownActions.fetchDropdownCreditLimitGroupRequest());
 
+        this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
+
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         // Get data number of employee (local)
         this.numberOfEmployees = this._$helper.numberOfEmployee();
 
         this.store.dispatch(FormActions.resetFormStatus());
+
+        // Handle search district autocomplete & try request to endpoint
+        this.form
+            .get('storeInfo.address.district')
+            .valueChanges.pipe(
+                filter(v => {
+                    this.districtHighlight = v;
+                    return v.length >= 3;
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(v => {
+                if (v) {
+                    const data: IQueryParams = {
+                        limit: 10,
+                        skip: 0
+                    };
+
+                    data['paginate'] = true;
+
+                    data['search'] = [
+                        {
+                            fieldName: 'keyword',
+                            keyword: v
+                        }
+                    ];
+
+                    this.districtHighlight = v;
+
+                    this.store.dispatch(DropdownActions.searchDistrictRequest({ payload: data }));
+                }
+            });
+
+        // Handle search urban autocomplete & refresh source data with filter
+        this.form
+            .get('storeInfo.address.urban')
+            .valueChanges.pipe(takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.urbanHighlight = v;
+
+                this.urbans$ = this.store
+                    .select(DropdownSelectors.getAllUrban)
+                    .pipe(map(source => this._filterUrban(source, v)));
+            });
 
         // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
         this.form.statusChanges
@@ -302,6 +402,49 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             });
     }
 
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        // Handle trigger autocomplete district force selected from options
+        this.triggerDistrict.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+            const value = this.form.get('storeInfo.address.district').value;
+
+            if (!this._selectedDistrict || this._selectedDistrict !== JSON.stringify(value)) {
+                // Set input district empty
+                this.form.get('storeInfo.address.district').setValue('');
+
+                // Reset input urban
+                this.form.get('storeInfo.address.urban').reset();
+
+                // Reset input postcode
+                this.form.get('storeInfo.address.postcode').reset();
+
+                // Reset state urban
+                this.store.dispatch(DropdownActions.resetUrbansState());
+
+                // Set selected district empty (helper check User is choose from option or not)
+                this._selectedDistrict = '';
+            }
+        });
+
+        // Handle trigger autocomplete urban force selected from options
+        this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+            const value = this.form.get('storeInfo.address.urban').value;
+
+            if (!this._selectedUrban || this._selectedUrban !== JSON.stringify(value)) {
+                // Set input urban empty
+                this.form.get('storeInfo.address.urban').setValue('');
+
+                // Reset input postcode
+                this.form.get('storeInfo.address.postcode').reset();
+
+                // Set selected urban empty (helper check User is choose from option or not)
+                this._selectedUrban = '';
+            }
+        });
+    }
+
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
@@ -324,8 +467,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         // Reset invoice group state
         this.store.dispatch(DropdownActions.resetInvoiceGroupState());
 
+        // Reset district state
+        this.store.dispatch(DropdownActions.resetDistrictsState());
+
+        // Reset urban state
+        this.store.dispatch(DropdownActions.resetUrbansState());
+
         // Reset province state
-        this.store.dispatch(DropdownActions.resetProvinceState());
+        // this.store.dispatch(DropdownActions.resetProvinceState());
 
         this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];
@@ -345,6 +494,18 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
     get creditLimitControls(): AbstractControl[] {
         return (this.form.get('storeInfo.payment.creditLimit') as FormArray).controls;
+    }
+
+    displayDistrictOption(item: District, isHtml = false): string {
+        if (!isHtml) {
+            return `${item.province.name}, ${item.city}, ${item.district}`;
+        }
+
+        return `<span class="subtitle">${item.province.name}, ${item.city}, ${item.district}</span>`;
+    }
+
+    displayUrbanOption(item: Urban, isHtml = false): string {
+        return `${item.urban}`;
     }
 
     getErrorMessage(field: string): string {
@@ -391,6 +552,55 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    hasError(field: string, isMatError = false): boolean {
+        if (!field) {
+            return;
+        }
+
+        const errors = this.form.get(field).errors;
+        const touched = this.form.get(field).touched;
+        const dirty = this.form.get(field).dirty;
+
+        if (isMatError) {
+            return errors && (dirty || touched);
+        }
+
+        return errors && ((touched && dirty) || touched);
+    }
+
+    hasLength(field: string, minLength: number): boolean {
+        if (!field || !minLength) {
+            return;
+        }
+
+        const value = this.form.get(field).value;
+
+        return !value ? false : value.length <= minLength;
+    }
+
+    onBlur(field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    const value = this.form.get('storeInfo.address.district').value;
+
+                    // if (
+                    //     !this._selectedDistrict ||
+                    //     this._selectedDistrict !== JSON.stringify(value)
+                    // ) {
+                    //     this.form.get('storeInfo.address.district').setValue('');
+                    //     this._selectedDistrict = '';
+                    // }
+
+                    console.log('BLUR', value);
+                }
+                break;
+
+            default:
+                return;
+        }
+    }
+
     onChangeAllowCredit(ev: MatSlideToggleChange, idx: number): void {
         if (typeof ev.checked !== 'boolean' || typeof idx !== 'number') {
             return;
@@ -401,6 +611,26 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         } else {
             this.handleNotAllowCredit(idx);
         }
+    }
+
+    onDisplayDistrict(item: District): string {
+        if (!item) {
+            return;
+        }
+
+        return HelperService.truncateText(
+            `${item.province.name}, ${item.city}, ${item.district}`,
+            40,
+            'start'
+        );
+    }
+
+    onDisplayUrban(item: Urban): string {
+        if (!item) {
+            return;
+        }
+
+        return item.urban;
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -416,12 +646,19 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             const photoField = this.form.get('profileInfo.photos');
 
                             const fileReader = new FileReader();
+
                             fileReader.onload = () => {
-                                photoField.patchValue(fileReader.result);
-                                this.tmpPhoto.patchValue(file.name);
+                                photoField.setValue(fileReader.result);
+                                this.tmpPhoto.setValue(file.name);
+
+                                if (photoField.invalid) {
+                                    photoField.markAsTouched();
+                                }
                             };
 
                             fileReader.readAsDataURL(file);
+
+                            setTimeout(() => console.log(this.form, this.tmpPhoto), 200);
                         }
                         break;
 
@@ -430,9 +667,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             const photoField = this.form.get('storeInfo.legalInfo.identityPhoto');
 
                             const fileReader = new FileReader();
+
                             fileReader.onload = () => {
-                                photoField.patchValue(fileReader.result);
-                                this.tmpIdentityPhoto.patchValue(file.name);
+                                photoField.setValue(fileReader.result);
+                                this.tmpIdentityPhoto.setValue(file.name);
+
+                                if (photoField.invalid) {
+                                    photoField.markAsTouched();
+                                }
                             };
 
                             fileReader.readAsDataURL(file);
@@ -446,9 +688,14 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             );
 
                             const fileReader = new FileReader();
+
                             fileReader.onload = () => {
-                                photoField.patchValue(fileReader.result);
-                                this.tmpIdentityPhotoSelfie.patchValue(file.name);
+                                photoField.setValue(fileReader.result);
+                                this.tmpIdentityPhotoSelfie.setValue(file.name);
+
+                                if (photoField.invalid) {
+                                    photoField.markAsTouched();
+                                }
                             };
 
                             fileReader.readAsDataURL(file);
@@ -462,6 +709,113 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         }
 
         return;
+    }
+
+    onKeydown(ev: KeyboardEvent, field: string): void {
+        if (!field) {
+            return;
+        }
+
+        clearTimeout(this._timer[field]);
+    }
+
+    onKeyup(ev: KeyboardEvent, field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    if (!(ev.target as any).value || (ev.target as any).value.length < 3) {
+                        this.store.dispatch(DropdownActions.resetDistrictsState());
+                        return;
+                    }
+
+                    this.isDistrictTyping = true;
+
+                    clearTimeout(this._timer[field]);
+
+                    this._timer[field] = setTimeout(() => {
+                        this.isDistrictTyping = false;
+                    }, 100);
+                }
+                break;
+
+            case 'urban':
+                {
+                    if (!(ev.target as any).value) {
+                        // this.store.dispatch(DropdownActions.resetDistrictsState());
+                        return;
+                    }
+
+                    this.isUrbanTyping = true;
+
+                    clearTimeout(this._timer[field]);
+
+                    this._timer[field] = setTimeout(() => {
+                        this.isUrbanTyping = false;
+
+                        // Detect change manually
+                        this.cdRef.markForCheck();
+                    }, 100);
+                }
+                break;
+
+            default:
+                return;
+        }
+    }
+
+    onOpenAutocomplete(field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    if (this.autoDistrict && this.autoDistrict.panel && this.autoCompleteTrigger) {
+                        fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
+                            .pipe(
+                                map(x => this.autoDistrict.panel.nativeElement.scrollTop),
+                                withLatestFrom(
+                                    this.store.select(DropdownSelectors.getTotalDistrictEntity),
+                                    this.store.select(DropdownSelectors.getTotalDistrict)
+                                ),
+                                takeUntil(this.autoCompleteTrigger.panelClosingActions)
+                            )
+                            .subscribe(([x, skip, total]) => {
+                                const scrollTop = this.autoDistrict.panel.nativeElement.scrollTop;
+                                const scrollHeight = this.autoDistrict.panel.nativeElement
+                                    .scrollHeight;
+                                const elementHeight = this.autoDistrict.panel.nativeElement
+                                    .clientHeight;
+                                const atBottom = scrollHeight === scrollTop + elementHeight;
+
+                                if (atBottom && skip && total && skip < total) {
+                                    const data: IQueryParams = {
+                                        limit: 10,
+                                        skip: skip
+                                    };
+
+                                    data['paginate'] = true;
+
+                                    if (this.districtHighlight) {
+                                        data['search'] = [
+                                            {
+                                                fieldName: 'keyword',
+                                                keyword: this.districtHighlight
+                                            }
+                                        ];
+
+                                        this.store.dispatch(
+                                            DropdownActions.fetchScrollDistrictRequest({
+                                                payload: data
+                                            })
+                                        );
+                                    }
+                                }
+                            });
+                    }
+                }
+                break;
+
+            default:
+                return;
+        }
     }
 
     onOpenChangeProvince(ev: boolean): void {
@@ -527,6 +881,50 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
         this.form.get(field).reset();
     }
 
+    onSelectAutocomplete(ev: MatAutocompleteSelectedEvent, field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    const value = (ev.option.value as District) || '';
+
+                    if (!value) {
+                        this.form.get('storeInfo.address.district').reset();
+                        this.form.get('storeInfo.address.postcode').reset();
+                    } else {
+                        if (value.urbans.length > 0) {
+                            // this.form.get('storeInfo.address.urban').enable();
+
+                            this.store.dispatch(
+                                DropdownActions.setUrbanSource({ payload: value.urbans })
+                            );
+                        }
+                    }
+
+                    this._selectedDistrict = value ? JSON.stringify(value) : '';
+                }
+                break;
+
+            case 'urban':
+                {
+                    const value = (ev.option.value as Urban) || '';
+
+                    if (!value) {
+                        this.form.get('storeInfo.address.postcode').reset();
+                    } else {
+                        this.form.get('storeInfo.address.postcode').setValue(value.zipCode);
+                    }
+
+                    this._selectedUrban = value ? JSON.stringify(value) : '';
+                }
+                break;
+
+            default:
+                return;
+        }
+
+        console.log('AUTO ON SELECT', ev);
+    }
+
     onSelectCreditLimitGroup(ev: MatSelectChange, idx: number): void {
         if (!ev.value || typeof idx !== 'number') {
             return;
@@ -570,7 +968,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             });
     }
 
-    onSelectProvince(ev: MatSelectChange): void {
+    /* onSelectProvince(ev: MatSelectChange): void {
         this.form.get('storeInfo.address.city').reset();
         this.form.get('storeInfo.address.district').reset();
         this.form.get('storeInfo.address.urban').reset();
@@ -591,9 +989,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    onSelectCity(ev: MatSelectChange): void {
+    /* onSelectCity(ev: MatSelectChange): void {
         this.form.get('storeInfo.address.district').reset();
         this.form.get('storeInfo.address.urban').reset();
         this.form.get('storeInfo.address.postcode').reset();
@@ -616,9 +1014,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    onSelectDistrict(ev: MatSelectChange): void {
+    /* onSelectDistrict(ev: MatSelectChange): void {
         this.form.get('storeInfo.address.urban').reset();
         this.form.get('storeInfo.address.postcode').reset();
 
@@ -642,9 +1040,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    onSelectUrban(ev: MatSelectChange): void {
+    /* onSelectUrban(ev: MatSelectChange): void {
         this.form.get('storeInfo.address.postcode').reset();
 
         const provinceId = this.form.get('storeInfo.address.province').value;
@@ -668,6 +1066,32 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     this.form.get('storeInfo.address.postcode').patchValue(postcode);
                 }
             });
+    } */
+
+    onScroll(ev: any, field: string): void {
+        console.log('ON SCROLL', ev);
+
+        switch (field) {
+            case 'district':
+                const end = this.cdkDistrict.getRenderedRange().end;
+                const total = this.cdkDistrict.getDataLength();
+
+                /* if (total > 0) {
+                    const data: IQueryParams = {
+                        limit: 50,
+                        skip: this.cdkDistrict.getDataLength()
+                    };
+
+                    data['paginate'] = true;
+
+                    this.store.dispatch(
+                        DropdownActions.fetchScrollDistrictRequest({ payload: data })
+                    );
+                } */
+
+                console.log('CEK', end, total, this.cdkDistrict.getViewportSize());
+                break;
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -1037,6 +1461,20 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
             .disable();
     }
 
+    private _filterUrban(source: Array<Urban>, value: string): Array<Urban> {
+        if (!value || !source || (source && source.length < 1)) {
+            return source;
+        }
+
+        const filterValue = String(value).toLowerCase();
+
+        return source.filter(r =>
+            String(r.urban)
+                .toLowerCase()
+                .includes(filterValue)
+        );
+    }
+
     private initForm(): void {
         this.tmpPhoto = new FormControl({ value: '', disabled: true });
         this.tmpIdentityPhoto = new FormControl({ value: '', disabled: true });
@@ -1078,7 +1516,17 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     ],
                     photos: [
-                        ''
+                        '',
+                        [
+                            RxwebValidators.fileSize({
+                                maxSize: Math.floor(5 * 1048576),
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'file_size_lte',
+                                    { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                )
+                            })
+                        ]
                         // [
                         //     RxwebValidators.required({
                         //         message: this._$errorMessage.getErrorMessageNonState(
@@ -1140,7 +1588,29 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     }),
                     address: this.formBuilder.group({
-                        province: [
+                        // province: [
+                        //     '',
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
+                        // city: [
+                        //     { value: '', disabled: true },
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
+                        district: [
                             '',
                             [
                                 RxwebValidators.required({
@@ -1151,30 +1621,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                 })
                             ]
                         ],
-                        city: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
-                        ],
-                        district: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
-                        ],
                         urban: [
-                            { value: '', disabled: true },
+                            '',
                             [
                                 RxwebValidators.required({
                                     message: this._$errorMessage.getErrorMessageNonState(
@@ -1184,6 +1632,28 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                 })
                             ]
                         ],
+                        // district: [
+                        //     { value: '', disabled: true },
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
+                        // urban: [
+                        //     { value: '', disabled: true },
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
                         postcode: [
                             { value: '', disabled: true },
                             [
@@ -1309,10 +1779,30 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                         'default',
                                         'required'
                                     )
+                                }),
+                                RxwebValidators.fileSize({
+                                    maxSize: Math.floor(5 * 1048576),
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'file_size_lte',
+                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    )
                                 })
                             ]
                         ],
-                        identityPhotoSelfie: [''],
+                        identityPhotoSelfie: [
+                            '',
+                            [
+                                RxwebValidators.fileSize({
+                                    maxSize: Math.floor(5 * 1048576),
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'file_size_lte',
+                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    )
+                                })
+                            ]
+                        ],
                         npwpId: [
                             '',
                             [
@@ -1501,15 +1991,23 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     ],
                     photos: [
-                        ''
-                        // [
-                        //     RxwebValidators.required({
-                        //         message: this._$errorMessage.getErrorMessageNonState(
-                        //             'default',
-                        //             'required'
-                        //         )
-                        //     })
-                        // ]
+                        '',
+                        [
+                            RxwebValidators.fileSize({
+                                maxSize: Math.floor(5 * 1048576),
+                                message: this._$errorMessage.getErrorMessageNonState(
+                                    'default',
+                                    'file_size_lte',
+                                    { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                )
+                            })
+                            // RxwebValidators.required({
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'required'
+                            //     )
+                            // })
+                        ]
                     ],
                     npwpId: [
                         '',
@@ -1563,7 +2061,29 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         ]
                     }),
                     address: this.formBuilder.group({
-                        province: [
+                        // province: [
+                        //     '',
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
+                        // city: [
+                        //     { value: '', disabled: true },
+                        //     [
+                        //         RxwebValidators.required({
+                        //             message: this._$errorMessage.getErrorMessageNonState(
+                        //                 'default',
+                        //                 'required'
+                        //             )
+                        //         })
+                        //     ]
+                        // ],
+                        district: [
                             '',
                             [
                                 RxwebValidators.required({
@@ -1574,30 +2094,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                 })
                             ]
                         ],
-                        city: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
-                        ],
-                        district: [
-                            { value: '', disabled: true },
-                            [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                })
-                            ]
-                        ],
                         urban: [
-                            { value: '', disabled: true },
+                            '',
                             [
                                 RxwebValidators.required({
                                     message: this._$errorMessage.getErrorMessageNonState(
@@ -1756,7 +2254,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 .subscribe(data => {
                     if (data) {
                         if (data.phoneNo) {
-                            this.form.get('profileInfo.phoneNumber').patchValue(data.phoneNo);
+                            this.form.get('profileInfo.phoneNumber').setValue(data.phoneNo);
                         }
 
                         if (this.form.get('profileInfo.phoneNumber').invalid) {
@@ -1766,7 +2264,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         if (data.longitude) {
                             this.form
                                 .get('storeInfo.address.geolocation.lng')
-                                .patchValue(data.longitude);
+                                .setValue(data.longitude);
                         }
 
                         if (this.form.get('storeInfo.address.geolocation.lng').invalid) {
@@ -1776,7 +2274,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         if (data.latitude) {
                             this.form
                                 .get('storeInfo.address.geolocation.lat')
-                                .patchValue(data.latitude);
+                                .setValue(data.latitude);
                         }
 
                         if (this.form.get('storeInfo.address.geolocation.lat').invalid) {
@@ -1785,11 +2283,21 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                         if (data.imageUrl) {
                             this.form.get('profileInfo.photos').clearValidators();
+                            this.form.get('profileInfo.photos').setValidators([
+                                RxwebValidators.fileSize({
+                                    maxSize: Math.floor(5 * 1048576),
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'file_size_lte',
+                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    )
+                                })
+                            ]);
                             this.form.get('profileInfo.photos').updateValueAndValidity();
                         }
 
                         if (data.taxNo) {
-                            this.form.get('profileInfo.npwpId').patchValue(data.taxNo);
+                            this.form.get('profileInfo.npwpId').setValue(data.taxNo);
                         }
 
                         if (this.form.get('profileInfo.npwpId').invalid) {
@@ -1797,7 +2305,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         }
 
                         if (data.externalId) {
-                            this.form.get('storeInfo.storeId.id').patchValue(data.externalId);
+                            this.form.get('storeInfo.storeId.id').setValue(data.externalId);
                         }
 
                         if (this.form.get('storeInfo.storeId.id').invalid) {
@@ -1805,7 +2313,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                         }
 
                         if (data.name) {
-                            this.form.get('storeInfo.storeId.storeName').patchValue(data.name);
+                            this.form.get('storeInfo.storeId.storeName').setValue(data.name);
                         }
 
                         if (this.form.get('storeInfo.storeId.storeName').invalid) {
@@ -1822,10 +2330,17 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
                                 if (provinceId) {
                                     this.form
-                                        .get('storeInfo.address.province')
-                                        .patchValue(provinceId);
+                                        .get('storeInfo.address.district')
+                                        .setValue(data.urban);
 
-                                    this.store
+                                    this.form.get('storeInfo.address.urban').setValue(data.urban);
+
+                                    this.form.get('storeInfo.address.postcode').setValue(zipCode);
+
+                                    // this.form
+                                    //     .get('storeInfo.address.province')
+                                    //     .patchValue(provinceId);
+                                    /* this.store
                                         .select(DropdownSelectors.getProvinceDropdownState)
                                         .pipe(takeUntil(this._unSubs$))
                                         .subscribe(hasProvinces => {
@@ -1838,17 +2353,17 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                                     zipCode
                                                 );
                                             }
-                                        });
+                                        }); */
                                 }
                             }
                         }
 
                         if (data.address) {
-                            this.form.get('storeInfo.address.notes').patchValue(data.address);
+                            this.form.get('storeInfo.address.notes').setValue(data.address);
+                        }
 
-                            if (this.form.get('storeInfo.address.notes').invalid) {
-                                this.form.get('storeInfo.address.notes').markAsTouched();
-                            }
+                        if (this.form.get('storeInfo.address.notes').invalid) {
+                            this.form.get('storeInfo.address.notes').markAsTouched();
                         }
 
                         // if (data.largeArea) {
@@ -2103,6 +2618,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                                   })
                                 : [];
 
+                        const urban = body.storeInfo.address.urban as Urban;
+
                         const payload = {
                             externalId: body.storeInfo.storeId.id,
                             name: body.storeInfo.storeId.storeName,
@@ -2119,7 +2636,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                             storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                             vehicleAccessibilityId:
                                 body.storeInfo.physicalStoreInfo.vehicleAccessibility,
-                            urbanId: body.storeInfo.address.urban,
+                            urbanId: urban.id,
                             user: {
                                 idNo: body.storeInfo.legalInfo.identityId,
                                 fullName: body.storeInfo.legalInfo.name,
@@ -2252,6 +2769,8 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                       })
                     : [];
 
+            const urban = body.storeInfo.address.urban as Urban;
+
             const payload = {
                 externalId: body.storeInfo.storeId.id,
                 name: body.storeInfo.storeId.storeName,
@@ -2266,7 +2785,7 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                 storeGroupId: body.storeInfo.storeClassification.storeGroup,
                 storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                 vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
-                urbanId: body.storeInfo.address.urban,
+                urbanId: urban.id,
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster
                 },
@@ -2339,16 +2858,23 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
 
     private addressValid(): boolean {
         return (
-            this.form.get('storeInfo.address.province').value &&
-            this.form.get('storeInfo.address.city').value &&
-            this.form.get('storeInfo.address.district').value &&
-            this.form.get('storeInfo.address.urban').value &&
+            this.form.get('storeInfo.address.district').valid &&
+            this.form.get('storeInfo.address.urban').valid &&
             this.form.get('storeInfo.address.postcode').value &&
             this.form.get('storeInfo.address').valid
         );
+
+        // return (
+        //     // this.form.get('storeInfo.address.province').value &&
+        //     // this.form.get('storeInfo.address.city').value &&
+        //     // this.form.get('storeInfo.address.district').value &&
+        //     // this.form.get('storeInfo.address.urban').value &&
+        //     // this.form.get('storeInfo.address.postcode').value &&
+        //     // this.form.get('storeInfo.address').valid
+        // );
     }
 
-    private populateCity(
+    /* private populateCity(
         provinceId: string,
         currentCity?: string,
         currentDistrict?: string,
@@ -2378,9 +2904,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    private populateDistrict(
+    /* private populateDistrict(
         provinceId: string,
         city: string,
         currentDistrict?: string,
@@ -2411,9 +2937,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    private populateUrban(
+    /* private populateUrban(
         provinceId: string,
         city: string,
         district: string,
@@ -2445,9 +2971,9 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     }
                 })
             );
-    }
+    } */
 
-    private populatePostcode(
+    /* private populatePostcode(
         provinceId: string,
         city: string,
         district: string,
@@ -2469,5 +2995,5 @@ export class MerchantFormComponent implements OnInit, OnDestroy {
                     this.form.get('storeInfo.address.postcode').patchValue(postcode);
                 }
             });
-    }
+    } */
 }

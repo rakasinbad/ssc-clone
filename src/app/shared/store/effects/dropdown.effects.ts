@@ -9,6 +9,7 @@ import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/m
 import { CreditLimitGroupApiService } from 'app/main/pages/finances/credit-limit-balance/services';
 import {
     ClusterApiService,
+    DistrictApiService,
     HierarchyApiService,
     InvoiceGroupApiService,
     LogService,
@@ -23,8 +24,11 @@ import {
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import {
     Cluster,
+    District,
     Hierarchy,
+    IDistrict,
     InvoiceGroup,
+    PaginateResponse,
     Province,
     Role,
     StoreGroup,
@@ -35,8 +39,16 @@ import {
 } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 import { sortBy } from 'lodash';
-import { of } from 'rxjs';
-import { catchError, exhaustMap, map, retry, switchMap, withLatestFrom } from 'rxjs/operators';
+import { asyncScheduler, of } from 'rxjs';
+import {
+    catchError,
+    debounceTime,
+    exhaustMap,
+    map,
+    retry,
+    switchMap,
+    withLatestFrom
+} from 'rxjs/operators';
 
 import { DropdownActions } from '../actions';
 
@@ -52,6 +64,80 @@ import { DropdownActions } from '../actions';
 @Injectable()
 export class DropdownEffects {
     private _isOnline = this.network.online;
+
+    searchDistrictRequest$ = createEffect(
+        () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
+            this.actions$.pipe(
+                ofType(DropdownActions.searchDistrictRequest),
+                debounceTime(debounce, scheduler),
+                map(action => action.payload),
+                map(params => DropdownActions.fetchDistrictRequest({ payload: params }))
+            )
+    );
+
+    fetchDistrictRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchDistrictRequest),
+            map(action => action.payload),
+            switchMap(params => {
+                return this._$districtApi.findAll<PaginateResponse<IDistrict>>(params).pipe(
+                    map(resp => {
+                        const newResp = {
+                            data:
+                                resp && resp.data && resp.data.length > 0
+                                    ? resp.data.map(row => new District(row))
+                                    : [],
+                            total: resp.total
+                        };
+
+                        return DropdownActions.fetchDistrictSuccess({
+                            payload: newResp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchDistrictFailure({
+                                payload: { id: 'fetchDistrictFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchScrollDistrictRequest$ = createEffect(
+        () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
+            this.actions$.pipe(
+                ofType(DropdownActions.fetchScrollDistrictRequest),
+                debounceTime(debounce, scheduler),
+                map(action => action.payload),
+                switchMap(params => {
+                    return this._$districtApi.findAll<PaginateResponse<IDistrict>>(params).pipe(
+                        map(resp => {
+                            const newResp = {
+                                data:
+                                    resp && resp.data && resp.data.length > 0
+                                        ? resp.data.map(row => new District(row))
+                                        : [],
+                                total: resp.total
+                            };
+
+                            return DropdownActions.fetchScrollDistrictSuccess({
+                                payload: newResp
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                DropdownActions.fetchScrollDistrictFailure({
+                                    payload: { id: 'fetchScrollDistrictFailure', errors: err }
+                                })
+                            )
+                        )
+                    );
+                })
+            )
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH dropdown methods [Credit Limit Group]
@@ -128,13 +214,7 @@ export class DropdownEffects {
                     retry(3),
                     map(resp => {
                         const sources = (resp as Array<Province>).map(row => {
-                            const newProvince = new Province(
-                                row.id,
-                                row.name,
-                                row.createdAt,
-                                row.updatedAt,
-                                row.deletedAt
-                            );
+                            const newProvince = new Province(row);
 
                             return newProvince.name;
                         });
@@ -508,23 +588,7 @@ export class DropdownEffects {
                     retry(3),
                     map(resp => {
                         const newResp =
-                            resp && resp.length > 0
-                                ? resp.map(row => {
-                                      const newProvince = new Province(
-                                          row.id,
-                                          row.name,
-                                          row.createdAt,
-                                          row.updatedAt,
-                                          row.deletedAt
-                                      );
-
-                                      if (row.urbans) {
-                                          newProvince.urbans = row.urbans;
-                                      }
-
-                                      return newProvince;
-                                  })
-                                : [];
+                            resp && resp.length > 0 ? resp.map(row => new Province(row)) : [];
 
                         return DropdownActions.fetchDropdownProvinceSuccess({
                             payload: newResp
@@ -902,6 +966,7 @@ export class DropdownEffects {
         // private _$accountApi: AccountApiService,
         private _$clusterApi: ClusterApiService,
         private _$creditLimitGroupApi: CreditLimitGroupApiService,
+        private _$districtApi: DistrictApiService,
         private _$hierarchyApi: HierarchyApiService,
         private _$invoiceGroupApi: InvoiceGroupApiService,
         private _$provinceApi: ProvinceApiService,

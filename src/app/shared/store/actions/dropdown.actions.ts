@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     Cluster,
+    District,
     GeoParameter,
     Hierarchy,
     IErrorHandler,
@@ -12,11 +13,65 @@ import {
     StoreGroup,
     StoreSegment,
     StoreType,
+    Urban,
     VehicleAccessibility
 } from 'app/shared/models';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Autocomplete [Districts]
+// -----------------------------------------------------------------------------------------------------
+
+export const searchDistrictRequest = createAction(
+    '[Helper Dropdown] Search District Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchDistrictRequest = createAction(
+    '[Helper Dropdown] Fetch District Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchDistrictFailure = createAction(
+    '[Helper Dropdown] Fetch District Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchDistrictSuccess = createAction(
+    '[Helper Dropdown] Fetch District Success',
+    props<{ payload: { data: District[]; total: number } }>()
+);
+
+export const fetchScrollDistrictRequest = createAction(
+    '[Helper Dropdown] Fetch Scroll District Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchScrollDistrictFailure = createAction(
+    '[Helper Dropdown] Fetch Scroll District Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchScrollDistrictSuccess = createAction(
+    '[Helper Dropdown] Fetch Scroll District Success',
+    props<{ payload: { data: District[]; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Autocomplete [Urbans]
+// -----------------------------------------------------------------------------------------------------
+
+export const searchUrbanRequest = createAction(
+    '[Helper Dropdown] Search Urban Request',
+    props<{ payload: string }>()
+);
+
+export const setUrbanSource = createAction(
+    '[Helper Dropdown] Set Urban Source',
+    props<{ payload: Urban[] }>()
+);
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Credit Limit Group
@@ -324,3 +379,7 @@ export const resetInvoiceGroupState = createAction('[Helper Dropdown] Reset Invo
 export const resetProvinceState = createAction('[Helper Dropdown] Reset Province State');
 
 export const resetGeoparamsState = createAction('[Helper Dropdown] Reset Geoparams State');
+
+export const resetDistrictsState = createAction('[Helper Dropdown] Reset Districts State');
+
+export const resetUrbansState = createAction('[Helper Dropdown] Reset Urbans State');
