@@ -1,29 +1,22 @@
 <h2 mat-dialog-title *ngIf="data?.title">{{ data?.title | titlecase }}</h2>
 
-<mat-dialog-content class="mat-typography" style="min-width: 50em;">
-    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex novalidate>
-        <div class="custom-field" fxLayoutAlign="space-between stretch">
-            <label
-                fxFlexAlign="start"
-                [class.mat-error]="
-                    form.get('file').errors &&
-                    !form.get('file').untouched &&
-                    (form.get('file').dirty || form.get('file').touched)
-                "
-            >
-                Select a CSV or Excel file to import.
-            </label>
-
-        </div>
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
-            <mat-form-field appearance="outline" fxLayout="row" fxLayoutAlign="start">
+<mat-dialog-content class="mat-typography">
+    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="10px" fxFlex novalidate>
+        <label
+            [class.mat-error]="hasError(form.get('file'), { ignoreDirty: true, ignoreTouched: true })"
+        >
+            <strong>Select a CSV file to import.</strong>
+        </label>
+        <div class="custom-form-field" fxLayout="row" fxLayoutGap="20px">
+            <mat-form-field fxFlex="80" fxFlexAlign="center" appearance="outline" fxLayout="row" fxLayoutAlign="start">
                 <input
-                    hidden
                     #file
-                    [disabled]="true"
+                    hidden
                     type="file"
                     name="file"
                     formControlName="file"
+                    accept=".csv"
+                    (change)="onFileBrowse($event)"
                 />
                 <input
                     matInput
@@ -31,16 +24,46 @@
                     name="fileName"
                     fxFlex="80"
                     formControlName="fileName"
-                    [disabled]="true"
                 />
-                <button 
-                    mat-flat-button
-                    color="accent"
-                    (click)="file.click()"
-                    fxFlex="20">
-                    Pilih File
-                </button>
+                <mat-error
+                    *ngIf="hasError(form.get('file'), { ignoreDirty: true, ignoreTouched: true })"
+                >
+                    {{ getFormError(form.get('file')) }}
+                </mat-error>
             </mat-form-field>
+            <button
+                fxFlex
+                class="mb-20"
+                mat-flat-button
+                fxFlexAlign="center"
+                color="accent"
+                (click)="file.click()"
+                [disabled]="isBlocking"
+            >
+                Pilih File
+            </button>
+        </div>
+        <div
+            fxLayout="row"
+            fxLayoutAlign="end center"
+            fxLayoutGap="20px"
+        >
+            <button
+                mat-flat-button
+                color="accent"
+                (click)="close()"
+                [disabled]="isBlocking"
+            >
+                Batal
+            </button>
+            <button
+                mat-stroked-button
+                color="accent"
+                (click)="submit()"
+                [disabled]="isBlocking || form.invalid"
+            >
+                Kirim
+            </button>
         </div>
     </form>
 </mat-dialog-content>
