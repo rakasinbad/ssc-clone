@@ -22,6 +22,7 @@ export interface State {
     isDeleting?: boolean;
     isUpdating?: boolean;
     isLoading: boolean;
+    needRefresh: boolean;
     selectedCatalogueId: string | number;
     selectedCategories: Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>;
     productName: string;
@@ -58,6 +59,7 @@ const initialState: State = {
     isDeleting: false,
     isUpdating: false,
     isLoading: false,
+    needRefresh: false,
     selectedCatalogueId: null,
     selectedCategories: [],
     productName: '',
@@ -146,6 +148,7 @@ const catalogueReducer = createReducer(
     ),
     on(
         CatalogueActions.patchCatalogueRequest,
+        CatalogueActions.patchCataloguesRequest,
         CatalogueActions.setCatalogueToActiveRequest,
         CatalogueActions.setCatalogueToInactiveRequest,
         (state) => ({
@@ -180,12 +183,13 @@ const catalogueReducer = createReducer(
     ),
     on(
         CatalogueActions.patchCatalogueFailure,
+        CatalogueActions.patchCataloguesFailure,
         CatalogueActions.setCatalogueToActiveFailure,
         CatalogueActions.setCatalogueToInactiveFailure,
         (state, { payload }) => ({
             ...state,
             isUpdating: initialState.isUpdating,
-            isLoading: false,
+            isLoading: initialState.isLoading,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
@@ -249,9 +253,10 @@ const catalogueReducer = createReducer(
     ),
     on(
         CatalogueActions.patchCatalogueSuccess,
+        CatalogueActions.patchCataloguesSuccess,
         (state) => ({
             ...state,
-            isLoading: false,
+            isLoading: initialState.isLoading,
             isDeleting: initialState.isDeleting,
             isUpdating: initialState.isUpdating,
             errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
@@ -344,6 +349,13 @@ const catalogueReducer = createReducer(
         (state, { payload: selectedCatalogueId }) => ({
             ...state,
             selectedCatalogueId
+        })
+    ),
+    on(
+        CatalogueActions.setRefreshStatus,
+        (state, { status }) => ({
+            ...state,
+            needRefresh: status
         })
     ),
     /** 
