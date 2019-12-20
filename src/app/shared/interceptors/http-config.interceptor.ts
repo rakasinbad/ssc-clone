@@ -38,7 +38,7 @@ export class HttpConfigInterceptor implements HttpInterceptor {
             //     }
             // }
 
-            if (!req.headers.has('Content-Type') && !req.url.endsWith('import-order-parcels')) {
+            if (!req.headers.has('Content-Type') && !req.url.endsWith('import-order-parcels') && !req.url.endsWith('import-catalogues')) {
                 req = req.clone({
                     headers: req.headers.set('Content-Type', 'application/json')
                 });
