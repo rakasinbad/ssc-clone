@@ -17,6 +17,7 @@ import { StoreCatalogueActions } from '../actions';
 import { fromStoreCatalogue } from '../reducers';
 import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 import { CataloguesService } from 'app/main/pages/catalogues/services';
+import { StoreCatalogue } from '../../models/store-catalogue.model';
 
 @Injectable()
 export class StoreCatalogueEffects {
@@ -171,7 +172,7 @@ export class StoreCatalogueEffects {
             ofType(StoreCatalogueActions.fetchStoreCatalogueRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([catalogueId, { supplierId }]) => {
+            switchMap(([storeCatalogueId, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
                 if (isNaN(+supplierId)) {
                     return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
@@ -182,7 +183,7 @@ export class StoreCatalogueEffects {
                     }));
                 }
 
-                return this.catalogueApiSvc.findById(catalogueId).pipe(
+                return this.storeCatalogueApiSvc.findStoreCatalogue(storeCatalogueId).pipe(
                     catchOffline(),
                     map(resp => {
                         return StoreCatalogueActions.fetchStoreCatalogueSuccess({

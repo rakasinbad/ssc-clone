@@ -5,14 +5,15 @@ import * as fromRoot from 'app/store/app.reducer';
 
 // import { StoreCatalogue } from '../../models';
 import { StoreCatalogueActions } from '../actions';
+import { StoreHistoryInventory, StoreCatalogue } from '../../models/store-catalogue.model';
 
 export const FEATURE_KEY = 'storeCatalogues';
 
-interface StoreCatalogueState extends EntityState<any> {
+interface StoreCatalogueState extends EntityState<StoreCatalogue> {
     total: number;
 }
 
-interface CatalogueHistoryState extends EntityState<any> {
+interface CatalogueHistoryState extends EntityState<StoreHistoryInventory> {
     total: number;
 }
 
@@ -21,20 +22,20 @@ interface ErrorState extends EntityState<IErrorHandler> {}
 export interface State {
     isDeleting: boolean | undefined;
     isLoading: boolean;
-    selectedStoreCatalogueId: string | number;
+    selectedStoreCatalogueId: string;
     source: TSource;
-    storeCatalogue: any;
+    storeCatalogue: StoreCatalogue;
     storeCatalogues: StoreCatalogueState;
     catalogueHistories: CatalogueHistoryState;
     errors: ErrorState;
 }
 
-const adapterStoreCatalogue = createEntityAdapter<any>({
+const adapterStoreCatalogue = createEntityAdapter<StoreCatalogue>({
     selectId: storeCatalogue => storeCatalogue.id
 });
 const initialStoreCatalogueState = adapterStoreCatalogue.getInitialState({ total: 0 });
 
-const adapterCatalogueHistory = createEntityAdapter<any>({
+const adapterCatalogueHistory = createEntityAdapter<StoreHistoryInventory>({
     selectId: catalogueHistory => catalogueHistory.id
 });
 const initialCatalogueHistoryState = adapterCatalogueHistory.getInitialState({ total: 0 });
@@ -55,6 +56,13 @@ export const initialState: State = {
 
 const storeCatalogueReducer = createReducer(
     initialState,
+    on(
+        StoreCatalogueActions.setSelectedStoreCatalogue,
+        (state, { payload }) => ({
+            ...state,
+            selectedStoreCatalogueId: payload
+        })
+    ),
     on(
         StoreCatalogueActions.fetchStoreCatalogueRequest,
         StoreCatalogueActions.fetchStoreCataloguesRequest,
@@ -78,7 +86,7 @@ const storeCatalogueReducer = createReducer(
         (state, { payload }) => ({
             ...state,
             isLoading: false,
-            storeCatalogue: payload.storeCatalogue,
+            storeCatalogues: adapterStoreCatalogue.upsertOne(payload.storeCatalogue, state.storeCatalogues),
             errors: adapterError.removeOne('fetchStoreCatalogueFailure', state.errors)
         })
     ),

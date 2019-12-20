@@ -17,9 +17,13 @@
                     Tambah Produk
                 </button>
 
-                <!-- <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
+                <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
                     IMPORT
-                </button> -->
+                </button>
+
+                <button type="button" mat-flat-button color="primary" (click)="onDownload('catalogueStock')">
+                    <span>DOWNLOAD TEMPLATE</span>
+                </button>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -258,7 +262,7 @@
                         Actions
                     </mat-header-cell>
 
-                    <mat-cell *matCellDef="let row">
+                    <mat-cell class="pr-8" *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
                                 mat-icon-button

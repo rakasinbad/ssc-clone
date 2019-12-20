@@ -1,6 +1,13 @@
+import { globalEnLang } from '../../lang/i18n/en';
+
 export const locale = {
     lang: 'en',
     data: {
+        ...globalEnLang,
+        ERROR: {
+            ...globalEnLang.ERROR,
+            MISMATCH_EXTENSION: '{{ fieldName }} field only accepts some file extensions: [{{ extensions }}]'
+        },
         NAV: {
             ADD_PRODUCT: {
                 TITLE: 'Add Product'

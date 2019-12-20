@@ -38,6 +38,7 @@ export class CataloguesService {
     private readonly _catalogueCategoriesEndpoint = '/catalogue-categories';
     private readonly _catalogueStockEndpoint = '/get-stocks';
     private readonly _categoryTreeEndpoint = '/categories-tree';
+    private readonly _catalogueImportEndpoint = '/upload/import-catalogues';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -234,6 +235,13 @@ export class CataloguesService {
     addNewCatalogue(data: any): Observable<any> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.post<Catalogue>(this._url, data);
+    }
+
+    updateCataloguePrices(data: FormData): Observable<{ status: string; }> {
+        this._url = this._$helper.handleApiRouter(this._catalogueImportEndpoint);
+        return this.http.post<{ status: string; }>(this._url, data, {
+            reportProgress: true
+        });
     }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {

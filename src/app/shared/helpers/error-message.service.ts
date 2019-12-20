@@ -117,6 +117,10 @@ export class ErrorMessageService {
                     prefix: args
                 });
 
+            case 'mismatch_extension':
+                const extensions: Array<string> = args.extensions || [];
+                return this.translate.instant('ERROR.MISMATCH_EXTENSION', { fieldName: labelName, extensions: extensions.join(', ')});
+
             case 'numeric':
                 return this.translate.instant('ERROR.NUMERIC', { fieldName: labelName });
 

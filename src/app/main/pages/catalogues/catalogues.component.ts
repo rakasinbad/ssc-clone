@@ -19,7 +19,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store, select } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { MatTableDataSource } from '@angular/material';
-import { GeneratorService } from 'app/shared/helpers';
+import { GeneratorService, HelperService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
@@ -92,40 +92,42 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
-  constructor(
-    private router: Router,
-    private store: Store<fromCatalogue.FeatureState>,
-    private _fuseNavigationService: FuseNavigationService,
-    private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-    private _$catalogue: CataloguesService,
-    private _$generate: GeneratorService,
-    private matDialog: MatDialog,
-    public translate: TranslateService,
-    private readonly sanitizer: DomSanitizer
-  ) {
-    this.store.dispatch(
-        UiActions.createBreadcrumb({
-            payload: [
-                {
-                    title: 'Home',
-                    translate: 'BREADCRUMBS.HOME'
-                },
-                {
-                    title: 'Catalogue',
-                    translate: 'BREADCRUMBS.CATALOGUE'
-                },
-                {
-                    title: 'Manage Product',
-                    translate: 'BREADCRUMBS.MANAGE_PRODUCT',
-                    active: true
-                }
-            ]
-        })
-    );
-    this.statusCatalogue = statusCatalogue;
+    constructor(
+        private router: Router,
+        private store: Store<fromCatalogue.FeatureState>,
+        private _fuseNavigationService: FuseNavigationService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$catalogue: CataloguesService,
+        private _$generate: GeneratorService,
+        private matDialog: MatDialog,
+        public translate: TranslateService,
+        private readonly sanitizer: DomSanitizer,
+        private _helper: HelperService,
+        private _notice: NoticeService
+    ) {
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Catalogue',
+                        translate: 'BREADCRUMBS.CATALOGUE'
+                    },
+                    {
+                        title: 'Manage Product',
+                        translate: 'BREADCRUMBS.MANAGE_PRODUCT',
+                        active: true
+                    }
+                ]
+            })
+        );
+        this.statusCatalogue = statusCatalogue;
 
-    this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-    this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+        this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
   // -----------------------------------------------------------------------------------------------------
@@ -188,6 +190,15 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.paginator.pageSize = this.defaultPageSize;
 
         // this._$catalogue.getCatalogueStatuses({ allCount: 40, blockedCount: 5, emptyCount: 10, liveCount: 25 });
+        this.store.select(
+            CatalogueSelectors.getRefreshStatus
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(status => {
+            if (status) {
+                this.onRefreshTable();
+            }
+        })
     }
 
     ngAfterViewInit(): void {
@@ -398,11 +409,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onImportProduct(): void {
-        // this.matDialog.open(CataloguesImportComponent, {
-        //     data: {
-        //         title: 'Import'
-        //     }
-        // });
+        this.matDialog.open(CataloguesImportComponent, {
+            data: {
+                title: 'Import'
+            },
+            disableClose: true,
+            width: '1000px'
+        });
     }
 
     editCatalogue(editMode: 'price' | 'stock', catalogue: Catalogue): void {
@@ -420,6 +433,23 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 disableClose: false
             })
         , 100);
+    }
+
+    onDownload(template: string): void {
+        this._helper
+            .downloadTemplate()
+            .subscribe(links => {
+                for (const type of Object.keys(links)) {
+                    if (type === template) {
+                        return window.open(links[type], '_blank');
+                    }
+                }
+
+                return this._notice.open('Template not found.', 'error', {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom'
+                });
+            });
     }
 
     // -----------------------------------------------------------------------------------------------------

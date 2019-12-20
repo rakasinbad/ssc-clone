@@ -3,9 +3,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, filter } from 'rxjs/operators';
 
 import { IQueryParams } from '../models/query.model';
+
+type TTemplateFiles = {
+    catalogueStock: string;
+    orderStatus: string;
+    paymentStatus: string;
+};
 
 @Injectable({
     providedIn: 'root'
@@ -376,5 +382,10 @@ export class HelperService {
 
     locationTypes(): Array<{ value: string; text: string }> {
         return this._locationTypes;
+    }
+
+    downloadTemplate(): Observable<TTemplateFiles> {
+        const url = this.handleApiRouter('/import-template-links');
+        return this.http.get<TTemplateFiles>(url);
     }
 }

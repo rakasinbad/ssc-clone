@@ -27,7 +27,7 @@
                         class="fit-image fuse-white"
                         style="border-radius: 5px;"
                         [defaultImage]="'assets/images/logos/sinbad.svg'"
-                        [lazyLoad]="getCatalogueImage()"
+                        [lazyLoad]="form.get(['productMedia', 'oldPhotos', '0', 'value'])?.value"
                         [errorImage]="'assets/images/logos/sinbad.svg'"
                     />
                 </div>
@@ -490,10 +490,10 @@
                                 {{ getFormError(form.get('productSale.productPrice')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productSale.productPrice').value">
-                            {{ form.get('productSale.productPrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productSale.productPrice')?.value">
+                            {{ form.get('productSale.productPrice')?.value | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </span>
-                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productSale.productPrice').value">
+                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productSale.productPrice')?.value">
                             -
                         </span>
                     </div>
@@ -529,10 +529,10 @@
                                 {{ getFormError(form.get('productSale.retailPrice')) }}
                             </mat-error>
                         </mat-form-field>
-                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productSale.retailPrice').value !== 'null'">
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productSale.retailPrice').value">
                             {{ form.get('productSale.retailPrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </span>
-                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('productSale.retailPrice').value === 'null'">
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productSale.retailPrice').value">
                             -
                         </span>
                     </div>
