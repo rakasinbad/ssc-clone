@@ -312,7 +312,7 @@
                     *matRowDef="let row; columns: displayedColumns"
                     class="merchant"
                     matRipple
-                    [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']"
+                    (click)="openStoreHistoryInventories(row?.id)"
                 >
                 </mat-row>
             </mat-table>
