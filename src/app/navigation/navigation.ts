@@ -124,5 +124,21 @@ export const navigation: FuseNavigation[] = [
                 exactMatch: false
             }
         ]
+    },
+    {
+        id: 'sales-force',
+        title: 'Sales Rep Management',
+        //    translate: 'NAV.INVENTORIES.TITLE',
+        type: 'collapsable',
+        icon: 'layerassessments',
+        children: [
+            {
+                id: 'sales-rep',
+                title: 'Sales Rep',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force'
+            }
+        ]
     }
 ];
