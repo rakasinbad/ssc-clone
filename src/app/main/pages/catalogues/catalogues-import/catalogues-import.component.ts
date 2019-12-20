@@ -72,7 +72,7 @@ export class CataloguesImportComponent implements OnInit {
         });
     }
 
-    onFileBrowse($event: Event, index: number): void {
+    onFileBrowse($event: Event): void {
         const inputEl = $event.target as HTMLInputElement;
 
         if (inputEl.files && inputEl.files.length > 0) {
