@@ -4,6 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
 import { Store as Merchant } from '../models';
 import { Observable } from 'rxjs';
+import { StoreCatalogue } from '../models/store-catalogue.model';
 
 // import { StoreCatalogue } from '../models';
 
@@ -38,17 +39,10 @@ export class StoreCatalogueApiService {
     findCatalogueHistory<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        if (params['catalogueId']) {
+        if (params['storeCatalogueId']) {
             newArgs.push({
-                key: 'catalogueId',
-                value: params['catalogueId']
-            });
-        }
-
-        if (params['storeId']) {
-            newArgs.push({
-                key: 'storeId',
-                value: params['storeId']
+                key: 'storeCatalogueId',
+                value: params['storeCatalogueId']
             });
         }
 
@@ -59,7 +53,13 @@ export class StoreCatalogueApiService {
     }
 
     findById<T>(id: string): Observable<T> {
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
         return this.http.get<T>(`${this._url}/${id}`);
+    }
+
+    findStoreCatalogue(id: string): Observable<StoreCatalogue> {
+        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        return this.http.get<StoreCatalogue>(`${this._url}/${id}`);
     }
 
     // patch(id: string, data: Partial<Attendance>): Observable<Attendance> {

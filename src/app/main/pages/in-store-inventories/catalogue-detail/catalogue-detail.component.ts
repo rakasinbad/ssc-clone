@@ -5,25 +5,19 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef,
     AfterViewInit
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
+import { environment } from '../../../../../environments/environment';
+import { MatPaginator, MatSort } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import { select, Store as NgRxStore } from '@ngrx/store';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { Store as NgRxStore } from '@ngrx/store';
 import { IQueryParams, Role } from 'app/shared/models';
-import { DropdownActions, UiActions } from 'app/shared/store/actions';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { UiActions } from 'app/shared/store/actions';
 import * as moment from 'moment';
-import { Observable, of, Subject, merge } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
+import { Observable, Subject, merge, combineLatest } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil, tap, withLatestFrom, filter } from 'rxjs/operators';
 
 // import { StoreCatalogue } from '../models';
 
@@ -53,6 +47,13 @@ import {
 // import { StoreSelectors } from '../../accounts/merchants/store/selectors';
 import { MerchantSelectors } from '../../attendances/store/selectors';
 import { MerchantActions } from '../../attendances/store/actions';
+import { fromMerchant } from '../../accounts/merchants/store/reducers';
+import { Store, Catalogue } from '../models';
+import { StoreHistoryInventory } from '../models/store-catalogue.model';
+import { fromCatalogue } from '../../catalogues/store/reducers';
+import { CatalogueActions } from '../../catalogues/store/actions';
+import { CatalogueSelectors } from '../../catalogues/store/selectors';
+import { AuthSelectors } from '../../core/auth/store/selectors';
 
 @Component({
     selector: 'app-catalogue-detail',
@@ -66,16 +67,16 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
-    /** Menyimpan ID store yang sedang dibuka. */
     storeId: string;
-    /** Menyimpan ID catalogue yang sedang dibuka. */
     catalogueId: string;
+    storeCatalogueId: string;
 
-    selectedStore$: Observable<any>;
-    /** Observable untuk Store yang dipilih dari halaman depan. */
-    selectedCatalogue$: Observable<any>;
-    /** Observable untuk Array Attendance dari store yang dipilih. */
-    catalogueHistories$: Observable<Array<any>>;
+    /** Untuk menyimpan data store yang dipilih berdasarkan Store History Inventories-nya. */
+    selectedStore: Store;
+    /** Untuk menyimpan katalog yang terpilih berdasarkan Store History Inventories-nya. */
+    selectedCatalogue: Catalogue;
+    /** Untuk Array StoreHistoryInventory dari StoreCatalogue yang dipilih. */
+    catalogueHistories: Array<StoreHistoryInventory>;
     /** Observable untuk mendapatkan jumlah data keseluruhan untuk aktivitas karyawan. */
     totalCatalogueHistories$: Observable<number>;
 
@@ -103,35 +104,23 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    /** Filter untuk tabel aktivitas karyawan. */
-    // @ViewChild('filter', { static: true })
-    // filter: ElementRef;
-
-    /** Observable untuk status loading dari state-nya Attendance. */
-    isHistoryLoading$: Observable<boolean>;
     /** Observable untuk status loading dari state-nya Store. */
-    // isStoreLoading$: Observable<boolean>;
+    isStoreLoading$: Observable<boolean>;
+    /** Observable untuk status loading dari state-nya Store History Inventories. */
+    isHistoryLoading$: Observable<boolean>;
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         // private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
-        // private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         // private _fromUser: NgRxStore<fromUser.FeatureState>,
+        private _fromCatalogue: NgRxStore<fromCatalogue.FeatureState>,
+        private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromStoreCatalogue: NgRxStore<fromStoreCatalogue.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
-        /** Mendapatkan ID dari route (parameter URL) */
-        const { catalogueId, storeId } = this.route.snapshot.params;
-
-        /** Menyimpan ID catlaogue dan store-nya. */
-        this.catalogueId = catalogueId;
-        this.storeId = storeId;
-
-        /** Melakukan request data Store berdasarkan ID nya melalui dispatch action. */
-        this._fromStoreCatalogue.dispatch(StoreCatalogueActions.fetchStoreCatalogueRequest({
-            payload: catalogueId
-        }));
+        /** Ambil dari URL. */
+        this.storeCatalogueId = this.route.snapshot.params.id;
 
         this._fromStoreCatalogue.dispatch(
             UiActions.createBreadcrumb({
@@ -166,112 +155,96 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this._unSubs$ = new Subject<void>();
 
         /** Menentukan maksimal jumlah data yang ditampilkan pada tabel. */
-        this.paginator.pageSize = 5;
+        this.paginator.pageSize = environment.pageSize;
 
-        /** Mendapatkan status loading dari store-nya Attendance. */
+        /** Mendapatkan status loading dari Store Catalogue Histories. */
         this.isHistoryLoading$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getIsLoading)
-        .pipe(
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+            .pipe(
+                takeUntil(this._unSubs$)
+            );
 
-        /** Mendapatkan status loading dari store-nya Store. */
-        // this.isStoreLoading$ = this._fromMerchant.select(MerchantSelectors.getIsLoading)
-        // .pipe(
-        //     distinctUntilChanged(),
-        //     takeUntil(this._unSubs$)
-        // );
-        this.selectedStore$ = this._fromStoreCatalogue.select(MerchantSelectors.getMerchant)
-        .pipe(
-            tap(merchant => {
-                return merchant;
-            }),
-            takeUntil(this._unSubs$)
-        );
+        this._fromStoreCatalogue.select(StoreCatalogueSelectors.getAllCatalogueHistory)
+            .pipe(
+                takeUntil(this._unSubs$)
+            ).subscribe(histories => {
+                if (histories.length > 0) {
+                    this.catalogueHistories = histories;
+                }
+            });
 
-        /** Mendapatkan store yang telah dipilih dari halaman depan. */
-        this.selectedCatalogue$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getSelectedStoreCatalogue)
-        .pipe(
-            map(storeCatalogue => {
-                if (storeCatalogue) {
-                    // const newMerchant = new Merchant(
-                    //     merchant.id,
-                    //     merchant.storeCode,
-                    //     merchant.name,
-                    //     merchant.address,
-                    //     merchant.taxNo,
-                    //     merchant.longitude,
-                    //     merchant.latitude,
-                    //     merchant.largeArea,
-                    //     merchant.phoneNo,
-                    //     merchant.imageUrl,
-                    //     merchant.taxImageUrl,
-                    //     merchant.status,
-                    //     merchant.reason,
-                    //     merchant.parent,
-                    //     merchant.parentId,
-                    //     merchant.numberOfEmployee,
-                    //     merchant.externalId,
-                    //     merchant.storeTypeId,
-                    //     merchant.storeGroupId,
-                    //     merchant.storeSegmentId,
-                    //     merchant.urbanId,
-                    //     merchant.vehicleAccessibilityId,
-                    //     merchant.warehouseId,
-                    //     merchant.userStores,
-                    //     merchant.storeType,
-                    //     merchant.storeGroup,
-                    //     merchant.storeSegment,
-                    //     merchant.urban,
-                    //     merchant.storeConfig,
-                    //     merchant.createdAt,
-                    //     merchant.updatedAt,
-                    //     merchant.deletedAt
-                    // );
-
-                    return storeCatalogue;
+        combineLatest([
+            this._fromStoreCatalogue.select(StoreCatalogueSelectors.getAllStoreCatalogue),
+            this._fromStoreCatalogue.select(StoreCatalogueSelectors.getSelectedStoreCatalogue)
+        ]).pipe(
+                withLatestFrom(
+                    this._fromStoreCatalogue.select(AuthSelectors.getUserSupplier)
+                ),
+                takeUntil(this._unSubs$)
+            ).subscribe(([[storeCatalogues, selectedStoreCatalogue], userSupplier]) => {
+                /** Jika tidak ada data user supplier di state. */
+                if (!userSupplier) {
+                    return this._fromStoreCatalogue.dispatch(
+                        StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+                            payload: {
+                                id: 'fetchStoreCatalogueHistoriesFailure',
+                                errors: 'Not authenticated'
+                            }
+                        })
+                    );
                 }
 
-            }),
-            tap(storeCatalogue => {
-                if (!storeCatalogue) {
-                    this._fromStoreCatalogue.dispatch(StoreCatalogueActions.fetchStoreCatalogueRequest({
-                        payload: this.catalogueId
-                    }));
-                }
-            }),
-            takeUntil(this._unSubs$)
+                /** Jika belum ada store catalogue yang terpilih. */
+                if (!selectedStoreCatalogue) {
+                    /** Ambil dari URL. */
+                    this.storeCatalogueId = this.route.snapshot.params.id;
+                    /** Mengambil data Store Catalogue dari state. */
+                    const cachedStoreCatalogue = storeCatalogues.filter(sc => sc.id === this.storeCatalogueId)[0];
 
-        );
+                    /** Jika belum ada, maka lakukan request dan masukkan ke dalam state. */
+                    if (!cachedStoreCatalogue) {
+                        return this._fromStoreCatalogue.dispatch(
+                            StoreCatalogueActions.fetchStoreCatalogueRequest({ payload: this.storeCatalogueId })
+                        );
+                    } else {
+                        /** Set seleectedStoreCatalogue berdasarkan ID dari URL. */
+                        return this._fromStoreCatalogue.dispatch(
+                            StoreCatalogueActions.setSelectedStoreCatalogue({ payload: this.storeCatalogueId })
+                        );
+                    }
+                } else {
+                    /** Mengambil ID Supplier dari Store Catalogue yang terpilih. */
+                    const selectedSupplierStore = selectedStoreCatalogue.store.supplierStores
+                                                .filter(supplierStore => supplierStore.supplierId === userSupplier.supplierId);
 
-        /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */
-        this.catalogueHistories$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getAllCatalogueHistory)
-        .pipe(
-            tap(catHistories => {
-                if (catHistories.length > 0) {
-                    this._fromStoreCatalogue
-                    .dispatch(MerchantActions.fetchStoreRequest({
-                        payload: catHistories[0].storeCatalogue.storeId
-                    }));
+                    /** Jika Store Catalogue yang terpilih tidak sesuai dengan ID Supplier user-nya, maka tidak diperbolehkan untuk melihatnya. */
+                    if (selectedSupplierStore.length === 0) {
+                        return this._fromStoreCatalogue.dispatch(
+                                StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+                                payload: {
+                                    id: 'fetchStoreCatalogueHistoriesFailure',
+                                    errors: 'Not found'
+                                }
+                            }
+                        ));
+                    }
+
+                    this.selectedStore = selectedStoreCatalogue.store;
+                    this.selectedCatalogue = selectedStoreCatalogue.catalogue;
+                    this.onChangePage();
                 }
-            }),
-            takeUntil(this._unSubs$)
-        );
+            });
 
         /** Mendapatkan jumlah aktivitas karyawan dari store yang telah dipilih. */
         this.totalCatalogueHistories$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getTotalCatalogueHistory)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
-
-        /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
-        this.onChangePage();
+            .pipe(
+                takeUntil(this._unSubs$)
+            );
     }
 
     ngAfterViewInit(): void {
         this.sort.sortChange
-        .pipe(takeUntil(this._unSubs$))
-        .subscribe(() => (this.paginator.pageIndex = 0));
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
 
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
@@ -310,13 +283,15 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         data['paginate'] = true;
 
         /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
-        data['catalogueId'] = this.catalogueId;
-        data['storeId'] = this.storeId;
+        data['storeCatalogueId'] = this.storeCatalogueId;
 
         /** Mengambil arah sortir dan data yang ingin disotir. */
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
             data['sortBy'] = this.sort.active;
+        } else {
+            data['sort'] = 'desc';
+            data['sortBy'] = 'created_at';
         }
 
         /** Melakukan request dengan membawa query string yang telah disiapkan. */
@@ -325,11 +300,6 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 payload: data
             })
         );
-    }
-
-    public getChainRoles(roles: Array<Role>): string {
-        // return Attendance.getChainRoles(roles);
-        return 'foo';
     }
 
     // public getAttendanceType(attendanceType: any): string {
@@ -349,6 +319,13 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     //         `/pages/attendances/${this.storeId}/employee/${data.user.id}/detail`
     //     ]);
     // }
+    hasDiscountPrice(catalogue: Catalogue): boolean {
+        return Catalogue.hasDiscountPrice(catalogue);
+    }
+
+    getCataloguePrice(catalogue: Catalogue): number {
+        return Catalogue.getCataloguePrice(catalogue);
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods

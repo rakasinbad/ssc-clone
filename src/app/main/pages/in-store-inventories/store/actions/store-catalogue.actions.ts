@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
+import { StoreCatalogue, StoreHistoryInventory } from '../../models/store-catalogue.model';
 
 // import { StoreCatalogue } from '../../models';
 
@@ -19,7 +20,7 @@ export const fetchStoreCatalogueFailure = createAction(
 
 export const fetchStoreCatalogueSuccess = createAction(
     '[Store Catalogues API] Fetch Store Catalogue Success',
-    props<{ payload: { storeCatalogue: any; source: TSource } }>()
+    props<{ payload: { storeCatalogue: StoreCatalogue; source: TSource } }>()
 );
 
 /**
@@ -38,7 +39,7 @@ export const fetchStoreCataloguesFailure = createAction(
 
 export const fetchStoreCataloguesSuccess = createAction(
     '[Attendances API] Fetch Store Catalogues Success',
-    props<{ payload: { storeCatalogues: Array<any>; total: number } }>()
+    props<{ payload: { storeCatalogues: Array<StoreCatalogue>; total: number } }>()
 );
 
 /**
@@ -57,5 +58,14 @@ export const fetchStoreCatalogueHistoriesFailure = createAction(
 
 export const fetchStoreCatalogueHistoriesSuccess = createAction(
     '[Store Catalogues API] Fetch Store Catalogue Histories Success',
-    props<{ payload: { catalogueHistories: Array<any>; total: number } }>()
+    props<{ payload: { catalogueHistories: Array<StoreHistoryInventory>; total: number } }>()
+);
+
+/**
+ * SETTERS
+ */
+
+export const setSelectedStoreCatalogue = createAction(
+    '[Store Catalogues Page] Set Selected Store Catalogue',
+    props<{ payload: string }>()
 );

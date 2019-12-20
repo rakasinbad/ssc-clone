@@ -4,7 +4,7 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
+    <div class="center px-32">
         <!-- HEADER -->
         <div class="header accent" fxLayout="row" fxLayoutAlign="space-between center">
             <!-- APP TITLE -->
@@ -14,12 +14,12 @@
                 </button>
 
                 <div
-                    class="attendance-image mr-8 mr-sm-16"
+                    class="attendance-image mr-8 mr-sm-16 fuse-white-bg"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
                     <img
-                        *ngIf="(selectedCatalogue$ | async)?.imageUrl; else noImage;"
-                        [src]="(selectedCatalogue$ | async)?.imageUrl"
+                        *ngIf="selectedCatalogue?.catalogueImages[0]?.imageUrl; else noImage;"
+                        [src]="selectedCatalogue?.catalogueImages[0]?.imageUrl"
                     />
                     <ng-template #noImage>
                         <img [src]="'assets/images/avatars/profile.jpg'"/>
@@ -32,7 +32,7 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        <strong>{{ (selectedCatalogue$ | async)?.name }}</strong>
+                        <strong>{{ selectedCatalogue?.name }}</strong>
                     </div>
 
                     <div class="subtitle secondary-text">
@@ -65,7 +65,7 @@
                             <strong>Nama Toko</strong>
                         </label>
                         <span>
-                            {{ (selectedStore$ | async)?.name }}
+                            {{ selectedStore?.name }}
                         </span>
                     </div>
                     <!-- / NAMA TOKO -->
@@ -76,7 +76,7 @@
                             <strong>Alamat</strong>
                         </label>
                         <span>
-                            {{ (selectedStore$ | async)?.address }}
+                            {{ selectedStore?.address }}
                         </span>
                     </div>
                     <!-- / ALAMAT TOKO -->
@@ -103,7 +103,7 @@
                 <mat-table
                     class="catalogue-histories-table"
                     #table
-                    [dataSource]="catalogueHistories$ | async"
+                    [dataSource]="catalogueHistories"
                     matSort
                     [@animateStagger]="{ value: '50' }"
                     fusePerfectScrollbar
@@ -128,7 +128,7 @@
                     <ng-container matColumnDef="price">
                         <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeCatalogue?.catalogue?.suggestRetailPrice | price: 'full':'IDR':'narrow':'1.0-2' }}</p>
+                            <p>{{ getCataloguePrice(row?.storeCatalogue?.catalogue) | price: 'full':'IDR':'narrow':'1.0-2' }}</p>
                         </mat-cell>
                     </ng-container>
                     
@@ -152,7 +152,7 @@
                     <ng-container matColumnDef="stockOnHand">
                         <mat-header-cell *matHeaderCellDef matTooltip="Stock on Hand" matTooltipPosition="above">SoH</mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeCatalogue?.catalogue?.stock | number }}</p>
+                            <p>{{ row?.total | number }}</p>
                         </mat-cell>
                     </ng-container>
 
