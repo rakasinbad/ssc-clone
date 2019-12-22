@@ -128,6 +128,7 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
 @import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
+@import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
 
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
@@ -156,6 +157,7 @@ $typography: mat-typography-config(
     @include payment-status-theme($theme);
     @include profile-theme($theme);
     @include supplier-inventories-theme($theme);
+    @include portfolios-theme($theme);
 
     // Plugin
     // @include mat-datepicker-theme($theme);
