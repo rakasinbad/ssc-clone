@@ -5,9 +5,5 @@ import { Actions, createEffect } from '@ngrx/effects';
 
 @Injectable()
 export class PortfoliosEffects {
-
-
-
-  constructor(private actions$: Actions) {}
-
+    constructor(private actions$: Actions) {}
 }

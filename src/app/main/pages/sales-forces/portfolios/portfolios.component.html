@@ -83,12 +83,12 @@
                 fusePerfectScrollbar
             >
                 <!-- Checkbox Column -->
-                <!-- <ng-container matColumnDef="checkbox">
+                <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox   (change)="$event ? masterToggle() : null"
                                         (click)="$event.stopPropagation()"
                                         [checked]="selection.hasValue() && isAllSelected()"
-                                        [indeterminate]="selecction.hasValue() && !isAllSelected()"
+                                        [indeterminate]="selection.hasValue() && !isAllSelected()"
                         ></mat-checkbox>
                     </mat-header-cell>
 
@@ -98,7 +98,7 @@
                                         [checked]="selection.isSelected(row)"
                         ></mat-checkbox>
                     </mat-cell>
-                </ng-container> -->
+                </ng-container>
 
                 <!-- "Portfolio Code" Column -->
                 <ng-container matColumnDef="code">
