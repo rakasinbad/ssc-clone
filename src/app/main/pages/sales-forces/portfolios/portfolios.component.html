@@ -122,7 +122,7 @@
 
                 <!-- "Sales Force" Column -->
                 <ng-container matColumnDef="salesForce">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Sales Force</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Sales Rep.</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="word-wrap">{{ row?.salesForce }}</p>
                     </mat-cell>
@@ -130,9 +130,9 @@
 
                 <!-- Timestamp Column -->
                 <ng-container matColumnDef="timestamp">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Time Stamp</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Last Update Portfolio</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.createdAt }}</p>
+                        <p class="text-truncate">{{ row?.updatedAt }}</p>
                     </mat-cell>
                 </ng-container>
 

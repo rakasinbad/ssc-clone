@@ -1,7 +1,7 @@
-import { createReducer } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { Portfolio } from '../../models/portfolios.model';
-import { TNullable } from 'app/shared/models';
+import { PortfolioActions } from '../actions';
 
 // Set reducer's feature key
 export const featureKey = 'portfolios';
@@ -30,12 +30,30 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 });
 
 // Create the reducer.
-export const reducer = createReducer(initialState);
-
-// Export selector for entities.
-export const {
-    selectAll: selectAllPortfolios,
-    selectEntities: selectPortfolioEntities,
-    selectIds: selectPortfolioIds,
-    selectTotal: selectPortfolioTotal
-} = adapter.getSelectors();
+export const reducer = createReducer(
+    initialState,
+    on(
+        PortfolioActions.fetchPortfolioRequest,
+        PortfolioActions.fetchPortfoliosRequest,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
+        PortfolioActions.fetchPortfolioSuccess,
+        (state, { payload }) => adapter.upsertOne(payload.portfolio, state)
+    ),
+    on(
+        PortfolioActions.fetchPortfoliosSuccess,
+        (state, { payload }) => ({
+            ...state,
+            state: adapter.addAll(payload.portfolios, state),
+            total: payload.total
+        })
+    ),
+    on(
+        PortfolioActions.truncatePortfolios,
+        state => adapter.removeAll(state)
+    )
+);

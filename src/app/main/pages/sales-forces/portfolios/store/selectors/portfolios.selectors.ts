@@ -3,24 +3,38 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
     fromPortfolios,
     mainFeatureKey,
+    FeatureState,
+    State as CoreState
 } from '../reducers';
 
 // Get state from the feature key.
-export const getPortfolioState = createFeatureSelector<fromPortfolios.State>(mainFeatureKey);
+export const getPortfolioState = createFeatureSelector<FeatureState, CoreState>(mainFeatureKey);
 
-const getSelectedPortfolioId = createSelector(
+export const {
+    selectAll: selectAllPortfolios,
+    selectEntities: selectPortfolioEntities,
+    selectIds: selectPortfolioIds,
+    selectTotal: selectPortfolioTotal
+} = fromPortfolios.adapter.getSelectors();
+
+export const getPortfolioEntity = createSelector(
     getPortfolioState,
+    state => state[mainFeatureKey]
+);
+
+export const getSelectedPortfolioId = createSelector(
+    getPortfolioEntity,
     state => state.selectedIds
 );
 
 export const getTotalPortfolios = createSelector(
-    getPortfolioState,
-    fromPortfolios.selectPortfolioTotal
+    getPortfolioEntity,
+    state => state.total
 );
 
-export const getPortfolioEntity = createSelector(
-    getPortfolioState,
-    fromPortfolios.selectPortfolioEntities
+export const getAllPortfolios = createSelector(
+    getPortfolioEntity,
+    selectAllPortfolios
 );
 
 export const getSelectedPortfolio = createSelector(
@@ -32,15 +46,15 @@ export const getSelectedPortfolio = createSelector(
 export const getSelectedPortfolios = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioId,
-    (portfolios, ids) => ids.map(id => portfolios[id])
+    (portfolios, ids) => ids ? ids.map(id => portfolios[id]) : ids
 );
 
 export const getLoadingState = createSelector(
-    getPortfolioState,
+    getPortfolioEntity,
     state => state.isLoading
 );
 
 export const getNeedRefreshState = createSelector(
-    getPortfolioState,
+    getPortfolioEntity,
     state => state.needRefresh
 );

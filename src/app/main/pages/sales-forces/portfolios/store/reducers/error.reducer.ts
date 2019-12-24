@@ -1,7 +1,8 @@
 // Import things.
-import { createReducer } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter } from '@ngrx/entity';
 import { ErrorHandler } from 'app/shared/models';
+import { PortfolioActions } from '../actions';
 
 // The reducer's feature key.
 export const featureKey = 'errors';
@@ -22,4 +23,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 });
 
 // Create the reducer.
-export const reducer = createReducer(initialState);
+export const reducer = createReducer(
+    initialState,
+    on(
+        PortfolioActions.fetchPortfolioFailure,
+        PortfolioActions.fetchPortfoliosFailure,
+        (state, { payload }) => adapter.upsertOne(payload, state)
+    )
+);

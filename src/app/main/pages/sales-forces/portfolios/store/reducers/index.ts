@@ -28,4 +28,5 @@ export {
     reducers,
     fromPortfolios,
     fromErrors,
+    State
 };

@@ -16,6 +16,46 @@ import {
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
 
+interface IStorePortfolio extends ITimestamp {
+    id: string;
+    target: number;
+    portfolioId: string;
+    storeId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+}
+
+export class StorePortfolio implements IStorePortfolio {
+    id: string;
+    target: number;
+    portfolioId: string;
+    storeId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+
+    constructor(data: StorePortfolio) {
+        const {
+            id,
+            target,
+            portfolioId,
+            storeId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+        } = data;
+
+        this.id = id;
+        this.target = target;
+        this.portfolioId = portfolioId;
+        this.storeId = storeId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
+}
+
 interface IStore extends ITimestamp {
     readonly id: NonNullable<string>;
     storeCode: string;
@@ -54,6 +94,7 @@ interface IStore extends ITimestamp {
     creditLimitStores?: CreditLimitStore[];
     legalInfo?: User;
     owner?: User;
+    storePortfolios?: Array<StorePortfolio>;
 }
 
 export class Store implements IStore {
@@ -97,6 +138,7 @@ export class Store implements IStore {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    storePortfolios?: Array<StorePortfolio>;
 
     constructor(data: Store) {
         const {
@@ -139,7 +181,8 @@ export class Store implements IStore {
             owner,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
+            storePortfolios = []
         } = data;
 
         this.id = id;
@@ -267,6 +310,10 @@ export class Store implements IStore {
         if (owner) {
             this.setOwner = owner;
         }
+
+        this.storePortfolios = storePortfolios.length === 0
+            ? []
+            : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
     }
 
     set setCreditLimitStores(value: CreditLimitStore[]) {

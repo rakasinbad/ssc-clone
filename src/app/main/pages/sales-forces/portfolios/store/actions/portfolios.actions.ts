@@ -31,5 +31,10 @@ export const fetchPortfoliosFailure = createAction(
     
 export const fetchPortfoliosSuccess = createAction(
     '[Portfolios API] Fetch Portfolios Success',
-    props<{ payload: { portfolios?: Array<Portfolio>; source: TSource } }>()
+    props<{ payload: { portfolios?: Array<Portfolio>; source: TSource, total?: number } }>()
 );
+
+/**
+ * HELPER
+ */
+export const truncatePortfolios = createAction('[Portfolios Page] Truncate Portfolios');
