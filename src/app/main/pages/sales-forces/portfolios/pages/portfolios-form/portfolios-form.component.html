@@ -1,0 +1,125 @@
+<div id="portfolios-form" class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <!-- <div class="accent"></div> -->
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-32" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="25px">
+        <!-- CONTENT CARD (INFORMASI PORTFOLIO TOKO) -->
+        <div class="content-card">
+            <div class="p-16">
+                <div class="font-weight-600 font-size-24 line-height-20">Informasi Portfolio Toko</div>
+            </div>
+        
+            <div class="p-16 pt-0 pb-40 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex fxLayoutGap="5px" novalidate>
+                    <!-- PORTFOLIO NAME -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('name'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Portfolio Name
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="name"
+                                formControlName="name"
+                            />
+                            <mat-error *ngIf="hasError(form.get('name'))">
+                                {{ getFormError(form.get('name')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / PORTFOLIO NAME -->
+                    <!-- INVOICE GROUP (GRUP FAKTUR) -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('invoiceGroup'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Faktur
+                        </label>
+                
+                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
+                            <mat-select
+                                name="invoiceGroup"
+                                formControlName="invoiceGroup"
+                            >
+                                <mat-option
+                                    *ngFor="let invoiceGroup of invoiceGroups"
+                                    [value]="invoiceGroup.id"
+                                >
+                                    {{ invoiceGroup.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError(form.get('invoiceGroup'))">
+                                {{ getFormError(form.get('invoiceGroup')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / INVOICE GROUP (GRUP FAKTUR) -->
+                    <!-- PORTFOLIO TYPE -->
+                    <div
+                        class="custom-field mt-24"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('type'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Portfolio Type
+                        </label>
+                
+                        <mat-radio-group fxFlexAlign="center" fxLayout="row" fxLayoutGap="50px" fxFlex="80">
+                            <mat-radio-button value="direct">Direct</mat-radio-button>
+                            <mat-radio-button value="group">Group</mat-radio-button>
+                        </mat-radio-group>
+                        <!-- <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
+                            <mat-select
+                                name="type"
+                                formControlName="typr"
+                            >
+                                <mat-option
+                                    *ngFor="let invoiceGroup of invoiceGroups"
+                                    [value]="invoiceGroup.id"
+                                >
+                                    {{ invoiceGroup.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError(form.get('type'))">
+                                {{ getFormError(form.get('type')) }}
+                            </mat-error>
+                        </mat-form-field> -->
+                    </div>
+                    <!-- / PORTFOLIO TYPE -->
+                </form>
+            </div>
+        </div>
+        <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+    </div>
+    <!-- / CENTER -->
+</div>

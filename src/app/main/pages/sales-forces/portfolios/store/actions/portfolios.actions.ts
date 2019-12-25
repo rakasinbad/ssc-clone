@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
 import { Portfolio } from '../../models/portfolios.model';
+import { Store } from 'app/main/pages/attendances/models';
 
 export type requestActionNames =
     'fetchPortfolioRequest' |
@@ -26,6 +27,22 @@ export const fetchPortfolioFailure = createAction(
 export const fetchPortfolioSuccess = createAction(
     '[Portfolios API] Fetch Portfolio Success',
     props<{ payload: { portfolio?: Portfolio; source: TSource } }>()
+);
+
+/** PORTFOLIO'S STORE */
+export const fetchPortfolioStoresRequest = createAction(
+    '[Portfolios API] Fetch Portfolio Store Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchPortfolioStoresFailure = createAction(
+    '[Portfolios API] Fetch Portfolio Store Failure',
+    props<{ payload: IErrorHandler }>()
+);
+    
+export const fetchPortfolioStoresSuccess = createAction(
+    '[Portfolios API] Fetch Portfolio Store Success',
+    props<{ payload: { stores?: Array<Store>; source: TSource } }>()
 );
 
 /** PORTFOLIOS */

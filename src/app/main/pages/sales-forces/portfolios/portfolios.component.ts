@@ -162,6 +162,10 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         );
     }
 
+    addPortfolio(): void {
+        this.router.navigate(['/pages/sales-force/portfolio/add']);
+    }
+
     editPortfolio(id: string): void {
 
     }

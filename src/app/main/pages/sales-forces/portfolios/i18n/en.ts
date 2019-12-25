@@ -7,6 +7,7 @@ export const locale = {
         BREADCRUMBS: {
             ...globalEnLang.BREADCRUMBS,
             PORTFOLIO: 'Portfolio',
+            PORTFOLIO_ADD: 'Add Portfolio',
             PORTFOLIO_DETAIL: 'Detail Portfolio'
         }
     }
