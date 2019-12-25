@@ -155,6 +155,14 @@ export class User extends Timestamp implements IUser {
         this.attendances = value;
     }
 
+    get userSupplier(): TNullable<UserSupplier> {
+        if (this.userSuppliers.length === 0) {
+            return null;
+        }
+
+        return this.userSuppliers[0];
+    }
+
     static patch(body: UserOptions): UserOptions {
         return body;
     }
