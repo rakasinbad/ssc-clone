@@ -1,3 +1,10 @@
 import * as PortfolioActions from './portfolios.actions';
 
-export { PortfolioActions };
+type portfolioRequestActionNames = PortfolioActions.requestActionNames;
+type portfolioFailureActionNames = PortfolioActions.failureActionNames;
+
+export {
+    PortfolioActions,
+    portfolioRequestActionNames,
+    portfolioFailureActionNames,
+};

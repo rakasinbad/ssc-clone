@@ -13,6 +13,7 @@ export interface State extends EntityState<Portfolio> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
+    urlExport: string;
     total: number;
 }
 
@@ -26,6 +27,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
+    urlExport: null,
     total: 0,
 });
 
@@ -33,24 +35,38 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 export const reducer = createReducer(
     initialState,
     on(
+        PortfolioActions.exportPortfoliosRequest,
         PortfolioActions.fetchPortfolioRequest,
         PortfolioActions.fetchPortfoliosRequest,
         state => ({
             ...state,
-            isLoading: false
+            isLoading: true
+        })
+    ),
+    on(
+        PortfolioActions.exportPortfoliosSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            urlExport: payload
         })
     ),
     on(
         PortfolioActions.fetchPortfolioSuccess,
-        (state, { payload }) => adapter.upsertOne(payload.portfolio, state)
+        (state, { payload }) =>
+            adapter.upsertOne(payload.portfolio, {
+                ...state,
+                isLoading: false
+            })
     ),
     on(
         PortfolioActions.fetchPortfoliosSuccess,
-        (state, { payload }) => ({
-            ...state,
-            state: adapter.addAll(payload.portfolios, state),
-            total: payload.total
-        })
+        (state, { payload }) =>
+            adapter.addAll(payload.portfolios, {
+                ...state,
+                isLoading: false,
+                total: payload.total
+            })
     ),
     on(
         PortfolioActions.truncatePortfolios,

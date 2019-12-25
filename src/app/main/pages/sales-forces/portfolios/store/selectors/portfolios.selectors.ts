@@ -3,12 +3,12 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
     fromPortfolios,
     mainFeatureKey,
-    FeatureState,
-    State as CoreState
+    CoreFeatureState,
+    CoreState,
 } from '../reducers';
 
 // Get state from the feature key.
-export const getPortfolioState = createFeatureSelector<FeatureState, CoreState>(mainFeatureKey);
+export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
 
 export const {
     selectAll: selectAllPortfolios,

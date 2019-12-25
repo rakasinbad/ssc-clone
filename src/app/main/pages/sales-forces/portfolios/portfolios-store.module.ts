@@ -7,12 +7,15 @@ import {
     mainFeatureKey,
     reducers,
 } from './store/reducers';
+import { PortfoliosEffects } from './store/effects/portfolios.effects';
 
 @NgModule({
     declarations: [],
     imports: [
         StoreModule.forFeature(mainFeatureKey, reducers),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([
+            PortfoliosEffects
+        ])
     ],
 })
 export class PortfoliosStoreModule { }

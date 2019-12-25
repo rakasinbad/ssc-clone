@@ -13,11 +13,17 @@ export class PortfoliosApiService {
     private _url: string;
 
     private readonly _endpoint = '/portfolios';
+    private readonly _exportEndpoint = '/download/export-portfolios';
 
     constructor(
         private http: HttpClient,
         private helper$: HelperService,
     ) { }
+
+    exportPortfoliosRequest(supplierId: string): Observable<{ url: string }> {
+        this._url = this.helper$.handleApiRouter(this._exportEndpoint);
+        return this.http.get<{ url: string }>(`${this._url}?supplierId=${supplierId}`);
+    }
 
     findPortfolio(id: string): Observable<Portfolio> {
         this._url = this.helper$.handleApiRouter(this._endpoint);

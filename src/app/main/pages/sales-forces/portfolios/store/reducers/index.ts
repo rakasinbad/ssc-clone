@@ -6,16 +6,16 @@ import * as fromErrors from './error.reducer';
 
 const mainFeatureKey = fromPortfolios.featureKey;
 
-interface State {
+interface CoreState {
     [mainFeatureKey]: fromPortfolios.State;
     [fromErrors.featureKey]: fromErrors.State;
 }
 
-interface FeatureState extends fromRoot.State {
-    [mainFeatureKey]: State;
+interface CoreFeatureState extends fromRoot.State {
+    [mainFeatureKey]: CoreState;
 }
 
-function reducers(state: State | undefined, action: Action): State {
+function reducers(state: CoreState | undefined, action: Action): CoreState {
     return combineReducers({
         [mainFeatureKey]: fromPortfolios.reducer,
         [fromErrors.featureKey]: fromErrors.reducer,
@@ -24,9 +24,9 @@ function reducers(state: State | undefined, action: Action): State {
 
 export {
     mainFeatureKey,
-    FeatureState,
+    CoreFeatureState,
     reducers,
     fromPortfolios,
     fromErrors,
-    State
+    CoreState
 };

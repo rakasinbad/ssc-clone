@@ -11,7 +11,7 @@
                 <div fxFlexAlign="center" class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Cari di sini" />
+                        <input #filter [formControl]="search" placeholder="Cari di sini" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -29,6 +29,17 @@
                 <!-- / ADD BUTTON -->
                 <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
                 <div fxLayout="row" fxLayoutGap="16px">
+                    <!-- EXPORT BUTTON -->
+                    <button
+                        mat-stroked-button
+                        color="accent"
+                        fxFlexAlign="center"
+                        class="red-border"
+                        (click)="exportPortfolio()"
+                    >
+                        Export
+                    </button>
+                    <!-- / EXPORT BUTTON -->
                     <!-- IMPORT BUTTON -->
                     <button
                         mat-stroked-button
@@ -39,16 +50,6 @@
                         Import
                     </button>
                     <!-- / IMPORT BUTTON -->
-                    <!-- EXPORT BUTTON -->
-                    <button
-                        mat-stroked-button
-                        color="accent"
-                        fxFlexAlign="center"
-                        class="red-border"
-                    >
-                        Export
-                    </button>
-                    <!-- / EXPORT BUTTON -->
                     <!-- FILTER BUTTON -->
                     <button
                         mat-flat-button
@@ -122,17 +123,17 @@
 
                 <!-- "Sales Force" Column -->
                 <ng-container matColumnDef="salesForce">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Sales Rep.</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Sales Rep.</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="word-wrap">{{ row?.salesForce }}</p>
+                        <p class="word-wrap">{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Timestamp Column -->
                 <ng-container matColumnDef="timestamp">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Last Update Portfolio</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Last Update Portfolio</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.updatedAt }}</p>
+                        <p class="text-truncate">{{ row?.updatedAt | date }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -171,8 +172,7 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewPortfolio(row?.id)" class="catalogue">
-                </mat-row>
+                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewPortfolio(row?.id)" class="portfolio"></mat-row>
             </mat-table>
 
             <mat-paginator

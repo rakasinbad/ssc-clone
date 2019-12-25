@@ -7,14 +7,14 @@ import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { PortfoliosStoreModule } from './portfolios-store.module';
 // import { PortfolioCreateComponent } from './pages/portfolio-create/portfolio-create.component';
-import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
+// import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
 
 
 @NgModule({
     declarations: [
         PortfoliosComponent,
         // PortfolioCreateComponent,
-        PortfolioDetailsComponent
+        // PortfolioDetailsComponent
     ],
     imports: [
         CommonModule,
