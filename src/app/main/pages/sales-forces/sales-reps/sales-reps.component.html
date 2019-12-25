@@ -37,15 +37,60 @@
 
             <!-- HEADER BOTTOM -->
             <div fxLayout="row" fxLayoutAlign="space-between center">
-                <button
-                    type="button"
-                    mat-flat-button
-                    color="accent"
-                    class="sinbad"
-                    [routerLink]="['/pages/sales-force/sales-rep/new']"
-                >
-                    ADD SALES
-                </button>
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        [routerLink]="['/pages/sales-force/sales-rep/new']"
+                    >
+                        ADD SALES
+                    </button>
+
+                    <ng-container *ngIf="selection.hasValue()">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            class="sinbad"
+                            [matMenuTriggerFor]="actionMenu"
+                            aria-label="Action Menu"
+                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                        >
+                            <span>Action</span>
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                        <mat-menu #actionMenu="matMenu">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Active"
+                                (click)="onSelectedActions('active')"
+                            >
+                                <span>Set Active</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Inactive"
+                                (click)="onSelectedActions('inactive')"
+                            >
+                                <span>Set Inactive</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Remove"
+                                (click)="onSelectedActions('delete')"
+                            >
+                                <span>Remove</span>
+                            </button>
+                        </mat-menu>
+                    </ng-container>
+                </div>
 
                 <div fxLayout="row" fxLayoutAlign="start center">
                     <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
@@ -70,6 +115,25 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Sales Rep Column -->
                 <ng-container matColumnDef="sales-rep-name">
                     <mat-header-cell *matHeaderCellDef>
@@ -101,7 +165,10 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.user?.totalTargetSales }}
+                            {{
+                                (row?.user?.totalTargetSales
+                                    | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                            }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -113,7 +180,12 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.user?.totalActualSales }}
+                            {{
+                                row?.user?.totalActualSales
+                                    ? (row?.user?.totalActualSales
+                                          | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                    : safeValue(row?.user?.totalActualSales)
+                            }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -126,6 +198,18 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Joining Date Column -->
+                <ng-container matColumnDef="joining-date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Joining Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.createdAt | date: 'dd/MM/yyyy') || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>

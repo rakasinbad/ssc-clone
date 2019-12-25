@@ -1,6 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
+import { SalesRep } from '../../models';
 import { SalesRepActions } from '../actions';
 
 // Keyname for reducer
@@ -10,9 +11,9 @@ const featureKey = 'salesReps';
  *
  * Main interface for reducer
  * @interface State
- * @extends {EntityState<any>}
+ * @extends {EntityState<SalesRep>}
  */
-interface State extends EntityState<any> {
+interface State extends EntityState<SalesRep> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
@@ -20,7 +21,7 @@ interface State extends EntityState<any> {
 }
 
 // Adapter for salesReps state
-const adapter = createEntityAdapter<any>({ selectId: row => row.id });
+const adapter = createEntityAdapter<SalesRep>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({

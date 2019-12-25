@@ -1,22 +1,22 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    AfterViewInit
+    ViewEncapsulation
 } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { IBreadcrumbs, IFooterActionConfig, LifecyclePlatform } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import * as fromSalesReps from '../store/reducers';
-import { UiActions } from 'app/shared/store/actions';
-import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models';
-import { ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { LifecycleHooks } from '@angular/compiler/src/lifecycle_reflector';
 
 @Component({
     templateUrl: './sales-rep-form.component.html',
@@ -25,7 +25,7 @@ import { LifecycleHooks } from '@angular/compiler/src/lifecycle_reflector';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SalesRepFormComponent implements OnInit, AfterViewInit {
+export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
     pageType: string;
 
@@ -100,7 +100,14 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this._initPage(LifecycleHooks.AfterViewInit);
+        this._initPage(LifecyclePlatform.AfterViewInit);
+    }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -111,10 +118,10 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit {
      *
      * Initialize current page
      * @private
-     * @param {LifecycleHooks} [lifeCycle]
+     * @param {LifecyclePlatform} [lifeCycle]
      * @memberof SalesRepFormComponent
      */
-    private _initPage(lifeCycle?: LifecycleHooks): void {
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
         const { id } = this.route.snapshot.params;
 
         if (id === 'new') {
@@ -146,9 +153,14 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit {
         this.store.dispatch(UiActions.setFooterActionConfig({ payload: this._footerConfig }));
 
         switch (lifeCycle) {
-            case LifecycleHooks.AfterViewInit:
+            case LifecyclePlatform.AfterViewInit:
                 // Display footer action
                 this.store.dispatch(UiActions.showFooterAction());
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Hide footer action
+                this.store.dispatch(UiActions.hideFooterAction());
                 break;
 
             default:

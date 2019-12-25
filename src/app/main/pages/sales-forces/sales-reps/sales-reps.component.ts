@@ -1,3 +1,5 @@
+import { animate, style, transition, trigger } from '@angular/animations';
+import { SelectionModel } from '@angular/cdk/collections';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -15,10 +17,11 @@ import { IBreadcrumbs, IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { flatMap, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
+import { SalesRep } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
@@ -27,18 +30,32 @@ import { SalesRepSelectors } from './store/selectors';
     selector: 'app-sales-reps',
     templateUrl: './sales-reps.component.html',
     styleUrls: ['./sales-reps.component.scss'],
-    animations: fuseAnimations,
+    animations: [
+        fuseAnimations,
+        trigger('enterAnimation', [
+            transition(':enter', [
+                style({ transform: 'translateX(100%)', opacity: 0 }),
+                animate('500ms', style({ transform: 'translateX(0)', opacity: 1 }))
+            ]),
+            transition(':leave', [
+                style({ transform: 'translateX(0)', opacity: 1 }),
+                animate('500ms', style({ transform: 'translateX(100%)', opacity: 0 }))
+            ])
+        ])
+    ],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     displayedColumns = [
+        'checkbox',
         'sales-rep-name',
         'phone-number',
         'sales-rep-target',
         'actual-sales',
         'area',
+        'joining-date',
         'status',
         'actions'
     ];
@@ -88,8 +105,9 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             status: 'active'
         }
     ];
+    selection: SelectionModel<SalesRep>;
 
-    dataSource$: Observable<Array<any>>;
+    dataSource$: Observable<Array<SalesRep>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -131,6 +149,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
+        this.selection = new SelectionModel<SalesRep>(true, []);
 
         this._initPage();
 
@@ -164,6 +183,46 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    handleCheckbox(): void {
+        this.isAllSelected()
+            ? this.selection.clear()
+            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
+    }
+
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        const numRows = this.paginator.length;
+
+        console.log('IS ALL SELECTED', numSelected, numRows);
+
+        return numSelected === numRows;
+    }
+
+    safeValue(value: any): any {
+        console.log(typeof value);
+
+        if (typeof value === 'number') {
+            return value;
+        } else {
+            return value ? value : '-';
+        }
+    }
+
+    onSelectedActions(action: 'active' | 'inactive' | 'delete'): void {
+        if (!action) {
+            return;
+        }
+
+        switch (action) {
+            case 'active':
+                console.log('Set Active', this.selection.selected);
+                break;
+
+            default:
+                return;
+        }
     }
 
     /**

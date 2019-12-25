@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
+
+import { SalesRep } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Sales Reps
@@ -7,7 +9,7 @@ import { ErrorHandler } from 'app/shared/models';
 
 export const fetchSalesRepsRequest = createAction(
     '[Sales Reps API] Fetch Sales Reps Request',
-    props<{ payload: any }>()
+    props<{ payload: IQueryParams }>()
 );
 
 export const fetchSalesRepsFailure = createAction(
@@ -17,7 +19,7 @@ export const fetchSalesRepsFailure = createAction(
 
 export const fetchSalesRepsSuccess = createAction(
     '[Sales Reps API] Fetch Sales Reps Success',
-    props<{ payload: { data: Array<any>; total: number } }>()
+    props<{ payload: { data: Array<SalesRep>; total: number } }>()
 );
 
 export const resetState = createAction('[Sales Rep Page] Reset Core State');

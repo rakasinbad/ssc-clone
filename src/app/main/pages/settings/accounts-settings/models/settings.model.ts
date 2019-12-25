@@ -1,8 +1,4 @@
-import {
-    ITimestamp,
-    TNullable,
-    TUserStatus,
-} from 'app/shared/models';
+import { ITimestamp, TNullable, UserStatus } from 'app/shared/models';
 
 interface IUser extends ITimestamp {
     id: string;
@@ -12,7 +8,7 @@ interface IUser extends ITimestamp {
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TUserStatus;
+    status: UserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
@@ -33,7 +29,7 @@ export class User implements IUser {
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TUserStatus;
+    status: UserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
@@ -52,7 +48,7 @@ export class User implements IUser {
             mobilePhoneNo,
             idNo,
             taxNo,
-            status = 'inactive',
+            status = UserStatus.INACTIVE,
             imageUrl,
             taxImageUrl,
             idImageUrl,
@@ -60,7 +56,7 @@ export class User implements IUser {
             urbanId,
             createdAt,
             updatedAt,
-            deletedAt,
+            deletedAt
         } = user;
 
         this.id = id ? id.trim() : id;

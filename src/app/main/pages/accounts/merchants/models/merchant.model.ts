@@ -339,91 +339,11 @@ export class Store implements IStore {
     }
 
     set setLegalInfo(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.legalInfo = newUser;
-        } else {
-            this.legalInfo = null;
-        }
+        this.legalInfo = value ? new User(value) : null;
     }
 
     set setOwner(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.owner = newUser;
-        } else {
-            this.owner = null;
-        }
+        this.owner = value ? new User(value) : null;
     }
 
     set setUrban(value: Urban) {
@@ -463,47 +383,7 @@ export class UserStore extends Timestamp implements IUserStore {
     }
 
     set setUser(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.user = newUser;
-        } else {
-            this.user = null;
-        }
+        this.user = value ? new User(value) : null;
     }
 
     set setStore(value: Store) {

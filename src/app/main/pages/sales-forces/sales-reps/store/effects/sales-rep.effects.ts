@@ -10,6 +10,7 @@ import { ErrorHandler, IQueryParams, PaginateResponse } from 'app/shared/models'
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 
+import { SalesRep } from '../../models';
 import { SalesRepApiService } from '../../services';
 import { SalesRepActions } from '../actions';
 import * as fromSalesReps from '../reducers';
@@ -62,29 +63,37 @@ export class SalesRepEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
-                return this._$salesRepApi.findAll<PaginateResponse<any>>(params, supplierId).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        const newResp = {
-                            data: resp.data || [],
-                            total: resp.total
-                        };
+                return this._$salesRepApi
+                    .findAll<PaginateResponse<SalesRep>>(params, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map(resp => {
+                            const newResp = {
+                                data: resp.data || [],
+                                total: resp.total
+                            };
 
-                        return SalesRepActions.fetchSalesRepsSuccess({
-                            payload: newResp
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            SalesRepActions.fetchSalesRepsFailure({
-                                payload: new ErrorHandler({
-                                    id: 'fetchSalesRepsFailure',
-                                    errors: err
+                            return SalesRepActions.fetchSalesRepsSuccess({
+                                payload: {
+                                    ...newResp,
+                                    data:
+                                        newResp.data && newResp.data.length > 0
+                                            ? newResp.data.map(r => new SalesRep(r))
+                                            : []
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                SalesRepActions.fetchSalesRepsFailure({
+                                    payload: new ErrorHandler({
+                                        id: 'fetchSalesRepsFailure',
+                                        errors: err
+                                    })
                                 })
-                            })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );

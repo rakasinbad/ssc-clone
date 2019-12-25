@@ -87,6 +87,10 @@ app-sales-reps {
             padding-right: 8px;
         }
 
+        .mat-column-checkbox {
+            flex: 0 1 80px;
+        }
+
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
