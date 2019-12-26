@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
+import { SalesRepForm, ISalesRep } from '../models';
 
 /**
  *
@@ -54,5 +55,9 @@ export class SalesRepApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    create<T>(body: T): Observable<ISalesRep> {
+        return this.http.post<ISalesRep>(this._url, body);
     }
 }

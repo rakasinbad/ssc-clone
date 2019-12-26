@@ -49,7 +49,11 @@
                     <mat-tab label="Sales Rep Detail">
                         <ng-template matTabContent>
                             <div class="tab-content p-24" fusePerfectScrollbar>
-                                <app-sales-rep-info fxLayout="column" fxFlex></app-sales-rep-info>
+                                <app-sales-rep-info
+                                    [pageType]="pageType"
+                                    fxLayout="column"
+                                    fxFlex
+                                ></app-sales-rep-info>
                             </div>
                         </ng-template>
 
@@ -184,7 +188,7 @@
                         </div> -->
                     </mat-tab>
 
-                    <mat-tab label="Change Password">
+                    <mat-tab label="Change Password" *ngIf="pageType === 'edit'">
                         <ng-template matTabContent>
                             <div class="tab-content p-24" fusePerfectScrollbar>
                                 <app-sales-rep-password

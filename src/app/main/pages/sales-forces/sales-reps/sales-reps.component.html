@@ -167,8 +167,10 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{
-                                (row?.user?.totalTargetSales
-                                    | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                row?.user?.totalTargetSales
+                                    ? (row?.user?.totalTargetSales
+                                          | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                    : safeValue(row?.user?.totalTargetSales)
                             }}
                         </p>
                     </mat-cell>
@@ -188,6 +190,19 @@
                                     : safeValue(row?.user?.totalActualSales)
                             }}
                         </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Invoice Group Column -->
+                <ng-container matColumnDef="invoice-group">
+                    <mat-header-cell *matHeaderCellDef>
+                        Faktur
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p
+                            style="word-break: break-word;"
+                            [innerHTML]="joinPortfolios(row?.user?.portfolios)"
+                        ></p>
                     </mat-cell>
                 </ng-container>
 

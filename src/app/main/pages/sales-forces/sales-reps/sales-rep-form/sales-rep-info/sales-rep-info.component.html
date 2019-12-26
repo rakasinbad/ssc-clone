@@ -57,6 +57,114 @@
                 </div>
             </div>
 
+            <ng-container *ngIf="pageType === 'new'">
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('newPassword')"
+                    >
+                        *New Password
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input type="password" matInput formControlName="newPassword" />
+                            <mat-hint align="end">Must be at least 8 characters long</mat-hint>
+
+                            <mat-error *ngIf="hasError('newPassword', true)">
+                                {{ getErrorMessage('newPassword') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('confirmPassword')"
+                    >
+                        *re-Type Pass..
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input type="password" matInput formControlName="confirmPassword" />
+
+                            <mat-error *ngIf="hasError('confirmPassword', true)">
+                                {{ getErrorMessage('confirmPassword') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('photo')"
+                    >
+                        Sales Photo
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="50">
+                        <mat-form-field
+                            class="sinbad-file-field"
+                            appearance="outline"
+                            fxFlex="59"
+                            [class.mat-form-field-invalid]="hasError('photo')"
+                        >
+                            <input
+                                #photoPicker
+                                type="file"
+                                class="custom-file"
+                                accept=".jpg, .jpeg, .png"
+                                formControlName="photo"
+                                (change)="onFileBrowse($event, 'photo')"
+                            />
+                            <input
+                                matInput
+                                [formControl]="tmp.photo"
+                                placeholder="No file choose"
+                            />
+
+                            <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
+                                {{ getErrorMessage('photo') }}
+                            </mat-hint>
+                        </mat-form-field>
+
+                        <button
+                            mat-flat-button
+                            color="accent"
+                            type="button"
+                            (click)="photoPicker.click()"
+                            fxFlexAlign="center"
+                        >
+                            Upload your file
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
+
             <div
                 class="custom-field"
                 fxLayout="row"
@@ -67,17 +175,22 @@
                     class="custom-field__label"
                     fxFlexAlign="center"
                     fxFlex="13"
-                    [class.mat-error]="hasError('nik')"
+                    [class.mat-error]="hasError('identityId')"
                 >
-                    *NIK
+                    *Identity ID
                 </label>
 
                 <div class="custom-field__field" fxFlex="100">
                     <mat-form-field appearance="outline" fxFlex="50">
-                        <input type="text" matInput formControlName="nik" />
+                        <input
+                            type="text"
+                            matInput
+                            formControlName="identityId"
+                            mask="0000000000000000"
+                        />
 
-                        <mat-error *ngIf="hasError('nik', true)">
-                            {{ getErrorMessage('nik') }}
+                        <mat-error *ngIf="hasError('identityId', true)">
+                            {{ getErrorMessage('identityId') }}
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -101,12 +214,13 @@
             </div> -->
 
             <div
-                class="custom-field"
+                class="custom-field mt-16"
                 fxLayout="row"
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <label fxFlex="12"></label>
+                <label fxFlex="13"></label>
+
                 <div class="custom-field__field" fxFlex="100">
                     <mat-slide-toggle formControlName="status">
                         Active

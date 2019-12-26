@@ -37,8 +37,8 @@ export class SalesRep implements ISalesRep {
         this.userId = userId;
         this.supplierId = supplierId;
         this.status = status;
-        this.supplier = supplier;
-        this.user = user;
+        this.setSupplier = supplier;
+        this.setUser = user;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
@@ -52,3 +52,14 @@ export class SalesRep implements ISalesRep {
         this.user = value ? new User(value) : null;
     }
 }
+
+type AddForm = 'fullName' | 'mobilePhoneNo' | 'idNo' | 'status';
+
+interface ISalesRepForm {
+    image: string;
+    supplierId: string;
+    password: string;
+    confPassword: string;
+}
+
+export type SalesRepForm = Required<Pick<User, AddForm> & ISalesRepForm>;

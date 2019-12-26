@@ -17,7 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
@@ -59,6 +59,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         'phone-number',
         'sales-rep-target',
         'actual-sales',
+        'invoice-group',
         'area',
         'joining-date',
         'status',
@@ -160,6 +161,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.paginator.pageSize = this.defaultPageSize;
         this.search = new FormControl('');
         this.selection = new SelectionModel<SalesRep>(true, []);
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
 
         this._initPage();
 
@@ -220,6 +226,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
+    joinPortfolios(value: Array<Portfolio>): string {
+        if (value && value.length > 0) {
+            return value.map(v => v.invoiceGroup.name).join(', ');
+        }
+
+        return '-';
+    }
+
     isAllSelected(): boolean {
         const numSelected = this.selection.selected.length;
         const numRows = this.paginator.length;
@@ -230,8 +244,6 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     safeValue(value: any): any {
-        console.log(typeof value);
-
         if (typeof value === 'number') {
             return value;
         } else {
@@ -278,6 +290,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             };
 
             data['paginate'] = true;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
 
             const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
 

@@ -37,7 +37,7 @@ const reducer = createReducer<State>(
         ...state,
         isLoading: true
     })),
-    on(SalesRepActions.fetchSalesRepsFailure, state => ({
+    on(SalesRepActions.createSalesRepFailure, SalesRepActions.fetchSalesRepsFailure, state => ({
         ...state,
         isLoading: false
     })),
@@ -47,7 +47,11 @@ const reducer = createReducer<State>(
             isLoading: false,
             total: payload.total
         });
-    })
+    }),
+    on(SalesRepActions.createSalesRepSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false
+    }))
 );
 
 // Set anything for the export

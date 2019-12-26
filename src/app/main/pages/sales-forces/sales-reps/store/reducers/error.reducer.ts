@@ -28,11 +28,18 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(SalesRepActions.fetchSalesRepsFailure, (state, { payload }) => {
-        return adapter.upsertOne(payload, state);
-    }),
+    on(
+        SalesRepActions.createSalesRepFailure,
+        SalesRepActions.fetchSalesRepsFailure,
+        (state, { payload }) => {
+            return adapter.upsertOne(payload, state);
+        }
+    ),
     on(SalesRepActions.fetchSalesRepsSuccess, state => {
         return adapter.removeOne('fetchSalesRepsFailure', state);
+    }),
+    on(SalesRepActions.createSalesRepSuccess, state => {
+        return adapter.removeOne('createSalesRepFailure', state);
     })
 );
 

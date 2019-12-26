@@ -6,13 +6,12 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IFooterActionConfig, LifecyclePlatform } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
+import { UiActions, FormActions } from 'app/shared/store/actions';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
@@ -26,7 +25,7 @@ import * as fromSalesReps from '../store/reducers';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
-    form: FormGroup;
+    // form: FormGroup;
     pageType: string;
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
@@ -74,7 +73,6 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     constructor(
-        private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
@@ -92,8 +90,6 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._initPage();
-
-        this._initForm();
     }
 
     ngAfterViewInit(): void {
@@ -161,26 +157,16 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
             case LifecyclePlatform.OnDestroy:
                 // Hide footer action
                 this.store.dispatch(UiActions.hideFooterAction());
+
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset click save button state
+                this.store.dispatch(FormActions.resetClickSaveButton());
                 break;
 
             default:
                 break;
         }
-    }
-
-    /**
-     *
-     * Initialize form
-     * @private
-     * @memberof SalesRepFormComponent
-     */
-    private _initForm(): void {
-        this.form = this.formBuilder.group({
-            name: '',
-            phone: '',
-            nik: '',
-            area: '',
-            status: ''
-        });
     }
 }
