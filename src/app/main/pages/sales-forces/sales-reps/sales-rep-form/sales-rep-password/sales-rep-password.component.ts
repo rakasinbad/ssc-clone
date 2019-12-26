@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService } from 'app/shared/helpers';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
@@ -26,7 +28,8 @@ export class SalesRepPasswordComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private store: Store<fromSalesReps.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$errorMessage: ErrorMessageService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -67,7 +70,16 @@ export class SalesRepPasswordComponent implements OnInit {
     private _initForm(): void {
         this.form = this.formBuilder.group({
             password: '',
-            confirmPassword: ''
+            confirmPassword: [
+                '',
+                RxwebValidators.compare({
+                    fieldName: 'password',
+                    message: this._$errorMessage.getErrorMessageNonState(
+                        'default',
+                        'confirm_password'
+                    )
+                })
+            ]
         });
     }
 }

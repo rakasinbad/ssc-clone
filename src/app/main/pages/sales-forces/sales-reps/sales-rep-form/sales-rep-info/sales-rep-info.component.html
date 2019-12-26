@@ -11,13 +11,22 @@
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <label class="custom-field__label" fxFlexAlign="center" fxFlex="12">
-                    Nama Sales Rep
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('name')"
+                >
+                    *Sales Rep Name
                 </label>
 
                 <div class="custom-field__field" fxFlex="100">
                     <mat-form-field appearance="outline" fxFlex="50">
                         <input type="text" matInput formControlName="name" />
+
+                        <mat-error *ngIf="hasError('name', true)">
+                            {{ getErrorMessage('name') }}
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -28,13 +37,22 @@
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <label class="custom-field__label" fxFlexAlign="center" fxFlex="12">
-                    Phone Number
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('phone')"
+                >
+                    *Phone Number
                 </label>
 
                 <div class="custom-field__field" fxFlex="100">
                     <mat-form-field appearance="outline" fxFlex="50">
                         <input type="tel" matInput formControlName="phone" />
+
+                        <mat-error *ngIf="hasError('phone', true)">
+                            {{ getErrorMessage('phone') }}
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </div>
@@ -45,18 +63,27 @@
                 fxLayoutAlign="start center"
                 fxLayoutGap="15px"
             >
-                <label class="custom-field__label" fxFlexAlign="center" fxFlex="12">
-                    NIK
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('nik')"
+                >
+                    *NIK
                 </label>
 
                 <div class="custom-field__field" fxFlex="100">
                     <mat-form-field appearance="outline" fxFlex="50">
                         <input type="text" matInput formControlName="nik" />
+
+                        <mat-error *ngIf="hasError('nik', true)">
+                            {{ getErrorMessage('nik') }}
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </div>
 
-            <div
+            <!-- <div
                 class="custom-field"
                 fxLayout="row"
                 fxLayoutAlign="start center"
@@ -71,7 +98,7 @@
                         <input type="text" matInput formControlName="area" />
                     </mat-form-field>
                 </div>
-            </div>
+            </div> -->
 
             <div
                 class="custom-field"

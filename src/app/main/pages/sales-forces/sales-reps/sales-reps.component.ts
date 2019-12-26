@@ -6,18 +6,22 @@ import {
     Component,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ElementRef
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
-import { flatMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, flatMap, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -48,6 +52,7 @@ import { SalesRepSelectors } from './store/selectors';
 })
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
+    search: FormControl;
     displayedColumns = [
         'checkbox',
         'sales-rep-name',
@@ -111,6 +116,9 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
+
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
@@ -132,6 +140,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
 
     constructor(
+        private domSanitizer: DomSanitizer,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
@@ -149,6 +158,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
+        this.search = new FormControl('');
         this.selection = new SelectionModel<SalesRep>(true, []);
 
         this._initPage();
@@ -158,6 +168,23 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataSource$ = this.store.select(SalesRepSelectors.selectAll);
         this.totalDataSource$ = this.store.select(SalesRepSelectors.getTotalItem);
         this.isLoading$ = this.store.select(SalesRepSelectors.getIsLoading);
+
+        this.search.valueChanges
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000),
+                filter(v => {
+                    if (v) {
+                        return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                    }
+
+                    return true;
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(v => {
+                this._onRefreshTable();
+            });
     }
 
     ngAfterViewInit(): void {
@@ -171,6 +198,8 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
+                // this.table.nativeElement.scrollIntoView(true);
+                // this.table.nativeElement.scrollTop = 0;
                 this._initTable();
             });
     }
@@ -229,9 +258,10 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
      *
      * Initialize current page
      * @private
+     * @param {LifecyclePlatform} [lifeCycle]
      * @memberof SalesRepsComponent
      */
-    private _initPage(): void {
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
@@ -241,13 +271,34 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-        };
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 5,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
 
-        data['paginate'] = true;
+            data['paginate'] = true;
 
-        this.store.dispatch(SalesRepActions.fetchSalesRepsRequest({ payload: data }));
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            if (query) {
+                localStorage.setItem('filter.search.salesreps', query);
+
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            } else {
+                localStorage.removeItem('filter.search.salesreps');
+            }
+
+            this.store.dispatch(SalesRepActions.fetchSalesRepsRequest({ payload: data }));
+        }
+    }
+
+    private _onRefreshTable(): void {
+        this._initTable();
     }
 }

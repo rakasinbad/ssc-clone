@@ -28,7 +28,7 @@
                 <div class="search-wrapper mx-32 mx-md-0">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter placeholder="Search for a sales" />
+                        <input [formControl]="search" placeholder="Search for a sales" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -109,6 +109,7 @@
         <!-- CONTENT CARD -->
         <div class="content-card">
             <mat-table
+                #table
                 class="sales-reps-table"
                 [dataSource]="dataSource$ | async"
                 matSort
