@@ -1,36 +1,59 @@
 import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 
-import { TNullable, TStatus } from './global.model';
+import { EStatus, TNullable, TStatus } from './global.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
 import { User } from './user.model';
 
-interface ISupplier extends ITimestamp {
-    id: string;
+export interface ISupplier extends ITimestamp {
+    readonly id: NonNullable<string>;
     name: string;
+    address: string;
     longitude: number;
     latitude: number;
     phoneNo: string;
-    status: TStatus;
+    status: EStatus;
     urbanId: string;
 }
 
-export class Supplier extends Timestamp implements ISupplier {
-    constructor(
-        public id: string,
-        public name: string,
-        public longitude: number,
-        public latitude: number,
-        public phoneNo: string,
-        public status: TStatus,
-        public urbanId: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class Supplier implements ISupplier {
+    readonly id: NonNullable<string>;
+    name: string;
+    address: string;
+    longitude: number;
+    latitude: number;
+    phoneNo: string;
+    status: EStatus;
+    urbanId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.name = name ? name.trim() : null;
-        this.phoneNo = phoneNo ? phoneNo.trim() : null;
+    constructor(data: ISupplier) {
+        const {
+            id,
+            name,
+            address,
+            longitude,
+            latitude,
+            phoneNo,
+            status,
+            urbanId,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id;
+        this.name = name ? String(name).trim() : null;
+        this.address = address ? String(address).trim() : null;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.phoneNo = phoneNo;
+        this.status = status;
+        this.urbanId = urbanId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 }
 
@@ -58,64 +81,15 @@ export class UserSupplier extends Timestamp implements IUserSupplier {
     ) {
         super(createdAt, updatedAt, deletedAt);
 
-        this.supplier = supplier
-            ? new Supplier(
-                  supplier.id,
-                  supplier.name,
-                  supplier.longitude,
-                  supplier.latitude,
-                  supplier.phoneNo,
-                  supplier.status,
-                  supplier.urbanId,
-                  supplier.createdAt,
-                  supplier.updatedAt,
-                  supplier.deletedAt
-              )
-            : null;
+        this.setSupplier = supplier;
+    }
+
+    set setSupplier(value: Supplier) {
+        this.supplier = value ? new Supplier(value) : null;
     }
 
     set setUser(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.user = newUser;
-        } else {
-            this.user = null;
-        }
+        this.user = value ? new User(value) : null;
     }
 
     static patch(body: UserSupplierOptions): UserSupplierOptions {

@@ -90,7 +90,8 @@ const routes: Routes = [
                 loadChildren: () =>
                     import('./main/pages/sales-forces/sales-forces.module').then(
                         m => m.SalesForcesModule
-                    )
+                    ),
+                canLoad: [AuthGuard]
             },
             {
                 path: 'supplier-inventories',
@@ -115,7 +116,8 @@ const routes: Routes = [
     {
         path: 'profile',
         loadChildren: () =>
-            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule)
+            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule),
+        canLoad: [AuthGuard]
     }
 ];
 

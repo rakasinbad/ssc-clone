@@ -1,14 +1,14 @@
 import { sortBy } from 'lodash';
 
-import { IResponsePaginate, TNullable, TStatus } from './global.model';
+import { EStatus, IResponsePaginate, TNullable } from './global.model';
 import { Privilege } from './privilege.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
-interface IRole extends ITimestamp {
-    id: string;
+export interface IRole extends ITimestamp {
+    readonly id: NonNullable<string>;
     role: string;
     description: string;
-    status: TStatus;
+    status: EStatus;
     roleTypeId: string;
     privileges?: Privilege[];
 }
@@ -17,36 +17,44 @@ export interface IRoleResponse extends IResponsePaginate {
     data: Role[];
 }
 
-export class Role extends Timestamp implements IRole {
-    public privileges?: Privilege[];
+export class Role implements IRole {
+    readonly id: NonNullable<string>;
+    role: string;
+    description: string;
+    status: EStatus;
+    roleTypeId: string;
+    privileges?: Privilege[];
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        public id: string,
-        public role: string,
-        public description: string,
-        public status: TStatus,
-        public roleTypeId: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: IRole) {
+        const {
+            id,
+            role,
+            description,
+            status,
+            roleTypeId,
+            privileges,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-        this.role = role ? role.trim() : null;
-        this.description = description ? description.trim() : null;
+        this.id = id;
+        this.role = role ? String(role).trim() : null;
+        this.description = description ? String(description).trim() : null;
+        this.status = status;
+        this.roleTypeId = roleTypeId;
+        this.setPrivileges = privileges;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     set setPrivileges(value: Privilege[]) {
         if (value && value.length > 0) {
-            const newPrivileges = value.map(row => {
-                return new Privilege(
-                    row.id,
-                    row.privilege,
-                    row.createdAt,
-                    row.updatedAt,
-                    row.deletedAt
-                );
-            });
+            const newPrivileges = value.map(row => new Privilege(row));
 
             this.privileges = sortBy(newPrivileges, ['privilege'], ['asc']);
         } else {

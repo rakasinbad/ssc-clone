@@ -1,106 +1,139 @@
 import { UserStore } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable } from './global.model';
+import { Portfolio } from './portfolio.model';
 import { Role } from './role.model';
 import { UserSupplier } from './supplier.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 import { Urban } from './urban.model';
 
-enum UserStatus {
-    active,
-    inactive,
-    banned
+export enum UserStatus {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+    BANNED = 'banned'
 }
 
-type UserStatusString = keyof typeof UserStatus;
-
-export type TUserStatus = UserStatusString;
-
-interface IUser extends ITimestamp {
-    id: string;
-    fullName: string;
-    email: TNullable<string>;
-    phoneNo: TNullable<string>;
-    mobilePhoneNo: string;
-    idNo: string;
-    taxNo: string;
-    status: TUserStatus;
-    imageUrl: TNullable<string>;
-    taxImageUrl: TNullable<string>;
-    idImageUrl: TNullable<string>;
-    selfieImageUrl: TNullable<string>;
-    urbanId: string;
-    userStores?: UserStore[];
-    userSuppliers?: UserSupplier[];
-    urban?: Urban;
-    roles: Role[];
+export interface IUser extends ITimestamp {
+    readonly id: NonNullable<string>;
     attendances?: any;
+    email: TNullable<string>;
+    fullName: string;
+    idImageUrl: TNullable<string>;
+    idNo: string;
+    imageUrl: TNullable<string>;
+    mobilePhoneNo: string;
+    phoneNo: TNullable<string>;
+    portfolios?: Array<Portfolio>;
+    roles: Array<Role>;
+    selfieImageUrl: TNullable<string>;
+    status: UserStatus;
+    taxImageUrl: TNullable<string>;
+    taxNo: string;
+    totalActualSales?: number;
+    totalTargetSales?: number;
+    urban?: Urban;
+    urbanId: string;
+    userStores?: Array<UserStore>;
+    userSuppliers?: Array<UserSupplier>;
 }
 
-export class User extends Timestamp implements IUser {
-    public userStores?: UserStore[];
-    public userSuppliers?: UserSupplier[];
-    public urban?: Urban;
-    public attendances?: any;
+export class User implements IUser {
+    readonly id: NonNullable<string>;
+    attendances?: any;
+    email: TNullable<string>;
+    fullName: string;
+    idImageUrl: TNullable<string>;
+    idNo: string;
+    imageUrl: TNullable<string>;
+    mobilePhoneNo: string;
+    phoneNo: TNullable<string>;
+    portfolios?: Array<Portfolio>;
+    roles: Array<Role>;
+    selfieImageUrl: TNullable<string>;
+    status: UserStatus;
+    taxImageUrl: TNullable<string>;
+    taxNo: string;
+    totalActualSales?: number;
+    totalTargetSales?: number;
+    urban?: Urban;
+    urbanId: string;
+    userStores?: Array<UserStore>;
+    userSuppliers?: Array<UserSupplier>;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        public id: string,
-        public fullName: string,
-        public email: TNullable<string>,
-        public phoneNo: TNullable<string>,
-        public mobilePhoneNo: string,
-        public idNo: string,
-        public taxNo: string,
-        public status: TUserStatus,
-        public imageUrl: TNullable<string>,
-        public taxImageUrl: TNullable<string>,
-        public idImageUrl: TNullable<string>,
-        public selfieImageUrl: TNullable<string>,
-        public urbanId: string,
-        public roles: Role[],
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: IUser) {
+        const {
+            id,
+            attendances,
+            email,
+            fullName,
+            idImageUrl,
+            idNo,
+            imageUrl,
+            mobilePhoneNo,
+            phoneNo,
+            portfolios,
+            roles,
+            selfieImageUrl,
+            status = UserStatus.INACTIVE,
+            taxImageUrl,
+            taxNo,
+            totalActualSales,
+            totalTargetSales,
+            urban,
+            urbanId,
+            userStores,
+            userSuppliers,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-        this.fullName = fullName ? fullName.trim() : null;
-        this.email = email ? email.trim() : null;
-        this.phoneNo = phoneNo ? phoneNo.trim() : null;
-        this.idNo = idNo ? idNo.trim() : null;
-        this.taxNo = taxNo ? taxNo.trim() : null;
-        this.imageUrl = imageUrl ? imageUrl.trim() : null;
-        this.taxImageUrl = taxImageUrl ? taxImageUrl.trim() : null;
-        this.idImageUrl = idImageUrl ? idImageUrl.trim() : null;
-        this.selfieImageUrl = selfieImageUrl ? selfieImageUrl.trim() : null;
+        this.id = id;
+        this.attendances = attendances;
+        this.email = email ? String(email).trim() : null;
+        this.fullName = fullName ? String(fullName).trim() : null;
+        this.idImageUrl = idImageUrl ? String(idImageUrl).trim() : null;
+        this.idNo = idNo ? String(idNo).trim() : null;
+        this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
+        this.mobilePhoneNo = mobilePhoneNo ? String(mobilePhoneNo).trim() : null;
+        this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
+        this.setPortfolios = portfolios;
+        this.setRoles = roles;
+        this.setUserStores = userStores;
+        this.setUserSuppliers = userSuppliers;
+        this.status = status;
+        this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
+        this.taxNo = taxNo ? String(taxNo).trim() : null;
+        this.totalActualSales = totalActualSales;
+        this.totalTargetSales = totalTargetSales;
+        this.urban = urban;
+        this.urbanId = urbanId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
 
-        if (roles && roles.length > 0) {
-            const newRoles = roles.map(row => {
-                const newRole = new Role(
-                    row.id,
-                    row.role,
-                    row.description,
-                    row.status,
-                    row.roleTypeId,
-                    row.createdAt,
-                    row.updatedAt,
-                    row.deletedAt
-                );
+    set setPortfolios(value: Array<Portfolio>) {
+        if (value && value.length > 0) {
+            this.portfolios = value.map(row => new Portfolio(row));
+        } else {
+            this.portfolios = [];
+        }
+    }
 
-                if (row.privileges) {
-                    newRole.setPrivileges = row.privileges;
-                }
-
-                return newRole;
-            });
-
-            this.roles = newRoles;
+    set setRoles(value: Array<Role>) {
+        if (value && value.length > 0) {
+            this.roles = value.map(row => new Role(row));
         } else {
             this.roles = [];
         }
     }
 
-    set setUserStores(value: UserStore[]) {
+    set setUserStores(value: Array<UserStore>) {
         this.userStores =
             value && value.length > 0
                 ? value.map(row => {
@@ -123,7 +156,7 @@ export class User extends Timestamp implements IUser {
                 : [];
     }
 
-    set setUserSuppliers(value: UserSupplier[]) {
+    set setUserSuppliers(value: Array<UserSupplier>) {
         this.userSuppliers =
             value && value.length > 0
                 ? value.map(row => {

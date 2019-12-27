@@ -498,20 +498,7 @@ export class DropdownEffects {
                         // map(resp => (!resp['data'] ? (resp as Role[]) : null)),
                         map(resp => {
                             const newResp =
-                                resp && resp.length > 0
-                                    ? resp.map(row => {
-                                          return new Role(
-                                              row.id,
-                                              row.role,
-                                              row.description,
-                                              row.status,
-                                              row.roleTypeId,
-                                              row.createdAt,
-                                              row.updatedAt,
-                                              row.deletedAt
-                                          );
-                                      })
-                                    : [];
+                                resp && resp.length > 0 ? resp.map(row => new Role(row)) : [];
 
                             return DropdownActions.fetchDropdownRoleSuccess({ payload: newResp });
                         }),

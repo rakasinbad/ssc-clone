@@ -130,9 +130,12 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
 @import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
 
+// Sales force
+@import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
+
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
-@import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
+// @import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
 
 // Plugin https://github.com/SaturnTeam/saturn-datepicker
 @import '~saturn-datepicker/theming';
@@ -159,10 +162,13 @@ $typography: mat-typography-config(
     @include supplier-inventories-theme($theme);
     @include portfolios-theme($theme);
 
+    // Sales force
+    @include sales-reps-theme($theme);
+
     // Plugin
     // @include mat-datepicker-theme($theme);
     // Using the $theme variable from the pre-built theme you can call the theming function
-    @include mat-datetimepicker-theme($theme);
+    // @include mat-datetimepicker-theme($theme);
     @include sat-datepicker-theme($theme);
 }
 
