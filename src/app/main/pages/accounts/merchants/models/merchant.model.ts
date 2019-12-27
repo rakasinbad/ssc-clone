@@ -15,6 +15,7 @@ import {
     VehicleAccessibility
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { Portfolio } from 'app/main/pages/sales-forces/portfolios/models';
 
 interface IStorePortfolio extends ITimestamp {
     id: string;
@@ -24,6 +25,8 @@ interface IStorePortfolio extends ITimestamp {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    portfolio?: Portfolio;
+    store?: Store;
 }
 
 export class StorePortfolio implements IStorePortfolio {
@@ -34,6 +37,8 @@ export class StorePortfolio implements IStorePortfolio {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    portfolio?: Portfolio;
+    store?: Store;
 
     constructor(data: StorePortfolio) {
         const {
@@ -44,6 +49,8 @@ export class StorePortfolio implements IStorePortfolio {
             createdAt,
             updatedAt,
             deletedAt,
+            portfolio,
+            store,
         } = data;
 
         this.id = id;
@@ -53,6 +60,9 @@ export class StorePortfolio implements IStorePortfolio {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+
+        this.portfolio = portfolio ? new Portfolio(portfolio) : null;
+        this.store = store ? new Store(store) : null;
     }
 }
 

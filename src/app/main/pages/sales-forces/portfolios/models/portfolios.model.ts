@@ -4,24 +4,37 @@ type TPortfolioType = 'multi' | 'single';
 
 interface IPortfolio extends ITimestamp {
     id: string;
-    supplierId: string;
-    invoiceGroupId: TNullable<string>;
-    userId: string;
     name: string;
-    code: string;
     type: TPortfolioType;
+    invoiceGroupId: string;
+    code: string;
+    userId: TNullable<string>;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
 }
 
+interface IPortfolioStore {
+    storeId: number;
+    target: number;
+}
+
+export interface IPortfolioAddForm {
+    name: string;
+    type: 'direct' | 'group';
+    invoiceGroupId: string;
+    stores: Array<IPortfolioStore>;
+}
+
 export class Portfolio implements IPortfolio {
     id: string;
-    supplierId: string;
-    invoiceGroupId: string;
-    userId: string;
     name: string;
-    code: string;
     type: TPortfolioType;
+    invoiceGroupId: string;
+    code: string;
+    userId: TNullable<string>;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -31,7 +44,6 @@ export class Portfolio implements IPortfolio {
     constructor(data: IPortfolio) {
         const {
             id,
-            supplierId,
             invoiceGroupId,
             userId,
             name,
@@ -45,7 +57,6 @@ export class Portfolio implements IPortfolio {
         } = data;
 
         this.id = id;
-        this.supplierId = supplierId;
         this.invoiceGroupId = invoiceGroupId;
         this.userId = userId;
         this.name = name;
