@@ -1,5 +1,19 @@
 app-portfolios-form {
     #portfolios-form {
+        mat-form-field#search-field {
+            .mat-form-field-infix {
+                padding-top: 0px !important;
+            }
+
+            .mat-form-field-wrapper {
+                padding-bottom: 0px !important;
+            }
+        }
+
+        .strong-label {
+            font-weight: 600;
+        }
+
         .view-field-right {
             label {
                 font-weight: 600;
@@ -85,6 +99,30 @@ app-portfolios-form {
                 height: 100%;
                 object-fit: cover; /*magic*/
             }
+        }
+    }
+
+    mat-table {
+        mat-row.list-store {
+            cursor: pointer;
+        }
+
+        .mat-column-checkbox {
+            flex: 0 1 12%;
+            padding-left: 14px !important;
+        }
+
+        // .mat-column-code {
+        // }
+
+        .mat-column-actions {
+            justify-content: flex-end;
+        }
+    }
+
+    mat-paginator {
+        &.no-content {
+            border-top: 1px solid rgba(0, 0, 0, 0.12);
         }
     }
 }
