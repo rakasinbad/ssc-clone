@@ -1,1 +1,339 @@
-<p>sales-reps works!</p>
+<div id="sales-reps" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div
+            class="header sinbad"
+            fxLayout="column"
+            fxLayoutAlign="center stretch"
+            fxLayoutGap="10px"
+        >
+            <!-- HEADER TOP -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- APP TITLE -->
+                <span
+                    class="mat-title mb-24 mb-md-0"
+                    fxFlexAlign="center"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Sales Rep
+                </span>
+                <!-- / APP TITLE -->
+
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-32 mx-md-0">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search for a sales" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <!-- / HEADER TOP -->
+
+            <!-- HEADER BOTTOM -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        [routerLink]="['/pages/sales-force/sales-rep/new']"
+                    >
+                        ADD SALES
+                    </button>
+
+                    <ng-container *ngIf="selection.hasValue()">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            class="sinbad"
+                            [matMenuTriggerFor]="actionMenu"
+                            aria-label="Action Menu"
+                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                        >
+                            <span>Action</span>
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                        <mat-menu #actionMenu="matMenu">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Active"
+                                (click)="onSelectedActions('active')"
+                            >
+                                <span>Set Active</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Inactive"
+                                (click)="onSelectedActions('inactive')"
+                            >
+                                <span>Set Inactive</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Remove"
+                                (click)="onSelectedActions('delete')"
+                            >
+                                <span>Remove</span>
+                            </button>
+                        </mat-menu>
+                    </ng-container>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
+                        EXPORT
+                    </button>
+
+                    <button type="button" mat-stroked-button color="accent" class="sinbad">
+                        IMPORT
+                    </button>
+                </div>
+            </div>
+            <!-- / HEADER BOTTOM -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table
+                #table
+                class="sales-reps-table"
+                [dataSource]="dataSource$ | async"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sales Rep Column -->
+                <ng-container matColumnDef="sales-rep-name">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sales Rep
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.user?.fullName }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Phone Number Column -->
+                <ng-container matColumnDef="phone-number">
+                    <mat-header-cell *matHeaderCellDef>
+                        Phone Number
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.user?.mobilePhoneNo }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sales Rep Target Column -->
+                <ng-container matColumnDef="sales-rep-target">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sales RepTarget
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{
+                                row?.user?.totalTargetSales
+                                    ? (row?.user?.totalTargetSales
+                                          | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                    : safeValue(row?.user?.totalTargetSales)
+                            }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actual Sales Column -->
+                <ng-container matColumnDef="actual-sales">
+                    <mat-header-cell *matHeaderCellDef>
+                        Actual Sales
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{
+                                row?.user?.totalActualSales
+                                    ? (row?.user?.totalActualSales
+                                          | price: 'full':'IDR':'narrow':'1.2-2') || '-'
+                                    : safeValue(row?.user?.totalActualSales)
+                            }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Invoice Group Column -->
+                <ng-container matColumnDef="invoice-group">
+                    <mat-header-cell *matHeaderCellDef>
+                        Faktur
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p
+                            style="word-break: break-word;"
+                            [innerHTML]="joinPortfolios(row?.user?.portfolios)"
+                        ></p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Area Column -->
+                <ng-container matColumnDef="area">
+                    <mat-header-cell *matHeaderCellDef>
+                        Area
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Joining Date Column -->
+                <ng-container matColumnDef="joining-date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Joining Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.createdAt | date: 'dd/MM/yyyy') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef>
+                        Status
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.status | titlecase }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    type="button"
+                                    mat-menu-item
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Edit"
+                                    [routerLink]="[row?.id]"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    [attr.aria-label]="
+                                        row?.status === 'active' ? 'Inactive' : 'Active'
+                                    "
+                                >
+                                    <mat-icon>
+                                        {{
+                                            row?.status === 'active'
+                                                ? 'archive'
+                                                : 'check_circle_outline'
+                                        }}
+                                    </mat-icon>
+                                    <span>
+                                        {{
+                                            (row?.status === 'active'
+                                                ? 'ACTION.INACTIVE'
+                                                : 'ACTION.ACTIVE'
+                                            ) | translate
+                                        }}
+                                    </span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="sales-rep"
+                ></mat-row>
+            </mat-table>
+
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
+            <mat-paginator
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                showFirstLastButtons
+            ></mat-paginator>
+
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

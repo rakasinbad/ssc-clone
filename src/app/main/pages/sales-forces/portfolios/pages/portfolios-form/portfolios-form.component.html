@@ -1,0 +1,442 @@
+<div id="portfolios-form" class="page-layout carded fullwidth" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <!-- <div class="accent"></div> -->
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center p-32" fxLayout="column" fxLayoutAlign="space-between none" fxLayoutGap="10px">
+        <!-- CONTENT CARD (INFORMASI PORTFOLIO TOKO) -->
+        <div class="content-card p-16" fxLayout="column" fxLayoutAlign="start none" fxLayoutGap="25px">
+            <div>
+                <div class="font-weight-600 font-size-24 line-height-20">Informasi Portfolio Toko</div>
+            </div>
+        
+            <div class="pt-0 line-height-1.75">
+                <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex fxLayoutGap="5px" novalidate>
+                    <!-- PORTFOLIO NAME -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('name'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Portfolio Name
+                        </label>
+                
+                        <mat-form-field appearance="outline" fxFlex="80">
+                            <input
+                                matInput
+                                name="name"
+                                formControlName="name"
+                            />
+                            <mat-error *ngIf="hasError(form.get('name'))">
+                                {{ getFormError(form.get('name')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / PORTFOLIO NAME -->
+                    <!-- INVOICE GROUP (GRUP FAKTUR) -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="hasError(form.get('invoiceGroup'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Faktur
+                        </label>
+                
+                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
+                            <mat-select
+                                name="invoiceGroup"
+                                formControlName="invoiceGroup"
+                            >
+                                <mat-option
+                                    *ngFor="let invoiceGroup of invoiceGroups"
+                                    [value]="invoiceGroup.id"
+                                >
+                                    {{ invoiceGroup.name }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="hasError(form.get('invoiceGroup'))">
+                                {{ getFormError(form.get('invoiceGroup')) }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- / INVOICE GROUP (GRUP FAKTUR) -->
+                    <!-- PORTFOLIO TYPE -->
+                    <div
+                        class="custom-field mt-16"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                    >
+                        <label
+                            fxFlexAlign="start"
+                            fxFlex="18"
+                            class="pr-0 pt-12"
+                            [class.mat-error]="hasError(form.get('type'))"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Portfolio Type
+                        </label>
+
+                        <div fxFlex="80" fxFlexAlign="center" fxLayout="column" fxLayoutAlign="start stretch">
+                            <mat-radio-group formControlName="type" fxLayout="row" fxLayoutGap="50px" fxFlex="80">
+                                <mat-radio-button value="direct">Direct</mat-radio-button>
+                                <mat-radio-button value="group">Group</mat-radio-button>
+                            </mat-radio-group>
+
+                            <mat-error *ngIf="hasError(form.get('type'))">
+                                {{ getFormError(form.get('type')) }}
+                            </mat-error>
+
+                            <mat-hint *ngIf="form.get('type').value === 'direct'">
+                                Only a store allowed to be added for Portfolio Type direct.
+                            </mat-hint>
+                        </div>
+                    </div>
+                    <!-- / PORTFOLIO TYPE -->
+                </form>
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="space-between none">
+                <!-- "FILTER LIST" BUTTON -->
+                <button
+                    mat-flat-button
+                    color="primary"
+                    fxFlexAlign="center"
+                >
+                    Filter List
+                </button>
+                <!-- / "FILTER LIST" BUTTON -->
+                <!-- SEARCH BAR -->
+                <mat-form-field id="search-field" appearance="outline">
+                    <input
+                        matInput
+                        [formControl]="search"
+                        placeholder="Cari List Store"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                </mat-form-field>
+                <!-- <div fxFlexAlign="center" class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [formControl]="search" placeholder="Cari List Store" />
+                    </div>
+                </div> -->
+                <!-- / SEARCH BAR -->
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                <!-- LIST STORE -->
+                <div
+                    fxFlex="48"
+                    fxLayout="column"
+                    fxLayoutAlign="start none"
+                    fxLayoutGap="25px"
+                    class="content-card p-16 mat-elevation-z1"
+                >
+                    <!-- CARD TITLE -->
+                    <p class="h4 mt-0 strong-label">List Store ({{ totalListStore$ | async | number }} Store)</p>
+                    <!-- / CARD TITLE -->
+                    <!-- TABLE -->
+                    <div class="mat-elevation-z3">
+                        <mat-table
+                            #listStoreSort="matSort"
+                            matSort
+                            fusePerfectScrollbar
+                            class="list-store-table"
+                            [dataSource]="listStore"
+                            [@animateStagger]="{ value: '50' }"
+                            
+                        >
+                            <!-- Checkbox Column -->
+                            <ng-container matColumnDef="checkbox">
+                                <mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox   (change)="$event && form.get('type').value !== 'direct' ? listStoreMasterToggle() : null"
+                                                    (click)="$event && form.get('type').value !== 'direct' ? $event.stopPropagation() : null"
+                                                    [checked]="listStoreSelection.hasValue() && isAllListStoreSelected()"
+                                                    [indeterminate]="listStoreSelection.hasValue() && !isAllListStoreSelected()"
+                                    ></mat-checkbox>
+                                </mat-header-cell>
+    
+                                <mat-cell *matCellDef="let row">
+                                    <mat-checkbox   (click)="$event.stopPropagation()"
+                                                    (change)="$event ? toggleListStore(row) : null"
+                                                    [checked]="listStoreSelection.isSelected(row)"
+                                    ></mat-checkbox>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Checkbox Column -->
+    
+                            <!-- Store Code Column -->
+                            <ng-container matColumnDef="code">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeCode }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Code Column -->
+    
+                            <!-- Store Name Column -->
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Code Column -->
+    
+                            <!-- Store Region Column -->
+                            <ng-container matColumnDef="region">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Region</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <!-- <p>{{ row?.store?.storeCode }}</p> -->
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Region Column -->
+    
+                            <!-- Store Segment Column -->
+                            <ng-container matColumnDef="segment">
+                                <mat-header-cell *matHeaderCellDef>Segment</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeSegment?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Segment Column -->
+    
+                            <!-- Store Type Column -->
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeType?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Segment Column -->
+    
+                            <!-- Header Row -->
+                            <mat-header-row *matHeaderRowDef="displayedListStoreColumns; sticky: true"></mat-header-row>
+                            <!-- / Header Row -->
+    
+                            <!-- Row -->
+                            <mat-row
+                                matRipple
+                                *matRowDef="let row; columns: displayedListStoreColumns"
+                                class="list-store"
+                                (click)="toggleListStore(row)"
+                            ></mat-row>
+                            <!-- / Row -->
+                        </mat-table>
+                        <!-- / TABLE -->
+    
+                        <!-- No Record -->
+                        <div
+                            class="no-records my-40 h-100"
+                            *ngIf="!(isListStoreLoading$ | async) && (totalListStore$ | async) === 0"
+                        >
+                            No store found.
+                        </div>
+                        <!-- / No Record -->
+    
+                        <!-- Paginator's Table -->
+                        <mat-paginator
+                            #listStorePaginator="matPaginator"
+                            [length]="totalListStore$ | async"
+                            [pageSize]="defaultListStorePageSize"
+                            [pageSizeOptions]="[5, 10, 25, 100]"
+                            (page)="onChangePage('listStore')"
+                            [class.no-content]="(totalListStore$ | async) === 0"
+                            showFirstLastButtons
+                        >
+                        </mat-paginator>
+                        <!-- / Paginator's Table -->
+    
+                        <!-- Spinner Loader -->
+                        <div class="loader" *ngIf="isListStoreLoading$ | async">
+                            <mat-spinner color="accent"></mat-spinner>
+                        </div>
+                        <!-- Spinner Loader -->
+                    </div>
+                    <!-- "ADD TO LIST" BUTTON -->
+                    <button
+                        color="accent"
+                        class="h-40 mat-elevation-z3"
+                        mat-stroked-button
+                        (click)="addSelectedStores()"
+                        [class.red-500-border]="listStoreSelection.hasValue()"
+                        [disabled]="!(listStoreSelection.hasValue()) || (form.get('type').value === 'direct' && (totalPortfolioStore$ | async) > 0)"
+                    >
+                        Add to List
+                    </button>
+                    <!-- / "ADD TO LIST" BUTTON -->
+                </div>
+                <!-- / LIST STORE -->
+                <!-- ARROW -->
+                <div
+                    fxFlex="4"
+                    fxFlexAlign="center" fxLayout="column"
+                >
+                    <mat-icon fxFlexAlign="center">arrow_forward_ios</mat-icon>
+                </div>
+                <!-- / ARROW -->
+                <!-- PORTFOLIO STORE -->
+                <div
+                    fxFlex="48"
+                    fxLayout="column"
+                    fxLayoutAlign="start none"
+                    fxLayoutGap="25px"
+                    class="content-card p-16 mat-elevation-z1"
+                >
+                    <!-- CARD TITLE -->
+                    <p class="h4 mt-0 strong-label">
+                        Portfolio (<span class="red-500-fg">{{ totalPortfolioStore$ | async | number }}</span> Store)
+                    </p>
+                    <!-- / CARD TITLE -->
+                    <!-- TABLE -->
+                    <div class="mat-elevation-z3">
+                        <mat-table
+                            #portfolioStoreSort="matSort"
+                            matSort
+                            fusePerfectScrollbar
+                            class="portfolio-store-table"
+                            [dataSource]="portfolioStores"
+                            [@animateStagger]="{ value: '50' }"
+                        >
+                            <!-- Checkbox Column -->
+                            <ng-container matColumnDef="checkbox">
+                                <mat-header-cell *matHeaderCellDef>
+                                    <mat-checkbox   (change)="$event ? portfolioStoreMasterToggle() : null"
+                                                    (click)="$event.stopPropagation()"
+                                                    [checked]="portfolioStoreSelection.hasValue() && isAllPortfolioStoreSelected()"
+                                                    [indeterminate]="portfolioStoreSelection.hasValue() && !isAllPortfolioStoreSelected()"
+                                    ></mat-checkbox>
+                                </mat-header-cell>
+    
+                                <mat-cell *matCellDef="let row">
+                                    <mat-checkbox   (click)="$event.stopPropagation()"
+                                                    (change)="$event ? portfolioStoreSelection.toggle(row) : null"
+                                                    [checked]="portfolioStoreSelection.isSelected(row)"
+                                    ></mat-checkbox>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Checkbox Column -->
+    
+                            <!-- Store Code Column -->
+                            <ng-container matColumnDef="code">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeCode }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Code Column -->
+    
+                            <!-- Store Name Column -->
+                            <ng-container matColumnDef="name">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Code Column -->
+    
+                            <!-- Store Region Column -->
+                            <ng-container matColumnDef="region">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Region</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <!-- <p>{{ row?.store?.storeCode }}</p> -->
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Region Column -->
+    
+                            <!-- Store Segment Column -->
+                            <ng-container matColumnDef="segment">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Segment</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeSegment?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Segment Column -->
+    
+                            <!-- Store Type Column -->
+                            <ng-container matColumnDef="type">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Type</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <p>{{ row?.storeType?.name }}</p>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Store Segment Column -->
+    
+                            <!-- Header Row -->
+                            <mat-header-row *matHeaderRowDef="displayedPortfolioStoreColumns; sticky: true"></mat-header-row>
+                            <!-- / Header Row -->
+    
+                            <!-- Row -->
+                            <mat-row matRipple *matRowDef="let row; columns: displayedPortfolioStoreColumns" class="list-store"></mat-row>
+                            <!-- / Row -->
+                        </mat-table>
+                        <!-- / TABLE -->
+    
+                        <!-- No Record -->
+                        <div
+                            class="no-records my-40"
+                            [class.h-100]="(totalPortfolioStore$ | async) === 0"
+                            *ngIf="!(isPortfolioStoreLoading$ | async) && (totalPortfolioStore$ | async) === 0"
+                        >
+                            Not have any store here.
+                        </div>
+                        <!-- / No Record -->
+    
+                        <!-- Paginator's Table -->
+                        <mat-paginator
+                            #portfolioStorePaginator="matPaginator"
+                            [length]="totalPortfolioStore$ | async"
+                            [pageSize]="defaultPortfolioStorePageSize"
+                            [pageSizeOptions]="[5, 10, 25, 100]"
+                            (page)="onChangePage('portfolioStore')"
+                            showFirstLastButtons
+                            [class.no-content]="(totalPortfolioStore$ | async) === 0"
+                        >
+                        </mat-paginator>
+                        <!-- / Paginator's Table -->
+                    </div>
+                    <!-- Spinner Loader -->
+                    <div class="loader" *ngIf="isListStoreLoading$ | async">
+                        <mat-spinner color="accent"></mat-spinner>
+                    </div>
+                    <!-- Spinner Loader -->
+
+                    <!-- "CONFIRM" BUTTON -->
+                    <button
+                        color="accent"
+                        class="h-40 mat-elevation-z3"
+                        mat-flat-button
+                        (click)="submitPortfolio()
+                        "
+                        [class.red-500-border]="(totalPortfolioStore$ | async) > 0"
+                        [disabled]="hasError(form) || ((totalPortfolioStore$ | async) === 0)"
+                    >
+                        Confirm
+                    </button>
+                    <!-- / "CONFIRM" BUTTON -->
+                </div>
+                <!-- / PORTFOLIO STORE -->
+            </div>
+        </div>
+        <!-- / CONTENT CARD (INFORMASI PRODUK) -->
+    </div>
+    <!-- / CENTER -->
+</div>
