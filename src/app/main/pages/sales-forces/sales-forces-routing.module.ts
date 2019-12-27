@@ -6,7 +6,8 @@ const routes: Routes = [
     {
         path: 'sales-rep',
         loadChildren: () => import('./sales-reps/sales-reps.module').then(m => m.SalesRepsModule)
-    }
+    },
+    { path: 'associations', loadChildren: () => import('./associations/associations.module').then(m => m.AssociationsModule) }
 ];
 
 @NgModule({
