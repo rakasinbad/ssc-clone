@@ -66,25 +66,7 @@ export class Portfolio implements IPortfolio {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
 
-        this.user = user ? new User(
-            user.id,
-            user.fullName,
-            user.email,
-            user.phoneNo,
-            user.mobilePhoneNo,
-            user.idNo,
-            user.taxNo,
-            user.status,
-            user.imageUrl,
-            user.taxImageUrl,
-            user.idImageUrl,
-            user.selfieImageUrl,
-            user.urbanId,
-            user.roles,
-            user.createdAt,
-            user.updatedAt,
-            user.deletedAt,
-        ) : user;
+        this.user = user ? new User(user) : user;
 
         this.invoiceGroup = invoiceGroup ? new InvoiceGroup(invoiceGroup) : invoiceGroup;
     }

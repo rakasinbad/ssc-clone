@@ -416,29 +416,11 @@ export class HelperService {
                             }
 
                             // Create User object.
-                            const user = new User(
-                                userData.id,
-                                userData.fullName,
-                                userData.email,
-                                userData.phoneNo,
-                                userData.mobilePhoneNo,
-                                userData.idNo,
-                                userData.taxNo,
-                                userData.status,
-                                userData.imageUrl,
-                                userData.taxImageUrl,
-                                userData.idImageUrl,
-                                userData.selfieImageUrl,
-                                userData.urbanId,
-                                userData.roles,
-                                userData.createdAt,
-                                userData.updatedAt,
-                                userData.deletedAt,
-                            );
-                            user.setUserStores = userData.userStores;
-                            user.setUserSuppliers = userData.userSuppliers;
-                            user.setUrban = userData.urban;
-                            user.setAttendances = userData.attendances;
+                            const user = new User(userData);
+                            // user.setUserStores = userData.userStores;
+                            // user.setUserSuppliers = userData.userSuppliers;
+                            // user.setUrban = userData.urban;
+                            // user.setAttendances = userData.attendances;
 
                             // Return the value as User object.
                             return user;
