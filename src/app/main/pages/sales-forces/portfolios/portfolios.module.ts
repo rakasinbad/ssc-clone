@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 import { PortfoliosRoutingModule } from './portfolios.routes';
 import { PortfoliosComponent } from './portfolios.component';
@@ -21,6 +22,7 @@ import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form
     imports: [
         CommonModule,
         SharedModule,
+        RxReactiveFormsModule,
         PortfoliosRoutingModule,
         PortfoliosStoreModule,
         MaterialModule,
