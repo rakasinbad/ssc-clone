@@ -1,16 +1,20 @@
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
-import { Portfolio } from '../../models/portfolios.model';
+import { Portfolio, IPortfolioAddForm } from '../../models/portfolios.model';
 import { Store } from 'app/main/pages/attendances/models';
 
 export type requestActionNames =
+    'exportPortfoliosRequest' |
     'fetchPortfolioRequest' |
     'fetchPortfoliosRequest'
 ;
 
 export type failureActionNames =
+    'createPortfolioFailure' |
+    'exportPortfoliosFailure' |
     'fetchPortfolioFailure' |
-    'fetchPortfoliosFailure'
+    'fetchPortfoliosFailure' |
+    'fetchPortfolioStoresFailure'
 ;
 
 /** PORTFOLIO */
@@ -29,20 +33,37 @@ export const fetchPortfolioSuccess = createAction(
     props<{ payload: { portfolio?: Portfolio; source: TSource } }>()
 );
 
+/** CREATE PORTFOLIO */
+
+export const createPortfolioRequest = createAction(
+    '[Portfolios API] Create Portfolio Request',
+    props<{ payload: IPortfolioAddForm }>()
+);
+
+export const createPortfolioFailure = createAction(
+    '[Portfolios API] Create Portfolio Failure',
+    props<{ payload: IErrorHandler }>()
+);
+    
+export const createPortfolioSuccess = createAction(
+    '[Portfolios API] Create Portfolio Success',
+    props<{ payload: Portfolio }>()
+);
+
 /** PORTFOLIO'S STORE */
 export const fetchPortfolioStoresRequest = createAction(
-    '[Portfolios API] Fetch Portfolio Store Request',
+    '[Portfolios API] Fetch Portfolio Stores Request',
     props<{ payload: IQueryParams }>()
 );
 
 export const fetchPortfolioStoresFailure = createAction(
-    '[Portfolios API] Fetch Portfolio Store Failure',
+    '[Portfolios API] Fetch Portfolio Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
     
 export const fetchPortfolioStoresSuccess = createAction(
-    '[Portfolios API] Fetch Portfolio Store Success',
-    props<{ payload: { stores?: Array<Store>; source: TSource } }>()
+    '[Portfolios API] Fetch Portfolio Stores Success',
+    props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
 );
 
 /** PORTFOLIOS */
@@ -58,7 +79,17 @@ export const fetchPortfoliosFailure = createAction(
     
 export const fetchPortfoliosSuccess = createAction(
     '[Portfolios API] Fetch Portfolios Success',
-    props<{ payload: { portfolios?: Array<Portfolio>; source: TSource, total?: number } }>()
+    props<{ payload: { portfolios?: Array<Portfolio>; source: TSource; total?: number } }>()
+);
+
+export const addSelectedStores = createAction(
+    '[Portfolios Page] Add Selected Portfolio Stores',
+    props<{ payload: Array<Store> }>()
+);
+
+export const removeSelectedStores = createAction(
+    '[Portfolios Page] Remove Selected Portfolio Stores',
+    props<{ payload: Array<string> }>()
 );
 
 export const exportPortfoliosRequest = createAction('[Portfolios API] Export Portfolios Request');

@@ -6,6 +6,7 @@ import {
     CoreFeatureState,
     CoreState,
 } from '../reducers';
+import { Portfolio } from '../../models/portfolios.model';
 
 // Get state from the feature key.
 export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
@@ -22,7 +23,7 @@ export const getPortfolioEntity = createSelector(
     state => state[mainFeatureKey]
 );
 
-export const getSelectedPortfolioId = createSelector(
+export const getSelectedPortfolioIds = createSelector(
     getPortfolioEntity,
     state => state.selectedIds
 );
@@ -39,13 +40,13 @@ export const getAllPortfolios = createSelector(
 
 export const getSelectedPortfolio = createSelector(
     getPortfolioEntity,
-    getSelectedPortfolioId,
-    (portfolios, ids) => portfolios[ids[0]]
+    getSelectedPortfolioIds,
+    (portfolios, ids) => (portfolios[ids[0]] as Portfolio)
 );
 
 export const getSelectedPortfolios = createSelector(
     getPortfolioEntity,
-    getSelectedPortfolioId,
+    getSelectedPortfolioIds,
     (portfolios, ids) => ids ? ids.map(id => portfolios[id]) : ids
 );
 

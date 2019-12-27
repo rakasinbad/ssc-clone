@@ -3,25 +3,32 @@ import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { environment } from '../../../../../../../environments/environment';
 import { Portfolio } from '../../models/portfolios.model';
 import { PortfolioActions } from '../actions';
-import { Store } from 'app/main/pages/attendances/models';
+import { Store, StorePortfolio } from 'app/main/pages/attendances/models';
 
 // Set reducer's feature key
 export const featureKey = 'portfolios';
 
+// Store's Portfolio
+interface PortfolioNewStoreState extends EntityState<Store> {}
+export const adapterPortfolioNewStore: EntityAdapter<Store> = createEntityAdapter<Store>({
+    selectId: store => (store.id as string)
+});
+
+// Portfolio
 interface PortfolioStoreState extends EntityState<Store> {
     isLoading: boolean;
     needRefresh: boolean;
-    selectedIds: Array<string>;
     total: number;
 }
 
 export const adapterPortfolioStore: EntityAdapter<Store> = createEntityAdapter<Store>({
-    selectId: store => store.id
+    selectId: store => (store.id as string)
 });
+
+// Initial value for Portfolio State.
 const initialPortfolioStoreState = adapterPortfolioStore.getInitialState({
     isLoading: false,
     needRefresh: false,
-    selectedIds: [],
     total: 0,
     limit: environment.pageSize,
     skip: 0,
@@ -37,6 +44,7 @@ export interface State extends EntityState<Portfolio> {
     selectedIds: Array<string>;
     urlExport: string;
     stores: PortfolioStoreState;
+    newStores: PortfolioNewStoreState;
     total: number;
 }
 
@@ -46,12 +54,13 @@ export const adapter: EntityAdapter<Portfolio> = createEntityAdapter<Portfolio>(
 });
 
 // Set the reducer's initial state.
-const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
     urlExport: null,
     stores: initialPortfolioStoreState,
+    newStores: adapterPortfolioNewStore.getInitialState(),
     total: 0,
 });
 
@@ -59,6 +68,7 @@ const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
 export const reducer = createReducer(
     initialState,
     on(
+        PortfolioActions.createPortfolioRequest,
         PortfolioActions.exportPortfoliosRequest,
         PortfolioActions.fetchPortfolioRequest,
         PortfolioActions.fetchPortfoliosRequest,
@@ -73,6 +83,20 @@ export const reducer = createReducer(
             ...state,
             isLoading: false,
             urlExport: payload
+        })
+    ),
+    on(
+        PortfolioActions.createPortfolioFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
+        PortfolioActions.createPortfolioSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false
         })
     ),
     on(
@@ -109,6 +133,24 @@ export const reducer = createReducer(
             stores: adapterPortfolioStore.addAll(payload.stores, {
                 ...state.stores,
                 isLoading: false
+            })
+        })
+    ),
+    on(
+        PortfolioActions.addSelectedStores,
+        (state, { payload }) => ({
+            ...state,
+            newStores: adapterPortfolioNewStore.upsertMany(payload, {
+                ...state.newStores
+            }),
+        })
+    ),
+    on(
+        PortfolioActions.removeSelectedStores,
+        (state, { payload }) => ({
+            ...state,
+            newStores: adapterPortfolioNewStore.removeMany(payload, {
+                ...state.newStores
             })
         })
     ),

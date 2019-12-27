@@ -6,6 +6,8 @@ import {
     CoreFeatureState,
     CoreState,
 } from '../reducers';
+import { Store } from '../../models';
+import { TNullable } from 'app/shared/models';
 
 // Get state from the feature key.
 export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
@@ -17,14 +19,31 @@ export const {
     selectTotal: selectPortfolioStoreTotal
 } = fromPortfolios.adapterPortfolioStore.getSelectors();
 
+export const {
+    selectAll: selectAllPortfolioNewStores,
+    selectEntities: selectPortfolioNewStoreEntities,
+    selectIds: selectPortfolioNewStoreIds,
+    selectTotal: selectPortfolioNewStoreTotal
+} = fromPortfolios.adapterPortfolioNewStore.getSelectors();
+
 export const getPortfolioStoreEntity = createSelector(
     getPortfolioState,
     state => state[mainFeatureKey].stores
 );
 
-export const getSelectedPortfolioStoreId = createSelector(
+export const getPortfolioNewStoreEntity = createSelector(
+    getPortfolioState,
+    state => state[mainFeatureKey].newStores
+);
+
+export const getPortfolioStoreEntityIds = createSelector(
     getPortfolioStoreEntity,
-    state => state.selectedIds
+    selectPortfolioStoreIds
+);
+
+export const getTotalPortfolioStoreEntity = createSelector(
+    getPortfolioStoreEntity,
+    selectPortfolioStoreTotal
 );
 
 export const getTotalPortfolioStores = createSelector(
@@ -37,17 +56,6 @@ export const getAllPortfolioStores = createSelector(
     selectAllPortfolioStores
 );
 
-export const getSelectedPortfolioStore = createSelector(
-    getPortfolioStoreEntity,
-    getSelectedPortfolioStoreId,
-    (portfolios, ids) => portfolios[ids[0]]
-);
-
-export const getSelectedPortfolioStores = createSelector(
-    getPortfolioStoreEntity,
-    getSelectedPortfolioStoreId,
-    (portfolios, ids) => ids ? ids.map(id => portfolios[id]) : ids
-);
 
 export const getLoadingState = createSelector(
     getPortfolioStoreEntity,
@@ -58,3 +66,24 @@ export const getNeedRefreshState = createSelector(
     getPortfolioStoreEntity,
     state => state.needRefresh
 );
+
+export const getPortfolioNewStoreIds = createSelector(
+    getPortfolioNewStoreEntity,
+    selectPortfolioNewStoreIds
+);
+
+export const getPortfolioNewStore = createSelector(
+    getPortfolioNewStoreEntity,
+    getPortfolioNewStoreIds,
+    (portfolios, ids) => (portfolios[ids[0]] as TNullable<Store>)
+);
+
+export const getPortfolioNewStores = createSelector(
+    getPortfolioNewStoreEntity,
+    selectAllPortfolioNewStores,
+);
+
+export const getTotalPortfolioNewStoreEntity = createSelector(
+    getPortfolioNewStoreEntity,
+    selectPortfolioNewStoreTotal
+)
