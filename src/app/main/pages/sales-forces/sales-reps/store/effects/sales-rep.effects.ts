@@ -28,7 +28,7 @@ import * as fromSalesReps from '../reducers';
 @Injectable()
 export class SalesRepEffects {
     // -----------------------------------------------------------------------------------------------------
-    // @ CRUD methods [ADD - SALES REPS]
+    // @ CRUD methods [CREATE - SALES REP]
     // -----------------------------------------------------------------------------------------------------
 
     createSalesRepRequest$ = createEffect(() =>
@@ -130,6 +130,130 @@ export class SalesRepEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - SALES REP]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateSalesRepRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(SalesRepActions.updateSalesRepRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$salesRepApi.patch(body, id).pipe(
+                    map(resp => {
+                        return SalesRepActions.updateSalesRepSuccess({
+                            payload: new SalesRep(resp)
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            SalesRepActions.updateSalesRepFailure({
+                                payload: { id: 'updateSalesRepFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                    })
+                );
+            })
+        )
+    );
+
+    updateSalesRepFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(SalesRepActions.updateSalesRepFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Failed to update sales rep', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateSalesRepSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(SalesRepActions.updateSalesRepSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this.router.navigate(['/pages/sales-force/sales-rep']).finally(() => {
+                        this._$notice.open('Successfully updated sales rep', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE PASSWORD - SALES REP]
+    // -----------------------------------------------------------------------------------------------------
+
+    changePasswordSalesRepRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(SalesRepActions.changePasswordSalesRepRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                return this._$salesRepApi.put(body, id).pipe(
+                    map(resp => {
+                        return SalesRepActions.updateSalesRepSuccess({
+                            payload: new SalesRep(resp)
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            SalesRepActions.updateSalesRepFailure({
+                                payload: { id: 'updateSalesRepFailure', errors: err }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(FormActions.resetClickSaveButton());
+                    })
+                );
+            })
+        )
+    );
+
+    changePasswordSalesRepFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(SalesRepActions.changePasswordSalesRepFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Failed to change password sales rep', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    changePasswordSalesRepSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(SalesRepActions.changePasswordSalesRepSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this.router.navigate(['/pages/sales-force/sales-rep']).finally(() => {
+                        this._$notice.open('Successfully changed password sales rep', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [SALES REPS]
     // -----------------------------------------------------------------------------------------------------
 
@@ -214,6 +338,89 @@ export class SalesRepEffects {
         () =>
             this.actions$.pipe(
                 ofType(SalesRepActions.fetchSalesRepsFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [SALES REP]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchSalesRepRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(SalesRepActions.fetchSalesRepRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([id, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [id, user] : [id, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([id, supplierId]);
+            }),
+            switchMap(([id, data]: [string, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        SalesRepActions.fetchSalesRepFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchSalesRepFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                return this._$salesRepApi.findById(id, supplierId).pipe(
+                    catchOffline(),
+                    map(resp => {
+                        return SalesRepActions.fetchSalesRepSuccess({
+                            payload: new SalesRep(resp)
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            SalesRepActions.fetchSalesRepFailure({
+                                payload: new ErrorHandler({
+                                    id: 'fetchSalesRepFailure',
+                                    errors: err
+                                })
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchSalesRepFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(SalesRepActions.fetchSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message =

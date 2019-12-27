@@ -110,60 +110,67 @@
                         </mat-form-field>
                     </div>
                 </div>
-
-                <div
-                    class="custom-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <label
-                        class="custom-field__label"
-                        fxFlexAlign="center"
-                        fxFlex="13"
-                        [class.mat-error]="hasError('photo')"
-                    >
-                        Sales Photo
-                    </label>
-
-                    <div class="custom-field__field" fxFlex="50">
-                        <mat-form-field
-                            class="sinbad-file-field"
-                            appearance="outline"
-                            fxFlex="59"
-                            [class.mat-form-field-invalid]="hasError('photo')"
-                        >
-                            <input
-                                #photoPicker
-                                type="file"
-                                class="custom-file"
-                                accept=".jpg, .jpeg, .png"
-                                formControlName="photo"
-                                (change)="onFileBrowse($event, 'photo')"
-                            />
-                            <input
-                                matInput
-                                [formControl]="tmp.photo"
-                                placeholder="No file choose"
-                            />
-
-                            <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
-                                {{ getErrorMessage('photo') }}
-                            </mat-hint>
-                        </mat-form-field>
-
-                        <button
-                            mat-flat-button
-                            color="accent"
-                            type="button"
-                            (click)="photoPicker.click()"
-                            fxFlexAlign="center"
-                        >
-                            Upload your file
-                        </button>
-                    </div>
-                </div>
             </ng-container>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('photo')"
+                >
+                    Sales Photo
+                </label>
+
+                <div class="custom-field__field" fxFlex="50">
+                    <mat-form-field
+                        class="sinbad-file-field"
+                        appearance="outline"
+                        fxFlex="59"
+                        [class.mat-form-field-invalid]="hasError('photo')"
+                    >
+                        <input
+                            #photoPicker
+                            type="file"
+                            class="custom-file"
+                            accept=".jpg, .jpeg, .png"
+                            formControlName="photo"
+                            (change)="onFileBrowse($event, 'photo')"
+                        />
+                        <input matInput [formControl]="tmp.photo" placeholder="No file choose" />
+
+                        <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
+                            {{ getErrorMessage('photo') }}
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <button
+                        mat-flat-button
+                        color="accent"
+                        type="button"
+                        (click)="photoPicker.click()"
+                        fxFlexAlign="center"
+                    >
+                        Upload your file
+                    </button>
+
+                    <ng-container *ngIf="pageType === 'edit' && (salesRep$ | async) as salesRep">
+                        <a
+                            [href]="salesRep?.user?.imageUrl"
+                            target="_blank"
+                            *ngIf="salesRep?.user?.imageUrl"
+                            style="position: relative;top: 0.8em"
+                        >
+                            <mat-icon>remove_red_eye</mat-icon>
+                        </a>
+                    </ng-container>
+                </div>
+            </div>
 
             <div
                 class="custom-field"

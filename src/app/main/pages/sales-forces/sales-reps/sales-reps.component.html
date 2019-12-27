@@ -260,10 +260,11 @@
 
                             <mat-menu #moreMenu="matMenu">
                                 <button
-                                    mat-menu-item
                                     type="button"
+                                    mat-menu-item
                                     class="sinbad-mat-menu-item"
                                     aria-label="Edit"
+                                    [routerLink]="[row?.id]"
                                 >
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>

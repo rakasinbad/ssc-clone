@@ -30,7 +30,10 @@ const reducer = createReducer<State>(
     initialState,
     on(
         SalesRepActions.createSalesRepFailure,
+        SalesRepActions.updateSalesRepFailure,
+        SalesRepActions.changePasswordSalesRepFailure,
         SalesRepActions.fetchSalesRepsFailure,
+        SalesRepActions.fetchSalesRepFailure,
         (state, { payload }) => {
             return adapter.upsertOne(payload, state);
         }
@@ -38,8 +41,20 @@ const reducer = createReducer<State>(
     on(SalesRepActions.fetchSalesRepsSuccess, state => {
         return adapter.removeOne('fetchSalesRepsFailure', state);
     }),
+    on(SalesRepActions.fetchSalesRepSuccess, state => {
+        return adapter.removeOne('fetchSalesRepFailure', state);
+    }),
     on(SalesRepActions.createSalesRepSuccess, state => {
         return adapter.removeOne('createSalesRepFailure', state);
+    }),
+    on(SalesRepActions.updateSalesRepSuccess, state => {
+        return adapter.removeOne('updateSalesRepFailure', state);
+    }),
+    on(SalesRepActions.changePasswordSalesRepSuccess, state => {
+        return adapter.removeOne('changePasswordSalesRepFailure', state);
+    }),
+    on(SalesRepActions.clearState, state => {
+        return adapter.removeAll({ ...state });
     })
 );
 

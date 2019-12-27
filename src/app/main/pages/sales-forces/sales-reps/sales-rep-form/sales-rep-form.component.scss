@@ -22,6 +22,8 @@
                 height: 100%;
                 width: auto;
                 max-width: none;
+                min-width: inherit;
+                object-fit: cover;
             }
         }
 

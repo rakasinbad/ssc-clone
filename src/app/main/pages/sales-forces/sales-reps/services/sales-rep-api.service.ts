@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
-import { SalesRepForm, ISalesRep } from '../models';
+
+import { ISalesRep, SalesRepFormPasswordPut, SalesRepFormPatch } from '../models';
 
 /**
  *
@@ -57,7 +58,30 @@ export class SalesRepApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
+    findById(id: string, supplierId?: string): Observable<ISalesRep> {
+        const newArg = supplierId
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<ISalesRep>(`${this._url}/${id}`, { params: newParams });
+    }
+
     create<T>(body: T): Observable<ISalesRep> {
         return this.http.post<ISalesRep>(this._url, body);
+    }
+
+    patch(body: SalesRepFormPatch, id: string): Observable<ISalesRep> {
+        return this.http.patch<ISalesRep>(`${this._url}/${id}`, body);
+    }
+
+    put(body: SalesRepFormPasswordPut, id: string): Observable<ISalesRep> {
+        return this.http.put<ISalesRep>(`${this._url}/${id}`, body);
     }
 }

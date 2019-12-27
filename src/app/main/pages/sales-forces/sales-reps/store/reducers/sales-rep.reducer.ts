@@ -33,14 +33,35 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(SalesRepActions.fetchSalesRepsRequest, state => ({
+    on(
+        SalesRepActions.createSalesRepRequest,
+        SalesRepActions.updateSalesRepRequest,
+        SalesRepActions.changePasswordSalesRepRequest,
+        SalesRepActions.fetchSalesRepsRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        SalesRepActions.createSalesRepFailure,
+        SalesRepActions.updateSalesRepFailure,
+        SalesRepActions.changePasswordSalesRepFailure,
+        SalesRepActions.fetchSalesRepsFailure,
+        SalesRepActions.fetchSalesRepFailure,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(SalesRepActions.fetchSalesRepRequest, (state, { payload }) => ({
         ...state,
-        isLoading: true
+        isLoading: true,
+        selectedId: payload
     })),
-    on(SalesRepActions.createSalesRepFailure, SalesRepActions.fetchSalesRepsFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
+    on(SalesRepActions.fetchSalesRepSuccess, (state, { payload }) => {
+        return adapter.addOne(payload, { ...state, isLoading: false });
+    }),
     on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, {
             ...state,
@@ -48,10 +69,18 @@ const reducer = createReducer<State>(
             total: payload.total
         });
     }),
-    on(SalesRepActions.createSalesRepSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false
-    }))
+    on(
+        SalesRepActions.createSalesRepSuccess,
+        SalesRepActions.updateSalesRepSuccess,
+        SalesRepActions.changePasswordSalesRepSuccess,
+        (state, { payload }) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(SalesRepActions.clearState, state => {
+        return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
+    })
 );
 
 // Set anything for the export

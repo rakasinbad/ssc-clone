@@ -1,9 +1,12 @@
 import {
     ChangeDetectionStrategy,
     Component,
+    EventEmitter,
     Input,
     OnInit,
-    ViewEncapsulation
+    Output,
+    ViewEncapsulation,
+    OnDestroy
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -16,14 +19,15 @@ import { LifecyclePlatform, UserStatus } from 'app/shared/models';
 import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
-import { SalesRepForm } from '../../models';
+import { SalesRep, SalesRepForm, SalesRepFormPatch } from '../../models';
 import { SalesRepActions } from '../../store/actions';
 import * as fromSalesReps from '../../store/reducers';
+import { SalesRepSelectors } from '../../store/selectors';
 
 type TmpKey = 'photo';
 
@@ -35,11 +39,14 @@ type TmpKey = 'photo';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SalesRepInfoComponent implements OnInit {
+export class SalesRepInfoComponent implements OnInit, OnDestroy {
     form: FormGroup;
     tmp: Partial<Record<TmpKey, FormControl>> = {};
 
+    salesRep$: Observable<SalesRep>;
+
     @Input() readonly pageType: 'new' | 'edit' = 'new';
+    @Output() fullNameValue = new EventEmitter();
 
     private _unSubs$: Subject<void>;
 
@@ -72,13 +79,15 @@ export class SalesRepInfoComponent implements OnInit {
         this.form.statusChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
             .subscribe(status => {
-                if (status === 'VALID') {
-                    this.store.dispatch(FormActions.setFormStatusValid());
-                }
+                this._setFormStatus(status);
+            });
 
-                if (status === 'INVALID') {
-                    this.store.dispatch(FormActions.setFormStatusInvalid());
-                }
+        // Handle fullName value
+        this.form
+            .get('name')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.fullNameValue.emit(v);
             });
 
         // Handle save button action (footer)
@@ -92,6 +101,17 @@ export class SalesRepInfoComponent implements OnInit {
                 this._onSubmit();
             });
     }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
 
     getErrorMessage(field: string): string {
         if (field) {
@@ -126,8 +146,12 @@ export class SalesRepInfoComponent implements OnInit {
     onFileBrowse(ev: Event, type: string): void {
         const inputEl = ev.target as HTMLInputElement;
 
+        // console.log('CHANGE', inputEl.files.length);
+
         if (inputEl.files && inputEl.files.length > 0) {
             const file = inputEl.files[0];
+
+            // console.log('URL', window.URL.createObjectURL(file));
 
             if (file) {
                 switch (type) {
@@ -154,9 +178,19 @@ export class SalesRepInfoComponent implements OnInit {
                         break;
                 }
             }
-        }
+        } else {
+            switch (type) {
+                case 'photo':
+                    {
+                        this.form.get('photo').reset();
+                        this.tmp['photo'].reset();
+                    }
+                    break;
 
-        return;
+                default:
+                    break;
+            }
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -173,15 +207,21 @@ export class SalesRepInfoComponent implements OnInit {
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         const { id } = this.route.snapshot.params;
 
-        // switch (lifeCycle) {
-        //     default:
-        //         if (id === 'new') {
-        //             this.pageType = 'new';
-        //         } else {
-        //             this.pageType = 'edit';
-        //         }
-        //         return;
-        // }
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // Reset click save button state
+                this.store.dispatch(FormActions.resetClickSaveButton());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                if (this.pageType === 'edit') {
+                    this.salesRep$ = this.store.select(SalesRepSelectors.getSelectedItem);
+                }
+                return;
+        }
     }
 
     /**
@@ -275,11 +315,11 @@ export class SalesRepInfoComponent implements OnInit {
                     '',
                     [
                         RxwebValidators.fileSize({
-                            maxSize: Math.floor(5 * 1048576),
+                            maxSize: Math.floor(5 * 1000 * 1000),
                             message: this._$errorMessage.getErrorMessageNonState(
                                 'default',
                                 'file_size_lte',
-                                { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
                             )
                         })
                     ]
@@ -319,81 +359,130 @@ export class SalesRepInfoComponent implements OnInit {
                 status: ''
             });
         } else {
-            this.form = this.formBuilder.group({
-                name: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        }),
-                        RxwebValidators.alpha({
-                            allowWhiteSpace: true,
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        })
-                    ]
-                ],
-                phone: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        }),
-                        RxwebValidators.pattern({
-                            expression: {
-                                mobilePhone: /^08[0-9]{8,12}$/
-                            },
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'mobile_phone_pattern',
-                                '08'
-                            )
-                        })
-                    ]
-                ],
-                identityId: [
-                    '',
-                    [
-                        RxwebValidators.required({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'required'
-                            )
-                        }),
-                        RxwebValidators.digit({
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        }),
-                        RxwebValidators.minLength({
-                            value: 16,
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        }),
-                        RxwebValidators.maxLength({
-                            value: 16,
-                            message: this._$errorMessage.getErrorMessageNonState(
-                                'default',
-                                'pattern'
-                            )
-                        })
-                    ]
-                ],
-                // area: '',
-                status: ''
-            });
+            this._initEditForm();
         }
+    }
+
+    private _initEditForm(): void {
+        this.tmp['photo'] = new FormControl({ value: '', disabled: true });
+
+        this.form = this.formBuilder.group({
+            name: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.alpha({
+                        allowWhiteSpace: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
+            phone: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.pattern({
+                        expression: {
+                            mobilePhone: /^08[0-9]{8,12}$/
+                        },
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'mobile_phone_pattern',
+                            '08'
+                        )
+                    })
+                ]
+            ],
+            photo: [
+                '',
+                [
+                    RxwebValidators.fileSize({
+                        maxSize: Math.floor(5 * 1000 * 1000),
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'file_size_lte',
+                            { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
+                        )
+                    })
+                ]
+            ],
+            identityId: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.minLength({
+                        value: 16,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 16,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
+            // area: '',
+            status: ''
+        });
+
+        this.store
+            .select(SalesRepSelectors.getSelectedItem)
+            .pipe(
+                filter(v => !!v),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(row => {
+                const nameField = this.form.get('name');
+                const phoneField = this.form.get('phone');
+                const identityIdField = this.form.get('identityId');
+                const statusField = this.form.get('status');
+
+                if (row.user) {
+                    if (row.user.fullName) {
+                        nameField.setValue(row.user.fullName);
+                    }
+
+                    if (nameField.invalid) {
+                        nameField.markAsTouched();
+                    }
+
+                    if (row.user.mobilePhoneNo) {
+                        phoneField.setValue(row.user.mobilePhoneNo);
+                    }
+
+                    if (phoneField.invalid) {
+                        phoneField.markAsTouched();
+                    }
+
+                    if (row.user.idNo) {
+                        identityIdField.setValue(row.user.idNo);
+                    }
+
+                    if (identityIdField.invalid) {
+                        identityIdField.markAsTouched();
+                    }
+                }
+
+                if (row.status) {
+                    const status = row.status === 'active' ? true : false;
+
+                    statusField.setValue(status);
+                }
+
+                if (statusField.invalid) {
+                    statusField.markAsTouched();
+                }
+
+                this._setFormStatus(this.form.status);
+            });
     }
 
     private _onSubmit(): void {
@@ -416,6 +505,58 @@ export class SalesRepInfoComponent implements OnInit {
             };
 
             this.store.dispatch(SalesRepActions.createSalesRepRequest({ payload }));
+        }
+
+        if (this.pageType === 'edit') {
+            const { id } = this.route.snapshot.params;
+
+            const payload: SalesRepFormPatch = {
+                fullName: body.name,
+                mobilePhoneNo: body.phone,
+                idNo: body.identityId,
+                image: body.photo,
+                status: body.status ? UserStatus.ACTIVE : UserStatus.INACTIVE
+            };
+
+            if (!body.name) {
+                delete payload.fullName;
+            }
+
+            if (!body.phone) {
+                delete payload.mobilePhoneNo;
+            }
+
+            if (!body.identityId) {
+                delete payload.idNo;
+            }
+
+            if (!body.photo) {
+                delete payload.image;
+            }
+
+            if (typeof body.status !== 'boolean') {
+                delete payload.status;
+            }
+
+            if (Object.keys(payload).length > 0) {
+                this.store.dispatch(
+                    SalesRepActions.updateSalesRepRequest({ payload: { body: payload, id } })
+                );
+            }
+        }
+    }
+
+    private _setFormStatus(status: string): void {
+        if (!status) {
+            return;
+        }
+
+        if (status === 'VALID' || !this.form.pristine) {
+            this.store.dispatch(FormActions.setFormStatusValid());
+        }
+
+        if (status === 'INVALID' || this.form.pristine) {
+            this.store.dispatch(FormActions.setFormStatusInvalid());
         }
     }
 }

@@ -11,11 +11,15 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IFooterActionConfig, LifecyclePlatform } from 'app/shared/models';
-import { UiActions, FormActions } from 'app/shared/store/actions';
+import { FormActions, UiActions } from 'app/shared/store/actions';
+import { Observable } from 'rxjs';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { SalesRep } from '../models';
+import { SalesRepActions } from '../store/actions';
 import * as fromSalesReps from '../store/reducers';
+import { SalesRepSelectors } from '../store/selectors';
 
 @Component({
     templateUrl: './sales-rep-form.component.html',
@@ -27,6 +31,9 @@ import * as fromSalesReps from '../store/reducers';
 export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // form: FormGroup;
     pageType: string;
+    fullName: string;
+
+    salesRep$: Observable<SalesRep>;
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
         {
@@ -163,9 +170,17 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 // Reset click save button state
                 this.store.dispatch(FormActions.resetClickSaveButton());
+
+                // Reset core state sales reps
+                this.store.dispatch(SalesRepActions.clearState());
                 break;
 
             default:
+                if (this.pageType === 'edit') {
+                    this.salesRep$ = this.store.select(SalesRepSelectors.getSelectedItem);
+
+                    this.store.dispatch(SalesRepActions.fetchSalesRepRequest({ payload: id }));
+                }
                 break;
         }
     }

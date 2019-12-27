@@ -214,7 +214,8 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(SalesRepActions.resetState());
+        // Reset core state sales reps
+        this.store.dispatch(SalesRepActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
