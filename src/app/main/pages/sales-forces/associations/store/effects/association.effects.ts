@@ -12,12 +12,12 @@ import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs
 
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 // import { StoreCatalogue } from '../../models';
-import { StoreCatalogueApiService } from '../../services';
-import { StoreCatalogueActions } from '../actions';
+// import { StoreCatalogueApiService } from '../../services';
+// import { StoreCatalogueActions } from '../actions';
 import { fromStoreCatalogue } from '../reducers';
 import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 import { CataloguesService } from 'app/main/pages/catalogues/services';
-import { StoreCatalogue } from '../../models/store-catalogue.model';
+// import { StoreCatalogue } from '../../models/store-catalogue.model';
 
 @Injectable()
 export class StoreCatalogueEffects {
@@ -80,244 +80,243 @@ export class StoreCatalogueEffects {
     //     )
     // );
 
-    fetchCatalogueHistoriesRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(StoreCatalogueActions.fetchStoreCatalogueHistoriesRequest),
-            map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([queryParams, { supplierId }]) => {
-                /** NO SUPPLIER ID! */
-                if (!supplierId) {
-                    return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-                        payload: {
-                            id: 'fetchStoreCataloguesFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
-                }
+    // fetchCatalogueHistoriesRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(StoreCatalogueActions.fetchStoreCatalogueHistoriesRequest),
+    //         map(action => action.payload),
+    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+    //         switchMap(([queryParams, { supplierId }]) => {
+    //             /** NO SUPPLIER ID! */
+    //             if (!supplierId) {
+    //                 return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
+    //                     payload: {
+    //                         id: 'fetchStoreCataloguesFailure',
+    //                         errors: 'Not authenticated'
+    //                     }
+    //                 }));
+    //             }
 
-                /** WITH PAGINATION */
-                if (queryParams.paginate) {
-                    return this.storeCatalogueApiSvc.findCatalogueHistory<IPaginatedResponse<any>>(queryParams).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
+    //             /** WITH PAGINATION */
+    //             if (queryParams.paginate) {
+    //                 return this.storeCatalogueApiSvc.findCatalogueHistory<IPaginatedResponse<any>>(queryParams).pipe(
+    //                     catchOffline(),
+    //                     map(resp => {
+    //                         let newResp = {
+    //                             total: 0,
+    //                             data: []
+    //                         };
 
-                            newResp = {
-                                total: resp.total,
-                                data: resp.data
-                            };
-    
-                            return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
-                                payload: {
-                                    catalogueHistories: newResp.data,
-                                    total: newResp.total
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
-                                    payload: {
-                                        id: 'fetchStoreCatalogueHistoriesFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
-                        )
-                    );
-                }
+    //                         newResp = {
+    //                             total: resp.total,
+    //                             data: resp.data
+    //                         };
 
-                /** WITHOUT PAGINATION */
-                return this.storeCatalogueApiSvc.findCatalogueHistory<Array<any>>(queryParams).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        let newResp = {
-                            total: 0,
-                            data: []
-                        };
+    //                         return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
+    //                             payload: {
+    //                                 catalogueHistories: newResp.data,
+    //                                 total: newResp.total
+    //                             }
+    //                         });
+    //                     }),
+    //                     catchError(err =>
+    //                         of(
+    //                             StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+    //                                 payload: {
+    //                                     id: 'fetchStoreCatalogueHistoriesFailure',
+    //                                     errors: err
+    //                                 }
+    //                             })
+    //                         )
+    //                     )
+    //                 );
+    //             }
 
-                        newResp = {
-                            total: resp.length,
-                            data: resp
-                        };
+    //             /** WITHOUT PAGINATION */
+    //             return this.storeCatalogueApiSvc.findCatalogueHistory<Array<any>>(queryParams).pipe(
+    //                 catchOffline(),
+    //                 map(resp => {
+    //                     let newResp = {
+    //                         total: 0,
+    //                         data: []
+    //                     };
 
-                        return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
-                            payload: {
-                                catalogueHistories: newResp.data,
-                                total: newResp.total
-                            }
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
-                                payload: {
-                                    id: 'fetchStoreCatalogueHistoriesFailure',
-                                    errors: err
-                                }
-                            })
-                        )
-                    )
-                );
-            })
-        )
-    );
+    //                     newResp = {
+    //                         total: resp.length,
+    //                         data: resp
+    //                     };
 
-    fetchStoreCatalogueRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(StoreCatalogueActions.fetchStoreCatalogueRequest),
-            map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([storeCatalogueId, { supplierId }]) => {
-                /** NO SUPPLIER ID! */
-                if (isNaN(+supplierId)) {
-                    return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
-                        payload: {
-                            id: 'fetchStoreCatalogueFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
-                }
+    //                     return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
+    //                         payload: {
+    //                             catalogueHistories: newResp.data,
+    //                             total: newResp.total
+    //                         }
+    //                     });
+    //                 }),
+    //                 catchError(err =>
+    //                     of(
+    //                         StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+    //                             payload: {
+    //                                 id: 'fetchStoreCatalogueHistoriesFailure',
+    //                                 errors: err
+    //                             }
+    //                         })
+    //                     )
+    //                 )
+    //             );
+    //         })
+    //     )
+    // );
 
-                return this.storeCatalogueApiSvc.findStoreCatalogue(storeCatalogueId).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        return StoreCatalogueActions.fetchStoreCatalogueSuccess({
-                            payload: {
-                                storeCatalogue: resp,
-                                source: 'fetch'
-                            }
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            StoreCatalogueActions.fetchStoreCatalogueFailure({
-                                payload: {
-                                    id: 'fetchStoreCatalogueFailure',
-                                    errors: err
-                                }
-                            })
-                        )
-                    )
-                );
-            })
-        )
-    );
+    // fetchStoreCatalogueRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(StoreCatalogueActions.fetchStoreCatalogueRequest),
+    //         map(action => action.payload),
+    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+    //         switchMap(([storeCatalogueId, { supplierId }]) => {
+    //             /** NO SUPPLIER ID! */
+    //             if (isNaN(+supplierId)) {
+    //                 return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
+    //                     payload: {
+    //                         id: 'fetchStoreCatalogueFailure',
+    //                         errors: 'Not authenticated'
+    //                     }
+    //                 }));
+    //             }
 
-    fetchStoreCataloguesRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(StoreCatalogueActions.fetchStoreCataloguesRequest),
-            map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([queryParams, { supplierId }]) => {
-                /** NO SUPPLIER ID! */
-                if (isNaN(+supplierId)) {
-                    return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-                        payload: {
-                            id: 'fetchStoreCataloguesFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
-                }
+    //             return this.storeCatalogueApiSvc.findStoreCatalogue(storeCatalogueId).pipe(
+    //                 catchOffline(),
+    //                 map(resp => {
+    //                     return StoreCatalogueActions.fetchStoreCatalogueSuccess({
+    //                         payload: {
+    //                             storeCatalogue: resp,
+    //                             source: 'fetch'
+    //                         }
+    //                     });
+    //                 }),
+    //                 catchError(err =>
+    //                     of(
+    //                         StoreCatalogueActions.fetchStoreCatalogueFailure({
+    //                             payload: {
+    //                                 id: 'fetchStoreCatalogueFailure',
+    //                                 errors: err
+    //                             }
+    //                         })
+    //                     )
+    //                 )
+    //             );
+    //         })
+    //     )
+    // );
 
-                /** WITH PAGINATION */
-                if (queryParams.paginate) {
-                    const newQuery = {
-                        ...queryParams,
-                        supplierId
-                    };
+    // fetchStoreCataloguesRequest$ = createEffect(() =>
+    //     this.actions$.pipe(
+    //         ofType(StoreCatalogueActions.fetchStoreCataloguesRequest),
+    //         map(action => action.payload),
+    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+    //         switchMap(([queryParams, { supplierId }]) => {
+    //             /** NO SUPPLIER ID! */
+    //             if (isNaN(+supplierId)) {
+    //                 return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
+    //                     payload: {
+    //                         id: 'fetchStoreCataloguesFailure',
+    //                         errors: 'Not authenticated'
+    //                     }
+    //                 }));
+    //             }
 
-                    return this.storeCatalogueApiSvc.find<IPaginatedResponse<any>>(newQuery).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
+    //             /** WITH PAGINATION */
+    //             if (queryParams.paginate) {
+    //                 const newQuery = {
+    //                     ...queryParams,
+    //                     supplierId
+    //                 };
 
-                            newResp = {
-                                total: resp.total,
-                                data: resp.data
-                            };
-    
-                            return StoreCatalogueActions.fetchStoreCataloguesSuccess({
-                                payload: {
-                                    storeCatalogues: newResp.data,
-                                    total: newResp.total
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                StoreCatalogueActions.fetchStoreCataloguesFailure({
-                                    payload: {
-                                        id: 'fetchStoreCataloguesFailure',
-                                        errors: err
-                                    }
-                                })
-                            )
-                        )
-                    );
-                }
+    //                 return this.storeCatalogueApiSvc.find<IPaginatedResponse<any>>(newQuery).pipe(
+    //                     catchOffline(),
+    //                     map(resp => {
+    //                         let newResp = {
+    //                             total: 0,
+    //                             data: []
+    //                         };
 
-                /** WITHOUT PAGINATION */
-                return this.storeCatalogueApiSvc.find<Array<any>>(queryParams).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        let newResp = {
-                            total: 0,
-                            data: []
-                        };
+    //                         newResp = {
+    //                             total: resp.total,
+    //                             data: resp.data
+    //                         };
 
-                        newResp = {
-                            total: resp.length,
-                            data: resp
-                        };
+    //                         return StoreCatalogueActions.fetchStoreCataloguesSuccess({
+    //                             payload: {
+    //                                 storeCatalogues: newResp.data,
+    //                                 total: newResp.total
+    //                             }
+    //                         });
+    //                     }),
+    //                     catchError(err =>
+    //                         of(
+    //                             StoreCatalogueActions.fetchStoreCataloguesFailure({
+    //                                 payload: {
+    //                                     id: 'fetchStoreCataloguesFailure',
+    //                                     errors: err
+    //                                 }
+    //                             })
+    //                         )
+    //                     )
+    //                 );
+    //             }
 
-                        this.logSvc.generateGroup(
-                            '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: resp
-                                }
-                            }
-                        );
+    //             /** WITHOUT PAGINATION */
+    //             return this.storeCatalogueApiSvc.find<Array<any>>(queryParams).pipe(
+    //                 catchOffline(),
+    //                 map(resp => {
+    //                     let newResp = {
+    //                         total: 0,
+    //                         data: []
+    //                     };
 
-                        return StoreCatalogueActions.fetchStoreCataloguesSuccess({
-                            payload: {
-                                storeCatalogues: newResp.data,
-                                total: newResp.total
-                            }
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            StoreCatalogueActions.fetchStoreCataloguesFailure({
-                                payload: {
-                                    id: 'fetchStoreCataloguesFailure',
-                                    errors: err
-                                }
-                            })
-                        )
-                    )
-                );
-            })
-        )
-    );
+    //                     newResp = {
+    //                         total: resp.length,
+    //                         data: resp
+    //                     };
 
-    constructor(
-        private actions$: Actions,
-        private route: ActivatedRoute,
-        private router: Router,
-        private store: Store<fromStoreCatalogue.FeatureState>,
-        private catalogueApiSvc: CataloguesService,
-        private storeCatalogueApiSvc: StoreCatalogueApiService,
-        private logSvc: LogService,
-        private _$notice: NoticeService
-    ) {}
+    //                     this.logSvc.generateGroup(
+    //                         '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
+    //                         {
+    //                             payload: {
+    //                                 type: 'log',
+    //                                 value: resp
+    //                             }
+    //                         }
+    //                     );
+
+    //                     return StoreCatalogueActions.fetchStoreCataloguesSuccess({
+    //                         payload: {
+    //                             storeCatalogues: newResp.data,
+    //                             total: newResp.total
+    //                         }
+    //                     });
+    //                 }),
+    //                 catchError(err =>
+    //                     of(
+    //                         StoreCatalogueActions.fetchStoreCataloguesFailure({
+    //                             payload: {
+    //                                 id: 'fetchStoreCataloguesFailure',
+    //                                 errors: err
+    //                             }
+    //                         })
+    //                     )
+    //                 )
+    //             );
+    //         })
+    //     )
+    // );
+
+    constructor() // private actions$: Actions,
+    // private route: ActivatedRoute,
+    // private router: Router,
+    // private store: Store<fromStoreCatalogue.FeatureState>,
+    // private catalogueApiSvc: CataloguesService,
+    // private storeCatalogueApiSvc: StoreCatalogueApiService,
+    // private logSvc: LogService,
+    // private _$notice: NoticeService
+    {}
 }

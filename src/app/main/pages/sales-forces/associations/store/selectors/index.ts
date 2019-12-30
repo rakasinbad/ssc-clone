@@ -1,3 +1,3 @@
-import * as AssociationSelector from './store-association.selectors';
+import * as AssociationSelector from './association.selectors';
 
 export { AssociationSelector };

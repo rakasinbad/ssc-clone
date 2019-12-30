@@ -35,41 +35,8 @@ export class Association implements IAssociation {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
 
-        this.supplier = supplier
-            ? new Supplier(
-                  supplier.id,
-                  supplier.name,
-                  supplier.longitude,
-                  supplier.latitude,
-                  supplier.phoneNo,
-                  supplier.status,
-                  supplier.urbanId,
-                  supplier.createdAt,
-                  supplier.updatedAt,
-                  supplier.deletedAt
-              )
-            : supplier;
+        this.supplier = supplier ? new Supplier(supplier) : supplier;
 
-        this.user = user
-            ? new User(
-                  user.id,
-                  user.fullName,
-                  user.email,
-                  user.phoneNo,
-                  user.mobilePhoneNo,
-                  user.idNo,
-                  user.taxNo,
-                  user.status,
-                  user.imageUrl,
-                  user.taxImageUrl,
-                  user.idImageUrl,
-                  user.selfieImageUrl,
-                  user.urbanId,
-                  user.roles,
-                  user.createdAt,
-                  user.updatedAt,
-                  user.deletedAt
-              )
-            : user;
+        this.user = user ? new User(user) : user;
     }
 }

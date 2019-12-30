@@ -145,6 +145,13 @@ export const navigation: FuseNavigation[] = [
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/portfolio'
+            },
+            {
+                id: 'association',
+                title: 'Association',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/associations'
             }
         ]
     }
