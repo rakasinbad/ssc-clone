@@ -1,322 +1,139 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
-import { LogService, NoticeService } from 'app/shared/helpers';
-import { NetworkActions } from 'app/shared/store/actions';
-import { getParams } from 'app/store/app.reducer';
-import { NetworkSelectors } from 'app/shared/store/selectors';
-import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-// import { StoreCatalogue } from '../../models';
-// import { StoreCatalogueApiService } from '../../services';
-// import { StoreCatalogueActions } from '../actions';
-import { fromStoreCatalogue } from '../reducers';
-import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
-import { CataloguesService } from 'app/main/pages/catalogues/services';
-// import { StoreCatalogue } from '../../models/store-catalogue.model';
+import { NoticeService } from 'app/shared/helpers';
+import { ErrorHandler, IQueryParams, PaginateResponse } from 'app/shared/models';
+import { FormActions } from 'app/shared/store/actions';
+import { of } from 'rxjs';
+import {
+    catchError,
+    exhaustMap,
+    finalize,
+    map,
+    switchMap,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
+
+import { Association } from '../../models';
+import { AssociationApiService } from '../../services';
+import { AssociationActions } from '../actions';
+import * as fromAssociation from '../reducers';
 
 @Injectable()
-export class StoreCatalogueEffects {
+export class AssociationEffects {
     // -----------------------------------------------------------------------------------------------------
-    // @ CRUD methods
-    // -----------------------------------------------------------------------------------------------------
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods
+    // @ FETCH methods [ASSOCIATION]
     // -----------------------------------------------------------------------------------------------------
 
-    // fetchAttendanceRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(AttendanceActions.fetchAttendanceRequest),
-    //         map(action => action.payload),
-    //         switchMap(id => {
-    //             /** WITHOUT PAGINATION */
-    //             return this.attendanceApiSvc.findById(id).pipe(
-    //                 catchOffline(),
-    //                 map(resp => {
-    //                     const newResp = new Attendance(
-    //                         resp.id,
-    //                         resp.date,
-    //                         resp.longitudeCheckIn,
-    //                         resp.latitudeCheckIn,
-    //                         resp.longitudeCheckOut,
-    //                         resp.latitudeCheckOut,
-    //                         resp.checkIn,
-    //                         resp.checkOut,
-    //                         resp.locationType,
-    //                         resp.attendanceType,
-    //                         resp.userId,
-    //                         resp.user,
-    //                         resp.createdAt,
-    //                         resp.updatedAt,
-    //                         resp.deletedAt
-    //                     );
+    /**
+     *
+     * [REQUEST] Association
+     * @memberof AssociationEffects
+     */
+    fetchAssociationsRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AssociationActions.fetchAssociationsRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
 
-    //                     // newResp.user.setUserStores = resp.user.userStores;
+                const { supplierId } = userSupplier;
 
-    //                     return AttendanceActions.fetchAttendanceSuccess({
-    //                         payload: {
-    //                             attendance: newResp,
-    //                             source: 'fetch'
-    //                         }
-    //                     });
-    //                 }),
-    //                 catchError(err =>
-    //                     of(
-    //                         AttendanceActions.fetchAttendanceFailure({
-    //                             payload: {
-    //                                 id: 'fetchAttendanceFailure',
-    //                                 errors: err
-    //                             }
-    //                         })
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [IQueryParams, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        AssociationActions.fetchAssociationsFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchAssociationsFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
 
-    // fetchCatalogueHistoriesRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(StoreCatalogueActions.fetchStoreCatalogueHistoriesRequest),
-    //         map(action => action.payload),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([queryParams, { supplierId }]) => {
-    //             /** NO SUPPLIER ID! */
-    //             if (!supplierId) {
-    //                 return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-    //                     payload: {
-    //                         id: 'fetchStoreCataloguesFailure',
-    //                         errors: 'Not authenticated'
-    //                     }
-    //                 }));
-    //             }
+                let supplierId;
 
-    //             /** WITH PAGINATION */
-    //             if (queryParams.paginate) {
-    //                 return this.storeCatalogueApiSvc.findCatalogueHistory<IPaginatedResponse<any>>(queryParams).pipe(
-    //                     catchOffline(),
-    //                     map(resp => {
-    //                         let newResp = {
-    //                             total: 0,
-    //                             data: []
-    //                         };
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
 
-    //                         newResp = {
-    //                             total: resp.total,
-    //                             data: resp.data
-    //                         };
+                return this._$associationApi
+                    .findAll<PaginateResponse<Association>>(params, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map(resp => {
+                            const newResp = {
+                                data: resp.data || [],
+                                total: resp.total
+                            };
 
-    //                         return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
-    //                             payload: {
-    //                                 catalogueHistories: newResp.data,
-    //                                 total: newResp.total
-    //                             }
-    //                         });
-    //                     }),
-    //                     catchError(err =>
-    //                         of(
-    //                             StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
-    //                                 payload: {
-    //                                     id: 'fetchStoreCatalogueHistoriesFailure',
-    //                                     errors: err
-    //                                 }
-    //                             })
-    //                         )
-    //                     )
-    //                 );
-    //             }
+                            return AssociationActions.fetchAssociationsSuccess({
+                                payload: {
+                                    ...newResp,
+                                    data:
+                                        newResp.data && newResp.data.length > 0
+                                            ? newResp.data.map(r => new Association(r))
+                                            : []
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                AssociationActions.fetchAssociationsFailure({
+                                    payload: new ErrorHandler({
+                                        id: 'fetchAssociationsFailure',
+                                        errors: err
+                                    })
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
 
-    //             /** WITHOUT PAGINATION */
-    //             return this.storeCatalogueApiSvc.findCatalogueHistory<Array<any>>(queryParams).pipe(
-    //                 catchOffline(),
-    //                 map(resp => {
-    //                     let newResp = {
-    //                         total: 0,
-    //                         data: []
-    //                     };
+    fetchAssociationsFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AssociationActions.fetchAssociationsFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
 
-    //                     newResp = {
-    //                         total: resp.length,
-    //                         data: resp
-    //                     };
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
 
-    //                     return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
-    //                         payload: {
-    //                             catalogueHistories: newResp.data,
-    //                             total: newResp.total
-    //                         }
-    //                     });
-    //                 }),
-    //                 catchError(err =>
-    //                     of(
-    //                         StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
-    //                             payload: {
-    //                                 id: 'fetchStoreCatalogueHistoriesFailure',
-    //                                 errors: err
-    //                             }
-    //                         })
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
-
-    // fetchStoreCatalogueRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(StoreCatalogueActions.fetchStoreCatalogueRequest),
-    //         map(action => action.payload),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([storeCatalogueId, { supplierId }]) => {
-    //             /** NO SUPPLIER ID! */
-    //             if (isNaN(+supplierId)) {
-    //                 return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
-    //                     payload: {
-    //                         id: 'fetchStoreCatalogueFailure',
-    //                         errors: 'Not authenticated'
-    //                     }
-    //                 }));
-    //             }
-
-    //             return this.storeCatalogueApiSvc.findStoreCatalogue(storeCatalogueId).pipe(
-    //                 catchOffline(),
-    //                 map(resp => {
-    //                     return StoreCatalogueActions.fetchStoreCatalogueSuccess({
-    //                         payload: {
-    //                             storeCatalogue: resp,
-    //                             source: 'fetch'
-    //                         }
-    //                     });
-    //                 }),
-    //                 catchError(err =>
-    //                     of(
-    //                         StoreCatalogueActions.fetchStoreCatalogueFailure({
-    //                             payload: {
-    //                                 id: 'fetchStoreCatalogueFailure',
-    //                                 errors: err
-    //                             }
-    //                         })
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
-
-    // fetchStoreCataloguesRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(StoreCatalogueActions.fetchStoreCataloguesRequest),
-    //         map(action => action.payload),
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         switchMap(([queryParams, { supplierId }]) => {
-    //             /** NO SUPPLIER ID! */
-    //             if (isNaN(+supplierId)) {
-    //                 return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-    //                     payload: {
-    //                         id: 'fetchStoreCataloguesFailure',
-    //                         errors: 'Not authenticated'
-    //                     }
-    //                 }));
-    //             }
-
-    //             /** WITH PAGINATION */
-    //             if (queryParams.paginate) {
-    //                 const newQuery = {
-    //                     ...queryParams,
-    //                     supplierId
-    //                 };
-
-    //                 return this.storeCatalogueApiSvc.find<IPaginatedResponse<any>>(newQuery).pipe(
-    //                     catchOffline(),
-    //                     map(resp => {
-    //                         let newResp = {
-    //                             total: 0,
-    //                             data: []
-    //                         };
-
-    //                         newResp = {
-    //                             total: resp.total,
-    //                             data: resp.data
-    //                         };
-
-    //                         return StoreCatalogueActions.fetchStoreCataloguesSuccess({
-    //                             payload: {
-    //                                 storeCatalogues: newResp.data,
-    //                                 total: newResp.total
-    //                             }
-    //                         });
-    //                     }),
-    //                     catchError(err =>
-    //                         of(
-    //                             StoreCatalogueActions.fetchStoreCataloguesFailure({
-    //                                 payload: {
-    //                                     id: 'fetchStoreCataloguesFailure',
-    //                                     errors: err
-    //                                 }
-    //                             })
-    //                         )
-    //                     )
-    //                 );
-    //             }
-
-    //             /** WITHOUT PAGINATION */
-    //             return this.storeCatalogueApiSvc.find<Array<any>>(queryParams).pipe(
-    //                 catchOffline(),
-    //                 map(resp => {
-    //                     let newResp = {
-    //                         total: 0,
-    //                         data: []
-    //                     };
-
-    //                     newResp = {
-    //                         total: resp.length,
-    //                         data: resp
-    //                     };
-
-    //                     this.logSvc.generateGroup(
-    //                         '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-    //                         {
-    //                             payload: {
-    //                                 type: 'log',
-    //                                 value: resp
-    //                             }
-    //                         }
-    //                     );
-
-    //                     return StoreCatalogueActions.fetchStoreCataloguesSuccess({
-    //                         payload: {
-    //                             storeCatalogues: newResp.data,
-    //                             total: newResp.total
-    //                         }
-    //                     });
-    //                 }),
-    //                 catchError(err =>
-    //                     of(
-    //                         StoreCatalogueActions.fetchStoreCataloguesFailure({
-    //                             payload: {
-    //                                 id: 'fetchStoreCataloguesFailure',
-    //                                 errors: err
-    //                             }
-    //                         })
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
-
-    constructor() // private actions$: Actions,
-    // private route: ActivatedRoute,
-    // private router: Router,
-    // private store: Store<fromStoreCatalogue.FeatureState>,
-    // private catalogueApiSvc: CataloguesService,
-    // private storeCatalogueApiSvc: StoreCatalogueApiService,
-    // private logSvc: LogService,
-    // private _$notice: NoticeService
-    {}
+    constructor(
+        private actions$: Actions,
+        private router: Router,
+        private store: Store<fromAssociation.FeatureState>,
+        private storage: StorageMap,
+        private _$notice: NoticeService,
+        private _$associationApi: AssociationApiService
+    ) {}
 }

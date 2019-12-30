@@ -10,55 +10,120 @@ import {
     ChangeDetectorRef,
     SecurityContext
 } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { fuseAnimations } from '@fuse/animations';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 // NgRx's Libraries
-import { Store as NgRxStore } from '@ngrx/store';
+import { Store } from '@ngrx/store';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
 import { Observable, Subject, merge } from 'rxjs';
-import { takeUntil, catchError, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    flatMap,
+    takeUntil,
+    tap
+} from 'rxjs/operators';
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
 import { Association } from './models/associations.model';
 // State management's stuffs.
-// import { CoreFeatureState } from './store/reducers';
+import * as fromAssociations from './store/reducers';
 import { AssociationActions } from './store/actions';
-import { AssociationSelector } from './store/selectors';
+import { AssociationSelectors } from './store/selectors';
 import { Router } from '@angular/router';
-import { IQueryParams } from 'app/shared/models';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-associations',
     templateUrl: './associations.component.html',
-    styleUrls: ['./associations.component.scss']
+    styleUrls: ['./associations.component.scss'],
+    animations: [
+        fuseAnimations,
+        trigger('enterAnimation', [
+            transition(':enter', [
+                style({ transform: 'translateX(100%)', opacity: 0 }),
+                animate('500ms', style({ transform: 'translateX(0)', opacity: 1 }))
+            ]),
+            transition(':leave', [
+                style({ transform: 'translateX(0)', opacity: 1 }),
+                animate('500ms', style({ transform: 'translateX(100%)', opacity: 0 }))
+            ])
+        ])
+    ],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
-    // Untuk menangani search bar.
+    readonly defaultPageSize = environment.pageSize;
     search: FormControl;
-    // Untuk menampung data association.
-    associations: Array<Association>;
-    // Untuk menampung status dari state assocation.
-    isLoading$: Observable<boolean>;
-    // Untuk mendapatkan total association.
-    totalAssociations$: Observable<number>;
-    // Untuk unsubscribe semua Observable.
-    subs$: Subject<void> = new Subject<void>();
-    // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
-    defaultPageSize: number = environment.pageSize;
-    // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
-    displayedColumns: Array<string> = [
-        // 'checkbox',
-        'portfolioCode',
-        'portfolioName',
-        'storeQty',
-        'salesTarget',
-        'salesRep',
+    displayedColumns = [
+        'checkbox',
+        'portfolio-code',
+        'portfolio-name',
+        'store-qty',
+        'sales-target',
+        'sales-rep',
         'actions'
     ];
+    dataSource = [
+        {
+            name: 'Andi',
+            phone: '081391348317',
+            portofolio_code: 'Group01',
+            portofolio_name: 'Baba',
+            faktur: 'Danone',
+            sales_target: 500000000,
+            actual_sales: 500000000,
+            area: 'DC - SOLO',
+            status: 'active'
+        },
+        {
+            name: 'Yusup',
+            phone: '081391348317',
+            portofolio_code: 'Group02',
+            portofolio_name: 'Baba',
+            faktur: 'Combine',
+            sales_target: 0,
+            actual_sales: 0,
+            area: 'DC - SOLO',
+            status: 'inactive'
+        },
+        {
+            name: 'Pirmansyah',
+            phone: '081391348317',
+            portofolio_code: 'Group03',
+            portofolio_name: 'Baba',
+            faktur: 'Mars',
+            sales_target: 200000000,
+            actual_sales: 200000000,
+            area: 'DC - SOLO',
+            status: 'active'
+        },
+        {
+            name: 'Sutisna',
+            phone: '081391348317',
+            portofolio_code: 'Group04',
+            portofolio_name: 'Baba',
+            faktur: 'Danone',
+            sales_target: 350000000,
+            actual_sales: 350000000,
+            area: 'DC - SOLO',
+            status: 'active'
+        }
+    ];
+    selection: SelectionModel<Association>;
+
+    dataSource$: Observable<Array<Association>>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef;
@@ -69,104 +134,35 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    @ViewChild('filter', { static: true })
-    filter: ElementRef;
+    private _unSubs$: Subject<void>;
 
-    // Menyimpan data baris tabel yang tercentang oleh checkbox.
-    selection: SelectionModel<Association> = new SelectionModel<Association>(true, []);
+    private readonly _breadCrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home'
+        },
+        {
+            title: 'Sales Rep Management'
+        },
+        {
+            title: 'Association'
+        }
+    ];
 
     constructor(
-        private _cd: ChangeDetectorRef,
-        // private associationStore: NgRxStore<CoreFeatureState>,
-        private router: Router,
-        private readonly sanitizer: DomSanitizer
-    ) {
-        // // Mendapatkan state loading.
-        // this.isLoading$ = this.associationStore
-        //     .select(AssociationSelector.getLoadingState)
-        //     .pipe(takeUntil(this.subs$));
-        // // Mendapatkan total portfolio dari state.
-        // this.totalAssociations$ = this.associationStore
-        //     .select(AssociationSelector.getTotalAssociations)
-        //     .pipe(takeUntil(this.subs$));
-        // // Mendapatkan data portfolio dari state.
-        // this.associationStore
-        //     .select(AssociationSelector.getAllAssociations)
-        //     .pipe(takeUntil(this.subs$))
-        //     .subscribe(associations => {
-        //         // Mengambil data dari state.
-        //         this.associations = associations;
-        //         // Meng-update UI sesuai data yang didapat.
-        //         this._cd.markForCheck();
-        //     });
-    }
+        private domSanitizer: DomSanitizer,
+        private store: Store<fromAssociations.FeatureState>,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+    ) {}
 
     /**
      * PRIVATE FUNCTIONS
      */
-    // private onRefreshTable(): void {
-    //     // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
-    //     if (this.paginator) {
-    //         // Menyiapkan query parameter yang akan dikirim ke server.
-    //         const data: IQueryParams = {
-    //             limit: this.paginator.pageSize || this.defaultPageSize,
-    //             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-    //         };
-
-    //         // Menyalakan pagination.
-    //         data['paginate'] = true;
-
-    //         if (this.sort.direction) {
-    //             // Menentukan sort direction tabel.
-    //             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-
-    //             // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
-    //             if (this.sort.active === 'code') {
-    //                 data['sortBy'] = 'store_code';
-    //             }
-    //         } else {
-    //             // Sortir default jika tidak ada sort yang aktif.
-    //             data['sort'] = 'desc';
-    //             data['sortBy'] = 'id';
-    //         }
-
-    //         // Mengambil nilai dari search bar dan melakukan 'sanitasi' untuk menghindari injection.
-    //         const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
-    //         // Jika hasil sanitasi lolos, maka akan melanjutkan pencarian.
-    //         if (searchValue) {
-    //             data['search'] = [
-    //                 {
-    //                     fieldName: 'code',
-    //                     keyword: searchValue
-    //                 },
-    //                 {
-    //                     fieldName: 'name',
-    //                     keyword: searchValue
-    //                 }
-    //             ];
-    //         }
-
-    //         // Melakukan request store ke server via dispatch state.
-    //         // this.associationStore.dispatch(
-    //         //     AssociationActions.fetchPortfoliosRequest({ payload: data })
-    //         // );
-    //     }
-    // }
 
     /**
      * PUBLIC FUNCTIONS
      */
-    // exportAssociation(): void {
-    //     // this.associationStore.dispatch(AssociationActions.exportAssociationsRequest());
-    // }
 
-    // editAssociation(id: string): void {}
-
-    // viewAssociation(id: string): void {
-    //     this.router.navigate([`/pages/sales-force/association/${id}/detail`]);
-    // }
-
-    // onChangePage($event: PageEvent): void {}
+    onChangePage($event: PageEvent): void {}
 
     // isAllSelected(): boolean {
     //     const numSelected = this.selection.selected.length;
@@ -180,50 +176,174 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     //         : this.associations.forEach(row => this.selection.select(row));
     // }
 
-    /**
-     * ANGULAR'S LIFECYCLE HOOKS
-     */
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
+
+        this._unSubs$ = new Subject();
+        this.paginator.pageSize = this.defaultPageSize;
         this.search = new FormControl('');
+        this.selection = new SelectionModel<Association>(true, []);
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
+
+        this._initPage();
+
+        this._initTable();
+
+        this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
+        this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
+        this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
 
         this.search.valueChanges
             .pipe(
                 distinctUntilChanged(),
                 debounceTime(1000),
-                filter(value => {
-                    const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
-
-                    if (sanitized) {
-                        return true;
-                    } else {
-                        if (value.length === 0) {
-                            return true;
-                        } else {
-                            return false;
-                        }
+                filter(v => {
+                    if (v) {
+                        return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
                     }
+
+                    return true;
                 }),
-                takeUntil(this.subs$)
+                takeUntil(this._unSubs$)
             )
-            .subscribe(() => {
-                // this.onRefreshTable();
+            .subscribe(v => {
+                this._onRefreshTable();
             });
-
-        // this.onRefreshTable();
-    }
-
-    ngOnDestroy(): void {
-        this.subs$.next();
-        this.subs$.complete();
     }
 
     ngAfterViewInit(): void {
-        // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this.sort.sortChange
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => (this.paginator.pageIndex = 0));
+
         merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this.subs$))
+            .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
-                // this.onRefreshTable();
+                // this.table.nativeElement.scrollIntoView(true);
+                // this.table.nativeElement.scrollTop = 0;
+                this._initTable();
             });
+    }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        // Reset core state sales reps
+        this.store.dispatch(AssociationActions.clearState());
+
+        this._unSubs$.next();
+        this._unSubs$.complete();
+    }
+
+    handleCheckbox(): void {
+        this.isAllSelected()
+            ? this.selection.clear()
+            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
+    }
+
+    joinPortfolios(value: Array<Portfolio>): string {
+        if (value && value.length > 0) {
+            return value.map(v => v.invoiceGroup.name).join(', ');
+        }
+
+        return '-';
+    }
+
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        const numRows = this.paginator.length;
+
+        console.log('IS ALL SELECTED', numSelected, numRows);
+
+        return numSelected === numRows;
+    }
+
+    safeValue(value: any): any {
+        if (typeof value === 'number') {
+            return value;
+        } else {
+            return value ? value : '-';
+        }
+    }
+
+    onSelectedActions(action: 'active' | 'inactive' | 'delete'): void {
+        if (!action) {
+            return;
+        }
+
+        switch (action) {
+            case 'active':
+                console.log('Set Active', this.selection.selected);
+                break;
+
+            default:
+                return;
+        }
+    }
+
+    /**
+     *
+     * Initialize current page
+     * @private
+     * @param {LifecyclePlatform} [lifeCycle]
+     * @memberof AssociationsComponent
+     */
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        // Set breadcrumbs
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: this._breadCrumbs
+            })
+        );
+    }
+
+    private _initTable(): void {
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 5,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
+
+            data['paginate'] = true;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            if (query) {
+                localStorage.setItem('filter.search.associations', query);
+
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            } else {
+                localStorage.removeItem('filter.search.associations');
+            }
+
+            this.store.dispatch(AssociationActions.fetchAssociationsRequest({ payload: data }));
+        }
+    }
+
+    private _onRefreshTable(): void {
+        this._initTable();
     }
 }

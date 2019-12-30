@@ -1,38 +1,35 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import { fromStoreCatalogue } from '../reducers';
+import * as fromAssociation from '../reducers/association.reducer';
+import * as fromAssociationCore from '../reducers';
 
-// export const getStoreCatalogueState = createFeatureSelector<fromStoreCatalogue.State>(
-//     fromStoreCatalogue.FEATURE_KEY
-// );
+const getAssociationsCoreState = createFeatureSelector<
+    fromAssociationCore.FeatureState,
+    fromAssociationCore.State
+>(fromAssociationCore.featureKey);
 
-// export const getAllStoreCatalogue = createSelector(
-//     getStoreCatalogueState,
-//     fromStoreCatalogue.selectAllStoreCatalogues
-// );
+export const getAssociationEntitiesState = createSelector(
+    getAssociationsCoreState,
+    state => state.associations
+);
 
-// export const getTotalStoreCatalogue = createSelector(
-//     getStoreCatalogueState,
-//     state => state.storeCatalogues.total
-// );
+export const {
+    selectAll,
+    selectEntities,
+    selectIds,
+    selectTotal
+} = fromAssociation.adapter.getSelectors(getAssociationEntitiesState);
 
-// export const getSelectedStoreCatalogue = createSelector(
-//     getStoreCatalogueState,
-//     getAllStoreCatalogue,
-//     (state, storeCatalogues) =>
-//         storeCatalogues.filter(
-//             storeCatalogue => storeCatalogue.id === state.selectedStoreCatalogueId
-//         )[0]
-// );
+const getTotalItem = createSelector(getAssociationEntitiesState, state => state.total);
 
-// export const getSelectedStoreCatalogueId = createSelector(
-//     getStoreCatalogueState,
-//     state => state.selectedStoreCatalogueId
-// );
+const getSelectedId = createSelector(getAssociationEntitiesState, state => state.selectedId);
 
-// export const getSourceType = createSelector(getStoreCatalogueState, state => state.source);
+const getSelectedItem = createSelector(
+    selectEntities,
+    getSelectedId,
+    (entities, id) => entities[id]
+);
 
-// export const getStoreCatalogue = createSelector(
-//     getStoreCatalogueState,
-//     state => state.storeCatalogues
-// );
+const getIsLoading = createSelector(getAssociationEntitiesState, state => state.isLoading);
+
+export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };

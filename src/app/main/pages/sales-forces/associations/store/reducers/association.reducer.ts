@@ -1,8 +1,54 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
-import * as fromRoot from 'app/store/app.reducer';
+import { createReducer, on } from '@ngrx/store';
 
-// import { StoreCatalogue } from '../../models';
+import { Association } from '../../models';
 import { AssociationActions } from '../actions';
-import { Association } from '../../models/associations.model';
+
+// Keyname for reducer
+const featureKey = 'associations';
+
+/**
+ *
+ * Main interface for reducer
+ * @interface State
+ * @extends {EntityState<Association>}
+ */
+interface State extends EntityState<Association> {
+    isRefresh?: boolean;
+    isLoading: boolean;
+    selectedId: string;
+    total: number;
+}
+
+// Adapter for Association state
+const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
+
+// Initialize state
+const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    isLoading: false,
+    selectedId: null,
+    total: 0
+});
+
+// Reducer manage the action
+const reducer = createReducer<State>(
+    initialState,
+    on(AssociationActions.fetchAssociationsRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(AssociationActions.fetchAssociationsFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
+    on(AssociationActions.fetchAssociationsSuccess, (state, { payload }) => {
+        return adapter.addAll(payload.data, {
+            ...state,
+            isLoading: false,
+            total: payload.total
+        });
+    })
+);
+
+// Set anything for the export
+export { adapter, featureKey, initialState, reducer, State };

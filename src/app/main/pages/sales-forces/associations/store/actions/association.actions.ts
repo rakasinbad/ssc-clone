@@ -1,24 +1,24 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-import { Association } from '../../models/associations.model';
-
-// import { StoreCatalogue } from '../../models';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { Association } from '../../models';
 
 /**
- * STORE CATALOGUE
+ * ASSOCIATIONS
  */
 
-// export const fetchStoreCatalogueRequest = createAction(
-//     '[Store Catalogues API] Fetch Store Catalogue Request',
-//     props<{ payload: string }>()
-// );
+export const fetchAssociationsRequest = createAction(
+    '[Associations API] Fetch Associations Request',
+    props<{ payload: IQueryParams }>()
+);
 
-// export const fetchStoreCatalogueFailure = createAction(
-//     '[Store Catalogues API] Fetch Store Catalogue Failure',
-//     props<{ payload: IErrorHandler }>()
-// );
+export const fetchAssociationsFailure = createAction(
+    '[Associations API] Fetch Associations Failure',
+    props<{ payload: ErrorHandler }>()
+);
 
-// export const fetchStoreCatalogueSuccess = createAction(
-//     '[Store Catalogues API] Fetch Store Catalogue Success',
-//     props<{ payload: { associations: Association; source: TSource } }>()
-// );
+export const fetchAssociationsSuccess = createAction(
+    '[Associations API] Fetch Associations Success',
+    props<{ payload: { data: Array<Association>; total: number } }>()
+);
+
+export const clearState = createAction('[Associations Page] Reset Core State');

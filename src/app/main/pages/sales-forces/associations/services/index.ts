@@ -1,3 +1,1 @@
-import { AssociationsApiService } from './associations-api.service';
-
-export { AssociationsApiService };
+export * from './association-api.service';

@@ -1,118 +1,27 @@
 // -----------------------------------------------------------------------------------------------------
 // @ Custom color maps for Fuse
 // -----------------------------------------------------------------------------------------------------
-$fuse-white: (
-    500: white,
-    contrast: (
-        500: $dark-primary-text
-    )
-);
-
-$fuse-black: (
-    500: black,
-    contrast: (
-        500: $light-primary-text
-    )
-);
-
-$fuse-navy: (
-    50: #ececee,
-    100: #c5c6cb,
-    200: #9ea1a9,
-    300: #7d818c,
-    400: #5c616f,
-    500: #3c4252,
-    600: #353a48,
-    700: #2d323e,
-    800: #262933,
-    900: #1e2129,
-    A100: #c5c6cb,
-    A200: #9ea1a9,
-    A400: #5c616f,
-    A700: #2d323e,
-    contrast: (
-        50: $dark-primary-text,
-        100: $dark-primary-text,
-        200: $dark-primary-text,
-        300: $light-primary-text,
-        400: $light-primary-text,
-        500: $light-primary-text,
-        600: $light-primary-text,
-        700: $light-primary-text,
-        800: $light-primary-text,
-        900: $light-primary-text,
-        A100: $dark-primary-text,
-        A200: $light-primary-text,
-        A400: $light-primary-text,
-        A700: $light-primary-text
-    )
-);
-
-$sinbad-accent: (
-    50: #fde9ea,
-    100: #fbc7c9,
-    200: #f8a2a6,
-    300: #f57c82,
-    400: #f26067,
-    500: #f0444c,
-    600: #ee3e45,
-    700: #ec353c,
-    800: #e92d33,
-    900: #e51f24,
-    contrast: (
-        50: $dark-primary-text,
-        100: $dark-primary-text,
-        200: $dark-primary-text,
-        300: $light-primary-text,
-        400: $light-primary-text,
-        500: $light-primary-text,
-        600: $light-primary-text,
-        700: $light-primary-text,
-        800: $light-primary-text,
-        900: $light-primary-text,
-        A100: $dark-primary-text,
-        A200: $light-primary-text,
-        A400: $light-primary-text,
-        A700: $light-primary-text
-    )
-);
-
+$fuse-white: ( 500: white, contrast: ( 500: $dark-primary-text));
+$fuse-black: ( 500: black, contrast: ( 500: $light-primary-text));
+$fuse-navy: ( 50: #ececee, 100: #c5c6cb, 200: #9ea1a9, 300: #7d818c, 400: #5c616f, 500: #3c4252, 600: #353a48, 700: #2d323e, 800: #262933, 900: #1e2129, A100: #c5c6cb, A200: #9ea1a9, A400: #5c616f, A700: #2d323e, contrast: ( 50: $dark-primary-text, 100: $dark-primary-text, 200: $dark-primary-text, 300: $light-primary-text, 400: $light-primary-text, 500: $light-primary-text, 600: $light-primary-text, 700: $light-primary-text, 800: $light-primary-text, 900: $light-primary-text, A100: $dark-primary-text, A200: $light-primary-text, A400: $light-primary-text, A700: $light-primary-text));
+$sinbad-accent: ( 50: #fde9ea, 100: #fbc7c9, 200: #f8a2a6, 300: #f57c82, 400: #f26067, 500: #f0444c, 600: #ee3e45, 700: #ec353c, 800: #e92d33, 900: #e51f24, contrast: ( 50: $dark-primary-text, 100: $dark-primary-text, 200: $dark-primary-text, 300: $light-primary-text, 400: $light-primary-text, 500: $light-primary-text, 600: $light-primary-text, 700: $light-primary-text, 800: $light-primary-text, 900: $light-primary-text, A100: $dark-primary-text, A200: $light-primary-text, A400: $light-primary-text, A700: $light-primary-text));
 // Generate Fuse color classes for custom palettes
-$custom_palettes: (
-    fuse-white: $fuse-white,
-    fuse-black: $fuse-black,
-    fuse-navy: $fuse-navy,
-    sinbad-accent: $sinbad-accent
-);
-
+$custom_palettes: ( fuse-white: $fuse-white, fuse-black: $fuse-black, fuse-navy: $fuse-navy, sinbad-accent: $sinbad-accent);
 @include fuse-color-classes($custom_palettes);
-
 // -----------------------------------------------------------------------------------------------------
 // @ Typography
 // -----------------------------------------------------------------------------------------------------
-
 // Angular Material typography
-$typography: mat-typography-config(
-    $font-family: 'Muli, Helvetica Neue, Arial, sans-serif',
-    $title: mat-typography-level(20px, 32px, 600),
-    $body-2: mat-typography-level(14px, 24px, 600),
-    $button: mat-typography-level(14px, 14px, 600),
-    $input: mat-typography-level(16px, 1.125, 400)
-);
-
+$typography: mat-typography-config( $font-family: 'Muli, Helvetica Neue, Arial, sans-serif', $title: mat-typography-level(20px, 32px, 600), $body-2: mat-typography-level(14px, 24px, 600), $button: mat-typography-level(14px, 14px, 600), $input: mat-typography-level(16px, 1.125, 400));
 // line-height must be unitless !!!
-
 // Setup the typography
 @include angular-material-typography($typography);
-
 // -----------------------------------------------------------------------------------------------------
 // @ Component theming
 // -----------------------------------------------------------------------------------------------------
-
 // Import app and page component themes here to enable theming for them
 @import 'src/app/layout/components/chat-panel/chat-panel.theme';
 @import 'src/app/layout/components/toolbar/toolbar.theme';
-
 @import 'src/app/main/pages/core/auth/login/login.theme';
 @import 'src/app/main/pages/core/profile/profile.theme';
 @import 'src/app/main/pages/accounts/accounts.theme';
@@ -129,23 +38,19 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
 @import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
 @import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
-
+@import 'src/app/main/pages/sales-forces/associations/associations.theme';
 // Sales force
 @import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
-
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
 // @import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
-
 // Plugin https://github.com/SaturnTeam/saturn-datepicker
 @import '~saturn-datepicker/theming';
-
 // Define a mixin for easier access
 @mixin components-theme($theme) {
     // Layout components
     @include chat-panel-theme($theme);
     @include toolbar-theme($theme);
-
     // Pages
     @include login-theme($theme);
     @include accounts-theme($theme);
@@ -161,10 +66,9 @@ $typography: mat-typography-config(
     @include profile-theme($theme);
     @include supplier-inventories-theme($theme);
     @include portfolios-theme($theme);
-
+    @include associations-theme($theme);
     // Sales force
     @include sales-reps-theme($theme);
-
     // Plugin
     // @include mat-datepicker-theme($theme);
     // Using the $theme variable from the pre-built theme you can call the theming function
@@ -175,185 +79,114 @@ $typography: mat-typography-config(
 // -----------------------------------------------------------------------------------------------------
 // @ Define the default theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $default-primary-palette: mat-palette($fuse-navy);
 $default-accent-palette: mat-palette($mat-light-blue, 600, 400, 700);
 $default-warn-palette: mat-palette($mat-red);
-
 // Create the Material theme object
 $theme: mat-light-theme($default-primary-palette, $default-accent-palette, $default-warn-palette);
-
 // Add ".theme-default" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-default {
     // Create an Angular Material theme from the $theme map
     @include angular-material-theme($theme);
-
     // Apply the theme to the Fuse Core
     @include fuse-core-theme($theme);
-
     // Apply the theme to the user components
     @include components-theme($theme);
-
     // Generate Fuse color classes for primary, accent and warn colors
-    $palettes: (
-        primary: $default-primary-palette,
-        accent: $default-accent-palette,
-        warn: $default-warn-palette
-    );
-
+    $palettes: ( primary: $default-primary-palette, accent: $default-accent-palette, warn: $default-warn-palette);
     @include fuse-color-classes($palettes);
 }
 
 // -----------------------------------------------------------------------------------------------------
 // @ Define a yellow light theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $yellow-light-theme-primary-palette: mat-palette($fuse-navy, 600, 400, 700);
 $yellow-light-theme-accent-palette: mat-palette($mat-yellow, 600, 400, 700);
 $yellow-light-theme-warn-palette: mat-palette($mat-red);
-
 // Create the Material theme object
-$yellow-light-theme: mat-light-theme(
-    $yellow-light-theme-primary-palette,
-    $yellow-light-theme-accent-palette,
-    $yellow-light-theme-warn-palette
-);
-
+$yellow-light-theme: mat-light-theme( $yellow-light-theme-primary-palette, $yellow-light-theme-accent-palette, $yellow-light-theme-warn-palette);
 // Add ".theme-yellow-light" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-yellow-light {
     // Generate the Angular Material theme
     @include angular-material-theme($yellow-light-theme);
-
     // Apply the theme to the Fuse Core
     @include fuse-core-theme($yellow-light-theme);
-
     // Apply the theme to the user components
     @include components-theme($yellow-light-theme);
-
     // Generate Fuse color classes for primary, accent and warn colors
-    $palettes: (
-        primary: $yellow-light-theme-primary-palette,
-        accent: $yellow-light-theme-accent-palette,
-        warn: $yellow-light-theme-warn-palette
-    );
-
+    $palettes: ( primary: $yellow-light-theme-primary-palette, accent: $yellow-light-theme-accent-palette, warn: $yellow-light-theme-warn-palette);
     @include fuse-color-classes($palettes);
 }
 
 // -----------------------------------------------------------------------------------------------------
 // @ Define a blue-gray dark theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $blue-gray-dark-theme-primary-palette: mat-palette($mat-blue);
 $blue-gray-dark-theme-accent-palette: mat-palette($mat-blue-gray);
 $blue-gray-dark-theme-warn-palette: mat-palette($mat-red);
-
 // Create the Material theme object
-$blue-gray-dark-theme: mat-dark-theme(
-    $blue-gray-dark-theme-primary-palette,
-    $blue-gray-dark-theme-accent-palette,
-    $blue-gray-dark-theme-warn-palette
-);
-
+$blue-gray-dark-theme: mat-dark-theme( $blue-gray-dark-theme-primary-palette, $blue-gray-dark-theme-accent-palette, $blue-gray-dark-theme-warn-palette);
 // Add ".theme-blue-gray-dark" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-blue-gray-dark {
     // Generate the Angular Material theme
     @include angular-material-theme($blue-gray-dark-theme);
-
     // Apply the theme to the Fuse Core
     @include fuse-core-theme($blue-gray-dark-theme);
-
     // Apply the theme to the user components
     @include components-theme($blue-gray-dark-theme);
-
     // Generate Fuse color classes for primary, accent and warn colors
-    $palettes: (
-        primary: $blue-gray-dark-theme-primary-palette,
-        accent: $blue-gray-dark-theme-accent-palette,
-        warn: $blue-gray-dark-theme-warn-palette
-    );
-
+    $palettes: ( primary: $blue-gray-dark-theme-primary-palette, accent: $blue-gray-dark-theme-accent-palette, warn: $blue-gray-dark-theme-warn-palette);
     @include fuse-color-classes($palettes);
 }
 
 // -----------------------------------------------------------------------------------------------------
 // @ Define a pink dark theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $pink-dark-theme-primary-palette: mat-palette($mat-pink);
 $pink-dark-theme-accent-palette: mat-palette($mat-pink);
 $pink-dark-theme-warn-palette: mat-palette($mat-red);
-
 // Create the Material theme object
-$pink-dark-theme: mat-dark-theme(
-    $pink-dark-theme-primary-palette,
-    $pink-dark-theme-accent-palette,
-    $pink-dark-theme-warn-palette
-);
-
+$pink-dark-theme: mat-dark-theme( $pink-dark-theme-primary-palette, $pink-dark-theme-accent-palette, $pink-dark-theme-warn-palette);
 // Add ".theme-pink-dark" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-pink-dark {
     // Generate the Angular Material theme
     @include angular-material-theme($pink-dark-theme);
-
     // Apply the theme to the Fuse Core
     @include fuse-core-theme($pink-dark-theme);
-
     // Apply the theme to the user components
     @include components-theme($pink-dark-theme);
-
     // Generate Fuse color classes for primary, accent and warn colors
-    $palettes: (
-        primary: $pink-dark-theme-primary-palette,
-        accent: $pink-dark-theme-accent-palette,
-        warn: $pink-dark-theme-warn-palette
-    );
-
+    $palettes: ( primary: $pink-dark-theme-primary-palette, accent: $pink-dark-theme-accent-palette, warn: $pink-dark-theme-warn-palette);
     @include fuse-color-classes($palettes);
 }
 
 // -----------------------------------------------------------------------------------------------------
 // @ Define a sinbad light theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $sinbad-light-theme-primary-palette: mat-palette($fuse-navy);
 $sinbad-light-theme-accent-palette: mat-palette($sinbad-accent);
 $sinbad-light-theme-warn-palette: mat-palette($mat-red);
-
 // Create the Material theme object
-$sinbad-light-theme: mat-light-theme(
-    $sinbad-light-theme-primary-palette,
-    $sinbad-light-theme-accent-palette,
-    $sinbad-light-theme-warn-palette
-);
-
+$sinbad-light-theme: mat-light-theme( $sinbad-light-theme-primary-palette, $sinbad-light-theme-accent-palette, $sinbad-light-theme-warn-palette);
 // Add ".theme-sinbad-light" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-sinbad-light {
     // Generate the Angular Material theme
     @include angular-material-theme($sinbad-light-theme);
-
     // Apply the theme to the Fuse Core
     @include fuse-core-theme($sinbad-light-theme);
-
     // Apply the theme to the user components
     @include components-theme($sinbad-light-theme);
-
     // Generate Fuse color classes for primary, accent and warn colors
-    $palettes: (
-        primary: $sinbad-light-theme-primary-palette,
-        accent: $sinbad-light-theme-accent-palette,
-        warn: $sinbad-light-theme-warn-palette
-    );
-
+    $palettes: ( primary: $sinbad-light-theme-primary-palette, accent: $sinbad-light-theme-accent-palette, warn: $sinbad-light-theme-warn-palette);
     @include fuse-color-classes($palettes);
 }

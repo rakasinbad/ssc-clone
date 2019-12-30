@@ -2,40 +2,73 @@ import { ITimestamp, TNullable, User, InvoiceGroup, Supplier } from 'app/shared/
 
 type TStatusType = 'active' | 'inactive';
 
-interface IAssociation extends ITimestamp {
+export interface IAssociation extends ITimestamp {
     id: string;
+    name: string;
+    code: string;
+    type: string;
+    invoiceGroupId: string;
     userId: string;
-    supplierId: string;
-    status: TStatusType;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
-    supplier: Supplier;
+    invoiceGroup: InvoiceGroup;
     user: User;
+    user_id: string;
+    storePortfolios: [];
+    totalTargetSales: number;
+    actualTargetSales: number;
 }
 
 export class Association implements IAssociation {
     id: string;
+    name: string;
+    code: string;
+    type: string;
+    invoiceGroupId: string;
     userId: string;
-    supplierId: string;
-    status: TStatusType;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
-    supplier: Supplier;
+    invoiceGroup: InvoiceGroup;
     user: User;
+    user_id: string;
+    storePortfolios: [];
+    totalTargetSales: number;
+    actualTargetSales: number;
 
     constructor(data: IAssociation) {
-        const { id, supplierId, userId, createdAt, updatedAt, deletedAt, supplier, user } = data;
+        const {
+            id,
+            name,
+            code,
+            type,
+            invoiceGroup,
+            userId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+            user,
+            user_id,
+            storePortfolios,
+            totalTargetSales,
+            actualTargetSales
+        } = data;
 
         this.id = id;
-        this.supplierId = supplierId;
+        this.name = name;
+        this.code = code;
+        this.type = type;
         this.userId = userId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.user_id = user_id;
+        this.storePortfolios = storePortfolios;
+        this.totalTargetSales = totalTargetSales;
+        this.actualTargetSales = actualTargetSales;
 
-        this.supplier = supplier ? new Supplier(supplier) : supplier;
+        this.invoiceGroup = invoiceGroup ? new InvoiceGroup(invoiceGroup) : invoiceGroup;
 
         this.user = user ? new User(user) : user;
     }

@@ -1,3 +1,3 @@
-import * as AssociationSelector from './association.selectors';
+import * as AssociationSelectors from './association.selectors';
 
-export { AssociationSelector };
+export { AssociationSelectors };
