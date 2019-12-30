@@ -25,14 +25,9 @@ import { CustomSerializer } from './store/custom-serializer';
         }),
         EffectsModule.forRoot([AuthEffects, NetworkEffects, DropdownEffects, UiEffects]),
         environment.production || environment.staging
-            ? StoreDevtoolsModule.instrument({
-                  name: 'Sinbad Seller Center',
-                  logOnly: environment.production || environment.staging,
-                  maxAge: 10
-              })
+            ? []
             : StoreDevtoolsModule.instrument({
-                  name: 'NgRx Sinbad Seller Center',
-                  logOnly: environment.production
+                  name: 'NgRx Sinbad Seller Center'
               }),
         // environment.production
         //     ? []

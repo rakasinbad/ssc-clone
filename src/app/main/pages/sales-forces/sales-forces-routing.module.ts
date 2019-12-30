@@ -7,7 +7,15 @@ const routes: Routes = [
         path: 'sales-rep',
         loadChildren: () => import('./sales-reps/sales-reps.module').then(m => m.SalesRepsModule)
     },
-    { path: 'associations', loadChildren: () => import('./associations/associations.module').then(m => m.AssociationsModule) }
+    {
+        path: 'portfolio',
+        loadChildren: () => import('./portfolios/portfolios.module').then(m => m.PortfoliosModule)
+    },
+    {
+        path: 'associations',
+        loadChildren: () =>
+            import('./associations/associations.module').then(m => m.AssociationsModule)
+    }
 ];
 
 @NgModule({

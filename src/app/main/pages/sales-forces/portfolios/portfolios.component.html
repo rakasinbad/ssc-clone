@@ -1,0 +1,195 @@
+<div id="portfolios" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+    <!-- CONTENT -->
+    <div class="center px-32" fxLayout="column" fxLayoutGap="20px">
+        <!-- TOOLBAR -->
+        <div class="header mb-0 h-200" fxLayout="column">
+            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                <!-- TITLE -->
+                <p class="h2" fxFlexAlign="center">Portfolio</p>
+                <!-- / TITLE -->
+                <!-- SEARCH -->
+                <div fxFlexAlign="center" class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [formControl]="search" placeholder="Cari di sini" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <div fxLayout="row" fxLayoutAlign="space-between stretch">
+                <!-- ADD BUTTON -->
+                <button
+                    mat-flat-button
+                    color="accent"
+                    fxFlexAlign="center"
+                    (click)="addPortfolio()"
+                >
+                    <mat-icon>add</mat-icon>
+                    Add
+                </button>
+                <!-- / ADD BUTTON -->
+                <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
+                <div fxLayout="row" fxLayoutGap="16px">
+                    <!-- EXPORT BUTTON -->
+                    <button
+                        mat-stroked-button
+                        color="accent"
+                        fxFlexAlign="center"
+                        class="red-border"
+                        (click)="exportPortfolio()"
+                    >
+                        Export
+                    </button>
+                    <!-- / EXPORT BUTTON -->
+                    <!-- IMPORT BUTTON -->
+                    <button
+                        mat-stroked-button
+                        color="accent"
+                        class="red-border"
+                        fxFlexAlign="center"
+                    >
+                        Import
+                    </button>
+                    <!-- / IMPORT BUTTON -->
+                    <!-- FILTER BUTTON -->
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        fxFlexAlign="center"
+                    >
+                        Filter List
+                    </button>
+                    <!-- / FILTER BUTTON -->
+                    <!-- "GROUP BY" BUTTON -->
+                    <button
+                        mat-flat-button
+                        color="primary"
+                        fxFlexAlign="center"
+                    >
+                        Group By
+                    </button>
+                    <!-- / "GROUP BY" BUTTON -->
+                </div>
+                <!-- / IMPORT, EXPORT, FILTER, GROUP BY -->
+            </div>
+        </div>
+        <!-- / TOOLBAR -->
+        <!-- TABLES -->
+        <div class="content-card">
+            <mat-table
+                class="portfolios-table"
+                #table
+                [dataSource]="portfolios"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox   (change)="$event ? masterToggle() : null"
+                                        (click)="$event.stopPropagation()"
+                                        [checked]="selection.hasValue() && isAllSelected()"
+                                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox   (click)="$event.stopPropagation()"
+                                        (change)="$event ? selection.toggle(row) : null"
+                                        [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- "Portfolio Code" Column -->
+                <ng-container matColumnDef="code">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Portfolio Code
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>
+                            {{ row?.code }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- "Portfolio Name" Column -->
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Portfolio Name</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.name }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- "Sales Force" Column -->
+                <ng-container matColumnDef="salesForce">
+                    <mat-header-cell *matHeaderCellDef>Sales Rep.</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="word-wrap">{{ row?.user?.fullName }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Timestamp Column -->
+                <ng-container matColumnDef="timestamp">
+                    <mat-header-cell *matHeaderCellDef>Last Update Portfolio</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="text-truncate">{{ row?.updatedAt | date }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Actions
+                    </mat-header-cell>
+
+                    <mat-cell class="pr-8" *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="edit"
+                                    (click)="editPortfolio(row.id)"
+                                >
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewPortfolio(row?.id)" class="portfolio"></mat-row>
+            </mat-table>
+
+            <mat-paginator
+                [length]="totalPortfolios$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / TABLES -->
+    </div>
+    <!-- / CONTENT -->
+</div>

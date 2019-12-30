@@ -1,0 +1,239 @@
+<form id="sales-form" [formGroup]="form" novalidate>
+    <div class="section pb-48">
+        <div class="pb-16 section__top--contents" fxLayout="row" fxLayoutAlign="start center">
+            <div class="h2 section__title">Sales Rep Detail</div>
+        </div>
+
+        <div class="box-info horizontal" fxLayout="column">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('name')"
+                >
+                    *Sales Rep Name
+                </label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <input type="text" matInput formControlName="name" />
+
+                        <mat-error *ngIf="hasError('name', true)">
+                            {{ getErrorMessage('name') }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('phone')"
+                >
+                    *Phone Number
+                </label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <input type="tel" matInput formControlName="phone" />
+
+                        <mat-error *ngIf="hasError('phone', true)">
+                            {{ getErrorMessage('phone') }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <ng-container *ngIf="pageType === 'new'">
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('newPassword')"
+                    >
+                        *New Password
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input type="password" matInput formControlName="newPassword" />
+                            <mat-hint align="end">Must be at least 8 characters long</mat-hint>
+
+                            <mat-error *ngIf="hasError('newPassword', true)">
+                                {{ getErrorMessage('newPassword') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('confirmPassword')"
+                    >
+                        *re-Type Pass..
+                    </label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input type="password" matInput formControlName="confirmPassword" />
+
+                            <mat-error *ngIf="hasError('confirmPassword', true)">
+                                {{ getErrorMessage('confirmPassword') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </ng-container>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('photo')"
+                >
+                    Sales Photo
+                </label>
+
+                <div class="custom-field__field" fxFlex="50">
+                    <mat-form-field
+                        class="sinbad-file-field"
+                        appearance="outline"
+                        fxFlex="59"
+                        [class.mat-form-field-invalid]="hasError('photo')"
+                    >
+                        <input
+                            #photoPicker
+                            type="file"
+                            class="custom-file"
+                            accept=".jpg, .jpeg, .png"
+                            formControlName="photo"
+                            (change)="onFileBrowse($event, 'photo')"
+                        />
+                        <input matInput [formControl]="tmp.photo" placeholder="No file choose" />
+
+                        <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
+                            {{ getErrorMessage('photo') }}
+                        </mat-hint>
+                    </mat-form-field>
+
+                    <button
+                        mat-flat-button
+                        color="accent"
+                        type="button"
+                        (click)="photoPicker.click()"
+                        fxFlexAlign="center"
+                    >
+                        Upload your file
+                    </button>
+
+                    <ng-container *ngIf="pageType === 'edit' && (salesRep$ | async) as salesRep">
+                        <a
+                            [href]="salesRep?.user?.imageUrl"
+                            target="_blank"
+                            *ngIf="salesRep?.user?.imageUrl"
+                            style="position: relative;top: 0.8em"
+                        >
+                            <mat-icon>remove_red_eye</mat-icon>
+                        </a>
+                    </ng-container>
+                </div>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label
+                    class="custom-field__label"
+                    fxFlexAlign="center"
+                    fxFlex="13"
+                    [class.mat-error]="hasError('identityId')"
+                >
+                    *Identity ID
+                </label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <input
+                            type="text"
+                            matInput
+                            formControlName="identityId"
+                            mask="0000000000000000"
+                        />
+
+                        <mat-error *ngIf="hasError('identityId', true)">
+                            {{ getErrorMessage('identityId') }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <!-- <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="12">
+                    Area
+                </label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <input type="text" matInput formControlName="area" />
+                    </mat-form-field>
+                </div>
+            </div> -->
+
+            <div
+                class="custom-field mt-16"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label fxFlex="13"></label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-slide-toggle formControlName="status">
+                        Active
+                    </mat-slide-toggle>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

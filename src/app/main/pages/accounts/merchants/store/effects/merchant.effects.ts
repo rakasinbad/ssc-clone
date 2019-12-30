@@ -1744,44 +1744,8 @@ export class MerchantEffects {
                 return this._$userApi.findById(id).pipe(
                     catchOffline(),
                     map(resp => {
-                        const newResp = new User(
-                            resp.id,
-                            resp.fullName,
-                            resp.email,
-                            resp.phoneNo,
-                            resp.mobilePhoneNo,
-                            resp.idNo,
-                            resp.taxNo,
-                            resp.status,
-                            resp.imageUrl,
-                            resp.taxImageUrl,
-                            resp.idImageUrl,
-                            resp.selfieImageUrl,
-                            resp.urbanId,
-                            resp.roles,
-                            resp.createdAt,
-                            resp.updatedAt,
-                            resp.deletedAt
-                        );
-
-                        if (resp.userStores) {
-                            newResp.setUserStores = resp.userStores;
-                        }
-
-                        if (resp.userSuppliers) {
-                            newResp.setUserSuppliers = resp.userSuppliers;
-                        }
-
-                        if (resp.urban) {
-                            newResp.setUrban = resp.urban;
-                        }
-
-                        if (resp.attendances) {
-                            newResp.setAttendances = resp.attendances;
-                        }
-
                         return StoreActions.fetchStoreEmployeeEditSuccess({
-                            payload: newResp
+                            payload: new User(resp)
                         });
                     }),
                     catchError(err =>

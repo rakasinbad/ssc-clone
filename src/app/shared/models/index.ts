@@ -11,6 +11,7 @@ export * from './legal.model';
 export * from './order-parcel.model';
 export * from './payment-method.model';
 export * from './payment-type.model';
+export * from './portfolio.model';
 export * from './privilege.model';
 export * from './province.model';
 export * from './query.model';

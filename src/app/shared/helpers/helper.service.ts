@@ -2,10 +2,14 @@ import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, filter } from 'rxjs/operators';
 
 import { IQueryParams } from '../models/query.model';
+import * as jwt_decode from 'jwt-decode';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { Auth } from 'app/main/pages/core/auth/models';
+import { User, TNullable, ErrorHandler } from '../models';
 
 type TTemplateFiles = {
     catalogueStock: string;
@@ -50,7 +54,7 @@ export class HelperService {
         }
     ];
 
-    constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient) {
+    constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient, private storage: StorageMap) {
         this._currentHost = this.doc.location.hostname;
     }
 
@@ -387,5 +391,47 @@ export class HelperService {
     downloadTemplate(): Observable<TTemplateFiles> {
         const url = this.handleApiRouter('/import-template-links');
         return this.http.get<TTemplateFiles>(url);
+    }
+
+    decodeUserToken(): Observable<TNullable<User>> {
+        return this.storage
+            .get<Auth>('user')
+            .pipe(
+                map((userAuth: Auth) => {
+                    if (!userAuth) {
+                        throwError(new ErrorHandler({
+                            id: 'ERR_NO_TOKEN',
+                            errors: `Token found: ${userAuth.token}`
+                        }));
+                    } else {
+                        try {
+                            let userData: User;
+
+                            if (!userAuth.user) {
+                                // Decode the token.
+                                const decodedToken = jwt_decode<Auth>(userAuth.token);
+                                userData = decodedToken.user;
+                            } else {
+                                userData = userAuth.user;
+                            }
+
+                            // Create User object.
+                            const user = new User(userData);
+                            // user.setUserStores = userData.userStores;
+                            // user.setUserSuppliers = userData.userSuppliers;
+                            // user.setUrban = userData.urban;
+                            // user.setAttendances = userData.attendances;
+
+                            // Return the value as User object.
+                            return user;
+                        } catch (e) {
+                            throwError(new ErrorHandler({
+                                id: 'ERR_USER_INVALID_TOKEN',
+                                errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`
+                            }));
+                        }
+                    }
+                })
+            );
     }
 }
