@@ -8,16 +8,18 @@ import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { PortfoliosStoreModule } from './portfolios-store.module';
 import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form.component';
+import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
+import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-stores/portfolios-filter-stores.component';
 // import { PortfolioCreateComponent } from './pages/portfolio-create/portfolio-create.component';
-// import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
 
 
 @NgModule({
     declarations: [
         PortfoliosComponent,
         PortfoliosFormComponent,
+        PortfolioDetailsComponent,
+        PortfoliosFilterStoresComponent,
         // PortfolioCreateComponent,
-        // PortfolioDetailsComponent
     ],
     imports: [
         CommonModule,
@@ -26,6 +28,9 @@ import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form
         PortfoliosRoutingModule,
         PortfoliosStoreModule,
         MaterialModule,
+    ],
+    entryComponents: [
+        PortfoliosFilterStoresComponent
     ]
 })
 export class PortfoliosModule { }
