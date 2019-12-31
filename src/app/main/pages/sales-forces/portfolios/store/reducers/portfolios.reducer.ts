@@ -132,7 +132,8 @@ export const reducer = createReducer(
             ...state,
             stores: adapterPortfolioStore.addAll(payload.stores, {
                 ...state.stores,
-                isLoading: false
+                isLoading: false,
+                total: payload.total
             })
         })
     ),
@@ -152,6 +153,46 @@ export const reducer = createReducer(
             newStores: adapterPortfolioNewStore.removeMany(payload, {
                 ...state.newStores
             })
+        })
+    ),
+    on(
+        PortfolioActions.addSelectedPortfolios,
+        (state, { payload }) => {
+            // Add the payload to state.
+            state.selectedIds.push(...payload);
+
+            // Create a Set to make sure all of the elements is unique.
+            const set = new Set(state.selectedIds);
+            // Convert to Array.
+            state.selectedIds = Array.from<string>(set);
+
+            // Return the new state.
+            return state;
+        }
+    ),
+    on(
+        PortfolioActions.setSelectedPortfolios,
+        (state, { payload }) => ({
+            ...state,
+            selectedIds: payload
+        })
+    ),
+    on(
+        PortfolioActions.truncateSelectedPortfolios,
+        (state) => ({
+            ...state,
+            selectedIds: []
+        })
+    ),
+    on(
+        PortfolioActions.truncatePortfolioStores,
+        (state) => ({
+            ...state,
+            stores: adapterPortfolioStore.removeAll({
+                ...state.stores,
+                total: 0
+            }),
+            newStores: adapterPortfolioNewStore.removeAll(state.newStores),
         })
     ),
     on(
