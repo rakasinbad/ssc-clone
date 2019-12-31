@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, SecurityContext } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, SecurityContext, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Store as NgRxStore } from '@ngrx/store';
 // RxJS' Libraries
 import { Observable, Subject, merge, combineLatest } from 'rxjs';
-import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
 
 // Environment variables.
 import { environment } from '../../../../../../../environments/environment';
@@ -22,7 +22,7 @@ import { UiActions, DropdownActions } from 'app/shared/store/actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
 import { IQueryParams, InvoiceGroup, SupplierStore } from 'app/shared/models';
 import { Store } from '../../models';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
@@ -32,6 +32,7 @@ import { StoreActions } from '../../store/actions';
 import { StoreSelector } from '../../store/selectors';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { IPortfolioAddForm } from '../../models/portfolios.model';
+import { PortfoliosFilterStoresComponent } from '../../components/portfolios-filter-stores/portfolios-filter-stores.component';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -41,7 +42,7 @@ import { IPortfolioAddForm } from '../../models/portfolios.model';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PortfoliosFormComponent implements OnInit, AfterViewInit {
+export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Untuk menandakan halaman detail dalam keadaan mode edit atau tidak.
     isEditMode: boolean;
@@ -108,7 +109,8 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         'name',
         // 'region',
         'segment',
-        'type'
+        'type',
+        'delete'
     ];
     // Menyimpan data baris tabel yang tercentang oleh checkbox.
     portfolioStoreSelection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
@@ -123,8 +125,9 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
 
     constructor(
         private portfolioStore: NgRxStore<CoreFeatureState>,
-        private storeState: NgRxStore<CoreFeatureState>,
+        private shopStore: NgRxStore<CoreFeatureState>,
         private dropdownStore: NgRxStore<fromDropdown.State>,
+        private matDialog: MatDialog,
         private readonly sanitizer: DomSanitizer,
         private route: ActivatedRoute,
         private router: Router,
@@ -156,8 +159,8 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
                 active: false
             },
             {
-                title: 'Portfolio',
-                translate: 'BREADCRUMBS.PORTFOLIO',
+                title: 'Sales Rep Management',
+                translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                 url: '/pages/sales-force/portfolio'
             },
             {
@@ -182,7 +185,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         );
 
         // Mengambil status loading dari state-nya store (merchant).
-        this.isListStoreLoading$ = this.storeState.select(
+        this.isListStoreLoading$ = this.shopStore.select(
             StoreSelector.getLoadingState
         ).pipe(
             takeUntil(this.subs$)
@@ -190,7 +193,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
 
         // Mengambil jumlah store dari state-nya store (merchant).
         this.totalListStore$ = combineLatest([
-            this.storeState.select(StoreSelector.getTotalStores),
+            this.shopStore.select(StoreSelector.getTotalStores),
             this.portfolioStore.select(PortfolioStoreSelector.getTotalPortfolioStores),
             this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds)
         ]).pipe(
@@ -241,7 +244,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         );
     }
 
-    private onRefreshListStoreTable(): void {
+    private onRefreshListStoreTable(filter?: { storeType: string; storeSegment: string; }): void {
         // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
         if (this.listStorePaginator) {
             // Menyiapkan query parameter yang akan dikirim ke server.
@@ -252,6 +255,16 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
 
             // Menyalakan pagination.
             data['paginate'] = true;
+
+            if (filter) {
+                if (filter.storeType) {
+                    data['storeType'] = filter.storeType;
+                }
+
+                if (filter.storeSegment) {
+                    data['storeSegment'] = filter.storeSegment;
+                }
+            } 
 
             if (this.listStoreSort.direction) {
                 // Menentukan sort direction tabel.
@@ -286,7 +299,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
             }
 
             // Melakukan request store ke server via dispatch state.
-            this.storeState.dispatch(
+            this.shopStore.dispatch(
                 StoreActions.fetchStoresRequest({ payload: data })
             );
         }
@@ -339,11 +352,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
             })
         );
 
-        this.storeState.dispatch(
-            StoreActions.removeSelectedStores({
-                payload: this.listStoreSelection.selected.map(selected => selected.id)
-            })
-        );
+        this.onRefreshListStoreTable();
     }
 
     isAllListStoreSelected(): boolean {
@@ -386,6 +395,14 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         this.listStoreSelection.toggle(store);
     }
 
+    togglePortfolioStore(store: Store): void {
+        if (this.portfolioStoreSelection.isSelected(store)) {
+            return this.portfolioStoreSelection.toggle(store);
+        }
+
+        this.portfolioStoreSelection.toggle(store);
+    }
+
     getFormError(form: any): string {
         // console.log('get error');
         return this.errorMessageSvc.getFormError(form);
@@ -403,14 +420,14 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         }
 
         if (ignoreDirty) {
-            return form.errors && form.touched;
+            return (form.errors || form.status === 'INVALID') && form.touched;
         }
 
         if (ignoreTouched) {
-            return form.errors && form.dirty;
+            return (form.errors || form.status === 'INVALID') && form.dirty;
         }
 
-        return form.errors && (form.dirty || form.touched);
+        return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
     submitPortfolio(): void {
@@ -434,7 +451,35 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         }
     }
 
+    deletePortfolioStore(portfolioStoreId: string): void {
+        this.portfolioStore.dispatch(
+            PortfolioActions.removeSelectedStores({ payload: [portfolioStoreId] })
+        );
+
+        this.onRefreshListStoreTable();
+    }
+
+    deleteSelectedPortfolioStore(): void {
+        this.portfolioStore.dispatch(
+            PortfolioActions.removeSelectedStores({ payload: [...this.portfolioStoreSelection.selected.map(p => p.id)] })
+        );
+
+        this.onRefreshListStoreTable();
+    }
+
+    openFilter(): void {
+        this.matDialog.open(PortfoliosFilterStoresComponent, {
+            data: {
+                title: 'Filter'
+            },
+            disableClose: true,
+            width: '1000px'
+        });
+    }
+
     ngOnInit(): void {
+        this.isEditMode = this.route.snapshot.url[this.route.snapshot.url.length - 1].path === 'edit';
+
         // Inisialisasi FormControl untuk search.
         this.search = new FormControl('');
 
@@ -452,7 +497,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
                 ]
             ],
             type: [
-                { value: '', disabled: false },
+                { value: 'group', disabled: false },
                 [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
@@ -500,13 +545,19 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         // });
 
         // Mengambil data list store dari state.
-        this.storeState.select(
+        this.shopStore.select(
             StoreSelector.getAllStores
         ).pipe(
-            withLatestFrom(this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds)),
+            withLatestFrom(
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds),
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds),
+                (listStores: Array<Store>, portfolioStoreIds: Array<string>, portfolioNewStoreIds: Array<string>) => ({
+                    listStores, portfolioStoreIds, portfolioNewStoreIds
+                })
+            ),
             takeUntil(this.subs$)
-        ).subscribe(([listStores, portfolioStoreIds]: [Array<Store>, Array<string>]) => {
-            const newListStore = listStores.filter(listStore => !portfolioStoreIds.includes(listStore.id));
+        ).subscribe(({ listStores, portfolioStoreIds, portfolioNewStoreIds }) => {
+            const newListStore = listStores.filter(listStore => !portfolioStoreIds.concat(portfolioNewStoreIds).includes(listStore.id));
 
             this.listStore = new MatTableDataSource(newListStore);
             this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
@@ -519,7 +570,7 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
             this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStores)
         ]).pipe(
             map(([portfolioStore, selectedStore]) => selectedStore.concat(portfolioStore)),
-            withLatestFrom(this.storeState.select(StoreSelector.getSelectedStoreIds)),
+            withLatestFrom(this.shopStore.select(StoreSelector.getSelectedStoreIds)),
             takeUntil(this.subs$)
         ).subscribe(([portfolioStores, listStoreIds]) => {
             const newPortfolioStore = portfolioStores.filter(portfolioStore => !listStoreIds.includes(portfolioStore.id));
@@ -538,6 +589,12 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         this.portfolioStores.sort = this.portfolioStoreSort;
         this.portfolioStores.paginator = this.portfolioStorePaginator;
 
+        if (!this.isEditMode) {
+            this.portfolioStore.dispatch(
+                PortfolioActions.truncatePortfolioStores()
+            );
+        }
+
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel List Store.
         merge(
             this.listStoreSort.sortChange,
@@ -547,6 +604,14 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
         ).subscribe(() => {
             this.onRefreshListStoreTable();
         });
+
+        this.shopStore.select(
+            StoreSelector.getStoreFilters
+        ).pipe(
+            takeUntil(this.subs$)
+        ).subscribe((filters: { storeType: string; storeSegment: string }) =>
+            this.onRefreshListStoreTable(filters)
+        );
 
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel Portfolio Store.
         merge(
@@ -576,5 +641,13 @@ export class PortfoliosFormComponent implements OnInit, AfterViewInit {
 
         this.onRefreshListStoreTable();
         this.onRefreshPortfolioStoreTable();
+    }
+
+    ngOnDestroy(): void {
+        this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
+
+        this.subs$.next();
+        this.subs$.complete();
     }
 }
