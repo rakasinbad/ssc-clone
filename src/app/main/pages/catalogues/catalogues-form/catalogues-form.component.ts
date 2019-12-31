@@ -84,7 +84,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
     productCategory$: SafeHtml;
 
-    catalogueUnits$: Array<CatalogueUnit>;
+    catalogueUnits: Array<CatalogueUnit>;
 
     productTagsControls: FormArray;
     productCourierControls: AbstractControl[];
@@ -402,7 +402,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 stock: [''],
-                uom: [''],
+                uom: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
                 uomName : [''],
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
@@ -785,34 +789,34 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
         }
 
-        combineLatest([
-            this.store.select(CatalogueSelectors.getCatalogueUnits),
-            this.form.get('productInfo.uom').valueChanges
-        ]).pipe(
-                takeUntil(this._unSubs$)
-            ).subscribe(([units, uom]) => {
-                if (units.length === 0) {
-                    return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
-                        payload: {
-                            paginate: false,
-                            sort: 'asc',
-                            sortBy: 'id'
-                        }
-                    }));
-                }
+        this.store.select(
+            CatalogueSelectors.getCatalogueUnits
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(units => {
+            if (units.length === 0) {
+                return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
+                    payload: {
+                        paginate: false,
+                        sort: 'asc',
+                        sortBy: 'id'
+                    }
+                }));
+            }
 
-                this.catalogueUnits$ = units;
-                const selectedUnit = units.filter(unit => unit.id === uom);
-                if (selectedUnit.length > 0) {
-                    this.form.patchValue({
-                        productInfo: {
-                            uomName: selectedUnit[0].unit
-                        }
-                    });
-                }
+            const uom = this.form.get('productInfo.uom').value;
+            const selectedUnit = units.filter(unit => unit.id === uom);
+            if (selectedUnit.length > 0) {
+                this.form.patchValue({
+                    productInfo: {
+                        uomName: selectedUnit[0].unit
+                    }
+                });
+            }
 
-                this._cd.markForCheck();
-            });
+            this.catalogueUnits = units;
+            this._cd.markForCheck();
+        });
 
         if (!this.isViewMode()) {
             this.store.dispatch(UiActions.showFooterAction());

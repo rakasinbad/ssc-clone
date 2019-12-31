@@ -415,7 +415,9 @@
                             class="pr-0"
                             [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.uom'))"
                         >
-                            UOM 
+                            <span
+                                class="red-500-fg"
+                            >* </span>UOM 
                         </label>
                 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
@@ -424,7 +426,7 @@
                                 formControlName="uom"
                             >
                                 <mat-option
-                                    *ngFor="let unit of catalogueUnits$"
+                                    *ngFor="let unit of catalogueUnits"
                                     [value]="unit.id"
                                 >
                                     {{ unit.unit }}
