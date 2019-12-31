@@ -10,6 +10,7 @@ import { PortfoliosStoreModule } from './portfolios-store.module';
 import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form.component';
 import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
 import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-stores/portfolios-filter-stores.component';
+import { PortfoliosSelectedStoresComponent } from './components/portfolios-selected-stores/portfolios-selected-stores.component';
 // import { PortfolioCreateComponent } from './pages/portfolio-create/portfolio-create.component';
 
 
@@ -19,6 +20,7 @@ import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-
         PortfoliosFormComponent,
         PortfolioDetailsComponent,
         PortfoliosFilterStoresComponent,
+        PortfoliosSelectedStoresComponent,
         // PortfolioCreateComponent,
     ],
     imports: [
@@ -30,7 +32,8 @@ import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-
         MaterialModule,
     ],
     entryComponents: [
-        PortfoliosFilterStoresComponent
+        PortfoliosFilterStoresComponent,
+        PortfoliosSelectedStoresComponent,
     ]
 })
 export class PortfoliosModule { }
