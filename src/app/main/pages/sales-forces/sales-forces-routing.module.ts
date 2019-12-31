@@ -6,6 +6,10 @@ const routes: Routes = [
     {
         path: 'sales-rep',
         loadChildren: () => import('./sales-reps/sales-reps.module').then(m => m.SalesRepsModule)
+    },
+    {
+        path: 'portfolio',
+        loadChildren: () => import('./portfolios/portfolios.module').then(m => m.PortfoliosModule)
     }
 ];
 

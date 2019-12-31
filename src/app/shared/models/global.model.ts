@@ -205,3 +205,14 @@ export class GeoParameter implements IGeoParameter {
         public source: Array<string>
     ) {}
 }
+
+export enum LifecyclePlatform {
+    OnChanges = 'ngOnChanges',
+    OnInit = 'ngOnInit',
+    DoCheck = 'ngDoCheck',
+    AfterContentInit = 'ngAfterContentInit',
+    AfterContentChecked = 'ngAfterContentChecked',
+    AfterViewInit = 'ngAfterViewInit',
+    AfterViewChecked = 'ngAfterViewChecked',
+    OnDestroy = 'ngOnDestroy'
+}

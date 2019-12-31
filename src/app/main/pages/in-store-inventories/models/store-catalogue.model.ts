@@ -1,5 +1,6 @@
 import { TNullable, User } from 'app/shared/models';
-import { Catalogue, Store } from './index';
+
+import { Catalogue, Store } from '.';
 
 interface ICondition {
     id: string;
@@ -19,14 +20,7 @@ export class Condition implements ICondition {
     deletedAt: TNullable<string>;
 
     constructor(data: ICondition) {
-        const {
-            id,
-            name,
-            method,
-            createdAt,
-            updatedAt,
-            deletedAt,
-        } = data;
+        const { id, name, method, createdAt, updatedAt, deletedAt } = data;
 
         this.id = id;
         this.name = name;
@@ -76,7 +70,7 @@ export class StoreCatalogue implements IStoreCatalogue {
             catalogue,
             store,
             currentStock,
-            totalPrice,
+            totalPrice
         } = data;
 
         this.id = id;
@@ -157,7 +151,7 @@ export class StoreHistoryInventory implements IStoreHistoryInventory {
             deletedAt,
             creator,
             condition,
-            storeCatalogue,
+            storeCatalogue
         } = data;
 
         this.id = id;
@@ -173,25 +167,7 @@ export class StoreHistoryInventory implements IStoreHistoryInventory {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
 
-        this.creator = new User(
-            creator.id,
-            creator.fullName,
-            creator.email,
-            creator.phoneNo,
-            creator.mobilePhoneNo,
-            creator.idNo,
-            creator.taxNo,
-            creator.status,
-            creator.imageUrl,
-            creator.taxImageUrl,
-            creator.idImageUrl,
-            creator.selfieImageUrl,
-            creator.urbanId,
-            creator.roles,
-            creator.createdAt,
-            creator.updatedAt,
-            creator.deletedAt,
-        );
+        this.creator = new User(creator);
         this.condition = new Condition(condition);
         this.storeCatalogue = new StoreCatalogue(storeCatalogue);
     }

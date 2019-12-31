@@ -2,7 +2,7 @@ import { TNullable } from './global.model';
 import { Supplier } from './supplier.model';
 import { ITimestamp } from './timestamp.model';
 
-interface ICluster extends ITimestamp {
+export interface ICluster extends ITimestamp {
     readonly id: NonNullable<string>;
     name: string;
     supplierId: string;
@@ -18,7 +18,7 @@ export class Cluster implements ICluster {
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: Cluster) {
+    constructor(data: ICluster) {
         const { id, name, supplierId, supplier, createdAt, updatedAt, deletedAt } = data;
 
         this.id = id;
@@ -31,19 +31,6 @@ export class Cluster implements ICluster {
     }
 
     set setSupplier(value: Supplier) {
-        this.supplier = value
-            ? new Supplier(
-                  value.id,
-                  value.name,
-                  value.longitude,
-                  value.latitude,
-                  value.phoneNo,
-                  value.status,
-                  value.urbanId,
-                  value.createdAt,
-                  value.updatedAt,
-                  value.deletedAt
-              )
-            : null;
+        this.supplier = value ? new Supplier(value) : null;
     }
 }
