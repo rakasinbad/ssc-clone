@@ -41,7 +41,7 @@ import { OrderSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = 25;
     search: FormControl;
 
     filterStatus: string;

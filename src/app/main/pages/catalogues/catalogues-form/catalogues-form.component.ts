@@ -636,7 +636,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             // if (!this.isEditMode) {
             //     this.form.get('productInfo.name').patchValue(productName);
             // }
-            this.form.get('productInfo.name').patchValue(productName);
+
+            if (this.isAddMode()) {
+                this.form.get('productInfo.name').setValue(productName);
+            }
             
             /** Kategori produk yang ingin ditampilkan di front-end. */
             this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
@@ -818,12 +821,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this.catalogueUnits = units;
             this._cd.markForCheck();
         });
-
-        // this.store.select(
-        //     CatalogueSelectors.getProductName
-        // ).pipe(
-        //     takeUntil(this._unSubs$)
-        // ).subscribe(productName => this.form.get('productInfo.name').setValue(productName));
 
         if (!this.isViewMode()) {
             this.store.dispatch(UiActions.showFooterAction());
