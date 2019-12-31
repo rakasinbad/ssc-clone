@@ -107,6 +107,10 @@ app-portfolios-form {
             cursor: pointer;
         }
 
+        .mat-row:hover {
+            background-color: #fafafa;
+        }
+
         .mat-column-checkbox {
             flex: 0 1 12%;
             padding-left: 14px !important;
@@ -115,8 +119,10 @@ app-portfolios-form {
         // .mat-column-code {
         // }
 
-        .mat-column-actions {
+        .mat-column-actions, .mat-column-delete {
             justify-content: flex-end;
+            padding-right: 4px;
+            max-width: 10%;
         }
     }
 

@@ -78,7 +78,7 @@
                     </div>
                     <!-- / INVOICE GROUP (GRUP FAKTUR) -->
                     <!-- PORTFOLIO TYPE -->
-                    <div
+                    <!-- <div
                         class="custom-field mt-16"
                         fxLayout="row"
                         fxLayoutAlign="space-between start"
@@ -108,38 +108,34 @@
                                 Only a store allowed to be added for Portfolio Type direct.
                             </mat-hint>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- / PORTFOLIO TYPE -->
                 </form>
             </div>
 
-            <div fxLayout="row" fxLayoutAlign="space-between none">
-                <!-- "FILTER LIST" BUTTON -->
-                <button
-                    mat-flat-button
-                    color="primary"
-                    fxFlexAlign="center"
-                >
-                    Filter List
-                </button>
-                <!-- / "FILTER LIST" BUTTON -->
-                <!-- SEARCH BAR -->
-                <mat-form-field id="search-field" appearance="outline">
-                    <input
-                        matInput
-                        [formControl]="search"
-                        placeholder="Cari List Store"
-                    />
-                    <mat-icon matSuffix>search</mat-icon>
-                </mat-form-field>
-                <!-- <div fxFlexAlign="center" class="search-wrapper mx-12">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input #filter [formControl]="search" placeholder="Cari List Store" />
-                    </div>
-                </div> -->
-                <!-- / SEARCH BAR -->
+            <div
+                fxLayout="row"
+                fxLayoutAlign="start none"
+            >
+                <div class="font-weight-600 font-size-24 line-height-20">Find Store</div>
             </div>
+
+            <mat-tab-group>
+                <!-- IN PORTFOLIO -->
+                <mat-tab label="In Portfolio">
+                    <div class="tab-content p-24">
+                        <div class="section">
+                            <app-portfolios-selected-stores></app-portfolios-selected-stores>
+                        </div>
+                    </div>
+                </mat-tab>
+                <!-- / IN PORTFOLIO -->
+                <!-- OUT OF PORTFOLIO -->
+                <mat-tab label="Out of Portfolio">
+
+                </mat-tab>
+                <!-- / OUT OF PORTFOLIO -->
+            </mat-tab-group>
 
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
                 <!-- LIST STORE -->
@@ -264,13 +260,13 @@
                         >
                         </mat-paginator>
                         <!-- / Paginator's Table -->
-    
-                        <!-- Spinner Loader -->
-                        <div class="loader" *ngIf="isListStoreLoading$ | async">
-                            <mat-spinner color="accent"></mat-spinner>
-                        </div>
-                        <!-- Spinner Loader -->
                     </div>
+                    <!-- / TABLE -->
+                    <!-- SPINNER LOADING -->
+                    <div class="loader" *ngIf="isListStoreLoading$ | async">
+                        <mat-spinner color="accent"></mat-spinner>
+                    </div>
+                    <!-- / SPINNER LOADING -->
                     <!-- "ADD TO LIST" BUTTON -->
                     <button
                         color="accent"
@@ -290,7 +286,14 @@
                     fxFlex="4"
                     fxFlexAlign="center" fxLayout="column"
                 >
-                    <mat-icon fxFlexAlign="center">arrow_forward_ios</mat-icon>
+                    <button
+                        mat-icon-button
+                        [class.green-fg]="listStoreSelection.hasValue()"
+                        [disabled]="!listStoreSelection.hasValue()"
+                        (click)="addSelectedStores()"
+                    >
+                        <mat-icon fxFlexAlign="center">add_circle</mat-icon>
+                    </button>
                 </div>
                 <!-- / ARROW -->
                 <!-- PORTFOLIO STORE -->
@@ -378,14 +381,39 @@
                                     <p>{{ row?.storeType?.name }}</p>
                                 </mat-cell>
                             </ng-container>
-                            <!-- / Store Segment Column -->
-    
+                            <!-- / Store Type Column -->
+
+                            <!-- Delete Column -->
+                            <ng-container matColumnDef="delete">
+                                <mat-header-cell *matHeaderCellDef>
+                                    <button
+                                        [@animateStagger]="{ value: '50' }"
+                                        [disabled]="portfolioStoreSelection.selected.length === 0"
+                                        mat-icon-button
+                                        (click)="deleteSelectedPortfolioStore()"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <button mat-icon-button color="accent" (click)="deletePortfolioStore(row?.id)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </mat-cell>
+                            </ng-container>
+                            <!-- / Delete Column -->
+
                             <!-- Header Row -->
                             <mat-header-row *matHeaderRowDef="displayedPortfolioStoreColumns; sticky: true"></mat-header-row>
                             <!-- / Header Row -->
-    
+
                             <!-- Row -->
-                            <mat-row matRipple *matRowDef="let row; columns: displayedPortfolioStoreColumns" class="list-store"></mat-row>
+                            <mat-row
+                                matRipple
+                                class="list-store"
+                                *matRowDef="let row; columns: displayedPortfolioStoreColumns"
+                                (click)="togglePortfolioStore(row)"
+                            ></mat-row>
                             <!-- / Row -->
                         </mat-table>
                         <!-- / TABLE -->
@@ -413,21 +441,15 @@
                         </mat-paginator>
                         <!-- / Paginator's Table -->
                     </div>
-                    <!-- Spinner Loader -->
-                    <div class="loader" *ngIf="isListStoreLoading$ | async">
-                        <mat-spinner color="accent"></mat-spinner>
-                    </div>
-                    <!-- Spinner Loader -->
 
                     <!-- "CONFIRM" BUTTON -->
                     <button
                         color="accent"
                         class="h-40 mat-elevation-z3"
                         mat-flat-button
-                        (click)="submitPortfolio()
-                        "
+                        (click)="submitPortfolio()"
                         [class.red-500-border]="(totalPortfolioStore$ | async) > 0"
-                        [disabled]="hasError(form) || ((totalPortfolioStore$ | async) === 0)"
+                        [disabled]="hasError(form, { ignoreDirty: true, ignoreTouched: true }) || form.untouched || ((totalPortfolioStore$ | async) === 0)"
                     >
                         Confirm
                     </button>
@@ -439,4 +461,9 @@
         <!-- / CONTENT CARD (INFORMASI PRODUK) -->
     </div>
     <!-- / CENTER -->
+    <!-- Spinner Loader -->
+    <div class="loader" *ngIf="isPortfolioLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- Spinner Loader -->
 </div>
