@@ -185,7 +185,7 @@
                             </mat-error>
                         </div>
                         <span class="grey-fg" fxFlex="80" *ngIf="isViewMode() && form.get('productInfo.information').value">
-                            <quill-view-html [innerHTML]="form.get('productInfo.information').value"></quill-view-html>
+                            <quill-view-html [innerHTML]="form.get('productInfo.information').value | safe:'html'"></quill-view-html>
                         </span>
                         <span fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.information').value">
                             &nbsp;
