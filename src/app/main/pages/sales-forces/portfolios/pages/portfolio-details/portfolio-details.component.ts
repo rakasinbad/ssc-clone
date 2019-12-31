@@ -1,12 +1,12 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 // NgRx's Libraries
 import { Store as NgRxStore } from '@ngrx/store';
 // RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Observable, Subject, merge, combineLatest, of } from 'rxjs';
+import { takeUntil, withLatestFrom, tap } from 'rxjs/operators';
 
 // Environment variables.
 import { environment } from '../../../../../../../environments/environment';
@@ -16,19 +16,16 @@ import { locale as indonesian } from '../../i18n/id';
 // Entity model.
 import { Portfolio } from '../../models/portfolios.model';
 // State management's stuffs.
-import { fromPortfolios, FeatureState } from '../../store/reducers';
-import { PortfolioActions } from '../../store/actions';
-import { PortfolioSelector } from '../../store/selectors';
+import { fromPortfolios, CoreFeatureState } from '../../store/reducers';
+import { PortfolioActions, StoreActions } from '../../store/actions';
+import { PortfolioSelector, StoreSelector, PortfolioStoreSelector } from '../../store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { fromMerchant } from 'app/main/pages/accounts/merchants/store/reducers';
-import { MerchantSelectors } from 'app/main/pages/attendances/store/selectors';
 import { Store } from 'app/main/pages/attendances/models';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { IQueryParams } from 'app/shared/models';
-import { MerchantActions } from 'app/main/pages/attendances/store/actions';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
 
@@ -40,36 +37,40 @@ import { NoticeService } from 'app/shared/helpers';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
+export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Untuk menandakan halaman detail dalam keadaan mode edit atau tidak.
     isEditMode: boolean;
     // Untuk keperluan unsubscribe.
-    subs$: Subject<void>;
+    subs$: Subject<void> = new Subject<void>();
 
+    // Untuk menyimpan data portfolio yang sedang dibuka.
+    portfolio: Portfolio;
     // Untuk menyimpan ID portfolio yang sedang dibuka.
     portfolioId: string;
     // Untuk menyimpan form yang akan dikirim ke server.
     form: FormGroup;
     // Untuk menyimpan Observable status loading dari state portfolio.
     isPortfolioLoading$: Observable<boolean>;
+    // Untuk menyimpan Observable status loading dari state store-nya portfolio.
+    isPortfolioStoreLoading$: Observable<boolean>;
 
     // Untuk menyimpan data store.
-    listStore: Array<Store>;
-    // Untuk menyimpan Observable status loading dari state store (merchant).
-    isStoreLoading$: Observable<boolean>;
+    listStore: MatTableDataSource<Store>;
     // Untuk menyimpan jumlah store yang ada di server.
-    totalStores$: Observable<number>;
+    totalPortfolioStores$: Observable<number>;
     // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
     defaultPageSize: number = environment.pageSize;
+    // Menyimpan opsi jumlah data yang dapat ditampilkan dalam 1 halaman.
+    defaultPageSizeOptions: Array<number> = environment.pageSizeTable;
     // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
     displayedColumns: Array<string> = [
         // 'checkbox',
         'code',
         'name',
-        'region',
+        // 'region',
         'segment',
-        'type,'
+        'type'
     ];
     // Menyimpan data baris tabel yang tercentang oleh checkbox.
     selection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
@@ -87,8 +88,8 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
     sort: MatSort;
 
     constructor(
-        private portfolioStore: NgRxStore<FeatureState>,
-        private merchantStore: NgRxStore<fromMerchant.FeatureState>,
+        private portfolioStore: NgRxStore<CoreFeatureState>,
+        private storeState: NgRxStore<CoreFeatureState>,
         private route: ActivatedRoute,
         private router: Router,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -108,9 +109,9 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
                 active: false
             },
             {
-                title: 'Portfolio',
-                translate: 'BREADCRUMBS.PORTFOLIO',
-                url: '/pages/portfolio'
+                title: 'Sales Rep Management',
+                translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
+                url: '/pages/sales-force/portfolio'
             },
             {
                 title: 'Detail Portfolio',
@@ -127,8 +128,14 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
         );
 
         // Mengambil status loading dari state-nya store (merchant).
-        this.isPortfolioLoading$ = this.merchantStore.select(
-            MerchantSelectors.getIsLoading
+        this.isPortfolioStoreLoading$ = this.portfolioStore.select(
+            PortfolioStoreSelector.getLoadingState
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.totalPortfolioStores$ = this.portfolioStore.select(
+            PortfolioStoreSelector.getTotalPortfolioStores
         ).pipe(
             takeUntil(this.subs$)
         );
@@ -173,16 +180,33 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
                 data['sortBy'] = 'id';
             }
 
+            // Mencantumkan ID portfolio-nya untuk request data store.
+            data['portfolioId'] = this.portfolioId;
+
             // Melakukan request store ke server via dispatch state.
-            this.merchantStore.dispatch(
-                MerchantActions.fetchStoresRequest({ payload: data })
+            this.portfolioStore.dispatch(
+                PortfolioActions.fetchPortfolioStoresRequest({ payload: data })
             );
         }
     }
 
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        const numRows = this.listStore.data.length;
+        return numSelected === numRows;
+    }
+
+    masterToggle(): void {
+        this.isAllSelected() ?
+            this.selection.clear() :
+            this.listStore.data.forEach(row => this.selection.select(row));
+    }
+
+    onChangePage(): void {
+        this.onRefreshTable();
+    }
+
     ngOnInit(): void {
-        // Inisialisasi Subject.
-        this.subs$ = new Subject<void>();
 
         // Inisialisasi form.
         this.form = this.fb.group({
@@ -193,13 +217,23 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
 
         // Mengambil data portfolio yang terpilih dari state.
         this.portfolioStore.select(
-            PortfolioSelector.getSelectedPortfolio
+            PortfolioSelector.getAllPortfolios
         ).pipe(
-            withLatestFrom(this.portfolioStore.select(AuthSelectors.getUserSupplier)),
+            withLatestFrom(
+                this.portfolioStore.select(PortfolioSelector.getSelectedPortfolio),
+                this.portfolioStore.select(AuthSelectors.getUserSupplier),
+                (_, portfolio, userSupplier) => ({ portfolio, userSupplier })
+            ),
             takeUntil(this.subs$)
-        ).subscribe(([portfolio, userSupplier]) => {
+        ).subscribe(({ portfolio, userSupplier }) => {
             // Jika portfolio yang terpilih tidak ada, maka ambil dari server berdasarkan ID URL nya. 
             if (!portfolio) {
+                // Tetapkan portfolio yang terpilih.
+                this.portfolioStore.dispatch(
+                    PortfolioActions.setSelectedPortfolios({ payload: [this.portfolioId] })
+                );
+
+                // Melakukan request data portfolio.
                 return this.portfolioStore.dispatch(
                     PortfolioActions.fetchPortfolioRequest({ payload: this.portfolioId })
                 );
@@ -218,19 +252,25 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
                     '/pages/sales-force/portfolio'
                 ]);
             }
+
+            this.portfolio = portfolio;
+            this._cd.markForCheck();
         });
 
         // Mengambil data store dari state.
-        this.merchantStore.select(
-            MerchantSelectors.getAllMerchant
+        this.portfolioStore.select(
+            PortfolioStoreSelector.getAllPortfolioStores
         ).pipe(
             takeUntil(this.subs$)
         ).subscribe(stores => {
-            this.listStore = stores;
+            this.listStore = new MatTableDataSource(stores);
         });
     }
 
     ngAfterViewInit(): void {
+        // Melakukan trigger me-refresh tabel untuk mendapatkan data store.
+        this.onRefreshTable();
+
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
         merge(
             this.sort.sortChange,
@@ -240,5 +280,13 @@ export class PortfolioDetailsComponent implements OnInit, AfterViewInit {
         ).subscribe(() => {
             this.onRefreshTable();
         });
+    }
+
+    ngOnDestroy(): void {
+        this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
+
+        this.subs$.next();
+        this.subs$.complete();
     }
 }
