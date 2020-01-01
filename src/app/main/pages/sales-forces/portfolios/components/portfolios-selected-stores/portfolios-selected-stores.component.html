@@ -1,21 +1,35 @@
 <div
     fxLayout="row"
-    fxLayoutAlign="start none"
+    fxLayoutAlign="start stretch"
 >
     <div
-        fxFlex="48"
-        fxLayout="row"
-        fxLayoutAlign="space-between stretch"
+        fxFlex
+        fxLayout="column"
         fxLayoutGap="25px"
     >
         <!-- "FILTER LIST" BUTTON -->
         <button
+            class="w-15-p"
             mat-flat-button
             color="primary"
-            fxFlexAlign="center"
-            fxFlex="28"
         >
             Filter List
         </button>
+        <!-- / "FILTER LIST" BUTTON -->
+
+        <!-- FILTER LISTS -->
+        <div class="grey-300-border p-16" style="border: 1px solid #fafafa;" fxLayout="column" fxLayoutGap="10px" fxFlex>
+            <strong>Filter by</strong>
+            <mat-chip-list selectable="false">
+                <mat-chip removable="true" selectable="false">
+                    Store Type: GT
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                <mat-chip removable="true" selectable="false">
+                    Store Segment: supermarket
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+            </mat-chip-list>
+        </div>
         <!-- / "FILTER LIST" BUTTON -->
 </div>
