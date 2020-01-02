@@ -157,6 +157,20 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    calculateUnit(nettPrice: number, qty: number): number {
+        if (typeof nettPrice !== 'number' || typeof qty !== 'number') {
+            return 0;
+        }
+
+        if (qty && nettPrice) {
+            return nettPrice / qty;
+        } else if (nettPrice > qty && qty && nettPrice) {
+            return nettPrice / qty;
+        }
+
+        return 0;
+    }
+
     onChangeQty(item: any, type: 'delivered' | 'invoiced'): void {
         this._$log.generateGroup(
             'CLICK CHANGE QTY',

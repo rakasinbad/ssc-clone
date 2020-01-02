@@ -1304,9 +1304,9 @@
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
                                 {{
-                                    +row?.grossPrice > 0
-                                        ? (+row?.grossPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                        : +row?.grossPrice
+                                    +row?.nettPrice > 0 && calculateUnit(+row?.nettPrice, +row?.qty) > 0
+                                        ? (calculateUnit(+row?.nettPrice, +row?.qty) | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.nettPrice
                                 }}
                             </p>
                         </mat-cell>
@@ -1320,9 +1320,9 @@
                         <mat-cell *matCellDef="let row">
                             <p class="text-truncate">
                                 {{
-                                    +row?.totalPrice > 0
-                                        ? (+row?.totalPrice | price: 'full':'IDR':'narrow':'1.2-2')
-                                        : +row?.totalPrice
+                                    +row?.nettPrice > 0
+                                        ? (+row?.nettPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                        : +row?.nettPrice
                                 }}
                             </p>
                         </mat-cell>

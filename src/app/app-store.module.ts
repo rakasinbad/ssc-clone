@@ -24,15 +24,10 @@ import { CustomSerializer } from './store/custom-serializer';
             // }
         }),
         EffectsModule.forRoot([AuthEffects, NetworkEffects, DropdownEffects, UiEffects]),
-        environment.production
-            ? StoreDevtoolsModule.instrument({
-                  name: 'Sinbad Seller Center',
-                  logOnly: environment.production,
-                  maxAge: 25
-              })
+        environment.production || environment.staging
+            ? []
             : StoreDevtoolsModule.instrument({
-                  name: 'NgRx Sinbad Seller Center',
-                  logOnly: environment.production
+                  name: 'NgRx Sinbad Seller Center'
               }),
         // environment.production
         //     ? []

@@ -10,9 +10,16 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <button type="button" mat-flat-button color="accent" (click)="onExport()">
+                <!-- <button type="button" mat-flat-button color="accent" (click)="onExport()">
                     EXPORT
-                </button>
+                </button> -->
+                <app-export-advanced
+                    title="EXPORT"
+                    color="accent"
+                    action="export"
+                    [formConfig]="formConfig"
+                    (clickExport)="onExport($event)"
+                ></app-export-advanced>
 
                 <button
                     type="button"
@@ -320,15 +327,19 @@
 
                 <!-- Delivered Date Column -->
                 <ng-container matColumnDef="delivered-date">
-                        <mat-header-cell *matHeaderCellDef>
-                            Delivered Date
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p class="price" style="word-break: break-word;">
-                                {{ row?.deliveredDate ? (row?.deliveredDate | date: 'dd/MM/yyyy HH:mm:ss') : '-' }}
-                            </p>
-                        </mat-cell>
-                    </ng-container>
+                    <mat-header-cell *matHeaderCellDef>
+                        Delivered Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="price" style="word-break: break-word;">
+                            {{
+                                row?.deliveredDate
+                                    ? (row?.deliveredDate | date: 'dd/MM/yyyy HH:mm:ss')
+                                    : '-'
+                            }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
 
                 <!-- Active Column -->
                 <!-- <ng-container matColumnDef="active">
@@ -495,12 +506,12 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSizeOptions]="[5, 10, 25, 50]"
                 showFirstLastButtons
             >
             </mat-paginator>
 
-            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+             <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

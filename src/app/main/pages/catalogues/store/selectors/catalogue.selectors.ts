@@ -73,6 +73,11 @@ export const getCategoryTree = createSelector(
     state => state.categoryTree
 );
 
+export const getRefreshStatus = createSelector(
+    getCatalogueState,
+    state => state.needRefresh
+)
+
 export const getSelectedCatalogue = createSelector(
     getCatalogueState,
     state => state.catalogue

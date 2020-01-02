@@ -1,7 +1,7 @@
 import { EStatus, TNullable } from './global.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
-interface IInvoiceGroup extends ITimestamp {
+export interface IInvoiceGroup extends ITimestamp {
     readonly id: NonNullable<string>;
     name: string;
     minimumOrder: string;

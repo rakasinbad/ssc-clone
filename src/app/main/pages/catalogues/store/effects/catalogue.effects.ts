@@ -94,6 +94,72 @@ export class CatalogueEffects {
         ), { dispatch: false }
     );
 
+    patchCataloguesRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCataloguesRequest),
+            map(action => action.payload),
+            withLatestFrom(
+                this.store.select(AuthSelectors.getUserSupplier)
+            ),
+            switchMap(([{ file, type }, userSupplier]) => {
+                if (!userSupplier) {
+                    return of(CatalogueActions.patchCataloguesFailure({
+                        payload: {
+                            id: 'patchCataloguesFailure',
+                            errors: 'Not authenticated'
+                        }
+                    }));
+                }
+
+                const formData: FormData = new FormData();
+                formData.append('file', file);
+                formData.append('supplierId', userSupplier.supplierId);
+                formData.append('type', type);
+
+                return this._$catalogueApi.updateCataloguePrices(formData)
+                    .pipe(
+                        catchOffline(),
+                        map(response => {
+                            return CatalogueActions.patchCataloguesSuccess({
+                                payload: {
+                                    status: response.status
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.patchCataloguesFailure({
+                                    payload: {
+                                        id: 'patchCataloguesFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
+    patchCataloguesSuccess$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCataloguesSuccess),
+            map(action => action.payload),
+            tap(() => {
+                this._$notice.open('Produk berhasil di-update', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.matDialog.closeAll();
+
+                this.store.dispatch(
+                    CatalogueActions.setRefreshStatus({ status: true })
+                );
+            })
+        ), { dispatch: false }
+    );
+
     fetchCatalogueCategorySuccess$ = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategorySuccess),

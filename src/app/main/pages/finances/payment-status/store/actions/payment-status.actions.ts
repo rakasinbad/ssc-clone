@@ -27,7 +27,10 @@ export const fetchPaymentStatusesSuccess = createAction(
 // EXPORT Payment
 // -----------------------------------------------------------------------------------------------------
 
-export const exportRequest = createAction('[Payment Status Page] Export Request');
+export const exportRequest = createAction(
+    '[Payment Status Page] Export Request',
+    props<{ payload: { status?: any; dateGte?: string; dateLte?: string } }>()
+);
 
 export const exportFailure = createAction(
     '[Payment Status Page] Export Failure',

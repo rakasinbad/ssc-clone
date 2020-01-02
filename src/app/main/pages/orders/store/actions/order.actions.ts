@@ -46,7 +46,10 @@ export const fetchOrderSuccess = createAction(
 // EXPORT Order
 // -----------------------------------------------------------------------------------------------------
 
-export const exportRequest = createAction('[Order Page] Export Request');
+export const exportRequest = createAction(
+    '[Order Page] Export Request',
+    props<{ payload: { status?: any; dateGte?: string; dateLte?: string } }>()
+);
 
 export const exportFailure = createAction(
     '[Order Page] Export Failure',
