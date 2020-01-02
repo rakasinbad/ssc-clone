@@ -29,6 +29,7 @@ export interface IUser extends ITimestamp {
     status: UserStatus;
     taxImageUrl: TNullable<string>;
     taxNo: string;
+    joinDate?: string;
     totalActualSales?: number;
     totalTargetSales?: number;
     urban?: Urban;
@@ -53,6 +54,7 @@ export class User implements IUser {
     status: UserStatus;
     taxImageUrl: TNullable<string>;
     taxNo: string;
+    joinDate?: string;
     totalActualSales?: number;
     totalTargetSales?: number;
     urban?: Urban;
@@ -80,6 +82,7 @@ export class User implements IUser {
             status = UserStatus.INACTIVE,
             taxImageUrl,
             taxNo,
+            joinDate,
             totalActualSales,
             totalTargetSales,
             urban,
@@ -108,6 +111,7 @@ export class User implements IUser {
         this.status = status;
         this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
         this.taxNo = taxNo ? String(taxNo).trim() : null;
+        this.joinDate = joinDate;
         this.totalActualSales = totalActualSales;
         this.totalTargetSales = totalTargetSales;
         this.urban = urban;

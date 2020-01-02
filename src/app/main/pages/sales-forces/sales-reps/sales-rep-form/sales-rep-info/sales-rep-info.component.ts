@@ -15,7 +15,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { LifecyclePlatform, UserStatus } from 'app/shared/models';
+import { LifecyclePlatform, UserStatus, EStatus } from 'app/shared/models';
 import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
@@ -500,7 +500,7 @@ export class SalesRepInfoComponent implements OnInit, OnDestroy {
                 confPassword: body.confirmPassword,
                 idNo: body.identityId,
                 image: body.photo,
-                status: body.status ? UserStatus.ACTIVE : UserStatus.INACTIVE,
+                status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE,
                 supplierId: null
             };
 
@@ -515,7 +515,7 @@ export class SalesRepInfoComponent implements OnInit, OnDestroy {
                 mobilePhoneNo: body.phone,
                 idNo: body.identityId,
                 image: body.photo,
-                status: body.status ? UserStatus.ACTIVE : UserStatus.INACTIVE
+                status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE
             };
 
             if (!body.name) {

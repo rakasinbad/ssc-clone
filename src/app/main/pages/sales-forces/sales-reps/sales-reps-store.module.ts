@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
-import { SalesRepEffects } from './store/effects';
+import { SalesRepBatchEffects, SalesRepEffects } from './store/effects';
 import * as fromSalesReps from './store/reducers';
 
 // import { fromSalesRep } from './store/reducers';
@@ -31,11 +31,10 @@ import * as fromSalesReps from './store/reducers';
 // );
 
 @NgModule({
-    declarations: [],
     imports: [
         // Third Party (Ngrx: https://ngrx.io)
         StoreModule.forFeature(fromSalesReps.featureKey, fromSalesReps.reducers),
-        EffectsModule.forFeature([SalesRepEffects])
+        EffectsModule.forFeature([SalesRepEffects, SalesRepBatchEffects])
     ]
 })
 export class SalesRepsStoreModule {}
