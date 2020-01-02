@@ -64,7 +64,7 @@ import { FormControl } from '@angular/forms';
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
-    pageType: string;
+
     search: FormControl;
     displayedColumns = [
         'checkbox',
@@ -245,6 +245,27 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
             : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
+    clickTab(action: 'all' | 'associated' | 'non-associated'): void {
+        if (!action) {
+            return;
+        }
+
+        switch (action) {
+            case 'all':
+                console.log('Set all');
+                break;
+            case 'associated':
+                console.log('Set associated');
+                break;
+            case 'non-associated':
+                console.log('Set non associated');
+                break;
+
+            default:
+                return;
+        }
+    }
+
     joinPortfolios(value: Array<Portfolio>): string {
         if (value && value.length > 0) {
             return value.map(v => v.invoiceGroup.name).join(', ');
@@ -293,26 +314,6 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
      * @memberof AssociationsComponent
      */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
-        const { id } = this.route.snapshot.params;
-
-        if (id === 'new') {
-            this.pageType = 'new';
-        } else {
-            this.pageType = 'edit';
-
-            // this._breadCrumbs = [
-            //     {
-            //         title: 'Home'
-            //     },
-            //     {
-            //         title: 'Sales Rep Management'
-            //     },
-            //     {
-            //         title: 'Edit Sales Rep'
-            //     }
-            // ];
-        }
-
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
