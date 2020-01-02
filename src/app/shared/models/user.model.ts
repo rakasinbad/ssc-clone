@@ -6,6 +6,7 @@ import { Role } from './role.model';
 import { UserSupplier } from './supplier.model';
 import { ITimestamp } from './timestamp.model';
 import { Urban } from './urban.model';
+import { Team } from './team.model';
 
 export enum UserStatus {
     ACTIVE = 'active',
@@ -21,15 +22,17 @@ export interface IUser extends ITimestamp {
     idImageUrl: TNullable<string>;
     idNo: string;
     imageUrl: TNullable<string>;
+    joinDate?: string;
     mobilePhoneNo: string;
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles: Array<Role>;
+    saleTeam: Team;
+    saleTeamId: string;
     selfieImageUrl: TNullable<string>;
     status: UserStatus;
     taxImageUrl: TNullable<string>;
     taxNo: string;
-    joinDate?: string;
     totalActualSales?: number;
     totalTargetSales?: number;
     urban?: Urban;
@@ -46,15 +49,17 @@ export class User implements IUser {
     idImageUrl: TNullable<string>;
     idNo: string;
     imageUrl: TNullable<string>;
+    joinDate?: string;
     mobilePhoneNo: string;
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
     roles: Array<Role>;
+    saleTeam: Team;
+    saleTeamId: string;
     selfieImageUrl: TNullable<string>;
     status: UserStatus;
     taxImageUrl: TNullable<string>;
     taxNo: string;
-    joinDate?: string;
     totalActualSales?: number;
     totalTargetSales?: number;
     urban?: Urban;
@@ -74,15 +79,17 @@ export class User implements IUser {
             idImageUrl,
             idNo,
             imageUrl,
+            joinDate,
             mobilePhoneNo,
             phoneNo,
             portfolios,
             roles,
+            saleTeam,
+            saleTeamId,
             selfieImageUrl,
             status = UserStatus.INACTIVE,
             taxImageUrl,
             taxNo,
-            joinDate,
             totalActualSales,
             totalTargetSales,
             urban,
@@ -101,17 +108,19 @@ export class User implements IUser {
         this.idImageUrl = idImageUrl ? String(idImageUrl).trim() : null;
         this.idNo = idNo ? String(idNo).trim() : null;
         this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
+        this.joinDate = joinDate;
         this.mobilePhoneNo = mobilePhoneNo ? String(mobilePhoneNo).trim() : null;
         this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.saleTeamId = saleTeamId;
         this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
         this.setPortfolios = portfolios;
         this.setRoles = roles;
+        this.setSaleTeam = saleTeam;
         this.setUserStores = userStores;
         this.setUserSuppliers = userSuppliers;
         this.status = status;
         this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
         this.taxNo = taxNo ? String(taxNo).trim() : null;
-        this.joinDate = joinDate;
         this.totalActualSales = totalActualSales;
         this.totalTargetSales = totalTargetSales;
         this.urban = urban;
@@ -135,6 +144,10 @@ export class User implements IUser {
         } else {
             this.roles = [];
         }
+    }
+
+    set setSaleTeam(value: Team) {
+        this.saleTeam = value ? new Team(value) : null;
     }
 
     set setUserStores(value: Array<UserStore>) {

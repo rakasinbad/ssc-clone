@@ -22,6 +22,7 @@ export * from './store-group.model';
 export * from './store-segment.model';
 export * from './store-type.model';
 export * from './supplier.model';
+export * from './team.model';
 export * from './third-party.model';
 export * from './timestamp.model';
 export * from './urban.model';

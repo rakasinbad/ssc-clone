@@ -6,9 +6,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'environments/environment';
 
 import { AuthEffects } from './main/pages/core/auth/store/effects/auth.effects';
-import { UiEffects } from './shared/store/effects';
-import { DropdownEffects } from './shared/store/effects/dropdown.effects';
-import { NetworkEffects } from './shared/store/effects/network.effects';
+import { DropdownEffects, NetworkEffects, TeamEffects, UiEffects } from './shared/store/effects';
 import * as fromRoot from './store/app.reducer';
 import { CustomSerializer } from './store/custom-serializer';
 
@@ -23,7 +21,13 @@ import { CustomSerializer } from './store/custom-serializer';
             //     strictActionSerializability: true
             // }
         }),
-        EffectsModule.forRoot([AuthEffects, NetworkEffects, DropdownEffects, UiEffects]),
+        EffectsModule.forRoot([
+            AuthEffects,
+            DropdownEffects,
+            NetworkEffects,
+            TeamEffects,
+            UiEffects
+        ]),
         environment.production || environment.staging
             ? []
             : StoreDevtoolsModule.instrument({

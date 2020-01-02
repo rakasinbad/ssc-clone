@@ -20,6 +20,7 @@ import { SalesRep } from '../models';
 import { SalesRepActions } from '../store/actions';
 import * as fromSalesReps from '../store/reducers';
 import { SalesRepSelectors } from '../store/selectors';
+import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-sales-rep-form',
@@ -33,8 +34,10 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // form: FormGroup;
     pageType: string;
     fullName: string;
+    phone: string;
 
     salesRep$: Observable<SalesRep>;
+    isLoading$: Observable<boolean>;
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
         {
@@ -103,8 +106,7 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-
-        this._initPage(LifecyclePlatform.AfterViewInit);
+        // this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
@@ -163,14 +165,17 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Hide footer action
-                this.store.dispatch(UiActions.hideFooterAction());
-
                 // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
 
+                // Reset form status state
+                this.store.dispatch(FormActions.resetFormStatus());
+
                 // Reset click save button state
                 this.store.dispatch(FormActions.resetClickSaveButton());
+
+                // Hide footer action
+                this.store.dispatch(UiActions.hideFooterAction());
 
                 // Reset core state sales reps
                 this.store.dispatch(SalesRepActions.clearState());
@@ -182,6 +187,18 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                     this.store.dispatch(SalesRepActions.fetchSalesRepRequest({ payload: id }));
                 }
+
+                this.isLoading$ = this.store.select(SalesRepSelectors.getIsLoading).pipe(
+                    tap(isLoading => {
+                        if (!isLoading) {
+                            // Display footer action
+                            this.store.dispatch(UiActions.showFooterAction());
+                        } else {
+                            // Hide footer action
+                            this.store.dispatch(UiActions.hideFooterAction());
+                        }
+                    })
+                );
                 break;
         }
     }
