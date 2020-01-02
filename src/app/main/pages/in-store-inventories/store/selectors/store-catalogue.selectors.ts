@@ -16,19 +16,20 @@ export const getTotalStoreCatalogue = createSelector(
     state => state.storeCatalogues.total
 );
 
+export const getSelectedStoreCatalogue = createSelector(
+    getStoreCatalogueState,
+    getAllStoreCatalogue,
+    (state, storeCatalogues) => storeCatalogues.filter(storeCatalogue => storeCatalogue.id === state.selectedStoreCatalogueId)[0]
+);
+
 export const getSelectedStoreCatalogueId = createSelector(
     getStoreCatalogueState,
-    state => state.selectedStoreCatalogueId
+    (state) => state.selectedStoreCatalogueId
 );
 
 export const getSourceType = createSelector(
     getStoreCatalogueState,
     state => state.source
-);
-
-export const getSelectedStoreCatalogue = createSelector(
-    getStoreCatalogueState,
-    state => state.storeCatalogue
 );
 
 export const getStoreCatalogue = createSelector(

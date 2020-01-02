@@ -86,6 +86,14 @@ const routes: Routes = [
                 canLoad: [AuthGuard]
             },
             {
+                path: 'sales-force',
+                loadChildren: () =>
+                    import('./main/pages/sales-forces/sales-forces.module').then(
+                        m => m.SalesForcesModule
+                    ),
+                canLoad: [AuthGuard]
+            },
+            {
                 path: 'supplier-inventories',
                 loadChildren: () =>
                     import('./main/pages/supplier-inventories/supplier-inventories.module').then(
@@ -95,10 +103,8 @@ const routes: Routes = [
             },
             {
                 path: 'settings',
-                loadChildren: () => 
-                    import('./main/pages/settings/settings.module').then(
-                        m => m.SettingsModule
-                    ),
+                loadChildren: () =>
+                    import('./main/pages/settings/settings.module').then(m => m.SettingsModule),
                 canLoad: [AuthGuard]
             }
         ]
@@ -110,8 +116,9 @@ const routes: Routes = [
     {
         path: 'profile',
         loadChildren: () =>
-            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule)
-    },
+            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule),
+        canLoad: [AuthGuard]
+    }
 ];
 
 /**

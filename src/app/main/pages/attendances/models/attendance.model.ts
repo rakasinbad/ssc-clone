@@ -1,9 +1,8 @@
-import { IResponsePaginate, ITimestamp, Timestamp, TNullable, User, Role } from 'app/shared/models';
+import { IResponsePaginate, ITimestamp, Role, Timestamp, TNullable, User } from 'app/shared/models';
+
+import { Store } from '.';
 
 // import { AccountAssocAttendance } from '../../accounts/models/account.model';
-import { Store } from './index';
-import { UserStore } from '../../accounts/merchants/models';
-
 type ELocationType = 'inside' | 'outside' | 'others';
 
 type EAttendanceType = 'absent' | 'present' | 'leave';
@@ -72,27 +71,7 @@ export class Attendance extends Timestamp {
         this.attendanceType = attendanceType;
 
         this.userId = userId;
-        this.user = user
-            ? new User(
-                user.id,
-                user.fullName,
-                user.email,
-                user.phoneNo,
-                user.mobilePhoneNo,
-                user.idNo,
-                user.taxNo,
-                user.status,
-                user.imageUrl,
-                user.taxImageUrl,
-                user.idImageUrl,
-                user.selfieImageUrl,
-                user.urbanId,
-                user.roles,
-                user.createdAt,
-                user.updatedAt,
-                user.deletedAt
-            )
-            : null;
+        this.user = user ? new User(user) : null;
 
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -100,34 +79,32 @@ export class Attendance extends Timestamp {
     }
 
     static getChainRoles(roles: Array<Role>): string {
-
         return !Array.isArray(roles) ? '' : roles.map(role => role.role).join(', ');
     }
 
+    // static getAttendanceType(attendanceType: EAttendanceType): string {
+    //     if (attendanceType === 'present') {
+    //         return 'Hadir';
+    //     } else if (attendanceType === 'absent') {
+    //         return 'Tidak Hadir';
+    //     } else if (attendanceType === 'leave') {
+    //         return 'Cuti';
+    //     }
 
-    static getAttendanceType(attendanceType: EAttendanceType): string {
-        if (attendanceType === 'present') {
-            return 'Hadir';
-        } else if (attendanceType === 'absent') {
-            return 'Tidak Hadir';
-        } else if (attendanceType === 'leave') {
-            return 'Cuti';
-        }
+    //     return 'Tidak diketahui';
+    // }
 
-        return 'Tidak diketahui';
-    }
+    // static getLocationType(locationType: ELocationType): string {
+    //     if (locationType === 'inside') {
+    //         return 'Kerja di Toko';
+    //     } else if (locationType === 'outside') {
+    //         return 'Kerja di Luar Toko';
+    // } else if (locationType === 'others') {
+    //         return 'Lainnya';
+    //     }
 
-    static getLocationType(locationType: ELocationType): string {
-        if (locationType === 'inside') {
-            return 'Kerja di Toko';
-        } else if (locationType === 'outside') {
-            return 'Kerja di Luar Toko';
-    } else if (locationType === 'others') {
-            return 'Lainnya';
-        }
-
-        return 'Tidak diketahui';
-    }
+    //     return 'Tidak diketahui';
+    // }
 
     static patch(attendance: Partial<Attendance>): Partial<Attendance> {
         return attendance;

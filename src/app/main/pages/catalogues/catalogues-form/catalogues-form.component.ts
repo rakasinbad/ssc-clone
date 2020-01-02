@@ -21,7 +21,7 @@ import { HelperService, ErrorMessageService, NoticeService } from 'app/shared/he
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
-import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take } from 'rxjs/operators';
+import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take, tap } from 'rxjs/operators';
 import {
     FormArray,
     FormBuilder,
@@ -48,6 +48,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { CataloguesService } from '../services';
 
+type IFormMode = 'add' | 'view' | 'edit';
+
 @Component({
     selector: 'app-catalogues-form',
     templateUrl: './catalogues-form.component.html',
@@ -57,9 +59,20 @@ import { CataloguesService } from '../services';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesFormComponent implements OnInit, OnDestroy {
-    isEditMode = false;
+    formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
+    catalogueContent: {
+        'content-card': boolean;
+        'mt-16': boolean;
+        'sinbad-content': boolean;
+        'mat-elevation-z1': boolean;
+        'fuse-white': boolean;
+    };
+    formClass: {
+        'custom-field-right': boolean;
+        'view-field-right': boolean;
+    };
 
     quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;
@@ -71,7 +84,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
     brandUser$: { id: string; name: string; } = { id: '0', name: '' };
     productCategory$: SafeHtml;
 
-    catalogueUnits$: Observable<Array<CatalogueUnit>>;
+    catalogueUnits: Array<CatalogueUnit>;
 
     productTagsControls: FormArray;
     productCourierControls: AbstractControl[];
@@ -181,18 +194,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         );
 
         this.store.dispatch(FormActions.resetFormStatus());
-
-        this.store.dispatch(UiActions.showFooterAction());
-
-        this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
-            payload: {
-                limit: 10,
-                skip: 0,
-                sort: 'asc',
-                sortBy: 'id'
-            }
-        }));
-        this.catalogueUnits$ = this.store.select(CatalogueSelectors.getCatalogueUnits);
     }
 
     private onSubmit(): void {
@@ -256,7 +257,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             unlimitedStock: false,
         };
 
-        if (this.isEditMode) {
+        if (this.formMode === 'edit') {
             /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
             const filterPhoto = (photo, idx) => {
                 const check = photo !== oldPhotos[idx].value && (!oldPhotos[idx].id || photo);
@@ -283,7 +284,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             catalogueData.catalogueImages = formValues.productMedia.photos.filter(filterPhoto);
         }
 
-        if (!this.isEditMode) {
+        if (this.formMode !== 'edit') {
             this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
         } else {
             this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' } }));
@@ -322,7 +323,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                             .pipe(
                                 map(response => {
                                     if (response.total > 0) {
-                                        if (response.data[0].externalId === catalogue.externalId) {
+                                        if (response.data[0].id === catalogue.id) {
                                             return null;
                                         }
 
@@ -401,7 +402,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 stock: [''],
-                uom: [''],
+                uom: ['', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]],
+                uomName : [''],
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
@@ -553,6 +559,22 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             'variants'
         ) as FormArray).controls;
 
+        this.route.url.pipe(
+            take(1)
+        ).subscribe(urls => {
+            if (urls.filter(url => url.path === 'edit').length > 0) {
+                this.formMode = 'edit';
+                this._prepareEditCatalogue();
+            } else if (urls.filter(url => url.path === 'view').length > 0) {
+                this.formMode = 'view';
+                this._prepareEditCatalogue();
+            } else if (urls.filter(url => url.path === 'add').length > 0) {
+                this.formMode = 'add';
+            }
+
+            this.updateFormView();
+        });
+
         /** Melakukan subscribe ke pengambilan data brand dari state. */
         combineLatest([
             this.store.select(BrandSelectors.getAllBrands),
@@ -611,8 +633,12 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             }
 
             /** Memasukkan nama produk ke dalam form jika bukan edit mode (nama form yang berasal dari halaman Add Product) */
-            if (!this.isEditMode) {
-                this.form.get('productInfo.name').patchValue(productName);
+            // if (!this.isEditMode) {
+            //     this.form.get('productInfo.name').patchValue(productName);
+            // }
+
+            if (this.isAddMode()) {
+                this.form.get('productInfo.name').setValue(productName);
             }
             
             /** Kategori produk yang ingin ditampilkan di front-end. */
@@ -762,39 +788,46 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             );
 
-        /** Ini untuk fixing Quill Editor yang tingginya melewati form input di bawahnya. */
-        if (!this.isEditMode) {
-            this.form.patchValue({
-                productInfo: {
-                    description: '---',
-                    information: '---'
-                }
-            });
+        if (this.formMode !== 'edit') {
+            this.form.get('productInfo.information').setValue('---');
+            setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
+        }
 
-            setTimeout(() => {
+        this.store.select(
+            CatalogueSelectors.getCatalogueUnits
+        ).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(units => {
+            if (units.length === 0) {
+                return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
+                    payload: {
+                        paginate: false,
+                        sort: 'asc',
+                        sortBy: 'id'
+                    }
+                }));
+            }
+
+            const uom = this.form.get('productInfo.uom').value;
+            const selectedUnit = units.filter(unit => unit.id === uom);
+            if (selectedUnit.length > 0) {
                 this.form.patchValue({
                     productInfo: {
-                        description: '',
-                        information: ''
+                        uomName: selectedUnit[0].unit
                     }
                 });
-                this._cd.markForCheck();
-            }, 100);
+            }
+
+            this.catalogueUnits = units;
+            this._cd.markForCheck();
+        });
+
+        if (!this.isViewMode()) {
+            this.store.dispatch(UiActions.showFooterAction());
         }
 
         /** Mendaftarkan toolbox pada Quill Editor yang diperlukan saja */
         this.registerQuillFormatting();
-
-        /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
-        const { id } = this.route.snapshot.params;
-
-        if (id) {
-            /** Melakukan persiapan data dan form untuk edit katalog. */
-            this.isEditMode = true;
-            this._prepareEditCatalogue();
-        } else {
-            this.isEditMode = false;
-        }
     }
 
     ngOnDestroy(): void {
@@ -918,64 +951,63 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             });
 
             /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
-            setTimeout(() =>
-                this.form.patchValue({
-                    productInfo: {
-                        id: catalogue.id,
-                        externalId: catalogue.externalId,
-                        name: catalogue.name,
-                        description: catalogue.description,
-                        information: catalogue.detail,
-                        // variant: ['', Validators.required],
-                        brandId: catalogue.brandId,
-                        brandName: catalogue.brand.name,
-                        // category: ['', Validators.required],
-                        stock: catalogue.stock,
-                        uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                        minQty: catalogue.minQty,
-                        packagedQty: catalogue.packagedQty,
-                        multipleQty: catalogue.multipleQty
-                    }, productSale: {
-                        retailPrice: String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                        productPrice: String(catalogue.retailBuyingPrice).replace('.', ','),
-                        // variants: this.fb.array([])
-                    }, productMedia: {
-                        photos: [
-                            ...catalogue.catalogueImages.map(image => image.imageUrl)
-                        ],
-                        oldPhotos: [
-                            ...catalogue.catalogueImages.map(image => image.imageUrl)
-                        ]
-                    },
-                    productShipment: {
-                        catalogueWeight: catalogue.catalogueWeight,
-                        packagedWeight: catalogue.packagedWeight,
-                        catalogueDimension: catalogue.catalogueDimension,
-                        packagedDimension: catalogue.packagedDimension,
-                        // isDangerous: [''],
-                        // couriers: this.fb.array([
-                        //     this.fb.control({
-                        //         name: 'SiCepat REG (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     }),
-                        //     this.fb.control({
-                        //         name: 'JNE REG (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     }),
-                        //     this.fb.control({
-                        //         name: 'SiCepat Cargo (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     })
-                        // ])
-                    },
-                    productCount: {
-                        qtyPerMasterBox: catalogue.packagedQty,
-                        minQtyOption: catalogue.minQtyType,
-                        minQtyValue: catalogue.minQty,
-                        additionalQtyOption: catalogue.multipleQtyType,
-                        additionalQtyValue: catalogue.multipleQty,
-                    }
-                }), 100);
+            this.form.patchValue({
+                productInfo: {
+                    id: catalogue.id,
+                    externalId: catalogue.externalId,
+                    name: catalogue.name,
+                    description: catalogue.description,
+                    information: catalogue.detail,
+                    // variant: ['', Validators.required],
+                    brandId: catalogue.brandId,
+                    brandName: catalogue.brand.name,
+                    // category: ['', Validators.required],
+                    stock: catalogue.stock,
+                    uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                    minQty: catalogue.minQty,
+                    packagedQty: catalogue.packagedQty,
+                    multipleQty: catalogue.multipleQty
+                }, productSale: {
+                    retailPrice: this.isViewMode() ? catalogue.discountedRetailBuyingPrice : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                    productPrice: this.isViewMode() ? catalogue.retailBuyingPrice : String(catalogue.retailBuyingPrice).replace('.', ','),
+                    // variants: this.fb.array([])
+                }, productMedia: {
+                    photos: [
+                        ...catalogue.catalogueImages.map(image => image.imageUrl)
+                    ],
+                    oldPhotos: [
+                        ...catalogue.catalogueImages.map(image => image.imageUrl)
+                    ]
+                },
+                productShipment: {
+                    catalogueWeight: catalogue.catalogueWeight,
+                    packagedWeight: catalogue.packagedWeight,
+                    catalogueDimension: catalogue.catalogueDimension,
+                    packagedDimension: catalogue.packagedDimension,
+                    // isDangerous: [''],
+                    // couriers: this.fb.array([
+                    //     this.fb.control({
+                    //         name: 'SiCepat REG (maks 5000g)',
+                    //         disabled: this.fb.control(false)
+                    //     }),
+                    //     this.fb.control({
+                    //         name: 'JNE REG (maks 5000g)',
+                    //         disabled: this.fb.control(false)
+                    //     }),
+                    //     this.fb.control({
+                    //         name: 'SiCepat Cargo (maks 5000g)',
+                    //         disabled: this.fb.control(false)
+                    //     })
+                    // ])
+                },
+                productCount: {
+                    qtyPerMasterBox: catalogue.packagedQty,
+                    minQtyOption: catalogue.minQtyType,
+                    minQtyValue: catalogue.minQty,
+                    additionalQtyOption: catalogue.multipleQtyType,
+                    additionalQtyValue: catalogue.multipleQty,
+                }
+            });
 
 
             /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Minimum Quantity Order. */
@@ -1028,6 +1060,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this.form.markAsDirty({ onlySelf: false });
             this.form.markAllAsTouched();
             this.form.markAsPristine();
+            this._cd.markForCheck();
         });
     }
 
@@ -1169,5 +1202,38 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
 
         return form.errors && (form.dirty || form.touched);
+    }
+
+    isAddMode(): boolean {
+        return this.formMode === 'add';
+    }
+
+    isEditMode(): boolean {
+        return this.formMode === 'edit';
+    }
+
+    isViewMode(): boolean {
+        return this.formMode === 'view';
+    }
+
+    getCatalogueImage(): string {
+        return this.form.get(['productMedia', 'oldPhotos', '0', 'value'])
+            ? this.form.get(['productMedia', 'oldPhotos', '0', 'value']).value
+            : 'assets/images/logos/sinbad.svg';
+    }
+
+    updateFormView(): void {
+        this.formClass = {
+            'custom-field-right': !this.isViewMode(),
+            'view-field-right': this.isViewMode()
+        };
+
+        this.catalogueContent = {
+            'mt-16': this.isViewMode(),
+            'content-card': this.isViewMode(),
+            'sinbad-content': this.isAddMode() || this.isEditMode(),
+            'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
+            'fuse-white': this.isAddMode() || this.isEditMode(),
+        };
     }
 }

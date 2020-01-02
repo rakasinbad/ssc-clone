@@ -3,6 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import {
     Cluster,
+    District,
     GeoParameter,
     Hierarchy,
     IErrorHandler,
@@ -12,6 +13,7 @@ import {
     StoreGroup,
     StoreSegment,
     StoreType,
+    Urban,
     VehicleAccessibility
 } from 'app/shared/models';
 
@@ -21,7 +23,18 @@ import { DropdownActions } from '../actions';
 // import { Role } from 'app/main/pages/roles/role.model';
 export const FEATURE_KEY = 'dropdowns';
 
+interface DistrictState extends EntityState<District> {
+    isLoading: boolean;
+    selectedId: string | number;
+    total: number;
+}
+
 interface GeoParameterState extends EntityState<GeoParameter> {
+    selectedId: string | number;
+}
+
+interface UrbanState extends EntityState<Urban> {
+    isLoading: boolean;
     selectedId: string | number;
 }
 
@@ -37,6 +50,8 @@ interface ErrorState extends EntityState<IErrorHandler> {
 export interface State {
     // search: SearchState;
     creditLimitGroups?: CreditLimitGroup[];
+    districts: DistrictState;
+    urbans: UrbanState;
     hierarchies?: Hierarchy[];
     invoiceGroups?: InvoiceGroup[];
     roles?: Role[];
@@ -52,6 +67,16 @@ export interface State {
 // const adapterAccount = createEntityAdapter<Account>();
 // const initialAccountState = adapterAccount.getInitialState();
 
+const adapterDistrict = createEntityAdapter<District>({ selectId: row => row.id });
+const initialDistrictState = adapterDistrict.getInitialState({
+    selectedId: null,
+    total: 0,
+    isLoading: false
+});
+
+const adapterUrban = createEntityAdapter<Urban>({ selectId: row => row.id });
+const initialUrbanState = adapterUrban.getInitialState({ selectedId: null, isLoading: false });
+
 const adapterGeoParameter = createEntityAdapter<GeoParameter>({ selectId: row => row.id });
 const initialGeoParameterState = adapterGeoParameter.getInitialState({ selectedId: null });
 
@@ -61,25 +86,30 @@ const adapterError = createEntityAdapter<IErrorHandler>({
 const initialErrorState = adapterError.getInitialState({ selectedErrorId: null });
 
 export const initialState: State = {
-    // search: {
-    //     accounts: initialAccountState
-    // },
-    // roles: [],
-    // provinces: [],
+    districts: initialDistrictState,
     geoParameters: initialGeoParameterState,
+    urbans: initialUrbanState,
     errors: initialErrorState
 };
 
-const dropdownReducer = createReducer(
-    initialState,
-    // on(DropdownActions.fetchSearchAccountSuccess, (state, { payload }) => ({
+/*     // on(DropdownActions.fetchSearchAccountSuccess, (state, { payload }) => ({
     //     ...state,
     //     search: {
     //         ...state.search,
     //         accounts: adapterAccount.addAll(payload, state.search.accounts)
     //     },
     //     errors: adapterError.removeOne('fetchAccountSearchFailure', state.errors)
-    // })),
+    // })), */
+
+const dropdownReducer = createReducer<State>(
+    initialState,
+    on(DropdownActions.fetchDistrictRequest, DropdownActions.fetchScrollDistrictRequest, state => ({
+        ...state,
+        districts: {
+            ...state.districts,
+            isLoading: true
+        }
+    })),
     on(
         DropdownActions.fetchDropdownCreditLimitGroupFailure,
         DropdownActions.fetchDropdownGeoParameterProvinceFailure,
@@ -171,9 +201,49 @@ const dropdownReducer = createReducer(
         vehicleAccessibilities: payload,
         errors: adapterError.removeOne('fetchDropdownVehicleAccessibilityFailure', state.errors)
     })),
+    on(DropdownActions.fetchDistrictSuccess, (state, { payload }) => ({
+        ...state,
+        districts: adapterDistrict.addAll(payload.data, {
+            ...state.districts,
+            selectedId: null,
+            total: payload.total,
+            isLoading: false
+        }),
+        errors: adapterError.removeOne('fetchDistrictFailure', state.errors)
+    })),
+    on(DropdownActions.fetchScrollDistrictSuccess, (state, { payload }) => ({
+        ...state,
+        districts: adapterDistrict.upsertMany(payload.data, {
+            ...state.districts,
+            selectedId: null,
+            total: payload.total,
+            isLoading: false
+        }),
+        errors: adapterError.removeOne('fetchScrollDistrictFailure', state.errors)
+    })),
+    on(DropdownActions.setUrbanSource, (state, { payload }) => ({
+        ...state,
+        urbans: adapterUrban.addAll(payload, state.urbans)
+    })),
+    on(DropdownActions.resetDistrictsState, state => ({
+        ...state,
+        districts: initialState.districts
+    })),
     on(DropdownActions.resetInvoiceGroupState, state => ({
         ...state,
         invoiceGroups: undefined
+    })),
+    on(DropdownActions.resetProvinceState, state => ({
+        ...state,
+        provinces: undefined
+    })),
+    on(DropdownActions.resetGeoparamsState, state => ({
+        ...state,
+        geoParameters: initialState.geoParameters
+    })),
+    on(DropdownActions.resetUrbansState, state => ({
+        ...state,
+        urbans: initialState.urbans
     }))
 );
 
@@ -182,7 +252,9 @@ export function reducer(state: State | undefined, action: Action): State {
 }
 
 const selectProvinceState = (state: State) => state.provinces;
+const getDistrictsState = (state: State) => state.districts;
 const getGeoParametersState = (state: State) => state.geoParameters;
+const getUrbansState = (state: State) => state.urbans;
 const getErrorsState = (state: State) => state.errors;
 // const getListSearchAccountState = (state: State) => state.search.accounts;
 
@@ -194,11 +266,25 @@ const getErrorsState = (state: State) => state.errors;
 // } = adapterAccount.getSelectors(getListSearchAccountState);
 
 export const {
+    selectAll: selectAllDistrict,
+    selectEntities: selectDistrictEntities,
+    selectIds: selectDistrictIds,
+    selectTotal: selectDistrictTotal
+} = adapterDistrict.getSelectors(getDistrictsState);
+
+export const {
     selectAll: selectAllGeoParameter,
     selectEntities: selectGeoParameterEntities,
     selectIds: selectGeoParameterIds,
     selectTotal: selectGeoParameterTotal
 } = adapterGeoParameter.getSelectors(getGeoParametersState);
+
+export const {
+    selectAll: selectAllUrban,
+    selectEntities: selecteUrbanEntities,
+    selectIds: selectUrbanIds,
+    selectTotal: selectUrbanTotal
+} = adapterUrban.getSelectors(getUrbansState);
 
 export const {
     selectAll: selectAllError,

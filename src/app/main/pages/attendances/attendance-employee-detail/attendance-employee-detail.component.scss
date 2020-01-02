@@ -107,13 +107,14 @@
             // justify-content: flex-end;
         }
 
+        .mat-column-attendanceType,
         .mat-column-locationType {
-            flex: 0 1 10%;
+            flex: 0 1 13%;
             // justify-content: flex-end;
         }
 
         .mat-column-checkDate {
-            flex: 0 1 10%;
+            flex: 0 1 12%;
             // justify-content: flex-end;
         }
 
@@ -125,9 +126,24 @@
             flex: 0 1 12.5%;
         }
 
+        .mat-column-duration {
+            flex: 0 1 12.5%;
+        }
+
         .mat-column-actions {
-            flex: 0 1 8%;
+            flex: 0 1 12%;
             justify-content: flex-end;
+        }
+
+        mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            // padding-right: 8px;
+
+            .mat-column-actions {
+                flex: 0 1 10%;
+                justify-content: flex-end;
+            }
         }
     }
 }

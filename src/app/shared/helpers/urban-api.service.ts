@@ -68,4 +68,12 @@ export class UrbanApiService {
             params: newParams
         });
     }
+
+    findTest(params: IQueryParams): Observable<PaginateResponse<Urban>> {
+        const newParams = this._$helper.handleParams(this._url, params);
+
+        return this.http.get<PaginateResponse<Urban>>(this._url, {
+            params: newParams
+        });
+    }
 }

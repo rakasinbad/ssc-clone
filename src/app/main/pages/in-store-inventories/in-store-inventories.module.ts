@@ -18,6 +18,7 @@ import { AttendanceEffects } from '../attendances/store/effects';
 
 import { MerchantEffects } from '../attendances/store/effects';
 import { fromMerchant } from '../attendances/store/reducers';
+import { fromCatalogue } from '../catalogues/store/reducers';
 
 /**
  *
@@ -42,8 +43,9 @@ import { fromMerchant } from '../attendances/store/reducers';
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
 
-        StoreModule.forFeature(fromStoreCatalogue.FEATURE_KEY, fromStoreCatalogue.reducer),
+        StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
+        StoreModule.forFeature(fromStoreCatalogue.FEATURE_KEY, fromStoreCatalogue.reducer),
 
         EffectsModule.forFeature([
             MerchantEffects,

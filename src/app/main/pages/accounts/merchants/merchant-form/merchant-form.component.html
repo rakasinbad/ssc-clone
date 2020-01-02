@@ -1,4 +1,4 @@
-<div id="merchants" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="merchants" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -59,12 +59,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('profileInfo.phoneNumber').errors &&
-                                    !form.get('profileInfo.phoneNumber').untouched &&
-                                    (form.get('profileInfo.phoneNumber').dirty ||
-                                        form.get('profileInfo.phoneNumber').touched)
-                                "
+                                [class.mat-error]="hasError('profileInfo.phoneNumber')"
                             >
                                 *Phone Number
                             </label>
@@ -78,13 +73,7 @@
                                     maxlength="30"
                                 />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('profileInfo.phoneNumber').errors &&
-                                        (form.get('profileInfo.phoneNumber').dirty ||
-                                            form.get('profileInfo.phoneNumber').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('profileInfo.phoneNumber', true)">
                                     {{ getErrorMessage('profileInfo.phoneNumber') }}
                                 </mat-error>
                             </mat-form-field>
@@ -94,12 +83,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('profileInfo.photos').errors &&
-                                    !form.get('profileInfo.photos').untouched &&
-                                    (form.get('profileInfo.photos').dirty ||
-                                        form.get('profileInfo.photos').touched)
-                                "
+                                [class.mat-error]="hasError('profileInfo.photos')"
                             >
                                 Store Photo
                             </label>
@@ -109,11 +93,14 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
+                                    [class.mat-form-field-invalid]="hasError('profileInfo.photos')"
                                 >
                                     <input
-                                        type="file"
                                         #photoPicker
+                                        type="file"
                                         class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="photos"
                                         (change)="onFileBrowse($event, 'photo')"
                                     />
                                     <input
@@ -123,15 +110,12 @@
                                         placeholder="No file choose"
                                     />
 
-                                    <mat-error
-                                        *ngIf="
-                                            form.get('profileInfo.photos').errors &&
-                                            (form.get('profileInfo.photos').dirty ||
-                                                form.get('profileInfo.photos').touched)
-                                        "
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('profileInfo.photos', true)"
                                     >
                                         {{ getErrorMessage('profileInfo.photos') }}
-                                    </mat-error>
+                                    </mat-hint>
                                 </mat-form-field>
 
                                 <button
@@ -163,12 +147,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('profileInfo.npwpId').errors &&
-                                    !form.get('profileInfo.npwpId').untouched &&
-                                    (form.get('profileInfo.npwpId').dirty ||
-                                        form.get('profileInfo.npwpId').touched)
-                                "
+                                [class.mat-error]="hasError('profileInfo.npwpId')"
                             >
                                 *NPWP ID
                             </label>
@@ -182,13 +161,7 @@
                                     [validation]="false"
                                 />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('profileInfo.npwpId').errors &&
-                                        (form.get('profileInfo.npwpId').dirty ||
-                                            form.get('profileInfo.npwpId').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('profileInfo.npwpId', true)">
                                     {{ getErrorMessage('profileInfo.npwpId') }}
                                 </mat-error>
                             </mat-form-field>
@@ -210,12 +183,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.storeId.id').errors &&
-                                    !form.get('storeInfo.storeId.id').untouched &&
-                                    (form.get('storeInfo.storeId.id').dirty ||
-                                        form.get('storeInfo.storeId.id').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.storeId.id')"
                             >
                                 *ID
                             </label>
@@ -223,13 +191,7 @@
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input matInput name="id" formControlName="id" />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.storeId.id').errors &&
-                                        (form.get('storeInfo.storeId.id').dirty ||
-                                            form.get('storeInfo.storeId.id').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
                                     {{ getErrorMessage('storeInfo.storeId.id') }}
                                 </mat-error>
                             </mat-form-field>
@@ -239,26 +201,15 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.storeId.storeName').errors &&
-                                    !form.get('storeInfo.storeId.storeName').untouched &&
-                                    (form.get('storeInfo.storeId.storeName').dirty ||
-                                        form.get('storeInfo.storeId.storeName').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.storeId.storeName')"
                             >
-                                *Nama Toko
+                                *Store Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input matInput name="storeName" formControlName="storeName" />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.storeId.storeName').errors &&
-                                        (form.get('storeInfo.storeId.storeName').dirty ||
-                                            form.get('storeInfo.storeId.storeName').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.storeId.storeName', true)">
                                     {{ getErrorMessage('storeInfo.storeId.storeName') }}
                                 </mat-error>
                             </mat-form-field>
@@ -269,6 +220,232 @@
                         <span class="mat-subheading-2">Address</span>
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.address.district')"
+                            >
+                                *District
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    #triggerDistrict
+                                    matInput
+                                    formControlName="district"
+                                    placeholder="Search District"
+                                    aria-label="District"
+                                    [matAutocomplete]="autoDistrict"
+                                    (keyup)="onKeyup($event, 'district')"
+                                    (keydown)="onKeydown($event, 'district')"
+                                />
+
+                                <mat-autocomplete
+                                    #autoDistrict="matAutocomplete"
+                                    [displayWith]="onDisplayDistrict"
+                                    (opened)="onOpenAutocomplete('district')"
+                                    (optionSelected)="onSelectAutocomplete($event, 'district')"
+                                >
+                                    <!-- <mat-option *ngIf="isLoadingDistrict$ | async">
+                                        Loading...
+                                    </mat-option> -->
+                                    <mat-option
+                                        *ngIf="!(isLoadingDistrict$ | async) && isDistrictTyping"
+                                    >
+                                        Searching...
+                                    </mat-option>
+                                    <!-- <ng-container
+                                        *ngIf="!(isLoadingDistrict$ | async) && !isDistrictTyping"
+                                    > -->
+                                    <ng-container
+                                        *ngIf="
+                                            !isDistrictTyping && (districts$ | async)?.length > 0
+                                        "
+                                    >
+                                        <!-- <cdk-virtual-scroll-viewport
+                                                #cdkDistrict
+                                                itemSize="5"
+                                                class="viewport-select"
+                                                (scrolledIndexChange)="onScroll($event, 'district')"
+                                            >
+                                                <mat-option
+                                                    *cdkVirtualFor="let source of d2Source$"
+                                                    [value]="source"
+                                                >
+                                                    <ng-container *ngIf="source">
+                                                        <span
+                                                            [innerHtml]="
+                                                                source?.province?.name +
+                                                                    ', ' +
+                                                                    source?.city +
+                                                                    ', ' +
+                                                                    source?.district
+                                                                    | highlight: districtHighlight
+                                                            "
+                                                        ></span>
+                                                    </ng-container>
+
+                                                    <ng-container *ngIf="!source">Loading...</ng-container>
+                                                </mat-option>
+                                            </cdk-virtual-scroll-viewport> -->
+
+                                        <ng-container
+                                            *ngIf="
+                                                districts$ | async as districts;
+                                                else noDistricts
+                                            "
+                                        >
+                                            <mat-option
+                                                *ngFor="let source of districts"
+                                                [value]="source"
+                                                [attr.title]="displayDistrictOption(source)"
+                                            >
+                                                <ng-container
+                                                    *ngIf="source && !(isLoadingDistrict$ | async)"
+                                                >
+                                                    <span
+                                                        [innerHtml]="
+                                                            displayDistrictOption(source, true)
+                                                                | highlight: districtHighlight
+                                                        "
+                                                    ></span>
+                                                </ng-container>
+
+                                                <ng-container
+                                                    *ngIf="!source || (isLoadingDistrict$ | async)"
+                                                >
+                                                    Loading...
+                                                </ng-container>
+                                            </mat-option>
+
+                                            <!-- <cdk-virtual-scroll-viewport
+                                                #cdkDistrict
+                                                itemSize="5"
+                                                class="viewport-select"
+                                                (scrolledIndexChange)="onScroll($event, 'district')"
+                                            >
+                                                <mat-option
+                                                    *cdkVirtualFor="let source of d2Source"
+                                                    [value]="source"
+                                                >
+                                                    <ng-container *ngIf="source">
+                                                        <span
+                                                            [innerHtml]="
+                                                                source?.province?.name +
+                                                                    ', ' +
+                                                                    source?.city +
+                                                                    ', ' +
+                                                                    source?.district
+                                                                    | highlight: districtHighlight
+                                                            "
+                                                        ></span>
+                                                    </ng-container>
+
+                                                    <ng-container *ngIf="!source">Loading...</ng-container>
+                                                </mat-option>
+                                            </cdk-virtual-scroll-viewport> -->
+                                        </ng-container>
+
+                                        <ng-template #noDistricts>
+                                            <mat-option>None</mat-option>
+                                        </ng-template>
+                                    </ng-container>
+
+                                    <ng-container
+                                        *ngIf="!isDistrictTyping && !(districts$ | async)?.length"
+                                    >
+                                        <mat-option>None</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+
+                                <mat-hint
+                                    align="end"
+                                    *ngIf="hasLength('storeInfo.address.district', 3)"
+                                >
+                                    Please enter 3 or more characters.
+                                </mat-hint>
+
+                                <mat-error *ngIf="hasError('storeInfo.address.district', true)">
+                                    {{ getErrorMessage('storeInfo.address.district') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="hasError('storeInfo.address.urban')"
+                            >
+                                *Urban
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    #triggerUrban
+                                    matInput
+                                    formControlName="urban"
+                                    placeholder="Search Urban"
+                                    aria-label="Urban"
+                                    [matAutocomplete]="autoUrban"
+                                    (keyup)="onKeyup($event, 'urban')"
+                                    (keydown)="onKeydown($event, 'urban')"
+                                />
+
+                                <mat-autocomplete
+                                    #autoUrban="matAutocomplete"
+                                    [displayWith]="onDisplayUrban"
+                                    (optionSelected)="onSelectAutocomplete($event, 'urban')"
+                                >
+                                    <mat-option *ngIf="isUrbanTyping">
+                                        Searching...
+                                    </mat-option>
+
+                                    <ng-container
+                                        *ngIf="!isUrbanTyping && (urbans$ | async)?.length > 0"
+                                    >
+                                        <ng-container
+                                            *ngIf="urbans$ | async as urbans; else noUrbans"
+                                        >
+                                            <mat-option
+                                                *ngFor="let source of urbans"
+                                                [value]="source"
+                                                [attr.title]="displayUrbanOption(source)"
+                                            >
+                                                <ng-container *ngIf="source">
+                                                    <span
+                                                        [innerHtml]="
+                                                            displayUrbanOption(source, true)
+                                                                | highlight: urbanHighlight
+                                                        "
+                                                    ></span>
+                                                </ng-container>
+
+                                                <ng-container *ngIf="!source">
+                                                    Loading...
+                                                </ng-container>
+                                            </mat-option>
+                                        </ng-container>
+
+                                        <ng-template #noUrbans>
+                                            <mat-option>None</mat-option>
+                                        </ng-template>
+                                    </ng-container>
+
+                                    <ng-container
+                                        *ngIf="!isUrbanTyping && !(urbans$ | async)?.length"
+                                    >
+                                        <mat-option>None</mat-option>
+                                    </ng-container>
+                                </mat-autocomplete>
+
+                                <mat-error *ngIf="hasError('storeInfo.address.urban', true)">
+                                    {{ getErrorMessage('storeInfo.address.urban') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
@@ -427,7 +604,7 @@
                                         (selectionChange)="onSelectDistrict($event)"
                                     >
                                         <cdk-virtual-scroll-viewport
-                                            #cdkDistrict
+                                            #cdkDistrict2
                                             itemSize="5"
                                             minBufferPx="200"
                                             maxBufferPx="400"
@@ -534,20 +711,15 @@
                                     {{ getErrorMessage('storeInfo.address.urban') }}
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.address.postcode').errors &&
-                                    !form.get('storeInfo.address.postcode').untouched &&
-                                    (form.get('storeInfo.address.postcode').dirty ||
-                                        form.get('storeInfo.address.postcode').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.address.postcode')"
                             >
-                                *Kode Pos
+                                *Postcode
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -565,13 +737,7 @@
                                     <mat-option>12440</mat-option>
                                 </mat-select> -->
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.address.postcode').errors &&
-                                        (form.get('storeInfo.address.postcode').dirty ||
-                                            form.get('storeInfo.address.postcode').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.address.postcode', true)">
                                     {{ getErrorMessage('storeInfo.address.postcode') }}
                                 </mat-error>
                             </mat-form-field>
@@ -585,12 +751,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.address.notes').errors &&
-                                    !form.get('storeInfo.address.notes').untouched &&
-                                    (form.get('storeInfo.address.notes').dirty ||
-                                        form.get('storeInfo.address.notes').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.address.notes')"
                             >
                                 *Notes
                             </label>
@@ -598,17 +759,65 @@
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <textarea matInput formControlName="notes" rows="5"></textarea>
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.address.notes').errors &&
-                                        (form.get('storeInfo.address.notes').dirty ||
-                                            form.get('storeInfo.address.notes').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.address.notes', true)">
                                     {{ getErrorMessage('storeInfo.address.notes') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
+
+                        <ng-container formGroupName="geolocation">
+                            <div
+                                class="custom-field-right"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        hasError('storeInfo.address.geolocation.lat')
+                                    "
+                                >
+                                    Latitude
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input matInput formControlName="lat" />
+
+                                    <mat-error
+                                        *ngIf="hasError('storeInfo.address.geolocation.lat', true)"
+                                    >
+                                        {{ getErrorMessage('storeInfo.address.geolocation.lat') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+
+                            <div
+                                class="custom-field-right"
+                                fxLayout="row"
+                                fxLayoutAlign="start center"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="12"
+                                    [class.mat-error]="
+                                        hasError('storeInfo.address.geolocation.lng')
+                                    "
+                                >
+                                    Longitude
+                                </label>
+
+                                <mat-form-field appearance="outline" fxFlex="50">
+                                    <input matInput formControlName="lng" />
+
+                                    <mat-error
+                                        *ngIf="hasError('storeInfo.address.geolocation.lng', true)"
+                                    >
+                                        {{ getErrorMessage('storeInfo.address.geolocation.lng') }}
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </ng-container>
 
                         <!-- <div
                             class="custom-field-right sinbad-button"
@@ -657,12 +866,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.legalInfo.name').errors &&
-                                    !form.get('storeInfo.legalInfo.name').untouched &&
-                                    (form.get('storeInfo.legalInfo.name').dirty ||
-                                        form.get('storeInfo.legalInfo.name').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.legalInfo.name')"
                             >
                                 *Owner Name
                             </label>
@@ -670,13 +874,7 @@
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input matInput name="name" formControlName="name" />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.legalInfo.name').errors &&
-                                        (form.get('storeInfo.legalInfo.name').dirty ||
-                                            form.get('storeInfo.legalInfo.name').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.legalInfo.name', true)">
                                     {{ getErrorMessage('storeInfo.legalInfo.name') }}
                                 </mat-error>
                             </mat-form-field>
@@ -686,12 +884,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.legalInfo.identityId').errors &&
-                                    !form.get('storeInfo.legalInfo.identityId').untouched &&
-                                    (form.get('storeInfo.legalInfo.identityId').dirty ||
-                                        form.get('storeInfo.legalInfo.identityId').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.legalInfo.identityId')"
                             >
                                 *KTP ID
                             </label>
@@ -704,13 +897,7 @@
                                     mask="0000000000000000"
                                 />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.legalInfo.identityId').errors &&
-                                        (form.get('storeInfo.legalInfo.identityId').dirty ||
-                                            form.get('storeInfo.legalInfo.identityId').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.legalInfo.identityId', true)">
                                     {{ getErrorMessage('storeInfo.legalInfo.identityId') }}
                                 </mat-error>
                             </mat-form-field>
@@ -724,12 +911,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.legalInfo.identityPhoto').errors &&
-                                    !form.get('storeInfo.legalInfo.identityPhoto').untouched &&
-                                    (form.get('storeInfo.legalInfo.identityPhoto').dirty ||
-                                        form.get('storeInfo.legalInfo.identityPhoto').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.legalInfo.identityPhoto')"
                             >
                                 *KTP Photo
                             </label>
@@ -739,11 +921,16 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
+                                    [class.mat-form-field-invalid]="
+                                        hasError('storeInfo.legalInfo.identityPhoto')
+                                    "
                                 >
                                     <input
-                                        type="file"
                                         #identityPhotoPicker
+                                        type="file"
                                         class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="identityPhoto"
                                         (change)="onFileBrowse($event, 'identityPhoto')"
                                     />
                                     <input
@@ -753,16 +940,12 @@
                                         placeholder="No file choose"
                                     />
 
-                                    <mat-error
-                                        *ngIf="
-                                            form.get('storeInfo.legalInfo.identityPhoto').errors &&
-                                            (form.get('storeInfo.legalInfo.identityPhoto').dirty ||
-                                                form.get('storeInfo.legalInfo.identityPhoto')
-                                                    .touched)
-                                        "
+                                    <mat-hint
+                                        class="mat-error"
+                                        *ngIf="hasError('storeInfo.legalInfo.identityPhoto', true)"
                                     >
                                         {{ getErrorMessage('storeInfo.legalInfo.identityPhoto') }}
-                                    </mat-error>
+                                    </mat-hint>
                                 </mat-form-field>
 
                                 <button
@@ -786,11 +969,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.legalInfo.identityPhotoSelfie').errors &&
-                                    !form.get('storeInfo.legalInfo.identityPhotoSelfie')
-                                        .untouched &&
-                                    (form.get('storeInfo.legalInfo.identityPhotoSelfie').dirty ||
-                                        form.get('storeInfo.legalInfo.identityPhotoSelfie').touched)
+                                    hasError('storeInfo.legalInfo.identityPhotoSelfie')
                                 "
                             >
                                 KTP Photo + Selfie
@@ -801,11 +980,16 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
+                                    [class.mat-form-field-invalid]="
+                                        hasError('storeInfo.legalInfo.identityPhotoSelfie')
+                                    "
                                 >
                                     <input
-                                        type="file"
                                         #identityPhotoSelfiePicker
+                                        type="file"
                                         class="custom-file"
+                                        accept=".jpg, .jpeg, .png"
+                                        formControlName="identityPhotoSelfie"
                                         (change)="onFileBrowse($event, 'identityPhotoSelfie')"
                                     />
                                     <input
@@ -815,14 +999,13 @@
                                         placeholder="No file choose"
                                     />
 
-                                    <mat-error
+                                    <mat-hint
+                                        class="mat-error"
                                         *ngIf="
-                                            form.get('storeInfo.legalInfo.identityPhotoSelfie')
-                                                .errors &&
-                                            (form.get('storeInfo.legalInfo.identityPhotoSelfie')
-                                                .dirty ||
-                                                form.get('storeInfo.legalInfo.identityPhotoSelfie')
-                                                    .touched)
+                                            hasError(
+                                                'storeInfo.legalInfo.identityPhotoSelfie',
+                                                true
+                                            )
                                         "
                                     >
                                         {{
@@ -830,7 +1013,7 @@
                                                 'storeInfo.legalInfo.identityPhotoSelfie'
                                             )
                                         }}
-                                    </mat-error>
+                                    </mat-hint>
                                 </mat-form-field>
 
                                 <button
@@ -849,12 +1032,7 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.mat-error]="
-                                    form.get('storeInfo.legalInfo.npwpId').errors &&
-                                    !form.get('storeInfo.legalInfo.npwpId').untouched &&
-                                    (form.get('storeInfo.legalInfo.npwpId').dirty ||
-                                        form.get('storeInfo.legalInfo.npwpId').touched)
-                                "
+                                [class.mat-error]="hasError('storeInfo.legalInfo.npwpId')"
                             >
                                 *NPWP ID
                             </label>
@@ -868,13 +1046,7 @@
                                     [validation]="false"
                                 />
 
-                                <mat-error
-                                    *ngIf="
-                                        form.get('storeInfo.legalInfo.npwpId').errors &&
-                                        (form.get('storeInfo.legalInfo.npwpId').dirty ||
-                                            form.get('storeInfo.legalInfo.npwpId').touched)
-                                    "
-                                >
+                                <mat-error *ngIf="hasError('storeInfo.legalInfo.npwpId', true)">
                                     {{ getErrorMessage('storeInfo.legalInfo.npwpId') }}
                                 </mat-error>
                             </mat-form-field>
@@ -889,14 +1061,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                        .errors &&
-                                    !form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                        .untouched &&
-                                    (form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                        .dirty ||
-                                        form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                            .touched)
+                                    hasError('storeInfo.physicalStoreInfo.numberOfEmployee')
                                 "
                             >
                                 Number of Employee
@@ -928,12 +1093,10 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                            .errors &&
-                                        (form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                            .dirty ||
-                                            form.get('storeInfo.physicalStoreInfo.numberOfEmployee')
-                                                .touched)
+                                        hasError(
+                                            'storeInfo.physicalStoreInfo.numberOfEmployee',
+                                            true
+                                        )
                                     "
                                 >
                                     {{
@@ -950,14 +1113,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                                        .errors &&
-                                    !form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                                        .untouched &&
-                                    (form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                                        .dirty ||
-                                        form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                                            .touched)
+                                    hasError('storeInfo.physicalStoreInfo.vehicleAccessibility')
                                 "
                             >
                                 Vehicle Accessibility
@@ -994,14 +1150,10 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.physicalStoreInfo.vehicleAccessibility')
-                                            .errors &&
-                                        (form.get(
-                                            'storeInfo.physicalStoreInfo.vehicleAccessibility'
-                                        ).dirty ||
-                                            form.get(
-                                                'storeInfo.physicalStoreInfo.vehicleAccessibility'
-                                            ).touched)
+                                        hasError(
+                                            'storeInfo.physicalStoreInfo.vehicleAccessibility',
+                                            true
+                                        )
                                     "
                                 >
                                     {{
@@ -1024,11 +1176,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.storeClassification.storeType').errors &&
-                                    !form.get('storeInfo.storeClassification.storeType')
-                                        .untouched &&
-                                    (form.get('storeInfo.storeClassification.storeType').dirty ||
-                                        form.get('storeInfo.storeClassification.storeType').touched)
+                                    hasError('storeInfo.storeClassification.storeType')
                                 "
                             >
                                 Store Type
@@ -1063,12 +1211,7 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.storeClassification.storeType')
-                                            .errors &&
-                                        (form.get('storeInfo.storeClassification.storeType')
-                                            .dirty ||
-                                            form.get('storeInfo.storeClassification.storeType')
-                                                .touched)
+                                        hasError('storeInfo.storeClassification.storeType', true)
                                     "
                                 >
                                     {{ getErrorMessage('storeInfo.storeClassification.storeType') }}
@@ -1082,12 +1225,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.storeClassification.storeGroup').errors &&
-                                    !form.get('storeInfo.storeClassification.storeGroup')
-                                        .untouched &&
-                                    (form.get('storeInfo.storeClassification.storeGroup').dirty ||
-                                        form.get('storeInfo.storeClassification.storeGroup')
-                                            .touched)
+                                    hasError('storeInfo.storeClassification.storeGroup')
                                 "
                             >
                                 Store Group
@@ -1122,12 +1260,7 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.storeClassification.storeGroup')
-                                            .errors &&
-                                        (form.get('storeInfo.storeClassification.storeGroup')
-                                            .dirty ||
-                                            form.get('storeInfo.storeClassification.storeGroup')
-                                                .touched)
+                                        hasError('storeInfo.storeClassification.storeGroup', true)
                                     "
                                 >
                                     {{
@@ -1155,12 +1288,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.storeClassification.storeCluster').errors &&
-                                    !form.get('storeInfo.storeClassification.storeCluster')
-                                        .untouched &&
-                                    (form.get('storeInfo.storeClassification.storeCluster').dirty ||
-                                        form.get('storeInfo.storeClassification.storeCluster')
-                                            .touched)
+                                    hasError('storeInfo.storeClassification.storeCluster')
                                 "
                             >
                                 Store Cluster
@@ -1198,12 +1326,7 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.storeClassification.storeCluster')
-                                            .errors &&
-                                        (form.get('storeInfo.storeClassification.storeCluster')
-                                            .dirty ||
-                                            form.get('storeInfo.storeClassification.storeCluster')
-                                                .touched)
+                                        hasError('storeInfo.storeClassification.storeCluster', true)
                                     "
                                 >
                                     {{
@@ -1233,12 +1356,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.storeClassification.storeSegment').errors &&
-                                    !form.get('storeInfo.storeClassification.storeSegment')
-                                        .untouched &&
-                                    (form.get('storeInfo.storeClassification.storeSegment').dirty ||
-                                        form.get('storeInfo.storeClassification.storeSegment')
-                                            .touched)
+                                    hasError('storeInfo.storeClassification.storeSegment')
                                 "
                             >
                                 Store Segment
@@ -1276,12 +1394,7 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.storeClassification.storeSegment')
-                                            .errors &&
-                                        (form.get('storeInfo.storeClassification.storeSegment')
-                                            .dirty ||
-                                            form.get('storeInfo.storeClassification.storeSegment')
-                                                .touched)
+                                        hasError('storeInfo.storeClassification.storeSegment', true)
                                     "
                                 >
                                     {{
@@ -1299,11 +1412,7 @@
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    form.get('storeInfo.storeClassification.hierarchy').errors &&
-                                    !form.get('storeInfo.storeClassification.hierarchy')
-                                        .untouched &&
-                                    (form.get('storeInfo.storeClassification.hierarchy').dirty ||
-                                        form.get('storeInfo.storeClassification.hierarchy').touched)
+                                    hasError('storeInfo.storeClassification.hierarchy')
                                 "
                             >
                                 Hierarchy
@@ -1335,12 +1444,7 @@
 
                                 <mat-error
                                     *ngIf="
-                                        form.get('storeInfo.storeClassification.hierarchy')
-                                            .errors &&
-                                        (form.get('storeInfo.storeClassification.hierarchy')
-                                            .dirty ||
-                                            form.get('storeInfo.storeClassification.hierarchy')
-                                                .touched)
+                                        hasError('storeInfo.storeClassification.hierarchy', true)
                                     "
                                 >
                                     {{ getErrorMessage('storeInfo.storeClassification.hierarchy') }}
@@ -1400,8 +1504,6 @@
                                             [class.mat-error]="
                                                 formCreditLimits.controls[i].get('creditLimit')
                                                     .errors &&
-                                                !formCreditLimits.controls[i].get('creditLimit')
-                                                    .untouched &&
                                                 (formCreditLimits.controls[i].get('creditLimit')
                                                     .dirty ||
                                                     formCreditLimits.controls[i].get('creditLimit')
@@ -1462,8 +1564,6 @@
                                             [class.mat-error]="
                                                 formCreditLimits.controls[i].get('termOfPayment')
                                                     .errors &&
-                                                !formCreditLimits.controls[i].get('termOfPayment')
-                                                    .untouched &&
                                                 (formCreditLimits.controls[i].get('termOfPayment')
                                                     .dirty ||
                                                     formCreditLimits.controls[i].get(
@@ -1526,9 +1626,6 @@
                                             [class.mat-error]="
                                                 formCreditLimits.controls[i].get('creditLimitGroup')
                                                     .errors &&
-                                                !formCreditLimits.controls[i].get(
-                                                    'creditLimitGroup'
-                                                ).untouched &&
                                                 (formCreditLimits.controls[i].get(
                                                     'creditLimitGroup'
                                                 ).dirty ||
@@ -1808,10 +1905,10 @@
                 </div>
             </mat-card>
         </form>
-
-        <div class="loader" *ngIf="isLoading$ | async">
-            <mat-spinner color="accent"></mat-spinner>
-        </div>
     </div>
     <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
 </div>

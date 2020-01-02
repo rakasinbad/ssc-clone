@@ -4,6 +4,16 @@
 }
  */
 
+/* .custom-field-right {
+    .mat-form-field {
+        .mat-form-field-wrapper {
+            > .mat-form-field-subscript-wrapper {
+                padding: 0;
+            }
+        }
+    }
+} */
+
 .mat-select-panel.virtual-scroll {
     max-height: 100% !important;
     overflow: inherit !important;

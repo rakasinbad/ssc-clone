@@ -2,10 +2,21 @@ import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, filter } from 'rxjs/operators';
 
 import { IQueryParams } from '../models/query.model';
+import * as jwt_decode from 'jwt-decode';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { Auth } from 'app/main/pages/core/auth/models';
+import { User, TNullable, ErrorHandler } from '../models';
+import { NoticeService } from './notice.service';
+
+type TTemplateFiles = {
+    catalogueStock: string;
+    orderStatus: string;
+    paymentStatus: string;
+};
 
 @Injectable({
     providedIn: 'root'
@@ -15,9 +26,69 @@ export class HelperService {
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     private _currentHost: string;
+    private _attendanceTypes: Array<{ value: string; text: string }> = [
+        {
+            value: 'absent',
+            text: 'Tidak Hadir'
+        },
+        {
+            value: 'present',
+            text: 'Hadir'
+        },
+        {
+            value: 'leave',
+            text: 'Cuti'
+        }
+    ];
+    private _locationTypes: Array<{ value: string; text: string }> = [
+        {
+            value: 'inside',
+            text: 'Kerja di Toko'
+        },
+        {
+            value: 'outside',
+            text: 'Kerja di Luar Toko'
+        },
+        {
+            value: 'others',
+            text: 'Lainnya'
+        }
+    ];
 
-    constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient) {
+    constructor(
+        @Inject(DOCUMENT) private doc: Document,
+        private http: HttpClient,
+        private storage: StorageMap,
+        private _$notice: NoticeService
+    ) {
         this._currentHost = this.doc.location.hostname;
+    }
+
+    static truncateText(value: string, maxLength: number, type: 'start' | 'end'): string {
+        console.log(value.length, maxLength);
+
+        if (value.length > maxLength) {
+            switch (type) {
+                case 'start': {
+                    const ellipsis = '...';
+                    const valueArr = value.split(',');
+
+                    if (valueArr.length > 0) {
+                        return `${ellipsis}, ${valueArr[1]}, ${valueArr[2]}`;
+                    }
+
+                    return `${ellipsis}${value.slice(-(maxLength - ellipsis.length))}`;
+                }
+
+                case 'end':
+                default: {
+                    const ellipsis = '...';
+                    return `${value.slice(0, maxLength - ellipsis.length)}${ellipsis}`;
+                }
+            }
+        }
+
+        return value;
     }
 
     handleApiRouter(endpoint: string): string {
@@ -190,6 +261,43 @@ export class HelperService {
         ];
     }
 
+    orderStatus(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'all',
+                label: 'Semua'
+            },
+            {
+                id: 'checkout',
+                label: 'Quotation'
+            },
+            {
+                id: 'confirm',
+                label: 'Order Baru'
+            },
+            {
+                id: 'packing',
+                label: 'Dikemas'
+            },
+            {
+                id: 'shipping',
+                label: 'Dikirim'
+            },
+            {
+                id: 'delivered',
+                label: 'Diterima'
+            },
+            {
+                id: 'done',
+                label: 'Selesai'
+            },
+            {
+                id: 'cancel',
+                label: 'Batal'
+            }
+        ];
+    }
+
     paymentStatus(): { id: string; label: string }[] {
         return [
             {
@@ -256,5 +364,90 @@ export class HelperService {
                 label: 'Select Manually'
             }
         ];
+    }
+
+    attendanceType(value: string): string {
+        const attendanceType = this._attendanceTypes.filter(attType => attType.value === value);
+
+        if (attendanceType.length === 0) {
+            return '-';
+        }
+
+        return attendanceType[0].text;
+    }
+
+    attendanceTypes(): Array<{ value: string; text: string }> {
+        return this._attendanceTypes;
+    }
+
+    locationType(value: string): string {
+        const locationType = this._locationTypes.filter(locType => locType.value === value);
+
+        if (locationType.length === 0) {
+            return '-';
+        }
+
+        return locationType[0].text;
+    }
+
+    locationTypes(): Array<{ value: string; text: string }> {
+        return this._locationTypes;
+    }
+
+    downloadTemplate(): Observable<TTemplateFiles> {
+        const url = this.handleApiRouter('/import-template-links');
+        return this.http.get<TTemplateFiles>(url);
+    }
+
+    decodeUserToken(): Observable<TNullable<User>> {
+        return this.storage.get<Auth>('user').pipe(
+            map((userAuth: Auth) => {
+                if (!userAuth) {
+                    throwError(
+                        new ErrorHandler({
+                            id: 'ERR_NO_TOKEN',
+                            errors: `Token found: ${userAuth.token}`
+                        })
+                    );
+                } else {
+                    try {
+                        let userData: User;
+
+                        if (!userAuth.user) {
+                            // Decode the token.
+                            const decodedToken = jwt_decode<Auth>(userAuth.token);
+                            userData = decodedToken.user;
+                        } else {
+                            userData = userAuth.user;
+                        }
+
+                        // Create User object.
+                        const user = new User(userData);
+                        // user.setUserStores = userData.userStores;
+                        // user.setUserSuppliers = userData.userSuppliers;
+                        // user.setUrban = userData.urban;
+                        // user.setAttendances = userData.attendances;
+
+                        // Return the value as User object.
+                        return user;
+                    } catch (e) {
+                        throwError(
+                            new ErrorHandler({
+                                id: 'ERR_USER_INVALID_TOKEN',
+                                errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`
+                            })
+                        );
+                    }
+                }
+            })
+        );
+    }
+
+    infoNotice(text: string = 'This feature is coming soon!'): void {
+        this._$notice.open(text, 'info', {
+            verticalPosition: 'bottom',
+            horizontalPosition: 'right',
+            duration: 7000
+        });
     }
 }

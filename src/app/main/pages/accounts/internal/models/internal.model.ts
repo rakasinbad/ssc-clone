@@ -2,229 +2,133 @@ import {
     IResponsePaginate,
     ITimestamp,
     Role,
-    Timestamp,
     TNullable,
     TStatus,
-    TUserStatus
+    User,
+    UserStatus
 } from 'app/shared/models';
-import * as _ from 'lodash';
+import { sortBy } from 'lodash';
 
 export interface IInternalEmployee extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     userId: string;
     brandId: string;
     status: TStatus;
     user: User;
-}
-
-export interface IInternalEmployeeDetail extends ITimestamp {
-    id: string;
-    fullName: string;
-    email: string;
-    phoneNo: TNullable<string>;
-    mobilePhoneNo: string;
-    idNo: string;
-    taxNo: string;
-    status: TUserStatus;
-    imageUrl: TNullable<string>;
-    taxImageUrl: TNullable<string>;
-    idImageUrl: TNullable<string>;
-    selfieImageUrl: TNullable<string>;
-    roles: Role[];
 }
 
 export interface IInternalEmployeeResponse extends IResponsePaginate {
     data: IInternalEmployee[];
 }
 
-export class InternalEmployee extends Timestamp {
-    id: string;
+export class InternalEmployee implements IInternalEmployee {
+    readonly id: NonNullable<string>;
     userId: string;
     brandId: string;
     status: TStatus;
     user: User;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        id: string,
-        userId: string,
-        brandId: string,
-        status: TStatus,
-        user: User,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: IInternalEmployee) {
+        const { id, userId, brandId, status, user, createdAt, updatedAt, deletedAt } = data;
 
-        this.id = id || undefined;
+        this.id = id;
         this.userId = userId;
         this.brandId = brandId;
         this.status = status;
-        this.user = user
-            ? new User(
-                  user.id,
-                  user.fullName,
-                  user.email,
-                  user.phoneNo,
-                  user.mobilePhoneNo,
-                  user.idNo,
-                  user.taxNo,
-                  user.status,
-                  user.imageUrl,
-                  user.taxImageUrl,
-                  user.idImageUrl,
-                  user.selfieImageUrl,
-                  user.urbanId,
-                  user.roles,
-                  user.createdAt,
-                  user.updatedAt,
-                  user.deletedAt
-              )
-            : null;
+        this.setUser = user;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
+
+    set setUser(value: User) {
+        this.user = value ? new User(value) : null;
+    }
 }
 
-export class InternalEmployeeDetail extends Timestamp {
-    id: string;
+export interface IInternalEmployeeDetail extends ITimestamp {
+    readonly id: NonNullable<string>;
     fullName: string;
     email: string;
     phoneNo: TNullable<string>;
     mobilePhoneNo: string;
     idNo: string;
     taxNo: string;
-    status: TUserStatus;
+    status: UserStatus;
     imageUrl: TNullable<string>;
     taxImageUrl: TNullable<string>;
     idImageUrl: TNullable<string>;
     selfieImageUrl: TNullable<string>;
     roles: Role[];
+}
 
-    constructor(
-        id: string,
-        fullName: string,
-        email: string,
-        phoneNo: TNullable<string>,
-        mobilePhoneNo: string,
-        idNo: string,
-        taxNo: string,
-        status: TUserStatus,
-        imageUrl: TNullable<string>,
-        taxImageUrl: TNullable<string>,
-        idImageUrl: TNullable<string>,
-        selfieImageUrl: TNullable<string>,
-        roles: Role[],
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class InternalEmployeeDetail implements IInternalEmployeeDetail {
+    readonly id: NonNullable<string>;
+    fullName: string;
+    email: string;
+    phoneNo: TNullable<string>;
+    mobilePhoneNo: string;
+    idNo: string;
+    taxNo: string;
+    status: UserStatus;
+    imageUrl: TNullable<string>;
+    taxImageUrl: TNullable<string>;
+    idImageUrl: TNullable<string>;
+    selfieImageUrl: TNullable<string>;
+    roles: Role[];
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.id = id || undefined;
-        this.fullName = fullName ? fullName.trim() : fullName;
-        this.email = email ? email.trim() : email;
-        this.phoneNo = phoneNo ? phoneNo.trim() : phoneNo;
-        this.mobilePhoneNo = mobilePhoneNo ? mobilePhoneNo.trim() : mobilePhoneNo;
-        this.idNo = idNo;
-        this.taxNo = taxNo;
+    constructor(data: IInternalEmployeeDetail) {
+        const {
+            id,
+            fullName,
+            email,
+            phoneNo,
+            mobilePhoneNo,
+            idNo,
+            taxNo,
+            status,
+            imageUrl,
+            taxImageUrl,
+            idImageUrl,
+            selfieImageUrl,
+            roles,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id;
+        this.fullName = fullName ? String(fullName).trim() : null;
+        this.email = email ? String(email).trim() : null;
+        this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.mobilePhoneNo = mobilePhoneNo ? String(mobilePhoneNo).trim() : null;
+        this.idNo = idNo ? String(idNo).trim() : null;
+        this.taxNo = taxNo ? String(taxNo).trim() : null;
         this.status = status;
-        this.imageUrl = imageUrl;
-        this.taxImageUrl = taxImageUrl;
-        this.idImageUrl = idImageUrl;
-        this.selfieImageUrl = selfieImageUrl;
+        this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
+        this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
+        this.idImageUrl = idImageUrl ? String(idImageUrl).trim() : null;
+        this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
+        this.setRoles = roles;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
 
-        if (roles && roles.length > 0) {
-            roles = roles.map(role => {
-                return new Role(
-                    role.id,
-                    role.role,
-                    role.description,
-                    role.status,
-                    role.roleTypeId,
-                    role.createdAt,
-                    role.updatedAt,
-                    role.deletedAt
-                );
-            });
+    set setRoles(value: Role[]) {
+        if (value && value.length > 0) {
+            const newRoles = value.map(row => new Role(row));
 
-            this.roles = _.sortBy(roles, ['role'], ['asc']);
+            this.roles = sortBy(newRoles, ['role'], ['asc']);
         } else {
             this.roles = [];
         }
-    }
-}
-
-class User extends Timestamp {
-    id: string;
-    fullName: string;
-    email: string;
-    phoneNo: TNullable<string>;
-    mobilePhoneNo: string;
-    idNo: string;
-    taxNo: string;
-    status: TUserStatus;
-    imageUrl: TNullable<string>;
-    taxImageUrl: TNullable<string>;
-    idImageUrl: TNullable<string>;
-    selfieImageUrl: TNullable<string>;
-    urbanId: string;
-    roles: Role[];
-
-    constructor(
-        id: string,
-        fullName: string,
-        email: string,
-        phoneNo: TNullable<string>,
-        mobilePhoneNo: string,
-        idNo: string,
-        taxNo: string,
-        status: TUserStatus,
-        imageUrl: TNullable<string>,
-        taxImageUrl: TNullable<string>,
-        idImageUrl: TNullable<string>,
-        selfieImageUrl: TNullable<string>,
-        urbanId: string,
-        roles: Role[],
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
-
-        this.id = id || undefined;
-        this.fullName = fullName ? fullName.trim() : fullName;
-        this.email = email ? email.trim() : email;
-        this.phoneNo = phoneNo ? phoneNo.trim() : phoneNo;
-        this.mobilePhoneNo = mobilePhoneNo ? mobilePhoneNo.trim() : mobilePhoneNo;
-        this.idNo = idNo;
-        this.taxNo = taxNo;
-        this.status = status;
-        this.imageUrl = imageUrl;
-        this.taxImageUrl = taxImageUrl;
-        this.idImageUrl = idImageUrl;
-        this.selfieImageUrl = selfieImageUrl;
-        this.urbanId = urbanId;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-
-        this.roles =
-            roles && roles.length > 0
-                ? roles.map(row => {
-                      return new Role(
-                          row.id,
-                          row.role,
-                          row.description,
-                          row.status,
-                          row.roleTypeId,
-                          row.createdAt,
-                          row.updatedAt,
-                          row.deletedAt
-                      );
-                  })
-                : [];
     }
 }
 
