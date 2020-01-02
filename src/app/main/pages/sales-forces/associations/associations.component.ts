@@ -11,6 +11,7 @@ import {
     SecurityContext
 } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { PageEvent, MatPaginator, MatSort } from '@angular/material';
@@ -63,6 +64,7 @@ import { FormControl } from '@angular/forms';
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
+    pageType: string;
     search: FormControl;
     displayedColumns = [
         'checkbox',
@@ -149,6 +151,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
 
     constructor(
+        private route: ActivatedRoute,
         private domSanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
@@ -163,18 +166,6 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
      */
 
     onChangePage($event: PageEvent): void {}
-
-    // isAllSelected(): boolean {
-    //     const numSelected = this.selection.selected.length;
-    //     const numRows = this.associations.length;
-    //     return numSelected === numRows;
-    // }
-
-    // masterToggle(): void {
-    //     this.isAllSelected()
-    //         ? this.selection.clear()
-    //         : this.associations.forEach(row => this.selection.select(row));
-    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -302,6 +293,26 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
      * @memberof AssociationsComponent
      */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
+        const { id } = this.route.snapshot.params;
+
+        if (id === 'new') {
+            this.pageType = 'new';
+        } else {
+            this.pageType = 'edit';
+
+            // this._breadCrumbs = [
+            //     {
+            //         title: 'Home'
+            //     },
+            //     {
+            //         title: 'Sales Rep Management'
+            //     },
+            //     {
+            //         title: 'Edit Sales Rep'
+            //     }
+            // ];
+        }
+
         // Set breadcrumbs
         this.store.dispatch(
             UiActions.createBreadcrumb({
