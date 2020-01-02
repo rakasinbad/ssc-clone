@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
@@ -8,7 +8,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -17,7 +17,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 import { Attendance } from '../models/attendance.model';
 import { AttendanceActions } from '../store/actions';
@@ -32,7 +32,7 @@ import { AttendanceSelectors } from '../store/selectors';
     animations: fuseAnimations,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
+export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, AfterViewInit {
     storeId: string;
     employeeId: string;
     activityId: string;
@@ -51,35 +51,9 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
     filteredAccounts$: Observable<Account[]>;
     isLoading$: Observable<boolean>;
 
-    attendanceTypes: Array<{ value: string; text: string }> = [
-        {
-            value: 'absent',
-            text: 'Tidak Hadir'
-        },
-        {
-            value: 'present',
-            text: 'Hadir'
-        },
-        {
-            value: 'leave',
-            text: 'Cuti'
-        }
-    ];
+    attendanceTypes: Array<{ value: string; text: string }>;
 
-    locationTypes: Array<{ value: string; text: string }> = [
-        {
-            value: 'inside',
-            text: 'Kerja di Toko'
-        },
-        {
-            value: 'outside',
-            text: 'Kerja di Luar Toko'
-        },
-        {
-            value: 'others',
-            text: 'Lainnya'
-        }
-    ];
+    locationTypes: Array<{ value: string; text: string }>;
 
     private _unSubs$: Subject<void>;
     private _selectedAccount: string;
@@ -90,30 +64,19 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
         private storage: StorageMap,
         private store: Store<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private errorMessageSvc: ErrorMessageService
+        private errorMessageSvc: ErrorMessageService,
+        private helperSvc: HelperService
     ) {
         const { storeId, employeeId, activityId } = this.route.snapshot.params;
         this.storeId = storeId;
         this.employeeId = employeeId;
         this.activityId = activityId;
 
-        this.store.dispatch(AttendanceActions.fetchAttendanceRequest({ payload: this.activityId }));
+        this.attendanceTypes = this.helperSvc.attendanceTypes();
 
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Attendances',
-                        translate: 'BREADCRUMBS.ATTENDANCES',
-                        active: true
-                    }
-                ]
-            })
-        );
+        this.locationTypes = this.helperSvc.locationTypes();
+
+        this.store.dispatch(AttendanceActions.fetchAttendanceRequest({ payload: this.activityId }));
 
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -310,6 +273,24 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy {
             this._unSubs$.next();
             this._unSubs$.complete();
         }
+    }
+
+    ngAfterViewInit(): void {
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
     }
 
     // -----------------------------------------------------------------------------------------------------

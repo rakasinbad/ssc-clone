@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
@@ -16,7 +17,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams, User, Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -27,7 +28,7 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs
 import { Attendance } from '../models';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 import { fromAttendance, fromUser } from '../store/reducers';
 import { AttendanceSelectors, UserSelectors } from '../store/selectors';
@@ -45,7 +46,7 @@ import { AttendanceActions, UserActions } from '../store/actions';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
+export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, AfterViewInit {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
@@ -66,10 +67,12 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         'number',
         'employee',
         'role',
+        'attendanceType',
         'locationType',
         'checkDate',
         'checkIn',
         'checkOut',
+        'duration',
         'actions'
     ];
 
@@ -94,6 +97,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         private _fromUser: NgRxStore<fromUser.FeatureState>,
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _helper: HelperService
     ) {
         /** Mendapatkan ID user dan toko dari parameter URL. */
         this._employeeId = this.route.snapshot.params.employeeId;
@@ -101,22 +105,6 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         this._activityId = this.route.snapshot.params.activityId;
 
         this._fromUser.dispatch(UserActions.fetchUserRequest({ payload: this._employeeId }));
-
-        this._fromAttendance.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Attendances',
-                        translate: 'BREADCRUMBS.ATTENDANCES',
-                        active: true
-                    }
-                ]
-            })
-        );
 
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -173,6 +161,24 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    ngAfterViewInit(): void {
+        this._fromAttendance.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -209,11 +215,11 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
     }
 
     public getAttendanceType(attendanceType: any): string {
-        return Attendance.getAttendanceType(attendanceType);
+        return this._helper.attendanceType(attendanceType);
     }
 
     public getLocationType(locationType: any): string {
-        return Attendance.getLocationType(locationType);
+        return this._helper.locationType(locationType);
     }
 
     public editEmployeeAttendanceDetail(data: Attendance): void {
@@ -224,6 +230,14 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy {
         this.router.navigate([
             '/pages', '/attendances/', this._storeId, '/employee/', this._employeeId, '/activity/' , this._activityId, '/detail'
         ]);
+    }
+
+    public getDuration(row: Attendance): string {
+        if (!row.checkIn || !row.checkOut) {
+            return '-';
+        }
+
+        return moment(row.checkIn).to(moment(row.checkOut), true);
     }
 
     // -----------------------------------------------------------------------------------------------------

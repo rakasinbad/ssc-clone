@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
@@ -16,7 +17,7 @@ import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { select, Store as NgRxStore } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { IQueryParams, Role } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
@@ -27,7 +28,7 @@ import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 
 import { Attendance, Store as Merchant } from '../models';
 
 import { locale as english } from '../i18n/en';
-import { locale as indonesian } from 'app/navigation/i18n/id';
+import { locale as indonesian } from '../i18n/id';
 
 /**
  * ACTIONS
@@ -52,7 +53,7 @@ import { AttendanceSelectors, MerchantSelectors } from '../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
+export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, OnDestroy {
     /** Untuk unsubscribe. */
     private _unSubs$: Subject<void>;
 
@@ -71,10 +72,12 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         'number',
         'employee',
         'role',
+        'attendanceType',
         'locationType',
         'checkDate',
         'checkIn',
         'checkOut',
+        'duration',
         'actions'
     ];
 
@@ -101,7 +104,8 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         private _fromAttendance: NgRxStore<fromAttendance.FeatureState>,
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromUser: NgRxStore<fromUser.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _helper: HelperService
     ) {
         /** Mendapatkan ID dari route (parameter URL) */
         const { id } = this.route.snapshot.params;
@@ -204,6 +208,24 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         }
     }
 
+    ngAfterViewInit(): void {
+        this._fromMerchant.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Attendances',
+                        translate: 'BREADCRUMBS.ATTENDANCES',
+                        active: true
+                    }
+                ]
+            })
+        );
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -239,12 +261,20 @@ export class AttendanceStoreDetailComponent implements OnInit, OnDestroy {
         return Attendance.getChainRoles(roles);
     }
 
-    public getAttendanceType(attendanceType: any): string {
-        return Attendance.getAttendanceType(attendanceType);
+    public getAttendanceType(attendanceType: string): string {
+        return this._helper.attendanceType(attendanceType);
     }
 
-    public getLocationType(locationType: any): string {
-        return Attendance.getLocationType(locationType);
+    public getLocationType(locationType: string): string {
+        return this._helper.locationType(locationType);
+    }
+
+    public getDuration(row: Attendance): string {
+        if (!row.checkIn || !row.checkOut) {
+            return '-';
+        }
+
+        return moment(row.checkIn).to(moment(row.checkOut), true);
     }
 
     public openEmployeeAttendanceDetail(data: Attendance): void {

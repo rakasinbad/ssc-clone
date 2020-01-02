@@ -79,7 +79,6 @@ export const patchCatalogueRequest = createAction(
     props<{ payload: { id: string; data: Partial<Catalogue>; source: TSourceEdit } }>()
 );
 
-
 export const patchCatalogueFailure = createAction(
     '[Catalogues API] Patch Catalogue Failure',
     props<{ payload: IErrorHandler }>()
@@ -90,6 +89,20 @@ export const patchCatalogueSuccess = createAction(
     props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit; } }>()
 );
 
+export const patchCataloguesRequest = createAction(
+    '[Catalogues API] Patch Catalogues Request',
+    props<{ payload: { file: File; type: string; } }>()
+);
+
+export const patchCataloguesFailure = createAction(
+    '[Catalogues API] Patch Catalogues Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const patchCataloguesSuccess = createAction(
+    '[Catalogues API] Patch Catalogues Success',
+    props<{ payload: { status: string; } }>()
+);
 /**
  * CATALOGUE - FETCH
  */
@@ -102,7 +115,6 @@ export const fetchCatalogueRequest = createAction(
     '[Catalogues API] Fetch Catalogue Request',
     props<{ payload: string }>()
 );
-
 
 export const fetchCatalogueFailure = createAction(
     '[Catalogues API] Fetch Catalogue Failure',
@@ -370,6 +382,10 @@ export const resetCatalogues = createAction('[Catalogues Page] Reset Catalogues 
 export const startLoading = createAction('[Catalogues Page] Start Loading');
 
 export const endLoading = createAction('[Catalogues Page] End Loading');
+
+export const setRefreshStatus = createAction('[Catalogues Page] Set Refresh Status',
+    props<{ status: boolean }>()
+);
 
 export const setProductName = createAction(
     '[Catalogues Page] Set Product Name',

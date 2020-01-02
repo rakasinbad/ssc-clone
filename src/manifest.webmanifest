@@ -1,9 +1,10 @@
 {
-    "name": "supplier-center",
-    "short_name": "supplier-center",
+    "name": "Sinbad Supplier Center",
+    "short_name": "SSC",
     "theme_color": "#f0444c",
     "background_color": "#fafafa",
     "display": "standalone",
+    "orientation": "portrait",
     "scope": "/",
     "start_url": "/",
     "icons": [

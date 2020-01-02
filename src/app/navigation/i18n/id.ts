@@ -1,6 +1,13 @@
+import { globalIdLang } from '../../lang/i18n/id';
+
 export const locale = {
     lang: 'id',
     data: {
+        ...globalIdLang,
+        ERROR: {
+            ...globalIdLang.ERROR,
+            MISMATCH_EXTENSION: '{{ fieldName }} field only accepts some file extensions: [{{ extensions }}]'
+        },
         NAV: {
             ADD_PRODUCT: {
                 TITLE: 'Add Product'

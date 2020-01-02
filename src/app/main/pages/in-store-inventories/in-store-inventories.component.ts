@@ -18,16 +18,14 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { LogService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 
-import { Auth } from '../core/auth/models';
 import { StoreCatalogueApiService } from './services';
 import { StoreCatalogueActions } from './store/actions';
 import { fromStoreCatalogue } from './store/reducers';
@@ -136,6 +134,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                 }
             }
         ]);
+
         this.paginator.pageSize = environment.pageSize;
         this.sort.sort({
             id: 'id',
@@ -215,6 +214,18 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
+    }
+
+    openStoreHistoryInventories(id: string): void {
+        this.store.dispatch(
+            StoreCatalogueActions.setSelectedStoreCatalogue({
+                payload: id
+            })
+        );
+
+        this.router.navigate([
+            '/pages/in-store-inventories/' + id + '/detail'
+        ]);
     }
 
     // -----------------------------------------------------------------------------------------------------

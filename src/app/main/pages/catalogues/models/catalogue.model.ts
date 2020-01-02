@@ -680,9 +680,8 @@ export class Catalogue implements ICatalogue {
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88 88YbdP88  dP__Yb  Yb  "88 88""   o.`Y8b 
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88 88 YY 88 dP""""Yb  YboodP 888888 8bodP' 
         */
-        this.catalogueImages = Array.isArray(catalogueImages) ? [
-            ...catalogueImages.map(catalogueImage => ({
-                ...new CatalogueImage(
+        this.catalogueImages = Array.isArray(catalogueImages) ? 
+            catalogueImages.map(catalogueImage => new CatalogueImage(
                     catalogueImage.id,
                     catalogueImage.catalogueId,
                     catalogueImage.imageUrl,
@@ -691,8 +690,7 @@ export class Catalogue implements ICatalogue {
                     catalogueImage.updatedAt,
                     catalogueImage.deletedAt
                 )
-            }))
-        ] : [];
+            ).sort((catA, catB) => +catA.id - +catB.id) : [];
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888    db    Yb  dP 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88     dPYb    YbdP  
@@ -828,5 +826,13 @@ export class Catalogue implements ICatalogue {
 
     static patch(catalogue: Partial<Catalogue>): Partial<Catalogue> {
         return catalogue;
+    }
+
+    static hasDiscountPrice(catalogue: Catalogue): boolean {
+        return (!!(catalogue.discountedRetailBuyingPrice) || catalogue.discountedRetailBuyingPrice === 0);
+    }
+
+    static getCataloguePrice(catalogue: Catalogue): number {
+        return Catalogue.hasDiscountPrice(catalogue) ? catalogue.discountedRetailBuyingPrice : catalogue.retailBuyingPrice;
     }
 }

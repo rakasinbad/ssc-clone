@@ -17,9 +17,13 @@
                     Tambah Produk
                 </button>
 
-                <!-- <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
+                <button mat-stroked-button color="accent" class="sinbad" type="button" (click)="onImportProduct()">
                     IMPORT
-                </button> -->
+                </button>
+
+                <button type="button" mat-flat-button color="primary" (click)="onDownload('catalogueStock')">
+                    <span>DOWNLOAD TEMPLATE</span>
+                </button>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -77,7 +81,23 @@
                     <mat-cell *matCellDef="let row">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
                             <div class="img-container">
-                                <img class="fit-image" [src]="(row?.catalogueImages)[row?.catalogueImages.length - 1]?.imageUrl" />
+                                <ng-container
+                                    *ngIf="row?.catalogueImages.length > 0; else noPhoto;"
+                                >
+                                    <img
+                                        class="fit-image"
+                                        [defaultImage]="'assets/images/logos/sinbad.svg'"
+                                        [useSrcset]="true"
+                                        [lazyLoad]="row?.catalogueImages[0]?.imageUrl"
+                                        [errorImage]="'assets/images/logos/sinbad.svg'"
+                                    />
+                                </ng-container>
+                                <ng-template #noPhoto>
+                                    <img
+                                        class="fit-image"
+                                        [src]="'assets/images/logos/sinbad.svg'"
+                                    />
+                                </ng-template>
                             </div>
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
@@ -147,7 +167,7 @@
                         <a
                             class="fuse-black-fg clickable"
                             matTooltip="Click to edit price"
-                            (click)="editCatalogue('price', row)"
+                            (click)="$event.stopPropagation(); editCatalogue('price', row)"
                         >
                             <p *ngIf="!!(row?.discountedRetailBuyingPrice) || row?.discountedRetailBuyingPrice === 0; else noDiscount;" class="text-truncate">
                                 {{ row?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -168,7 +188,7 @@
                         <a
                             class="fuse-black-fg clickable"
                             matTooltip="Click to edit stock"
-                            (click)="editCatalogue('stock', row)"
+                            (click)="$event.stopPropagation(); editCatalogue('stock', row)"
                         >
                             <p class="text-truncate">{{ row?.stock | number }}</p>
                         </a>
@@ -242,7 +262,7 @@
                         Actions
                     </mat-header-cell>
 
-                    <mat-cell *matCellDef="let row">
+                    <mat-cell class="pr-8" *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
                                 mat-icon-button
@@ -329,7 +349,7 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="catalogue">
+                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewProduct(row?.id)" class="catalogue">
                 </mat-row>
             </mat-table>
 

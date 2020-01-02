@@ -1,4 +1,3 @@
-import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -10,23 +9,24 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from 'app/shared/helpers';
+import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
+import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { IOrderDemo } from './models';
 import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
@@ -43,8 +43,29 @@ import { OrderSelectors } from './store/selectors';
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 25;
     search: FormControl;
-
     filterStatus: string;
+    formConfig = {
+        status: {
+            label: 'Order Status',
+            placeholder: 'Choose Order Status',
+            sources: this._$helper.orderStatus(),
+            rules: {
+                required: true
+            }
+        },
+        startDate: {
+            label: 'Start Date',
+            rules: {
+                required: true
+            }
+        },
+        endDate: {
+            label: 'End Date',
+            rules: {
+                required: true
+            }
+        }
+    };
     total: number;
     displayedColumns = [
         // 'checkbox',
@@ -85,7 +106,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromOrder.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
-        private _$log: LogService
+        private _$helper: HelperService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -133,6 +154,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataSource$ = this.store.select(OrderSelectors.getAllOrder);
         this.totalDataSource$ = this.store.select(OrderSelectors.getTotalOrder);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+
         this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
 
         this.initTable();
@@ -291,8 +313,32 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         );
     }
 
-    onExport(): void {
-        this.store.dispatch(OrderActions.exportRequest());
+    onExport(ev: { action: string; payload: any }): void {
+        if (!ev) {
+            return;
+        }
+
+        const { action, payload } = ev;
+
+        if (action === 'export') {
+            const body = {
+                status: payload.status,
+                dateGte:
+                    moment.isMoment(payload.start) && payload.start
+                        ? (payload.start as moment.Moment).format('YYYY-MM-DD')
+                        : payload.start
+                        ? moment(payload.start).format('YYYY-MM-DD')
+                        : null,
+                dateLte:
+                    moment.isMoment(payload.end) && payload.end
+                        ? (payload.end as moment.Moment).format('YYYY-MM-DD')
+                        : payload.end
+                        ? moment(payload.end).format('YYYY-MM-DD')
+                        : null
+            };
+
+            this.store.dispatch(OrderActions.exportRequest({ payload: body }));
+        }
     }
 
     onFileBrowse(ev: Event, type: string): void {

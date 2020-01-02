@@ -1,9 +1,9 @@
 import { TNullable } from './global.model';
 import { Province } from './province.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
 interface IUrban extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     zipCode: string;
     city: string;
     district: string;
@@ -12,44 +12,45 @@ interface IUrban extends ITimestamp {
     province?: Province;
 }
 
-export class Urban extends Timestamp implements IUrban {
-    public province?: Province;
+export class Urban implements IUrban {
+    readonly id: NonNullable<string>;
+    zipCode: string;
+    city: string;
+    district: string;
+    urban: string;
+    provinceId: string;
+    province?: Province;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-    constructor(
-        public id: string,
-        public zipCode: string,
-        public city: string,
-        public district: string,
-        public urban: string,
-        public provinceId: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+    constructor(data: Urban) {
+        const {
+            id,
+            zipCode,
+            city,
+            district,
+            urban,
+            provinceId,
+            province,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
 
-        this.zipCode = zipCode ? zipCode.trim() : null;
-        this.city = city ? city.trim() : null;
-        this.urban = urban ? urban.trim() : null;
+        this.id = id;
+        this.zipCode = zipCode ? String(zipCode).trim() : null;
+        this.city = city ? String(city).trim() : null;
+        this.district = district ? String(district).trim() : null;
+        this.urban = urban ? String(urban).trim() : null;
+        this.provinceId = provinceId;
+        this.setProvince = province;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     set setProvince(value: Province) {
-        if (value) {
-            const newProvince = new Province(
-                value.id,
-                value.name,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            );
-
-            if (value.urbans) {
-                newProvince.setUrbans = value.urbans;
-            }
-
-            this.province = newProvince;
-        } else {
-            this.province = null;
-        }
+        this.province = value ? new Province(value) : null;
     }
 }

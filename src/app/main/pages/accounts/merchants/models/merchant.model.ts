@@ -15,6 +15,56 @@ import {
     VehicleAccessibility
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { Portfolio } from 'app/main/pages/sales-forces/portfolios/models';
+
+interface IStorePortfolio extends ITimestamp {
+    id: string;
+    target: number;
+    portfolioId: string;
+    storeId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+    portfolio?: Portfolio;
+    store?: Store;
+}
+
+export class StorePortfolio implements IStorePortfolio {
+    id: string;
+    target: number;
+    portfolioId: string;
+    storeId: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
+    portfolio?: Portfolio;
+    store?: Store;
+
+    constructor(data: StorePortfolio) {
+        const {
+            id,
+            target,
+            portfolioId,
+            storeId,
+            createdAt,
+            updatedAt,
+            deletedAt,
+            portfolio,
+            store,
+        } = data;
+
+        this.id = id;
+        this.target = target;
+        this.portfolioId = portfolioId;
+        this.storeId = storeId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+
+        this.portfolio = portfolio ? new Portfolio(portfolio) : null;
+        this.store = store ? new Store(store) : null;
+    }
+}
 
 interface IStore extends ITimestamp {
     readonly id: NonNullable<string>;
@@ -54,6 +104,7 @@ interface IStore extends ITimestamp {
     creditLimitStores?: CreditLimitStore[];
     legalInfo?: User;
     owner?: User;
+    storePortfolios?: Array<StorePortfolio>;
 }
 
 export class Store implements IStore {
@@ -97,6 +148,7 @@ export class Store implements IStore {
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
+    storePortfolios?: Array<StorePortfolio>;
 
     constructor(data: Store) {
         const {
@@ -139,7 +191,8 @@ export class Store implements IStore {
             owner,
             createdAt,
             updatedAt,
-            deletedAt
+            deletedAt,
+            storePortfolios = []
         } = data;
 
         this.id = id;
@@ -233,28 +286,7 @@ export class Store implements IStore {
             : null;
 
         this.setHierarchy = hierarchy;
-
-        if (urban) {
-            const newUrban = new Urban(
-                urban.id,
-                urban.zipCode,
-                urban.city,
-                urban.district,
-                urban.urban,
-                urban.provinceId,
-                urban.createdAt,
-                urban.updatedAt,
-                urban.deletedAt
-            );
-
-            if (urban.province) {
-                newUrban.province = urban.province;
-            }
-
-            this.urban = newUrban;
-        } else {
-            this.urban = null;
-        }
+        this.setUrban = urban;
 
         if (customerHierarchies) {
             this.setCustomerHierarchies = customerHierarchies;
@@ -288,6 +320,10 @@ export class Store implements IStore {
         if (owner) {
             this.setOwner = owner;
         }
+
+        this.storePortfolios = storePortfolios.length === 0
+            ? []
+            : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
     }
 
     set setCreditLimitStores(value: CreditLimitStore[]) {
@@ -360,91 +396,15 @@ export class Store implements IStore {
     }
 
     set setLegalInfo(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.legalInfo = newUser;
-        } else {
-            this.legalInfo = null;
-        }
+        this.legalInfo = value ? new User(value) : null;
     }
 
     set setOwner(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
+        this.owner = value ? new User(value) : null;
+    }
 
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.owner = newUser;
-        } else {
-            this.owner = null;
-        }
+    set setUrban(value: Urban) {
+        this.urban = value ? new Urban(value) : null;
     }
 
     static patch(body: StoreOptions): StoreOptions {
@@ -480,47 +440,7 @@ export class UserStore extends Timestamp implements IUserStore {
     }
 
     set setUser(value: User) {
-        if (value) {
-            const newUser = new User(
-                value.id,
-                value.fullName,
-                value.email,
-                value.phoneNo,
-                value.mobilePhoneNo,
-                value.idNo,
-                value.taxNo,
-                value.status,
-                value.imageUrl,
-                value.taxImageUrl,
-                value.idImageUrl,
-                value.selfieImageUrl,
-                value.urbanId,
-                value.roles,
-                value.createdAt,
-                value.urbanId,
-                value.deletedAt
-            );
-
-            if (value.userStores) {
-                newUser.setUserStores = value.userStores;
-            }
-
-            if (value.userSuppliers) {
-                newUser.setUserSuppliers = value.userSuppliers;
-            }
-
-            if (value.urban) {
-                newUser.setUrban = value.urban;
-            }
-
-            if (value.attendances) {
-                newUser.setAttendances = value.attendances;
-            }
-
-            this.user = newUser;
-        } else {
-            this.user = null;
-        }
+        this.user = value ? new User(value) : null;
     }
 
     set setStore(value: Store) {

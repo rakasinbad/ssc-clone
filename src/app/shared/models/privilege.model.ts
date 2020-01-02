@@ -1,8 +1,8 @@
 import { IResponsePaginate, TNullable } from './global.model';
-import { ITimestamp, Timestamp } from './timestamp.model';
+import { ITimestamp } from './timestamp.model';
 
 export interface IPrivilege extends ITimestamp {
-    id: string;
+    readonly id: NonNullable<string>;
     privilege: string;
 }
 
@@ -10,16 +10,20 @@ export interface IPrivilegeResponse extends IResponsePaginate {
     data: Privilege[];
 }
 
-export class Privilege extends Timestamp implements IPrivilege {
-    constructor(
-        public id: string,
-        public privilege: string,
-        createdAt: string,
-        updatedAt: string,
-        deletedAt: TNullable<string>
-    ) {
-        super(createdAt, updatedAt, deletedAt);
+export class Privilege implements IPrivilege {
+    readonly id: NonNullable<string>;
+    privilege: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: TNullable<string>;
 
-        this.privilege = privilege ? privilege.trim() : null;
+    constructor(data: IPrivilege) {
+        const { id, privilege, createdAt, updatedAt, deletedAt } = data;
+
+        this.id = id;
+        this.privilege = privilege ? String(privilege).trim() : null;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 }
