@@ -9,6 +9,9 @@ export interface IPortfolio extends ITimestamp {
     invoiceGroupId: string;
     userId: string;
     invoiceGroup: InvoiceGroup;
+    totalTargetSales?: number;
+    totalActualSales?: number;
+    totalStore?: number;
 }
 
 export class Portfolio implements IPortfolio {
@@ -18,6 +21,9 @@ export class Portfolio implements IPortfolio {
     invoiceGroupId: string;
     userId: string;
     invoiceGroup: InvoiceGroup;
+    totalTargetSales?: number;
+    totalActualSales?: number;
+    totalStore?: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -30,6 +36,9 @@ export class Portfolio implements IPortfolio {
             invoiceGroupId,
             userId,
             invoiceGroup,
+            totalTargetSales,
+            totalActualSales,
+            totalStore,
             createdAt,
             updatedAt,
             deletedAt
@@ -41,6 +50,9 @@ export class Portfolio implements IPortfolio {
         this.invoiceGroupId = invoiceGroupId;
         this.userId = userId;
         this.setInvoiceGroup = invoiceGroup;
+        this.totalTargetSales = totalTargetSales;
+        this.totalActualSales = totalActualSales;
+        this.totalStore = totalStore;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

@@ -22,6 +22,7 @@ import * as fromSalesReps from '../store/reducers';
 import { SalesRepSelectors } from '../store/selectors';
 
 @Component({
+    selector: 'app-sales-rep-form',
     templateUrl: './sales-rep-form.component.html',
     styleUrls: ['./sales-rep-form.component.scss'],
     animations: fuseAnimations,

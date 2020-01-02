@@ -145,6 +145,12 @@ export const navigation: FuseNavigation[] = [
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/portfolio'
+            },
+            {
+                id: 'journey-plan',
+                title: 'Journey Plan',
+                type: 'item',
+                url: '/pages/sales-force/journey-plans'
             }
         ]
     }

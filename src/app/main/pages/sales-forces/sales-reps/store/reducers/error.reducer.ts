@@ -32,6 +32,10 @@ const reducer = createReducer<State>(
         SalesRepActions.createSalesRepFailure,
         SalesRepActions.updateSalesRepFailure,
         SalesRepActions.changePasswordSalesRepFailure,
+        SalesRepActions.changeStatusSalesRepFailure,
+        SalesRepActions.batchSetActiveSalesRepsFailure,
+        SalesRepActions.batchSetInactiveSalesRepsFailure,
+        SalesRepActions.batchDeleteSalesRepsFailure,
         SalesRepActions.fetchSalesRepsFailure,
         SalesRepActions.fetchSalesRepFailure,
         (state, { payload }) => {
@@ -52,6 +56,18 @@ const reducer = createReducer<State>(
     }),
     on(SalesRepActions.changePasswordSalesRepSuccess, state => {
         return adapter.removeOne('changePasswordSalesRepFailure', state);
+    }),
+    on(SalesRepActions.changeStatusSalesRepSuccess, state => {
+        return adapter.removeOne('changeStatusSalesRepFailure', state);
+    }),
+    on(SalesRepActions.batchSetActiveSalesRepsSuccess, state => {
+        return adapter.removeOne('batchSetActiveSalesRepsFailure', state);
+    }),
+    on(SalesRepActions.batchSetInactiveSalesRepsSuccess, state => {
+        return adapter.removeOne('batchSetInactiveSalesRepsFailure', state);
+    }),
+    on(SalesRepActions.batchDeleteSalesRepsSuccess, state => {
+        return adapter.removeOne('batchDeleteSalesRepsFailure', state);
     }),
     on(SalesRepActions.clearState, state => {
         return adapter.removeAll({ ...state });

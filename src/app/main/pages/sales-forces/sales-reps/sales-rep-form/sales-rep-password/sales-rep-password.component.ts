@@ -175,19 +175,19 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
      */
     private _initForm(): void {
         this.form = this.formBuilder.group({
-            oldPassword: [
+            /* oldPassword: [
                 '',
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                 })
-            ],
+            ], */
             newPassword: [
                 '',
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
                     }),
-                    RxwebValidators.different({
+                    /* RxwebValidators.different({
                         fieldName: 'oldPassword',
                         message: this._$errorMessage.getErrorMessageNonState(
                             'new_password',
@@ -196,7 +196,7 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
                                 fieldComparedName: 'Old Password'
                             }
                         )
-                    }),
+                    }), */
                     RxwebValidators.password({
                         validation: {
                             alphabet: true,
@@ -237,7 +237,7 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
             const { id } = this.route.snapshot.params;
 
             const payload: SalesRepFormPasswordPut = {
-                oldPassword: body.oldPassword,
+                // oldPassword: body.oldPassword,
                 password: body.newPassword,
                 confPassword: body.confirmPassword
             };

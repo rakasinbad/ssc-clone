@@ -10,6 +10,7 @@ import * as jwt_decode from 'jwt-decode';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { User, TNullable, ErrorHandler } from '../models';
+import { NoticeService } from './notice.service';
 
 type TTemplateFiles = {
     catalogueStock: string;
@@ -54,7 +55,12 @@ export class HelperService {
         }
     ];
 
-    constructor(@Inject(DOCUMENT) private doc: Document, private http: HttpClient, private storage: StorageMap) {
+    constructor(
+        @Inject(DOCUMENT) private doc: Document,
+        private http: HttpClient,
+        private storage: StorageMap,
+        private _$notice: NoticeService
+    ) {
         this._currentHost = this.doc.location.hostname;
     }
 
@@ -394,44 +400,54 @@ export class HelperService {
     }
 
     decodeUserToken(): Observable<TNullable<User>> {
-        return this.storage
-            .get<Auth>('user')
-            .pipe(
-                map((userAuth: Auth) => {
-                    if (!userAuth) {
-                        throwError(new ErrorHandler({
+        return this.storage.get<Auth>('user').pipe(
+            map((userAuth: Auth) => {
+                if (!userAuth) {
+                    throwError(
+                        new ErrorHandler({
                             id: 'ERR_NO_TOKEN',
                             errors: `Token found: ${userAuth.token}`
-                        }));
-                    } else {
-                        try {
-                            let userData: User;
+                        })
+                    );
+                } else {
+                    try {
+                        let userData: User;
 
-                            if (!userAuth.user) {
-                                // Decode the token.
-                                const decodedToken = jwt_decode<Auth>(userAuth.token);
-                                userData = decodedToken.user;
-                            } else {
-                                userData = userAuth.user;
-                            }
+                        if (!userAuth.user) {
+                            // Decode the token.
+                            const decodedToken = jwt_decode<Auth>(userAuth.token);
+                            userData = decodedToken.user;
+                        } else {
+                            userData = userAuth.user;
+                        }
 
-                            // Create User object.
-                            const user = new User(userData);
-                            // user.setUserStores = userData.userStores;
-                            // user.setUserSuppliers = userData.userSuppliers;
-                            // user.setUrban = userData.urban;
-                            // user.setAttendances = userData.attendances;
+                        // Create User object.
+                        const user = new User(userData);
+                        // user.setUserStores = userData.userStores;
+                        // user.setUserSuppliers = userData.userSuppliers;
+                        // user.setUrban = userData.urban;
+                        // user.setAttendances = userData.attendances;
 
-                            // Return the value as User object.
-                            return user;
-                        } catch (e) {
-                            throwError(new ErrorHandler({
+                        // Return the value as User object.
+                        return user;
+                    } catch (e) {
+                        throwError(
+                            new ErrorHandler({
                                 id: 'ERR_USER_INVALID_TOKEN',
                                 errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`
-                            }));
-                        }
+                            })
+                        );
                     }
-                })
-            );
+                }
+            })
+        );
+    }
+
+    infoNotice(text: string = 'This feature is coming soon!'): void {
+        this._$notice.open(text, 'info', {
+            verticalPosition: 'bottom',
+            horizontalPosition: 'right',
+            duration: 7000
+        });
     }
 }

@@ -1,0 +1,30 @@
+app-sales-rep-detail-info {
+    .box-info__subtitle {
+        margin-bottom: 30px !important;
+        max-width: 59%;
+    }
+
+    .sinbad__card {
+        // max-width: 420px;
+
+        .sinbad__card--header {
+            > .mat-card-header-text {
+                margin: 0;
+
+                .mat-card-title {
+                    font-size: 16px;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .sinbad__card--content--not-found {
+            height: 100%;
+            min-height: 130px;
+
+            .loader {
+                background: transparent;
+            }
+        }
+    }
+}

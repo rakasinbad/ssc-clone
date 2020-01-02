@@ -28,7 +28,7 @@
                 <div class="search-wrapper mx-32 mx-md-0">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Search for a sales" />
+                        <input [formControl]="search" placeholder="Search for a sales rep" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -45,7 +45,7 @@
                         class="sinbad mr-16"
                         [routerLink]="['/pages/sales-force/sales-rep/new']"
                     >
-                        ADD SALES
+                        ADD
                     </button>
 
                     <ng-container *ngIf="selection.hasValue()">
@@ -93,11 +93,23 @@
                 </div>
 
                 <div fxLayout="row" fxLayoutAlign="start center">
-                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
                         EXPORT
                     </button>
 
-                    <button type="button" mat-stroked-button color="accent" class="sinbad">
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="showInfo()"
+                    >
                         IMPORT
                     </button>
                 </div>
@@ -225,7 +237,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ (row?.createdAt | date: 'dd/MM/yyyy') || '-' }}
+                            {{ (row?.user?.joinDate | date: 'dd/MM/yyyy') || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -277,6 +289,7 @@
                                     [attr.aria-label]="
                                         row?.status === 'active' ? 'Inactive' : 'Active'
                                     "
+                                    (click)="onChangeStatus(row)"
                                 >
                                     <mat-icon>
                                         {{
@@ -304,6 +317,9 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="sales-rep"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    matRipple
+                    [routerLink]="['/pages/sales-force/sales-rep', row?.id, 'detail']"
                 ></mat-row>
             </mat-table>
 
