@@ -37,6 +37,10 @@ const reducer = createReducer<State>(
         SalesRepActions.createSalesRepRequest,
         SalesRepActions.updateSalesRepRequest,
         SalesRepActions.changePasswordSalesRepRequest,
+        SalesRepActions.changeStatusSalesRepRequest,
+        SalesRepActions.batchSetActiveSalesRepsRequest,
+        SalesRepActions.batchSetInactiveSalesRepsRequest,
+        SalesRepActions.batchDeleteSalesRepsRequest,
         SalesRepActions.fetchSalesRepsRequest,
         state => ({
             ...state,
@@ -47,6 +51,10 @@ const reducer = createReducer<State>(
         SalesRepActions.createSalesRepFailure,
         SalesRepActions.updateSalesRepFailure,
         SalesRepActions.changePasswordSalesRepFailure,
+        SalesRepActions.changeStatusSalesRepFailure,
+        SalesRepActions.batchSetActiveSalesRepsFailure,
+        SalesRepActions.batchSetInactiveSalesRepsFailure,
+        SalesRepActions.batchDeleteSalesRepsFailure,
         SalesRepActions.fetchSalesRepsFailure,
         SalesRepActions.fetchSalesRepFailure,
         state => ({
@@ -78,6 +86,19 @@ const reducer = createReducer<State>(
             isLoading: false
         })
     ),
+    on(SalesRepActions.changeStatusSalesRepSuccess, (state, { payload }) => {
+        return adapter.updateOne(payload, { ...state, isLoading: false });
+    }),
+    on(
+        SalesRepActions.batchSetActiveSalesRepsSuccess,
+        SalesRepActions.batchSetInactiveSalesRepsSuccess,
+        (state, { payload }) => {
+            return adapter.updateMany(payload, { ...state, isLoading: false });
+        }
+    ),
+    on(SalesRepActions.batchDeleteSalesRepsSuccess, (state, { payload }) => {
+        return adapter.removeMany(payload, { ...state, isLoading: false });
+    }),
     on(SalesRepActions.clearState, state => {
         return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
     })

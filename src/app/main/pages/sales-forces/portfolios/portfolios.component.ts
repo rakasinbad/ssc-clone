@@ -11,6 +11,9 @@ import { takeUntil, catchError, distinctUntilChanged, debounceTime, filter } fro
 
 // Environment variables.
 import { environment } from '../../../../../environments/environment';
+// Languages.
+import { locale as english } from './i18n/en';
+import { locale as indonesian } from './i18n/id';
 // Entity model.
 import { Portfolio } from './models/portfolios.model';
 // State management's stuffs.
@@ -21,6 +24,8 @@ import { Router } from '@angular/router';
 import { IQueryParams } from 'app/shared/models';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
+import { UiActions } from 'app/shared/store/actions';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 
 @Component({
     selector: 'app-portfolios',
@@ -73,7 +78,28 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         private portfolioStore: NgRxStore<CoreFeatureState>,
         private router: Router,
         private readonly sanitizer: DomSanitizer,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
+        this.portfolioStore.dispatch(
+            UiActions.createBreadcrumb({
+                payload: [
+                    {
+                        title: 'Home',
+                        translate: 'BREADCRUMBS.HOME'
+                    },
+                    {
+                        title: 'Sales Rep Management',
+                        translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT'
+                    },
+                    {
+                        title: 'Portfolio',
+                        translate: 'BREADCRUMBS.PORTFOLIO',
+                        active: true
+                    }
+                ]
+            })
+        );
+
         // Mendapatkan state loading.
         this.isLoading$ = this.portfolioStore.select(
             PortfolioSelector.getLoadingState
@@ -99,6 +125,12 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
             // Meng-update UI sesuai data yang didapat.
             this._cd.markForCheck();
         });
+
+        // Memuat terjemahan bahasa.
+        this._fuseTranslationLoaderService.loadTranslations(
+            indonesian,
+            english
+        );
     }
 
     /**
@@ -163,14 +195,20 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     addPortfolio(): void {
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
+
         this.router.navigate(['/pages/sales-force/portfolio/add']);
     }
 
     editPortfolio(id: string): void {
-
+        this.router.navigate([`/pages/sales-force/portfolio/${id}/edit`]);
     }
 
     viewPortfolio(id: string): void {
+        this.portfolioStore.dispatch(
+            PortfolioActions.setSelectedPortfolios({ payload: [id] })
+        );
+
         this.router.navigate([`/pages/sales-force/portfolio/${id}/detail`]);
     }
 
@@ -223,6 +261,9 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngOnDestroy(): void {
+        this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
+
         this.subs$.next();
         this.subs$.complete();
     }

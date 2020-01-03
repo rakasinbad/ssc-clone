@@ -40,6 +40,8 @@ $typography: mat-typography-config( $font-family: 'Muli, Helvetica Neue, Arial, 
 @import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
 @import 'src/app/main/pages/sales-forces/associations/associations.theme';
 // Sales force
+@import 'src/app/main/pages/sales-forces/journey-plans/journey-plans.theme';
+@import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
 @import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
@@ -68,6 +70,8 @@ $typography: mat-typography-config( $font-family: 'Muli, Helvetica Neue, Arial, 
     @include portfolios-theme($theme);
     @include associations-theme($theme);
     // Sales force
+    @include journey-plans-theme($theme);
+    @include portfolios-theme($theme);
     @include sales-reps-theme($theme);
     // Plugin
     // @include mat-datepicker-theme($theme);

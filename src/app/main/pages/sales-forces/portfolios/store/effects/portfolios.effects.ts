@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap } from 'rxjs/operators';
 
 import {
     PortfolioActions,
@@ -12,15 +12,18 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable, throwError } from 'rxjs';
 import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { Portfolio } from '../../models/portfolios.model';
+import { Portfolio, IPortfolioAddForm } from '../../models/portfolios.model';
 import { IQueryParams, TNullable, User, ErrorHandler } from 'app/shared/models';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
 import { Store } from 'app/main/pages/attendances/models';
-import { fromStore } from '../reducers';
+import { fromStore, CoreFeatureState } from '../reducers';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material';
+import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
+import { PortfolioStoreSelector } from '../selectors';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 
@@ -29,11 +32,12 @@ export class PortfoliosEffects {
     constructor(
         private actions$: Actions,
         private authStore: NgRxStore<fromAuth.FeatureState>,
-        private storeState: NgRxStore<fromStore.State>,
+        private portfolioStore: NgRxStore<CoreFeatureState>,
         private portfoliosService: PortfoliosApiService,
         private notice: NoticeService,
         private router: Router,
         private helper$: HelperService,
+        private matDialog: MatDialog,
     ) {}
 
     // addSelectedStores$ = createEffect(() =>
@@ -47,6 +51,37 @@ export class PortfoliosEffects {
     //         ))
     //     )
     // , { dispatch: false });
+
+    confirmRemoveAllSelectedStores$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(PortfolioActions.confirmRemoveAllSelectedStores),
+            exhaustMap(() => {
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: 'Delete',
+                        message: `Are you sure want to clear all selected stores?`,
+                    }, disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            withLatestFrom(
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds),
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds),
+                (_, newStores, portfolioStores) => ({ newStores, portfolioStores })
+            ),
+            map<{ newStores: Array<string>; portfolioStores: Array<string> }, any>(({ newStores, portfolioStores }) => {
+                const mergedStores = (newStores).concat(portfolioStores);
+                const uniqueStores = new Set(mergedStores);
+
+                this.portfolioStore.dispatch(
+                    PortfolioActions.removeSelectedStores({
+                        payload: Array.from(uniqueStores)
+                    })
+                );
+            })
+        ), { dispatch: false }
+    );
 
     createPortfolioRequest$ = createEffect(() =>
         this.actions$.pipe(
@@ -67,6 +102,36 @@ export class PortfoliosEffects {
             ofType(PortfolioActions.createPortfolioSuccess),
             tap(() => {
                 this.notice.open('Berhasil membuat portfolio.', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.router.navigate(['/pages/sales-force/portfolio']);
+            })
+        )
+    , { dispatch: false });
+
+    patchPortfolioRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PortfolioActions.patchPortfolioRequest),
+            map(action => action.payload),
+            switchMap(({ id, portfolio }) =>
+                this.portfoliosService
+                    .patchPortfolio(id, portfolio)
+                    .pipe(
+                        catchOffline(),
+                        map(response => PortfolioActions.patchPortfolioSuccess({ payload: response })),
+                        catchError(err => this.sendErrorToState(err, 'patchPortfolioFailure'))
+                    )
+            )
+        )
+    );
+
+    patchPortfolioSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PortfolioActions.patchPortfolioSuccess),
+            tap(() => {
+                this.notice.open('Berhasil memperbarui portfolio.', 'success', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
@@ -208,6 +273,16 @@ export class PortfoliosEffects {
             );
     }
 
+    processPatchPortfolioRequest = (data: { id: string; portfolio: IPortfolioAddForm }): Observable<AnyAction> => {
+        return this.portfoliosService
+            .patchPortfolio(data.id, data.portfolio)
+            .pipe(
+                catchOffline(),
+                map(portfolio => PortfolioActions.patchPortfolioSuccess({ payload: portfolio })),
+                catchError(err => this.sendErrorToState(err, 'patchPortfolioFailure'))
+            );
+    }
+
     processPortfolioRequest = (portfolioId: string): Observable<AnyAction> => {
         return this.portfoliosService
             .findPortfolio(portfolioId)
@@ -258,11 +333,15 @@ export class PortfoliosEffects {
             .findPortfolioStores(queryParams)
             .pipe(
                 catchOffline(),
-                switchMap(response =>
+                switchMap(response => 
                     of(PortfolioActions.fetchPortfolioStoresSuccess({
                         payload: {
-                            stores: response.data.map(store => new Store(store)),
-                            total: response.total,
+                            stores: queryParams.paginate
+                                    ? response.data.map(store => new Store(store))
+                                    : (response as unknown as Array<Store>).map(store => new Store(store)),
+                            total: queryParams.paginate
+                                    ? response.total
+                                    : (response as unknown as Array<Store>).length,
                             source: 'fetch',
                         }
                     }))

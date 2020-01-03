@@ -41,13 +41,13 @@ export const getAllPortfolios = createSelector(
 export const getSelectedPortfolio = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => (portfolios[ids[0]] as Portfolio)
+    (portfolios, ids) => (portfolios.entities[ids[0]] as Portfolio)
 );
 
 export const getSelectedPortfolios = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => ids ? ids.map(id => portfolios[id]) : ids
+    (portfolios, ids) => ids ? ids.map(id => portfolios.entities[id]) : ids
 );
 
 export const getLoadingState = createSelector(

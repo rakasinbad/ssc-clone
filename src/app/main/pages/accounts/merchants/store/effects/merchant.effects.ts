@@ -345,7 +345,7 @@ export class MerchantEffects {
      * [UPDATE - DIALOG] Status Store
      * @memberof MerchantEffects
      */
-    confirmCangeStatusStore$ = createEffect(() =>
+    confirmChangeStatusStore$ = createEffect(() =>
         this.actions$.pipe(
             ofType(StoreActions.confirmChangeStatusStore),
             map(action => action.payload),
