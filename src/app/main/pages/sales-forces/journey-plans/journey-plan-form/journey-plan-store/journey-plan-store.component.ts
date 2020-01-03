@@ -14,6 +14,8 @@ import { LifecyclePlatform } from 'app/shared/models';
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
 import * as fromJourneyPlans from '../../store/reducers';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-journey-plan-store',
@@ -31,7 +33,8 @@ export class JourneyPlanStoreComponent implements OnInit {
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private store: Store<fromJourneyPlans.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$errorMessage: ErrorMessageService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -48,6 +51,46 @@ export class JourneyPlanStoreComponent implements OnInit {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    getErrorMessage(field: string): string {
+        if (field) {
+            const { errors } = this.form.get(field);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        }
+    }
+
+    hasError(field: string, isMatError = false): boolean {
+        if (!field) {
+            return;
+        }
+
+        const errors = this.form.get(field).errors;
+        const touched = this.form.get(field).touched;
+        const dirty = this.form.get(field).dirty;
+
+        if (isMatError) {
+            return errors && (dirty || touched);
+        }
+
+        return errors && ((touched && dirty) || touched);
+    }
+
+    hasLength(field: string, minLength: number): boolean {
+        if (!field || !minLength) {
+            return;
+        }
+
+        const value = this.form.get(field).value;
+
+        return !value ? true : value.length <= minLength;
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
@@ -70,7 +113,17 @@ export class JourneyPlanStoreComponent implements OnInit {
     private _initForm(): void {
         if (this.pageType === 'new') {
             this.form = this.formBuilder.group({
-                startDate: '',
+                startDate: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
                 endDate: '',
                 portfolio: ''
             });

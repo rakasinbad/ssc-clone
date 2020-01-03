@@ -2,6 +2,7 @@ export * from './field.model';
 export * from './global.model';
 export * from './progress.model';
 
+export * from './associated.model';
 export * from './brand.model';
 export * from './cluster.model';
 export * from './customer-hierarchy.model';

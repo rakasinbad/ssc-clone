@@ -4,68 +4,188 @@
             <div class="h2 section__title">Add Journey Plan</div>
         </div>
 
-        <div class="box-info horizontal" fxLayout="row" fxLayoutAlign="start start">
-            <!-- <div
-                *ngIf="salesRep$ | async"
-                class="sales-image"
-                fxFlexAlign="start"
-                [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
-            >
-                <ng-container *ngIf="tmp.photo.value && tmp.photo.value.url">
-                    <img [src]="tmp.photo.value.url" />
-                </ng-container>
-
-                <ng-container *ngIf="!tmp.photo.value || !tmp.photo.value.url">
-                    <img
-                        [defaultImage]="'assets/images/avatars/profile.jpg'"
-                        [useSrcset]="true"
-                        [lazyLoad]="(salesRep$ | async)?.user?.imageUrl"
-                        [errorImage]="'assets/images/avatars/profile.jpg'"
-                    />
-                </ng-container>
-            </div>
-
-            <div
-                *ngIf="!(salesRep$ | async)"
-                class="sales-image"
-                fxFlexAlign="start"
-                [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
-            >
-                <ng-container *ngIf="tmp.photo.value && tmp.photo.value.url">
-                    <img [src]="tmp.photo.value.url" />
-                </ng-container>
-
-                <ng-container *ngIf="!tmp.photo.value || !tmp.photo.value.url">
-                    <img [src]="'assets/images/avatars/profile.jpg'" />
-                </ng-container>
-            </div>
-
-            <div fxLayout="column" fxFlex>
-                <div
-                    class="custom-field"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="15px"
-                >
-                    <label
-                        class="custom-field__label"
-                        fxFlexAlign="center"
-                        fxFlex="13"
-                        [class.mat-error]="hasError('name')"
+        <div class="box-info horizontal" fxLayout="column">
+            <div fxLayout="row">
+                <div fxLayout="column" fxLayoutGap="15px" fxFlex>
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
                     >
-                        *Sales Rep Name
-                    </label>
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="hasError('startDate')"
+                        >
+                            *Start Date
+                        </label>
 
-                    <div class="custom-field__field" fxFlex="100">
-                        <mat-form-field appearance="outline" fxFlex="50">
-                            <input type="text" matInput formControlName="name" />
+                        <div class="custom-field__field" fxFlex="100">
+                            <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    matInput
+                                    [matDatepicker]="startDatePicker"
+                                    name="startDate"
+                                    formControlName="startDate"
+                                />
 
-                            <mat-error *ngIf="hasError('name', true)">
-                                {{ getErrorMessage('name') }}
+                                <mat-datepicker-toggle
+                                    matSuffix
+                                    [for]="startDatePicker"
+                                ></mat-datepicker-toggle>
+
+                                <mat-datepicker #startDatePicker touchUi></mat-datepicker>
+
+                                <mat-error *ngIf="hasError('startDate', true)">
+                                    {{ getErrorMessage('startDate') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
+                    >
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="hasError('portfolio')"
+                        >
+                            *Portfolio
+                        </label>
+
+                        <div class="custom-field__field" fxFlex="100">
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
+                            <input
+                                #triggerSalesTeam
+                                matInput
+                                formControlName="team"
+                                placeholder="Search Sales Team"
+                                aria-label="Sales Team"
+                                [matAutocomplete]="autoSalesTeam"
+                                (keyup)="onKeyup($event, 'salesTeam')"
+                                (keydown)="onKeydown($event, 'salesTeam')"
+                            />
+
+                            <mat-autocomplete
+                                #autoSalesTeam="matAutocomplete"
+                                [displayWith]="onDisplaySalesTeam"
+                                (opened)="onOpenAutocomplete('salesTeam')"
+                                (optionSelected)="onSelectAutocomplete($event, 'salesTeam')"
+                            >
+                                <mat-option
+                                    *ngIf="!(isLoadingSalesTeam$ | async) && field.salesTeam.typing"
+                                >
+                                    Searching...
+                                </mat-option>
+
+                                <ng-container
+                                    *ngIf="
+                                        !field.salesTeam.typing && (salesTeams$ | async)?.length > 0
+                                    "
+                                >
+                                    <ng-container
+                                        *ngIf="salesTeams$ | async as salesTeams; else noSalesTeams"
+                                    >
+                                        <mat-option
+                                            *ngFor="let source of salesTeams"
+                                            [value]="source"
+                                            [attr.title]="displayOption(source, 'salesTeam')"
+                                        >
+                                            <ng-container
+                                                *ngIf="source && !(isLoadingSalesTeam$ | async)"
+                                            >
+                                                <span
+                                                    [innerHtml]="
+                                                        displayOption(source, 'salesTeam', true)
+                                                            | highlight: getHighlight('salesTeam')
+                                                    "
+                                                ></span>
+                                            </ng-container>
+
+                                            <ng-container
+                                                *ngIf="!source || (isLoadingSalesTeam$ | async)"
+                                            >
+                                                Loading...
+                                            </ng-container>
+                                        </mat-option>
+                                    </ng-container>
+
+                                    <ng-template #noSalesTeams>
+                                        <mat-option>None</mat-option>
+                                    </ng-template>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="
+                                        !field.salesTeam.typing && !(salesTeams$ | async)?.length
+                                    "
+                                >
+                                    <mat-option>None</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+
+                            <mat-hint align="end" *ngIf="hasLength('team', 3)">
+                                Please enter 3 or more characters.
+                            </mat-hint>
+
+                            <mat-error *ngIf="hasError('team', true)">
+                                {{ getErrorMessage('team') }}
                             </mat-error>
-                        </mat-form-field>
+                        </mat-form-field> -->
+                        </div>
                     </div>
                 </div>
+
+                <div fxLayout="column" fxFlex>
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
+                    >
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="hasError('startDate')"
+                        >
+                            *End Date
+                        </label>
+
+                        <div class="custom-field__field" fxFlex="100">
+                            <mat-form-field appearance="outline" fxFlex="80">
+                                <input
+                                    matInput
+                                    [matDatepicker]="endDatePicker"
+                                    name="endDate"
+                                    formControlName="endDate"
+                                />
+
+                                <mat-datepicker-toggle
+                                    matSuffix
+                                    [for]="endDatePicker"
+                                ></mat-datepicker-toggle>
+
+                                <mat-datepicker #endDatePicker touchUi></mat-datepicker>
+
+                                <mat-error *ngIf="hasError('endDate', true)">
+                                    {{ getErrorMessage('endDate') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--   <div fxLayout="column" fxFlex>
+
 
                 <div
                     class="custom-field"
@@ -362,6 +482,16 @@
                     </div>
                 </div>
             </div> -->
+        </div>
+    </div>
+
+    <div class="section mb-48">
+        <mat-divider></mat-divider>
+    </div>
+
+    <div class="section pb-48">
+        <div class="pb-16 section__top--contents" fxLayout="row" fxLayoutAlign="start center">
+            <div class="h2 section__title">Find Store</div>
         </div>
     </div>
 </form>
