@@ -1,7 +1,13 @@
 app-sales-rep-detail-info {
-    .box-info__subtitle {
-        margin-bottom: 30px !important;
-        max-width: 59%;
+    .box-info {
+        .sales-image {
+            margin-top: -7px;
+        }
+
+        .box-info__subtitle {
+            margin-bottom: 30px !important;
+            max-width: 59%;
+        }
     }
 
     .sinbad__card {

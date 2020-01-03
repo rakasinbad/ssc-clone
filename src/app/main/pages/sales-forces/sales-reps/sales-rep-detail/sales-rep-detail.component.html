@@ -17,7 +17,7 @@
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
-                <div
+                <!-- <div
                     *ngIf="salesRep$ | async"
                     class="sales-image mr-8 mr-sm-16"
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
@@ -36,7 +36,7 @@
                     [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
                 >
                     <img [src]="'assets/images/avatars/profile.jpg'" />
-                </div>
+                </div> -->
 
                 <div
                     fxLayout="column"
@@ -63,6 +63,17 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <button
+                    type="button"
+                    mat-raised-button
+                    class="accent-fg"
+                    [routerLink]="['/pages/sales-force/sales-rep', (salesRep$ | async)?.id]"
+                >
+                    <span>EDIT</span>
+                </button>
+            </div>
         </div>
         <!-- / HEADER -->
 
@@ -80,6 +91,14 @@
                                     fxLayout="column"
                                     fxFle
                                 ></app-sales-rep-detail-info>
+                            </div>
+                        </ng-template>
+                    </mat-tab>
+
+                    <mat-tab label="Reset Password">
+                        <ng-template matTabContent>
+                            <div class="tab-content p-24" fusePerfectScrollbar>
+                                <app-sales-rep-detail-password></app-sales-rep-detail-password>
                             </div>
                         </ng-template>
                     </mat-tab>

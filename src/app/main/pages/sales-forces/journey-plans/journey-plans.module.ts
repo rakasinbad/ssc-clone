@@ -4,8 +4,14 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule, SharedModule } from 'app/shared';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
-import { JourneyPlanFormComponent } from './journey-plan-form/journey-plan-form.component';
+import {
+    JourneyPlanActionComponent,
+    JourneyPlanFormComponent,
+    JourneyPlanInfoComponent,
+    JourneyPlanStoreComponent
+} from './journey-plan-form';
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
+import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
 
 /**
@@ -15,9 +21,16 @@ import { JourneyPlansComponent } from './journey-plans.component';
  * @class JourneyPlansModule
  */
 @NgModule({
-    declarations: [JourneyPlansComponent, JourneyPlanFormComponent],
+    declarations: [
+        JourneyPlanActionComponent,
+        JourneyPlanFormComponent,
+        JourneyPlanInfoComponent,
+        JourneyPlansComponent,
+        JourneyPlanStoreComponent
+    ],
     imports: [
         JourneyPlansRoutingModule,
+
         SharedModule,
         MaterialModule,
 
@@ -26,7 +39,10 @@ import { JourneyPlansComponent } from './journey-plans.component';
         RxReactiveDynamicFormsModule,
 
         // Third Party (NgxPermissions: https://github.com/AlexKhymenko/ngx-permissions)
-        NgxPermissionsModule.forChild()
+        NgxPermissionsModule.forChild(),
+
+        // Store
+        JourneyPlansStoreModule
     ]
 })
 export class JourneyPlansModule {}

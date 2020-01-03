@@ -41,7 +41,7 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
 
     @Input() readonly pageType: 'new' | 'edit' = 'edit';
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private formBuilder: FormBuilder,
@@ -61,8 +61,6 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject<void>();
 
         this._initPage();
 
@@ -152,6 +150,9 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
 
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
+                // Reset form status state
+                this.store.dispatch(FormActions.resetFormStatus());
+
                 // Reset click save button state
                 this.store.dispatch(FormActions.resetClickSaveButton());
 

@@ -19,6 +19,7 @@ export * from './store-group-api.service';
 export * from './store-segment-api.service';
 export * from './store-type-api.service';
 export * from './supplier-api.service';
+export * from './team-api.service';
 export * from './upload-api.service';
 export * from './urban-api.service';
 export * from './user-api.service';

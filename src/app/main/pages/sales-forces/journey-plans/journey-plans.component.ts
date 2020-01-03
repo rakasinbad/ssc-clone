@@ -5,6 +5,7 @@ import {
     Component,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
@@ -15,14 +16,19 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
-import { Subject } from 'rxjs';
+import { merge, Observable, Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
+import { JourneyPlan } from './models';
+import { JourneyPlanActions } from './store/actions';
 import * as fromJourneyPlans from './store/reducers';
+import { JourneyPlanSelectors } from './store/selectors';
 
 @Component({
     selector: 'app-journey-plans',
@@ -35,41 +41,25 @@ import * as fromJourneyPlans from './store/reducers';
 export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     search: FormControl = new FormControl('');
+
     displayedColumns = [
         'checkbox',
+        'date',
         'sales-rep-id',
         'sales-rep-name',
-        'phone-number',
-        'date',
+        'num-of-store',
+        'mandatory-action',
+        'last-visit',
         'actions'
     ];
-    dataSource = new MatTableDataSource([
-        {
-            id: '1',
-            name: 'Andi',
-            phone: '081391348317',
-            date: '12/11/2019'
-        },
-        {
-            id: '2',
-            name: 'Yusup',
-            phone: '081391348317',
-            date: '12/11/2019'
-        },
-        {
-            id: '3',
-            name: 'Pirmansyah',
-            phone: '081391348317',
-            date: '12/11/2019'
-        },
-        {
-            id: '4',
-            name: 'Sutisna',
-            phone: '081391348317',
-            date: '12/11/2019'
-        }
-    ]);
-    selection: SelectionModel<any> = new SelectionModel<any>(true, []);
+
+    dataSource: MatTableDataSource<JourneyPlan>;
+    selection: SelectionModel<JourneyPlan> = new SelectionModel<JourneyPlan>(true, []);
+
+    dataSource$: Observable<Array<JourneyPlan>>;
+    selectedRowIndex$: Observable<string>;
+    totalDataSource$: Observable<number>;
+    isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -96,10 +86,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromJourneyPlans.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService
-    ) {
-        // Load translate
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-    }
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -115,14 +102,15 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
+
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -157,5 +145,83 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: this._breadCrumbs
             })
         );
+
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this._initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state sales reps
+                this.store.dispatch(JourneyPlanActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                // Load translate
+                this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                this._initTable();
+
+                this.dataSource$ = this.store.select(JourneyPlanSelectors.selectAll).pipe(
+                    tap(source => {
+                        this.dataSource = new MatTableDataSource(source);
+                        this.selection.clear();
+                    })
+                );
+                this.totalDataSource$ = this.store.select(JourneyPlanSelectors.getTotalItem);
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(JourneyPlanSelectors.getIsLoading);
+                break;
+        }
+    }
+
+    private _initTable(): void {
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 5,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
+
+            data['paginate'] = true;
+
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            if (query) {
+                localStorage.setItem('filter.search.journeyplans', query);
+
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            } else {
+                localStorage.removeItem('filter.search.journeyplans');
+            }
+
+            this.store.dispatch(JourneyPlanActions.fetchJourneyPlansRequest({ payload: data }));
+        }
     }
 }
