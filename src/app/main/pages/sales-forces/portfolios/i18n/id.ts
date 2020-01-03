@@ -8,6 +8,7 @@ export const locale = {
             ...globalIdLang.BREADCRUMBS,
             PORTFOLIO: 'Portfolio',
             PORTFOLIO_ADD: 'Add Portfolio',
+            PORTFOLIO_EDIT: 'Edit Portfolio',
             PORTFOLIO_DETAIL: 'Detail Portfolio'
         }
     }

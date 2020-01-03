@@ -218,11 +218,11 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
 
         // Menetapkan breadcrumb yang ingin ditampilkan.
-        this.portfolioStore.dispatch(
-            UiActions.createBreadcrumb({
-                payload: breadcrumbs
-            })
-        );
+        // this.portfolioStore.dispatch(
+        //     UiActions.createBreadcrumb({
+        //         payload: breadcrumbs
+        //     })
+        // );
 
         // Memuat footer action untuk keperluan form.
         this.portfolioStore.dispatch(
@@ -541,6 +541,52 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     ngOnInit(): void {
         this.isEditMode = this.route.snapshot.url[this.route.snapshot.url.length - 1].path === 'edit';
 
+        if (this.isEditMode) {
+            this.portfolioStore.dispatch(
+                UiActions.createBreadcrumb({
+                    payload: [
+                        {
+                            title: 'Home',
+                            translate: 'BREADCRUMBS.HOME',
+                            active: false
+                        },
+                        {
+                            title: 'Sales Rep Management',
+                            translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
+                            url: '/pages/sales-force/portfolio'
+                        },
+                        {
+                            title: 'Edit Portfolio',
+                            translate: 'BREADCRUMBS.PORTFOLIO_EDIT',
+                            active: true
+                        }
+                    ]
+                })
+            );
+        } else {
+            this.portfolioStore.dispatch(
+                UiActions.createBreadcrumb({
+                    payload: [
+                        {
+                            title: 'Home',
+                            translate: 'BREADCRUMBS.HOME',
+                            active: false
+                        },
+                        {
+                            title: 'Sales Rep Management',
+                            translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
+                            url: '/pages/sales-force/portfolio'
+                        },
+                        {
+                            title: 'Add Portfolio',
+                            translate: 'BREADCRUMBS.PORTFOLIO_ADD',
+                            active: true
+                        }
+                    ]
+                })
+            );
+        }
+
         // Inisialisasi FormControl untuk search.
         this.search = new FormControl('');
 
@@ -619,10 +665,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         ).subscribe(({ listStores, portfolioStoreIds, portfolioNewStoreIds }) => {
             const newListStore = listStores.filter(listStore => !portfolioStoreIds.concat(portfolioNewStoreIds).includes(listStore.id));
 
-                this.listStore = new MatTableDataSource(newListStore);
-                this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
-                this.listStoreSelection.clear();
-            });
+            // this.listStore = new MatTableDataSource(newListStore);
+            // this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
+            // this.listStoreSelection.clear();
+        });
 
         // Mengambil data store-nya portfolio dari state.
         combineLatest([
@@ -827,10 +873,12 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioStore.dispatch(FormActions.resetFormStatus());
         this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
-
+        
         this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
+        
+        this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
 
         this.subs$.next();
         this.subs$.complete();
