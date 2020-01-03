@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { AssociationPortfolio } from '../../models';
+import { Association } from '../../models';
 import { AssociationActions } from '../actions';
 
 // Keyname for reducer
@@ -11,17 +11,17 @@ const featureKey = 'associations';
  *
  * Main interface for reducer
  * @interface State
- * @extends {EntityState<AssociationPortfolio>}
+ * @extends {EntityState<Association>}
  */
-interface State extends EntityState<AssociationPortfolio> {
+interface State extends EntityState<Association> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
     total: number;
 }
 
-// Adapter for AssociationPortfolio state
-const adapter = createEntityAdapter<AssociationPortfolio>({ selectId: row => row.id });
+// Adapter for Association state
+const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -33,15 +33,15 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(AssociationActions.fetchAssociationPortfoliosRequest, state => ({
+    on(AssociationActions.fetchAssociationRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(AssociationActions.fetchAssociationPortfoliosFailure, state => ({
+    on(AssociationActions.fetchAssociationFailure, state => ({
         ...state,
         isLoading: false
     })),
-    on(AssociationActions.fetchAssociationPortfoliosSuccess, (state, { payload }) => {
+    on(AssociationActions.fetchAssociationSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, {
             ...state,
             isLoading: false,

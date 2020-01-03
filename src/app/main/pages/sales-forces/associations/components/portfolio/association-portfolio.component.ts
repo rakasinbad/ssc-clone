@@ -34,7 +34,7 @@ import {
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { AssociationPortfolio } from '../../models/';
+import { Association } from '../../models/';
 // State management's stuffs.
 import * as fromAssociations from '../../store/reducers';
 import { AssociationActions } from '../../store/actions';
@@ -78,9 +78,9 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         'actions'
     ];
 
-    selection: SelectionModel<AssociationPortfolio>;
+    selection: SelectionModel<Association>;
 
-    dataSource$: Observable<Array<AssociationPortfolio>>;
+    dataSource$: Observable<Array<Association>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -134,7 +134,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<AssociationPortfolio>(true, []);
+        this.selection = new SelectionModel<Association>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -148,34 +148,6 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
-
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(
-                distinctUntilChanged(),
-                filter(v => !!v),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                const data: IQueryParams = {
-                    limit: this.paginator.pageSize || 5,
-                    skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-                };
-
-                this.activeTab = v;
-
-                data['paginate'] = true;
-
-                if (v === 'associated') {
-                    data['associated'] = true;
-                } else if (v === 'not-associated') {
-                    data['associated'] = false;
-                }
-
-                this.store.dispatch(
-                    AssociationActions.fetchAssociationPortfoliosRequest({ payload: data })
-                );
-            });
     }
 
     ngAfterViewInit(): void {
@@ -200,16 +172,10 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
-    }
-
-    handleCheckbox(): void {
-        this.isAllSelected()
-            ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
     clickTab(action: 'all' | 'associated' | 'not-associated'): void {
@@ -219,20 +185,43 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
         switch (action) {
             case 'all':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all' }));
+                this.activeTab = 'all';
                 break;
             case 'associated':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'associated' }));
+                this.activeTab = 'associated';
                 break;
             case 'not-associated':
-                this.store.dispatch(
-                    UiActions.setCustomToolbarActive({ payload: 'not-associated' })
-                );
+                this.activeTab = 'not-associated';
                 break;
 
             default:
                 return;
         }
+
+        this.loadTab(this.activeTab);
+    }
+
+    loadTab(activeTab): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (activeTab === 'associated') {
+            data['associated'] = true;
+        } else if (activeTab === 'not-associated') {
+            data['associated'] = false;
+        }
+
+        this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
+    }
+
+    handleCheckbox(): void {
+        this.isAllSelected()
+            ? this.selection.clear()
+            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -289,9 +278,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
                 data['sortBy'] = this.sort.active;
             }
 
-            this.store.dispatch(
-                AssociationActions.fetchAssociationPortfoliosRequest({ payload: data })
-            );
+            this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
         }
     }
 

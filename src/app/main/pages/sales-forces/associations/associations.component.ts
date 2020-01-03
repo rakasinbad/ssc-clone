@@ -4,44 +4,26 @@ import {
     ChangeDetectionStrategy,
     ViewEncapsulation,
     OnDestroy,
-    AfterViewInit,
-    ViewChild,
-    ElementRef,
-    ChangeDetectorRef,
-    SecurityContext
+    AfterViewInit
 } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { PageEvent, MatPaginator, MatSort } from '@angular/material';
-import { SelectionModel } from '@angular/cdk/collections';
+import { PageEvent } from '@angular/material';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    flatMap,
-    takeUntil,
-    tap
-} from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 // Environment variables.
-import { environment } from 'environments/environment';
 // Entity model.
-import { AssociationPortfolio } from './models/associations.model';
 // State management's stuffs.
 import * as fromAssociations from './store/reducers';
 import { AssociationActions } from './store/actions';
-import { AssociationSelectors } from './store/selectors';
-import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-associations',
@@ -119,7 +101,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();

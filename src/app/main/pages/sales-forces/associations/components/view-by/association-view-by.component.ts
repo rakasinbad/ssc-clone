@@ -6,25 +6,18 @@ import {
     OnDestroy
 } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
 // RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 // Environment variables.
-import { environment } from 'environments/environment';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // Entity model.
 // State management's stuffs.
 import * as fromAssociations from '../../store/reducers';
 import { AssociationActions } from '../../store/actions';
-import { AssociationSelectors } from '../../store/selectors';
-import { Router } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-associations-view-by',
@@ -51,12 +44,7 @@ export class AssociationViewByComponent implements OnInit, OnDestroy {
 
     buttonViewByActive$: Observable<string>;
 
-    constructor(
-        private route: ActivatedRoute,
-        private domSanitizer: DomSanitizer,
-        private store: Store<fromAssociations.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
-    ) {}
+    constructor(private store: Store<fromAssociations.FeatureState>) {}
 
     ngOnInit(): void {
         this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'sales-rep' }));
@@ -68,7 +56,7 @@ export class AssociationViewByComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();

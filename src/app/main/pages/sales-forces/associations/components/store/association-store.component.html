@@ -2,26 +2,26 @@
     <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
         <span class="text-tab-custom">All</span>
     </div>
-    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
-        (click)="clickTab('associated')">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated-portfolio'"
+        (click)="clickTab('associated-portfolio')">
         <span class="text-tab-custom">Associated (Portfolio)</span>
     </div>
-    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
-        (click)="clickTab('associated')">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated-direct'"
+        (click)="clickTab('associated-direct')">
         <span class="text-tab-custom">Associated (Direct)</span>
     </div>
-    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated'"
-        (click)="clickTab('not-associated')">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated-portfolio'"
+        (click)="clickTab('not-associated-portfolio')">
         <span class="text-tab-custom">Not Associated (Portfolio)</span>
     </div>
-    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
-        (click)="clickTab('associated')">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated-direct'"
+        (click)="clickTab('not-associated-direct')">
         <span class="text-tab-custom">Not Associated (Direct)</span>
     </div>
 </div>
 <!-- CONTENT -->
 <div class="content">
-    <mat-table class="association-portfolio-table" #table [dataSource]="dataSource$ | async" matSort
+    <mat-table class="association-store-table" #table [dataSource]="dataSource$ | async" matSort
         [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
         <!-- Checkbox Column -->
         <ng-container matColumnDef="checkbox">
@@ -38,41 +38,37 @@
             </mat-cell>
         </ng-container>
 
-        <!-- "Portfolio Code" Column -->
-        <ng-container matColumnDef="portfolio-code">
+        <!-- "Store Code" Column -->
+        <ng-container matColumnDef="store-code">
             <mat-header-cell *matHeaderCellDef mat-sort-header>
-                Portfolio Code
+                Store Code
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p>
-                    {{ row?.code }}
-                </p>
+                <p>{{ row?.storePortfolios?.store ? row?.storePortfolios?.store?.storeCode: '-' }}</p>
             </mat-cell>
         </ng-container>
 
-        <!-- "Portfolio Name" Column -->
+        <!-- "Store Name" Column -->
+        <ng-container matColumnDef="store-name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Store Name</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.storePortfolios?.store ? row?.storePortfolios?.store?.name: '-' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Portfolio Code" Column -->
+        <ng-container matColumnDef="portfolio-code">
+            <mat-header-cell *matHeaderCellDef>Portfolio Code</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="word-wrap">{{ row?.code }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Portfolio Name Column -->
         <ng-container matColumnDef="portfolio-name">
-            <mat-header-cell *matHeaderCellDef mat-sort-header>Portfolio Name</mat-header-cell>
+            <mat-header-cell *matHeaderCellDef>Portfolio Name</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p>{{ row?.name }}</p>
-            </mat-cell>
-        </ng-container>
-
-        <!-- "Store Qty" Column -->
-        <ng-container matColumnDef="store-qty">
-            <mat-header-cell *matHeaderCellDef>Store Qty</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p class="word-wrap">{{ row?.storeQty }}</p>
-            </mat-cell>
-        </ng-container>
-
-        <!-- Sales Target Column -->
-        <ng-container matColumnDef="sales-target">
-            <mat-header-cell *matHeaderCellDef>Sales Target</mat-header-cell>
-            <mat-cell *matCellDef="let row">
-                <p class="text-truncate">
-                    {{ +row?.totalTargetSales > 0 ? (+row?.totalTargetSales | price: 'short') : +row?.totalTargetSales }}
-                </p>
             </mat-cell>
         </ng-container>
 
@@ -81,6 +77,14 @@
             <mat-header-cell *matHeaderCellDef>Sales Rep</mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-truncate">{{ row?.user?.fullName ? row?.user?.fullName : '-' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Date Of Associate Column -->
+        <ng-container matColumnDef="date-associate">
+            <mat-header-cell *matHeaderCellDef>Date Of Associate</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-truncate">{{ row?.associated[0]?.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}</p>
             </mat-cell>
         </ng-container>
 

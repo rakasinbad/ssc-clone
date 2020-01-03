@@ -6,42 +6,27 @@ import {
     OnDestroy,
     AfterViewInit,
     ViewChild,
-    ElementRef,
-    ChangeDetectorRef,
-    SecurityContext
+    ElementRef
 } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
 import { Observable, Subject, merge } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    flatMap,
-    takeUntil,
-    tap
-} from 'rxjs/operators';
+import { flatMap, takeUntil } from 'rxjs/operators';
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { AssociationPortfolio } from '../../models/';
+import { Association } from '../../models/';
 // State management's stuffs.
 import * as fromAssociations from '../../store/reducers';
 import { AssociationActions } from '../../store/actions';
 import { AssociationSelectors } from '../../store/selectors';
-import { Router } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-associations-store',
@@ -75,13 +60,13 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         'portfolio-code',
         'portfolio-name',
         'sales-rep',
-        'date-accotiate',
+        'date-associate',
         'actions'
     ];
 
-    selection: SelectionModel<AssociationPortfolio>;
+    selection: SelectionModel<Association>;
 
-    dataSource$: Observable<Array<AssociationPortfolio>>;
+    dataSource$: Observable<Array<Association>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -108,12 +93,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         }
     ];
 
-    constructor(
-        private route: ActivatedRoute,
-        private domSanitizer: DomSanitizer,
-        private store: Store<fromAssociations.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
-    ) {}
+    constructor(private store: Store<fromAssociations.FeatureState>) {}
 
     /**
      * PRIVATE FUNCTIONS
@@ -135,7 +115,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<AssociationPortfolio>(true, []);
+        this.selection = new SelectionModel<Association>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -149,34 +129,6 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
-
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(
-                distinctUntilChanged(),
-                filter(v => !!v),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                const data: IQueryParams = {
-                    limit: this.paginator.pageSize || 5,
-                    skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-                };
-
-                this.activeTab = v;
-
-                data['paginate'] = true;
-
-                if (v === 'associated') {
-                    data['associated'] = true;
-                } else if (v === 'not-associated') {
-                    data['associated'] = false;
-                }
-
-                this.store.dispatch(
-                    AssociationActions.fetchAssociationPortfoliosRequest({ payload: data })
-                );
-            });
     }
 
     ngAfterViewInit(): void {
@@ -201,7 +153,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -213,27 +165,57 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
             : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
-    clickTab(action: 'all' | 'associated' | 'not-associated'): void {
+    clickTab(
+        action:
+            | 'all'
+            | 'associated-portfolio'
+            | 'associated-direct'
+            | 'not-associated-portfolio'
+            | 'not-associated-direct'
+    ): void {
         if (!action) {
             return;
         }
 
         switch (action) {
             case 'all':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all' }));
+                this.activeTab = 'all';
                 break;
-            case 'associated':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'associated' }));
+            case 'associated-portfolio':
+                this.activeTab = 'associated-portfolio';
                 break;
-            case 'not-associated':
-                this.store.dispatch(
-                    UiActions.setCustomToolbarActive({ payload: 'not-associated' })
-                );
+            case 'associated-direct':
+                this.activeTab = 'associated-direct';
+                break;
+            case 'not-associated-portfolio':
+                this.activeTab = 'not-associated-portfolio';
+                break;
+            case 'not-associated-direct':
+                this.activeTab = 'not-associated-direct';
                 break;
 
             default:
                 return;
         }
+
+        this.loadTab(this.activeTab);
+    }
+
+    loadTab(activeTab): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (activeTab === 'associated') {
+            data['associated'] = true;
+        } else if (activeTab === 'not-associated') {
+            data['associated'] = false;
+        }
+
+        this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
     }
 
     isAllSelected(): boolean {
@@ -290,9 +272,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
                 data['sortBy'] = this.sort.active;
             }
 
-            this.store.dispatch(
-                AssociationActions.fetchAssociationPortfoliosRequest({ payload: data })
-            );
+            this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
         }
     }
 

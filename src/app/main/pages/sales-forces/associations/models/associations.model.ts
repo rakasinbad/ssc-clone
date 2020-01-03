@@ -1,8 +1,9 @@
 import { ITimestamp, TNullable, User, InvoiceGroup, Supplier } from 'app/shared/models';
+import { StorePortfolio } from 'app/main/pages/attendances/models';
 
 type TStatusType = 'active' | 'inactive';
 
-export interface IAssociationPortfolio extends ITimestamp {
+export interface IAssociation extends ITimestamp {
     id: string;
     name: string;
     code: string;
@@ -15,12 +16,14 @@ export interface IAssociationPortfolio extends ITimestamp {
     invoiceGroup: InvoiceGroup;
     user: User;
     user_id: string;
-    storePortfolios: [];
+    storePortfolios: StorePortfolio;
+    storeQty: string;
+    associated: [];
     totalTargetSales: number;
     actualTargetSales: number;
 }
 
-export class AssociationPortfolio implements IAssociationPortfolio {
+export class Association implements IAssociation {
     id: string;
     name: string;
     code: string;
@@ -33,11 +36,13 @@ export class AssociationPortfolio implements IAssociationPortfolio {
     invoiceGroup: InvoiceGroup;
     user: User;
     user_id: string;
-    storePortfolios: [];
+    storePortfolios: StorePortfolio;
+    storeQty: string;
+    associated: [];
     totalTargetSales: number;
     actualTargetSales: number;
 
-    constructor(data: IAssociationPortfolio) {
+    constructor(data: IAssociation) {
         const {
             id,
             name,
@@ -51,6 +56,8 @@ export class AssociationPortfolio implements IAssociationPortfolio {
             user,
             user_id,
             storePortfolios,
+            storeQty,
+            associated,
             totalTargetSales,
             actualTargetSales
         } = data;
@@ -64,9 +71,13 @@ export class AssociationPortfolio implements IAssociationPortfolio {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
         this.user_id = user_id;
-        this.storePortfolios = storePortfolios;
         this.totalTargetSales = totalTargetSales;
+        this.storeQty = storeQty;
         this.actualTargetSales = actualTargetSales;
+        this.associated = associated;
+        this.storePortfolios = storePortfolios
+            ? new StorePortfolio(storePortfolios)
+            : storePortfolios;
 
         this.invoiceGroup = invoiceGroup ? new InvoiceGroup(invoiceGroup) : invoiceGroup;
 

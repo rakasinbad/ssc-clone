@@ -1,1 +1,1 @@
-export * from './association-portfolios.effects';
+export * from './association.effects';
