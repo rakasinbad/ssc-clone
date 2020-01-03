@@ -2,6 +2,7 @@ import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/m
 import {
     CustomerHierarchy,
     Hierarchy,
+    Portfolio,
     StoreCluster,
     StoreConfig,
     StoreGroup,
@@ -15,212 +16,215 @@ import {
     VehicleAccessibility
 } from 'app/shared/models';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
-import { Portfolio } from 'app/main/pages/sales-forces/portfolios/models';
 
-interface IStorePortfolio extends ITimestamp {
-    id: string;
-    target: number;
-    portfolioId: string;
-    storeId: string;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: TNullable<string>;
+export interface IStorePortfolio extends ITimestamp {
+    readonly id: NonNullable<string>;
     portfolio?: Portfolio;
+    portfolioId: string;
     store?: Store;
+    storeId: string;
+    target: number;
 }
 
 export class StorePortfolio implements IStorePortfolio {
-    id: string;
-    target: number;
+    readonly id: NonNullable<string>;
+    portfolio?: Portfolio;
     portfolioId: string;
+    store?: Store;
     storeId: string;
+    target: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
-    portfolio?: Portfolio;
-    store?: Store;
 
-    constructor(data: StorePortfolio) {
+    constructor(data: IStorePortfolio) {
         const {
             id,
-            target,
+            portfolio,
             portfolioId,
+            store,
             storeId,
+            target,
             createdAt,
             updatedAt,
-            deletedAt,
-            portfolio,
-            store,
+            deletedAt
         } = data;
 
         this.id = id;
-        this.target = target;
         this.portfolioId = portfolioId;
+        this.setPortfolio = portfolio;
+        this.setStore = store;
         this.storeId = storeId;
+        this.target = target;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
 
-        this.portfolio = portfolio ? new Portfolio(portfolio) : null;
-        this.store = store ? new Store(store) : null;
+    set setPortfolio(value: Portfolio) {
+        this.portfolio = value ? new Portfolio(value) : null;
+    }
+
+    set setStore(value: Store) {
+        this.store = value ? new Store(value) : null;
     }
 }
 
-interface IStore extends ITimestamp {
+export interface IStore extends ITimestamp {
     readonly id: NonNullable<string>;
-    storeCode: string;
-    name: string;
     address: string;
-    taxNo: string;
-    longitude: number;
-    latitude: number;
-    largeArea: string;
-    phoneNo: string;
+    creditLimitStores?: Array<CreditLimitStore>;
+    customerHierarchies?: Array<CustomerHierarchy>;
+    externalId: string;
+    hierarchy: Hierarchy;
     imageUrl: TNullable<string>;
-    taxImageUrl: TNullable<string>;
-    status: TStatus;
-    reason: string;
+    largeArea: string;
+    latitude: number;
+    legalInfo?: User;
+    longitude: number;
+    name: string;
+    numberOfEmployee: TNullable<string>;
+    owner?: User;
     parent: boolean;
     parentId: string;
-    numberOfEmployee: TNullable<string>;
-    externalId: string;
-    storeTypeId: string;
+    phoneNo: string;
+    reason: string;
+    status: TStatus;
+    storeClusters?: Array<StoreCluster>;
+    storeCode: string;
+    storeConfig: StoreConfig;
+    storeGroup: StoreGroup;
     storeGroupId: string;
+    storePortfolios?: Array<StorePortfolio>;
+    storeSegment: StoreSegment;
     storeSegmentId: string;
+    storeType: StoreType;
+    storeTypeId: string;
+    supplierStores?: Array<SupplierStore>;
+    taxImageUrl: TNullable<string>;
+    taxNo: string;
+    urban: Urban;
     urbanId: string;
+    userStores: Array<UserStore>;
+    vehicleAccessibility?: VehicleAccessibility;
     vehicleAccessibilityId: string;
     warehouseId: string;
-    userStores: UserStore[];
-    supplierStores?: SupplierStore[];
-    vehicleAccessibility?: VehicleAccessibility;
-    storeType: StoreType;
-    storeGroup: StoreGroup;
-    storeSegment: StoreSegment;
-    hierarchy: Hierarchy;
-    urban: Urban;
-    customerHierarchies?: CustomerHierarchy[];
-    storeConfig: StoreConfig;
-    storeClusters?: StoreCluster[];
-    creditLimitStores?: CreditLimitStore[];
-    legalInfo?: User;
-    owner?: User;
-    storePortfolios?: Array<StorePortfolio>;
     isSelected?: boolean; // Menandakan apakah object ini terpilih atau tidak.
     source?: 'fetch' | 'list'; // Menandakan apakah object ini berasal hasil fetch atau mengambil dari list (cache).
 }
 
 export class Store implements IStore {
     readonly id: NonNullable<string>;
-    storeCode: string;
-    name: string;
     address: string;
-    taxNo: string;
-    longitude: number;
-    latitude: number;
-    largeArea: string;
-    phoneNo: string;
+    creditLimitStores?: Array<CreditLimitStore>;
+    customerHierarchies?: Array<CustomerHierarchy>;
+    externalId: string;
+    hierarchy: Hierarchy;
     imageUrl: TNullable<string>;
-    taxImageUrl: TNullable<string>;
-    status: TStatus;
-    reason: string;
+    largeArea: string;
+    latitude: number;
+    legalInfo?: User;
+    longitude: number;
+    name: string;
+    numberOfEmployee: TNullable<string>;
+    owner?: User;
     parent: boolean;
     parentId: string;
-    numberOfEmployee: TNullable<string>;
-    externalId: string;
-    storeTypeId: string;
+    phoneNo: string;
+    reason: string;
+    status: TStatus;
+    storeClusters?: Array<StoreCluster>;
+    storeCode: string;
+    storeConfig: StoreConfig;
+    storeGroup: StoreGroup;
     storeGroupId: string;
+    storePortfolios?: Array<StorePortfolio>;
+    storeSegment: StoreSegment;
     storeSegmentId: string;
+    storeType: StoreType;
+    storeTypeId: string;
+    supplierStores?: Array<SupplierStore>;
+    taxImageUrl: TNullable<string>;
+    taxNo: string;
+    urban: Urban;
     urbanId: string;
+    userStores: Array<UserStore>;
+    vehicleAccessibility?: VehicleAccessibility;
     vehicleAccessibilityId: string;
     warehouseId: string;
-    userStores: UserStore[];
-    supplierStores?: SupplierStore[];
-    vehicleAccessibility?: VehicleAccessibility;
-    storeType: StoreType;
-    storeGroup: StoreGroup;
-    storeSegment: StoreSegment;
-    hierarchy: Hierarchy;
-    urban: Urban;
-    customerHierarchies?: CustomerHierarchy[];
-    storeConfig: StoreConfig;
-    storeClusters?: StoreCluster[];
-    creditLimitStores?: CreditLimitStore[];
-    legalInfo?: User;
-    owner?: User;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
-    storePortfolios?: Array<StorePortfolio>;
     isSelected?: boolean;
     source?: 'fetch' | 'list';
 
     constructor(data: Store) {
         const {
             id,
-            storeCode,
-            name,
             address,
-            taxNo,
-            longitude,
-            latitude,
-            largeArea,
-            phoneNo,
+            creditLimitStores,
+            customerHierarchies,
+            externalId,
+            hierarchy,
             imageUrl,
-            taxImageUrl,
-            status,
-            reason,
+            largeArea,
+            latitude,
+            legalInfo,
+            longitude,
+            name,
+            numberOfEmployee,
+            owner,
             parent,
             parentId,
-            numberOfEmployee,
-            externalId,
-            storeTypeId,
+            phoneNo,
+            reason,
+            status,
+            storeClusters,
+            storeCode,
+            storeConfig,
+            storeGroup,
             storeGroupId,
+            storePortfolios = [],
+            storeSegment,
             storeSegmentId,
+            storeType,
+            storeTypeId,
+            supplierStores,
+            taxImageUrl,
+            taxNo,
+            urban,
             urbanId,
+            userStores,
+            vehicleAccessibility,
             vehicleAccessibilityId,
             warehouseId,
-            userStores,
-            supplierStores,
-            vehicleAccessibility,
-            storeType,
-            storeGroup,
-            storeSegment,
-            hierarchy,
-            urban,
-            customerHierarchies,
-            storeConfig,
-            storeClusters,
-            creditLimitStores,
-            legalInfo,
-            owner,
             createdAt,
             updatedAt,
             deletedAt,
-            storePortfolios = [],
             isSelected = false,
             source = 'fetch',
         } = data;
 
         this.id = id;
-        this.storeCode = storeCode ? String(storeCode).trim() : null;
-        this.name = name ? String(name).trim() : null;
         this.address = address ? String(address).trim() : null;
-        this.taxNo = taxNo ? String(taxNo).trim() : null;
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.largeArea = largeArea ? String(largeArea).trim() : null;
-        this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.externalId = externalId ? String(externalId).trim() : null;
         this.imageUrl = imageUrl ? String(imageUrl).trim() : null;
-        this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
-        this.status = status;
-        this.reason = reason ? String(reason).trim() : null;
+        this.largeArea = largeArea ? String(largeArea).trim() : null;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name ? String(name).trim() : null;
+        this.numberOfEmployee = numberOfEmployee ? String(numberOfEmployee).trim() : null;
         this.parent = parent;
         this.parentId = parentId;
-        this.numberOfEmployee = numberOfEmployee ? String(numberOfEmployee).trim() : null;
-        this.externalId = externalId ? String(externalId).trim() : null;
-        this.storeTypeId = storeTypeId;
+        this.phoneNo = phoneNo ? String(phoneNo).trim() : null;
+        this.reason = reason ? String(reason).trim() : null;
+        this.status = status;
+        this.storeCode = storeCode ? String(storeCode).trim() : null;
         this.storeGroupId = storeGroupId;
         this.storeSegmentId = storeSegmentId;
+        this.storeTypeId = storeTypeId;
+        this.taxImageUrl = taxImageUrl ? String(taxImageUrl).trim() : null;
+        this.taxNo = taxNo ? String(taxNo).trim() : null;
         this.urbanId = urbanId;
         this.vehicleAccessibilityId = vehicleAccessibilityId;
         this.warehouseId = warehouseId;
@@ -329,9 +333,10 @@ export class Store implements IStore {
             this.setOwner = owner;
         }
 
-        this.storePortfolios = storePortfolios.length === 0
-            ? []
-            : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
+        this.storePortfolios =
+            storePortfolios.length === 0
+                ? []
+                : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
     }
 
     set setDeletedAt(time: string) {
@@ -438,7 +443,7 @@ export class Store implements IStore {
 
 export type StoreOptions = Partial<Store>;
 
-interface IUserStore {
+export interface IUserStore {
     id: string;
     userId: string;
     storeId: string;

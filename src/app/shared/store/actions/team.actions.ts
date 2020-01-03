@@ -22,7 +22,7 @@ export const fetchTeamFailure = createAction(
 
 export const fetchTeamSuccess = createAction(
     '[Helper Sources - Team API] Fetch Team Success',
-    props<{ payload: { data: Team[]; total: number } }>()
+    props<{ payload: { data: Array<Team>; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

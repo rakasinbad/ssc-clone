@@ -12,6 +12,7 @@ export * from './hierarchy-api.service';
 export * from './invoice-group-api.service';
 export * from './order-brand-catalogue-api.service';
 export * from './order-parcel-api.service';
+export * from './portfolio-api.service';
 export * from './province-api.service';
 export * from './store-api.service';
 export * from './store-cluster-api.service';
