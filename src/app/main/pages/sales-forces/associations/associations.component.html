@@ -1,0 +1,78 @@
+<div id="associations" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div class="header sinbad" fxLayout="column" fxLayoutAlign="center stretch" fxLayoutGap="10px">
+            <!-- HEADER TOP -->
+            <app-associations-header-search></app-associations-header-search>
+            <!-- / HEADER TOP -->
+
+            <!-- MIDDLE HEADER -->
+            <app-associations-view-by></app-associations-view-by>
+            <!-- / MIDDLE HEADER -->
+
+            <!-- HEADER BOTTOM -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16"
+                        [routerLink]="['/pages/sales-force/sales-rep/new']">
+                        ADD
+                    </button>
+
+                    <!-- <ng-container *ngIf="selection.hasValue()">
+                        <button type="button" mat-flat-button class="sinbad" [matMenuTriggerFor]="actionMenu"
+                            aria-label="Action Menu"
+                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
+                            <span>Action</span>
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                        <mat-menu #actionMenu="matMenu">
+                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Active"
+                                (click)="onSelectedActions('active')">
+                                <span>Set Active</span>
+                            </button>
+                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Inactive"
+                                (click)="onSelectedActions('inactive')">
+                                <span>Set Inactive</span>
+                            </button>
+                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Remove"
+                                (click)="onSelectedActions('delete')">
+                                <span>Remove</span>
+                            </button>
+                        </mat-menu>
+                    </ng-container> -->
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
+                        EXPORT
+                    </button>
+
+                    <button type="button" mat-stroked-button color="accent" class="sinbad">
+                        IMPORT
+                    </button>
+                </div>
+            </div>
+            <!-- / HEADER BOTTOM -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <app-associations-sales-rep *ngIf="(buttonViewByActive$ | async) ==='sales-rep'">
+            </app-associations-sales-rep>
+
+            <app-associations-portfolio *ngIf="(buttonViewByActive$ | async) ==='portfolio'">
+            </app-associations-portfolio>
+
+            <app-associations-store *ngIf="(buttonViewByActive$ | async) ==='store'">
+            </app-associations-store>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

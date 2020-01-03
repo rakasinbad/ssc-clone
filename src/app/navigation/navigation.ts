@@ -125,33 +125,34 @@ export const navigation: FuseNavigation[] = [
             }
         ]
     },
-    // {
-    //     id: 'sales-force',
-    //     title: 'Sales Rep Management',
-    //     //    translate: 'NAV.INVENTORIES.TITLE',
-    //     type: 'collapsable',
-    //     icon: 'layerassessments',
-    //     children: [
-    //         {
-    //             id: 'sales-rep',
-    //             title: 'Sales Rep',
-    //             //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
-    //             type: 'item',
-    //             url: '/pages/sales-force/sales-rep'
-    //         },
-    //         {
-    //             id: 'portfolio',
-    //             title: 'Portfolio',
-    //             //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
-    //             type: 'item',
-    //             url: '/pages/sales-force/portfolio'
-    //         },
-    //         {
-    //             id: 'journey-plan',
-    //             title: 'Journey Plan',
-    //             type: 'item',
-    //             url: '/pages/sales-force/journey-plans'
-    //         }
-    //     ]
-    // }
+    {
+        id: 'sales-force',
+        title: 'Sales Rep Management',
+        //    translate: 'NAV.INVENTORIES.TITLE',
+        type: 'collapsable',
+        icon: 'layerassessments',
+        children: [
+            {
+                id: 'sales-rep',
+                title: 'Sales Rep',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/sales-rep'
+            },
+            {
+                id: 'portfolio',
+                title: 'Portfolio',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/portfolio'
+            },
+            {
+                id: 'association',
+                title: 'Association',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/associations'
+            }
+        ]
+    }
 ];

@@ -16,9 +16,12 @@ const routes: Routes = [
     },
     {
         path: 'journey-plans',
-        loadChildren: () =>
-            import('./journey-plans/journey-plans.module').then(m => m.JourneyPlansModule),
-        canLoad: [AuthGuard]
+        loadChildren: () => import('./journey-plans/journey-plans.module').then(m => m.JourneyPlansModule),
+        canLoad: [AuthGuard],
+    },
+    {
+        path: 'associations',
+        loadChildren: () => import('./associations/associations.module').then(m => m.AssociationsModule)
     }
 ];
 
