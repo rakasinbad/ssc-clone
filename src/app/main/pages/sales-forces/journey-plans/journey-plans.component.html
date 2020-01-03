@@ -35,6 +35,50 @@
             </div>
             <!-- / HEADER TOP -->
 
+            <!-- HEADER MID -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <span class="mr-0 mr-sm-16 font-weight-600">View by:</span>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        Planned
+                    </button>
+
+                    <button type="button" mat-stroked-button class="mr-16" (click)="showInfo()">
+                        Not Planned
+                    </button>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        EXPORT
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="showInfo()"
+                    >
+                        IMPORT
+                    </button>
+                </div>
+            </div>
+            <!-- / HEADER MID -->
+
             <!-- HEADER BOTTOM -->
             <div fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="row" fxLayoutAlign="start center">
@@ -43,7 +87,7 @@
                         mat-flat-button
                         color="accent"
                         class="sinbad mr-16"
-                        (click)="showInfo()"
+                        [routerLink]="['/pages/sales-force/journey-plans/new']"
                     >
                         ADD
                     </button>
@@ -89,7 +133,7 @@
                     </ng-container> -->
                 </div>
 
-                <div fxLayout="row" fxLayoutAlign="start center">
+                <!-- <div fxLayout="row" fxLayoutAlign="start center">
                     <button
                         type="button"
                         mat-flat-button
@@ -109,7 +153,7 @@
                     >
                         IMPORT
                     </button>
-                </div>
+                </div> -->
             </div>
             <!-- / HEADER BOTTOM -->
         </div>
@@ -120,7 +164,7 @@
             <mat-table
                 #table
                 class="journey-plans-table"
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
@@ -144,6 +188,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.date | date: 'dd/MM/yyyy') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Sales Rep ID Column -->
                 <ng-container matColumnDef="sales-rep-id">
                     <mat-header-cell *matHeaderCellDef>
@@ -163,31 +219,43 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.name }}
+                            {{ row?.user?.fullName }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Phone Number Column -->
-                <ng-container matColumnDef="phone-number">
+                <!-- Num of Store Column -->
+                <ng-container matColumnDef="num-of-store">
                     <mat-header-cell *matHeaderCellDef>
-                        Phone Number
+                        Num. of Store
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.phone }}
+                            -
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Date Column -->
-                <ng-container matColumnDef="date">
+                <!-- Mandatory Action Column -->
+                <ng-container matColumnDef="mandatory-action">
                     <mat-header-cell *matHeaderCellDef>
-                        Date
+                        Mandatory Action
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ (row?.date | date: 'dd/MM/yyyy') || '-' }}
+                            -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Last Visit Column -->
+                <ng-container matColumnDef="last-visit">
+                    <mat-header-cell *matHeaderCellDef>
+                        Last Visit
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            -
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -215,12 +283,13 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="journey-plan"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     matRipple
                     [routerLink]="['/pages/sales-force/sales-rep', row?.id, 'detail']"
                 ></mat-row>
             </mat-table>
 
-            <!-- <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
@@ -229,18 +298,22 @@
                 *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
             >
                 No records found
-            </div> -->
+            </div>
 
             <mat-paginator
-                [length]="dataSource.data.length"
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 50, 100]"
                 showFirstLastButtons
             ></mat-paginator>
 
-            <!-- <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
-            </div> -->
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

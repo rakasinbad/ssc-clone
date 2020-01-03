@@ -1,14 +1,29 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
 
-export enum JourneyPlanActionTypes {
-  LoadJourneyPlans = '[JourneyPlan] Load JourneyPlans',
-  
-  
-}
+import { JourneyPlan } from '../../models';
 
-export class LoadJourneyPlans implements Action {
-  readonly type = JourneyPlanActionTypes.LoadJourneyPlans;
-}
+// -----------------------------------------------------------------------------------------------------
+// Fetch Journey Plans
+// -----------------------------------------------------------------------------------------------------
 
+export const fetchJourneyPlansRequest = createAction(
+    '[Journey Plans API] Fetch Journey Plans Request',
+    props<{ payload: IQueryParams }>()
+);
 
-export type JourneyPlanActions = LoadJourneyPlans;
+export const fetchJourneyPlansFailure = createAction(
+    '[Journey Plans API] Fetch Journey Plans Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchJourneyPlansSuccess = createAction(
+    '[Journey Plans API] Fetch Journey Plans Success',
+    props<{ payload: { data: Array<JourneyPlan>; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Helper
+// -----------------------------------------------------------------------------------------------------
+
+export const clearState = createAction('[Journey Plan Page] Clear State');
