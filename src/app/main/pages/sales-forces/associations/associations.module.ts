@@ -24,7 +24,7 @@ import {
     reducers as PortfolioReducers
 } from '../portfolios/store/reducers';
 import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
-
+// 
 @NgModule({
     declarations: [
         AssociationsComponent,
