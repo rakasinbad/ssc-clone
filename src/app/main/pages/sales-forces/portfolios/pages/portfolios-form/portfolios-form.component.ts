@@ -386,6 +386,18 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     //     this.onRefreshListStoreTable();
     // }
 
+    updateSelectedTab(tabId: number): void {
+        if (tabId === 0) {
+            this.shopStore.dispatch(
+                StoreActions.setStoreEntityType({ payload: 'in-portfolio' })
+            );
+        } else if (tabId === 1) {
+            this.shopStore.dispatch(
+                StoreActions.setStoreEntityType({ payload: 'out-portfolio' })
+            );
+        }
+    }
+
     isAllListStoreSelected(): boolean {
         const numSelected = this.listStoreSelection.selected.length;
         const numRows = this.listStore.data.length;
@@ -815,6 +827,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
         this.portfolioStore.dispatch(FormActions.resetFormStatus());
+        this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
+        this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
 
         this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());

@@ -33,7 +33,12 @@ export const fetchStoresFailure = createAction(
     '[Portfolios API] Fetch Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
+export const setStoreEntityType = createAction(
+    '[Portfolios Page] Set Store Entity Type',
+    props<{ payload: string }>()
+);
+
 export const fetchStoresSuccess = createAction(
     '[Portfolios API] Fetch Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()

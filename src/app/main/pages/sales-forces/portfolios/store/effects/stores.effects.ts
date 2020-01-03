@@ -80,12 +80,7 @@ export class StoreEffects {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = {
-            ...queryParams
-        };
-    
-        // Memasukkan ID supplier ke dalam parameter.
-        newQuery['supplierId'] = supplierId;
+        const newQuery: IQueryParams = Object.assign({}, queryParams, { supplierId });
 
         return this.storesService
             .findStores(newQuery)

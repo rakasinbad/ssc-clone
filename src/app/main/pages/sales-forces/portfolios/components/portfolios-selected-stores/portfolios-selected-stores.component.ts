@@ -71,7 +71,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         }
     }
 
-    private requestStore(filters: Array<Filter>): void {
+    private requestStore(filters: Array<Filter>, storeType?: string): void {
         const data: IQueryParams = { paginate: false };
     
         for (const fil of filters) {
@@ -92,6 +92,10 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                     keyword: searchValue
                 }
             ];
+        }
+
+        if (storeType) {
+            data['type'] = storeType;
         }
 
         this.shopStore.dispatch(
@@ -167,23 +171,13 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     }
 
     ngOnInit(): void {
-        this.subs$.pipe(
-            filter(text => text === 'PREPARE_INIT_CREATE_FORM'),
-            withLatestFrom(
-                this.availableStores$,
-                this.selectedStores$,
-                (_, availableStores, selectedStores) => ({ availableStores, selectedStores })
-            ),
-            map(({ availableStores, selectedStores }) => {
-                
-            }),
-            takeUntil(this.subs$)
-        );
-
-        this.filters$ = this.shopStore.select(
-            StoreSelector.getAllFilters
-        ).pipe(
-            tap(filters => this.requestStore(filters)),
+        this.filters$ = combineLatest([
+            this.shopStore.select(StoreSelector.getAllFilters),
+            this.shopStore.select(StoreSelector.getStoreEntityType),
+        ]).pipe(
+            map(([filters, type]) => ({ filters, type: type === 'all' ? 'in-portfolio' : type })),
+            tap(({ filters, type }) => this.requestStore(filters, type)),
+            map(({ filters }) => filters),
             takeUntil(this.subs$)
         );
 
@@ -327,9 +321,12 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                 tap(() => this.debug('SEARCH VALUE CHANGES CHECK', {})),
                 distinctUntilChanged(),
                 debounceTime(1000),
-                withLatestFrom(this.shopStore.select(StoreSelector.getAllFilters)),
+                withLatestFrom(
+                    this.shopStore.select(StoreSelector.getAllFilters),
+                    this.shopStore.select(StoreSelector.getStoreEntityType),
+                ),
                 takeUntil(this.subs$)
-            ).subscribe(([_, filters]) => this.requestStore(filters));
+            ).subscribe(([_, filters, type]) => this.requestStore(filters, type));
     }
 
     ngAfterViewInit(): void { }

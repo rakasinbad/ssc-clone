@@ -121,7 +121,7 @@
             </div>
 
             <div class="content-card mat-elevation-z1">
-                <mat-tab-group color="accent" animationDuration="0ms">
+                <mat-tab-group color="accent" animationDuration="0ms" (selectedIndexChange)="updateSelectedTab($event)">
                     <!-- IN PORTFOLIO -->
                     <mat-tab label="In Portfolio">
                     </mat-tab>

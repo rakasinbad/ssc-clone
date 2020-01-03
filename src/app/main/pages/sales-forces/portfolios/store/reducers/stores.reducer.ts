@@ -14,6 +14,7 @@ export interface State extends EntityState<Store> {
     needRefresh: boolean;
     selectedIds: Array<string>;
     filter: EntityState<Filter>;
+    type: string; // Jenis store yang sedang ada di dalam state.
     total: number;
 }
 
@@ -32,6 +33,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     needRefresh: false,
     selectedIds: [],
     filter: adapterFilter.getInitialState(),
+    type: 'all',
     total: 0,
 });
 
@@ -60,10 +62,25 @@ export const reducer = createReducer(
         })
     ),
     on(
-        StoreActions.fetchStoresRequest,
-        state => ({
+        StoreActions.setStoreEntityType,
+        (state, { payload }) => ({
             ...state,
+            type: payload
+        })
+    ),
+    on(
+        StoreActions.fetchStoresRequest,
+        (state, { payload }) => ({
+            ...state,
+            type: payload['type'],
             isLoading: true
+        })
+    ),
+    on(
+        StoreActions.fetchStoresFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
         })
     ),
     on(
