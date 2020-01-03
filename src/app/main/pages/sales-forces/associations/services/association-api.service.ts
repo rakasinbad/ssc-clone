@@ -44,6 +44,7 @@ export class AssociationApiService {
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
+        console.log(params['associated'], 'ini service');
         const newArg = supplierId
             ? [
                   {
@@ -52,6 +53,18 @@ export class AssociationApiService {
                   }
               ]
             : [];
+
+        if (params['associated']) {
+            newArg.push({
+                key: 'associated',
+                value: 'true'
+            });
+        } else if (params.hasOwnProperty('associated') && !params['associated']) {
+            newArg.push({
+                key: 'associated',
+                value: 'false'
+            });
+        }
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 

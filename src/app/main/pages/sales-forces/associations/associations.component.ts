@@ -19,6 +19,7 @@ import { SelectionModel } from '@angular/cdk/collections';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
 import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
 import { Observable, Subject, merge } from 'rxjs';
@@ -64,6 +65,8 @@ import { FormControl } from '@angular/forms';
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
+
+    selectTab: string;
 
     search: FormControl;
     displayedColumns = [
@@ -193,6 +196,32 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
 
+        this.store
+            .select(UiSelectors.getCustomToolbarActive)
+            .pipe(
+                distinctUntilChanged(),
+                debounceTime(1000),
+                filter(v => !!v),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(v => {
+                const data: IQueryParams = {
+                    limit: this.paginator.pageSize || 5,
+                    skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                };
+
+                data['paginate'] = true;
+
+                if (v === 'associated') {
+                    data['associated'] = true;
+                } else if (v === 'not-associated') {
+                    console.log(v, 'ini masuk');
+                    data['associated'] = false;
+                }
+
+                this.store.dispatch(AssociationActions.fetchAssociationsRequest({ payload: data }));
+            });
+
         this.search.valueChanges
             .pipe(
                 distinctUntilChanged(),
@@ -245,33 +274,27 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
             : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
     }
 
-    clickTab(action: 'all' | 'associated' | 'non-associated'): void {
+    clickTab(action: 'all' | 'associated' | 'not-associated'): void {
         if (!action) {
             return;
         }
 
         switch (action) {
             case 'all':
-                console.log('Set all');
+                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all' }));
                 break;
             case 'associated':
-                console.log('Set associated');
+                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'associated' }));
                 break;
-            case 'non-associated':
-                console.log('Set non associated');
+            case 'not-associated':
+                this.store.dispatch(
+                    UiActions.setCustomToolbarActive({ payload: 'not-associated' })
+                );
                 break;
 
             default:
                 return;
         }
-    }
-
-    joinPortfolios(value: Array<Portfolio>): string {
-        if (value && value.length > 0) {
-            return value.map(v => v.invoiceGroup.name).join(', ');
-        }
-
-        return '-';
     }
 
     isAllSelected(): boolean {
@@ -281,14 +304,6 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         console.log('IS ALL SELECTED', numSelected, numRows);
 
         return numSelected === numRows;
-    }
-
-    safeValue(value: any): any {
-        if (typeof value === 'number') {
-            return value;
-        } else {
-            return value ? value : '-';
-        }
     }
 
     onSelectedActions(action: 'active' | 'inactive' | 'delete'): void {
