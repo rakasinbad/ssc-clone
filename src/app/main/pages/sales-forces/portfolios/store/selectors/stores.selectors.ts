@@ -18,16 +18,26 @@ export const {
     selectTotal: selectStoreTotal
 } = fromStore.adapter.getSelectors();
 
+export const {
+    selectAll: selectAllFilters,
+    selectEntities: selectFilterEntities,
+    selectIds: selectFilterIds,
+    selectTotal: selectFilterTotal
+} = fromStore.adapterFilter.getSelectors();
+
 export const getStoreEntity = createSelector(
     getPortfolioState,
     state => state[fromStore.featureKey]
 );
 
-export const getStoreFilters = createSelector(
+export const getFilterEntity = createSelector(
     getStoreEntity,
-    state => {
-        return state.filter;
-    }
+    state => state.filter
+);
+
+export const getAllFilters = createSelector(
+    getFilterEntity,
+    selectAllFilters
 );
 
 export const getSelectedStoreIds = createSelector(

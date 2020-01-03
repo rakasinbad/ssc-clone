@@ -424,8 +424,8 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownInvoiceGroupRequest),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([_, { supplierId }]) => {
-                if (!supplierId) {
+            switchMap(([_, userSupplier]) => {
+                if (!userSupplier || !userSupplier.supplierId) {
                     return of(
                         DropdownActions.fetchDropdownInvoiceGroupFailure({
                             payload: {
@@ -435,6 +435,8 @@ export class DropdownEffects {
                         })
                     );
                 }
+
+                const { supplierId } = userSupplier;
 
                 return this._$invoiceGroupApi.findAll({ paginate: false }, supplierId).pipe(
                     catchOffline(),

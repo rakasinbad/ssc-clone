@@ -202,6 +202,10 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
             this.listStore.data.forEach(row => this.selection.select(row));
     }
 
+    editPortfolio(): void {
+        this.router.navigate([`/pages/sales-force/portfolio/${this.portfolioId}/edit`]);
+    }
+
     onChangePage(): void {
         this.onRefreshTable();
     }

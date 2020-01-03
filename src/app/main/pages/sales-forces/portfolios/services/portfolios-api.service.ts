@@ -68,4 +68,9 @@ export class PortfoliosApiService {
         this._url = this.helper$.handleApiRouter(this._endpoint);
         return this.http.post<Portfolio>(this._url, data);
     }
+
+    patchPortfolio(id: string, data: IPortfolioAddForm): Observable<Portfolio> {
+        this._url = this.helper$.handleApiRouter(this._endpoint);
+        return this.http.patch<Portfolio>(`${this._url}/${id}`, data);
+    }
 }

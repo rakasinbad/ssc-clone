@@ -1,35 +1,116 @@
 <div
-    fxLayout="row"
-    fxLayoutAlign="start stretch"
+    fxLayout="column"
+    fxLayoutGap="25px"
+    fxLayoutAlign="start start"
 >
-    <div
-        fxFlex
-        fxLayout="column"
-        fxLayoutGap="25px"
+    <!-- "FILTER LIST" BUTTON -->
+    <button
+        fxFlex="none"
+        mat-flat-button
+        color="primary"
+        (click)="openFilter()"
     >
-        <!-- "FILTER LIST" BUTTON -->
-        <button
-            class="w-15-p"
-            mat-flat-button
-            color="primary"
-        >
-            Filter List
-        </button>
-        <!-- / "FILTER LIST" BUTTON -->
+        Filter List
+    </button>
+    <!-- / "FILTER LIST" BUTTON -->
 
-        <!-- FILTER LISTS -->
-        <div class="grey-300-border p-16" style="border: 1px solid #fafafa;" fxLayout="column" fxLayoutGap="10px" fxFlex>
-            <strong>Filter by</strong>
-            <mat-chip-list selectable="false">
-                <mat-chip removable="true" selectable="false">
-                    Store Type: GT
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-                <mat-chip removable="true" selectable="false">
-                    Store Segment: supermarket
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-            </mat-chip-list>
+    <!-- FILTER LISTS -->
+    <div class="grey-300-border p-16 w-100-p" style="border: 1px solid #fafafa;" fxLayout="column" fxLayoutGap="10px" *ngIf="(filters$ | async)?.length > 0">
+        <strong>Filter by</strong>
+        <mat-chip-list [selectable]="false">
+            <mat-chip [removable]="true" [selectable]="false" *ngFor="let filter of (filters$ | async)" (removed)="removeFilter$.next(filter.id)">
+                {{ filter.title }}: {{ filter.value.title }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+    </div>
+    <!-- / FILTER LISTS -->
+
+    <!-- STORE LIST -->
+    <div
+        class="w-100-p"
+        fxLayout="row"
+        fxLayoutGap="16px"
+        fxLayoutAlign="space-between stretch"
+    >
+        <!-- AVAILABLE STORES -->
+        <div fxLayout="column" fxFlex>
+            <!-- HEADER -->
+            <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
+                <!-- LABEL -->
+                <p fxFlexAlign="center">Find:</p>
+                <!-- / LABEL -->
+                <!-- SEARCH -->
+                <div fxFlexAlign="center" fxFlex class="search-wrapper grey-300-border">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Find Store"/>
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <!-- / HEADER -->
+            <!-- LIST -->
+            <mat-selection-list
+                fxFlex
+                [style.overflow]="'auto'"
+                [style.border]="'1px solid'"
+                class="grey-300-border h-400"
+                [disableRipple]="true"
+                (selectionChange)="updateSelectedStores($event)"
+            >
+                <mat-list-option
+                    *ngFor="let store of (availableStores$ | async)"
+                    [checkboxPosition]="'before'"
+                    [value]="store"
+                    [selected]="store?.isSelected"
+                >
+                    {{ printStoreName(store) }}
+                </mat-list-option>
+            </mat-selection-list>
+            <!-- / LIST -->
         </div>
-        <!-- / FILTER LISTS -->
+        <!-- / AVAILABLE STORES -->
+        <!-- SELECTED STORES -->
+        <div fxLayout="column" fxFlex>
+            <!-- HEADER -->
+            <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <!-- LABEL -->
+                <p fxFlexAlign="center">Your Selections ({{ totalPortfolioStore$ | async }})</p>
+                <!-- / LABEL -->
+                <!-- CLEAR ALL -->
+                <a fxFlexAlign="center" [style.cursor]="'pointer'" class="red-500-fg" (click)="clearAllSelectedStores()">Clear All</a>
+                <!-- / CLEAR ALL -->
+            </div>
+            <!-- / HEADER -->
+            <!-- LIST -->
+            <mat-selection-list
+                fxFlex
+                [style.overflow]="'auto'"
+                [style.border]="'1px solid'"
+                class="grey-300-border h-400"
+                [disableRipple]="true"
+                (selectionChange)="updateSelectedStores($event)"
+            >
+                <ng-container *ngFor="let store of (selectedStores$ | async)">
+                    <mat-list-option
+                        *ngIf="!store?.deletedAt"
+                        [checkboxPosition]="'before'"
+                        [selected]="true"
+                        [value]="store"
+                    >
+                        {{ printStoreName(store) }}
+                    </mat-list-option>
+                </ng-container>
+            </mat-selection-list>
+            <!-- / LIST -->
+        </div>
+        <!-- / SELECTED STORES -->
+    </div>
+    <!-- / STORE LIST -->
 </div>
+<!-- LOADER -->
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+<!-- / LOADER -->

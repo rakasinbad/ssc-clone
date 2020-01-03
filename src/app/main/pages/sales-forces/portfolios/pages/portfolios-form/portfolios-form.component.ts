@@ -6,8 +6,8 @@ import { TranslateService } from '@ngx-translate/core';
 // NgRx's Libraries
 import { Store as NgRxStore } from '@ngrx/store';
 // RxJS' Libraries
-import { Observable, Subject, merge, combineLatest } from 'rxjs';
-import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
+import { Observable, Subject, merge, combineLatest, of } from 'rxjs';
+import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap, filter, delay, take, retryWhen, switchMap } from 'rxjs/operators';
 
 // Environment variables.
 import { environment } from '../../../../../../../environments/environment';
@@ -18,7 +18,7 @@ import { locale as indonesian } from '../../i18n/id';
 import { CoreFeatureState } from '../../store/reducers';
 import { PortfolioActions } from '../../store/actions';
 import { PortfolioSelector, PortfolioStoreSelector } from '../../store/selectors';
-import { UiActions, DropdownActions } from 'app/shared/store/actions';
+import { UiActions, DropdownActions, FormActions } from 'app/shared/store/actions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -27,11 +27,11 @@ import { IQueryParams, InvoiceGroup, SupplierStore } from 'app/shared/models';
 import { Store } from '../../models';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
 import { fromDropdown } from 'app/shared/store/reducers';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { StoreActions } from '../../store/actions';
 import { StoreSelector } from '../../store/selectors';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { IPortfolioAddForm } from '../../models/portfolios.model';
+import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
 import { PortfoliosFilterStoresComponent } from '../../components/portfolios-filter-stores/portfolios-filter-stores.component';
 
 @Component({
@@ -96,6 +96,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     /**
      * SEGALA SESUATU YANG BERHUBUNGAN DENGAN PORTFOLIO STORE.
      */
+    portfolioStores$: Observable<Array<Store>>;
     // Untuk menyimpan data store.
     portfolioStores: MatTableDataSource<Store>;
     // Untuk menyimpan jumlah store yang ada di server.
@@ -138,18 +139,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         private _notice: NoticeService,
         private errorMessageSvc: ErrorMessageService,
     ) {
-        // Mengambil ID portfolio dari state maupun URL.
-        this.portfolioStore.select(
-            PortfolioSelector.getSelectedPortfolio
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(portfolio => {
-            if (!portfolio) {
-                this.portfolioId = this.route.snapshot.params.id;
-            } else {
-                this.portfolioId = portfolio.id;
-            }
-        });
+        // Mengambil ID portfolio dari param URL.
+        this.portfolioId = this.route.snapshot.params.id;
 
         // Menyiapkan breadcrumb yang ingin ditampilkan.
         const breadcrumbs = [
@@ -237,6 +228,46 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             })
         );
 
+        // Memuat footer action untuk keperluan form.
+        this.portfolioStore.dispatch(
+            UiActions.setFooterActionConfig({
+                payload: {
+                    progress: {
+                        title: {
+                            label: 'Skor Konten Produk',
+                            active: true
+                        },
+                        value: {
+                            active: false
+                        },
+                        active: false
+                    },
+                    action: {
+                        goBack: {
+                            label: 'Cancel',
+                            active: true,
+                            url: '/pages/sales-force/portfolio'
+                        },
+                        save: {
+                            label: 'Save',
+                            active: true
+                        },
+                        draft: {
+                            label: 'Save Draft',
+                            active: false
+                        },
+                        cancel: {
+                            label: 'Batal',
+                            active: false
+                        }
+                    }
+                }
+            })
+        );
+
+        // Mengatur ulang status form.
+        this.portfolioStore.dispatch(FormActions.resetFormStatus());
+
         // Memuat terjemahan bahasa.
         this._fuseTranslationLoaderService.loadTranslations(
             indonesian,
@@ -244,7 +275,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         );
     }
 
-    private onRefreshListStoreTable(filter?: { storeType: string; storeSegment: string; }): void {
+    private onRefreshListStoreTable(filters?: { storeType: string; storeSegment: string; }): void {
         // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
         if (this.listStorePaginator) {
             // Menyiapkan query parameter yang akan dikirim ke server.
@@ -256,13 +287,13 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             // Menyalakan pagination.
             data['paginate'] = true;
 
-            if (filter) {
-                if (filter.storeType) {
-                    data['storeType'] = filter.storeType;
+            if (filters) {
+                if (filters.storeType) {
+                    data['storeType'] = filters.storeType;
                 }
 
-                if (filter.storeSegment) {
-                    data['storeSegment'] = filter.storeSegment;
+                if (filters.storeSegment) {
+                    data['storeSegment'] = filters.storeSegment;
                 }
             } 
 
@@ -345,15 +376,15 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
     }
 
-    addSelectedStores(): void {        
-        this.portfolioStore.dispatch(
-            PortfolioActions.addSelectedStores({
-                payload: this.listStoreSelection.selected
-            })
-        );
+    // addSelectedStores(): void {        
+    //     this.portfolioStore.dispatch(
+    //         PortfolioActions.addSelectedStores({
+    //             payload: this.listStoreSelection.selected
+    //         })
+    //     );
 
-        this.onRefreshListStoreTable();
-    }
+    //     this.onRefreshListStoreTable();
+    // }
 
     isAllListStoreSelected(): boolean {
         const numSelected = this.listStoreSelection.selected.length;
@@ -435,37 +466,47 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             name: this.form.get('name').value,
             type: this.form.get('type').value,
             invoiceGroupId: this.form.get('invoiceGroup').value,
-            stores: (this.form.get('stores').value as Array<Store>).map(store => ({ storeId: +store.id, target: 0 }))
+            stores: (this.form.get('stores').value as Array<Store>).map(store => ({ storeId: +store.id, target: 0 })),
+            // delete: (this.form.get('removedStores').value as Array<Store>).map(store => ({ storeId: store.id }))
         };
 
-        this.portfolioStore.dispatch(
-            PortfolioActions.createPortfolioRequest({ payload: portfolioForm })
-        );
-    }
+        if (!this.isEditMode) {
+            this.portfolioStore.dispatch(
+                PortfolioActions.createPortfolioRequest({ payload: portfolioForm })
+            );
+        } else {
+            portfolioForm.delete = (this.form.get('removedStores').value as Array<Store>).map(store => ({ storeId: store.id }));
 
-    onChangePage(tableType: 'listStore' | 'portfolioStore'): void {
-        if (tableType === 'listStore') {
-            this.onRefreshListStoreTable();
-        } else if (tableType === 'portfolioStore') {
-            this.onRefreshPortfolioStoreTable();
+            this.portfolioStore.dispatch(
+                PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: portfolioForm } })
+            );
         }
+
     }
 
-    deletePortfolioStore(portfolioStoreId: string): void {
-        this.portfolioStore.dispatch(
-            PortfolioActions.removeSelectedStores({ payload: [portfolioStoreId] })
-        );
+    // onChangePage(tableType: 'listStore' | 'portfolioStore'): void {
+    //     if (tableType === 'listStore') {
+    //         this.onRefreshListStoreTable();
+    //     } else if (tableType === 'portfolioStore') {
+    //         this.onRefreshPortfolioStoreTable();
+    //     }
+    // }
 
-        this.onRefreshListStoreTable();
-    }
+    // deletePortfolioStore(portfolioStoreId: string): void {
+    //     this.portfolioStore.dispatch(
+    //         PortfolioActions.removeSelectedStores({ payload: [portfolioStoreId] })
+    //     );
 
-    deleteSelectedPortfolioStore(): void {
-        this.portfolioStore.dispatch(
-            PortfolioActions.removeSelectedStores({ payload: [...this.portfolioStoreSelection.selected.map(p => p.id)] })
-        );
+    //     this.onRefreshListStoreTable();
+    // }
 
-        this.onRefreshListStoreTable();
-    }
+    // deleteSelectedPortfolioStore(): void {
+    //     this.portfolioStore.dispatch(
+    //         PortfolioActions.removeSelectedStores({ payload: [...this.portfolioStoreSelection.selected.map(p => p.id)] })
+    //     );
+
+    //     this.onRefreshListStoreTable();
+    // }
 
     openFilter(): void {
         this.matDialog.open(PortfoliosFilterStoresComponent, {
@@ -475,6 +516,14 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             disableClose: true,
             width: '1000px'
         });
+    }
+
+    checkFormValidation(form: FormGroup, stores: Array<Store>): void {
+        if (form.invalid || stores.length === 0) {
+            this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
+        } else if (form.valid && stores.length > 0) {
+            this.portfolioStore.dispatch(FormActions.setFormStatusValid());
+        }
     }
 
     ngOnInit(): void {
@@ -512,7 +561,8 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                     }),
                 ]
             ],
-            stores: [[]]
+            stores: [[]],
+            removedStores: [[]],
         });
 
         // Mengambil data portfolio yang terpilih dari state.
@@ -571,81 +621,204 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         ]).pipe(
             map(([portfolioStore, selectedStore]) => selectedStore.concat(portfolioStore)),
             withLatestFrom(this.shopStore.select(StoreSelector.getSelectedStoreIds)),
+            tap(([stores, _]) => {
+                if ((!stores || stores.length === 0) && this.isEditMode) {
+                    const err = new Error('Portfolio stores not available right now.');
+                    err.name = 'ERR_NO_PORTFOLIO_STORE';
+
+                    const query: IQueryParams = {
+                        paginate: false,
+                        sort: 'asc',
+                        sortBy: 'id',
+                        
+                    };
+
+                    query['portfolioId'] = this.portfolioId;
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.fetchPortfolioStoresRequest({
+                            payload: query
+                        })
+                    );
+
+                    throw err;
+                }
+            }),
+            retryWhen((error: Observable<Error>) => {
+                return error.pipe(
+                    tap(err => !environment.production ? console.log('PORTFOLIO STORES CHECK ERROR', err) : null),
+                    switchMap(err => {
+                        if (err.name === 'ERR_NO_PORTFOLIO_STORE') {
+                            return of(err);
+                        }
+                    }),
+                    delay(1000),
+                    take(5)
+                );
+                // return error.toPromise()
+                //     .then(err => {
+                //         if (this.isEditMode && err.name === 'ERR_NO_PORTFOLIO_STORE') {
+                //             return error.pipe(delay(1000), take(5));
+                //         }
+                //     });
+            }),
             takeUntil(this.subs$)
         ).subscribe(([portfolioStores, listStoreIds]) => {
-            const newPortfolioStore = portfolioStores.filter(portfolioStore => !listStoreIds.includes(portfolioStore.id));
+            // Mengambil toko-toko yang ingin dihapus dari portfolio.
+            const deletedStores = portfolioStores.filter(pStore => pStore.deletedAt);
+
+            // Mengambil toko-toko yang ingin ditambah atau diperbarui ke portfolio.
+            const newPortfolioStore = portfolioStores.filter(pStore => !deletedStores.map(dStore => dStore.id).includes(pStore.id));
+
+            // Menetapkan toko-toko yang ingin ditambahkan ke portfolio ke dalam form.
             this.form.get('stores').setValue(newPortfolioStore);
+            // Menetapkan toko-toko yang ingin dihapus dari portfolio ke dalam form.
+            this.form.get('removedStores').setValue(deletedStores);
 
-            this.portfolioStores = new MatTableDataSource(newPortfolioStore);
-            this.portfolioStoreSelection = new SelectionModel<Store>(true, newPortfolioStore);
-            this.portfolioStoreSelection.clear();
-        });
-    }
+            // this.portfolioStores$ = of(newPortfolioStore.map(store => new Store(store)));
+            // this.portfolioStores = new MatTableDataSource(newPortfolioStore);
+            // this.portfolioStoreSelection = new SelectionModel<Store>(true, newPortfolioStore);
+            // this.portfolioStoreSelection.clear();
 
-    ngAfterViewInit(): void {
-        this.listStore.sort = this.listStoreSort;
-        this.listStore.paginator = this.listStorePaginator;
-
-        this.portfolioStores.sort = this.portfolioStoreSort;
-        this.portfolioStores.paginator = this.portfolioStorePaginator;
-
-        if (!this.isEditMode) {
-            this.portfolioStore.dispatch(
-                PortfolioActions.truncatePortfolioStores()
-            );
-        }
-
-        // Melakukan merge Observable pada perubahan sortir dan halaman tabel List Store.
-        merge(
-            this.listStoreSort.sortChange,
-            this.listStorePaginator.page
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
-            this.onRefreshListStoreTable();
+            this.checkFormValidation(this.form, newPortfolioStore);
         });
 
-        this.shopStore.select(
-            StoreSelector.getStoreFilters
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe((filters: { storeType: string; storeSegment: string }) =>
-            this.onRefreshListStoreTable(filters)
-        );
-
-        // Melakukan merge Observable pada perubahan sortir dan halaman tabel Portfolio Store.
-        merge(
-            this.portfolioStoreSort.sortChange,
-            this.portfolioStorePaginator.page
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
-            this.onRefreshPortfolioStoreTable();
-        });
-
-        this.form.get('type').valueChanges
+        this.form
+            .valueChanges
             .pipe(
+                distinctUntilChanged(),
+                debounceTime(100),
                 takeUntil(this.subs$)
-            ).subscribe(value => {
-                if (value === 'direct') {
-                    this.listStoreSelection.clear();
+            ).subscribe(() => {
+                this.checkFormValidation(this.form, (this.form.get('stores').value as Array<Store>));
+            });
+
+        this.portfolioStore
+            .select(FormSelectors.getIsClickSaveButton)
+            .pipe(
+                tap(isClick => console.log(isClick)),
+                filter(isClick => !!isClick),
+                takeUntil(this.subs$)
+            )
+            .subscribe(isClick => {
+                /** Jika menekannya, maka submit data form-nya. */
+                if (isClick) {
+                    this.submitPortfolio();
                 }
             });
 
-        this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                takeUntil(this.subs$)
-            ).subscribe(() => this.onRefreshListStoreTable());
+        this.portfolioStore.dispatch(UiActions.showFooterAction());
+    }
 
-        this.onRefreshListStoreTable();
-        this.onRefreshPortfolioStoreTable();
+    ngAfterViewInit(): void {
+        // Mengambil ID portfolio dari state maupun URL.
+        if (this.isEditMode) {
+            this.portfolioStore.select(
+                PortfolioSelector.getSelectedPortfolio
+            ).pipe(
+                tap(portfolio => {
+                    if (!portfolio) {
+                        throw Error('Selected portfolio not available');
+                    }
+                }),
+                retryWhen(error => {
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.setSelectedPortfolios({
+                            payload: [this.portfolioId]
+                        })
+                    );
+    
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.fetchPortfolioRequest({ payload: this.portfolioId })
+                    );
+    
+                    return error.pipe(delay(1000), take(5));
+                }),
+                takeUntil(this.subs$)
+            ).subscribe(portfolio => {
+                if (!portfolio) {
+                    throw Error('Selected portfolio not available');
+                } else {
+                    this.portfolioId = portfolio.id;
+    
+                    if (this.isEditMode) {
+                        this.form.patchValue({
+                            name: portfolio.name,
+                            invoiceGroup: portfolio.invoiceGroupId,
+                        });
+                    }
+                }
+            });
+        }
+
+        // this.listStore.sort = this.listStoreSort;
+        // this.listStore.paginator = this.listStorePaginator;
+
+        // this.portfolioStores.sort = this.portfolioStoreSort;
+        // this.portfolioStores.paginator = this.portfolioStorePaginator;
+
+        // if (!this.isEditMode) {
+        //     this.portfolioStore.dispatch(
+        //         PortfolioActions.truncatePortfolioStores()
+        //     );
+        // }
+
+        // Melakukan merge Observable pada perubahan sortir dan halaman tabel List Store.
+        // merge(
+        //     this.listStoreSort.sortChange,
+        //     this.listStorePaginator.page
+        // ).pipe(
+        //     takeUntil(this.subs$)
+        // ).subscribe(() => {
+        //     this.onRefreshListStoreTable();
+        // });
+
+        // this.shopStore.select(
+        //     StoreSelector.getStoreFilters
+        // ).pipe(
+        //     takeUntil(this.subs$)
+        // ).subscribe((filters: { storeType: string; storeSegment: string }) =>
+        //     this.onRefreshListStoreTable(filters)
+        // );
+
+        // Melakukan merge Observable pada perubahan sortir dan halaman tabel Portfolio Store.
+        // merge(
+        //     this.portfolioStoreSort.sortChange,
+        //     this.portfolioStorePaginator.page
+        // ).pipe(
+        //     takeUntil(this.subs$)
+        // ).subscribe(() => {
+        //     this.onRefreshPortfolioStoreTable();
+        // });
+
+        // this.form.get('type').valueChanges
+        //     .pipe(
+        //         takeUntil(this.subs$)
+        //     ).subscribe(value => {
+        //         if (value === 'direct') {
+        //             this.listStoreSelection.clear();
+        //         }
+        //     });
+
+        // this.search.valueChanges
+        //     .pipe(
+        //         distinctUntilChanged(),
+        //         debounceTime(1000),
+        //         takeUntil(this.subs$)
+        //     ).subscribe(() => this.onRefreshListStoreTable());
+
+        // this.onRefreshListStoreTable();
+        // this.onRefreshPortfolioStoreTable();
     }
 
     ngOnDestroy(): void {
+        this.portfolioStore.dispatch(UiActions.hideFooterAction());
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
+        this.portfolioStore.dispatch(FormActions.resetFormStatus());
+
+        this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
+        this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
 
         this.subs$.next();
         this.subs$.complete();

@@ -94,7 +94,9 @@ export class StoreEffects {
                 switchMap(response =>
                     of(StoreActions.fetchStoresSuccess({
                         payload: {
-                            stores: response.data.map(store => new Store(store)),
+                            stores: queryParams.paginate
+                                    ? response.data.map(store => new Store(store))
+                                    : ((response as unknown) as Array<Store>).map(store => new Store(store)),
                             total: response.total,
                             source: 'fetch',
                         }

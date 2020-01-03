@@ -28,6 +28,11 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
+            <!-- EDIT BUTTON -->
+            <button mat-flat-button>
+                <span class="red-500-fg" (click)="editPortfolio()">Edit</span>
+            </button>
+            <!-- / EDIT BUTTON -->
         </div>
         <!-- / HEADER -->
 
@@ -78,127 +83,126 @@
                 </div>
             </div>
             <!-- / MARGIN LEFT ADJUSMENT -->
+            <!-- PORTFOLIO STORES -->
+            <div class="mat-elevation-z4 fuse-white m-16" fxLayout="column">
+                <!-- TITLE -->
+                <div class="h1 p-20">Store List ({{ totalPortfolioStores$ | async }} Store)</div>
+                <!-- / TITLE -->
+
+                <!-- CONTENT -->
+                <div>
+                    <mat-table
+                        matSort
+                        fusePerfectScrollbar
+                        class="list-store-table grey-300-border m-16"
+                        [dataSource]="listStore"
+                        [@animateStagger]="{ value: '50' }"
+                        [style.border]="'1px solid'"
+                    >
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="checkbox">
+                            <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox   (change)="$event ? masterToggle() : null"
+                                                (click)="$event ? $event.stopPropagation() : null"
+                                                [checked]="selection.hasValue() && isAllSelected()"
+                                                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                ></mat-checkbox>
+                            </mat-header-cell>
+
+                            <mat-cell *matCellDef="let row">
+                                <mat-checkbox   (click)="$event.stopPropagation()"
+                                                (change)="$event ? selection.toggle(row) : null"
+                                                [checked]="selection.isSelected(row)"
+                                ></mat-checkbox>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Checkbox Column -->
+
+                        <!-- Store Code Column -->
+                        <ng-container matColumnDef="code">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p>{{ row?.storeCode }}</p>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Store Code Column -->
+
+                        <!-- Store Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p>{{ row?.name }}</p>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Store Code Column -->
+
+                        <!-- Store Region Column -->
+                        <ng-container matColumnDef="region">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Region</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <!-- <p>{{ row?.store?.storeCode }}</p> -->
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Store Region Column -->
+
+                        <!-- Store Segment Column -->
+                        <ng-container matColumnDef="segment">
+                            <mat-header-cell *matHeaderCellDef>Segment</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p>{{ row?.storeSegment?.name }}</p>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Store Segment Column -->
+
+                        <!-- Store Type Column -->
+                        <ng-container matColumnDef="type">
+                            <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <p>{{ row?.storeType?.name }}</p>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- / Store Segment Column -->
+
+                        <!-- Header Row -->
+                        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                        <!-- / Header Row -->
+
+                        <!-- Row -->
+                        <mat-row
+                            *matRowDef="let row; columns: displayedColumns"
+                            class="list-store"
+                        ></mat-row>
+                        <!-- / Row -->
+                    </mat-table>
+                    <!-- / TABLE -->
+
+                    <!-- No Record -->
+                    <div
+                        class="no-records my-40 h-100"
+                        *ngIf="!(isPortfolioStoreLoading$ | async) && (totalPortfolioStores$ | async) === 0"
+                    >
+                        No store found.
+                    </div>
+                    <!-- / No Record -->
+
+                    <!-- Paginator's Table -->
+                    <mat-paginator
+                        #listStorePaginator="matPaginator"
+                        [length]="totalPortfolioStores$ | async"
+                        [pageSize]="defaultPageSize"
+                        [pageSizeOptions]="defaultPageSizeOptions"
+                        (page)="onChangePage()"
+                        [class.no-content]="(totalPortfolioStores$ | async) === 0"
+                        showFirstLastButtons
+                    >
+                    </mat-paginator>
+                    <!-- / Paginator's Table -->
+                </div>
+                <!-- / CONTENT -->
+            </div>
+            <!-- PORTFOLIO STORES -->
         </div>
         <!-- / PORTFOLIO DETAIL -->
-        
-        <!-- PORTFOLIO STORES -->
-        <div class="sinbad-content mat-elevation-z1 fuse-white mt-16" fxLayout="column" fxLayoutGap="25px">
-            <!-- TITLE -->
-            <div class="h1 pl-40 py-20">List Store ({{ totalPortfolioStores$ | async }} Store)</div>
-            <!-- / TITLE -->
-
-            <!-- CONTENT -->
-            <div>
-                <mat-table
-                    matSort
-                    fusePerfectScrollbar
-                    class="list-store-table"
-                    [dataSource]="listStore"
-                    [@animateStagger]="{ value: '50' }"
-                    
-                >
-                    <!-- Checkbox Column -->
-                    <ng-container matColumnDef="checkbox">
-                        <mat-header-cell *matHeaderCellDef>
-                            <mat-checkbox   (change)="$event ? masterToggle() : null"
-                                            (click)="$event ? $event.stopPropagation() : null"
-                                            [checked]="selection.hasValue() && isAllSelected()"
-                                            [indeterminate]="selection.hasValue() && !isAllSelected()"
-                            ></mat-checkbox>
-                        </mat-header-cell>
-
-                        <mat-cell *matCellDef="let row">
-                            <mat-checkbox   (click)="$event.stopPropagation()"
-                                            (change)="$event ? selection.toggle(row) : null"
-                                            [checked]="selection.isSelected(row)"
-                            ></mat-checkbox>
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Checkbox Column -->
-
-                    <!-- Store Code Column -->
-                    <ng-container matColumnDef="code">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeCode }}</p>
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Store Code Column -->
-
-                    <!-- Store Name Column -->
-                    <ng-container matColumnDef="name">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p>{{ row?.name }}</p>
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Store Code Column -->
-
-                    <!-- Store Region Column -->
-                    <ng-container matColumnDef="region">
-                        <mat-header-cell *matHeaderCellDef mat-sort-header>Region</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <!-- <p>{{ row?.store?.storeCode }}</p> -->
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Store Region Column -->
-
-                    <!-- Store Segment Column -->
-                    <ng-container matColumnDef="segment">
-                        <mat-header-cell *matHeaderCellDef>Segment</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeSegment?.name }}</p>
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Store Segment Column -->
-
-                    <!-- Store Type Column -->
-                    <ng-container matColumnDef="type">
-                        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p>{{ row?.storeType?.name }}</p>
-                        </mat-cell>
-                    </ng-container>
-                    <!-- / Store Segment Column -->
-
-                    <!-- Header Row -->
-                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-                    <!-- / Header Row -->
-
-                    <!-- Row -->
-                    <mat-row
-                        *matRowDef="let row; columns: displayedColumns"
-                        class="list-store"
-                    ></mat-row>
-                    <!-- / Row -->
-                </mat-table>
-                <!-- / TABLE -->
-
-                <!-- No Record -->
-                <div
-                    class="no-records my-40 h-100"
-                    *ngIf="!(isPortfolioStoreLoading$ | async) && (totalPortfolioStores$ | async) === 0"
-                >
-                    No store found.
-                </div>
-                <!-- / No Record -->
-
-                <!-- Paginator's Table -->
-                <mat-paginator
-                    #listStorePaginator="matPaginator"
-                    [length]="totalPortfolioStores$ | async"
-                    [pageSize]="defaultPageSize"
-                    [pageSizeOptions]="defaultPageSizeOptions"
-                    (page)="onChangePage()"
-                    [class.no-content]="(totalPortfolioStores$ | async) === 0"
-                    showFirstLastButtons
-                >
-                </mat-paginator>
-                <!-- / Paginator's Table -->
-            </div>
-            <!-- / CONTENT -->
-        </div>
-        <!-- PORTFOLIO STORES -->
     </div>
     <!-- / CENTER -->
 </div>
