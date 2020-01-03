@@ -16,13 +16,15 @@ import { AssociationPortfolioComponent } from './components/portfolio/associatio
 import { AssociationStoreComponent } from './components/store/association-store.component';
 import { AssociationEffects } from './store/effects';
 import * as fromAssociations from './store/reducers';
+import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
 
 @NgModule({
     declarations: [
         AssociationsComponent,
         AssociationHeaderSearchComponent,
         AssociationViewByComponent,
-        //Main Component
+        AssociationsFormComponent,
+        // Main Component
         AssociationSalesRepComponent,
         AssociationPortfolioComponent,
         AssociationStoreComponent
