@@ -12,6 +12,7 @@ export interface State extends EntityState<Store> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
+    filter: { storeType?: string; storeSegment?: string; };
     total: number;
 }
 
@@ -25,12 +26,20 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
+    filter: {},
     total: 0,
 });
 
 // Create the reducer.
 export const reducer = createReducer(
     initialState,
+    on(
+        StoreActions.applyStoreFilter,
+        (state, { payload }) => ({
+            ...state,
+            filter: payload
+        })
+    ),
     on(
         StoreActions.fetchStoresRequest,
         state => ({

@@ -33,6 +33,20 @@ export const fetchPortfolioSuccess = createAction(
     props<{ payload: { portfolio?: Portfolio; source: TSource } }>()
 );
 
+export const addSelectedPortfolios = createAction(
+    '[Portfolios Page] Add Selected Portfolios',
+    props<{ payload: Array<string> }>()
+);
+
+export const setSelectedPortfolios = createAction(
+    '[Portfolios Page] Set Selected Portfolios',
+    props<{ payload: Array<string> }>()
+);
+
+export const truncateSelectedPortfolios = createAction('[Portfolios Page] Truncate Selected Portfolios');
+
+export const truncatePortfolioStores = createAction('[Portfolios/Add Page] Truncate All of Portfolio Stores');
+
 /** CREATE PORTFOLIO */
 
 export const createPortfolioRequest = createAction(

@@ -23,6 +23,13 @@ export const getStoreEntity = createSelector(
     state => state[fromStore.featureKey]
 );
 
+export const getStoreFilters = createSelector(
+    getStoreEntity,
+    state => {
+        return state.filter;
+    }
+);
+
 export const getSelectedStoreIds = createSelector(
     getStoreEntity,
     state => state.selectedIds
