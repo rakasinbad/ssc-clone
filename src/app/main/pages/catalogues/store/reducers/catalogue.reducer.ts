@@ -140,7 +140,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueUnitRequest,
         CatalogueActions.fetchCatalogueCategoryRequest,
         CatalogueActions.fetchCatalogueCategoriesRequest,
-        CatalogueActions.fetchTotalCatalogueStatusRequest,
+        // CatalogueActions.fetchTotalCatalogueStatusRequest,
         (state) => ({
             ...state,
             isLoading: true
@@ -319,7 +319,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchTotalCatalogueStatusSuccess,
         (state, { payload }) => ({
             ...state,
-            isLoading: false,
+            // isLoading: false,
             totalAllStatus: +payload.totalAllStatus,
             totalEmptyStock: +payload.totalEmptyStock,
             totalActive: +payload.totalActive,
