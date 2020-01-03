@@ -69,6 +69,7 @@ export const reducer = createReducer(
     initialState,
     on(
         PortfolioActions.createPortfolioRequest,
+        PortfolioActions.patchPortfolioRequest,
         PortfolioActions.exportPortfoliosRequest,
         PortfolioActions.fetchPortfolioRequest,
         PortfolioActions.fetchPortfoliosRequest,
@@ -93,7 +94,21 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.patchPortfolioFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
         PortfolioActions.createPortfolioSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
+        PortfolioActions.patchPortfolioSuccess,
         (state) => ({
             ...state,
             isLoading: false
@@ -139,12 +154,20 @@ export const reducer = createReducer(
     ),
     on(
         PortfolioActions.addSelectedStores,
-        (state, { payload }) => ({
-            ...state,
-            newStores: adapterPortfolioNewStore.upsertMany(payload, {
-                ...state.newStores
-            }),
-        })
+        (state, { payload }) => {
+            const newStores = (payload as Array<Store>).map(store => {
+                const newStore = new Store(store);
+                newStore.setSelectedStore = true;
+                return newStore;
+            });
+
+            return {
+                ...state,
+                newStores: adapterPortfolioNewStore.upsertMany(newStores, {
+                    ...state.newStores
+                }),
+            };
+        }
     ),
     on(
         PortfolioActions.removeSelectedStores,
@@ -168,6 +191,30 @@ export const reducer = createReducer(
 
             // Return the new state.
             return state;
+        }
+    ),
+    on(
+        PortfolioActions.markStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = new Date().toISOString();
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.abortStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = null;
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
         }
     ),
     on(

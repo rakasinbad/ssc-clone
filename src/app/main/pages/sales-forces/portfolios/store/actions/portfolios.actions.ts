@@ -11,6 +11,7 @@ export type requestActionNames =
 
 export type failureActionNames =
     'createPortfolioFailure' |
+    'patchPortfolioFailure' |
     'exportPortfoliosFailure' |
     'fetchPortfolioFailure' |
     'fetchPortfoliosFailure' |
@@ -45,7 +46,24 @@ export const setSelectedPortfolios = createAction(
 
 export const truncateSelectedPortfolios = createAction('[Portfolios Page] Truncate Selected Portfolios');
 
-export const truncatePortfolioStores = createAction('[Portfolios/Add Page] Truncate All of Portfolio Stores');
+export const truncatePortfolioStores = createAction('[Portfolios Page] Truncate All of Portfolio Stores');
+
+/** PATCH PORTFOLIO */
+
+export const patchPortfolioRequest = createAction(
+    '[Portfolios API] Patch Portfolio Request',
+    props<{ payload: { id: string; portfolio: IPortfolioAddForm } }>()
+);
+
+export const patchPortfolioFailure = createAction(
+    '[Portfolios API] Patch Portfolio Failure',
+    props<{ payload: IErrorHandler }>()
+);
+    
+export const patchPortfolioSuccess = createAction(
+    '[Portfolios API] Patch Portfolio Success',
+    props<{ payload: Portfolio }>()
+);
 
 /** CREATE PORTFOLIO */
 
@@ -105,6 +123,18 @@ export const removeSelectedStores = createAction(
     '[Portfolios Page] Remove Selected Portfolio Stores',
     props<{ payload: Array<string> }>()
 );
+
+export const markStoreAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Mark Store as Removed from Portfolio',
+    props<{ payload: string }>()
+);
+
+export const abortStoreAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Abort Store as Removed from Portfolio',
+    props<{ payload: string }>()
+);
+
+export const confirmRemoveAllSelectedStores = createAction('[Portfolios Page] Confirm to Remove All Selected Stores');
 
 export const exportPortfoliosRequest = createAction('[Portfolios API] Export Portfolios Request');
 

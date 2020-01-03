@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { StoreActions } from '../actions';
 import { Store } from 'app/main/pages/attendances/models';
+import { Filter } from '../../models';
 
 // Set reducer's feature key
 export const featureKey = 'stores';
@@ -12,9 +13,14 @@ export interface State extends EntityState<Store> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
-    filter: { storeType?: string; storeSegment?: string; };
+    filter: EntityState<Filter>;
+    type: string; // Jenis store yang sedang ada di dalam state.
     total: number;
 }
+
+export const adapterFilter: EntityAdapter<Filter> = createEntityAdapter<Filter>({
+    selectId: filter => filter.id
+});
 
 // Entity Adapter for the Entity State.
 export const adapter: EntityAdapter<Store> = createEntityAdapter<Store>({
@@ -26,7 +32,8 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
-    filter: {},
+    filter: adapterFilter.getInitialState(),
+    type: 'all',
     total: 0,
 });
 
@@ -37,14 +44,43 @@ export const reducer = createReducer(
         StoreActions.applyStoreFilter,
         (state, { payload }) => ({
             ...state,
-            filter: payload
+            filter: adapterFilter.upsertMany(payload, state.filter)
+        })
+    ),
+    on(
+        StoreActions.removeStoreFilter,
+        (state, { payload }) => ({
+            ...state,
+            filter: adapterFilter.removeOne(payload, state.filter)
+        })
+    ),
+    on(
+        StoreActions.removeAllStoreFilters,
+        (state) => ({
+            ...state,
+            filter: adapterFilter.removeAll(state.filter)
+        })
+    ),
+    on(
+        StoreActions.setStoreEntityType,
+        (state, { payload }) => ({
+            ...state,
+            type: payload
         })
     ),
     on(
         StoreActions.fetchStoresRequest,
-        state => ({
+        (state, { payload }) => ({
             ...state,
+            type: payload['type'],
             isLoading: true
+        })
+    ),
+    on(
+        StoreActions.fetchStoresFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
         })
     ),
     on(

@@ -105,6 +105,8 @@ interface IStore extends ITimestamp {
     legalInfo?: User;
     owner?: User;
     storePortfolios?: Array<StorePortfolio>;
+    isSelected?: boolean; // Menandakan apakah object ini terpilih atau tidak.
+    source?: 'fetch' | 'list'; // Menandakan apakah object ini berasal hasil fetch atau mengambil dari list (cache).
 }
 
 export class Store implements IStore {
@@ -149,6 +151,8 @@ export class Store implements IStore {
     updatedAt: string;
     deletedAt: TNullable<string>;
     storePortfolios?: Array<StorePortfolio>;
+    isSelected?: boolean;
+    source?: 'fetch' | 'list';
 
     constructor(data: Store) {
         const {
@@ -192,7 +196,9 @@ export class Store implements IStore {
             createdAt,
             updatedAt,
             deletedAt,
-            storePortfolios = []
+            storePortfolios = [],
+            isSelected = false,
+            source = 'fetch',
         } = data;
 
         this.id = id;
@@ -221,6 +227,8 @@ export class Store implements IStore {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.isSelected = isSelected;
+        this.source = ['fetch', 'list'].includes(source) ? source : 'fetch';
 
         this.userStores =
             userStores && userStores.length > 0
@@ -324,6 +332,22 @@ export class Store implements IStore {
         this.storePortfolios = storePortfolios.length === 0
             ? []
             : storePortfolios.map(storePortfolio => new StorePortfolio(storePortfolio));
+    }
+
+    set setDeletedAt(time: string) {
+        this.deletedAt = time;
+    }
+
+    set setSource(source: 'fetch' | 'list') {
+        if (['fetch', 'list'].includes(source)) {
+            this.source = source;
+        } else {
+            throw new Error('Merchant source is not valid. Acceptable sources: fetch, list');
+        }
+    }
+
+    set setSelectedStore(value: boolean) {
+        this.isSelected = value;
     }
 
     set setCreditLimitStores(value: CreditLimitStore[]) {
