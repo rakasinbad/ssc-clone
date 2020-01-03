@@ -1,0 +1,123 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="tab-container">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
+        <span class="text-tab-custom">All</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
+        (click)="clickTab('associated')">
+        <span class="text-tab-custom">Associated (Portfolio)</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
+        (click)="clickTab('associated')">
+        <span class="text-tab-custom">Associated (Direct)</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated'"
+        (click)="clickTab('not-associated')">
+        <span class="text-tab-custom">Not Associated (Portfolio)</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
+        (click)="clickTab('associated')">
+        <span class="text-tab-custom">Not Associated (Direct)</span>
+    </div>
+</div>
+<!-- CONTENT -->
+<div class="content">
+    <mat-table class="association-portfolio-table" #table [dataSource]="dataSource$ | async" matSort
+        [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+        <!-- Checkbox Column -->
+        <ng-container matColumnDef="checkbox">
+            <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox (change)="$event ? masterToggle() : null" (click)="$event.stopPropagation()"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+            </mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+                <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Portfolio Code" Column -->
+        <ng-container matColumnDef="portfolio-code">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Portfolio Code
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>
+                    {{ row?.code }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Portfolio Name" Column -->
+        <ng-container matColumnDef="portfolio-name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Portfolio Name</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.name }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Store Qty" Column -->
+        <ng-container matColumnDef="store-qty">
+            <mat-header-cell *matHeaderCellDef>Store Qty</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="word-wrap">{{ row?.storeQty }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Sales Target Column -->
+        <ng-container matColumnDef="sales-target">
+            <mat-header-cell *matHeaderCellDef>Sales Target</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-truncate">
+                    {{ +row?.totalTargetSales > 0 ? (+row?.totalTargetSales | price: 'short') : +row?.totalTargetSales }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Sales Rep Column -->
+        <ng-container matColumnDef="sales-rep">
+            <mat-header-cell *matHeaderCellDef>Sales Rep</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-truncate">{{ row?.user?.fullName ? row?.user?.fullName : '-' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+
+            <mat-cell class="pr-8" *matCellDef="let row">
+                <div fxFlex="row" fxLayoutAlign="end center">
+                    <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                        (click)="$event.stopPropagation()">
+                        <mat-icon class="secondary-text">more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #moreMenu="matMenu">
+                        <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="edit"
+                            (click)="editPortfolio(row.id)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+                    </mat-menu>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+        <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewAssociation(row?.id)"
+            class="association"></mat-row>
+    </mat-table>
+
+    <mat-paginator [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="[5, 10, 25, 100]"
+        (page)="onChangePage($event)" showFirstLastButtons>
+    </mat-paginator>
+
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+</div>
+<!-- / CONTENT -->

@@ -1,24 +1,24 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler, IQueryParams } from 'app/shared/models';
-import { Association } from '../../models';
+import { AssociationPortfolio } from '../../models';
 
 /**
  * ASSOCIATIONS
  */
 
-export const fetchAssociationsRequest = createAction(
-    '[Associations API] Fetch Associations Request',
+export const fetchAssociationPortfoliosRequest = createAction(
+    '[Associations Portfolios API] Fetch Association Portfolios Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchAssociationsFailure = createAction(
-    '[Associations API] Fetch Associations Failure',
+export const fetchAssociationPortfoliosFailure = createAction(
+    '[Associations Portfolios API] Fetch Association Portfolios Failure',
     props<{ payload: ErrorHandler }>()
 );
 
-export const fetchAssociationsSuccess = createAction(
-    '[Associations API] Fetch Associations Success',
-    props<{ payload: { data: Array<Association>; total: number } }>()
+export const fetchAssociationPortfoliosSuccess = createAction(
+    '[Associations Portfolios API] Fetch Association Portfolios Success',
+    props<{ payload: { data: Array<AssociationPortfolio>; total: number } }>()
 );
 
-export const clearState = createAction('[Associations Page] Reset Core State');
+export const clearPortfolioState = createAction('[Association Portfolios Page] Reset Core State');

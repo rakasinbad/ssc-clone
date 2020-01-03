@@ -34,7 +34,7 @@ import {
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { Association } from './models/associations.model';
+import { AssociationPortfolio } from './models/associations.model';
 // State management's stuffs.
 import * as fromAssociations from './store/reducers';
 import { AssociationActions } from './store/actions';
@@ -64,82 +64,9 @@ import { FormControl } from '@angular/forms';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
-    readonly defaultPageSize = environment.pageSize;
-
-    selectTab: string;
-
-    search: FormControl;
-    displayedColumns = [
-        'checkbox',
-        'portfolio-code',
-        'portfolio-name',
-        'store-qty',
-        'sales-target',
-        'sales-rep',
-        'actions'
-    ];
-    dataSource = [
-        {
-            name: 'Andi',
-            phone: '081391348317',
-            portofolio_code: 'Group01',
-            portofolio_name: 'Baba',
-            faktur: 'Danone',
-            sales_target: 500000000,
-            actual_sales: 500000000,
-            area: 'DC - SOLO',
-            status: 'active'
-        },
-        {
-            name: 'Yusup',
-            phone: '081391348317',
-            portofolio_code: 'Group02',
-            portofolio_name: 'Baba',
-            faktur: 'Combine',
-            sales_target: 0,
-            actual_sales: 0,
-            area: 'DC - SOLO',
-            status: 'inactive'
-        },
-        {
-            name: 'Pirmansyah',
-            phone: '081391348317',
-            portofolio_code: 'Group03',
-            portofolio_name: 'Baba',
-            faktur: 'Mars',
-            sales_target: 200000000,
-            actual_sales: 200000000,
-            area: 'DC - SOLO',
-            status: 'active'
-        },
-        {
-            name: 'Sutisna',
-            phone: '081391348317',
-            portofolio_code: 'Group04',
-            portofolio_name: 'Baba',
-            faktur: 'Danone',
-            sales_target: 350000000,
-            actual_sales: 350000000,
-            area: 'DC - SOLO',
-            status: 'active'
-        }
-    ];
-    selection: SelectionModel<Association>;
-
-    dataSource$: Observable<Array<Association>>;
-    totalDataSource$: Observable<number>;
-    isLoading$: Observable<boolean>;
-
-    @ViewChild('table', { read: ElementRef, static: true })
-    table: ElementRef;
-
-    @ViewChild(MatPaginator, { static: true })
-    paginator: MatPaginator;
-
-    @ViewChild(MatSort, { static: true })
-    sort: MatSort;
-
     private _unSubs$: Subject<void>;
+
+    buttonViewByActive$: Observable<string>;
 
     private readonly _breadCrumbs: IBreadcrumbs[] = [
         {
@@ -177,84 +104,14 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
         this._unSubs$ = new Subject();
-        this.paginator.pageSize = this.defaultPageSize;
-        this.search = new FormControl('');
-        this.selection = new SelectionModel<Association>(true, []);
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
 
-        this._initPage();
-
-        this._initTable();
-
-        this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
-        this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
-        this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
-
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(v => !!v),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                const data: IQueryParams = {
-                    limit: this.paginator.pageSize || 5,
-                    skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-                };
-
-                data['paginate'] = true;
-
-                if (v === 'associated') {
-                    data['associated'] = true;
-                } else if (v === 'not-associated') {
-                    console.log(v, 'ini masuk');
-                    data['associated'] = false;
-                }
-
-                this.store.dispatch(AssociationActions.fetchAssociationsRequest({ payload: data }));
-            });
-
-        this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(v => {
-                    if (v) {
-                        return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
-                    }
-
-                    return true;
-                }),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                this._onRefreshTable();
-            });
+        this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-        // Add 'implements AfterViewInit' to the class.
-
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                // this.table.nativeElement.scrollIntoView(true);
-                // this.table.nativeElement.scrollTop = 0;
-                this._initTable();
-            });
+        // Add 'implements AfterViewInit' to the class
     }
 
     ngOnDestroy(): void {
@@ -262,63 +119,10 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearState());
+        this.store.dispatch(AssociationActions.clearPortfolioState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
-    }
-
-    handleCheckbox(): void {
-        this.isAllSelected()
-            ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
-    }
-
-    clickTab(action: 'all' | 'associated' | 'not-associated'): void {
-        if (!action) {
-            return;
-        }
-
-        switch (action) {
-            case 'all':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'all' }));
-                break;
-            case 'associated':
-                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: 'associated' }));
-                break;
-            case 'not-associated':
-                this.store.dispatch(
-                    UiActions.setCustomToolbarActive({ payload: 'not-associated' })
-                );
-                break;
-
-            default:
-                return;
-        }
-    }
-
-    isAllSelected(): boolean {
-        const numSelected = this.selection.selected.length;
-        const numRows = this.paginator.length;
-
-        console.log('IS ALL SELECTED', numSelected, numRows);
-
-        return numSelected === numRows;
-    }
-
-    onSelectedActions(action: 'active' | 'inactive' | 'delete'): void {
-        if (!action) {
-            return;
-        }
-
-        switch (action) {
-            case 'active':
-                console.log('Set Active', this.selection.selected);
-                break;
-
-            default:
-                return;
-        }
     }
 
     /**
@@ -335,42 +139,5 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
                 payload: this._breadCrumbs
             })
         );
-    }
-
-    private _initTable(): void {
-        if (this.paginator) {
-            const data: IQueryParams = {
-                limit: this.paginator.pageSize || 5,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-            };
-
-            data['paginate'] = true;
-
-            if (this.sort.direction) {
-                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-                data['sortBy'] = this.sort.active;
-            }
-
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
-
-            if (query) {
-                localStorage.setItem('filter.search.associations', query);
-
-                data['search'] = [
-                    {
-                        fieldName: 'keyword',
-                        keyword: query
-                    }
-                ];
-            } else {
-                localStorage.removeItem('filter.search.associations');
-            }
-
-            this.store.dispatch(AssociationActions.fetchAssociationsRequest({ payload: data }));
-        }
-    }
-
-    private _onRefreshTable(): void {
-        this._initTable();
     }
 }

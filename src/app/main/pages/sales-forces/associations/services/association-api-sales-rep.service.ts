@@ -4,24 +4,24 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { IAssociation } from '../models';
+import { IAssociationPortfolio } from '../models';
 
 /**
  *
  *
  * @export
- * @class AssociationApiService
+ * @class AssociationApiSalesRepsService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class AssociationApiService {
+export class AssociationApiSalesRepsService {
     /**
      *
      *
      * @private
      * @type {string}
-     * @memberof AssociationApiService
+     * @memberof AssociationApiSalesRepsService
      */
     private _url: string;
 
@@ -29,22 +29,21 @@ export class AssociationApiService {
      *
      *
      * @private
-     * @memberof AssociationApiService
+     * @memberof AssociationApiSalesRepsService
      */
-    private readonly _endpoint = '/portfolios';
+    private readonly _endpoint = '/sales-reps';
 
     /**
-     * Creates an instance of AssociationApiService.
+     * Creates an instance of AssociationApiSalesRepsService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
-     * @memberof AssociationApiService
+     * @memberof AssociationApiSalesRepsService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        console.log(params['associated'], 'ini service');
         const newArg = supplierId
             ? [
                   {
@@ -71,7 +70,7 @@ export class AssociationApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    findById(id: string, supplierId?: string): Observable<IAssociation> {
+    findById(id: string, supplierId?: string): Observable<IAssociationPortfolio> {
         const newArg = supplierId
             ? [
                   {
@@ -83,10 +82,10 @@ export class AssociationApiService {
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
-        return this.http.get<IAssociation>(`${this._url}/${id}`, { params: newParams });
+        return this.http.get<IAssociationPortfolio>(`${this._url}/${id}`, { params: newParams });
     }
 
-    create<T>(body: T): Observable<IAssociation> {
-        return this.http.post<IAssociation>(this._url, body);
+    create<T>(body: T): Observable<IAssociationPortfolio> {
+        return this.http.post<IAssociationPortfolio>(this._url, body);
     }
 }

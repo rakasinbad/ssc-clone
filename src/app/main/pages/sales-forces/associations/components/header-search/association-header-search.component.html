@@ -1,0 +1,17 @@
+<div fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- APP TITLE -->
+    <span class="mat-title mb-24 mb-md-0" fxFlexAlign="center"
+        [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
+        Association
+    </span>
+    <!-- / APP TITLE -->
+
+    <!-- SEARCH -->
+    <div class="search-wrapper mx-32 mx-md-0">
+        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+            <mat-icon>search</mat-icon>
+            <input [formControl]="search" placeholder="Search for association" />
+        </div>
+    </div>
+    <!-- / SEARCH -->
+</div>

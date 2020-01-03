@@ -20,8 +20,8 @@ import {
     withLatestFrom
 } from 'rxjs/operators';
 
-import { Association } from '../../models';
-import { AssociationApiService } from '../../services';
+import { AssociationPortfolio } from '../../models';
+import { AssociationApiPortfoliosService } from '../../services';
 import { AssociationActions } from '../actions';
 import * as fromAssociation from '../reducers';
 
@@ -36,9 +36,9 @@ export class AssociationEffects {
      * [REQUEST] Association
      * @memberof AssociationEffects
      */
-    fetchAssociationsRequest$ = createEffect(() =>
+    fetchAssociationPortfoliosRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(AssociationActions.fetchAssociationsRequest),
+            ofType(AssociationActions.fetchAssociationPortfoliosRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
             exhaustMap(([params, userSupplier]) => {
@@ -56,9 +56,9 @@ export class AssociationEffects {
             switchMap(([params, data]: [IQueryParams, string | Auth]) => {
                 if (!data) {
                     return of(
-                        AssociationActions.fetchAssociationsFailure({
+                        AssociationActions.fetchAssociationPortfoliosFailure({
                             payload: new ErrorHandler({
-                                id: 'fetchAssociationsFailure',
+                                id: 'fetchAssociationPortfoliosFailure',
                                 errors: 'Not Found!'
                             })
                         })
@@ -74,7 +74,7 @@ export class AssociationEffects {
                 }
 
                 return this._$associationApi
-                    .findAll<PaginateResponse<Association>>(params, supplierId)
+                    .findAll<PaginateResponse<AssociationPortfolio>>(params, supplierId)
                     .pipe(
                         catchOffline(),
                         map(resp => {
@@ -83,19 +83,19 @@ export class AssociationEffects {
                                 total: resp.total
                             };
 
-                            return AssociationActions.fetchAssociationsSuccess({
+                            return AssociationActions.fetchAssociationPortfoliosSuccess({
                                 payload: {
                                     ...newResp,
                                     data:
                                         newResp.data && newResp.data.length > 0
-                                            ? newResp.data.map(r => new Association(r))
+                                            ? newResp.data.map(r => new AssociationPortfolio(r))
                                             : []
                                 }
                             });
                         }),
                         catchError(err =>
                             of(
-                                AssociationActions.fetchAssociationsFailure({
+                                AssociationActions.fetchAssociationPortfoliosFailure({
                                     payload: new ErrorHandler({
                                         id: 'fetchAssociationsFailure',
                                         errors: err
@@ -111,7 +111,7 @@ export class AssociationEffects {
     fetchAssociationsFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(AssociationActions.fetchAssociationsFailure),
+                ofType(AssociationActions.fetchAssociationPortfoliosFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message =
@@ -134,6 +134,6 @@ export class AssociationEffects {
         private store: Store<fromAssociation.FeatureState>,
         private storage: StorageMap,
         private _$notice: NoticeService,
-        private _$associationApi: AssociationApiService
+        private _$associationApi: AssociationApiPortfoliosService
     ) {}
 }

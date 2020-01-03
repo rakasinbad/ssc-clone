@@ -2,7 +2,7 @@ import { ITimestamp, TNullable, User, InvoiceGroup, Supplier } from 'app/shared/
 
 type TStatusType = 'active' | 'inactive';
 
-export interface IAssociation extends ITimestamp {
+export interface IAssociationPortfolio extends ITimestamp {
     id: string;
     name: string;
     code: string;
@@ -20,7 +20,7 @@ export interface IAssociation extends ITimestamp {
     actualTargetSales: number;
 }
 
-export class Association implements IAssociation {
+export class AssociationPortfolio implements IAssociationPortfolio {
     id: string;
     name: string;
     code: string;
@@ -37,7 +37,7 @@ export class Association implements IAssociation {
     totalTargetSales: number;
     actualTargetSales: number;
 
-    constructor(data: IAssociation) {
+    constructor(data: IAssociationPortfolio) {
         const {
             id,
             name,
