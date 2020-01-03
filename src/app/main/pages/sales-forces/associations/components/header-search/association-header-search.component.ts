@@ -65,7 +65,7 @@ export class AssociationHeaderSearchComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();

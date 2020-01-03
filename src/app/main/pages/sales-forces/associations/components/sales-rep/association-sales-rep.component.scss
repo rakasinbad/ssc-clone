@@ -110,6 +110,17 @@ app-associations {
         text-align: center;
     }
 
+    .button-tab-custom-active {
+        min-height: 50px !important;
+        max-height: 50px !important;
+        min-width: 120px !important;
+        padding: 20px;
+        cursor: pointer;
+        text-align: center;
+        color: #f34247;
+        border-bottom: 1px solid #f34247;
+    }
+
     .text-tab-custom {
         color: 'red';
     }

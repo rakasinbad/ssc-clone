@@ -34,7 +34,7 @@ import {
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { AssociationPortfolio } from '../../models/associations.model';
+import { Association } from '../../models/associations.model';
 // State management's stuffs.
 import * as fromAssociations from '../../store/reducers';
 import { AssociationActions } from '../../store/actions';
@@ -66,12 +66,12 @@ import { FormControl } from '@angular/forms';
 export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
 
-    selection: SelectionModel<AssociationPortfolio>;
+    activeTab: string = 'all';
 
     search: FormControl;
 
     displayedColumns = [
-        // 'checkbox',
+        'checkbox',
         'sales-rep',
         'portfolio-code',
         'portfolio-name',
@@ -82,7 +82,9 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         'actions'
     ];
 
-    dataSource$: Observable<Array<AssociationPortfolio>>;
+    selection: SelectionModel<Association>;
+
+    dataSource$: Observable<Array<Association>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -95,7 +97,19 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
+
+    private readonly _breadCrumbs: IBreadcrumbs[] = [
+        {
+            title: 'Home'
+        },
+        {
+            title: 'Sales Rep Management'
+        },
+        {
+            title: 'Association'
+        }
+    ];
 
     constructor(
         private route: ActivatedRoute,
@@ -104,7 +118,26 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
 
-    ngOnInit(): void {}
+    onChangePage($event: PageEvent): void {}
+
+    ngOnInit(): void {
+        this._unSubs$ = new Subject();
+        this.paginator.pageSize = this.defaultPageSize;
+        this.selection = new SelectionModel<Association>(true, []);
+        this.sort.sort({
+            id: 'id',
+            start: 'desc',
+            disableClear: true
+        });
+
+        this._initPage();
+
+        this._initTable();
+
+        this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
+        this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
+        this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
+    }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
@@ -128,10 +161,50 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearPortfolioState());
+        this.store.dispatch(AssociationActions.clearState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    clickTab(action: 'all' | 'associated' | 'not-associated'): void {
+        if (!action) {
+            return;
+        }
+
+        switch (action) {
+            case 'all':
+                this.activeTab = 'all';
+                break;
+            case 'associated':
+                this.activeTab = 'associated';
+                break;
+            case 'not-associated':
+                this.activeTab = 'not-associated';
+                break;
+
+            default:
+                return;
+        }
+
+        this.loadTab(this.activeTab);
+    }
+
+    loadTab(activeTab): void {
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize || 5,
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+        };
+
+        data['paginate'] = true;
+
+        if (activeTab === 'associated') {
+            data['associated'] = true;
+        } else if (activeTab === 'not-associated') {
+            data['associated'] = false;
+        }
+
+        this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
     }
 
     handleCheckbox(): void {
@@ -164,6 +237,22 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         }
     }
 
+    /**
+     *
+     * Initialize current page
+     * @private
+     * @param {LifecyclePlatform} [lifeCycle]
+     * @memberof AssociationsComponent
+     */
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        // Set breadcrumbs
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: this._breadCrumbs
+            })
+        );
+    }
+
     private _initTable(): void {
         if (this.paginator) {
             const data: IQueryParams = {
@@ -178,24 +267,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
                 data['sortBy'] = this.sort.active;
             }
 
-            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
-
-            if (query) {
-                localStorage.setItem('filter.search.associations', query);
-
-                data['search'] = [
-                    {
-                        fieldName: 'keyword',
-                        keyword: query
-                    }
-                ];
-            } else {
-                localStorage.removeItem('filter.search.associations');
-            }
-
-            this.store.dispatch(
-                AssociationActions.fetchAssociationPortfoliosRequest({ payload: data })
-            );
+            this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
         }
     }
 
