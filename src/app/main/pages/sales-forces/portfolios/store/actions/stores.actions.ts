@@ -9,6 +9,12 @@ export type requestActionNames =
 export type failureActionNames =
     'fetchStoresFailure';
 
+/** REQUESTS */
+export const applyStoreFilter = createAction(
+    '[Stores] Apply Stores Filter',
+    props<{ payload: { storeType?: string; storeSegment?: string; } }>()
+);
+
 /** STORES */
 export const fetchStoresRequest = createAction(
     '[Portfolios API] Fetch Stores Request',

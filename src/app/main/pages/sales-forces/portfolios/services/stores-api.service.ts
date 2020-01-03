@@ -23,10 +23,31 @@ export class StoresApiService {
     findStores(params: IQueryParams): Observable<IPaginatedResponse<Store>> {
         const newArgs = [];
 
+        if (!isNaN(params['portfolioId'])) {
+            newArgs.push({
+                key: 'portfolioId',
+                value: params['portfolioId']
+            });
+        }
+
         if (!isNaN(params['supplierId'])) {
             newArgs.push({
                 key: 'supplierId',
                 value: params['supplierId']
+            });
+        }
+
+        if (!isNaN(params['storeType'])) {
+            newArgs.push({
+                key: 'storeTypeId',
+                value: params['storeType']
+            });
+        }
+
+        if (!isNaN(params['storeSegment'])) {
+            newArgs.push({
+                key: 'storeSegmentId',
+                value: params['storeSegment']
             });
         }
 
