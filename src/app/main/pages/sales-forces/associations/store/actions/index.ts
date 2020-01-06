@@ -1,3 +1,4 @@
 import * as AssociationActions from './association.actions';
+import * as AssociationStoresActions from './association-store.actions';
 
-export { AssociationActions };
+export { AssociationActions, AssociationStoresActions };

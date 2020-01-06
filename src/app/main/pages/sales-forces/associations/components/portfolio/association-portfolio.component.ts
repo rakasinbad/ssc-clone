@@ -47,6 +47,9 @@ import { FormControl } from '@angular/forms';
     selector: 'app-associations-portfolio',
     templateUrl: './association-portfolio.component.html',
     styleUrls: ['./association-portfolio.component.scss'],
+    host: {
+        class: 'content-card'
+    },
     animations: [
         fuseAnimations,
         trigger('enterAnimation', [

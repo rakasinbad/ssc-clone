@@ -7,7 +7,7 @@ import { Association } from '../../models';
  */
 
 export const fetchAssociationRequest = createAction(
-    '[Associations Portfolios API] Fetch Association Request',
+    '[Associations API] Fetch Association Request',
     props<{ payload: IQueryParams }>()
 );
 

@@ -34,7 +34,7 @@ import {
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { Association } from '../../models/associations.model';
+import { Association } from '../../models/association.model';
 // State management's stuffs.
 import * as fromAssociations from '../../store/reducers';
 import { AssociationActions } from '../../store/actions';
@@ -47,6 +47,9 @@ import { FormControl } from '@angular/forms';
     selector: 'app-associations-sales-rep',
     templateUrl: './association-sales-rep.component.html',
     styleUrls: ['./association-sales-rep.component.scss'],
+    host: {
+        class: 'content-card'
+    },
     animations: [
         fuseAnimations,
         trigger('enterAnimation', [

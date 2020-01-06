@@ -14,7 +14,7 @@ import { AssociationViewByComponent } from './components/view-by/association-vie
 import { AssociationSalesRepComponent } from './components/sales-rep/association-sales-rep.component';
 import { AssociationPortfolioComponent } from './components/portfolio/association-portfolio.component';
 import { AssociationStoreComponent } from './components/store/association-store.component';
-import { AssociationEffects } from './store/effects';
+import { AssociationEffects, AssociationStoreEffects } from './store/effects';
 import * as fromAssociations from './store/reducers';
 
 @NgModule({
@@ -34,7 +34,7 @@ import * as fromAssociations from './store/reducers';
         AssociationsRoutingModule,
         MaterialModule,
         StoreModule.forFeature(fromAssociations.featureKey, fromAssociations.reducers),
-        EffectsModule.forFeature([AssociationEffects])
+        EffectsModule.forFeature([AssociationEffects, AssociationStoreEffects])
     ]
 })
 export class AssociationsModule {}

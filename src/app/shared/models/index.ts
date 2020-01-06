@@ -17,6 +17,7 @@ export * from './privilege.model';
 export * from './province.model';
 export * from './query.model';
 export * from './role.model';
+export * from './store.model';
 export * from './store-cluster.model';
 export * from './store-config.model';
 export * from './store-group.model';
