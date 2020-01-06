@@ -21,4 +21,9 @@ export const fetchAssociationSuccess = createAction(
     props<{ payload: { data: Array<Association>; total: number } }>()
 );
 
+export const setSearchValue = createAction(
+    '[Associations PAGE] Set Search Value',
+    props<{ payload: string }>()
+);
+
 export const clearState = createAction('[Association Page] Reset Core State');

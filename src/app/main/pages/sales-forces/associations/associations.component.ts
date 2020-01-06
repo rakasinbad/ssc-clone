@@ -64,7 +64,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     constructor(
         private route: ActivatedRoute,
-        private domSanitizer: DomSanitizer,
+        private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}

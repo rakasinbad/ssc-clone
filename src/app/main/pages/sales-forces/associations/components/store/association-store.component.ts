@@ -126,6 +126,10 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
         this._initTable();
 
+        this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
+            this._initTable(val);
+        });
+
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
@@ -258,7 +262,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         );
     }
 
-    private _initTable(): void {
+    private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -270,6 +274,19 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
+            }
+
+            if (searchText) {
+                data['search'] = [
+                    {
+                        fieldName: 'code',
+                        keyword: searchText
+                    },
+                    {
+                        fieldName: 'name',
+                        keyword: searchText
+                    }
+                ];
             }
 
             this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));

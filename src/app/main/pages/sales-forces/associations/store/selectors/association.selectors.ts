@@ -32,4 +32,6 @@ const getSelectedItem = createSelector(
 
 const getIsLoading = createSelector(getAssociationEntitiesState, state => state.isLoading);
 
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+const getSearchValue = createSelector(getAssociationEntitiesState, state => state.textSearch);
+
+export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem, getSearchValue };

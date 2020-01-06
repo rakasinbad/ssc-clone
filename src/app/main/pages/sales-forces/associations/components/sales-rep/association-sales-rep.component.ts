@@ -113,7 +113,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
 
     constructor(
         private route: ActivatedRoute,
-        private domSanitizer: DomSanitizer,
+        private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
@@ -133,6 +133,10 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         this._initPage();
 
         this._initTable();
+
+        this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
+            this._initTable(val);
+        });
 
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
@@ -253,7 +257,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         );
     }
 
-    private _initTable(): void {
+    private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -265,6 +269,19 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
+            }
+
+            if (searchText) {
+                data['search'] = [
+                    {
+                        fieldName: 'code',
+                        keyword: searchText
+                    },
+                    {
+                        fieldName: 'name',
+                        keyword: searchText
+                    }
+                ];
             }
 
             this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));

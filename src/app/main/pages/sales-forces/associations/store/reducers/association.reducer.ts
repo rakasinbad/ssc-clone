@@ -18,6 +18,7 @@ interface State extends EntityState<Association> {
     isLoading: boolean;
     selectedId: string;
     total: number;
+    textSearch: string;
 }
 
 // Adapter for Association state
@@ -27,6 +28,7 @@ const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
     selectedId: null,
+    textSearch: null,
     total: 0
 });
 
@@ -47,7 +49,11 @@ const reducer = createReducer<State>(
             isLoading: false,
             total: payload.total
         });
-    })
+    }),
+    on(AssociationActions.setSearchValue, (state, { payload }) => ({
+        ...state,
+        textSearch: payload
+    }))
 );
 
 // Set anything for the export
