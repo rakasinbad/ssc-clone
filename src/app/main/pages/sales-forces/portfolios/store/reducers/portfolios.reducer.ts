@@ -69,6 +69,7 @@ export const reducer = createReducer(
     initialState,
     on(
         PortfolioActions.createPortfolioRequest,
+        PortfolioActions.patchPortfolioRequest,
         PortfolioActions.exportPortfoliosRequest,
         PortfolioActions.fetchPortfolioRequest,
         PortfolioActions.fetchPortfoliosRequest,
@@ -93,7 +94,21 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.patchPortfolioFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
         PortfolioActions.createPortfolioSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
+        PortfolioActions.patchPortfolioSuccess,
         (state) => ({
             ...state,
             isLoading: false
@@ -132,18 +147,27 @@ export const reducer = createReducer(
             ...state,
             stores: adapterPortfolioStore.addAll(payload.stores, {
                 ...state.stores,
-                isLoading: false
+                isLoading: false,
+                total: payload.total
             })
         })
     ),
     on(
         PortfolioActions.addSelectedStores,
-        (state, { payload }) => ({
-            ...state,
-            newStores: adapterPortfolioNewStore.upsertMany(payload, {
-                ...state.newStores
-            }),
-        })
+        (state, { payload }) => {
+            const newStores = (payload as Array<Store>).map(store => {
+                const newStore = new Store(store);
+                newStore.setSelectedStore = true;
+                return newStore;
+            });
+
+            return {
+                ...state,
+                newStores: adapterPortfolioNewStore.upsertMany(newStores, {
+                    ...state.newStores
+                }),
+            };
+        }
     ),
     on(
         PortfolioActions.removeSelectedStores,
@@ -152,6 +176,70 @@ export const reducer = createReducer(
             newStores: adapterPortfolioNewStore.removeMany(payload, {
                 ...state.newStores
             })
+        })
+    ),
+    on(
+        PortfolioActions.addSelectedPortfolios,
+        (state, { payload }) => {
+            // Add the payload to state.
+            state.selectedIds.push(...payload);
+
+            // Create a Set to make sure all of the elements is unique.
+            const set = new Set(state.selectedIds);
+            // Convert to Array.
+            state.selectedIds = Array.from<string>(set);
+
+            // Return the new state.
+            return state;
+        }
+    ),
+    on(
+        PortfolioActions.markStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = new Date().toISOString();
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.abortStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = null;
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.setSelectedPortfolios,
+        (state, { payload }) => ({
+            ...state,
+            selectedIds: payload
+        })
+    ),
+    on(
+        PortfolioActions.truncateSelectedPortfolios,
+        (state) => ({
+            ...state,
+            selectedIds: []
+        })
+    ),
+    on(
+        PortfolioActions.truncatePortfolioStores,
+        (state) => ({
+            ...state,
+            stores: adapterPortfolioStore.removeAll({
+                ...state.stores,
+                total: 0
+            }),
+            newStores: adapterPortfolioNewStore.removeAll(state.newStores),
         })
     ),
     on(

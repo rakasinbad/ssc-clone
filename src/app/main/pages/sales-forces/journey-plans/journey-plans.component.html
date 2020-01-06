@@ -1,0 +1,321 @@
+<div id="journey-plans" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <!-- HEADER -->
+        <div
+            class="header sinbad"
+            fxLayout="column"
+            fxLayoutAlign="center stretch"
+            fxLayoutGap="10px"
+        >
+            <!-- HEADER TOP -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- APP TITLE -->
+                <span
+                    class="mat-title mb-24 mb-md-0"
+                    fxFlexAlign="center"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Journey Plan
+                </span>
+                <!-- / APP TITLE -->
+
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-32 mx-md-0">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search for a SR Journey Plan" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <!-- / HEADER TOP -->
+
+            <!-- HEADER MID -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <span class="mr-0 mr-sm-16 font-weight-600">View by:</span>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        Planned
+                    </button>
+
+                    <button type="button" mat-stroked-button class="mr-16" (click)="showInfo()">
+                        Not Planned
+                    </button>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        EXPORT
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="showInfo()"
+                    >
+                        IMPORT
+                    </button>
+                </div>
+            </div>
+            <!-- / HEADER MID -->
+
+            <!-- HEADER BOTTOM -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        [routerLink]="['/pages/sales-force/journey-plans/new']"
+                    >
+                        ADD
+                    </button>
+
+                    <!-- <ng-container *ngIf="selection.hasValue()">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            class="sinbad"
+                            [matMenuTriggerFor]="actionMenu"
+                            aria-label="Action Menu"
+                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                        >
+                            <span>Action</span>
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                        <mat-menu #actionMenu="matMenu">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Active"
+                            >
+                                <span>Set Active</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Inactive"
+                            >
+                                <span>Set Inactive</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Remove"
+                            >
+                                <span>Remove</span>
+                            </button>
+                        </mat-menu>
+                    </ng-container> -->
+                </div>
+
+                <!-- <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        EXPORT
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="showInfo()"
+                    >
+                        IMPORT
+                    </button>
+                </div> -->
+            </div>
+            <!-- / HEADER BOTTOM -->
+        </div>
+        <!-- / HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <mat-table
+                #table
+                class="journey-plans-table"
+                [dataSource]="dataSource$ | async"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="checkbox">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Date Column -->
+                <ng-container matColumnDef="date">
+                    <mat-header-cell *matHeaderCellDef>
+                        Date
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ (row?.date | date: 'dd/MM/yyyy') || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sales Rep ID Column -->
+                <ng-container matColumnDef="sales-rep-id">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sales Rep ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.id }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sales Rep Name Column -->
+                <ng-container matColumnDef="sales-rep-name">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sales Rep Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.user?.fullName }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Num of Store Column -->
+                <ng-container matColumnDef="num-of-store">
+                    <mat-header-cell *matHeaderCellDef>
+                        Num. of Store
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Mandatory Action Column -->
+                <ng-container matColumnDef="mandatory-action">
+                    <mat-header-cell *matHeaderCellDef>
+                        Mandatory Action
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Last Visit Column -->
+                <ng-container matColumnDef="last-visit">
+                    <mat-header-cell *matHeaderCellDef>
+                        Last Visit
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            -
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>
+                        Action
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button
+                                mat-icon-button
+                                aria-label="More"
+                                (click)="$event.stopPropagation(); showInfo()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="journey-plan"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    matRipple
+                    [routerLink]="['/pages/sales-force/sales-rep', row?.id, 'detail']"
+                ></mat-row>
+            </mat-table>
+
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
+            <mat-paginator
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                showFirstLastButtons
+            ></mat-paginator>
+
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

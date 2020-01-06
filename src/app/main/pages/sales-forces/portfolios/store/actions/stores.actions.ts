@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
 import { Store } from 'app/main/pages/attendances/models';
+import { Filter } from '../../models';
 
 export type requestActionNames =
     'fetchStoresRequest'
@@ -8,6 +9,19 @@ export type requestActionNames =
 
 export type failureActionNames =
     'fetchStoresFailure';
+
+/** REQUESTS */
+export const applyStoreFilter = createAction(
+    '[Stores] Apply Stores Filter',
+    props<{ payload: Array<Filter> }>()
+);
+
+export const removeStoreFilter = createAction(
+    '[Stores] Remove Store Filter',
+    props<{ payload: string }>()
+);
+
+export const removeAllStoreFilters = createAction('[Stores] Remove All Store Filters');
 
 /** STORES */
 export const fetchStoresRequest = createAction(
@@ -19,7 +33,12 @@ export const fetchStoresFailure = createAction(
     '[Portfolios API] Fetch Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
+export const setStoreEntityType = createAction(
+    '[Portfolios Page] Set Store Entity Type',
+    props<{ payload: string }>()
+);
+
 export const fetchStoresSuccess = createAction(
     '[Portfolios API] Fetch Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()

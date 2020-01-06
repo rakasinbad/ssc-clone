@@ -80,12 +80,7 @@ export class StoreEffects {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = {
-            ...queryParams
-        };
-    
-        // Memasukkan ID supplier ke dalam parameter.
-        newQuery['supplierId'] = supplierId;
+        const newQuery: IQueryParams = Object.assign({}, queryParams, { supplierId });
 
         return this.storesService
             .findStores(newQuery)
@@ -94,7 +89,9 @@ export class StoreEffects {
                 switchMap(response =>
                     of(StoreActions.fetchStoresSuccess({
                         payload: {
-                            stores: response.data.map(store => new Store(store)),
+                            stores: queryParams.paginate
+                                    ? response.data.map(store => new Store(store))
+                                    : ((response as unknown) as Array<Store>).map(store => new Store(store)),
                             total: response.total,
                             source: 'fetch',
                         }

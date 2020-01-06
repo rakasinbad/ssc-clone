@@ -4,5 +4,6 @@ export const environment = {
     staging: false,
     hmr: true,
     freshnessData: 60, // in seconds.
+    pageSizeTable: [5, 10, 25, 50, 100],
     host: 'https://kong-dev.sinbad.web.id'
 };

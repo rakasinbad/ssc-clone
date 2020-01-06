@@ -5,6 +5,9 @@ import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
+import { SalesRepDetailInfoComponent } from './sales-rep-detail/sales-rep-detail-info/sales-rep-detail-info.component';
+import { SalesRepDetailPasswordComponent } from './sales-rep-detail/sales-rep-detail-password/sales-rep-detail-password.component';
+import { SalesRepDetailComponent } from './sales-rep-detail/sales-rep-detail.component';
 import {
     SalesRepFormComponent,
     SalesRepInfoComponent,
@@ -25,7 +28,10 @@ import { SalesRepsComponent } from './sales-reps.component';
         SalesRepsComponent,
         SalesRepFormComponent,
         SalesRepInfoComponent,
-        SalesRepPasswordComponent
+        SalesRepPasswordComponent,
+        SalesRepDetailComponent,
+        SalesRepDetailInfoComponent,
+        SalesRepDetailPasswordComponent
     ],
     imports: [
         SalesRepsRoutingModule,
