@@ -34,7 +34,7 @@
         fxLayoutAlign="space-between stretch"
     >
         <!-- AVAILABLE STORES -->
-        <div fxLayout="column" fxFlex>
+        <div class="content" fxLayout="column" fxFlex>
             <!-- HEADER -->
             <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
@@ -53,6 +53,9 @@
             <!-- LIST -->
             <mat-selection-list
                 fxFlex
+                cdkScrollable
+                #availableStoreScroll
+                id="available-store-scroll"
                 [style.overflow]="'auto'"
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
@@ -69,10 +72,15 @@
                 </mat-list-option>
             </mat-selection-list>
             <!-- / LIST -->
+            <!-- LOADER -->
+            <div class="loader" *ngIf="isLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+            <!-- / LOADER -->
         </div>
         <!-- / AVAILABLE STORES -->
         <!-- SELECTED STORES -->
-        <div fxLayout="column" fxFlex>
+        <div class="content" fxLayout="column" fxFlex>
             <!-- HEADER -->
             <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
@@ -86,6 +94,7 @@
             <!-- LIST -->
             <mat-selection-list
                 fxFlex
+                cdkScrollable
                 [style.overflow]="'auto'"
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
@@ -109,8 +118,3 @@
     </div>
     <!-- / STORE LIST -->
 </div>
-<!-- LOADER -->
-<div class="loader" *ngIf="isLoading$ | async">
-    <mat-spinner color="accent"></mat-spinner>
-</div>
-<!-- / LOADER -->

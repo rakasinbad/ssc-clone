@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, SecurityContext } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, SecurityContext, ViewChild, ViewChildren, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -9,12 +9,13 @@ import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../
 import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 import { StoreActions, PortfolioActions } from '../../store/actions';
 import { IQueryParams } from 'app/shared/models';
-import { MatDialog, MatSelectionListChange } from '@angular/material';
+import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
 import { PortfoliosFilterStoresComponent } from '../portfolios-filter-stores/portfolios-filter-stores.component';
 import { FormControl } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
-import { EventEmitter } from 'protractor';
+import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
+import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-portfolios-selected-stores',
@@ -50,11 +51,16 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     // Untuk menyimpan Observable status loading dari state list store (merchant).
     isListStoreLoading$: Observable<boolean>;
 
+    @ViewChildren(CdkScrollable, { read: ElementRef }) scrollable: CdkScrollable;
+    @ViewChild('availableStoreScroll', { static: false, read: ElementRef }) availableStoreScroll: ElementRef;
+
     constructor(
         private matDialog: MatDialog,
         private portfolioStore: NgRxStore<CoreFeatureState>,
         private shopStore: NgRxStore<CoreFeatureState>,
         private sanitizer: DomSanitizer,
+        private helperSvc: HelperService,
+        private scroll: ScrollDispatcher
     ) {
         this.isLoading$ = combineLatest([
             this.portfolioStore.select(PortfolioSelector.getLoadingState),
@@ -63,6 +69,14 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             map(([portfolio, store]) => portfolio || store),
             takeUntil(this.subs$)
         );
+
+        // this.scroll.register(this.scrollable);
+
+        // this.scroll.register()
+        // this.scroll.scrolled((500)
+
+        // console.log(this.availableStoreScroll);
+        // this.availableStoreScrollable = new CdkScrollable(this.availableStore, this.scroll, ngZo)
     }
 
     private debug(label: string, data: any): void {
@@ -127,6 +141,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         );
     }
 
+    // TODO: Menelusuri penyebab error ketika deselect store dari available store di mode add.
     updateSelectedStores($event: MatSelectionListChange): void {
         const store = ($event.option.value as Store);
         const isSelected = $event.option.selected;
@@ -266,14 +281,18 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
 
                 // Mengubah state toko tersebut tidak terpilih.
                 const newListStore = availableStores.map(store => {
-                    const newStore = new Store(store);
+                    let newStore = new Store(store);
 
                     // Hanya menandai toko yang ada di portfolio, namun tidak ditandai akan dihapus nantinya.
                     if (portfolioStoreIds.includes(newStore.id)) {
                         const selectedStore = portfolioStores.find(pStore => pStore.id === newStore.id);
 
-                        if (selectedStore) {
+                        if (selectedStore && newStore.source === 'list') {
+                            newStore = new Store(selectedStore);
                             newStore.setSource = 'list';
+                            newStore.setSelectedStore = !(!!selectedStore.deletedAt);
+                        } else if (selectedStore) {
+                            newStore = new Store(selectedStore);
                             newStore.setSelectedStore = !(!!selectedStore.deletedAt);
                         }
                     } else {
@@ -329,7 +348,40 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             ).subscribe(([_, filters, type]) => this.requestStore(filters, type));
     }
 
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {
+        // this.availableStore.elementScrolled().pipe(
+        //     tap(event => console.log(event)),
+        //     takeUntil(this.subs$)
+        // );
+
+        // this.scroll.register(this.availableStore);
+
+        // this.availableStore.elementScrolled()
+        //     .pipe(
+        //         takeUntil(this.subs$)
+        //     ).subscribe(data => console.log(data));
+
+        // this.scrollable.elementScrolled()
+        //     .pipe(
+        //         takeUntil(this.subs$)
+        //     ).subscribe(data => console.log(data));
+        // console.log(this.availableStore);
+
+        // console.log(this.scrollable);
+        // console.log(this.availableStoreScroll);
+
+        this.scroll.scrolled(500)
+            .pipe(
+                filter(cdkScrollable => {
+                    return this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id;
+                }),
+                map(cdkScrollable => (cdkScrollable as CdkScrollable).getElementRef()),
+                filter((elementRef) => this.helperSvc.isElementScrolledToBottom(elementRef)),
+                takeUntil(this.subs$)
+            ).subscribe(data => {
+                console.log(data);
+            });
+    }
 
     ngOnDestroy(): void {
         this.subs$.next();
