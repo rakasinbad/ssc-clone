@@ -2,7 +2,6 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestro
 import { fuseAnimations } from '@fuse/animations';
 import { Subject, Observable, combineLatest } from 'rxjs';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-
 import { Store as NgRxStore } from '@ngrx/store';
 
 // Languages' stuffs.
@@ -95,7 +94,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         // this.isPortfolioStoreLoading$ = this.portfolioStore
         //     .select(PortfolioStoreSelector.getLoadingState)
         //     .pipe(takeUntil(this.subs$));
-
+// 
         // Mengambil status loading dari state-nya store (merchant).
         // this.isListStoreLoading$ = this.shopStore
         //     .select(StoreSelector.getLoadingState)
