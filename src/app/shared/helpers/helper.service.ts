@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, ElementRef } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, filter } from 'rxjs/operators';
@@ -449,5 +449,21 @@ export class HelperService {
             horizontalPosition: 'right',
             duration: 7000
         });
+    }
+
+    isElementScrolledToBottom(element: ElementRef<HTMLElement>): boolean {
+        // Mengambil element native dari CdkScrollable yang sedang di-scroll.
+        const { nativeElement } = element;
+        // Mengambil beberapa property dari element native.
+        const { clientHeight, scrollTop, scrollHeight } = nativeElement;
+
+        // Pemeriksaan jika scroll sudah mencapai dasar.
+        const isReachedBottom = scrollHeight - scrollTop < clientHeight + 48;
+        if (!isReachedBottom) {
+            // Tidak akan diteruskan jika elemen tersebut tidak di-scroll hingga dasarnya.
+            return false;
+        }
+        
+        return true;
     }
 }
