@@ -176,6 +176,14 @@
                 <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewPortfolio(row?.id)" class="portfolio"></mat-row>
             </mat-table>
 
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && portfolios.length === 0"
+            >
+                No records found
+            </div>
+
+
             <mat-paginator
                 [length]="totalPortfolios$ | async"
                 [pageSize]="defaultPageSize"
