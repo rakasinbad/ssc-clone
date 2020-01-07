@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 // NgRx's Libraries
 import { Store as NgRxStore } from '@ngrx/store';
 // RxJS' Libraries
-import { Observable, Subject, merge, combineLatest, of } from 'rxjs';
+import { Observable, Subject, merge, combineLatest, of, fromEvent } from 'rxjs';
 import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap, filter, delay, take, retryWhen, switchMap } from 'rxjs/operators';
 
 // Environment variables.
@@ -22,7 +22,7 @@ import { UiActions, DropdownActions, FormActions } from 'app/shared/store/action
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatSelectionList } from '@angular/material';
 import { IQueryParams, InvoiceGroup, SupplierStore } from 'app/shared/models';
 import { Store } from '../../models';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
@@ -33,6 +33,7 @@ import { StoreSelector } from '../../store/selectors';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
 import { PortfoliosFilterStoresComponent } from '../../components/portfolios-filter-stores/portfolios-filter-stores.component';
+import { CdkScrollable } from '@angular/cdk/overlay';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -64,65 +65,67 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     // Untuk menyimpan Observable status loading dari state list store (merchant).
     isListStoreLoading$: Observable<boolean>;
 
-    /**
-     * SEGALA SESUATU YANG BERHUBUNGAN LIST STORE.
-     */
-    // Untuk menyimpan data store.
-    listStore: MatTableDataSource<Store>;
-    // Untuk menyimpan jumlah store yang ada di server.
+    // /**
+    //  * SEGALA SESUATU YANG BERHUBUNGAN LIST STORE.
+    //  */
+    // // Untuk menyimpan data store.
+    // listStore: MatTableDataSource<Store>;
+    // // Untuk menyimpan jumlah store yang ada di server.
     totalListStore$: Observable<number>;
-    // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
-    defaultListStorePageSize: number = environment.pageSize;
-    // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
-    displayedListStoreColumns: Array<string> = [
-        'checkbox',
-        'code',
-        'name',
-        // 'region',
-        'segment',
-        'type'
-    ];
-    // Menyimpan data baris tabel yang tercentang oleh checkbox.
-    listStoreSelection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
+    // // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
+    // defaultListStorePageSize: number = environment.pageSize;
+    // // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
+    // displayedListStoreColumns: Array<string> = [
+    //     'checkbox',
+    //     'code',
+    //     'name',
+    //     // 'region',
+    //     'segment',
+    //     'type'
+    // ];
+    // // Menyimpan data baris tabel yang tercentang oleh checkbox.
+    // listStoreSelection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
 
-    // ViewChild untuk MatPaginator.
-    @ViewChild('listStorePaginator', { static: true })
-    listStorePaginator: MatPaginator;
+    // // ViewChild untuk MatPaginator.
+    // @ViewChild('listStorePaginator', { static: true })
+    // listStorePaginator: MatPaginator;
 
-    // ViewChild untuk MatSort.
-    @ViewChild('listStoreSort', { static: true })
-    listStoreSort: MatSort;
+    // // ViewChild untuk MatSort.
+    // @ViewChild('listStoreSort', { static: true })
+    // listStoreSort: MatSort;
 
-    /**
-     * SEGALA SESUATU YANG BERHUBUNGAN DENGAN PORTFOLIO STORE.
-     */
-    portfolioStores$: Observable<Array<Store>>;
-    // Untuk menyimpan data store.
-    portfolioStores: MatTableDataSource<Store>;
-    // Untuk menyimpan jumlah store yang ada di server.
+    // /**
+    //  * SEGALA SESUATU YANG BERHUBUNGAN DENGAN PORTFOLIO STORE.
+    //  */
+    // portfolioStores$: Observable<Array<Store>>;
+    // // Untuk menyimpan data store.
+    // portfolioStores: MatTableDataSource<Store>;
+    // // Untuk menyimpan jumlah store yang ada di server.
     totalPortfolioStore$: Observable<number>;
-    // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
-    defaultPortfolioStorePageSize: number = environment.pageSize;
-    // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
-    displayedPortfolioStoreColumns: Array<string> = [
-        'checkbox',
-        'code',
-        'name',
-        // 'region',
-        'segment',
-        'type',
-        'delete'
-    ];
-    // Menyimpan data baris tabel yang tercentang oleh checkbox.
-    portfolioStoreSelection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
+    // // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
+    // defaultPortfolioStorePageSize: number = environment.pageSize;
+    // // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
+    // displayedPortfolioStoreColumns: Array<string> = [
+    //     'checkbox',
+    //     'code',
+    //     'name',
+    //     // 'region',
+    //     'segment',
+    //     'type',
+    //     'delete'
+    // ];
+    // // Menyimpan data baris tabel yang tercentang oleh checkbox.
+    // portfolioStoreSelection: SelectionModel<Store> = new SelectionModel<Store>(true, []);
 
-    // ViewChild untuk MatPaginator.
-    @ViewChild('portfolioStorePaginator', { static: true })
-    portfolioStorePaginator: MatPaginator;
+    // // ViewChild untuk MatPaginator.
+    // @ViewChild('portfolioStorePaginator', { static: true })
+    // portfolioStorePaginator: MatPaginator;
 
-    // ViewChild untuk MatSort.
-    @ViewChild('portfolioStoreSort', { static: true })
-    portfolioStoreSort: MatSort;
+    // // ViewChild untuk MatSort.
+    // @ViewChild('portfolioStoreSort', { static: true })
+    // portfolioStoreSort: MatSort;
+
+    // @ViewChild('listStore', { static: false }) listStore: CdkScrollable;
 
     constructor(
         private portfolioStore: NgRxStore<CoreFeatureState>,
@@ -143,23 +146,23 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioId = this.route.snapshot.params.id;
 
         // Menyiapkan breadcrumb yang ingin ditampilkan.
-        const breadcrumbs = [
-            {
-                title: 'Home',
-                translate: 'BREADCRUMBS.HOME',
-                active: false
-            },
-            {
-                title: 'Sales Rep Management',
-                translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
-                url: '/pages/sales-force/portfolio'
-            },
-            {
-                title: 'Add Portfolio',
-                translate: 'BREADCRUMBS.PORTFOLIO_ADD',
-                active: true
-            }
-        ];
+        // const breadcrumbs = [
+        //     {
+        //         title: 'Home',
+        //         translate: 'BREADCRUMBS.HOME',
+        //         active: false
+        //     },
+        //     {
+        //         title: 'Sales Rep Management',
+        //         translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
+        //         url: '/pages/sales-force/portfolio'
+        //     },
+        //     {
+        //         title: 'Add Portfolio',
+        //         translate: 'BREADCRUMBS.PORTFOLIO_ADD',
+        //         active: true
+        //     }
+        // ];
 
         // Mengambil status loading dari state-nya portfolio.
         this.isPortfolioLoading$ = this.portfolioStore
@@ -172,11 +175,9 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             .pipe(takeUntil(this.subs$));
 
         // Mengambil status loading dari state-nya store (merchant).
-        this.isListStoreLoading$ = this.shopStore.select(
-            StoreSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isListStoreLoading$ = this.shopStore
+            .select(StoreSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil jumlah store dari state-nya store (merchant).
         this.totalListStore$ = combineLatest([
@@ -268,108 +269,108 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
-    private onRefreshListStoreTable(filters?: { storeType: string; storeSegment: string; }): void {
-        // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
-        if (this.listStorePaginator) {
-            // Menyiapkan query parameter yang akan dikirim ke server.
-            const data: IQueryParams = {
-                limit: this.listStorePaginator.pageSize || this.defaultListStorePageSize,
-                skip: this.listStorePaginator.pageSize * this.listStorePaginator.pageIndex || 0
-            };
+    // private onRefreshListStoreTable(filters?: { storeType: string; storeSegment: string; }): void {
+    //     // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
+    //     if (this.listStorePaginator) {
+    //         // Menyiapkan query parameter yang akan dikirim ke server.
+    //         const data: IQueryParams = {
+    //             limit: this.listStorePaginator.pageSize || this.defaultListStorePageSize,
+    //             skip: this.listStorePaginator.pageSize * this.listStorePaginator.pageIndex || 0
+    //         };
 
-            // Menyalakan pagination.
-            data['paginate'] = true;
+    //         // Menyalakan pagination.
+    //         data['paginate'] = true;
 
-            if (filters) {
-                if (filters.storeType) {
-                    data['storeType'] = filters.storeType;
-                }
+    //         if (filters) {
+    //             if (filters.storeType) {
+    //                 data['storeType'] = filters.storeType;
+    //             }
 
-                if (filters.storeSegment) {
-                    data['storeSegment'] = filters.storeSegment;
-                }
-            } 
+    //             if (filters.storeSegment) {
+    //                 data['storeSegment'] = filters.storeSegment;
+    //             }
+    //         } 
 
-            if (this.listStoreSort.direction) {
-                // Menentukan sort direction tabel.
-                data['sort'] = this.listStoreSort.direction === 'desc' ? 'desc' : 'asc';
+    //         if (this.listStoreSort.direction) {
+    //             // Menentukan sort direction tabel.
+    //             data['sort'] = this.listStoreSort.direction === 'desc' ? 'desc' : 'asc';
 
-                // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
-                if (this.listStoreSort.active === 'code') {
-                    data['sortBy'] = 'store_code';
-                } else {
-                    data['sortBy'] = this.listStoreSort.active;
-                }
-            } else {
-                // Sortir default jika tidak ada sort yang aktif.
-                data['sort'] = 'asc';
-                data['sortBy'] = 'id';
-            }
+    //             // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
+    //             if (this.listStoreSort.active === 'code') {
+    //                 data['sortBy'] = 'store_code';
+    //             } else {
+    //                 data['sortBy'] = this.listStoreSort.active;
+    //             }
+    //         } else {
+    //             // Sortir default jika tidak ada sort yang aktif.
+    //             data['sort'] = 'asc';
+    //             data['sortBy'] = 'id';
+    //         }
 
-            // Mengambil nilai dari search bar dan melakukan 'sanitasi' untuk menghindari injection.
-            const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
-            // Jika hasil sanitasi lolos, maka akan melanjutkan pencarian.
-            if (searchValue) {
-                data['search'] = [
-                    {
-                        fieldName: 'store_code',
-                        keyword: searchValue
-                    },
-                    {
-                        fieldName: 'name',
-                        keyword: searchValue
-                    }
-                ];
-            }
+    //         // Mengambil nilai dari search bar dan melakukan 'sanitasi' untuk menghindari injection.
+    //         const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
+    //         // Jika hasil sanitasi lolos, maka akan melanjutkan pencarian.
+    //         if (searchValue) {
+    //             data['search'] = [
+    //                 {
+    //                     fieldName: 'store_code',
+    //                     keyword: searchValue
+    //                 },
+    //                 {
+    //                     fieldName: 'name',
+    //                     keyword: searchValue
+    //                 }
+    //             ];
+    //         }
 
-            // Melakukan request store ke server via dispatch state.
-            this.shopStore.dispatch(
-                StoreActions.fetchStoresRequest({ payload: data })
-            );
-        }
-    }
+    //         // Melakukan request store ke server via dispatch state.
+    //         this.shopStore.dispatch(
+    //             StoreActions.fetchStoresRequest({ payload: data })
+    //         );
+    //     }
+    // }
 
-    private onRefreshPortfolioStoreTable(): void {
-        // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
-        if (this.portfolioStorePaginator && this.isEditMode) {
-            // Menyiapkan query parameter yang akan dikirim ke server.
-            const data: IQueryParams = {
-                limit: this.portfolioStorePaginator.pageSize || this.defaultPortfolioStorePageSize,
-                skip:
-                    this.portfolioStorePaginator.pageSize *
-                        this.portfolioStorePaginator.pageIndex || 0
-            };
+    // private onRefreshPortfolioStoreTable(): void {
+    //     // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
+    //     if (this.portfolioStorePaginator && this.isEditMode) {
+    //         // Menyiapkan query parameter yang akan dikirim ke server.
+    //         const data: IQueryParams = {
+    //             limit: this.portfolioStorePaginator.pageSize || this.defaultPortfolioStorePageSize,
+    //             skip:
+    //                 this.portfolioStorePaginator.pageSize *
+    //                     this.portfolioStorePaginator.pageIndex || 0
+    //         };
 
-            // Menyalakan pagination.
-            data['paginate'] = true;
+    //         // Menyalakan pagination.
+    //         data['paginate'] = true;
 
-            if (this.portfolioStoreSort.direction) {
-                // Menentukan sort direction tabel.
-                data['sort'] = this.portfolioStoreSort.direction === 'desc' ? 'desc' : 'asc';
+    //         if (this.portfolioStoreSort.direction) {
+    //             // Menentukan sort direction tabel.
+    //             data['sort'] = this.portfolioStoreSort.direction === 'desc' ? 'desc' : 'asc';
 
-                // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
-                if (this.portfolioStoreSort.active === 'code') {
-                    data['sortBy'] = 'store_code';
-                } else {
-                    data['sortBy'] = this.portfolioStoreSort.active;
-                }
-            } else {
-                // Sortir default jika tidak ada sort yang aktif.
-                data['sort'] = 'asc';
-                data['sortBy'] = 'id';
-            }
+    //             // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
+    //             if (this.portfolioStoreSort.active === 'code') {
+    //                 data['sortBy'] = 'store_code';
+    //             } else {
+    //                 data['sortBy'] = this.portfolioStoreSort.active;
+    //             }
+    //         } else {
+    //             // Sortir default jika tidak ada sort yang aktif.
+    //             data['sort'] = 'asc';
+    //             data['sortBy'] = 'id';
+    //         }
 
-            // Hanya mengambil store-nya portfolio jika ada ID nya portfolio.
-            if (this.portfolioId) {
-                data['portfolioId'] = this.portfolioId;
-            }
+    //         // Hanya mengambil store-nya portfolio jika ada ID nya portfolio.
+    //         if (this.portfolioId) {
+    //             data['portfolioId'] = this.portfolioId;
+    //         }
 
-            // Melakukan request store ke server via dispatch state.
-            this.portfolioStore.dispatch(
-                PortfolioActions.fetchPortfolioStoresRequest({ payload: data })
-            );
-        }
-    }
+    //         // Melakukan request store ke server via dispatch state.
+    //         this.portfolioStore.dispatch(
+    //             PortfolioActions.fetchPortfolioStoresRequest({ payload: data })
+    //         );
+    //     }
+    // }
 
     // addSelectedStores(): void {        
     //     this.portfolioStore.dispatch(
@@ -384,7 +385,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     updateSelectedTab(tabId: number): void {
         if (tabId === 0) {
             this.shopStore.dispatch(
-                StoreActions.setStoreEntityType({ payload: 'in-portfolio' })
+                StoreActions.setStoreEntityType({ payload: 'portfolio' })
             );
         } else if (tabId === 1) {
             this.shopStore.dispatch(
@@ -393,61 +394,61 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
     }
 
-    isAllListStoreSelected(): boolean {
-        const numSelected = this.listStoreSelection.selected.length;
-        const numRows = this.listStore.data.length;
-        return numSelected === numRows;
-    }
+    // isAllListStoreSelected(): boolean {
+    //     const numSelected = this.listStoreSelection.selected.length;
+    //     const numRows = this.listStore.data.length;
+    //     return numSelected === numRows;
+    // }
 
-    listStoreMasterToggle(): void {
-        if (this.form.get('type').value === 'direct') {
-            return null;
-        }
+    // listStoreMasterToggle(): void {
+    //     if (this.form.get('type').value === 'direct') {
+    //         return null;
+    //     }
 
-        this.isAllListStoreSelected()
-            ? this.listStoreSelection.clear()
-            : this.listStore.data.forEach(row => this.listStoreSelection.select(row));
-    }
+    //     this.isAllListStoreSelected()
+    //         ? this.listStoreSelection.clear()
+    //         : this.listStore.data.forEach(row => this.listStoreSelection.select(row));
+    // }
 
-    isAllPortfolioStoreSelected(): boolean {
-        const numSelected = this.portfolioStoreSelection.selected.length;
-        const numRows = this.portfolioStores.data.length;
+    // isAllPortfolioStoreSelected(): boolean {
+    //     const numSelected = this.portfolioStoreSelection.selected.length;
+    //     const numRows = this.portfolioStores.data.length;
 
-        console.log('IS ALL SELECTED', numSelected, numRows);
+    //     console.log('IS ALL SELECTED', numSelected, numRows);
 
-        return numSelected === numRows;
-    }
+    //     return numSelected === numRows;
+    // }
 
-    portfolioStoreMasterToggle(): void {
-        this.isAllPortfolioStoreSelected()
-            ? this.portfolioStoreSelection.clear()
-            : this.portfolioStores.data.forEach(row => this.portfolioStoreSelection.select(row));
-    }
+    // portfolioStoreMasterToggle(): void {
+    //     this.isAllPortfolioStoreSelected()
+    //         ? this.portfolioStoreSelection.clear()
+    //         : this.portfolioStores.data.forEach(row => this.portfolioStoreSelection.select(row));
+    // }
 
-    toggleListStore(store: Store): void {
-        console.log('TOGGLE LIST STORE', this.listStoreSelection.isSelected(store));
+    // toggleListStore(store: Store): void {
+    //     console.log('TOGGLE LIST STORE', this.listStoreSelection.isSelected(store));
 
-        if (this.listStoreSelection.isSelected(store)) {
-            return this.listStoreSelection.toggle(store);
-        }
+    //     if (this.listStoreSelection.isSelected(store)) {
+    //         return this.listStoreSelection.toggle(store);
+    //     }
 
-        if (
-            this.listStoreSelection.selected.length > 0 &&
-            this.form.get('type').value === 'direct'
-        ) {
-            return null;
-        }
+    //     if (
+    //         this.listStoreSelection.selected.length > 0 &&
+    //         this.form.get('type').value === 'direct'
+    //     ) {
+    //         return null;
+    //     }
 
-        this.listStoreSelection.toggle(store);
-    }
+    //     this.listStoreSelection.toggle(store);
+    // }
 
-    togglePortfolioStore(store: Store): void {
-        if (this.portfolioStoreSelection.isSelected(store)) {
-            return this.portfolioStoreSelection.toggle(store);
-        }
+    // togglePortfolioStore(store: Store): void {
+    //     if (this.portfolioStoreSelection.isSelected(store)) {
+    //         return this.portfolioStoreSelection.toggle(store);
+    //     }
 
-        this.portfolioStoreSelection.toggle(store);
-    }
+    //     this.portfolioStoreSelection.toggle(store);
+    // }
 
     getFormError(form: any): string {
         // console.log('get error');
@@ -805,6 +806,11 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 }
             });
         }
+
+        // this.listStore.elementScrolled().pipe(
+        //     tap(event => event),
+        //     takeUntil(this.subs$)
+        // )
 
         // this.listStore.sort = this.listStoreSort;
         // this.listStore.paginator = this.listStorePaginator;
