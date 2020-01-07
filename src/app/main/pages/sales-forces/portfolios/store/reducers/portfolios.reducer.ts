@@ -42,6 +42,7 @@ export interface State extends EntityState<Portfolio> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
+    selectedInvoiceGroupId: string;
     urlExport: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
@@ -58,6 +59,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
+    selectedInvoiceGroupId: null,
     urlExport: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
@@ -150,6 +152,20 @@ export const reducer = createReducer(
                 isLoading: false,
                 total: payload.total
             })
+        })
+    ),
+    on(
+        PortfolioActions.setSelectedInvoiceGroup,
+        (state, { payload }) => ({
+            ...state,
+            selectedInvoiceGroupId: payload
+        })
+    ),
+    on(
+        PortfolioActions.resetSelectedInvoiceGroup,
+        (state) => ({
+            ...state,
+            selectedInvoiceGroupId: null
         })
     ),
     on(
