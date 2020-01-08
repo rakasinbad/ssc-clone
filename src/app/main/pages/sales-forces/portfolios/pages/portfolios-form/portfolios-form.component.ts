@@ -385,7 +385,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     updateSelectedTab(tabId: number): void {
         if (tabId === 0) {
             this.shopStore.dispatch(
-                StoreActions.setStoreEntityType({ payload: 'portfolio' })
+                StoreActions.setStoreEntityType({ payload: 'in-portfolio' })
             );
         } else if (tabId === 1) {
             this.shopStore.dispatch(
@@ -747,6 +747,14 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 takeUntil(this.subs$)
             ).subscribe(() => {
                 this.checkFormValidation(this.form, (this.form.get('stores').value as Array<Store>));
+            });
+
+        this.form.get('invoiceGroup')
+            .valueChanges
+            .pipe(
+                takeUntil(this.subs$)
+            ).subscribe((value: string) => {
+                this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: value }));
             });
 
         this.portfolioStore
