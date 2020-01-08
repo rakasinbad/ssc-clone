@@ -44,6 +44,13 @@ export class StoresApiService {
                 case 'out-portfolio': newArgs.push({ key: 'type', value: 'outside' }); break;
             }
 
+            if (!isNaN(params['invoiceGroupId'])) {
+                newArgs.push({
+                    key: 'invoiceGroupId',
+                    value: params['invoiceGroupId']
+                });
+            }
+
             this._url = this.helper$.handleApiRouter(this._storePortfolioListsEndpoint);
         } else {
             if (!isNaN(params['portfolioId'])) {
@@ -74,6 +81,11 @@ export class StoresApiService {
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<IPaginatedResponse<Store>>(this._url, { params: newParams });
+    }
+
+    checkStoreAtInvoiceGroup(storeId: string, invoiceGroupId: string): Observable<{ message: string; portfolioId?: string; name?: string; code?: string }> {
+        this._url = this.helper$.handleApiRouter(this._storePortfolioListsEndpoint);
+        return this.http.post<{ message: string; portfolioId?: string; name?: string; code?: string }>(this._url, { storeId, invoiceGroupId });
     }
 
 }
