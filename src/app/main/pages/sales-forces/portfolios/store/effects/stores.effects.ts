@@ -80,20 +80,17 @@ export class StoreEffects {
         this.actions$.pipe(
             ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
             map(action => action.payload),
-            tap(payload => this.portfolioStore.dispatch(PortfolioActions.updateStore({
-                payload: {
-                    id: payload.storeId,
-                    changes: {
-                        portfolio: payload.portfolioId ? {
-                            code: payload.code,
-                            name: payload.name,
-                            id: payload.portfolioId
-                        } : null
+            tap(({ portfolioId, code, name, storeId }) => {
+                this.portfolioStore.dispatch(PortfolioActions.updateStore({
+                    payload: {
+                        id: storeId,
+                        changes: {
+                            portfolio: portfolioId ? { code, name, id: portfolioId } : null
+                        }
                     }
-                }
-            }))),
-        )
-    , { dispatch: false });
+                }));
+            })
+    ) , { dispatch: false });
 
     checkStoreAtInvoiceGroup = (storeId: string, invoiceGroupId: string): Observable<AnyAction> => {
         return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId)
