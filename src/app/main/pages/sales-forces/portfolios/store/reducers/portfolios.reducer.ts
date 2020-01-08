@@ -42,6 +42,7 @@ export interface State extends EntityState<Portfolio> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
+    selectedInvoiceGroupId: string;
     urlExport: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
@@ -58,6 +59,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
+    selectedInvoiceGroupId: null,
     urlExport: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
@@ -153,6 +155,20 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.setSelectedInvoiceGroupId,
+        (state, { payload }) => ({
+            ...state,
+            selectedInvoiceGroupId: payload
+        })
+    ),
+    on(
+        PortfolioActions.resetSelectedInvoiceGroupId,
+        (state) => ({
+            ...state,
+            selectedInvoiceGroupId: null
+        })
+    ),
+    on(
         PortfolioActions.addSelectedStores,
         (state, { payload }) => {
             const newStores = (payload as Array<Store>).map(store => {
@@ -206,6 +222,24 @@ export const reducer = createReducer(
         }
     ),
     on(
+        PortfolioActions.markStoresAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore: Array<Store> = [];
+            
+            for (const storeId of payload) {
+                const _store = new Store(state.stores.entities[storeId]);
+                _store.setDeletedAt = new Date().toISOString();
+
+                newStore.push(_store);
+            }
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertMany(newStore, state.stores)
+            };
+        }
+    ),
+    on(
         PortfolioActions.abortStoreAsRemovedFromPortfolio,
         (state, { payload }) => {
             const newStore = new Store(state.stores.entities[payload]);
@@ -214,6 +248,24 @@ export const reducer = createReducer(
             return {
                 ...state,
                 stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.abortStoresAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore: Array<Store> = [];
+            
+            for (const storeId of payload) {
+                const _store = new Store(state.stores.entities[storeId]);
+                _store.setDeletedAt = null;
+
+                newStore.push(_store);
+            }
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertMany(newStore, state.stores)
             };
         }
     ),
@@ -245,5 +297,12 @@ export const reducer = createReducer(
     on(
         PortfolioActions.truncatePortfolios,
         state => adapter.removeAll(state)
+    ),
+    on(
+        PortfolioActions.updateStore,
+        (state, { payload }) => ({
+            ...state,
+            newStores: adapterPortfolioNewStore.updateOne(payload, state.newStores)
+        })
     )
 );

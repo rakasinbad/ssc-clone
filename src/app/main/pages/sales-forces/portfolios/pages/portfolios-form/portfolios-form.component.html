@@ -61,8 +61,10 @@
                 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
                             <mat-select
+                                #invoiceGroup
                                 name="invoiceGroup"
                                 formControlName="invoiceGroup"
+                                (selectionChange)="invoiceGroupSub.next($event.value)"
                             >
                                 <mat-option
                                     *ngFor="let invoiceGroup of invoiceGroups"

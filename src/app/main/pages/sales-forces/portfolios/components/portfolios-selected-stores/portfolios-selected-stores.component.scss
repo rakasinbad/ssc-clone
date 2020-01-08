@@ -1,6 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
 app-portfolios-selected-stores {
+    .content, .relative {
+        position: relative;
+    }
+
     .search-wrapper {
         width: 100%;
         // max-width: 200px;

@@ -8,7 +8,8 @@ export type requestActionNames =
 ;
 
 export type failureActionNames =
-    'fetchStoresFailure';
+    'fetchStoresFailure' |
+    'checkStoreAtInvoiceGroupFailure';
 
 /** REQUESTS */
 export const applyStoreFilter = createAction(
@@ -34,14 +35,29 @@ export const fetchStoresFailure = createAction(
     props<{ payload: IErrorHandler }>()
 );
 
-export const setStoreEntityType = createAction(
-    '[Portfolios Page] Set Store Entity Type',
-    props<{ payload: string }>()
-);
-
 export const fetchStoresSuccess = createAction(
     '[Portfolios API] Fetch Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
+);
+
+export const checkStoreAtInvoiceGroupRequest = createAction(
+    '[Store Portfolio Lists API] Check Store is at Invoice Group Request',
+    props<{ payload: { storeId: string; invoiceGroupId: string } }>()
+);
+
+export const checkStoreAtInvoiceGroupFailure = createAction(
+    '[Store Portfolio Lists API] Check Store is at Invoice Group Failure',
+    props<{ payload: IQueryParams }>()
+);
+
+export const checkStoreAtInvoiceGroupSuccess = createAction(
+    '[Store Portfolio Lists API] Check Store is at Invoice Group Success',
+    props<{ payload: { message: string; portfolioId?: string; storeId?: string; name?: string; code?: string } }>()
+);
+
+export const setStoreEntityType = createAction(
+    '[Portfolios Page] Set Store Entity Type',
+    props<{ payload: string }>()
 );
 
 export const addSelectedStores = createAction(
