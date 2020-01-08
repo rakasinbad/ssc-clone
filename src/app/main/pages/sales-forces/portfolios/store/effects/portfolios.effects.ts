@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter } from 'rxjs/operators';
 
 import {
     PortfolioActions,
@@ -56,8 +56,9 @@ export class PortfoliosEffects {
         this.actions$.pipe(
             ofType(PortfolioActions.confirmRemoveAllSelectedStores),
             exhaustMap(() => {
-                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(DeleteConfirmationComponent, {
                     data: {
+                        id: 'clear-all-confirmed',
                         title: 'Clear',
                         message: `It will clear all selected store from the list.
                                     It won't affected this portfolio unless you click the save button.
@@ -67,22 +68,55 @@ export class PortfoliosEffects {
 
                 return dialogRef.afterClosed();
             }),
+            // Hanya diteruskan ketika menekan tombol Yes pada confirm dialog.
+            filter(data => !!data),
             withLatestFrom(
-                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds),
-                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds),
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStores),
+                this.portfolioStore.select(PortfolioStoreSelector.getAllPortfolioStores),
                 (_, newStores, portfolioStores) => ({ newStores, portfolioStores })
             ),
-            map<{ newStores: Array<string>; portfolioStores: Array<string> }, any>(({ newStores, portfolioStores }) => {
-                const mergedStores = (newStores).concat(portfolioStores);
-                const uniqueStores = new Set(mergedStores);
+            map<{ newStores: Array<Store>; portfolioStores: Array<Store> }, any>(({ newStores, portfolioStores }) => {
+                let isCleared = false;
+                const newStoreIds = newStores.map(newStore => newStore.id);
+                const portfolioStoreIds = portfolioStores.map(portfolioStore => portfolioStore.id);
 
-                this.portfolioStore.dispatch(
-                    PortfolioActions.removeSelectedStores({
-                        payload: Array.from(uniqueStores)
-                    })
-                );
+                // const mergedStores = (newStores).concat(portfolioStores);
+                // const uniqueStores = mergedStores.filter((store, _, newMergedStore) => {
+                //     const newMergedStoreIds = newMergedStore.map(merged => merged.id);
+
+                //     if (newMergedStoreIds.includes(store.id)) {
+                //         return false;
+                //     } else {
+                //         return true;
+                //     }
+                // });
+
+                if (newStoreIds.length > 0) {
+                    isCleared = true;
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.removeSelectedStores({
+                            payload: newStoreIds
+                        })
+                    );
+                }
+
+                if (portfolioStoreIds.length > 0) {
+                    isCleared = true;
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.markStoresAsRemovedFromPortfolio({
+                            payload: portfolioStoreIds
+                        })
+                    );
+                }
+
+                return isCleared;
             }),
-            tap(() => this.notice.open('All selected stores have been cleared.', 'info', { verticalPosition: 'bottom', horizontalPosition: 'right' }))
+            tap((isCleared) => {
+                // Hanya memunculkan notifikasi jika memang ada store yang terhapus.
+                if (isCleared) {
+                    this.notice.open('All selected stores have been cleared.', 'info', { verticalPosition: 'bottom', horizontalPosition: 'right' });
+                }
+            })
         ), { dispatch: false }
     );
 

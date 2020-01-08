@@ -83,4 +83,9 @@ export class StoresApiService {
         return this.http.get<IPaginatedResponse<Store>>(this._url, { params: newParams });
     }
 
+    checkStoreAtInvoiceGroup(storeId: string, invoiceGroupId: string): Observable<{ message: string; portfolioId?: string; name?: string; code?: string }> {
+        this._url = this.helper$.handleApiRouter(this._storePortfolioListsEndpoint);
+        return this.http.post<{ message: string; portfolioId?: string; name?: string; code?: string }>(this._url, { storeId, invoiceGroupId });
+    }
+
 }

@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Store as NgRxStore } from '@ngrx/store';
 // RxJS' Libraries
 import { Observable, Subject, merge, combineLatest, of, fromEvent } from 'rxjs';
-import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap, filter, delay, take, retryWhen, switchMap } from 'rxjs/operators';
+import { takeUntil, withLatestFrom, map, distinctUntilChanged, debounceTime, tap, filter, delay, take, retryWhen, switchMap, exhaustMap, startWith } from 'rxjs/operators';
 
 // Environment variables.
 import { environment } from '../../../../../../../environments/environment';
@@ -22,7 +22,7 @@ import { UiActions, DropdownActions, FormActions } from 'app/shared/store/action
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatSelectionList } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatSelectionList, MatSelectChange, MatSelect } from '@angular/material';
 import { IQueryParams, InvoiceGroup, SupplierStore } from 'app/shared/models';
 import { Store } from '../../models';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
@@ -34,6 +34,7 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
 import { PortfoliosFilterStoresComponent } from '../../components/portfolios-filter-stores/portfolios-filter-stores.component';
 import { CdkScrollable } from '@angular/cdk/overlay';
+import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -126,6 +127,9 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     // portfolioStoreSort: MatSort;
 
     // @ViewChild('listStore', { static: false }) listStore: CdkScrollable;
+
+    @ViewChild('invoiceGroup', { static: false }) invoiceGroup: MatSelect;
+    invoiceGroupSub: Subject<string> = new Subject<string>();
 
     constructor(
         private portfolioStore: NgRxStore<CoreFeatureState>,
@@ -488,7 +492,11 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 PortfolioActions.createPortfolioRequest({ payload: portfolioForm })
             );
         } else {
-            portfolioForm.delete = (this.form.get('removedStores').value as Array<Store>).map(store => ({ storeId: store.id }));
+            portfolioForm.removedStore = (this.form.get('removedStores').value as Array<Store>)
+                                            .map(store => ({
+                                                storeId: store.id,
+                                                portfolioId: store.portfolio.id
+                                            }));
 
             this.portfolioStore.dispatch(
                 PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: portfolioForm } })
@@ -539,10 +547,52 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         }
     }
 
+    // checkInvoiceGroupChanged($event: MatSelectChange): void {
+    //     this.portfolioStore.select(
+    //         PortfolioSelector.getSelectedInvoiceGroupId
+    //     ).pipe(
+    //         exhaustMap(([formInvoiceGroupId, selectedInvoiceGroupId]) => {
+    //             if (formInvoiceGroupId !== selectedInvoiceGroupId) {
+    //                 const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(DeleteConfirmationComponent, {
+    //                     data: {
+    //                         id: `${formInvoiceGroupId}|${selectedInvoiceGroupId}`,
+    //                         title: 'Clear',
+    //                         message: `It will clear all selected store from the list.
+    //                                     It won't affected this portfolio unless you click the save button.
+    //                                     Are you sure want to proceed?`,
+    //                     }, disableClose: true
+    //                 });
+    
+    //                 return dialogRef.afterClosed();
+    //             }
+
+    //             const subject = new Subject<string>();
+    //             subject.next('cancelled');
+    //             subject.complete();
+    //             return subject;
+    //         }),
+    //         take(1)
+    //     ).subscribe(invoiceGroupId => {
+    //         if (invoiceGroupId === 'cancelled') {
+    //             const lastInvoiceGroupId = invoiceGroupId.split('|')[1];
+    //             $event.source.value = lastInvoiceGroupId;
+    //         } else {
+    //             const formInvoiceGroupId = invoiceGroupId.split('|')[0];
+    //             this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: formInvoiceGroupId }));
+    //         }
+    //     });
+    // }
+
     ngOnInit(): void {
         this.isEditMode = this.route.snapshot.url[this.route.snapshot.url.length - 1].path === 'edit';
 
         if (this.isEditMode) {
+            this.portfolioStore.dispatch(
+                PortfolioActions.setSelectedPortfolios({
+                    payload: [this.portfolioId]
+                })
+            );
+
             this.portfolioStore.dispatch(
                 UiActions.createBreadcrumb({
                     payload: [
@@ -652,24 +702,24 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         // });
 
         // Mengambil data list store dari state.
-        this.shopStore.select(
-            StoreSelector.getAllStores
-        ).pipe(
-            withLatestFrom(
-                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds),
-                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds),
-                (listStores: Array<Store>, portfolioStoreIds: Array<string>, portfolioNewStoreIds: Array<string>) => ({
-                    listStores, portfolioStoreIds, portfolioNewStoreIds
-                })
-            ),
-            takeUntil(this.subs$)
-        ).subscribe(({ listStores, portfolioStoreIds, portfolioNewStoreIds }) => {
-            const newListStore = listStores.filter(listStore => !portfolioStoreIds.concat(portfolioNewStoreIds).includes(listStore.id));
+        // this.shopStore.select(
+        //     StoreSelector.getAllStores
+        // ).pipe(
+        //     withLatestFrom(
+        //         this.portfolioStore.select(PortfolioStoreSelector.getPortfolioStoreEntityIds),
+        //         this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStoreIds),
+        //         (listStores: Array<Store>, portfolioStoreIds: Array<string>, portfolioNewStoreIds: Array<string>) => ({
+        //             listStores, portfolioStoreIds, portfolioNewStoreIds
+        //         })
+        //     ),
+        //     takeUntil(this.subs$)
+        // ).subscribe(({ listStores, portfolioStoreIds, portfolioNewStoreIds }) => {
+        //     // const newListStore = listStores.filter(listStore => !portfolioStoreIds.concat(portfolioNewStoreIds).includes(listStore.id));
 
-            // this.listStore = new MatTableDataSource(newListStore);
-            // this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
-            // this.listStoreSelection.clear();
-        });
+        //     // this.listStore = new MatTableDataSource(newListStore);
+        //     // this.listStoreSelection = new SelectionModel<Store>(true, newListStore);
+        //     // this.listStoreSelection.clear();
+        // });
 
         // Mengambil data store-nya portfolio dari state.
         combineLatest([
@@ -719,7 +769,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 //     });
             }),
             takeUntil(this.subs$)
-        ).subscribe(([portfolioStores, listStoreIds]) => {
+        ).subscribe(([portfolioStores]) => {
             // Mengambil toko-toko yang ingin dihapus dari portfolio.
             const deletedStores = portfolioStores.filter(pStore => pStore.deletedAt);
 
@@ -749,13 +799,35 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 this.checkFormValidation(this.form, (this.form.get('stores').value as Array<Store>));
             });
 
-        this.form.get('invoiceGroup')
-            .valueChanges
-            .pipe(
-                takeUntil(this.subs$)
-            ).subscribe((value: string) => {
-                this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: value }));
-            });
+        // (this.form.get('invoiceGroup')
+        //     .valueChanges as Observable<string>)
+        //     .pipe(
+        //         // withLatestFrom(this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)),
+        //         // exhaustMap(([formInvoiceGroupId, selectedInvoiceGroupId]) => {
+        //         //     if (formInvoiceGroupId !== selectedInvoiceGroupId) {
+        //         //         const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(DeleteConfirmationComponent, {
+        //         //             data: {
+        //         //                 id: formInvoiceGroupId,
+        //         //                 title: 'Clear',
+        //         //                 message: `It will clear all selected store from the list.
+        //         //                             It won't affected this portfolio unless you click the save button.
+        //         //                             Are you sure want to proceed?`,
+        //         //             }, disableClose: true
+        //         //         });
+        
+        //         //         return dialogRef.afterClosed();
+        //         //     }
+
+        //         //     const subject = new Subject<string>();
+        //         //     subject.next('cancelled');
+        //         //     subject.complete();
+        //         //     return subject;
+        //         // }),
+        //         // filter(action => action !== 'cancelled'),
+        //         takeUntil(this.subs$)
+        //     ).subscribe((value: string) => {
+        //         this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: value }));
+        //     });
 
         this.portfolioStore
             .select(FormSelectors.getIsClickSaveButton)
@@ -787,16 +859,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 }),
                 retryWhen(error => {
                     this.portfolioStore.dispatch(
-                        PortfolioActions.setSelectedPortfolios({
-                            payload: [this.portfolioId]
-                        })
-                    );
-    
-                    this.portfolioStore.dispatch(
                         PortfolioActions.fetchPortfolioRequest({ payload: this.portfolioId })
                     );
     
-                    return error.pipe(delay(1000), take(5));
+                    return error.pipe(delay(1000), take(3));
                 }),
                 takeUntil(this.subs$)
             ).subscribe(portfolio => {
@@ -810,6 +876,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                             name: portfolio.name,
                             invoiceGroup: portfolio.invoiceGroupId,
                         });
+
+                        this.portfolioStore.dispatch(
+                            PortfolioActions.setSelectedInvoiceGroupId({ payload: portfolio.invoiceGroupId })
+                        );
                     }
                 }
             });
@@ -878,6 +948,106 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         // this.onRefreshListStoreTable();
         // this.onRefreshPortfolioStoreTable();
+
+        this.invoiceGroupSub.pipe(
+            withLatestFrom(
+                this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
+                (formInvoiceGroupId, selectedInvoiceGroupId) => ({ formInvoiceGroupId, selectedInvoiceGroupId })
+            ),
+            exhaustMap<{ formInvoiceGroupId: string; selectedInvoiceGroupId: string }, Observable<string | null>>(({ formInvoiceGroupId, selectedInvoiceGroupId }) => {
+                // Memunculkan dialog ketika di state sudah ada invoice group yang terpilih dan pilihan tersebut berbeda dengan nilai yang sedang dipilih saat ini.
+                if (selectedInvoiceGroupId && formInvoiceGroupId !== selectedInvoiceGroupId) {
+                    const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string | null>(DeleteConfirmationComponent, {
+                        data: {
+                            id: `changed|${formInvoiceGroupId}|${selectedInvoiceGroupId}`,
+                            title: 'Clear',
+                            message: `It will clear all selected store from the list.
+                                        It won't affected this portfolio unless you click the save button.
+                                        Are you sure want to proceed?`,
+                        }, disableClose: true
+                    });
+    
+                    return dialogRef.afterClosed().pipe(
+                        map(id => {
+                            if (!id) {
+                                return `cancelled|${selectedInvoiceGroupId}`;
+                            }
+
+                            return id;
+                        }),
+                        take(1)
+                    );
+                } else {
+                    const subject = new Subject<string>();
+                    let payload;
+
+                    if (!selectedInvoiceGroupId) {
+                        payload = `init|${formInvoiceGroupId}`;
+                    } else {
+                        payload = `cancelled|${selectedInvoiceGroupId}`;
+                    }
+
+                    return subject.asObservable().pipe(
+                        startWith(payload),
+                        take(1)
+                    );
+                }
+            }),
+            filter(invoiceGroupId => {
+                const action = invoiceGroupId.split('|')[0];
+    
+                if (action === 'cancelled') {
+                    const lastInvoiceGroupId = invoiceGroupId.split('|')[1];
+                    this.invoiceGroup.value = lastInvoiceGroupId;
+
+                    return false;
+                } else if (action === 'init' || action === 'changed') {
+                    const formInvoiceGroupId = invoiceGroupId.split('|')[1];
+                    this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: formInvoiceGroupId }));
+
+                    return true;
+                }
+
+                return false;
+            }),
+            withLatestFrom(
+                this.portfolioStore.select(PortfolioStoreSelector.getPortfolioNewStores),
+                this.portfolioStore.select(PortfolioStoreSelector.getAllPortfolioStores),
+                (_, newStores, portfolioStores) => ({ newStores, portfolioStores })
+            ),
+            map<{ newStores: Array<Store>; portfolioStores: Array<Store> }, any>(({ newStores, portfolioStores }) => {
+                let isCleared = false;
+                const newStoreIds = newStores.map(newStore => newStore.id);
+                const portfolioStoreIds = portfolioStores.map(portfolioStore => portfolioStore.id);
+
+                if (newStoreIds.length > 0) {
+                    isCleared = true;
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.removeSelectedStores({
+                            payload: newStoreIds
+                        })
+                    );
+                }
+
+                if (portfolioStoreIds.length > 0) {
+                    isCleared = true;
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.markStoresAsRemovedFromPortfolio({
+                            payload: portfolioStoreIds
+                        })
+                    );
+                }
+
+                return isCleared;
+            }),
+            tap((isCleared) => {
+                // Hanya memunculkan notifikasi jika memang ada store yang terhapus.
+                if (isCleared) {
+                    this._notice.open('All selected stores have been cleared.', 'info', { verticalPosition: 'bottom', horizontalPosition: 'right' });
+                }
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
     }
 
     ngOnDestroy(): void {
@@ -889,6 +1059,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
         
         this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
+        this.portfolioStore.dispatch(PortfolioActions.resetSelectedInvoiceGroupId());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         

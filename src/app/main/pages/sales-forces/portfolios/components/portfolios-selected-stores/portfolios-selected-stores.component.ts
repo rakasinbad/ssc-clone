@@ -51,6 +51,12 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     // Untuk menyimpan Observable status loading dari state list store (merchant).
     isListStoreLoading$: Observable<boolean>;
 
+    // Untuk menyimpan ID Invoice Group yang terpilih.
+    invoiceGroupId$: Observable<string>;
+
+    // Untuk menangkap event yang terjadi saat meng-update store yang diklik.
+    selectedStoreSub$: Subject<MatSelectionListChange> = new Subject<MatSelectionListChange>();
+
     @ViewChildren(CdkScrollable, { read: ElementRef }) scrollable: CdkScrollable;
     @ViewChild('availableStoreScroll', { static: false, read: ElementRef }) availableStoreScroll: ElementRef;
 
@@ -71,6 +77,12 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             takeUntil(this.subs$)
         );
 
+        this.invoiceGroupId$ = this.portfolioStore.select(
+            PortfolioSelector.getSelectedInvoiceGroupId
+        ).pipe(
+            filter(invoiceGroupId => !!invoiceGroupId),
+            takeUntil(this.subs$)
+        );
         // this.scroll.register(this.scrollable);
 
         // this.scroll.register()
@@ -78,6 +90,63 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
 
         // console.log(this.availableStoreScroll);
         // this.availableStoreScrollable = new CdkScrollable(this.availableStore, this.scroll, ngZo)
+
+        this.selectedStoreSub$.pipe(
+            withLatestFrom(this.invoiceGroupId$),
+            tap(([$event, invoiceGroupId]) => {
+                const store = ($event.option.value as Store);
+                const isSelected = $event.option.selected;
+
+                if (store.source === 'fetch') {
+                    if (isSelected) {
+                        this.portfolioStore.dispatch(
+                            PortfolioActions.addSelectedStores({
+                                payload: [store]
+                            })
+                        );
+
+                        this.shopStore.dispatch(
+                            StoreActions.checkStoreAtInvoiceGroupRequest({
+                                payload: {
+                                    storeId: store.id,
+                                    invoiceGroupId
+                                }
+                            })
+                        );
+                    } else {
+                        this.portfolioStore.dispatch(
+                            PortfolioActions.removeSelectedStores({
+                                payload: [store.id]
+                            })
+                        );
+                    }
+                } else if (store.source === 'list') {
+                    if (!isSelected) {
+                        this.portfolioStore.dispatch(
+                            PortfolioActions.markStoreAsRemovedFromPortfolio({
+                                payload: store.id
+                            })
+                        );
+                    } else {
+                        this.portfolioStore.dispatch(
+                            PortfolioActions.abortStoreAsRemovedFromPortfolio({
+                                payload: store.id
+                            })
+                        );
+
+                        this.shopStore.dispatch(
+                            StoreActions.checkStoreAtInvoiceGroupRequest({
+                                payload: {
+                                    storeId: store.id,
+                                    invoiceGroupId
+                                }
+                            })
+                        );
+                    }
+                }
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
     }
 
     private debug(label: string, data: any): void {
@@ -144,44 +213,6 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         );
     }
 
-    // TODO: Menelusuri penyebab error ketika deselect store dari available store di mode add.
-    updateSelectedStores($event: MatSelectionListChange): void {
-        const store = ($event.option.value as Store);
-        const isSelected = $event.option.selected;
-
-        if (store.source === 'fetch') {
-            if (isSelected) {
-                this.portfolioStore.dispatch(
-                    PortfolioActions.addSelectedStores({
-                        payload: [store]
-                    })
-                );
-            } else {
-                this.portfolioStore.dispatch(
-                    PortfolioActions.removeSelectedStores({
-                        payload: [store.id]
-                    })
-                );
-            }
-        } else if (store.source === 'list') {
-            if (!isSelected) {
-                this.portfolioStore.dispatch(
-                    PortfolioActions.markStoreAsRemovedFromPortfolio({
-                        payload: store.id
-                    })
-                );
-            } else {
-                this.portfolioStore.dispatch(
-                    PortfolioActions.abortStoreAsRemovedFromPortfolio({
-                        payload: store.id
-                    })
-                );
-            }
-        }
-        
-        // console.log($event);
-    }
-
     clearAllSelectedStores(): void {
         this.portfolioStore.dispatch(
             PortfolioActions.confirmRemoveAllSelectedStores()
@@ -200,6 +231,14 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         }
 
         return true;
+    }
+
+    getStoreWarning(store: Store): string | null {
+        if (!store.portfolio) {
+            return null;
+        }
+
+        return `This store is already added on Portfolio "${store.portfolio.name}". (Code: ${store.portfolio.code})"`;
     }
 
     ngOnInit(): void {
@@ -412,6 +451,10 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
 
         this.removeFilter$.next();
         this.removeFilter$.complete();
+
+
+        this.selectedStoreSub$.next();
+        this.selectedStoreSub$.complete();
     }
 
 }

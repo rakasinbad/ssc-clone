@@ -26,7 +26,7 @@ export interface IPortfolioAddForm {
     type: 'direct' | 'group';
     invoiceGroupId: string;
     stores: Array<IPortfolioStore>;
-    delete?: Array<{ storeId: string }>;
+    removedStore?: Array<{ storeId: string; portfolioId: string; }>;
 } 
 
 export class Portfolio implements IPortfolio {

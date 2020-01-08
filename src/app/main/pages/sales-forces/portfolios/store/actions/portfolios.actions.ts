@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
 import { Portfolio, IPortfolioAddForm } from '../../models/portfolios.model';
 import { Store } from 'app/main/pages/attendances/models';
+import { Update } from '@ngrx/entity';
 
 export type requestActionNames =
     'exportPortfoliosRequest' |
@@ -114,6 +115,11 @@ export const fetchPortfoliosSuccess = createAction(
     props<{ payload: { portfolios?: Array<Portfolio>; source: TSource; total?: number } }>()
 );
 
+export const updateStore = createAction(
+    '[Portfolios] Update Store',
+    props<{ payload: Update<Store> }>()
+)
+
 export const addSelectedStores = createAction(
     '[Portfolios Page] Add Selected Portfolio Stores',
     props<{ payload: Array<Store> }>()
@@ -129,9 +135,19 @@ export const markStoreAsRemovedFromPortfolio = createAction(
     props<{ payload: string }>()
 );
 
+export const markStoresAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Mark Stores as Removed from Portfolio',
+    props<{ payload: Array<string> }>()
+);
+
 export const abortStoreAsRemovedFromPortfolio = createAction(
     '[Portfolios Page] Abort Store as Removed from Portfolio',
     props<{ payload: string }>()
+);
+
+export const abortStoresAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Abort Stores as Removed from Portfolio',
+    props<{ payload: Array<string> }>()
 );
 
 export const setSelectedInvoiceGroupId = createAction(
