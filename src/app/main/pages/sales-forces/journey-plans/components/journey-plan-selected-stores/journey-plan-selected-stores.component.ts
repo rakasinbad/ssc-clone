@@ -15,12 +15,15 @@ import { sortBy } from 'lodash';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
 
-import { locale as english } from '../i18n/en';
-import { locale as indonesian } from '../i18n/id';
-import { StorePortfolio } from '../models';
-import { JourneyPlanStoreActions, JourneyPlanStoreSelectedActions } from '../store/actions';
-import * as fromJourneyPlans from '../store/reducers';
-import { JourneyPlanStoreSelectedSelectors, JourneyPlanStoreSelectors } from '../store/selectors';
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { StorePortfolio } from '../../models';
+import { JourneyPlanStoreActions, JourneyPlanStoreSelectedActions } from '../../store/actions';
+import * as fromJourneyPlans from '../../store/reducers';
+import {
+    JourneyPlanStoreSelectedSelectors,
+    JourneyPlanStoreSelectors
+} from '../../store/selectors';
 
 type TmpAutoCompleteKey = 'sources';
 

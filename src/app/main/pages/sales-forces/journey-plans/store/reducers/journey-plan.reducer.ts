@@ -34,14 +34,26 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(JourneyPlanActions.fetchJourneyPlansRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(JourneyPlanActions.fetchJourneyPlansFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
+    on(
+        JourneyPlanActions.fetchJourneyPlansRequest,
+        JourneyPlanActions.exportRequest,
+        JourneyPlanActions.importRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        JourneyPlanActions.fetchJourneyPlansFailure,
+        JourneyPlanActions.exportFailure,
+        JourneyPlanActions.exportSuccess,
+        JourneyPlanActions.importFailure,
+        JourneyPlanActions.importSuccess,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
     on(JourneyPlanActions.fetchJourneyPlansSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total });
     }),

@@ -34,6 +34,38 @@ export const setViewBy = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// EXPORT Journey Plan
+// -----------------------------------------------------------------------------------------------------
+
+export const exportRequest = createAction(
+    '[JP Page] Export Request',
+    props<{ payload: { dateGte?: string; dateLte?: string } }>()
+);
+
+export const exportFailure = createAction(
+    '[JP Page] Export Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const exportSuccess = createAction('[JP Page] Export Success', props<{ payload: string }>());
+
+// -----------------------------------------------------------------------------------------------------
+// IMPORT Journey Plan
+// -----------------------------------------------------------------------------------------------------
+
+export const importRequest = createAction(
+    '[JP Page] Import Request',
+    props<{ payload: { file: File; type: string } }>()
+);
+
+export const importFailure = createAction(
+    '[JP Page] Import Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const importSuccess = createAction('[JP Page] Import Success');
+
+// -----------------------------------------------------------------------------------------------------
 // Helper
 // -----------------------------------------------------------------------------------------------------
 

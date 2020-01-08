@@ -4,6 +4,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule, SharedModule } from 'app/shared';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
+import { ExportFilterComponent, JourneyPlanSelectedStoresComponent } from './components';
 import {
     JourneyPlanActionComponent,
     JourneyPlanFormComponent,
@@ -13,7 +14,6 @@ import {
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
 import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
-import { JourneyPlanSelectedStoresComponent } from './components/journey-plan-selected-stores.component';
 
 /**
  *
@@ -23,12 +23,13 @@ import { JourneyPlanSelectedStoresComponent } from './components/journey-plan-se
  */
 @NgModule({
     declarations: [
+        ExportFilterComponent,
         JourneyPlanActionComponent,
         JourneyPlanFormComponent,
         JourneyPlanInfoComponent,
         JourneyPlansComponent,
-        JourneyPlanStoreComponent,
-        JourneyPlanSelectedStoresComponent
+        JourneyPlanSelectedStoresComponent,
+        JourneyPlanStoreComponent
     ],
     imports: [
         JourneyPlansRoutingModule,
@@ -45,6 +46,7 @@ import { JourneyPlanSelectedStoresComponent } from './components/journey-plan-se
 
         // Store
         JourneyPlansStoreModule
-    ]
+    ],
+    entryComponents: [ExportFilterComponent]
 })
 export class JourneyPlansModule {}

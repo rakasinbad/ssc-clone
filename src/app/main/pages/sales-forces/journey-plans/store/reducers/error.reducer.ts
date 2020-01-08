@@ -30,11 +30,19 @@ const reducer = createReducer<State>(
     initialState,
     on(
         JourneyPlanActions.fetchJourneyPlansFailure,
+        JourneyPlanActions.exportFailure,
+        JourneyPlanActions.importFailure,
         JourneyPlanStoreActions.fetchJourneyPlanStoresFailure,
         (state, { payload }) => {
             return adapter.upsertOne(payload, state);
         }
     ),
+    on(JourneyPlanActions.exportSuccess, state => {
+        return adapter.removeOne('exportFailure', state);
+    }),
+    on(JourneyPlanActions.importSuccess, state => {
+        return adapter.removeOne('importFailure', state);
+    }),
     on(JourneyPlanActions.fetchJourneyPlansSuccess, state => {
         return adapter.removeOne('fetchJourneyPlansFailure', state);
     }),
