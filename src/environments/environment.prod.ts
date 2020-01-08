@@ -1,5 +1,5 @@
 export const environment = {
-    pageSize: 100,
+    pageSize: 25,
     production: true,
     staging: false,
     hmr: false,
