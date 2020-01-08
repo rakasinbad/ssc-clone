@@ -155,14 +155,14 @@ export const reducer = createReducer(
         })
     ),
     on(
-        PortfolioActions.setSelectedInvoiceGroup,
+        PortfolioActions.setSelectedInvoiceGroupId,
         (state, { payload }) => ({
             ...state,
             selectedInvoiceGroupId: payload
         })
     ),
     on(
-        PortfolioActions.resetSelectedInvoiceGroup,
+        PortfolioActions.resetSelectedInvoiceGroupId,
         (state) => ({
             ...state,
             selectedInvoiceGroupId: null

@@ -44,6 +44,13 @@ export class StoresApiService {
                 case 'out-portfolio': newArgs.push({ key: 'type', value: 'outside' }); break;
             }
 
+            if (!isNaN(params['invoiceGroupId'])) {
+                newArgs.push({
+                    key: 'invoiceGroupId',
+                    value: params['invoiceGroupId']
+                });
+            }
+
             this._url = this.helper$.handleApiRouter(this._storePortfolioListsEndpoint);
         } else {
             if (!isNaN(params['portfolioId'])) {

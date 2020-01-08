@@ -15,7 +15,7 @@ import { FormControl } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-portfolios-selected-stores',
@@ -60,7 +60,8 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         private shopStore: NgRxStore<CoreFeatureState>,
         private sanitizer: DomSanitizer,
         private helperSvc: HelperService,
-        private scroll: ScrollDispatcher
+        private scroll: ScrollDispatcher,
+        private noticeSvc: NoticeService
     ) {
         this.isLoading$ = combineLatest([
             this.portfolioStore.select(PortfolioSelector.getLoadingState),
@@ -85,7 +86,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         }
     }
 
-    private requestStore(filters: Array<Filter>, storeType?: string): void {
+    private requestStore(filters: Array<Filter>, storeType?: string, invoiceGroupId?: string): void {
         const data: IQueryParams = { paginate: false };
     
         for (const fil of filters) {
@@ -111,6 +112,8 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         if (storeType) {
             data['type'] = storeType;
         }
+
+        data['invoiceGroupId'] = invoiceGroupId;
 
         this.shopStore.dispatch(
             StoreActions.fetchStoresRequest({
@@ -185,13 +188,29 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         );
     }
 
+    checkSelectedInvoiceGroupId(invoiceGroupId: string): boolean {
+        // Hanya meneruskan observable ini jika sudah memilih Invoice Group.
+        if (!invoiceGroupId) {
+            this.noticeSvc.open('Please select one of Invoice Group to view available stores.', 'info', {
+                horizontalPosition: 'right',
+                verticalPosition: 'bottom'
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+
     ngOnInit(): void {
         this.filters$ = combineLatest([
             this.shopStore.select(StoreSelector.getAllFilters),
             this.shopStore.select(StoreSelector.getStoreEntityType),
+            this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
         ]).pipe(
-            map(([filters, type]) => ({ filters, type: type === 'all' ? 'in-portfolio' : type })),
-            tap(({ filters, type }) => this.requestStore(filters, type)),
+            map(([filters, type, invoiceGroupId]) => ({ filters, type: type === 'all' ? 'in-portfolio' : type, invoiceGroupId })),
+            filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+            tap(({ filters, type, invoiceGroupId }) => this.requestStore(filters, type, invoiceGroupId)),
             map(({ filters }) => filters),
             takeUntil(this.subs$)
         );
@@ -275,7 +294,9 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             this.selectedStores$
         ]).pipe(
             tap(() => this.debug('AVAILABLE STORES CHECK', {})),
-            map(([availableStores, portfolioStores]) => {
+            withLatestFrom(this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)),
+            filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+            map(([[availableStores, portfolioStores]]) => {
                 // Mengambil ID dari store yang sudah terasosiasi dengan portfolio.
                 const portfolioStoreIds = portfolioStores.map(pStore => pStore.id);
 
@@ -343,9 +364,11 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                 withLatestFrom(
                     this.shopStore.select(StoreSelector.getAllFilters),
                     this.shopStore.select(StoreSelector.getStoreEntityType),
+                    this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
                 ),
+                filter(([_, __, ___, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
                 takeUntil(this.subs$)
-            ).subscribe(([_, filters, type]) => this.requestStore(filters, type));
+            ).subscribe(([_, filters, type, invoiceGroupId]) => this.requestStore(filters, type, invoiceGroupId));
     }
 
     ngAfterViewInit(): void {

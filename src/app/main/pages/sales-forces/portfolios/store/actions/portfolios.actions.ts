@@ -134,12 +134,12 @@ export const abortStoreAsRemovedFromPortfolio = createAction(
     props<{ payload: string }>()
 );
 
-export const setSelectedInvoiceGroup = createAction(
-    '[Portfolios Page] Set Selected Invoice Group',
+export const setSelectedInvoiceGroupId = createAction(
+    '[Portfolios Page] Set Selected Invoice Group ID',
     props<{ payload: string }>()
 );
 
-export const resetSelectedInvoiceGroup = createAction('[Portfolios Page] Reset Selected Invoice Group');
+export const resetSelectedInvoiceGroupId = createAction('[Portfolios Page] Reset Selected Invoice Group ID');
 
 export const confirmRemoveAllSelectedStores = createAction('[Portfolios Page] Confirm to Remove All Selected Stores');
 
