@@ -92,14 +92,14 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             .pipe(takeUntil(this.subs$));
 
         // Mengambil status loading dari state store-nya portfolio.
-        this.isPortfolioStoreLoading$ = this.portfolioStore
-            .select(PortfolioStoreSelector.getLoadingState)
-            .pipe(takeUntil(this.subs$));
+        // this.isPortfolioStoreLoading$ = this.portfolioStore
+        //     .select(PortfolioStoreSelector.getLoadingState)
+        //     .pipe(takeUntil(this.subs$));
 
         // Mengambil status loading dari state-nya store (merchant).
-        this.isListStoreLoading$ = this.shopStore
-            .select(StoreSelector.getLoadingState)
-            .pipe(takeUntil(this.subs$));
+        // this.isListStoreLoading$ = this.shopStore
+        //     .select(StoreSelector.getLoadingState)
+        //     .pipe(takeUntil(this.subs$));
 
         // Mengambil data Invoice Group dari state.
         this.invoiceGroups$ = this.dropdownStore
