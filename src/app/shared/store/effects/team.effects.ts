@@ -21,14 +21,13 @@ import { TeamActions } from '../actions';
 
 @Injectable()
 export class TeamEffects {
-    searchDistrictRequest$ = createEffect(
-        () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
-            this.actions$.pipe(
-                ofType(TeamActions.searchTeamRequest),
-                debounceTime(debounce, scheduler),
-                map(action => action.payload),
-                map(params => TeamActions.fetchTeamRequest({ payload: params }))
-            )
+    searchTeamRequest$ = createEffect(() => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
+        this.actions$.pipe(
+            ofType(TeamActions.searchTeamRequest),
+            debounceTime(debounce, scheduler),
+            map(action => action.payload),
+            map(params => TeamActions.fetchTeamRequest({ payload: params }))
+        )
     );
 
     fetchTeamRequest$ = createEffect(() =>

@@ -43,15 +43,36 @@
                     <button
                         type="button"
                         mat-stroked-button
-                        color="accent"
+                        [color]="(viewBy$ | async) === 'date' ? 'accent' : null"
                         class="sinbad mr-16"
-                        (click)="showInfo()"
+                        [class.sinbad]="(viewBy$ | async) === 'date'"
+                        (click)="onSetViewBy('date')"
                     >
-                        Planned
+                        Date - Sales Rep
                     </button>
 
-                    <button type="button" mat-stroked-button class="mr-16" (click)="showInfo()">
-                        Not Planned
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        [color]="(viewBy$ | async) === 'sales_rep' ? 'accent' : null"
+                        class="mr-16"
+                        [class.sinbad]="(viewBy$ | async) === 'sales_rep'"
+                        (click)="onSetViewBy('sales_rep')"
+                        *ngIf="false"
+                    >
+                        Sales Rep
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        [color]="(viewBy$ | async) === 'store' ? 'accent' : null"
+                        class="mr-16"
+                        [class.sinbad]="(viewBy$ | async) === 'store'"
+                        (click)="onSetViewBy('store')"
+                        *ngIf="false"
+                    >
+                        Store
                     </button>
                 </div>
 
@@ -80,7 +101,7 @@
             <!-- / HEADER MID -->
 
             <!-- HEADER BOTTOM -->
-            <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="false">
                 <div fxLayout="row" fxLayoutAlign="start center">
                     <button
                         type="button"
@@ -163,6 +184,7 @@
         <div class="content-card">
             <mat-table
                 #table
+                multiTemplateDataRows
                 class="journey-plans-table"
                 [dataSource]="dataSource$ | async"
                 matSort
@@ -188,10 +210,26 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Date Column -->
-                <ng-container matColumnDef="date">
+                <!-- Expand Action Column -->
+                <ng-container matColumnDef="expand-action">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <button
+                            mat-icon-button
+                            aria-label="Expand"
+                            (click)="$event.stopPropagation(); onExpandedRow(row)"
+                        >
+                            <mat-icon class="secondary-text">
+                                {{ expandedElement === row ? 'remove_circle' : 'add_circle' }}
+                            </mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Visit Date Column -->
+                <ng-container matColumnDef="visit-date">
                     <mat-header-cell *matHeaderCellDef>
-                        Date
+                        Visit Date
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -224,38 +262,26 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Num of Store Column -->
-                <ng-container matColumnDef="num-of-store">
+                <!-- Store ID Column -->
+                <ng-container matColumnDef="store-id">
                     <mat-header-cell *matHeaderCellDef>
-                        Num. of Store
+                        Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            -
+                            {{ getTotal(row, 'journeyPlanSales') }}
                         </p>
                     </mat-cell>
                 </ng-container>
 
-                <!-- Mandatory Action Column -->
-                <ng-container matColumnDef="mandatory-action">
+                <!-- Store Name Column -->
+                <ng-container matColumnDef="store-name">
                     <mat-header-cell *matHeaderCellDef>
-                        Mandatory Action
+                        Store Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            -
-                        </p>
-                    </mat-cell>
-                </ng-container>
-
-                <!-- Last Visit Column -->
-                <ng-container matColumnDef="last-visit">
-                    <mat-header-cell *matHeaderCellDef>
-                        Last Visit
-                    </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            -
+                            {{ getTotal(row, 'journeyPlanSales') }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -278,14 +304,134 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Expanded Element -->
+                <ng-container matColumnDef="expandedDetail">
+                    <mat-cell
+                        *matCellDef="let row"
+                        class="element-detail"
+                        [@detailExpand]="row == expandedElement ? 'expanded' : 'collapsed'"
+                    >
+                        <mat-table
+                            class="journey-plan-details-table"
+                            [dataSource]="detailDataSource$ | async"
+                        >
+                            <!-- Column -->
+                            <<!-- ng-container
+                                matColumnDef="{{ column }}"
+                                *ngFor="let column of displayedColumns"
+                            >
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let row2">
+                                    <p style="word-break: break-word;">
+                                        {{ row2[column] }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container> -->
+
+                            <!-- Checkbox Column -->
+                            <ng-container matColumnDef="checkbox">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet"></mat-cell>
+                            </ng-container>
+
+                            <!-- Expand Action Column -->
+                            <ng-container matColumnDef="expand-action">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet"></mat-cell>
+                            </ng-container>
+
+                            <!-- Visit Date Column -->
+                            <ng-container matColumnDef="visit-date">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Visit Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                    <p style="word-break: break-word;">
+                                        {{ (row?.date | date: 'dd/MM/yyyy') || '-' }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Sales Rep ID Column -->
+                            <ng-container matColumnDef="sales-rep-id">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Sales Rep ID
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                    <p style="word-break: break-word;">
+                                        {{ row?.id }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Sales Rep Name Column -->
+                            <ng-container matColumnDef="sales-rep-name">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Sales Rep Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                    <p style="word-break: break-word;">
+                                        {{ row?.user?.fullName }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Store ID Column -->
+                            <ng-container matColumnDef="store-id">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Store ID
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                    <p style="word-break: break-word;">
+                                        {{ rowDet?.store?.storeCode || '-' }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Store Name Column -->
+                            <ng-container matColumnDef="store-name">
+                                <mat-header-cell *matHeaderCellDef>
+                                    Store Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet">
+                                    <p style="word-break: break-word;">
+                                        {{ rowDet?.store?.name }}
+                                    </p>
+                                </mat-cell>
+                            </ng-container>
+
+                            <!-- Actions Column -->
+                            <ng-container matColumnDef="actions">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let rowDet"></mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row
+                                *matRowDef="let rowDet; columns: displayedColumns"
+                                class="journey-plan"
+                            ></mat-row>
+                        </mat-table>
+                    </mat-cell>
+                </ng-container>
+
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="journey-plan"
-                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    [ngClass]="{
+                        'highlight-row': (selectedRowIndex$ | async) === row?.id,
+                        'expanded-row': expandedElement === row
+                    }"
                     matRipple
                     [routerLink]="['/pages/sales-force/sales-rep', row?.id, 'detail']"
+                ></mat-row>
+
+                <mat-row
+                    *matRowDef="let row; columns: ['expandedDetail']"
+                    class="detail-row"
+                    [class.detail-expand-row]="expandedElement === row"
                 ></mat-row>
             </mat-table>
 

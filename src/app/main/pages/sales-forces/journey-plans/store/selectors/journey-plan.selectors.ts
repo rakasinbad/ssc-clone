@@ -30,6 +30,8 @@ const getSelectedItem = createSelector(
     (entities, id) => entities[id]
 );
 
+const getViewBy = createSelector(getJourneyPlanEntitiesState, state => state.viewBy);
+
 const getIsLoading = createSelector(getJourneyPlanEntitiesState, state => state.isLoading);
 
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem, getViewBy };
