@@ -11,7 +11,8 @@ app-journey-plans {
         > .center {
             > .header {
                 &.sinbad {
-                    height: 145px !important;
+                    height: 100px !important;
+                    /*  height: 145px !important; */
                     max-height: 150px !important;
                     min-height: 100px !important;
                 }
@@ -69,6 +70,25 @@ app-journey-plans {
 
         .mat-row {
             min-height: unset;
+
+            &.expanded-row {
+                .mat-cell {
+                    border-bottom-width: 0;
+                }
+            }
+
+            &.detail-row {
+                border-bottom-width: 0;
+
+                &.detail-expand-row {
+                    border-bottom-width: 1px;
+                }
+
+                .mat-cell {
+                    padding-left: 0;
+                    padding-right: 0;
+                }
+            }
         }
 
         .mat-header-cell {
@@ -92,13 +112,58 @@ app-journey-plans {
             // padding-right: 8px;
         }
 
-        .mat-column-checkbox {
+        .mat-column-checkbox,
+        .mat-column-expand-action {
             flex: 0 1 80px;
         }
 
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+    }
+
+    .journey-plan-details-table {
+        flex: 1 1 auto;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        .mat-header-row {
+            background: white;
+            height: 0;
+            min-height: 0;
+            display: none;
+        }
+
+        .mat-row {
+            background-color: rgba(240, 68, 76, 0.1);
+            min-height: unset;
+
+            &:last-of-type {
+                border-bottom-width: 0;
+
+                .mat-cell {
+                    border-bottom-width: 0;
+                }
+            }
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .journey-plan {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
         }
     }
 }

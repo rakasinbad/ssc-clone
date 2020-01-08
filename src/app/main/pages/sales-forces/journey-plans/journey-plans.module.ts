@@ -13,6 +13,7 @@ import {
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
 import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
+import { JourneyPlanSelectedStoresComponent } from './components/journey-plan-selected-stores.component';
 
 /**
  *
@@ -26,7 +27,8 @@ import { JourneyPlansComponent } from './journey-plans.component';
         JourneyPlanFormComponent,
         JourneyPlanInfoComponent,
         JourneyPlansComponent,
-        JourneyPlanStoreComponent
+        JourneyPlanStoreComponent,
+        JourneyPlanSelectedStoresComponent
     ],
     imports: [
         JourneyPlansRoutingModule,

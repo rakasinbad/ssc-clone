@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { JourneyPlan } from '../../models';
+import { JourneyPlan, ViewBy } from '../../models';
 import { JourneyPlanActions } from '../actions';
 
 // Keyname for reducer
@@ -18,6 +18,7 @@ interface State extends EntityState<JourneyPlan> {
     isRefresh?: boolean;
     selectedId: string;
     total: number;
+    viewBy?: ViewBy;
 }
 
 // Adapter for journeyPlans state
@@ -44,9 +45,17 @@ const reducer = createReducer<State>(
     on(JourneyPlanActions.fetchJourneyPlansSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total });
     }),
+    on(JourneyPlanActions.setViewBy, (state, { payload }) => ({
+        ...state,
+        viewBy: payload
+    })),
     on(JourneyPlanActions.clearState, state => {
         return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
-    })
+    }),
+    on(JourneyPlanActions.clearViewBy, state => ({
+        ...state,
+        viewBy: undefined
+    }))
 );
 
 // Set anything for the export

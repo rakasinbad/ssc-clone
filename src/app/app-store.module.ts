@@ -6,7 +6,13 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'environments/environment';
 
 import { AuthEffects } from './main/pages/core/auth/store/effects/auth.effects';
-import { DropdownEffects, NetworkEffects, TeamEffects, UiEffects } from './shared/store/effects';
+import {
+    DropdownEffects,
+    NetworkEffects,
+    PortfolioEffects,
+    TeamEffects,
+    UiEffects
+} from './shared/store/effects';
 import * as fromRoot from './store/app.reducer';
 import { CustomSerializer } from './store/custom-serializer';
 
@@ -25,6 +31,7 @@ import { CustomSerializer } from './store/custom-serializer';
             AuthEffects,
             DropdownEffects,
             NetworkEffects,
+            PortfolioEffects,
             TeamEffects,
             UiEffects
         ]),

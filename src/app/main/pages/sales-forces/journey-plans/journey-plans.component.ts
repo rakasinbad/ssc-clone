@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
     AfterViewInit,
@@ -25,16 +26,23 @@ import { takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { JourneyPlan } from './models';
-import { JourneyPlanActions } from './store/actions';
+import { JourneyPlan, JourneyPlanSales, ViewBy } from './models';
+import { JourneyPlanActions, JourneyPlanSalesActions } from './store/actions';
 import * as fromJourneyPlans from './store/reducers';
-import { JourneyPlanSelectors } from './store/selectors';
+import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selectors';
 
 @Component({
     selector: 'app-journey-plans',
     templateUrl: './journey-plans.component.html',
     styleUrls: ['./journey-plans.component.scss'],
-    animations: fuseAnimations,
+    animations: [
+        fuseAnimations,
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'))
+        ])
+    ],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -44,12 +52,22 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
     displayedColumns = [
         'checkbox',
-        'date',
+        'expand-action',
+        'visit-date',
         'sales-rep-id',
         'sales-rep-name',
-        'num-of-store',
-        'mandatory-action',
-        'last-visit',
+        'store-id',
+        'store-name',
+        'actions'
+    ];
+    detailDisplayedColumns = [
+        'checkbox',
+        'expand-action',
+        'visit-date',
+        'sales-rep-id',
+        'sales-rep-name',
+        'store-id',
+        'store-name',
         'actions'
     ];
 
@@ -57,8 +75,12 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     selection: SelectionModel<JourneyPlan> = new SelectionModel<JourneyPlan>(true, []);
 
     dataSource$: Observable<Array<JourneyPlan>>;
+    detailDataSource$: Observable<Array<JourneyPlanSales>>;
+    expandedElement: JourneyPlan | null;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
+    totalDetailDataSource$: Observable<number>;
+    viewBy$: Observable<ViewBy>;
     isLoading$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
@@ -117,6 +139,20 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    getExpandedDetail(item: JourneyPlan): void {}
+
+    getTotal(item: JourneyPlan, key: string): string {
+        if (!item || !key) {
+            return '-';
+        }
+
+        if (key === 'journeyPlanSales' && item.hasOwnProperty('journeyPlanSales')) {
+            return `#${(item[key] as Array<JourneyPlanSales>).length}`;
+        }
+
+        return '-';
+    }
+
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
@@ -132,6 +168,39 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
     showInfo(): void {
         this._$helper.infoNotice();
+    }
+
+    onExpandedRow(item: JourneyPlan): void {
+        this.expandedElement = this.expandedElement === item || !item ? null : item;
+
+        if (this.expandedElement) {
+            this.store.dispatch(
+                JourneyPlanSalesActions.setJourneyPlanSales({ payload: item.journeyPlanSales })
+            );
+        }
+    }
+
+    onSetViewBy(viewBy: ViewBy): void {
+        if (!viewBy) {
+            return;
+        }
+
+        switch (viewBy) {
+            case ViewBy.DATE:
+                this.store.dispatch(JourneyPlanActions.setViewBy(ViewBy.DATE));
+                break;
+
+            case ViewBy.SALES_REP:
+                this.store.dispatch(JourneyPlanActions.setViewBy(ViewBy.SALES_REP));
+                break;
+
+            case ViewBy.STORE:
+                this.store.dispatch(JourneyPlanActions.setViewBy(ViewBy.STORE));
+                break;
+
+            default:
+                return;
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -179,6 +248,8 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this._initTable();
 
+                this.store.dispatch(JourneyPlanActions.setViewBy(ViewBy.DATE));
+
                 this.dataSource$ = this.store.select(JourneyPlanSelectors.selectAll).pipe(
                     tap(source => {
                         this.dataSource = new MatTableDataSource(source);
@@ -187,6 +258,14 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 );
                 this.totalDataSource$ = this.store.select(JourneyPlanSelectors.getTotalItem);
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+
+                this.detailDataSource$ = this.store.select(JourneyPlanSalesSelectors.selectAll);
+                this.totalDetailDataSource$ = this.store.select(
+                    JourneyPlanSalesSelectors.selectTotal
+                );
+
+                this.viewBy$ = this.store.select(JourneyPlanSelectors.getViewBy);
+
                 this.isLoading$ = this.store.select(JourneyPlanSelectors.getIsLoading);
                 break;
         }
