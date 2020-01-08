@@ -58,8 +58,10 @@ export class PortfoliosEffects {
             exhaustMap(() => {
                 const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
                     data: {
-                        title: 'Delete',
-                        message: `Are you sure want to clear all selected stores?`,
+                        title: 'Clear',
+                        message: `It will clear all selected store from the list.
+                                    It won't affected this portfolio unless you click the save button.
+                                    Are you sure want to proceed?`,
                     }, disableClose: true
                 });
 
