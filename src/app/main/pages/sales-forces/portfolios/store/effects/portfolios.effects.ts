@@ -81,7 +81,8 @@ export class PortfoliosEffects {
                         payload: Array.from(uniqueStores)
                     })
                 );
-            })
+            }),
+            tap(() => this.notice.open('All selected stores have been cleared.', 'info', { verticalPosition: 'bottom', horizontalPosition: 'right' }))
         ), { dispatch: false }
     );
 
