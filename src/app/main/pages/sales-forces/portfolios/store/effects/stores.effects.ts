@@ -78,9 +78,9 @@ export class StoreEffects {
 
     processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
-        const { supplierId } = userData.userSupplier;
+        // const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = Object.assign({}, queryParams, { supplierId });
+        const newQuery: IQueryParams = Object.assign({}, queryParams);
 
         return this.storesService
             .findStores(newQuery)
