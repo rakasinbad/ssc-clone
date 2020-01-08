@@ -289,6 +289,9 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
     ngOnDestroy(): void {
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
+        
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
+        this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
 
         this.subs$.next();
         this.subs$.complete();
