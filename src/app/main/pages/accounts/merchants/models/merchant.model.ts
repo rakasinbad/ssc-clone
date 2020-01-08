@@ -87,6 +87,7 @@ export interface IStore extends ITimestamp {
     owner?: User;
     parent: boolean;
     parentId: string;
+    portfolio?: Partial<Portfolio>;
     phoneNo: string;
     reason: string;
     status: TStatus;
@@ -111,6 +112,7 @@ export interface IStore extends ITimestamp {
     warehouseId: string;
     isSelected?: boolean; // Menandakan apakah object ini terpilih atau tidak.
     source?: 'fetch' | 'list'; // Menandakan apakah object ini berasal hasil fetch atau mengambil dari list (cache).
+    isLoading?: boolean; // Untuk keperluan data store diperiksa di back-end.
 }
 
 export class Store implements IStore {
@@ -131,6 +133,7 @@ export class Store implements IStore {
     parent: boolean;
     parentId: string;
     phoneNo: string;
+    portfolio?: Partial<Portfolio>;
     reason: string;
     status: TStatus;
     storeClusters?: Array<StoreCluster>;
@@ -157,6 +160,7 @@ export class Store implements IStore {
     deletedAt: TNullable<string>;
     isSelected?: boolean;
     source?: 'fetch' | 'list';
+    isLoading?: boolean;
 
     constructor(data: Store) {
         const {
@@ -177,6 +181,7 @@ export class Store implements IStore {
             parent,
             parentId,
             phoneNo,
+            portfolio,
             reason,
             status,
             storeClusters,
@@ -203,6 +208,7 @@ export class Store implements IStore {
             deletedAt,
             isSelected = false,
             source = 'fetch',
+            isLoading = false,
         } = data;
 
         this.id = id;
@@ -233,6 +239,8 @@ export class Store implements IStore {
         this.deletedAt = deletedAt;
         this.isSelected = isSelected;
         this.source = ['fetch', 'list'].includes(source) ? source : 'fetch';
+        this.portfolio = portfolio;
+        this.isLoading = isLoading;
 
         this.userStores =
             userStores && userStores.length > 0
@@ -438,6 +446,17 @@ export class Store implements IStore {
 
     static patch(body: StoreOptions): StoreOptions {
         return body;
+    }
+
+    isPartOfInvoiceGroup(invoiceGroupId: string): boolean {
+        if (!invoiceGroupId) {
+            return false;
+        }
+
+        const storePortfolios = this.storePortfolios;
+        const isPart = storePortfolios.filter(storePortfolio => storePortfolio.portfolio.invoiceGroupId === invoiceGroupId);
+
+        return isPart.length > 0;
     }
 }
 
