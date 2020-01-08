@@ -35,6 +35,7 @@ import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
 import { PortfoliosFilterStoresComponent } from '../../components/portfolios-filter-stores/portfolios-filter-stores.component';
 import { CdkScrollable } from '@angular/cdk/overlay';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
+import { PortfoliosConflictStoresComponent } from '../../components/portfolios-conflict-stores/portfolios-conflict-stores.component';
 
 @Component({
     selector: 'app-portfolios-form',
@@ -478,31 +479,88 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
+    processConflictStores(form: IPortfolioAddForm, conflictStores: Array<Store>): void {
+        // Memunculkan dialog.
+        const dialogRef = this.matDialog.open(PortfoliosConflictStoresComponent, {
+            data: {
+                formData: form,
+                conflictStores
+            },
+            width: '100vw',
+            disableClose: true,
+        });
+
+        // Subscribe ke dialog yang terbuka dan akan jalan ketika dialog sudah tertutup.
+        (dialogRef.afterClosed() as Observable<string>).pipe(
+            // Hanya diteruskan jika menekan tombol "Yes".
+            filter(action => {
+                this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
+
+                return !!action;
+            }),
+            tap(() => {
+                // Mengambil store yang ingin dihapus dari form dan membentuknya untuk siap dihapus oleh back-end.
+                const removedStores = (this.form.get('removedStores').value as Array<Store>).map(store => ({ storeId: store.id, portfolioId: this.portfolioId }));
+                // Menambah store yang ingin dihapus dari toko yang konflik dengan portfolio lain dan fakturnya sama.
+                removedStores.push(...conflictStores.map(store => ({ storeId: store.id, portfolioId: store.portfolio.id })));
+                // Mengambil ID store-nya aja dari toko yang ingin dihapus.
+                const removedStoreIds = removedStores.map(removedStore => removedStore.storeId);
+                // Meng-update form data toko yang ingin dihapus.
+                form.removedStore = removedStores;
+                // Menyaring toko dari toko yang akan dihapus.
+//                 form.stores = form.stores.filter(store => !removedStoreIds.includes(String(store.storeId)));
+
+                // Melakukan request ke back-end untuk update portfolio.
+                this.portfolioStore.dispatch(
+                    PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: form } })
+                );
+            }),
+            take(1)
+        ).subscribe();
+    }
+
+    processPortfolioForm(form: IPortfolioAddForm, rawStores: Array<Store>): void {
+        // Mendapatkan toko-toko dari form.
+        // const storesForm = (form.stores as unknown as Array<Store>);
+        // Menampung toko yang konflik. (Toko yang sudah ada di portfolio lain dengan faktur yang sama)
+        const conflictStores = rawStores.filter(store => store.portfolio);
+
+        if (conflictStores.length === 0) {
+            if (!this.isEditMode) {
+                // Melakukan request ke back-end untuk create portfolio.
+                this.portfolioStore.dispatch(
+                    PortfolioActions.createPortfolioRequest({ payload: form })
+                );
+            } else {
+                // Menambah toko-toko yang ingin dihapus ke dalam form.
+                form.removedStore = (this.form.get('removedStores').value as Array<Store>)
+                                            .map(store => ({
+                                                storeId: store.id,
+                                                portfolioId: this.portfolioId
+                                            }));
+
+                // Melakukan request ke back-end untuk update portfolio.
+                this.portfolioStore.dispatch(
+                    PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: form } })
+                );
+            }
+        } else {
+            // Memproses form yang memiliki toko-toko konflik.
+            this.processConflictStores(form, conflictStores);
+        }
+    }
+
     submitPortfolio(): void {
+        const rawStores = (this.form.get('stores').value as Array<Store>);
+
         const portfolioForm: IPortfolioAddForm = {
             name: this.form.get('name').value,
             type: this.form.get('type').value,
             invoiceGroupId: this.form.get('invoiceGroup').value,
-            stores: (this.form.get('stores').value as Array<Store>).map(store => ({ storeId: +store.id, target: 0 })),
-            // delete: (this.form.get('removedStores').value as Array<Store>).map(store => ({ storeId: store.id }))
+            stores: rawStores.map(store => ({ storeId: +store.id, target: 0 })),
         };
 
-        if (!this.isEditMode) {
-            this.portfolioStore.dispatch(
-                PortfolioActions.createPortfolioRequest({ payload: portfolioForm })
-            );
-        } else {
-            portfolioForm.removedStore = (this.form.get('removedStores').value as Array<Store>)
-                                            .map(store => ({
-                                                storeId: store.id,
-                                                portfolioId: store.portfolio.id
-                                            }));
-
-            this.portfolioStore.dispatch(
-                PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: portfolioForm } })
-            );
-        }
-
+        this.processPortfolioForm(portfolioForm, rawStores);
     }
 
     // onChangePage(tableType: 'listStore' | 'portfolioStore'): void {
@@ -777,9 +835,9 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
             const newPortfolioStore = portfolioStores.filter(pStore => !deletedStores.map(dStore => dStore.id).includes(pStore.id));
 
             // Menetapkan toko-toko yang ingin ditambahkan ke portfolio ke dalam form.
-            this.form.get('stores').setValue(newPortfolioStore);
+            this.form.get('stores').setValue(newPortfolioStore.map(store => new Store(store)));
             // Menetapkan toko-toko yang ingin dihapus dari portfolio ke dalam form.
-            this.form.get('removedStores').setValue(deletedStores);
+            this.form.get('removedStores').setValue(deletedStores.map(store => new Store(store)));
 
             // this.portfolioStores$ = of(newPortfolioStore.map(store => new Store(store)));
             // this.portfolioStores = new MatTableDataSource(newPortfolioStore);
