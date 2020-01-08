@@ -15,8 +15,15 @@ import { AssociationSalesRepComponent } from './components/sales-rep/association
 import { AssociationPortfolioComponent } from './components/portfolio/association-portfolio.component';
 import { AssociationStoreComponent } from './components/store/association-store.component';
 import { AssociationEffects } from './store/effects';
-import * as fromAssociations from './store/reducers';
 import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
+import * as fromAssociations from './store/reducers';
+import * as fromSalesReps from '../sales-reps/store/reducers';
+import { SalesRepEffects } from '../sales-reps/store/effects';
+import {
+    mainFeatureKey as PortfoliosMainFeatureKey,
+    reducers as PortfolioReducers
+} from '../portfolios/store/reducers';
+import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
 
 @NgModule({
     declarations: [
@@ -36,7 +43,13 @@ import { AssociationsFormComponent } from './pages/associations-form/association
         AssociationsRoutingModule,
         MaterialModule,
         StoreModule.forFeature(fromAssociations.featureKey, fromAssociations.reducers),
-        EffectsModule.forFeature([AssociationEffects])
+        StoreModule.forFeature(PortfoliosMainFeatureKey, PortfolioReducers),
+        StoreModule.forFeature(fromSalesReps.featureKey, fromSalesReps.reducers),
+        EffectsModule.forFeature([
+            AssociationEffects,
+            PortfoliosEffects,
+            SalesRepEffects
+        ])
     ]
 })
 export class AssociationsModule {}
