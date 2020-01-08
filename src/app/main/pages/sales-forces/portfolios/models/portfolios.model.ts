@@ -14,6 +14,7 @@ interface IPortfolio extends ITimestamp {
     deletedAt: TNullable<string>;
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
+    storeQty?: number;
 }
 
 interface IPortfolioStore {
@@ -41,6 +42,7 @@ export class Portfolio implements IPortfolio {
     deletedAt: TNullable<string>;
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
+    storeQty?: number;
 
     constructor(data: IPortfolio) {
         const {
@@ -55,6 +57,7 @@ export class Portfolio implements IPortfolio {
             deletedAt,
             user = null,
             invoiceGroup = null,
+            storeQty = 0,
         } = data;
 
         this.id = id;
@@ -66,6 +69,7 @@ export class Portfolio implements IPortfolio {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.storeQty = storeQty;
 
         this.user = user ? new User(user) : user;
 
