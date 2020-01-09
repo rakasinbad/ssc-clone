@@ -45,7 +45,7 @@ import { FormControl } from '@angular/forms';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationHeaderSearchComponent implements OnInit, OnDestroy {
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     search: FormControl;
 
