@@ -117,6 +117,22 @@ app-journey-plans {
             flex: 0 1 80px;
         }
 
+        .mat-column-visit-date {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-sales-rep-id {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-sales-rep-name {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-store-id {
+            flex: 0 1 20%;
+        }
+
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
@@ -164,6 +180,16 @@ app-journey-plans {
             min-width: 0;
             display: flex;
             align-items: center;
+        }
+
+        .mat-column-checkbox,
+        .mat-column-expand-action {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            justify-content: flex-end;
         }
     }
 }

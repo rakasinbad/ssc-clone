@@ -62,7 +62,7 @@
                     >
                         Sales Rep
                     </button>
-<!--  -->
+                    <!--  -->
                     <button
                         type="button"
                         mat-stroked-button
@@ -104,6 +104,11 @@
                         (click)="filePicker.value = null"
                         (change)="onFileBrowse($event, 'docs')"
                     />
+
+                    <app-import-advanced
+                        class="mr-16"
+                        [btnConfig]="importBtnConfig"
+                    ></app-import-advanced>
 
                     <button type="button" mat-flat-button color="primary" (click)="onDownload()">
                         DOWNLOAD TEMPLATE

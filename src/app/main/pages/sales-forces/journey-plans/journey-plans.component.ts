@@ -1,3 +1,4 @@
+import { IButtonImportConfig } from './../../../../shared/components/import-advanced/models/import-advanced.model';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
@@ -18,7 +19,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { HelperService, WINDOW } from 'app/shared/helpers';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, ButtonDesignType } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -74,6 +75,17 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'store-name'
         // 'actions'
     ];
+    importBtnConfig: IButtonImportConfig = {
+        id: 'import-journey-plan',
+        cssClass: 'sinbad',
+        color: 'accent',
+        dialogConf: {
+            title: 'Import',
+            cssToolbar: 'fuse-white-bg'
+        },
+        title: 'IMPORT ADV',
+        type: ButtonDesignType.MAT_STROKED_BUTTON
+    };
 
     dataSource: MatTableDataSource<JourneyPlan>;
     selection: SelectionModel<JourneyPlan> = new SelectionModel<JourneyPlan>(true, []);
