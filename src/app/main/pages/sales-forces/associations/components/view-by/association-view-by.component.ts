@@ -40,7 +40,7 @@ import { AssociationActions } from '../../store/actions';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationViewByComponent implements OnInit, OnDestroy {
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     buttonViewByActive$: Observable<string>;
 
