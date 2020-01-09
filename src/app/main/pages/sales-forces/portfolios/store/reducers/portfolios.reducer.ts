@@ -14,6 +14,12 @@ export const adapterPortfolioNewStore: EntityAdapter<Store> = createEntityAdapte
     selectId: store => (store.id as string)
 });
 
+// New Portfolio's Store
+interface NewPortfolioState extends EntityState<Portfolio> {}
+export const adapterNewPortfolio: EntityAdapter<Portfolio> = createEntityAdapter<Portfolio>({
+    selectId: portfolio => (portfolio.id as string)
+});
+
 // Portfolio
 interface PortfolioStoreState extends EntityState<Store> {
     isLoading: boolean;
@@ -46,7 +52,9 @@ export interface State extends EntityState<Portfolio> {
     urlExport: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
+    newPortfolios: NewPortfolioState;
     total: number;
+    type: string; // Jenis store yang sedang ada di dalam state.
 }
 
 // Entity Adapter for the Entity State.
@@ -63,6 +71,8 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     urlExport: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
+    newPortfolios: adapterNewPortfolio.getInitialState(),
+    type: 'all',
     total: 0,
 });
 
@@ -127,7 +137,7 @@ export const reducer = createReducer(
     on(
         PortfolioActions.fetchPortfoliosSuccess,
         (state, { payload }) =>
-            adapter.addAll(payload.portfolios, {
+            adapter.upsertMany(payload.portfolios, {
                 ...state,
                 isLoading: false,
                 total: payload.total
@@ -166,6 +176,13 @@ export const reducer = createReducer(
         (state) => ({
             ...state,
             selectedInvoiceGroupId: null
+        })
+    ),
+    on(
+        PortfolioActions.setPortfolioEntityType,
+        (state, { payload }) => ({
+            ...state,
+            type: payload
         })
     ),
     on(

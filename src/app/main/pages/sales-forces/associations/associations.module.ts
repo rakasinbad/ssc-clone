@@ -16,14 +16,25 @@ import { AssociationPortfolioComponent } from './components/portfolio/associatio
 import { AssociationStoreComponent } from './components/store/association-store.component';
 import { AssociationEffects } from './store/effects';
 import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
-import * as fromAssociations from './store/reducers';
-import * as fromSalesReps from '../sales-reps/store/reducers';
+
+import {
+    featureKey as AssociationMainFeatureKey,
+    reducers as AssociationMainReducers
+} from './store/reducers';
+
+import {
+    featureKey as SalesRepMainFeatureKey,
+    reducers as SalesRepMainReducers
+} from '../sales-reps/store/reducers';
+
 import { SalesRepEffects } from '../sales-reps/store/effects';
 import {
     mainFeatureKey as PortfoliosMainFeatureKey,
     reducers as PortfolioReducers
 } from '../portfolios/store/reducers';
 import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
+import { AssociationsSelectedPortfoliosComponent } from './components/selected-portfolios/associations-selected-portfolios.component';
+import { AssociationsFilterPortfoliosComponent } from './components/filter-portfolios/associations-filter-portfolios.component';
 
 @NgModule({
     declarations: [
@@ -34,7 +45,10 @@ import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effect
         // Main Component
         AssociationSalesRepComponent,
         AssociationPortfolioComponent,
-        AssociationStoreComponent
+        AssociationStoreComponent,
+        // Sub-components
+        AssociationsSelectedPortfoliosComponent,
+        AssociationsFilterPortfoliosComponent,
     ],
     imports: [
         CommonModule,
@@ -42,9 +56,9 @@ import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effect
         RxReactiveFormsModule,
         AssociationsRoutingModule,
         MaterialModule,
-        StoreModule.forFeature(fromAssociations.featureKey, fromAssociations.reducers),
+        StoreModule.forFeature(AssociationMainFeatureKey, AssociationMainReducers),
         StoreModule.forFeature(PortfoliosMainFeatureKey, PortfolioReducers),
-        StoreModule.forFeature(fromSalesReps.featureKey, fromSalesReps.reducers),
+        StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),
         EffectsModule.forFeature([
             AssociationEffects,
             PortfoliosEffects,

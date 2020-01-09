@@ -4,7 +4,10 @@ import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import { IAssociation } from '../models';
+import { Store as NgRxStore } from '@ngrx/store';
+import { IAssociation, IAssociationForm } from '../models';
+import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/store/reducers';
+import { PortfolioActions } from '../../portfolios/store/actions';
 
 /**
  *
@@ -32,6 +35,7 @@ export class AssociationApiService {
      * @memberof AssociationApiService
      */
     private readonly _endpoint = '/portfolios';
+    private readonly _associationsEndpoint = '/associations';
 
     /**
      * Creates an instance of AssociationApiService.
@@ -39,19 +43,22 @@ export class AssociationApiService {
      * @param {HelperService} _$helper
      * @memberof AssociationApiService
      */
-    constructor(private http: HttpClient, private _$helper: HelperService) {
+    constructor(
+        private http: HttpClient,
+        private _$helper: HelperService,
+        private portfolioStore: NgRxStore<PortfolioCoreFeatureState>
+    ) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         const newArg = supplierId
             ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+                {
+                    key: 'supplierId',
+                    value: supplierId
+                }
+            ] : [];
 
         if (params['associated']) {
             newArg.push({
@@ -72,20 +79,42 @@ export class AssociationApiService {
 
     findById(id: string, supplierId?: string): Observable<IAssociation> {
         const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+            ? [{
+                    key: 'supplierId',
+                    value: supplierId
+                }] : [];
 
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
         return this.http.get<IAssociation>(`${this._url}/${id}`, { params: newParams });
     }
 
-    create<T>(body: T): Observable<IAssociation> {
-        return this.http.post<IAssociation>(this._url, body);
+    createAssociation(body: IAssociationForm): Observable<{ message: string }> {
+        return this.http.post<{ message: string }>(this._url, body);
+    }
+
+    requestPortfolio(userId: string, invoiceGroupId: string, portfolioEntityType: string): void {
+        // Mendapatkan toko yang tersedia.
+        const portfolioQuery: IQueryParams = {
+            limit: 10,
+            skip: 0,
+        };
+        portfolioQuery['type'] = portfolioEntityType;
+        portfolioQuery['invoiceGroupId'] = invoiceGroupId;
+
+        this.portfolioStore.dispatch(
+            PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+        );
+
+        // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
+        const associatedPortfolioQuery: IQueryParams = {
+            limit: 10,
+            skip: 0
+        };
+        associatedPortfolioQuery['userId'] = userId;
+        
+        this.portfolioStore.dispatch(
+            PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+        );
     }
 }

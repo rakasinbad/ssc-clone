@@ -36,7 +36,12 @@ export const fetchPortfolioSuccess = createAction(
 );
 
 export const addSelectedPortfolios = createAction(
-    '[Portfolios Page] Add Selected Portfolios',
+    '[Portfolios] Add Selected Portfolios',
+    props<{ payload: Array<string> }>()
+);
+
+export const removeSelectedPortfolios = createAction(
+    '[Portfolios] Remove Selected Portfolio',
     props<{ payload: Array<string> }>()
 );
 
@@ -118,7 +123,7 @@ export const fetchPortfoliosSuccess = createAction(
 export const updateStore = createAction(
     '[Portfolios] Update Store',
     props<{ payload: Update<Store> }>()
-)
+);
 
 export const addSelectedStores = createAction(
     '[Portfolios Page] Add Selected Portfolio Stores',
@@ -168,6 +173,11 @@ export const exportPortfoliosFailure = createAction(
 
 export const exportPortfoliosSuccess = createAction(
     '[Portfolios API] Export Portfolios Success',
+    props<{ payload: string }>()
+);
+
+export const setPortfolioEntityType = createAction(
+    '[Portfolios Page] Set Portfolio Entity Type',
     props<{ payload: string }>()
 );
 
