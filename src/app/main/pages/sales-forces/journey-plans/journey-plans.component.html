@@ -46,7 +46,6 @@
                         [color]="(viewBy$ | async) === 'date' ? 'accent' : null"
                         class="sinbad mr-16"
                         [class.sinbad]="(viewBy$ | async) === 'date'"
-                        (click)="onSetViewBy('date')"
                     >
                         Date - Sales Rep
                     </button>
@@ -57,7 +56,6 @@
                         [color]="(viewBy$ | async) === 'sales_rep' ? 'accent' : null"
                         class="mr-16"
                         [class.sinbad]="(viewBy$ | async) === 'sales_rep'"
-                        (click)="onSetViewBy('sales_rep')"
                         *ngIf="false"
                     >
                         Sales Rep
