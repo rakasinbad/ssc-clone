@@ -4,6 +4,7 @@ export * from './generator.service';
 export * from './helper.service';
 export * from './log.service';
 export * from './notice.service';
+export * from './window.service';
 
 export * from './cluster-api.service';
 export * from './district-api.service';

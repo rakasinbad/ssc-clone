@@ -32,6 +32,7 @@ import { FakeDbService } from './fake-db/fake-db.service';
 import { fuseConfig } from './fuse-config';
 import { LayoutModule } from './layout/layout.module';
 import { AuthInterceptor } from './main/pages/core/auth/auth.interceptor';
+import { WINDOW_PROVIDERS } from './shared/helpers';
 import { IconModule } from './shared/icon.module';
 import { HttpConfigInterceptor } from './shared/interceptors/http-config.interceptor';
 import { HttpErrorInterceptor } from './shared/interceptors/http-error.interceptor';
@@ -135,6 +136,7 @@ registerLocaleData(localId, 'id');
         LayoutModule
     ],
     providers: [
+        WINDOW_PROVIDERS,
         { provide: LOCALE_ID, useValue: 'id' },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },

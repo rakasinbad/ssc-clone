@@ -8,25 +8,29 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    Inject
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, WINDOW } from 'app/shared/helpers';
 import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { take, takeUntil, tap } from 'rxjs/operators';
 
+import { ExportFilterComponent } from './components';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { JourneyPlan, JourneyPlanSales, ViewBy } from './models';
+import { JourneyPlan, ViewBy } from './models';
+import { JourneyPlanSales } from './models/journey-plan-sales.model';
 import { JourneyPlanActions, JourneyPlanSalesActions } from './store/actions';
 import * as fromJourneyPlans from './store/reducers';
 import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selectors';
@@ -83,6 +87,8 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     viewBy$: Observable<ViewBy>;
     isLoading$: Observable<boolean>;
 
+    ViewByRes = ViewBy;
+
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
@@ -104,7 +110,9 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
 
     constructor(
+        @Inject(WINDOW) private $window: Window,
         private domSanitizer: DomSanitizer,
+        private matDialog: MatDialog,
         private store: Store<fromJourneyPlans.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService
@@ -177,6 +185,98 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
             this.store.dispatch(
                 JourneyPlanSalesActions.setJourneyPlanSales({ payload: item.journeyPlanSales })
             );
+        }
+    }
+
+    onActions(action: string): void {
+        if (!action) {
+            return;
+        }
+
+        switch (action) {
+            case 'export':
+                {
+                    const dialogRef = this.matDialog.open<
+                        ExportFilterComponent,
+                        any,
+                        { payload: any }
+                    >(ExportFilterComponent, {
+                        data: {
+                            dialog: {
+                                title: 'Filter Export'
+                            }
+                        },
+                        panelClass: 'event-form-dialog',
+                        disableClose: true
+                    });
+
+                    dialogRef
+                        .afterClosed()
+                        .pipe(take(1), takeUntil(this._unSubs$))
+                        .subscribe(resp => {
+                            if (!resp) {
+                                return;
+                            }
+
+                            const { payload } = resp;
+
+                            const body = {
+                                status: payload.status,
+                                dateGte:
+                                    moment.isMoment(payload.start) && payload.start
+                                        ? (payload.start as moment.Moment).format('YYYY-MM-DD')
+                                        : payload.start
+                                        ? moment(payload.start).format('YYYY-MM-DD')
+                                        : null,
+                                dateLte:
+                                    moment.isMoment(payload.end) && payload.end
+                                        ? (payload.end as moment.Moment).format('YYYY-MM-DD')
+                                        : payload.end
+                                        ? moment(payload.end).format('YYYY-MM-DD')
+                                        : null
+                            };
+
+                            if (payload) {
+                                this.store.dispatch(
+                                    JourneyPlanActions.exportRequest({ payload: body })
+                                );
+                            }
+                        });
+                }
+                break;
+
+            default:
+                return;
+        }
+    }
+
+    onDownload(): void {
+        this.$window.open(
+            'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Journey+Plans.zip',
+            '_blank'
+        );
+    }
+
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'docs':
+                        this.store.dispatch(
+                            JourneyPlanActions.importRequest({
+                                payload: { file, type: 'insert_journey_plans' }
+                            })
+                        );
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
     }
 
