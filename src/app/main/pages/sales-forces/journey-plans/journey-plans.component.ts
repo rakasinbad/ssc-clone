@@ -55,24 +55,24 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     search: FormControl = new FormControl('');
 
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'expand-action',
         'visit-date',
         'sales-rep-id',
         'sales-rep-name',
         'store-id',
-        'store-name',
-        'actions'
+        'store-name'
+        // 'actions'
     ];
     detailDisplayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'expand-action',
         'visit-date',
         'sales-rep-id',
         'sales-rep-name',
         'store-id',
-        'store-name',
-        'actions'
+        'store-name'
+        // 'actions'
     ];
 
     dataSource: MatTableDataSource<JourneyPlan>;
