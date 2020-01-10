@@ -165,11 +165,15 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                                         withLatestFrom(
                                             this.portfolioStore.select(PortfolioSelector.getAllPortfolios)
                                         ),
-                                        map(([portfolioIds, portfolios]) =>
-                                            portfolios.filter(portfolio =>
+                                        map(([portfolioIds, portfolios]) => {
+                                            const selectedPortfolios = portfolios.filter(portfolio =>
                                                 portfolioIds.includes(portfolio.id)
-                                            )
-                                        ),
+                                            );
+
+                                            this.form.get('portfolios').setValue(selectedPortfolios.map(portfolio => portfolio.id));
+
+                                            return selectedPortfolios;
+                                        }),
                                         takeUntil(this.subs$)
                                     );
 
@@ -354,13 +358,26 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
         this.portfolioStore.dispatch(UiActions.showFooterAction());
 
-        // this.form.valueChanges
+        combineLatest([
+            this.salesRepForm$,
+            this.invoiceGroupForm$,
+            this.portfolioStore.select(PortfolioSelector.getSelectedPortfolioIds)
+        ]).pipe(
+            tap(([salesRep, invoiceGroup, selectedPortfolioIds]) => {
+                if (!salesRep && !invoiceGroup && selectedPortfolioIds.length === 0) {
+                    this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
+                } else {
+                    this.portfolioStore.dispatch(FormActions.setFormStatusValid());
+                }
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
     }
 
     processAssociationForm(form: IAssociationForm): void {
         // Menambah toko-toko yang ingin dihapus ke dalam form.
-        form.delete = (this.form.get('removedPortfolios').value as Array<Portfolio>)
-                                .map(portfolio => +portfolio.id);
+        // form.delete = (this.form.get('removedPortfolios').value as Array<Portfolio>)
+        //                         .map(portfolio => +portfolio.id);
 
         // Melakukan request ke back-end untuk create / update association.
         this.associationStore.dispatch(
@@ -369,7 +386,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     submitAssociations(): void {
-        const rawPortfolioIds = (this.form.get('portfolios').value as Array<number>);
+        const rawPortfolioIds = [1];
 
         const associationsForm: IAssociationForm = {
             userId: this.form.get('salesRep').value,
