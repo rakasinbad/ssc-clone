@@ -90,7 +90,7 @@ export class AssociationApiService {
     }
 
     createAssociation(body: IAssociationForm): Observable<{ message: string }> {
-        return this.http.post<{ message: string }>(this._url, body);
+        return this.http.post<{ message: string }>(this._associationsEndpoint, body);
     }
 
     findAssociations<T>(params: IQueryParams): Observable<T> {
