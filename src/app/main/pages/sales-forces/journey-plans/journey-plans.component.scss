@@ -118,19 +118,23 @@ app-journey-plans {
         }
 
         .mat-column-visit-date {
-            flex: 0 1 20%;
+            flex: 0 1 18%;
         }
 
         .mat-column-sales-rep-id {
-            flex: 0 1 20%;
+            flex: 0 1 18%;
         }
 
         .mat-column-sales-rep-name {
-            flex: 0 1 20%;
+            flex: 0 1 18%;
         }
 
         .mat-column-store-id {
-            flex: 0 1 20%;
+            flex: 0 1 18%;
+        }
+
+        .mat-column-store-name {
+            flex: 0 1 18%;
         }
 
         .mat-column-actions {
@@ -192,4 +196,8 @@ app-journey-plans {
             justify-content: flex-end;
         }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

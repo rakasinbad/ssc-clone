@@ -36,6 +36,7 @@ const reducer = createReducer<State>(
     initialState,
     on(
         JourneyPlanActions.fetchJourneyPlansRequest,
+        JourneyPlanActions.deleteJourneyPlanRequest,
         JourneyPlanActions.exportRequest,
         JourneyPlanActions.importRequest,
         state => ({
@@ -45,6 +46,7 @@ const reducer = createReducer<State>(
     ),
     on(
         JourneyPlanActions.fetchJourneyPlansFailure,
+        JourneyPlanActions.deleteJourneyPlanFailure,
         JourneyPlanActions.exportFailure,
         JourneyPlanActions.exportSuccess,
         JourneyPlanActions.importFailure,
@@ -56,6 +58,9 @@ const reducer = createReducer<State>(
     ),
     on(JourneyPlanActions.fetchJourneyPlansSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total });
+    }),
+    on(JourneyPlanActions.deleteJourneyPlanSuccess, (state, { payload }) => {
+        return adapter.removeOne(payload, { ...state, isLoading: false, total: state.total - 1 });
     }),
     on(JourneyPlanActions.setViewBy, (state, { payload }) => ({
         ...state,
