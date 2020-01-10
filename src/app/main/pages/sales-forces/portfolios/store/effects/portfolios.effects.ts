@@ -352,15 +352,39 @@ export class PortfoliosEffects {
             .findPortfolios(newQuery)
             .pipe(
                 catchOffline(),
-                switchMap(response =>
-                    of(PortfolioActions.fetchPortfoliosSuccess({
-                        payload: {
-                            portfolios: response.data.map(portfolio => new Portfolio(portfolio)),
-                            total: response.total,
-                            source: 'fetch',
-                        }
-                    }))
-                ),
+                switchMap(response => {
+                    if (newQuery.paginate) {
+                        return of(PortfolioActions.fetchPortfoliosSuccess({
+                            payload: {
+                                portfolios: response.data.map(portfolio => new Portfolio({
+                                    ... portfolio,
+                                    storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                    stores: Array.isArray(portfolio['storePortfolios'])
+                                            ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                            : portfolio['storePortfolios']
+                                })),
+                                total: response.total,
+                                source: 'fetch',
+                            }
+                        }));
+                    } else {
+                        const newResponse = (response as unknown as Array<Portfolio>);
+
+                        return of(PortfolioActions.fetchPortfoliosSuccess({
+                            payload: {
+                                portfolios: newResponse.map(portfolio => new Portfolio({
+                                    ... portfolio,
+                                    storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                    stores: Array.isArray(portfolio['storePortfolios'])
+                                            ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                            : portfolio['storePortfolios']
+                                })),
+                                total: newResponse.length,
+                                source: 'fetch',
+                            }
+                        }));
+                    }
+                }),
                 catchError(err => this.sendErrorToState(err, 'fetchPortfoliosFailure'))
             );
     }

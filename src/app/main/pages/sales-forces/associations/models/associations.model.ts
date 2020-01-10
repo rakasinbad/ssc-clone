@@ -23,6 +23,12 @@ export interface IAssociation extends ITimestamp {
     actualTargetSales: number;
 }
 
+export interface IAssociationForm {
+    userId: number;
+    portfolioId: Array<number>;
+    delete?: Array<number>;
+}
+
 export class Association implements IAssociation {
     id: string;
     name: string;

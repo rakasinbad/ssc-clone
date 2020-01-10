@@ -14,6 +14,12 @@ export const adapterPortfolioNewStore: EntityAdapter<Store> = createEntityAdapte
     selectId: store => (store.id as string)
 });
 
+// New Portfolio's Store
+interface NewPortfolioState extends EntityState<Portfolio> {}
+export const adapterNewPortfolio: EntityAdapter<Portfolio> = createEntityAdapter<Portfolio>({
+    selectId: portfolio => (portfolio.id as string)
+});
+
 // Portfolio
 interface PortfolioStoreState extends EntityState<Store> {
     isLoading: boolean;
@@ -46,7 +52,9 @@ export interface State extends EntityState<Portfolio> {
     urlExport: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
+    newPortfolios: NewPortfolioState;
     total: number;
+    type: string; // Jenis store yang sedang ada di dalam state.
 }
 
 // Entity Adapter for the Entity State.
@@ -63,6 +71,8 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     urlExport: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
+    newPortfolios: adapterNewPortfolio.getInitialState(),
+    type: 'inside',
     total: 0,
 });
 
@@ -169,6 +179,13 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.setPortfolioEntityType,
+        (state, { payload }) => ({
+            ...state,
+            type: payload
+        })
+    ),
+    on(
         PortfolioActions.addSelectedStores,
         (state, { payload }) => {
             const newStores = (payload as Array<Store>).map(store => {
@@ -198,15 +215,16 @@ export const reducer = createReducer(
         PortfolioActions.addSelectedPortfolios,
         (state, { payload }) => {
             // Add the payload to state.
-            state.selectedIds.push(...payload);
+            let selectedIds = Array.from(state.selectedIds);
+            selectedIds.push(...payload);
 
             // Create a Set to make sure all of the elements is unique.
-            const set = new Set(state.selectedIds);
+            const set = new Set(selectedIds);
             // Convert to Array.
-            state.selectedIds = Array.from<string>(set);
+            selectedIds = Array.from<string>(set);
 
             // Return the new state.
-            return state;
+            return { ...state, selectedIds };
         }
     ),
     on(

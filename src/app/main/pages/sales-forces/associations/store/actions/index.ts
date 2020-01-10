@@ -1,3 +1,5 @@
 import * as AssociationActions from './association.actions';
 
-export { AssociationActions };
+type associationFailureActionNames = AssociationActions.failureActionNames;
+
+export { AssociationActions, associationFailureActionNames };

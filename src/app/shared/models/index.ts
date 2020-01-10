@@ -7,6 +7,7 @@ export * from './query.model';
 export * from './tab.model';
 export * from './timestamp.model';
 
+export * from './actions.model';
 export * from './associated.model';
 export * from './brand.model';
 export * from './cluster.model';

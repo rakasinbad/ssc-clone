@@ -24,6 +24,8 @@ const getTotalItem = createSelector(getAssociationEntitiesState, state => state.
 
 const getSelectedId = createSelector(getAssociationEntitiesState, state => state.selectedId);
 
+export const getPortfolioEntityType = createSelector(getAssociationEntitiesState, state => state.type);
+
 const getSelectedItem = createSelector(
     selectEntities,
     getSelectedId,

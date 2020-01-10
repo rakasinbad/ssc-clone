@@ -1,0 +1,70 @@
+<h2 mat-dialog-title>
+    Store List
+</h2>
+
+<h3>
+    {{ dialogData?.name || '-' }} ({{ dialogData?.storeQty }} stores)
+</h3>
+
+<mat-dialog-content class="mat-typography">
+    <mat-table
+        matSort
+        class="my-40 grey-300-border stores-table"
+        [style.border]="'1px solid'"
+        [style.border-radius]="'4px'"
+        [dataSource]="(stores$ | async)"
+        [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
+    >
+        <!-- "Store Code" Column -->
+        <ng-container matColumnDef="code">
+            <mat-header-cell *matHeaderCellDef>
+                Store Code
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>
+                    {{ row?.storeCode || '-' }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Store Name" Column -->
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef>
+                Store Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p>{{ row?.name || '(no name)' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Portfolio Code" Column -->
+        <ng-container matColumnDef="segment">
+            <mat-header-cell *matHeaderCellDef>
+                Store Segment
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="word-wrap">{{ row?.storeSegment?.name || '-' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- "Portfolio Name" Column -->
+        <ng-container matColumnDef="type">
+            <mat-header-cell *matHeaderCellDef>
+                Store Type
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="word-wrap">{{ row?.storeType?.name || '-' }}</p>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+        <mat-row class="pt-12" *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+</mat-dialog-content>
+
+<!-- <mat-dialog-actions align="end">
+    <button mat-flat-button mat-dialog-close color="accent" cdkFocusInitial>Cancel</button>
+    <button mat-flat-button mat-dialog-close="overwrite-confirmed" color="primary">Yes, confirm.</button>
+</mat-dialog-actions> -->

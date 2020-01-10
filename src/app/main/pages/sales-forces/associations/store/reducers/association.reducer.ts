@@ -17,6 +17,7 @@ interface State extends EntityState<Association> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
+    type: string;
     total: number;
 }
 
@@ -27,27 +28,40 @@ const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
     selectedId: null,
+    type: 'all',
     total: 0
 });
 
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(AssociationActions.fetchAssociationRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(AssociationActions.fetchAssociationFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
+    on(
+        AssociationActions.fetchAssociationRequest,
+        AssociationActions.fetchAssociationsRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
+    on(
+        AssociationActions.fetchAssociationFailure,
+        AssociationActions.fetchAssociationsFailure,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
     on(AssociationActions.fetchAssociationSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             total: payload.total
         });
-    })
+    }),
+    on(AssociationActions.setPortfolioEntityType, (state, { payload }) => ({
+        ...state,
+        type: payload
+    }))
 );
 
 // Set anything for the export

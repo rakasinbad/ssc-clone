@@ -23,6 +23,11 @@ export const getPortfolioEntity = createSelector(
     state => state[mainFeatureKey]
 );
 
+export const getPortfolioEntityType = createSelector(
+    getPortfolioEntity,
+    state => state.type
+);
+
 export const getSelectedPortfolioIds = createSelector(
     getPortfolioEntity,
     state => state.selectedIds
@@ -52,7 +57,7 @@ export const getSelectedPortfolio = createSelector(
 export const getSelectedPortfolios = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => ids ? ids.map(id => portfolios.entities[id]) : ids
+    (portfolios, ids) => ids.map(id => portfolios.entities[id])
 );
 
 export const getLoadingState = createSelector(
