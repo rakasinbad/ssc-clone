@@ -62,7 +62,7 @@
                     >
                         Sales Rep
                     </button>
-<!--  -->
+                    <!--  -->
                     <button
                         type="button"
                         mat-stroked-button
@@ -104,6 +104,11 @@
                         (click)="filePicker.value = null"
                         (change)="onFileBrowse($event, 'docs')"
                     />
+
+                    <!-- <app-import-advanced
+                        class="mr-16"
+                        [btnConfig]="importBtnConfig"
+                    ></app-import-advanced> -->
 
                     <button type="button" mat-flat-button color="primary" (click)="onDownload()">
                         DOWNLOAD TEMPLATE
@@ -307,11 +312,25 @@
                         <div fxFlex="row" fxLayoutAlign="end center">
                             <button
                                 mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
                                 aria-label="More"
-                                (click)="$event.stopPropagation(); showInfo()"
+                                (click)="$event.stopPropagation()"
                             >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button
+                                    mat-menu-item
+                                    type="button"
+                                    class="sinbad-mat-menu-item"
+                                    aria-label="Delete"
+                                    (click)="onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
                         </div>
                     </mat-cell>
                 </ng-container>

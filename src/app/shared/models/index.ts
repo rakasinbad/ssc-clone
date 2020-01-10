@@ -1,6 +1,11 @@
+export * from './button.model';
+export * from './dialog.model';
 export * from './field.model';
 export * from './global.model';
 export * from './progress.model';
+export * from './query.model';
+export * from './tab.model';
+export * from './timestamp.model';
 
 export * from './associated.model';
 export * from './brand.model';
@@ -15,7 +20,6 @@ export * from './payment-type.model';
 export * from './portfolio.model';
 export * from './privilege.model';
 export * from './province.model';
-export * from './query.model';
 export * from './role.model';
 export * from './store-cluster.model';
 export * from './store-config.model';
@@ -25,7 +29,6 @@ export * from './store-type.model';
 export * from './supplier.model';
 export * from './team.model';
 export * from './third-party.model';
-export * from './timestamp.model';
 export * from './urban.model';
 export * from './user.model';
 export * from './vehicle-accessibility.model';

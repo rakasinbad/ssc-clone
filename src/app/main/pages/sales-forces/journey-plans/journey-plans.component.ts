@@ -1,3 +1,4 @@
+import { IButtonImportConfig } from './../../../../shared/components/import-advanced/models/import-advanced.model';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
@@ -18,13 +19,13 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { HelperService, WINDOW } from 'app/shared/helpers';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, ButtonDesignType } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
-import { take, takeUntil, tap } from 'rxjs/operators';
+import { take, takeUntil, tap, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
 
 import { ExportFilterComponent } from './components';
 import { locale as english } from './i18n/en';
@@ -61,8 +62,8 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-id',
         'sales-rep-name',
         'store-id',
-        'store-name'
-        // 'actions'
+        'store-name',
+        'actions'
     ];
     detailDisplayedColumns = [
         // 'checkbox',
@@ -71,9 +72,20 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         'sales-rep-id',
         'sales-rep-name',
         'store-id',
-        'store-name'
-        // 'actions'
+        'store-name',
+        'actions'
     ];
+    importBtnConfig: IButtonImportConfig = {
+        id: 'import-journey-plan',
+        cssClass: 'sinbad',
+        color: 'accent',
+        dialogConf: {
+            title: 'Import',
+            cssToolbar: 'fuse-white-bg'
+        },
+        title: 'IMPORT ADV',
+        type: ButtonDesignType.MAT_STROKED_BUTTON
+    };
 
     dataSource: MatTableDataSource<JourneyPlan>;
     selection: SelectionModel<JourneyPlan> = new SelectionModel<JourneyPlan>(true, []);
@@ -178,16 +190,6 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         this._$helper.infoNotice();
     }
 
-    onExpandedRow(item: JourneyPlan): void {
-        this.expandedElement = this.expandedElement === item || !item ? null : item;
-
-        if (this.expandedElement) {
-            this.store.dispatch(
-                JourneyPlanSalesActions.setJourneyPlanSales({ payload: item.journeyPlanSales })
-            );
-        }
-    }
-
     onActions(action: string): void {
         if (!action) {
             return;
@@ -250,11 +252,30 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    onDelete(item: JourneyPlan): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+        this.store.dispatch(JourneyPlanActions.confirmDeleteJourneyPlan({ payload: item }));
+    }
+
     onDownload(): void {
         this.$window.open(
             'https://sinbad-website-sg.s3-ap-southeast-1.amazonaws.com/dev/template_upload/Journey+Plans.zip',
             '_blank'
         );
+    }
+
+    onExpandedRow(item: JourneyPlan): void {
+        this.expandedElement = this.expandedElement === item || !item ? null : item;
+
+        if (this.expandedElement) {
+            this.store.dispatch(
+                JourneyPlanSalesActions.setJourneyPlanSales({ payload: item.journeyPlanSales })
+            );
+        }
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -367,6 +388,23 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.viewBy$ = this.store.select(JourneyPlanSelectors.getViewBy);
 
                 this.isLoading$ = this.store.select(JourneyPlanSelectors.getIsLoading);
+
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                            }
+
+                            return true;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this._onRefreshTable();
+                    });
                 break;
         }
     }
@@ -402,5 +440,9 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.store.dispatch(JourneyPlanActions.fetchJourneyPlansRequest({ payload: data }));
         }
+    }
+
+    private _onRefreshTable(): void {
+        this._initTable();
     }
 }

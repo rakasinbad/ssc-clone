@@ -23,6 +23,30 @@ export const fetchJourneyPlansSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - DELETE] Journey Plan
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmDeleteJourneyPlan = createAction(
+    '[JP API] Confirm Delete Journey Plan',
+    props<{ payload: JourneyPlan }>()
+);
+
+export const deleteJourneyPlanRequest = createAction(
+    '[JP API] Delete Journey Plan Request',
+    props<{ payload: string }>()
+);
+
+export const deleteJourneyPlanFailure = createAction(
+    '[JP API] Delete Journey Plan Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const deleteJourneyPlanSuccess = createAction(
+    '[JP API] Delete Journey Plan Success',
+    props<{ payload: string }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Filter View Journey Plans
 // -----------------------------------------------------------------------------------------------------
 

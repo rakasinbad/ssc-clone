@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
+import { JourneyPlan } from '../models';
 
 /**
  *
@@ -54,5 +55,9 @@ export class JourneyPlanApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    delete(id: string): Observable<JourneyPlan> {
+        return this.http.delete<JourneyPlan>(`${this._url}/${id}`);
     }
 }

@@ -30,6 +30,7 @@ const reducer = createReducer<State>(
     initialState,
     on(
         JourneyPlanActions.fetchJourneyPlansFailure,
+        JourneyPlanActions.deleteJourneyPlanFailure,
         JourneyPlanActions.exportFailure,
         JourneyPlanActions.importFailure,
         JourneyPlanStoreActions.fetchJourneyPlanStoresFailure,
@@ -45,6 +46,9 @@ const reducer = createReducer<State>(
     }),
     on(JourneyPlanActions.fetchJourneyPlansSuccess, state => {
         return adapter.removeOne('fetchJourneyPlansFailure', state);
+    }),
+    on(JourneyPlanActions.deleteJourneyPlanSuccess, state => {
+        return adapter.removeOne('deleteJourneyPlanFailure', state);
     }),
     on(JourneyPlanStoreActions.fetchJourneyPlanStoresSuccess, state => {
         return adapter.removeOne('fetchJourneyPlanStoresFailure', state);

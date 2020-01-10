@@ -1,16 +1,27 @@
 import { Inject, Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { DownloadApiService, NoticeService, WINDOW, UploadApiService } from 'app/shared/helpers';
+import { DownloadApiService, NoticeService, UploadApiService, WINDOW } from 'app/shared/helpers';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { ErrorHandler, PaginateResponse } from 'app/shared/models';
-import { ProgressActions } from 'app/shared/store/actions';
+import { ProgressActions, UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
+import * as moment from 'moment';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    catchError,
+    exhaustMap,
+    map,
+    switchMap,
+    tap,
+    withLatestFrom,
+    finalize
+} from 'rxjs/operators';
 
 import { JourneyPlan } from '../../models';
 import { JourneyPlanApiService } from '../../services';
@@ -18,6 +29,108 @@ import { JourneyPlanActions } from '../actions';
 
 @Injectable()
 export class JourneyPlanEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [DELETE - JOURNEY PLAN]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmDeleteJourneyPlan$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(JourneyPlanActions.confirmDeleteJourneyPlan),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const visitDate = params.date
+                    ? moment(params.date, 'YYYY-MM-DD').format('DD/MM/YYYY')
+                    : null;
+
+                const formatMessage = visitDate
+                    ? `Are you sure want to delete <strong>${params.user.fullName} (${visitDate})</strong> ?`
+                    : `Are you sure want to delete <strong>${params.user.fullName}</strong> ?`;
+
+                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                    DeleteConfirmationComponent,
+                    {
+                        data: {
+                            title: 'Delete',
+                            message: formatMessage,
+                            id: params.id
+                        },
+                        disableClose: true
+                    }
+                );
+
+                return dialogRef.afterClosed();
+            }),
+            map(id => {
+                if (id) {
+                    return JourneyPlanActions.deleteJourneyPlanRequest({ payload: id });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    deleteJourneyPlanRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(JourneyPlanActions.deleteJourneyPlanRequest),
+            map(action => action.payload),
+            switchMap(id => {
+                return this._$journeyPlanApi.delete(id).pipe(
+                    map(resp => {
+                        return JourneyPlanActions.deleteJourneyPlanSuccess({ payload: id });
+                    }),
+                    catchError(err =>
+                        of(
+                            JourneyPlanActions.deleteJourneyPlanFailure({
+                                payload: new ErrorHandler({
+                                    id: 'deleteJourneyPlanFailure',
+                                    errors: err
+                                })
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    deleteJourneyPlanFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(JourneyPlanActions.deleteJourneyPlanFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Failed to delete journey plan', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    deleteJourneyPlanSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(JourneyPlanActions.deleteJourneyPlanSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    this._$notice.open('Successfully deleted journey plan', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [JOURNEY PLANS]
+    // -----------------------------------------------------------------------------------------------------
+
     fetchJourneyPlansRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(JourneyPlanActions.fetchJourneyPlansRequest),
@@ -321,6 +434,7 @@ export class JourneyPlanEffects {
     constructor(
         @Inject(WINDOW) private $window: Window,
         private actions$: Actions,
+        private matDialog: MatDialog,
         private store: Store<fromRoot.State>,
         private storage: StorageMap,
         private _$notice: NoticeService,

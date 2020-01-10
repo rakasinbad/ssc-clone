@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { MaterialModule, SharedModule } from 'app/shared';
+import { MaterialModule, SharedModule, ImportAdvancedModule } from 'app/shared';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { ExportFilterComponent, JourneyPlanSelectedStoresComponent } from './components';
@@ -36,6 +36,8 @@ import { JourneyPlansComponent } from './journey-plans.component';
 
         SharedModule,
         MaterialModule,
+
+        ImportAdvancedModule,
 
         // Third Party (RxWeb: https://www.rxweb.io)
         RxReactiveFormsModule,
