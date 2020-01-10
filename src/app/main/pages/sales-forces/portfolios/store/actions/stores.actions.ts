@@ -69,3 +69,5 @@ export const removeSelectedStores = createAction(
     '[Portfolios Page] Remove Selected Stores',
     props<{ payload: Array<string> }>()
 );
+
+export const truncateAllStores = createAction('[Store] Truncate All Stores');

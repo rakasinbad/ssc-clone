@@ -72,7 +72,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
     newPortfolios: adapterNewPortfolio.getInitialState(),
-    type: 'all',
+    type: 'inside',
     total: 0,
 });
 
@@ -137,7 +137,7 @@ export const reducer = createReducer(
     on(
         PortfolioActions.fetchPortfoliosSuccess,
         (state, { payload }) =>
-            adapter.upsertMany(payload.portfolios, {
+            adapter.addAll(payload.portfolios, {
                 ...state,
                 isLoading: false,
                 total: payload.total
@@ -215,15 +215,16 @@ export const reducer = createReducer(
         PortfolioActions.addSelectedPortfolios,
         (state, { payload }) => {
             // Add the payload to state.
-            state.selectedIds.push(...payload);
+            let selectedIds = Array.from(state.selectedIds);
+            selectedIds.push(...payload);
 
             // Create a Set to make sure all of the elements is unique.
-            const set = new Set(state.selectedIds);
+            const set = new Set(selectedIds);
             // Convert to Array.
-            state.selectedIds = Array.from<string>(set);
+            selectedIds = Array.from<string>(set);
 
             // Return the new state.
-            return state;
+            return { ...state, selectedIds };
         }
     ),
     on(

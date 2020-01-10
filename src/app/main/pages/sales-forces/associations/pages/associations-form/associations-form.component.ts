@@ -313,6 +313,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         );
 
         this.invoiceGroupForm$ = this.form.get('invoiceGroup').valueChanges.pipe(
+            tap(value => this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: value }))),
             takeUntil(this.subs$)
         );
 
@@ -352,6 +353,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             });
 
         this.portfolioStore.dispatch(UiActions.showFooterAction());
+
+        // this.form.valueChanges
     }
 
     processAssociationForm(form: IAssociationForm): void {
@@ -433,9 +436,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     requestPortfolio(salesRepId: string, invoiceGroupId: string, portfolioEntityType: string): void {
         // Mendapatkan toko yang tersedia.
         const portfolioQuery: IQueryParams = {
-            limit: 10,
+            limit: 100,
             skip: 0,
+            paginate: true
         };
+        portfolioQuery['request'] = 'associations';
         portfolioQuery['type'] = portfolioEntityType;
         portfolioQuery['invoiceGroupId'] = invoiceGroupId;
 
@@ -444,15 +449,15 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         );
 
         // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
-        const associatedPortfolioQuery: IQueryParams = {
-            limit: 10,
-            skip: 0
-        };
-        associatedPortfolioQuery['userId'] = salesRepId;
+        // const associatedPortfolioQuery: IQueryParams = {
+        //     limit: 10,
+        //     skip: 0
+        // };
+        // associatedPortfolioQuery['userId'] = salesRepId;
         
-        this.portfolioStore.dispatch(
-            PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
-        );
+        // this.portfolioStore.dispatch(
+        //     PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+        // );
     }
 
     ngOnInit(): void {

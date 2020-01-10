@@ -35,4 +35,11 @@ app-associations-selected-portfolios {
             }
         }
     }
+
+    #available-portfolio-scroll {
+        .mat-list-text {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
 }

@@ -104,4 +104,11 @@ export const reducer = createReducer(
             ...state
         })
     ),
+    on(
+        StoreActions.truncateAllStores,
+        state => adapter.removeAll({
+            ...state,
+            selectedIds: []
+        })
+    ),
 );

@@ -330,7 +330,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     //         // Melakukan request store ke server via dispatch state.
     //         this.shopStore.dispatch(
-    //             StoreActions.fetchStoresRequest({ payload: data })
+    //             `StoreActions.fetchStore`sRequest({ payload: data })
     //         );
     //     }
     // }

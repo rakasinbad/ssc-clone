@@ -1,4 +1,5 @@
 import { ITimestamp, TNullable, User, InvoiceGroup } from 'app/shared/models';
+import { Store } from '.';
 
 type TPortfolioType = 'multi' | 'single';
 
@@ -16,6 +17,7 @@ interface IPortfolio extends ITimestamp {
     invoiceGroup: TNullable<InvoiceGroup>;
     storeQty?: number;
     isSelected?: boolean;
+    stores?: Array<Store>;
 }
 
 interface IPortfolioStore {
@@ -44,6 +46,7 @@ export class Portfolio implements IPortfolio {
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
     storeQty?: number;
+    stores?: Array<Store>;
     isSelected?: boolean;
 
     constructor(data: IPortfolio) {
@@ -61,6 +64,7 @@ export class Portfolio implements IPortfolio {
             invoiceGroup = null,
             storeQty = 0,
             isSelected = false,
+            stores,
         } = data;
 
         this.id = id;
@@ -74,6 +78,8 @@ export class Portfolio implements IPortfolio {
         this.deletedAt = deletedAt;
         this.storeQty = storeQty;
         this.isSelected = isSelected;
+
+        this.stores = Array.isArray(stores) && stores.length > 0 ? stores.map(store => new Store(store)) : stores;
 
         this.user = user ? new User(user) : user;
 

@@ -1,10 +1,12 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler, IQueryParams } from 'app/shared/models';
 import { Association, IAssociationForm } from '../../models';
+import { Portfolio } from '../../../portfolios/models';
 
 export type failureActionNames =
     'createAssociationFailure' |
-    'fetchAssociationFailure'
+    'fetchAssociationFailure' |
+    'fetchAssociationsFailure'
 ;
 
 /**
@@ -26,6 +28,22 @@ export const fetchAssociationSuccess = createAction(
     props<{ payload: { data: Array<Association>; total: number } }>()
 );
 
+export const fetchAssociationsRequest = createAction(
+    '[Associations Portfolios API] Fetch Associations Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchAssociationsFailure = createAction(
+    '[Associations API] Fetch Association sFailure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchAssociationsSuccess = createAction(
+    '[Associations API] Fetch Associations Success',
+    props<{ payload: { data: Array<Portfolio>; total: number } }>()
+);
+
+
 export const createAssociationRequest = createAction(
     '[Associations API] Create Association Request',
     props<{ payload: IAssociationForm }>()
@@ -39,6 +57,11 @@ export const createAssociationFailure = createAction(
 export const createAssociationSuccess = createAction(
     '[Associations API] Create Association Success',
     props<{ payload: { message: string } }>()
+);
+
+export const setPortfolioEntityType = createAction(
+    '[Associations] Set Portfolio Entity Type',
+    props<{ payload: string }>()
 );
 
 export const clearState = createAction('[Association Page] Reset Core State');

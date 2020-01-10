@@ -93,6 +93,26 @@ export class AssociationApiService {
         return this.http.post<{ message: string }>(this._url, body);
     }
 
+    findAssociations<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+
+        if (params['type']) {
+            switch (params['type']) {
+                case 'outside':
+                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+            }
+        }
+
+        if (!isNaN(params['invoiceGroupId'])) {
+            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
+    }
+
     requestPortfolio(userId: string, invoiceGroupId: string, portfolioEntityType: string): void {
         // Mendapatkan toko yang tersedia.
         const portfolioQuery: IQueryParams = {

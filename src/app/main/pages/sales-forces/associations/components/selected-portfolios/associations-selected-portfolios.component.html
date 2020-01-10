@@ -55,20 +55,24 @@
                 fxFlex
                 cdkScrollable
                 #availableStoreScroll
-                id="available-store-scroll"
+                id="available-portfolio-scroll"
                 [style.overflow]="'auto'"
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
                 [disableRipple]="true"
-                (selectionChange)="selectedStoreSub$.next($event)"
+                (selectionChange)="selectedPortfolioSub$.next($event)"
             >
                 <mat-list-option
-                    *ngFor="let store of (availablePortfolios$ | async)"
+                    *ngFor="let portfolio of (availablePortfolios$ | async)"
                     [checkboxPosition]="'before'"
-                    [value]="store"
-                    [selected]="store?.isSelected"
+                    [value]="portfolio"
+                    [selected]="portfolio?.isSelected"
                 >
-                    {{ printStoreName(store) }}
+                    <span>{{ printPortfolioName(portfolio) }}</span>
+                    <a
+                        *ngIf="portfolio?.storeQty > 1"
+                        (click)="$event.stopPropagation(); showStore(portfolio)"
+                    >See details</a>
                 </mat-list-option>
             </mat-selection-list>
             <!-- / LIST -->
@@ -87,13 +91,13 @@
                 <p fxFlexAlign="center">Your Selections ({{ totalSelectedPortfolios$ | async }})</p>
                 <!-- / LABEL -->
                 <!-- CLEAR ALL -->
-                <a
+                <!-- <a
                     fxFlexAlign="center"
                     [style.cursor]="'pointer'"
                     class="red-500-fg"
                     (click)="clearAllSelectedStores()"
                     *ngIf="(totalSelectedPortfolios$ | async) > 0"
-                >Clear All</a>
+                >Clear All</a> -->
                 <!-- / CLEAR ALL -->
             </div>
             <!-- / HEADER -->
@@ -105,17 +109,16 @@
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
                 [disableRipple]="true"
-                (selectionChange)="selectedStoreSub$.next($event)"
+                (selectionChange)="selectedPortfolioSub$.next($event)"
             >
                 <ng-container *ngFor="let portfolio of (selectedPortfolios$ | async)" class="relative">
                     <mat-list-option
                         *ngIf="!portfolio?.deletedAt"
-                        [class.yellow-800]="!!portfolio"
                         [checkboxPosition]="'before'"
                         [selected]="true"
                         [value]="portfolio"
                     >
-                        {{ printStoreName(portfolio) }}
+                        {{ printPortfolioName(portfolio) }}
                     </mat-list-option>
                 </ng-container>
             </mat-selection-list>

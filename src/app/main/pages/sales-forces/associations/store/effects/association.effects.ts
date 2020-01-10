@@ -25,6 +25,7 @@ import { AssociationApiService } from '../../services';
 import { AssociationActions, associationFailureActionNames } from '../actions';
 import * as fromAssociation from '../reducers';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Portfolio } from '../../../portfolios/models';
 
 @Injectable()
 export class AssociationEffects {
@@ -71,6 +72,29 @@ export class AssociationEffects {
             })
         )
     , { dispatch: false });
+
+    fetchAssocitionsRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(AssociationActions.fetchAssociationsRequest),
+            map(action => action.payload),
+            switchMap(payload =>
+                this._$associationApi
+                    .findAssociations<PaginateResponse<Portfolio>>(payload)
+                    .pipe(
+                        catchOffline(),
+                        map(response =>
+                            AssociationActions.fetchAssociationsSuccess({
+                                payload: {
+                                    data: response.data.map(resp => new Portfolio({... resp, storeQty: resp['storeAmount'] })),
+                                    total: response.total
+                                },
+                            })
+                        ),
+                        catchError(err => this.sendErrorToState(err, 'fetchAssociationsFailure'))
+                    )
+            )
+        )
+    );
 
     /**
      *
