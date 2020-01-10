@@ -348,11 +348,19 @@ body.theme-sinbad-light {
     }
 
     .sinbad-file-field {
-        + button {
+        + button:not(.single-file-btn) {
             position: relative;
             top: -0.78em;
             left: -0.8em;
             height: 42px;
+        }
+
+        + button {
+            &.single-file-btn {
+                position: relative;
+                top: -0.78em;
+                height: 42px;
+            }
         }
     }
 
