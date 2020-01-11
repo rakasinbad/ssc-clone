@@ -24,6 +24,8 @@ import { IQueryParams } from 'app/shared/models';
 import { tap, distinctUntilChanged, takeUntil, map, debounceTime } from 'rxjs/operators';
 import { Store, Attendance } from './models';
 
+import { environment } from 'environments/environment';
+
 /**
  * ACTIONS
  */
@@ -66,6 +68,9 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'inventory',
         'actions'
     ];
+
+    defaultPageSize = environment.pageSize;
+    defaultPageSizeTable = environment.pageSizeTable;
 
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
@@ -118,7 +123,6 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
         ]);
-        this.paginator.pageSize = 5;
 
         this.dataSource$ = this._fromStore.select(MerchantSelectors.getAllMerchant).pipe(
             map(stores =>
@@ -194,8 +198,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     public onChangePage(): void {
         const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
+            limit: this.paginator.pageSize || this.defaultPageSize,
+            skip: this.defaultPageSize * this.paginator.pageIndex
         };
 
         data['paginate'] = true;

@@ -201,12 +201,21 @@
                     (click)="openStoreAttendanceDetail(row)"
                 >
                 </mat-row>
+
+                <div
+                    class="no-records"
+                    *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                >
+                    No records found
+                </div>
+
             </mat-table>
 
             <mat-paginator
+                *ngIf="(totalDataSource$ | async) > 0"
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageSizeTable"
                 (page)="onChangePage()"
                 showFirstLastButtons
             >
