@@ -56,7 +56,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // 'employeeName',
         // 'role',
         'date',
-        'actions',
+        // 'actions',
     ];
     environment = environment;
 

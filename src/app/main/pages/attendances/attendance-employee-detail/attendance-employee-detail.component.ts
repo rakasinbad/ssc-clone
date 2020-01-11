@@ -33,6 +33,7 @@ import { locale as indonesian } from '../i18n/id';
 import { fromAttendance, fromUser } from '../store/reducers';
 import { AttendanceSelectors, UserSelectors } from '../store/selectors';
 import { AttendanceActions, UserActions } from '../store/actions';
+import { environment } from 'environments/environment';
 
 // import * as localization from 'moment/locale/id';
 // import { LocaleConfig } from 'ngx-daterangepicker-material';
@@ -75,6 +76,11 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         'duration',
         'actions'
     ];
+
+    // Untuk menampilkan jumlah data dalam 1 halaman tabel.
+    defaultPageSize = environment.pageSize;
+    // Untuk menampilkan opsi jumlah data per halaman tabel.
+    defaultPageSizeTable = environment.pageSizeTable;
 
     /** Paginator untuk tabel aktivitas karyawan. */
     @ViewChild(MatPaginator, { static: true })
@@ -184,30 +190,32 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
     // -----------------------------------------------------------------------------------------------------
 
     public onChangePage(): void {
-        /** Menyiapkan parameter untuk query string saat request ke back-end. */
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
-        };
-
-        /** Menyalakan opsi pagination ke back-end. */
-        data['paginate'] = true;
-
-        /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
-        data['userId'] = this._employeeId;
-
-        /** Mengambil arah sortir dan data yang ingin disotir. */
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+        if (this.paginator) {
+            /** Menyiapkan parameter untuk query string saat request ke back-end. */
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.defaultPageSize * this.paginator.pageIndex
+            };
+    
+            /** Menyalakan opsi pagination ke back-end. */
+            data['paginate'] = true;
+    
+            /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
+            data['userId'] = this._employeeId;
+    
+            /** Mengambil arah sortir dan data yang ingin disotir. */
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+    
+            /** Melakukan request dengan membawa query string yang telah disiapkan. */
+            this._fromAttendance.dispatch(
+                AttendanceActions.fetchAttendancesRequest({
+                    payload: data
+                })
+            );
         }
-
-        /** Melakukan request dengan membawa query string yang telah disiapkan. */
-        this._fromAttendance.dispatch(
-            AttendanceActions.fetchAttendancesRequest({
-                payload: data
-            })
-        );
     }
 
     public getChainRoles(roles: Array<Role>): string {

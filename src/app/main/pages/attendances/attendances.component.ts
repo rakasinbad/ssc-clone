@@ -1,4 +1,4 @@
-import { Subject, merge, Observable } from 'rxjs';
+import { Subject, merge, Observable, combineLatest } from 'rxjs';
 import {
     Component,
     ElementRef,
@@ -21,7 +21,7 @@ import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 
 import { IQueryParams } from 'app/shared/models';
-import { tap, distinctUntilChanged, takeUntil, map, debounceTime } from 'rxjs/operators';
+import { tap, distinctUntilChanged, takeUntil, map, debounceTime, take } from 'rxjs/operators';
 import { Store, Attendance } from './models';
 
 import { environment } from 'environments/environment';
@@ -106,6 +106,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
+
         this.search = new FormControl('', [
             Validators.required,
             control => {
@@ -197,32 +198,34 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     public onChangePage(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || this.defaultPageSize,
-            skip: this.defaultPageSize * this.paginator.pageIndex
-        };
-
-        data['paginate'] = true;
-
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.defaultPageSize * this.paginator.pageIndex
+            };
+    
+            data['paginate'] = true;
+    
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+    
+            if (this.search.status === 'VALID') {
+                data['search'] = [
+                    {
+                        fieldName: 'name',
+                        keyword: this.search.value
+                    }
+                ];
+            }
+    
+            this._fromStore.dispatch(
+                MerchantActions.fetchStoresRequest({
+                    payload: data
+                })
+            );
         }
-
-        if (this.search.status === 'VALID') {
-            data['search'] = [
-                {
-                    fieldName: 'name',
-                    keyword: this.search.value
-                }
-            ];
-        }
-
-        this._fromStore.dispatch(
-            MerchantActions.fetchStoresRequest({
-                payload: data
-            })
-        );
     }
 
     getDiffTime(

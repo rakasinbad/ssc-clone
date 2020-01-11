@@ -44,6 +44,7 @@ import { fromAttendance, fromMerchant, fromUser } from '../store/reducers';
  * SELECTORS
  */
 import { AttendanceSelectors, MerchantSelectors } from '../store/selectors';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-attendance-store-detail',
@@ -88,6 +89,11 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
     /** Sort untuk tabel aktivitas karyawan. */
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
+
+    // Untuk menampilkan jumlah data dalam 1 halaman tabel.
+    defaultPageSize = environment.pageSize;
+    // Untuk menampilkan opsi jumlah data per halaman tabel.
+    defaultPageSizeTable = environment.pageSizeTable;
 
     /** Filter untuk tabel aktivitas karyawan. */
     // @ViewChild('filter', { static: true })
@@ -231,30 +237,32 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
     // -----------------------------------------------------------------------------------------------------
 
     public onChangePage(): void {
-        /** Menyiapkan parameter untuk query string saat request ke back-end. */
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
-        };
-
-        /** Menyalakan opsi pagination ke back-end. */
-        data['paginate'] = true;
-
-        /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
-        data['storeId'] = this.route.snapshot.params.id;
-
-        /** Mengambil arah sortir dan data yang ingin disotir. */
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+        if (this.paginator) {
+            /** Menyiapkan parameter untuk query string saat request ke back-end. */
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.defaultPageSize * this.paginator.pageIndex
+            };
+    
+            /** Menyalakan opsi pagination ke back-end. */
+            data['paginate'] = true;
+    
+            /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
+            data['storeId'] = this.route.snapshot.params.id;
+    
+            /** Mengambil arah sortir dan data yang ingin disotir. */
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+    
+            /** Melakukan request dengan membawa query string yang telah disiapkan. */
+            this._fromAttendance.dispatch(
+                AttendanceActions.fetchAttendancesRequest({
+                    payload: data
+                })
+            );
         }
-
-        /** Melakukan request dengan membawa query string yang telah disiapkan. */
-        this._fromAttendance.dispatch(
-            AttendanceActions.fetchAttendancesRequest({
-                payload: data
-            })
-        );
     }
 
     public getChainRoles(roles: Array<Role>): string {

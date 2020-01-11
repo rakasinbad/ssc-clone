@@ -201,18 +201,17 @@
                     (click)="openStoreAttendanceDetail(row)"
                 >
                 </mat-row>
-
-                <div
-                    class="no-records"
-                    *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
-                >
-                    No records found
-                </div>
-
             </mat-table>
 
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
-                *ngIf="(totalDataSource$ | async) > 0"
+                [fxHide]="(totalDataSource$ | async) === 0"
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageSizeTable"

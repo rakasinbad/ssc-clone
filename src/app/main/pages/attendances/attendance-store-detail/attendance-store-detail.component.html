@@ -45,7 +45,7 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="sinbad-content mat-elevation-z1 fuse-white">
+        <div class="content-card mat-elevation-z1 fuse-white">
             <!-- MARGIN LEFT ADJUSMENT -->
             <div class="pl-40 py-20">
                 <!-- CARD TITLE -->
@@ -108,7 +108,7 @@
         <!-- / CONTENT CARD -->
         
         <!-- EMPLOYEES ACTIVITY -->
-        <div class="sinbad-content mat-elevation-z1 fuse-white mt-32">
+        <div class="content-card mat-elevation-z1 fuse-white mt-32">
             <!-- TITLE -->
             <div class="h1 pl-40 py-20">Employees Activity</div>
             <!-- / TITLE -->
@@ -266,12 +266,21 @@
                         (click)="openEmployeeAttendanceDetail(row)"
                     >
                     </mat-row>
+
                 </mat-table>
+                
+                <div
+                    class="no-records"
+                    *ngIf="!(isAttendanceLoading$ | async) && (totalEmployeesActivities$ | async) === 0"
+                >
+                    No records found
+                </div>
     
                 <mat-paginator
+                    [fxHide]="(totalEmployeesActivities$ | async) === 0"
                     [length]="totalEmployeesActivities$ | async"
-                    [pageSize]="5"
-                    [pageSizeOptions]="[5, 10, 25, 100]"
+                    [pageSize]="defaultPageSize"
+                    [pageSizeOptions]="defaultPageSizeTable"
                     (page)="onChangePage()"
                     showFirstLastButtons
                 >
