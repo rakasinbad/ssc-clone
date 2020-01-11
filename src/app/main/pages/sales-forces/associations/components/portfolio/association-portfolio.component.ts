@@ -47,6 +47,9 @@ import { FormControl } from '@angular/forms';
     selector: 'app-associations-portfolio',
     templateUrl: './association-portfolio.component.html',
     styleUrls: ['./association-portfolio.component.scss'],
+    host: {
+        class: 'content-card'
+    },
     animations: [
         fuseAnimations,
         trigger('enterAnimation', [
@@ -144,6 +147,10 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         this._initPage();
 
         this._initTable();
+
+        this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
+            this._initTable(val);
+        });
 
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
@@ -264,7 +271,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         );
     }
 
-    private _initTable(): void {
+    private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -276,6 +283,19 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
+            }
+
+            if (searchText) {
+                data['search'] = [
+                    {
+                        fieldName: 'code',
+                        keyword: searchText
+                    },
+                    {
+                        fieldName: 'name',
+                        keyword: searchText
+                    }
+                ];
             }
 
             this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));

@@ -19,6 +19,7 @@ interface State extends EntityState<Association> {
     selectedId: string;
     type: string;
     total: number;
+    textSearch: string;
 }
 
 // Adapter for Association state
@@ -29,6 +30,7 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     selectedId: null,
     type: 'all',
+    textSearch: null,
     total: 0
 });
 
@@ -61,6 +63,10 @@ const reducer = createReducer<State>(
     on(AssociationActions.setPortfolioEntityType, (state, { payload }) => ({
         ...state,
         type: payload
+    })),
+    on(AssociationActions.setSearchValue, (state, { payload }) => ({
+        ...state,
+        textSearch: payload
     }))
 );
 

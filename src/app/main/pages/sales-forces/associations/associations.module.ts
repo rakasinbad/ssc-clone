@@ -14,7 +14,6 @@ import { AssociationViewByComponent } from './components/view-by/association-vie
 import { AssociationSalesRepComponent } from './components/sales-rep/association-sales-rep.component';
 import { AssociationPortfolioComponent } from './components/portfolio/association-portfolio.component';
 import { AssociationStoreComponent } from './components/store/association-store.component';
-import { AssociationEffects } from './store/effects';
 import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
 
 import {
@@ -37,6 +36,7 @@ import { AssociationsSelectedPortfoliosComponent } from './components/selected-p
 import { AssociationsFilterPortfoliosComponent } from './components/filter-portfolios/associations-filter-portfolios.component';
 import { PortfolioStoresComponent } from './components/portfolio-stores/portfolio-stores.component';
 import { StoreEffects } from '../portfolios/store/effects/stores.effects';
+import { AssociationEffects, AssociationStoreEffects } from './store/effects';
 
 @NgModule({
     declarations: [
@@ -64,6 +64,7 @@ import { StoreEffects } from '../portfolios/store/effects/stores.effects';
         StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),
         EffectsModule.forFeature([
             AssociationEffects,
+            AssociationStoreEffects,
             PortfoliosEffects,
             StoreEffects,
             SalesRepEffects

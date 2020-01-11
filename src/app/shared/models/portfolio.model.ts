@@ -16,6 +16,7 @@ export interface IPortfolio extends ITimestamp {
     totalStore?: number;
     totalTargetSales?: number;
     user?: User;
+    portfolioHistories?: any;
     userId: string;
 }
 
@@ -32,6 +33,7 @@ export class Portfolio implements IPortfolio {
     totalStore?: number;
     totalTargetSales?: number;
     user?: User;
+    portfolioHistories?: any;
     userId: string;
     createdAt: string;
     updatedAt: string;
@@ -51,6 +53,7 @@ export class Portfolio implements IPortfolio {
             totalStore,
             totalTargetSales,
             user,
+            portfolioHistories,
             userId,
             createdAt,
             updatedAt,
@@ -70,6 +73,7 @@ export class Portfolio implements IPortfolio {
         this.totalStore = totalStore;
         this.totalTargetSales = totalTargetSales;
         this.userId = userId;
+        this.portfolioHistories = portfolioHistories;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;

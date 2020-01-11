@@ -1,3 +1,17 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="tab-container">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
+        <span class="text-tab-custom">All</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"
+        (click)="clickTab('associated')">
+        <span class="text-tab-custom">Associated</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated'"
+        (click)="clickTab('not-associated')">
+        <span class="text-tab-custom">Not Associated</span>
+    </div>
+</div>
+
 <mat-table class="association-sales-rep-table" #table [dataSource]="dataSource$ | async" matSort
     [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
     <!-- Checkbox Column -->
@@ -107,10 +121,20 @@
         class="association"></mat-row>
 </mat-table>
 
-<mat-paginator [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="[5, 10, 25, 100]"
-    (page)="onChangePage($event)" showFirstLastButtons>
-</mat-paginator>
+<div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
 
-<div class="loader" *ngIf="isLoading$ | async">
+<div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div>
+
+<mat-paginator [fxHide]="
+                        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                    " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+
+<div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
     <mat-spinner color="accent"></mat-spinner>
 </div>

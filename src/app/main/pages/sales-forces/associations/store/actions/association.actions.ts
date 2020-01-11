@@ -14,7 +14,7 @@ export type failureActionNames =
  */
 
 export const fetchAssociationRequest = createAction(
-    '[Associations Portfolios API] Fetch Association Request',
+    '[Associations API] Fetch Association Request',
     props<{ payload: IQueryParams }>()
 );
 
@@ -61,6 +61,11 @@ export const createAssociationSuccess = createAction(
 
 export const setPortfolioEntityType = createAction(
     '[Associations] Set Portfolio Entity Type',
+    props<{ payload: string }>()
+);
+
+export const setSearchValue = createAction(
+    '[Associations PAGE] Set Search Value',
     props<{ payload: string }>()
 );
 

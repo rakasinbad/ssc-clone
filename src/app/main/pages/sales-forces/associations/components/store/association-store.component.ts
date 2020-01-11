@@ -22,16 +22,19 @@ import { flatMap, takeUntil } from 'rxjs/operators';
 // Environment variables.
 import { environment } from 'environments/environment';
 // Entity model.
-import { Association } from '../../models/';
+import { AssociationStore } from '../../models/';
 // State management's stuffs.
-import * as fromAssociations from '../../store/reducers';
-import { AssociationActions } from '../../store/actions';
-import { AssociationSelectors } from '../../store/selectors';
+import * as fromAssociationStores from '../../store/reducers';
+import { AssociationStoresActions } from '../../store/actions';
+import { AssociationSelectors, AssociationStoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-associations-store',
     templateUrl: './association-store.component.html',
     styleUrls: ['./association-store.component.scss'],
+    host: {
+        class: 'content-card'
+    },
     animations: [
         fuseAnimations,
         trigger('enterAnimation', [
@@ -64,9 +67,9 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         'actions'
     ];
 
-    selection: SelectionModel<Association>;
+    selection: SelectionModel<AssociationStore>;
 
-    dataSource$: Observable<Array<Association>>;
+    dataSource$: Observable<Array<AssociationStore>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -93,7 +96,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         }
     ];
 
-    constructor(private store: Store<fromAssociations.FeatureState>) {}
+    constructor(private store: Store<fromAssociationStores.FeatureState>) {}
 
     /**
      * PRIVATE FUNCTIONS
@@ -115,7 +118,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<Association>(true, []);
+        this.selection = new SelectionModel<AssociationStore>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -126,9 +129,13 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
         this._initTable();
 
-        this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
-        this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
-        this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
+        this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
+            this._initTable(val);
+        });
+
+        this.dataSource$ = this.store.select(AssociationStoreSelectors.selectAll);
+        this.totalDataSource$ = this.store.select(AssociationStoreSelectors.getTotalItem);
+        this.isLoading$ = this.store.select(AssociationStoreSelectors.getIsLoading);
     }
 
     ngAfterViewInit(): void {
@@ -153,7 +160,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearState());
+        this.store.dispatch(AssociationStoresActions.clearStoreState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -209,13 +216,27 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
         data['paginate'] = true;
 
-        if (activeTab === 'associated') {
+        if (activeTab === 'all') {
+            data['portfolio'] = 'all';
+        } else if (activeTab === 'associated-portfolio') {
+            data['portfolio'] = 'group';
             data['associated'] = true;
-        } else if (activeTab === 'not-associated') {
+        } else if (activeTab === 'associated-direct') {
+            data['portfolio'] = 'direct';
+            data['associated'] = true;
+        } else if (activeTab === 'not-associated-portfolio') {
+            data['portfolio'] = 'group';
             data['associated'] = false;
+        } else if (activeTab === 'not-associated-direct') {
+            data['portfolio'] = 'direct';
+            data['associated'] = false;
+        } else {
+            data['portfolio'] = 'all';
         }
 
-        this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
+        this.store.dispatch(
+            AssociationStoresActions.fetchAssociationStoresRequest({ payload: data })
+        );
     }
 
     isAllSelected(): boolean {
@@ -258,7 +279,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         );
     }
 
-    private _initTable(): void {
+    private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -267,12 +288,25 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
             data['paginate'] = true;
 
+            data['portfolio'] = 'all';
+
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
             }
 
-            this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
+            if (searchText) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: searchText
+                    }
+                ];
+            }
+
+            this.store.dispatch(
+                AssociationStoresActions.fetchAssociationStoresRequest({ payload: data })
+            );
         }
     }
 

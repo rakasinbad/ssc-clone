@@ -1,4 +1,4 @@
-<div id="associations" class="page-layout carded fullwidth inner-scroll">
+<div id="associations" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -62,16 +62,16 @@
         <!-- / HEADER -->
 
         <!-- CONTENT CARD -->
-        <div class="content-card">
-            <app-associations-sales-rep *ngIf="(buttonViewByActive$ | async) ==='sales-rep'">
-            </app-associations-sales-rep>
+        <!-- <div class="content-card"> -->
+        <app-associations-sales-rep *ngIf="(buttonViewByActive$ | async) ==='sales-rep'">
+        </app-associations-sales-rep>
 
-            <app-associations-portfolio *ngIf="(buttonViewByActive$ | async) ==='portfolio'">
-            </app-associations-portfolio>
+        <app-associations-portfolio *ngIf="(buttonViewByActive$ | async) ==='portfolio'">
+        </app-associations-portfolio>
 
-            <app-associations-store *ngIf="(buttonViewByActive$ | async) ==='store'">
-            </app-associations-store>
-        </div>
+        <app-associations-store *ngIf="(buttonViewByActive$ | async) ==='store'">
+        </app-associations-store>
+        <!-- </div> -->
         <!-- / CONTENT CARD -->
     </div>
     <!-- / CENTER -->

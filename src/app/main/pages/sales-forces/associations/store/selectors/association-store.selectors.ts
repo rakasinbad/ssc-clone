@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import * as fromAssociation from '../reducers/association.reducer';
+import * as fromAssociationStore from '../reducers/association-store.reducer';
 import * as fromAssociationCore from '../reducers';
 
 const getAssociationsCoreState = createFeatureSelector<
@@ -10,7 +10,7 @@ const getAssociationsCoreState = createFeatureSelector<
 
 export const getAssociationEntitiesState = createSelector(
     getAssociationsCoreState,
-    state => state.associations
+    state => state.associationStores
 );
 
 export const {
@@ -18,13 +18,11 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromAssociation.adapter.getSelectors(getAssociationEntitiesState);
+} = fromAssociationStore.adapter.getSelectors(getAssociationEntitiesState);
 
 const getTotalItem = createSelector(getAssociationEntitiesState, state => state.total);
 
 const getSelectedId = createSelector(getAssociationEntitiesState, state => state.selectedId);
-
-export const getPortfolioEntityType = createSelector(getAssociationEntitiesState, state => state.type);
 
 const getSelectedItem = createSelector(
     selectEntities,
@@ -34,6 +32,4 @@ const getSelectedItem = createSelector(
 
 const getIsLoading = createSelector(getAssociationEntitiesState, state => state.isLoading);
 
-const getSearchValue = createSelector(getAssociationEntitiesState, state => state.textSearch);
-
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem, getSearchValue };
+export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
