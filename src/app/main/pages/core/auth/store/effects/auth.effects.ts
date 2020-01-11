@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -379,22 +379,24 @@ export class AuthEffects {
                 tap(resp => {
                     const { user, token } = resp;
 
-                    this._$log.generateGroup('[LOGIN REQUEST SUCCESS]', {
-                        resp: {
-                            type: 'log',
-                            value: resp
+                    this.storage.set('user', new Auth(user, token)).subscribe({
+                        next: () => {
+                            // const roles = user.roles.map(r => {
+                            //     return {
+                            //         [r.role]
+                            //     }
+                            // })
+                            // /pages/dashboard
+                            this.router.navigate(['/pages/account/stores'], {
+                                replaceUrl: true
+                            });
                         },
-                        redirectUrl: {
-                            type: 'log',
-                            value: this._$auth.redirectUrl
+                        error: err => {
+                            this._$notice.open('Something wrong with sessions', 'error', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right'
+                            });
                         }
-                    });
-
-                    this.storage.set('user', new Auth(user, token)).subscribe(() => {
-                        // /pages/dashboard
-                        this.router.navigate(['/pages/account/stores'], {
-                            replaceUrl: true
-                        });
                     });
                 })
             ),
@@ -406,19 +408,24 @@ export class AuthEffects {
             this.actions$.pipe(
                 ofType(AuthActions.authLogout),
                 tap(() => {
-                    this.storage.clear().subscribe(() => {
-                        this.router.navigate(['/auth/login'], { replaceUrl: true });
+                    this.storage.clear().subscribe({
+                        next: () => {
+                            this.router.navigate(['/auth/login'], { replaceUrl: true });
+                        },
+                        error: err => {
+                            this._$notice.open('Something wrong with sessions storage', 'error', {
+                                verticalPosition: 'bottom',
+                                horizontalPosition: 'right'
+                            });
+                        }
                     });
                 })
             ),
-        {
-            dispatch: false
-        }
+        { dispatch: false }
     );
 
     constructor(
         private actions$: Actions,
-        private route: ActivatedRoute,
         private router: Router,
         protected network: Network,
         private store: Store<fromRoot.State>,

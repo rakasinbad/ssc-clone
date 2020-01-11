@@ -16,6 +16,7 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseSplashScreenService } from '@fuse/services/splash-screen.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { FuseNavigation } from '@fuse/types';
 import { DEFAULT_INTERRUPTSOURCES, Idle } from '@ng-idle/core';
 import { Keepalive } from '@ng-idle/keepalive';
 import { Store } from '@ngrx/store';
@@ -24,6 +25,8 @@ import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
+import { LifecyclePlatform } from 'app/shared/models';
+import { NgxPermissionsService, NgxRolesObject, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 
@@ -56,6 +59,8 @@ export class AppComponent implements OnInit, OnDestroy {
         @Inject(DOCUMENT) private document: any,
         private swUpdate: SwUpdate,
         private appRef: ApplicationRef,
+        private ngxPermissions: NgxPermissionsService,
+        private ngxRoles: NgxRolesService,
         private idle: Idle,
         private keepAlive: Keepalive,
         private store: Store<fromRoot.State>,
@@ -194,12 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        ReactiveFormConfig.set({
-            allowDecimalSymbol: '.',
-            validationMessage: {
-                required: 'This field is required'
-            }
-        });
+        this._initPage();
 
         this.store
             .select(AuthSelectors.getUserState)
@@ -281,9 +281,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
-        this._unsubscribeAll.complete();
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -319,5 +320,73 @@ export class AppComponent implements OnInit, OnDestroy {
         this.idle.watch();
         this.idleState = 'Started';
         this.timedOut = false;
+    }
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // Unsubscribe from all subscriptions
+                this._unsubscribeAll.next();
+                this._unsubscribeAll.complete();
+                break;
+
+            default:
+                ReactiveFormConfig.set({
+                    allowDecimalSymbol: '.',
+                    validationMessage: {
+                        required: 'This field is required'
+                    }
+                });
+
+                this._initNavigation();
+                break;
+        }
+    }
+
+    private _initNavigation(): void {
+        const navs = this._fuseNavigationService.getCurrentNavigation() as Array<FuseNavigation>;
+        const roles = this.ngxRoles.getRoles();
+
+        this._initNavigationCheck(navs, roles);
+    }
+
+    private _initNavigationCheck(nav: Array<FuseNavigation>, roles?: NgxRolesObject): void {
+        if (nav && nav.length > 0) {
+            for (const [idx, item] of nav.entries()) {
+                if (item.type === 'group') {
+                    console.log('Group', item);
+                }
+
+                if (item.type === 'item') {
+                    this._navigationRules(item.id);
+                }
+
+                if (item.type === 'collapsable') {
+                    if (item.children && item.children.length > 0) {
+                        this._initNavigationCheck(item.children);
+                    }
+                }
+            }
+        }
+    }
+
+    private _navigationRules(id: string): void {
+        if (!id) {
+            return;
+        }
+
+        switch (id) {
+            case 'orderManagement':
+                this._fuseNavigationService.updateNavigationItem(id, {
+                    hidden: !this.ngxRoles.getRole('SUPPLIER_ADMIN')
+                });
+                break;
+
+            default:
+                this._fuseNavigationService.updateNavigationItem(id, {
+                    hidden: false
+                });
+                break;
+        }
     }
 }
