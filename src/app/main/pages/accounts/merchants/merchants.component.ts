@@ -28,6 +28,7 @@ import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-merchants',
@@ -75,7 +76,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$log: LogService,
         private _$merchantApi: MerchantApiService,
-        public translate: TranslateService
+        public translate: TranslateService,
+        private ngPerms: NgxPermissionsService,
+        private ngRoles: NgxRolesService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -120,6 +123,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         });
 
         localStorage.removeItem('filter.store');
+
+        console.log('Perms ', this.ngPerms.getPermissions());
+        console.log('Roles', this.ngRoles.getRoles());
 
         // .pipe(
         //     filter(source => source.length > 0),

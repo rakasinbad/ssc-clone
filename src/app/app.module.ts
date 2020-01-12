@@ -3,7 +3,7 @@ import 'hammerjs';
 import { getCurrencySymbol, registerLocaleData } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -28,6 +28,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppStoreModule } from './app-store.module';
 import { AppComponent } from './app.component';
+import { AppService, initPrivileges } from './app.service';
 import { FakeDbService } from './fake-db/fake-db.service';
 import { fuseConfig } from './fuse-config';
 import { LayoutModule } from './layout/layout.module';
@@ -136,8 +137,10 @@ registerLocaleData(localId, 'id');
         LayoutModule
     ],
     providers: [
+        AppService,
         WINDOW_PROVIDERS,
         { provide: LOCALE_ID, useValue: 'id' },
+        { provide: APP_INITIALIZER, useFactory: initPrivileges, deps: [AppService], multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpConfigInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: HttpErrorInterceptor, multi: true }
