@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable, ElementRef } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, of, throwError } from 'rxjs';
