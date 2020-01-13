@@ -33,6 +33,11 @@ export const getSelectedPortfolioIds = createSelector(
     state => state.selectedIds
 );
 
+export const getSearchKeywordPortfolio = createSelector(
+    getPortfolioEntity,
+    state => state.search
+);
+
 export const getSelectedInvoiceGroupId = createSelector(
     getPortfolioEntity,
     state => state.selectedInvoiceGroupId

@@ -50,6 +50,10 @@ export class PortfoliosApiService {
             }
         }
 
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
         if (!isNaN(params['invoiceGroupId'])) {
             newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
         }

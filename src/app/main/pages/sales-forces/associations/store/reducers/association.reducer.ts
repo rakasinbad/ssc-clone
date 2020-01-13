@@ -3,6 +3,8 @@ import { createReducer, on } from '@ngrx/store';
 
 import { Association } from '../../models';
 import { AssociationActions } from '../actions';
+import { SalesRep } from '../../../sales-reps/models';
+import { InvoiceGroup } from 'app/shared/models';
 
 // Keyname for reducer
 const featureKey = 'associations';
@@ -17,9 +19,11 @@ interface State extends EntityState<Association> {
     isRefresh?: boolean;
     isLoading: boolean;
     selectedId: string;
-    type: string;
-    total: number;
+    selectedSalesRep: SalesRep;
+    selectedInvoiceGroup: InvoiceGroup;
+    portfolioType: string;
     textSearch: string;
+    total: number;
 }
 
 // Adapter for Association state
@@ -29,7 +33,9 @@ const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
     selectedId: null,
-    type: 'all',
+    selectedSalesRep: null,
+    selectedInvoiceGroup: null,
+    portfolioType: 'inside',
     textSearch: null,
     total: 0
 });
@@ -60,14 +66,22 @@ const reducer = createReducer<State>(
             total: payload.total
         });
     }),
+    on(AssociationActions.setSelectedSalesRep, (state, { payload }) => ({
+        ...state,
+        selectedSalesRep: payload
+    })),
+    on(AssociationActions.setSelectedInvoiceGroup, (state, { payload }) => ({
+        ...state,
+        selectedInvoiceGroup: payload
+    })),
     on(AssociationActions.setPortfolioEntityType, (state, { payload }) => ({
         ...state,
-        type: payload
+        portfolioType: payload
     })),
     on(AssociationActions.setSearchValue, (state, { payload }) => ({
         ...state,
         textSearch: payload
-    }))
+    })),
 );
 
 // Set anything for the export

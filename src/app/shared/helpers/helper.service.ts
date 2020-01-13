@@ -454,6 +454,13 @@ export class HelperService {
     isElementScrolledToBottom(element: ElementRef<HTMLElement>): boolean {
         // Mengambil element native dari CdkScrollable yang sedang di-scroll.
         const { nativeElement } = element;
+
+        // Tidak dilanjutkan jika tidak meneumukan nativeElement.
+        if (!nativeElement) {
+            console.error('nativeElement not found.');
+            return false;
+        }
+
         // Mengambil beberapa property dari element native.
         const { clientHeight, scrollTop, scrollHeight } = nativeElement;
 

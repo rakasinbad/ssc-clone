@@ -32,17 +32,36 @@
                         </label>
                 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="80">
-                            <mat-select
-                                name="salesRep"
+                            <input
+                                matInput
+                                placeholder="Pick a Sales Rep."
                                 formControlName="salesRep"
+                                [matAutocomplete]="salesRepScroll"
+                            />
+                            <mat-autocomplete
+                                #salesRepScroll="matAutocomplete"
+                                [displayWith]="displaySalesRep"
+                                (opened)="listenSalesRepScroll()"
                             >
+                                <!-- SALES REP. OPTIONS -->
                                 <mat-option
                                     *ngFor="let salesRep of (salesReps$ | async)"
-                                    [value]="salesRep?.id"
+                                    [value]="salesRep"
                                 >
                                     {{ salesRep?.user?.fullName }}
                                 </mat-option>
-                            </mat-select>
+                                <!-- SALES REP. OPTIONS -->
+
+                                <!-- LOADING OPTION -->
+                                <mat-option
+                                    [disabled]="true"
+                                    style="text-align: center; font-style: italic; max-height: 30px;"
+                                    *ngIf="(totalSalesReps$ | async) > (salesReps$ | async)?.length"
+                                >
+                                    Loading ...
+                                </mat-option>
+                                <!-- / LOADING OPTION -->
+                            </mat-autocomplete>
                             <mat-error *ngIf="hasError(form.get('salesRep'))">
                                 {{ getFormError(form.get('salesRep')) }}
                             </mat-error>
@@ -73,7 +92,7 @@
                             >
                                 <mat-option
                                     *ngFor="let invoiceGroup of (invoiceGroups$ | async)"
-                                    [value]="invoiceGroup.id"
+                                    [value]="invoiceGroup"
                                 >
                                     {{ invoiceGroup.name }}
                                 </mat-option>

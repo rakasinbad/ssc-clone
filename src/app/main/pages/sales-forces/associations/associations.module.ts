@@ -16,6 +16,7 @@ import { AssociationPortfolioComponent } from './components/portfolio/associatio
 import { AssociationStoreComponent } from './components/store/association-store.component';
 import { AssociationsFormComponent } from './pages/associations-form/associations-form.component';
 
+import { AssociatedPortfoliosEffects } from './store/effects';
 import {
     featureKey as AssociationMainFeatureKey,
     reducers as AssociationMainReducers
@@ -26,7 +27,7 @@ import {
     reducers as SalesRepMainReducers
 } from '../sales-reps/store/reducers';
 
-import { SalesRepEffects } from '../sales-reps/store/effects';
+import { SalesRepEffects } from './store/effects';
 import {
     mainFeatureKey as PortfoliosMainFeatureKey,
     reducers as PortfolioReducers
@@ -61,10 +62,11 @@ import { AssociationEffects, AssociationStoreEffects } from './store/effects';
         MaterialModule,
         StoreModule.forFeature(AssociationMainFeatureKey, AssociationMainReducers),
         StoreModule.forFeature(PortfoliosMainFeatureKey, PortfolioReducers),
-        StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),
+        // StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),
         EffectsModule.forFeature([
             AssociationEffects,
             AssociationStoreEffects,
+            AssociatedPortfoliosEffects,
             PortfoliosEffects,
             StoreEffects,
             SalesRepEffects
