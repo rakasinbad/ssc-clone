@@ -13,35 +13,41 @@
                 <!-- <button type="button" mat-flat-button color="accent" (click)="onExport()">
                     EXPORT
                 </button> -->
-                <app-export-advanced
-                    title="EXPORT"
-                    color="accent"
-                    action="export"
-                    [formConfig]="formConfig"
-                    (clickExport)="onExport($event)"
-                ></app-export-advanced>
+                <ng-template [ngxPermissionsOnly]="['OMS.EXPORT']">
+                    <app-export-advanced
+                        title="EXPORT"
+                        color="accent"
+                        action="export"
+                        [formConfig]="formConfig"
+                        (clickExport)="onExport($event)"
+                    ></app-export-advanced>
+                </ng-template>
 
-                <button
-                    type="button"
-                    mat-stroked-button
-                    color="accent"
-                    class="sinbad"
-                    (click)="filePicker.click()"
-                >
-                    IMPORT
-                </button>
+                <ng-template [ngxPermissionsOnly]="['OMS.IMPORT']">
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="filePicker.click()"
+                    >
+                        IMPORT
+                    </button>
 
-                <input
-                    type="file"
-                    #filePicker
-                    class="custom-file"
-                    (click)="filePicker.value = null"
-                    (change)="onFileBrowse($event, 'docs')"
-                />
+                    <input
+                        type="file"
+                        #filePicker
+                        class="custom-file"
+                        (click)="filePicker.value = null"
+                        (change)="onFileBrowse($event, 'docs')"
+                    />
+                </ng-template>
 
-                <button type="button" mat-flat-button color="primary" (click)="onDownload()">
-                    <span>DOWNLOAD TEMPLATE</span>
-                </button>
+                <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
+                    <button type="button" mat-flat-button color="primary" (click)="onDownload()">
+                        <span>DOWNLOAD TEMPLATE</span>
+                    </button>
+                </ng-template>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -364,21 +370,24 @@
                             <mat-icon class="secondary-text">delete</mat-icon>
                         </button> -->
                     </mat-header-cell>
+
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button
-                                mat-icon-button
-                                [matMenuTriggerFor]="moreMenu"
-                                aria-label="More"
-                                *ngIf="
-                                    row?.status !== 'done' &&
-                                    row?.status !== 'cancel' &&
-                                    row?.status !== 'checkout'
-                                "
-                                (click)="$event.stopPropagation()"
-                            >
-                                <mat-icon class="secondary-text">more_vert</mat-icon>
-                            </button>
+                            <ng-template [ngxPermissionsOnly]="['OMS.UPDATE']">
+                                <button
+                                    mat-icon-button
+                                    [matMenuTriggerFor]="moreMenu"
+                                    aria-label="More"
+                                    *ngIf="
+                                        row?.status !== 'done' &&
+                                        row?.status !== 'cancel' &&
+                                        row?.status !== 'checkout'
+                                    "
+                                    (click)="$event.stopPropagation()"
+                                >
+                                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                                </button>
+                            </ng-template>
 
                             <mat-menu #moreMenu="matMenu">
                                 <button
