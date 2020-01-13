@@ -147,10 +147,22 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Sales Rep ID Column -->
+                <ng-container matColumnDef="sales-rep-id">
+                    <mat-header-cell *matHeaderCellDef>
+                        Sales Rep ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            {{ row?.id }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Sales Rep Column -->
                 <ng-container matColumnDef="sales-rep-name">
                     <mat-header-cell *matHeaderCellDef>
-                        Sales Rep
+                        Sales Rep Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">

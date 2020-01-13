@@ -64,6 +64,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     search: FormControl;
     displayedColumns = [
         'checkbox',
+        'sales-rep-id',
         'sales-rep-name',
         'phone-number',
         'sales-rep-target',
