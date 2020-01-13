@@ -361,7 +361,7 @@
             </mat-table>
 
             <mat-paginator
-                *ngIf="(totalDataSource$ | async) > 0"
+                [fxHide]="(totalDataSource$ | async) === 0"
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"
