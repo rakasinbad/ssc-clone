@@ -25,6 +25,7 @@ import { locale as indonesian } from './i18n/id';
 import { SupplierInventoryActions } from './store/actions';
 import { fromSupplierInventory } from './store/reducers';
 import { SupplierInventorySelectors } from './store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-supplier-inventories',
@@ -67,6 +68,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
 
     constructor(
         private store: Store<fromSupplierInventory.FeatureState>,
+        private ngxPermissions: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         // Load translate
@@ -144,6 +146,31 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
                 this.initTable();
+            });
+
+
+        this.ngxPermissions.hasPermission(['INVENTORY.SI.CREATE', 'INVENTORY.SI.UPDATE', 'INVENTORY.SI.DELETE'])
+            .then(result => {
+                if (result) {
+                    this.displayedColumns = [
+                        'id',
+                        'product-name',
+                        'brand-name',
+                        'stock-type',
+                        'stock',
+                        'stock-en-route',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        'id',
+                        'product-name',
+                        'brand-name',
+                        'stock-type',
+                        'stock',
+                        'stock-en-route',
+                    ];
+                }
             });
     }
 
