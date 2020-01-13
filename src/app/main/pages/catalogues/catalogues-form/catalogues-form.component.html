@@ -364,6 +364,50 @@
                         </span>
                     </div>
                     <!-- / KATEGORI PRODUK -->
+                    <!-- OPSI STOK UNLIMITED -->
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.unlimitedStock'))"
+                        >
+                            Unlimited Stock
+                        </label>
+                
+                        <mat-checkbox
+                            formControlName="unlimitedStock"
+                            labelPosition="after"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                        ></mat-checkbox>
+                        <!-- <mat-form-field appearance="outline" fxFlexAlign="center" fxFlex="80" *ngIf="!isViewMode()">
+                            <input
+                                matInput
+                                name="stock"
+                                formControlName="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.stock'))"
+                            >
+                                {{ getFormError(form.get('productInfo.stock')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <span fxFlexAlign="center" class="grey-fg" fxFlex="80" *ngIf="isViewMode() && form.get('productInfo.stock').value">
+                            {{ form.get('productInfo.stock').value }}
+                        </span>
+                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
+                            &nbsp;
+                        </span> -->
+                    </div>
+                    <!-- / OPSI STOK UNLIMITED -->
                     <!-- PRODUK STOK -->
                     <div
                         [ngClass]="formClass"
@@ -1444,4 +1488,9 @@
         <!-- / CONTENT CARD (PENGIRIMAN PRODUK) -->
     </div>
     <!-- / CENTER -->
+    <!-- Spinner Loader -->
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- Spinner Loader -->
 </div>

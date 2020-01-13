@@ -351,9 +351,17 @@
 
                 <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewProduct(row?.id)" class="catalogue">
                 </mat-row>
+
+                <div
+                    class="no-records"
+                    *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                >
+                    No records found
+                </div>
             </mat-table>
 
             <mat-paginator
+                *ngIf="(totalDataSource$ | async) > 0"
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="[5, 10, 25, 100]"

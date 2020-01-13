@@ -35,7 +35,7 @@ import Quill from 'quill';
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
 import { statusCatalogue } from '../status';
-import { fromCatalogue } from '../store/reducers';
+import { fromCatalogue, fromBrand } from '../store/reducers';
 import { CatalogueActions, BrandActions } from '../store/actions';
 import { CatalogueSelectors, BrandSelectors } from '../store/selectors';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -58,7 +58,7 @@ type IFormMode = 'add' | 'view' | 'edit';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CataloguesFormComponent implements OnInit, OnDestroy {
+export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit {
     formMode: IFormMode = 'add';
     maxVariantSelections = 20;
     previewHTML: SafeHtml = '';
@@ -74,6 +74,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         'view-field-right': boolean;
     };
 
+    isLoading$: Observable<boolean>;
     quantityChoices: Array<{ id: string; label: string }>;
     form: FormGroup;
     variantForm: FormGroup;
@@ -107,6 +108,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
+        private brandStore: Store<fromBrand.FeatureState>,
         private matDialog: MatDialog,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _cd: ChangeDetectorRef,
@@ -219,7 +221,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             lastCatalogueCategoryId: formValues.productInfo.category.length === 1 ?
                                         formValues.productInfo.category[0].id
                                         : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-            stock: formValues.productInfo.stock,
+            stock: formValues.productInfo.unlimitedStock ? 0 : !formValues.productInfo.stock ? 0 : formValues.productInfo.stock,
             unitOfMeasureId:  formValues.productInfo.uom,
             /**
              * INFORMASI PENJUALAN
@@ -254,7 +256,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
              */
             displayStock: true,
             catalogueTaxId: 1,
-            unlimitedStock: false,
+            unlimitedStock: formValues.productInfo.unlimitedStock,
         };
 
         if (this.formMode === 'edit') {
@@ -344,6 +346,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
         /** Set subject untuk keperluan Subscription. */
         this._unSubs$ = new Subject<void>();
 
+        this.isLoading$ = combineLatest([
+            this.store.select(CatalogueSelectors.getIsLoading),
+            this.brandStore.select(BrandSelectors.getBrandState),
+        ]).pipe(
+            map(([storeLoading, brand]) => {
+                if (storeLoading && !brand.isLoading) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }),
+            takeUntil(this._unSubs$)
+        );
+
         /** Mulai mengambil data kategori katalog. */
         this.store.select(
             CatalogueSelectors.getCatalogueCategories
@@ -402,6 +418,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     })
                 ]],
                 stock: [''],
+                unlimitedStock: [{ value: false, disabled: true }],
                 uom: ['', [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
@@ -788,9 +805,13 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             );
 
-        if (this.formMode !== 'edit') {
-            this.form.get('productInfo.information').setValue('---');
-            setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
+        this.form.get('productInfo.information').setValue('---');
+        setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
+
+        if (!this.isViewMode()) {
+            this.form.get('productInfo.unlimitedStock').enable();
+        } else {
+            this.form.get('productInfo.unlimitedStock').disable();
         }
 
         this.store.select(
@@ -826,6 +847,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this.store.dispatch(UiActions.showFooterAction());
         }
 
+        this.form.get('productInfo.unlimitedStock').valueChanges
+            .pipe(
+                tap((value: boolean) => {
+                    this.form.get('productInfo.stock').setValue(0);
+
+                    if (value) {
+                        this.form.get('productInfo.stock').disable();
+                    } else {
+                        this.form.get('productInfo.stock').enable();
+                    }
+                }),
+                takeUntil(this._unSubs$)
+            ).subscribe();
+
         /** Mendaftarkan toolbox pada Quill Editor yang diperlukan saja */
         this.registerQuillFormatting();
     }
@@ -842,6 +877,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    ngAfterViewInit(): void {
+        this._cd.markForCheck();
     }
 
     private registerQuillFormatting(): void {
@@ -956,8 +995,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     id: catalogue.id,
                     externalId: catalogue.externalId,
                     name: catalogue.name,
-                    description: catalogue.description,
-                    information: catalogue.detail,
+                    description: catalogue.description || '-',
+                    // information: catalogue.detail || '-',
                     // variant: ['', Validators.required],
                     brandId: catalogue.brandId,
                     brandName: catalogue.brand.name,
@@ -966,7 +1005,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                     uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
                     minQty: catalogue.minQty,
                     packagedQty: catalogue.packagedQty,
-                    multipleQty: catalogue.multipleQty
+                    multipleQty: catalogue.multipleQty,
+                    unlimitedStock: catalogue.unlimitedStock,
                 }, productSale: {
                     retailPrice: this.isViewMode() ? catalogue.discountedRetailBuyingPrice : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
                     productPrice: this.isViewMode() ? catalogue.retailBuyingPrice : String(catalogue.retailBuyingPrice).replace('.', ','),
@@ -1009,6 +1049,20 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
                 }
             });
 
+            if (this.isViewMode()) {
+                this.form.get('productInfo.unlimitedStock').disable();
+            } else {
+                this.form.get('productInfo.unlimitedStock').enable();
+            }
+
+            if (catalogue.unlimitedStock) {
+                this.form.get('productInfo.stock').disable();
+            } else {
+                this.form.get('productInfo.stock').enable();
+            }
+
+            setTimeout(() => { this.form.get('productInfo.information').setValue(''); this._cd.markForCheck(); }, 100);
+            setTimeout(() => { this.form.get('productInfo.information').setValue(catalogue.detail); this._cd.markForCheck(); }, 150);
 
             /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Minimum Quantity Order. */
             if (catalogue.minQtyType !== 'custom') {
@@ -1060,7 +1114,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy {
             this.form.markAsDirty({ onlySelf: false });
             this.form.markAllAsTouched();
             this.form.markAsPristine();
-            this._cd.markForCheck();
         });
     }
 
