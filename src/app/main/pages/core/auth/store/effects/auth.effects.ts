@@ -4,8 +4,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Network } from '@ngx-pwa/offline';
-import { LogService, NoticeService } from 'app/shared/helpers';
+import { LogService, NavigationService, NoticeService } from 'app/shared/helpers';
 import * as fromRoot from 'app/store/app.reducer';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { asyncScheduler, of, throwError } from 'rxjs';
 import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap } from 'rxjs/operators';
 
@@ -73,21 +74,6 @@ export class AuthEffects {
                 // }
 
                 if (session && session.user && session.token) {
-                    this._$log.generateGroup('[REQUEST AUTO LOGIN]', {
-                        session: {
-                            type: 'log',
-                            value: session
-                        },
-                        user: {
-                            type: 'log',
-                            value: session.user
-                        },
-                        token: {
-                            type: 'log',
-                            value: session.token
-                        }
-                    });
-
                     return AuthActions.authAutoLoginSuccess({
                         payload: new Auth(session.user, session.token)
                     });
@@ -160,17 +146,6 @@ export class AuthEffects {
                 tap(resp => {
                     const { user, token } = resp;
 
-                    this._$log.generateGroup('[AUTO LOGIN SUCCESS]', {
-                        resp: {
-                            type: 'log',
-                            value: resp
-                        },
-                        redirectUrl: {
-                            type: 'log',
-                            value: this._$auth.redirectUrl
-                        }
-                    });
-
                     if (!this._$auth.redirectUrl) {
                         this.storage.has('user').subscribe(result => {
                             if (!result) {
@@ -202,41 +177,11 @@ export class AuthEffects {
                 // withLatestFrom(this.store.pipe(select(NetworkSelectors.isNetworkConnected))),
                 exhaustMap(({ username, password }) => {
                     if (this._isOnline) {
-                        this._$log.generateGroup('[LOGIN REQUEST] ONLINE', {
-                            online: {
-                                type: 'log',
-                                value: this._isOnline
-                            },
-                            username: {
-                                type: 'log',
-                                value: username
-                            },
-                            password: {
-                                type: 'log',
-                                value: password
-                            }
-                        });
-
                         return this._$auth.login(username, password).pipe(
                             retry(3),
                             switchMap(resp => {
                                 const { user, token } = resp;
                                 const { userSuppliers } = user;
-
-                                this._$log.generateGroup('[RESPONSE REQUEST LOGIN]', {
-                                    resp: {
-                                        type: 'log',
-                                        value: resp
-                                    },
-                                    user: {
-                                        type: 'log',
-                                        value: user
-                                    },
-                                    token: {
-                                        type: 'log',
-                                        value: token
-                                    }
-                                });
 
                                 if (!userSuppliers && userSuppliers.length < 1) {
                                     return throwError({
@@ -262,21 +207,6 @@ export class AuthEffects {
                             )
                         );
                     }
-
-                    this._$log.generateGroup('[LOGIN REQUEST] OFFLINE', {
-                        online: {
-                            type: 'log',
-                            value: this._isOnline
-                        },
-                        username: {
-                            type: 'log',
-                            value: username
-                        },
-                        password: {
-                            type: 'log',
-                            value: password
-                        }
-                    });
 
                     return of(
                         AuthActions.authLoginFailure({
@@ -379,6 +309,10 @@ export class AuthEffects {
                 tap(resp => {
                     const { user, token } = resp;
 
+                    this._$auth.assignRolePrivileges(new Auth(user, token));
+
+                    // this._$navigation.initNavigation();
+
                     this.storage.set('user', new Auth(user, token)).subscribe({
                         next: () => {
                             // const roles = user.roles.map(r => {
@@ -410,6 +344,10 @@ export class AuthEffects {
                 tap(() => {
                     this.storage.clear().subscribe({
                         next: () => {
+                            this.ngxPermissions.flushPermissions();
+
+                            this.ngxRoles.flushRoles();
+
                             this.router.navigate(['/auth/login'], { replaceUrl: true });
                         },
                         error: err => {
@@ -428,10 +366,13 @@ export class AuthEffects {
         private actions$: Actions,
         private router: Router,
         protected network: Network,
+        private ngxPermissions: NgxPermissionsService,
+        private ngxRoles: NgxRolesService,
         private store: Store<fromRoot.State>,
         private storage: StorageMap,
         private _$auth: AuthService,
         private _$log: LogService,
+        private _$navigation: NavigationService,
         private _$notice: NoticeService
     ) {}
 }

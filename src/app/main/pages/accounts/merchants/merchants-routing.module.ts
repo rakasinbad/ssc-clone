@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../../core/auth/auth.guard';
-import { MerchantDetailComponent } from './merchant-detail/merchant-detail.component';
-import { MerchantEmployeeDetailComponent } from './merchant-detail/merchant-employee-detail/merchant-employee-detail.component';
-import { MerchantInfoDetailComponent } from './merchant-detail/merchant-info-detail/merchant-info-detail.component';
-import { MerchantLocationDetailComponent } from './merchant-detail/merchant-location-detail/merchant-location-detail.component';
+import {
+    MerchantDetailComponent,
+    MerchantEmployeeDetailComponent,
+    MerchantInfoDetailComponent,
+    MerchantLocationDetailComponent
+} from './merchant-detail';
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
 import { MerchantsComponent } from './merchants.component';
@@ -14,7 +17,26 @@ const routes: Routes = [
     {
         path: '',
         component: MerchantsComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
         // resolve: {
         //     merchants: MerchantResolver
         // }
@@ -22,12 +44,31 @@ const routes: Routes = [
     {
         path: ':id',
         component: MerchantFormComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     },
     {
         path: ':id/detail',
         component: MerchantDetailComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         children: [
             // {
             //     path: '',
@@ -55,12 +96,50 @@ const routes: Routes = [
                 canActivate: [AuthGuard],
                 outlet: 'store-detail'
             }
-        ]
+        ],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     },
     {
         path: ':storeId/:id/employee',
         component: MerchantEmployeeComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
         // resolve: {
         //     roles: DropdownRolesResolver
         // }

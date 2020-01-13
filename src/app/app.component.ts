@@ -16,7 +16,6 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseSplashScreenService } from '@fuse/services/splash-screen.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { FuseNavigation } from '@fuse/types';
 import { DEFAULT_INTERRUPTSOURCES, Idle } from '@ng-idle/core';
 import { Keepalive } from '@ng-idle/keepalive';
 import { Store } from '@ngrx/store';
@@ -26,14 +25,14 @@ import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
 import { LifecyclePlatform } from 'app/shared/models';
-import { NgxPermissionsService, NgxRolesObject, NgxRolesService } from 'ngx-permissions';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
 import { statusOrder } from './main/pages/orders/status';
-import { NoticeService } from './shared/helpers';
+import { NavigationService, NoticeService } from './shared/helpers';
 import * as fromRoot from './store/app.reducer';
 
 @Component({
@@ -71,6 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _translateService: TranslateService,
         private _platform: Platform,
+        private _$navigation: NavigationService,
         private _$notice: NoticeService
     ) {
         // Get default navigation
@@ -338,54 +338,7 @@ export class AppComponent implements OnInit, OnDestroy {
                     }
                 });
 
-                this._initNavigation();
-                break;
-        }
-    }
-
-    private _initNavigation(): void {
-        const navs = this._fuseNavigationService.getCurrentNavigation() as Array<FuseNavigation>;
-        const roles = this.ngxRoles.getRoles();
-
-        this._initNavigationCheck(navs, roles);
-    }
-
-    private _initNavigationCheck(nav: Array<FuseNavigation>, roles?: NgxRolesObject): void {
-        if (nav && nav.length > 0) {
-            for (const [idx, item] of nav.entries()) {
-                if (item.type === 'group') {
-                    console.log('Group', item);
-                }
-
-                if (item.type === 'item') {
-                    this._navigationRules(item.id);
-                }
-
-                if (item.type === 'collapsable') {
-                    if (item.children && item.children.length > 0) {
-                        this._initNavigationCheck(item.children);
-                    }
-                }
-            }
-        }
-    }
-
-    private _navigationRules(id: string): void {
-        if (!id) {
-            return;
-        }
-
-        switch (id) {
-            case 'orderManagement':
-                this._fuseNavigationService.updateNavigationItem(id, {
-                    hidden: !this.ngxRoles.getRole('SUPPLIER_ADMIN')
-                });
-                break;
-
-            default:
-                this._fuseNavigationService.updateNavigationItem(id, {
-                    hidden: false
-                });
+                this._$navigation.initNavigation();
                 break;
         }
     }

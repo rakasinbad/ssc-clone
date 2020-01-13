@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../../core/auth/auth.guard';
 import { CreditLimitBalanceComponent } from './credit-limit-balance.component';
@@ -10,7 +11,7 @@ const routes: Routes = [
     {
         path: '',
         component: CreditLimitBalanceComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
         children: [
             {
                 path: 'stores',
@@ -28,7 +29,25 @@ const routes: Routes = [
                 //     stores: CreditLimitBalanceResolver
                 // }
             }
-        ]
+        ],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     }
 ];
 
