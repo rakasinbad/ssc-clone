@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
-import { CataloguesComponent } from './catalogues.component';
-import { CatalogueResolver, CatalogueStatusResolver } from './resolvers';
-import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
+import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
+import { CataloguesComponent } from './catalogues.component';
 
 const routes: Routes = [
     {
@@ -16,7 +16,25 @@ const routes: Routes = [
     {
         path: 'list',
         component: CataloguesComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
         // resolve: {
         //     catalogues: CatalogueResolver,
         //     status: CatalogueStatusResolver
@@ -26,7 +44,25 @@ const routes: Routes = [
     {
         path: 'add',
         component: CataloguesAddNewProductComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
         // resolve: {
         //     catalogues: CatalogueResolver,
         //     status: CatalogueStatusResolver
@@ -35,7 +71,25 @@ const routes: Routes = [
     {
         path: 'add/new',
         component: CataloguesFormComponent,
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
         // resolve: {
         //     catalogues: CatalogueResolver,
         //     status: CatalogueStatusResolver
@@ -44,14 +98,50 @@ const routes: Routes = [
     {
         path: 'edit/:id',
         component: CataloguesFormComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     },
     {
         path: 'view/:id',
         component: CataloguesFormComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     }
-    // 
+    //
 ];
 
 /**

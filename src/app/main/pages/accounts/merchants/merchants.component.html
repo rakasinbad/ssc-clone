@@ -30,15 +30,13 @@
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- SEARCH -->
-                <ng-template [ngxPermissionsOnly]="['SUPPLIER_ADMIN']">
-                    <div class="search-wrapper">
-                        <!-- mx-12 -->
-                        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                            <mat-icon>search</mat-icon>
-                            <input [formControl]="search" placeholder="Cari Disini" />
-                        </div>
+                <div class="search-wrapper">
+                    <!-- mx-12 -->
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Cari Disini" />
                     </div>
-                </ng-template>
+                </div>
                 <!-- / SEARCH -->
 
                 <!-- <button mat-flat-button class="grey-600">

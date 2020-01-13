@@ -15,10 +15,11 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { LogService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -28,7 +29,6 @@ import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
-import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-merchants',
@@ -40,7 +40,7 @@ import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
         'store-code',
@@ -68,17 +68,17 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private router: Router,
+        private ngPerms: NgxPermissionsService,
+        private ngRoles: NgxRolesService,
         private store: Store<fromMerchant.FeatureState>,
+        public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$log: LogService,
-        private _$merchantApi: MerchantApiService,
-        public translate: TranslateService,
-        private ngPerms: NgxPermissionsService,
-        private ngRoles: NgxRolesService
+        private _$merchantApi: MerchantApiService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -113,8 +113,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
@@ -158,32 +156,22 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.onRefreshTable();
                 }
             });
+
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.resetBreadcrumb());
-        this.store.dispatch(StoreActions.resetStore());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -241,6 +229,33 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this.initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                this.store.dispatch(UiActions.resetBreadcrumb());
+                this.store.dispatch(StoreActions.resetStore());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                break;
+        }
+    }
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
