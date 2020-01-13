@@ -36,7 +36,7 @@ app-associations-selected-portfolios {
         }
     }
 
-    #available-portfolio-scroll {
+    #available-portfolio-scroll, #selected-portfolio-scroll {
         .mat-list-text {
             flex-direction: row;
             justify-content: space-between;

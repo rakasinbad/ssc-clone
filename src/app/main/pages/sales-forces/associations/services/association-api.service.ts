@@ -72,6 +72,7 @@ export class AssociationApiService {
             });
         }
 
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
@@ -84,13 +85,15 @@ export class AssociationApiService {
                     value: supplierId
                 }] : [];
 
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
         return this.http.get<IAssociation>(`${this._url}/${id}`, { params: newParams });
     }
 
     createAssociation(body: IAssociationForm): Observable<{ message: string }> {
-        return this.http.post<{ message: string }>(this._associationsEndpoint, body);
+        this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+        return this.http.post<{ message: string }>(this._url, body);
     }
 
     findAssociations<T>(params: IQueryParams): Observable<T> {
@@ -107,7 +110,7 @@ export class AssociationApiService {
             newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
         }
 
-        this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+        this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });

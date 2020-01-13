@@ -419,7 +419,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         const deletedPOortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
 
         const associationsForm: IAssociationForm = {
-            userId: this.form.get('salesRep').value,
+            userId: +((this.form.get('salesRep').value as SalesRep).userId),
             portfolioId: rawPortfolioIds,
             delete: deletedPOortfolioIds,
         };
@@ -531,6 +531,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
+
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+        this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
 
         this.subs$.next();
         this.subs$.complete();
