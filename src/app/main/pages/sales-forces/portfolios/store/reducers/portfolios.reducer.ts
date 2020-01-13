@@ -50,6 +50,7 @@ export interface State extends EntityState<Portfolio> {
     selectedIds: Array<string>;
     selectedInvoiceGroupId: string;
     urlExport: string;
+    search: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
     newPortfolios: NewPortfolioState;
@@ -69,6 +70,7 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     selectedIds: [],
     selectedInvoiceGroupId: null,
     urlExport: null,
+    search: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
     newPortfolios: adapterNewPortfolio.getInitialState(),
@@ -183,6 +185,20 @@ export const reducer = createReducer(
         (state, { payload }) => ({
             ...state,
             type: payload
+        })
+    ),
+    on(
+        PortfolioActions.setSearchKeywordPortfolio,
+        (state, { payload }) => ({
+            ...state,
+            search: payload
+        })
+    ),
+    on(
+        PortfolioActions.resetSearchKeywordPortfolio,
+        (state) => ({
+            ...state,
+            search: null
         })
     ),
     on(

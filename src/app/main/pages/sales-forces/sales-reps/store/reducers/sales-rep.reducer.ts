@@ -71,7 +71,7 @@ const reducer = createReducer<State>(
         return adapter.addOne(payload, { ...state, isLoading: false });
     }),
     on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) => {
-        return adapter.addAll(payload.data, {
+        return adapter.upsertMany(payload.data, {
             ...state,
             isLoading: false,
             total: payload.total

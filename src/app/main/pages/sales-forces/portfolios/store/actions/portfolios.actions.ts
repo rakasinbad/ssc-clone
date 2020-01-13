@@ -45,10 +45,17 @@ export const removeSelectedPortfolios = createAction(
     props<{ payload: Array<string> }>()
 );
 
+export const setSearchKeywordPortfolio = createAction(
+    '[Portfolios Page] Set Search Keyword Portfolios',
+    props<{ payload: string }>()
+);
+
 export const setSelectedPortfolios = createAction(
     '[Portfolios Page] Set Selected Portfolios',
     props<{ payload: Array<string> }>()
 );
+
+export const resetSearchKeywordPortfolio = createAction('[Portfolios] Reset Search Keyword Portfolio');
 
 export const truncateSelectedPortfolios = createAction('[Portfolios Page] Truncate Selected Portfolios');
 

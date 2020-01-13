@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, ChangeDetectorRef, ViewChildren, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-import { Subject, Observable, combineLatest } from 'rxjs';
+import { Subject, Observable, combineLatest, fromEvent } from 'rxjs';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { Store as NgRxStore } from '@ngrx/store';
 
@@ -10,29 +10,29 @@ import { locale as indonesian } from '../../i18n/id';
 import { InvoiceGroup, IQueryParams } from 'app/shared/models';
 import { CoreFeatureState } from '../../../portfolios/store/reducers';
 import { fromDropdown } from 'app/shared/store/reducers';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatAutocomplete, MatAutocompleteTrigger } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { TranslateService } from '@ngx-translate/core';
-import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
+import { NoticeService, ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../../portfolios/store/selectors';
-import { takeUntil, filter, withLatestFrom, startWith, tap, take } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom, startWith, tap, take, debounceTime, delay } from 'rxjs/operators';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
 import { FeatureState as SalesRepsFeatureState } from '../../../sales-reps/store/reducers';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { SalesRep } from '../../../sales-reps/models';
-import { SalesRepSelectors } from '../../../sales-reps/store/selectors';
-import { SalesRepActions } from '../../../sales-reps/store/actions';
 import { map } from 'rxjs/operators';
 import { Portfolio } from '../../../portfolios/models';
 import { AssociationsFilterPortfoliosComponent } from '../../components/filter-portfolios/associations-filter-portfolios.component';
-import { IAssociationForm } from '../../models';
+import { IAssociationForm, SalesRep } from '../../models';
 
-import * as fromAssociation from '../../store/reducers';
-import { AssociationActions } from '../../store/actions';
+import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
+import { AssociationActions, SalesRepActions, AssociatedPortfolioActions } from '../../store/actions';
+import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
+import { environment } from 'environments/environment';
+import { SalesRepSelectors, AssociatedPortfolioSelectors } from '../../store/selectors';
 // 
 @Component({
     selector: 'app-associations-form',
@@ -68,6 +68,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
     // Untuk menyimpan Sales Reps.
     salesReps$: Observable<Array<SalesRep>>;
+    // Untuk menyimpan jumlah Sales Reps.
+    totalSalesReps$: Observable<number>;
     // Untuk mendapatkan Sales Rep. yang terpilih.
     selectedSalesRep$: Observable<SalesRep>;
     // Untuk menyimpan Invoice Group.
@@ -79,25 +81,27 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     // Untuk menyimpan Observable status loading dari state list store (merchant).
     isListStoreLoading$: Observable<boolean>;
 
-    salesRepForm$: Observable<string>;
-    invoiceGroupForm$: Observable<string>;
+    salesRepForm$: Observable<SalesRep>;
+    invoiceGroupForm$: Observable<InvoiceGroup>;
+
+    @ViewChild('salesRepScroll', { static: true }) salesRepScroll: MatAutocomplete;
+    @ViewChild(MatAutocompleteTrigger, { static: true }) autocompleteTrigger: MatAutocompleteTrigger;
 
     constructor(
         private portfolioStore: NgRxStore<CoreFeatureState>,
-        private shopStore: NgRxStore<CoreFeatureState>,
-        private associationStore: NgRxStore<fromAssociation.FeatureState>,
-        private salesRepStore: NgRxStore<SalesRepsFeatureState>,
+        private associationStore: NgRxStore<AssociationCoreFeatureState>,
         private dropdownStore: NgRxStore<fromDropdown.State>,
         private matDialog: MatDialog,
         private readonly sanitizer: DomSanitizer,
         private route: ActivatedRoute,
-        private router: Router,
+        // private router: Router,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _cd: ChangeDetectorRef,
+        // private _cd: ChangeDetectorRef,
         private fb: FormBuilder,
         public translate: TranslateService,
         private _notice: NoticeService,
-        private errorMessageSvc: ErrorMessageService
+        private errorMessageSvc: ErrorMessageService,
+        private helperSvc: HelperService,
     ) {
         // Mengambil ID association dari param URL.
         this.associationId = this.route.snapshot.params.id;
@@ -106,6 +110,13 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.isPortfolioLoading$ = this.portfolioStore
             .select(PortfolioSelector.getLoadingState)
             .pipe(takeUntil(this.subs$));
+
+        // Mengambil jumlah sales rep yang ada di server.
+        this.totalSalesReps$ = this.associationStore.select(
+            SalesRepSelectors.getTotalItem
+        ).pipe(
+            takeUntil(this.subs$)
+        );
 
         // Mengambil status loading dari state store-nya portfolio.
         // this.isPortfolioStoreLoading$ = this.portfolioStore
@@ -119,6 +130,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.invoiceGroups$ = this.dropdownStore
             .select(DropdownSelectors.getInvoiceGroupDropdownState)
             .pipe(
+                debounceTime(3000),
                 filter(invoiceGroups => {
                     if (invoiceGroups.length === 0) {
                         this.dropdownStore.dispatch(
@@ -132,15 +144,17 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             );
 
         // Mengambil data Sales Reps. dari state.
-        this.salesReps$ = this.salesRepStore
+        this.salesReps$ = this.associationStore
             .select(SalesRepSelectors.selectAll)
             .pipe(
                 filter(salesReps => {
                     if (salesReps.length === 0) {
-                        this.salesRepStore.dispatch(
+                        this.associationStore.dispatch(
                             SalesRepActions.fetchSalesRepsRequest({
                                 payload: {
-                                    paginate: true
+                                    paginate: true,
+                                    limit: 10,
+                                    skip: 0
                                 }
                             })
                         );
@@ -174,11 +188,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                                     );
 
         // Mengaambil jumlah portfolio yang terpilih.
-        this.totalSelectedPortfolios$ = this.selectedPortfolios$
-                                            .pipe(
-                                                map(selected => selected.length),
-                                                takeUntil(this.subs$)
-                                            );
+        // this.totalSelectedPortfolios$ = this.selectedPortfolios$
+        //                                     .pipe(
+        //                                         map(selected => selected.length),
+        //                                         takeUntil(this.subs$)
+        //                                     );
 
         // Memuat footer action untuk keperluan form.
         this.portfolioStore.dispatch(
@@ -272,6 +286,12 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         }
     }
 
+    private debug(label: string, data: any): void {
+        if (!environment.production) {
+            console.log(label, data);
+        }
+    }
+
     private initForm(): void {
         // Inisialisasi FormControl untuk search.
         this.search = new FormControl('');
@@ -307,37 +327,46 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             removedPortfolios: [[]],
         });
 
-        // this.form.get('salesRep').valueChanges.pipe(startWith(''));
-        this.salesRepForm$ = this.form.get('salesRep').valueChanges.pipe(
+        this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
+            tap(value => this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }))),
             takeUntil(this.subs$)
         );
 
-        this.invoiceGroupForm$ = this.form.get('invoiceGroup').valueChanges.pipe(
-            tap(value => this.portfolioStore.dispatch(PortfolioActions.setSelectedInvoiceGroupId({ payload: value }))),
+        this.invoiceGroupForm$ = (this.form.get('invoiceGroup').valueChanges as Observable<InvoiceGroup>).pipe(
+            tap(value => this.associationStore.dispatch(AssociationActions.setSelectedInvoiceGroup({ payload: value }))),
             takeUntil(this.subs$)
         );
 
-        this.selectedSalesRep$ = combineLatest([
-            (this.form.get('salesRep').valueChanges as Observable<string>),
-            this.salesRepStore.select(SalesRepSelectors.getSelectedItem),
-        ]).pipe(
-                withLatestFrom(
-                    this.salesRepStore.select(SalesRepSelectors.selectEntities),
-                    ([[salesRepId, _]], salesReps) => ({ salesRepId, salesReps })
-                ),
-                map(({ salesRepId, salesReps }) => {
-                    if (!salesReps[salesRepId]) {
-                        this.salesRepStore.dispatch(
-                            SalesRepActions.fetchSalesRepRequest({
-                                payload: salesRepId
-                            })
-                        );
-                    } else {
-                        return salesReps[salesRepId];
-                    }
-                }),
-                takeUntil(this.subs$)
-            );
+        this.associationStore.select(
+            AssociatedPortfolioSelectors.selectAll
+        ).pipe(
+            tap((selectedPortfolios) => {
+                this.form.get('portfolios').setValue(selectedPortfolios);
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        // this.selectedSalesRep$ = combineLatest([
+        //     (this.form.get('salesRep').valueChanges as Observable<string>),
+        //     this.salesRepStore.select(SalesRepSelectors.getSelectedItem),
+        // ]).pipe(
+        //         withLatestFrom(
+        //             this.salesRepStore.select(SalesRepSelectors.selectEntities),
+        //             ([[salesRepId, _]], salesReps) => ({ salesRepId, salesReps })
+        //         ),
+        //         map(({ salesRepId, salesReps }) => {
+        //             if (!salesReps[salesRepId]) {
+        //                 this.salesRepStore.dispatch(
+        //                     SalesRepActions.fetchSalesRepRequest({
+        //                         payload: salesRepId
+        //                     })
+        //                 );
+        //             } else {
+        //                 return salesReps[salesRepId];
+        //             }
+        //         }),
+        //         takeUntil(this.subs$)
+        //     );
 
         this.portfolioStore
             .select(FormSelectors.getIsClickSaveButton)
@@ -355,12 +384,36 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore.dispatch(UiActions.showFooterAction());
 
         // this.form.valueChanges
+        combineLatest([
+            this.salesRepForm$,
+            this.invoiceGroupForm$,
+            this.associationStore.select(AssociatedPortfolioSelectors.selectTotal)
+        ]).pipe(
+            tap(([salesRep, invoiceGroup, selectedPortfolioIds]) => {
+                if (!salesRep || !invoiceGroup || selectedPortfolioIds === 0) {
+                    this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
+                } else {
+                    this.portfolioStore.dispatch(FormActions.setFormStatusValid());
+                }
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        this.portfolioStore.dispatch(UiActions.showFooterAction());
+    }
+
+    displaySalesRep(item: SalesRep): string {
+        if (!item) {
+            return;
+        }
+
+        return item.user.fullName;
     }
 
     processAssociationForm(form: IAssociationForm): void {
         // Menambah toko-toko yang ingin dihapus ke dalam form.
-        form.delete = (this.form.get('removedPortfolios').value as Array<Portfolio>)
-                                .map(portfolio => +portfolio.id);
+        form.delete = (this.form.get('portfolios').value as Array<Portfolio>)
+                                .filter(portfolio => !!portfolio.deletedAt).map(portfolio => +portfolio.id);
 
         // Melakukan request ke back-end untuk create / update association.
         this.associationStore.dispatch(
@@ -369,7 +422,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     submitAssociations(): void {
-        const rawPortfolioIds = (this.form.get('portfolios').value as Array<number>);
+        const rawPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).map(p => +p.id);
 
         const associationsForm: IAssociationForm = {
             userId: this.form.get('salesRep').value,
@@ -433,32 +486,32 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         }
     }
 
-    requestPortfolio(salesRepId: string, invoiceGroupId: string, portfolioEntityType: string): void {
-        // Mendapatkan toko yang tersedia.
-        const portfolioQuery: IQueryParams = {
-            limit: 100,
-            skip: 0,
-            paginate: true
-        };
-        portfolioQuery['request'] = 'associations';
-        portfolioQuery['type'] = portfolioEntityType;
-        portfolioQuery['invoiceGroupId'] = invoiceGroupId;
+    // requestPortfolio(salesRepId: string, invoiceGroupId: string, portfolioEntityType: string, keyword: string): void {
+    //     // Mendapatkan toko yang tersedia.
+    //     const portfolioQuery: IQueryParams = {
+    //         limit: 100,
+    //         skip: 0,
+    //         paginate: true
+    //     };
+    //     portfolioQuery['request'] = 'associations';
+    //     portfolioQuery['type'] = portfolioEntityType;
+    //     portfolioQuery['invoiceGroupId'] = invoiceGroupId;
 
-        this.portfolioStore.dispatch(
-            PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
-        );
+    //     this.portfolioStore.dispatch(
+    //         PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+    //     );
 
-        // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
-        // const associatedPortfolioQuery: IQueryParams = {
-        //     limit: 10,
-        //     skip: 0
-        // };
-        // associatedPortfolioQuery['userId'] = salesRepId;
+    //     // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
+    //     // const associatedPortfolioQuery: IQueryParams = {
+    //     //     limit: 10,
+    //     //     skip: 0
+    //     // };
+    //     // associatedPortfolioQuery['userId'] = salesRepId;
         
-        // this.portfolioStore.dispatch(
-        //     PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
-        // );
-    }
+    //     // this.portfolioStore.dispatch(
+    //     //     PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+    //     // );
+    // }
 
     ngOnInit(): void {
         this.isEditMode = this.route.snapshot.url[this.route.snapshot.url.length - 1].path === 'edit';
@@ -490,10 +543,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             this.salesRepForm$,
             this.invoiceGroupForm$,
             this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
+            this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio)
         ]).pipe(
-            // Keduanya harus terisi
-            filter(([salesRepId, invoiceGroupId, _]) => {
-                const result = !!salesRepId && !!invoiceGroupId;
+            // Keduanya harus terisi.
+            filter(([salesRep, invoiceGroup, _]) => {
+                const result = !!salesRep && !!invoiceGroup;
 
                 if (!result) {
                     this._notice.open('Please fill Sales Rep. and Invoice Group to display the portfolios.', 'info', {
@@ -504,11 +558,78 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
                 return result;
             }),
-            map(([salesRepId, invoiceGroupId, portfolioEntityType]) =>
-                this.requestPortfolio(salesRepId, invoiceGroupId, portfolioEntityType)
-            ),
+            // Mengosongkan portfolio-nya terlebih dahulu.
+            tap(() => this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios())),
+            // Memproses pengambilan data portfolio dari server.
+            tap(([salesRep, invoiceGroup, portfolioEntityType, __]) => {
+                // Mendapatkan portfolio yang tersedia.
+                const portfolioQuery: IQueryParams = {
+                    limit: 10,
+                    skip: 0,
+                    paginate: true
+                };
+                portfolioQuery['request'] = 'associations';
+                portfolioQuery['type'] = portfolioEntityType;
+                portfolioQuery['invoiceGroupId'] = invoiceGroup.id;
+
+                this.portfolioStore.dispatch(
+                    PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+                );
+
+                // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
+                const associatedPortfolioQuery: IQueryParams = {
+                    limit: 100,
+                    skip: 0
+                };
+                associatedPortfolioQuery['fromSalesRep'] = true;
+                associatedPortfolioQuery['userId'] = salesRep.id;
+                
+                this.associationStore.dispatch(
+                    AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: portfolioQuery })
+                );
+            }),
             takeUntil(this.subs$)
         ).subscribe();
+    }
+
+    processSalesRepScroll(): void {
+        if (this.autocompleteTrigger && this.salesRepScroll && this.salesRepScroll.panel) {
+            fromEvent<Event>(this.salesRepScroll.panel.nativeElement, 'scroll')
+                .pipe(
+                    // Kasih jeda ketika scrolling.
+                    debounceTime(500),
+                    // Mengambil sales rep yang ada di state, jumlah total sales rep. di back-end dan loading state-nya.
+                    withLatestFrom(
+                        this.salesReps$,
+                        this.totalSalesReps$,
+                        this.associationStore.select(SalesRepSelectors.getLoadingState),
+                        ($event, salesReps, totalSalesReps, isLoading) => ({ $event, isLoading, salesReps, totalSalesReps }),
+                    ),
+                    // Debugging.
+                    tap(() => this.debug('SALES REP IS SCROLLING...', {})),
+                    // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
+                    filter(({ isLoading, salesReps, totalSalesReps }) =>
+                        !isLoading &&
+                        (totalSalesReps > salesReps.length) &&
+                        this.helperSvc.isElementScrolledToBottom(this.salesRepScroll.panel)
+                    ),
+                    takeUntil(this.autocompleteTrigger.panelClosingActions)
+                ).subscribe(({ salesReps }) =>
+                    this.associationStore.dispatch(
+                        SalesRepActions.fetchSalesRepsRequest({
+                            payload: {
+                                paginate: true,
+                                limit: 10,
+                                skip: salesReps.length
+                            }
+                        })
+                    )
+                );
+        }
+    }
+
+    listenSalesRepScroll(): void {
+        setTimeout(() => this.processSalesRepScroll());
     }
 
 }

@@ -1,7 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { ErrorHandler, IQueryParams, InvoiceGroup } from 'app/shared/models';
 import { Association, IAssociationForm } from '../../models';
 import { Portfolio } from '../../../portfolios/models';
+import { SalesRep } from '../../../sales-reps/models';
 
 export type failureActionNames =
     'createAssociationFailure' |
@@ -43,7 +44,6 @@ export const fetchAssociationsSuccess = createAction(
     props<{ payload: { data: Array<Portfolio>; total: number } }>()
 );
 
-
 export const createAssociationRequest = createAction(
     '[Associations API] Create Association Request',
     props<{ payload: IAssociationForm }>()
@@ -59,9 +59,28 @@ export const createAssociationSuccess = createAction(
     props<{ payload: { message: string } }>()
 );
 
+// Used in Association's Form.
+
+export const setSelectedSalesRep = createAction(
+    '[Associations] Set Selected Sales Rep.',
+    props<{ payload: SalesRep }>()
+);
+
+export const setSelectedInvoiceGroup = createAction(
+    '[Associations] Set Selected Invoice Group',
+    props<{ payload: InvoiceGroup }>()
+);
+
 export const setPortfolioEntityType = createAction(
     '[Associations] Set Portfolio Entity Type',
     props<{ payload: string }>()
 );
+
+export const setSearchValue = createAction(
+    '[Associations PAGE] Set Search Value',
+    props<{ payload: string }>()
+);
+
+// ----------------------------
 
 export const clearState = createAction('[Association Page] Reset Core State');

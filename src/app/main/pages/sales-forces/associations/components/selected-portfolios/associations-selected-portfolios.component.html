@@ -118,7 +118,11 @@
                         [selected]="true"
                         [value]="portfolio"
                     >
-                        {{ printPortfolioName(portfolio) }}
+                        <span>{{ printPortfolioName(portfolio) }}</span>
+                        <a
+                            *ngIf="portfolio?.storeQty > 1"
+                            (click)="$event.stopPropagation(); showStore(portfolio)"
+                        >See details</a>
                     </mat-list-option>
                 </ng-container>
             </mat-selection-list>

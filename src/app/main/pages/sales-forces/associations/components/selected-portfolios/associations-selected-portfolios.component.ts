@@ -6,7 +6,7 @@ import { Store as NgRxStore } from '@ngrx/store';
 import { Store, Filter, Portfolio } from '../../../portfolios/models';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../../portfolios/store/reducers';
 import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../../portfolios/store/selectors';
-import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime } from 'rxjs/operators';
+import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime, startWith } from 'rxjs/operators';
 import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
 import { IQueryParams } from 'app/shared/models';
 import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
@@ -21,6 +21,9 @@ import { SalesRepSelectors } from '../../../sales-reps/store/selectors';
 import { SalesRep } from '../../../sales-reps/models';
 import { AssociationApiService } from '../../services';
 import { PortfolioStoresComponent } from '../portfolio-stores/portfolio-stores.component';
+import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
+import { AssociatedPortfolioSelectors, AssociationSelectors } from '../../store/selectors';
+import { AssociatedPortfolioActions } from '../../store/actions';
 
 @Component({
     selector: 'app-associations-selected-portfolios',
@@ -71,6 +74,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         private matDialog: MatDialog,
         private portfolioStore: NgRxStore<PortfolioCoreFeatureState>,
         private salesRepStore: NgRxStore<SalesRepFeatureState>,
+        private associationStore: NgRxStore<AssociationCoreFeatureState>,
         private sanitizer: DomSanitizer,
         private helperSvc: HelperService,
         private scroll: ScrollDispatcher,
@@ -103,35 +107,57 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         // this.availableStoreScrollable = new CdkScrollable(this.availableStore, this.scroll, ngZo)
 
         this.selectedPortfolioSub$.pipe(
-            withLatestFrom(this.invoiceGroupId$),
-            tap(([$event, _]) => {
-                const store = ($event.option.value as Portfolio);
+            withLatestFrom(this.associationStore.select(AssociatedPortfolioSelectors.selectAll)),
+            tap(([$event, selectedPortfolios]) => {
+                const portfolio = ($event.option.value as Portfolio);
                 const isSelected = $event.option.selected;
+                const selectedPortfolioIds = selectedPortfolios.map(p => p.id);
 
-                // if (store.source === 'fetch') {
-                if (isSelected) {
-                    this.portfolioStore.dispatch(
-                        PortfolioActions.addSelectedPortfolios({
-                            payload: [store.id]
-                        })
-                    );
-
-                    // this.shopStore.dispatch(
-                    //     StoreActions.checkStoreAtInvoiceGroupRequest({
-                    //         payload: {
-                    //             storeId: store.id,
-                    //             invoiceGroupId
-                    //         }
-                    //     })
-                    // );
-                } else {
-                    this.portfolioStore.dispatch(
-                        PortfolioActions.removeSelectedPortfolios({
-                            payload: [store.id]
-                        })
-                    );
+                if (portfolio.source === 'fetch') {
+                    if (isSelected) {
+                        this.associationStore.dispatch(
+                            AssociatedPortfolioActions.addSelectedPortfolios({
+                                payload: [portfolio]
+                            })
+                        );
+                    } else {
+                        this.associationStore.dispatch(
+                            AssociatedPortfolioActions.removeSelectedPortfolios({
+                                payload: [portfolio.id]
+                            })
+                        );
+                    }
+                } else if (portfolio.source === 'list') {
+                    if (!selectedPortfolioIds.includes(portfolio.id)) {
+                        if (isSelected) {
+                            this.associationStore.dispatch(
+                                AssociatedPortfolioActions.addSelectedPortfolios({
+                                    payload: [portfolio]
+                                })
+                            );
+                        } else {
+                            this.associationStore.dispatch(
+                                AssociatedPortfolioActions.removeSelectedPortfolios({
+                                    payload: [portfolio.id]
+                                })
+                            );
+                        }
+                    } else {
+                        if (!isSelected) {
+                            this.associationStore.dispatch(
+                                AssociatedPortfolioActions.markPortfolioAsRemoved({
+                                    payload: [portfolio.id]
+                                })
+                            );
+                        } else {
+                            this.associationStore.dispatch(
+                                AssociatedPortfolioActions.abortPortfolioAsRemoved({
+                                    payload: [portfolio.id]
+                                })
+                            );
+                        }
+                    }
                 }
-                // } else if (store.source === 'list') {
                 // if (!isSelected) {
                 //     this.portfolioStore.dispatch(
                 //         PortfolioActions.markStoreAsRemovedFromPortfolio({
@@ -238,25 +264,25 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         );
     }
 
-    clearAllSelectedStores(): void {
+    clearAllSelectedPortfolios(): void {
         this.portfolioStore.dispatch(
             PortfolioActions.confirmRemoveAllSelectedStores()
         );
     }
 
-    checkSelectedInvoiceGroupId(invoiceGroupId: string): boolean {
-        // Hanya meneruskan observable ini jika sudah memilih Invoice Group.
-        if (!invoiceGroupId) {
-            this.noticeSvc.open('Please select one of Invoice Group to view available portfolios.', 'info', {
-                horizontalPosition: 'right',
-                verticalPosition: 'bottom'
-            });
+    // checkSelectedInvoiceGroupId(invoiceGroupId: string): boolean {
+    //     // Hanya meneruskan observable ini jika sudah memilih Invoice Group.
+    //     if (!invoiceGroupId) {
+    //         this.noticeSvc.open('Please select one of Invoice Group to view available portfolios.', 'info', {
+    //             horizontalPosition: 'right',
+    //             verticalPosition: 'bottom'
+    //         });
 
-            return false;
-        }
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     getStoreWarning(store: Store): string | null {
         if (!store.portfolio) {
@@ -282,33 +308,33 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         // );
 
         this.selectedPortfolios$ = combineLatest([
-            this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
-            this.portfolioStore.select(PortfolioSelector.getSelectedPortfolios),
+            // this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
+            this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
         ]).pipe(
             tap(() => this.debug('SELECTED PORTFOLIOS CHECK', {})),
-            map(([_, selectedPortfolios]) => selectedPortfolios.sort((a, b) => (+a.id) - (+b.id))),
+            map(([selectedPortfolios]) => selectedPortfolios.sort((a, b) => (+a.id) - (+b.id))),
             takeUntil(this.subs$)
         );
 
         this.availablePortfolios$ = combineLatest([
             this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
-            this.portfolioStore.select(PortfolioSelector.getSelectedPortfolios),
+            this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
         ]).pipe(
             // Debugging purpose.
             tap(() => this.debug('AVAILABLE PORTFOLIOS CHECK', {})),
             // Mengambil Invoice Group yang terpilih.
-            withLatestFrom(this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)),
+            withLatestFrom(this.associationStore.select(AssociationSelectors.getSelectedInvoiceGroup)),
             // Memeriksa Invoice Group yang dipilih.
-            filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+            // filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
             // Mengubah bentuk portfolio yang ingin ditampilkan.
-            map(([[availablePortfolios, selectedPortfolios], invoiceGroupId]) => {
+            map(([[availablePortfolios, selectedPortfolios], invoiceGroup]) => {
                 // Mengambil ID dari portfolio yang dipilih.
-                const selectedPortfolioIds = selectedPortfolios.map(portfolio => portfolio.id);
+                const selectedPortfolioIds = selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).map(portfolio => portfolio.id);
 
                 // Mengambil portfolio dari state dengan mencocokkan Invoice Group-nya.
                 const newAvailablePortfolios = availablePortfolios
                                                 .filter(portfolio =>
-                                                    portfolio.invoiceGroupId === invoiceGroupId
+                                                    portfolio.invoiceGroupId === invoiceGroup.id
                                                 ).map(portfolio => {
                                                     const newPortfolio = new Portfolio(portfolio);
                                                     newPortfolio.isSelected = selectedPortfolioIds.includes(newPortfolio.id);
@@ -324,7 +350,10 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         // Mengambil jumlah portfolio yang terpilih dari state.
         this.totalSelectedPortfolios$ = this.selectedPortfolios$.pipe(
             // Debugging purpose.
-            tap(() => this.debug('TOTAL PORTFOLIO STORES CHECK', {})),
+            tap((selectedPortfolios) => this.debug('TOTAL PORTFOLIO STORES CHECK', {
+                data: selectedPortfolios,
+                length: selectedPortfolios.length
+            })),
             // Hanya mengambil jumlah isi dari array-nya saja.
             map(selectedPortfolios => selectedPortfolios.length),
             takeUntil(this.subs$)
@@ -340,59 +369,33 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         //     }
         // });
 
-        (this.search
-            .valueChanges as Observable<string>)
+        (this.search.valueChanges as Observable<string>)
             .pipe(
-                tap(() => this.debug('SEARCH VALUE CHANGES CHECK', {})),
                 distinctUntilChanged(),
                 debounceTime(1000),
-                withLatestFrom(
-                    // this.shopStore.select(StoreSelector.getAllFilters),
-                    this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
-                    this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
-                    this.salesRep$,
-                    (search, portfolioEntityType, invoiceGroupId, salesRep) =>
-                        ({ search, portfolioEntityType, invoiceGroupId, salesRep })
-                ),
-                filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+                tap((searchValue) => this.debug('SEARCH VALUE CHANGES CHECK (BEFORE SANITIZED)', searchValue)),
+                map(searchValue => this.sanitizer.sanitize(SecurityContext.HTML, searchValue)),
+                tap((searchValue) => this.debug('SEARCH VALUE CHANGES CHECK (AFTER SANITIZED)', searchValue)),
+                filter(searchValue => !!searchValue),
                 takeUntil(this.subs$)
-            ).subscribe(({ portfolioEntityType, invoiceGroupId, salesRep }) =>
-                this.associationSvc.requestPortfolio(salesRep.userId, portfolioEntityType, invoiceGroupId)
+            ).subscribe((searchValue: string) =>
+                this.portfolioStore.dispatch(
+                    PortfolioActions.setSearchKeywordPortfolio({ payload: searchValue })
+                )
             );
     }
 
     ngAfterViewInit(): void {
-        // this.availableStore.elementScrolled().pipe(
-        //     tap(event => console.log(event)),
-        //     takeUntil(this.subs$)
-        // );
-
-        // this.scroll.register(this.availableStore);
-
-        // this.availableStore.elementScrolled()
-        //     .pipe(
-        //         takeUntil(this.subs$)
-        //     ).subscribe(data => console.log(data));
-
-        // this.scrollable.elementScrolled()
-        //     .pipe(
-        //         takeUntil(this.subs$)
-        //     ).subscribe(data => console.log(data));
-        // console.log(this.availableStore);
-
-        // console.log(this.scrollable);
-        // console.log(this.availableStoreScroll);
         this.scroll.scrolled(500)
             .pipe(
-                filter(cdkScrollable => {
-                    return this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id;
-                }),
+                tap(cdkScrollable => this.debug('CDKSCROLLABLE SCROLLED CHECK', { cdkScrollable })),
+                filter(cdkScrollable =>
+                    this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id
+                ),
                 map(cdkScrollable => (cdkScrollable as CdkScrollable).getElementRef()),
                 filter((elementRef) => this.helperSvc.isElementScrolledToBottom(elementRef)),
                 takeUntil(this.subs$)
-            ).subscribe(data => {
-                console.log(data);
-            });
+            ).subscribe();
     }
 
     ngOnDestroy(): void {
@@ -401,7 +404,6 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
 
         this.removeFilter$.next();
         this.removeFilter$.complete();
-
 
         this.selectedPortfolioSub$.next();
         this.selectedPortfolioSub$.complete();
