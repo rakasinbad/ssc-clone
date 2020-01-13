@@ -73,6 +73,10 @@ app-merchants {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .merchant {
             position: relative;
             cursor: pointer;
@@ -82,7 +86,7 @@ app-merchants {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+            // padding-right: 8px;
         }
 
         .mat-cell {
@@ -90,9 +94,9 @@ app-merchants {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
-            padding-right: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
+            // padding-right: 8px;
         }
 
         // .mat-column-checkbox {
@@ -100,9 +104,9 @@ app-merchants {
         //     padding-left: 18px;
         // }
 
-        .mat-column-id {
-            flex: 0 1 100px;
-        }
+        // .mat-column-id {
+        //     flex: 0 1 100px;
+        // }
 
         // .mat-column-image {
         //     flex: 0 1 84px;
@@ -130,12 +134,36 @@ app-merchants {
         //     flex: 0 1 120px;
         // }
 
+        .mat-column-store-code {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-city {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-address {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-owner-phone-no {
+            flex: 0 1 18%;
+        }
+
         .mat-column-store-segment {
             flex: 0 1 70px;
         }
 
+        .mat-column-store-type {
+            flex: 0 1 18%;
+        }
+
         .mat-column-status {
-            flex: 0 1 80px;
+            flex: 0 1 70px;
         }
 
         // .quantity-indicator {

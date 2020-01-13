@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy } from '@angular/compiler/src/core';
 import { Component, ViewEncapsulation } from '@angular/core';
 import { FuseConfigService } from '@fuse/services/config.service';
+import { Store } from '@ngrx/store';
+import * as fromRoot from 'app/store/app.reducer';
+
+import { AuthActions } from '../../auth/store/actions';
 
 @Component({
     selector: 'error-403',
@@ -10,7 +14,10 @@ import { FuseConfigService } from '@fuse/services/config.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Error403Component {
-    constructor(private _fuseConfigService: FuseConfigService) {
+    constructor(
+        private store: Store<fromRoot.State>,
+        private _fuseConfigService: FuseConfigService
+    ) {
         // Configure the layout
         this._fuseConfigService.config = {
             layout: {
@@ -28,5 +35,9 @@ export class Error403Component {
                 }
             }
         };
+    }
+
+    onLogout(): void {
+        this.store.dispatch(AuthActions.authLogout());
     }
 }

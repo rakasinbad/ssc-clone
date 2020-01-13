@@ -122,9 +122,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
         localStorage.removeItem('filter.store');
 
-        console.log('Perms ', this.ngPerms.getPermissions());
-        console.log('Roles', this.ngRoles.getRoles());
-
         // .pipe(
         //     filter(source => source.length > 0),
         //     delay(1000),
