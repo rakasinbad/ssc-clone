@@ -414,27 +414,20 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         return item.user.fullName;
     }
 
-    processAssociationForm(form: IAssociationForm): void {
-        // Menambah toko-toko yang ingin dihapus ke dalam form.
-        form.delete = (this.form.get('portfolios').value as Array<Portfolio>)
-                                .filter(portfolio => !!portfolio.deletedAt).map(portfolio => +portfolio.id);
-
-        // Melakukan request ke back-end untuk create / update association.
-        this.associationStore.dispatch(
-            AssociationActions.createAssociationRequest({ payload: form })
-        );
-    }
-
     submitAssociations(): void {
         const rawPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).map(p => +p.id);
-        const deletedPOrtfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
+        const deletedPOortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
 
         const associationsForm: IAssociationForm = {
             userId: this.form.get('salesRep').value,
             portfolioId: rawPortfolioIds,
+            delete: deletedPOortfolioIds,
         };
 
-        this.processAssociationForm(associationsForm);
+        // Melakukan request ke back-end untuk create / update association.
+        this.associationStore.dispatch(
+            AssociationActions.createAssociationRequest({ payload: associationsForm })
+        );
     }
 
     updateSelectedTab(tabId: number): void {
