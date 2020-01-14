@@ -32,7 +32,7 @@ import { FeatureState as AssociationCoreFeatureState } from '../../store/reducer
 import { AssociationActions, SalesRepActions, AssociatedPortfolioActions } from '../../store/actions';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
 import { environment } from 'environments/environment';
-import { SalesRepSelectors, AssociatedPortfolioSelectors } from '../../store/selectors';
+import { SalesRepSelectors, AssociatedPortfolioSelectors, AssociationSelectors } from '../../store/selectors';
 // 
 @Component({
     selector: 'app-associations-form',
@@ -80,6 +80,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     isPortfolioStoreLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari state list store (merchant).
     isListStoreLoading$: Observable<boolean>;
+    // Untuk menyimpan Observable status loading dari request association.
+    isRequesting$: Observable<boolean>;
 
     salesRepForm$: Observable<SalesRep>;
     invoiceGroupForm$: Observable<InvoiceGroup>;
@@ -142,6 +144,12 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                 }),
                 takeUntil(this.subs$)
             );
+
+        this.isRequesting$ = this.associationStore.select(
+            AssociationSelectors.getRequestingState
+        ).pipe(
+            takeUntil(this.subs$)
+        );
 
         // Mengambil data Sales Reps. dari state.
         this.salesReps$ = this.associationStore
@@ -415,7 +423,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     submitAssociations(): void {
-        const rawPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).map(p => +p.id);
+        const rawPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !(!!p.deletedAt)).map(p => +p.id);
         const deletedPOortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
 
         const associationsForm: IAssociationForm = {
@@ -544,10 +552,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             this.salesRepForm$,
             this.invoiceGroupForm$,
             this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
-            this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio)
+            this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),
+            this.associationStore.select(AssociatedPortfolioSelectors.getInitialized),
         ]).pipe(
             // Keduanya harus terisi.
-            filter(([salesRep, invoiceGroup, _]) => {
+            filter(([salesRep, invoiceGroup]) => {
                 const result = !!salesRep && !!invoiceGroup;
 
                 if (!result) {
@@ -562,7 +571,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             // Mengosongkan portfolio-nya terlebih dahulu.
             tap(() => this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios())),
             // Memproses pengambilan data portfolio dari server.
-            tap(([salesRep, invoiceGroup, portfolioEntityType, __]) => {
+            tap(([salesRep, invoiceGroup, portfolioEntityType, _, initialized]) => {
                 // Mendapatkan portfolio yang tersedia.
                 const portfolioQuery: IQueryParams = {
                     limit: 10,
@@ -577,17 +586,23 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
                 );
 
-                // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
-                const associatedPortfolioQuery: IQueryParams = {
-                    limit: 100,
-                    skip: 0
-                };
-                associatedPortfolioQuery['fromSalesRep'] = true;
-                associatedPortfolioQuery['userId'] = salesRep.id;
-                
-                this.associationStore.dispatch(
-                    AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: portfolioQuery })
-                );
+                if (!initialized) {
+                    // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
+                    const associatedPortfolioQuery: IQueryParams = {
+                        limit: 100,
+                        skip: 0
+                    };
+                    associatedPortfolioQuery['fromSalesRep'] = true;
+                    associatedPortfolioQuery['userId'] = salesRep.userId;
+                    
+                    this.associationStore.dispatch(
+                        AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioQuery })
+                    );
+
+                    this.associationStore.dispatch(
+                        AssociatedPortfolioActions.markInitialized()
+                    );
+                }
             }),
             takeUntil(this.subs$)
         ).subscribe();

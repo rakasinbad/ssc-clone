@@ -43,6 +43,10 @@ export const abortPortfolioAsRemoved = createAction(
     props<{ payload: Array<string> }>()
 );
 
+export const markInitialized = createAction('[Associations] Mark as Initialized');
+
+export const abortInitialized = createAction('[Associations] Abort as Initialized');
+
 export const confirmToClearAssociatedPortfolios = createAction('[Associations Page] Confirm to Clear Associated Portfolios');
 
 export const clearAssociatedPortfolios = createAction('[Associations Page] Clear Associated Portfolios');

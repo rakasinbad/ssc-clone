@@ -75,7 +75,7 @@
             </mat-selection-list>
             <!-- / LIST -->
             <!-- LOADER -->
-            <div class="loader" *ngIf="isPortfolioLoading$ | async">
+            <div class="loader" *ngIf="(isPortfolioLoading$ | async) || (isAssociatedPortfolioLoading$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
             <!-- / LOADER -->
@@ -126,6 +126,11 @@
                 </ng-container>
             </mat-selection-list>
             <!-- / LIST -->
+            <!-- LOADER -->
+            <div class="loader" *ngIf="(isPortfolioLoading$ | async) || (isAssociatedPortfolioLoading$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+            <!-- / LOADER -->
         </div>
         <!-- / SELECTED STORES -->
     </div>

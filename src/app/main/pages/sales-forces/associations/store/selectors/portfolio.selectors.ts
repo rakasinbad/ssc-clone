@@ -20,6 +20,8 @@ export const {
     selectTotal
 } = fromAssociatedPortfolio.adapter.getSelectors(getAssociatedPortfolioEntitiesState);
 
+export const getInitialized = createSelector(getAssociatedPortfolioEntitiesState, state => state.initialized);
+
 const getTotalItem = createSelector(getAssociatedPortfolioEntitiesState, state => state.total);
 
 const getSelectedIds = createSelector(getAssociatedPortfolioEntitiesState, state => state.selectedIds);

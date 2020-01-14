@@ -16,6 +16,7 @@ const featureKey = 'portfolios';
 interface State extends EntityState<Portfolio> {
     isRefresh?: boolean;
     isLoading: boolean;
+    initialized: boolean;
     selectedIds: Array<string>;
     total: number;
 }
@@ -26,6 +27,7 @@ const adapter = createEntityAdapter<Portfolio>({ selectId: row => row.id });
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
+    initialized: false,
     selectedIds: [],
     total: 0
 });
@@ -40,6 +42,14 @@ const reducer = createReducer<State>(
     on(AssociatedPortfolioActions.fetchAssociatedPortfoliosFailure, state => ({
         ...state,
         isLoading: false
+    })),
+    on(AssociatedPortfolioActions.markInitialized, state => ({
+        ...state,
+        initialized: true
+    })),
+    on(AssociatedPortfolioActions.abortInitialized, state => ({
+        ...state,
+        initialized: false
     })),
     on(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess, (state, { payload }) => {
         return adapter.upsertMany(payload.data, {

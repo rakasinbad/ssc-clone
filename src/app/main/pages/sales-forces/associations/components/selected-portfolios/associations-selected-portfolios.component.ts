@@ -53,6 +53,8 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     filters$: Observable<Array<Filter>>;
     // Untuk menyimpanan status loading dari state.
     isPortfolioLoading$: Observable<boolean>;
+    // Untuk menyimpan status loading dari state-nya associated portfolio.
+    isAssociatedPortfolioLoading$: Observable<boolean>;
     // Untuk menyimpan jumlah toko yang sudah terasosiasi dengan portofolio dan calon asosiasi dengan toko.
     totalSelectedPortfolios$: Observable<number>;
 
@@ -92,6 +94,11 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                 takeUntil(this.subs$)
             );
 
+        this.isAssociatedPortfolioLoading$ = this.associationStore.select(AssociatedPortfolioSelectors.getLoadingState)
+            .pipe(
+                takeUntil(this.subs$)
+            );
+
         this.invoiceGroupId$ = this.portfolioStore.select(
             PortfolioSelector.getSelectedInvoiceGroupId
         ).pipe(
@@ -107,11 +114,17 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         // this.availableStoreScrollable = new CdkScrollable(this.availableStore, this.scroll, ngZo)
 
         this.selectedPortfolioSub$.pipe(
-            withLatestFrom(this.associationStore.select(AssociatedPortfolioSelectors.selectAll)),
-            tap(([$event, selectedPortfolios]) => {
-                const portfolio = ($event.option.value as Portfolio);
+            withLatestFrom(
+                this.associationStore.select(AssociatedPortfolioSelectors.selectEntities),
+            ),
+            tap(([$event, portfolioEntities]) => {
+                let portfolio = ($event.option.value as Portfolio);
                 const isSelected = $event.option.selected;
-                const selectedPortfolioIds = selectedPortfolios.map(p => p.id);
+                const isInSelected = !!(portfolioEntities[portfolio.id]);
+
+                if (portfolioEntities[portfolio.id]) {
+                    portfolio = new Portfolio(portfolioEntities[portfolio.id]);
+                }
 
                 if (portfolio.source === 'fetch') {
                     if (isSelected) {
@@ -128,7 +141,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                         );
                     }
                 } else if (portfolio.source === 'list') {
-                    if (!selectedPortfolioIds.includes(portfolio.id)) {
+                    if (!isInSelected) {
                         if (isSelected) {
                             this.associationStore.dispatch(
                                 AssociatedPortfolioActions.addSelectedPortfolios({
@@ -356,7 +369,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                 length: selectedPortfolios.length
             })),
             // Hanya mengambil jumlah isi dari array-nya saja.
-            map(selectedPortfolios => selectedPortfolios.length),
+            map(selectedPortfolios => selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).length),
             takeUntil(this.subs$)
         );
 

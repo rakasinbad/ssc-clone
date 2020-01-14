@@ -32,6 +32,8 @@ const getSelectedItem = createSelector(
 
 const getIsLoading = createSelector(getAssociationEntitiesState, state => state.isLoading);
 
+export const getRequestingState = createSelector(getAssociationEntitiesState, state => state.isRequesting);
+
 const getSearchValue = createSelector(getAssociationEntitiesState, state => state.textSearch);
 
 export const getSelectedInvoiceGroup = createSelector(getAssociationEntitiesState, state => state.selectedInvoiceGroup);

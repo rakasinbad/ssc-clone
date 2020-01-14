@@ -68,6 +68,10 @@ export class AssociatedPortfolioApiService {
             newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
         }
 
+        if (!isNaN(params['userId'])) {
+            newArgs.push({ key: 'userId', value: params['userId'] });
+        }
+
         this._url = this._$helper.handleApiRouter(this._portfolioEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 

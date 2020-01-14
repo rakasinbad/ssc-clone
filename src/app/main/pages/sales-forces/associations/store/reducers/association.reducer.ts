@@ -17,6 +17,7 @@ const featureKey = 'associations';
  */
 interface State extends EntityState<Association> {
     isRefresh?: boolean;
+    isRequesting: boolean;
     isLoading: boolean;
     selectedId: string;
     selectedSalesRep: SalesRep;
@@ -32,6 +33,7 @@ const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
+    isRequesting: false,
     selectedId: null,
     selectedSalesRep: null,
     selectedInvoiceGroup: null,
@@ -43,6 +45,21 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
+    on(
+        AssociationActions.createAssociationRequest,
+        state => ({
+            ...state,
+            isRequesting: true
+        })
+    ),
+    on(
+        AssociationActions.createAssociationFailure,
+        AssociationActions.createAssociationSuccess,
+        state => ({
+            ...state,
+            isRequesting: false
+        })
+    ),
     on(
         AssociationActions.fetchAssociationRequest,
         AssociationActions.fetchAssociationsRequest,
