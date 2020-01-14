@@ -206,6 +206,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Mengambil foto-foto produk yang diperoleh dari back-end. */
         const oldPhotos = formValues.productMedia.oldPhotos;
 
+        const newStock = formValues.productInfo.unlimitedStock ? 0 : !formValues.productInfo.stock ? 0 : formValues.productInfo.stock;
+
         /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: Partial<Catalogue> = {
             /**
@@ -221,7 +223,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             lastCatalogueCategoryId: formValues.productInfo.category.length === 1 ?
                                         formValues.productInfo.category[0].id
                                         : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-            stock: formValues.productInfo.unlimitedStock ? 0 : !formValues.productInfo.stock ? 0 : formValues.productInfo.stock,
+            stock: newStock,
             unitOfMeasureId:  formValues.productInfo.uom,
             /**
              * INFORMASI PENJUALAN
@@ -254,7 +256,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             /**
              * LAINNYA
              */
-            displayStock: true,
+            displayStock: newStock === 0 ? false : true,
             catalogueTaxId: 1,
             unlimitedStock: formValues.productInfo.unlimitedStock,
         };
