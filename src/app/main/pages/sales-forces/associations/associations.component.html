@@ -13,17 +13,11 @@
 
             <div class="w-100-p" fxFlex fxFlexAlign="start" fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxFlex fxFlexAlign="center">
-                    <!-- MIDDLE HEADER -->
-                    <app-associations-view-by></app-associations-view-by>
-                    <!-- / MIDDLE HEADER -->
-                </div>
-    
-                <div fxFlex fxFlexAlign="center">
                     <!-- HEADER BOTTOM -->
                     <ng-template [ngxPermissionsOnly]="['SRM.ASC.CREATE','SRM.ASC.EXPORT', 'SRM.ASC.IMPORT']">
-                        <div fxLayout="row" [style.justify-content]="'flex-end'" fxLayoutAlign="space-between center">
+                        <div fxLayout="row" [style.justify-content]="'flex-start'" fxLayoutAlign="space-between center">
                             <ng-template [ngxPermissionsOnly]="['SRM.ASC.CREATE']">
-                                <div fxLayout="row" fxLayoutAlign="end center">
+                                <div fxLayout="row" fxLayoutAlign="start center">
                                     <button type="button" mat-flat-button color="accent" class="sinbad"
                                         [routerLink]="['/pages/sales-force/associations/add']">
                                         ADD
@@ -72,6 +66,12 @@
                         </div>
                     </ng-template>
                     <!-- / HEADER BOTTOM -->
+                </div>
+
+                <div fxFlex fxFlexAlign="center">
+                    <!-- MIDDLE HEADER -->
+                    <app-associations-view-by></app-associations-view-by>
+                    <!-- / MIDDLE HEADER -->
                 </div>
             </div>
         </div>
