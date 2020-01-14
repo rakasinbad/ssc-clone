@@ -140,6 +140,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueUnitRequest,
         CatalogueActions.fetchCatalogueCategoryRequest,
         CatalogueActions.fetchCatalogueCategoriesRequest,
+        CatalogueActions.addNewCatalogueRequest,
         // CatalogueActions.fetchTotalCatalogueStatusRequest,
         (state) => ({
             ...state,
@@ -175,6 +176,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueUnitFailure,
         CatalogueActions.fetchCatalogueCategoryFailure,
         CatalogueActions.fetchCatalogueCategoriesFailure,
+        CatalogueActions.addNewCatalogueFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -210,6 +212,14 @@ const catalogueReducer = createReducer(
      *  SUCCESSES
      *  ===================================================================
      */ 
+    on(
+        CatalogueActions.addNewCatalogueSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false,
+            errors: adapterError.removeOne('addNewCatalogueSuccess', state.errors)
+        })
+    ),
     on(
         CatalogueActions.fetchCatalogueStockSuccess,
         (state, { payload }) => ({
