@@ -11,12 +11,13 @@ export interface IPortfolio extends ITimestamp {
     invoiceGroup: InvoiceGroup;
     invoiceGroupId: string;
     name: string;
+    portfolioHistories?: any;
     portfolioStore?: StorePortfolio;
     storeQty?: number;
     totalStore?: number;
     totalTargetSales?: number;
+    type: string;
     user?: User;
-    portfolioHistories?: any;
     userId: string;
 }
 
@@ -28,12 +29,13 @@ export class Portfolio implements IPortfolio {
     invoiceGroup: InvoiceGroup;
     invoiceGroupId: string;
     name: string;
+    portfolioHistories?: any;
     portfolioStore?: StorePortfolio;
     storeQty?: number;
     totalStore?: number;
     totalTargetSales?: number;
+    type: string;
     user?: User;
-    portfolioHistories?: any;
     userId: string;
     createdAt: string;
     updatedAt: string;
@@ -48,12 +50,13 @@ export class Portfolio implements IPortfolio {
             invoiceGroup,
             invoiceGroupId,
             name,
+            portfolioHistories,
             portfolioStore,
             storeQty,
             totalStore,
             totalTargetSales,
+            type,
             user,
-            portfolioHistories,
             userId,
             createdAt,
             updatedAt,
@@ -72,6 +75,7 @@ export class Portfolio implements IPortfolio {
         this.storeQty = storeQty;
         this.totalStore = totalStore;
         this.totalTargetSales = totalTargetSales;
+        this.type = type;
         this.userId = userId;
         this.portfolioHistories = portfolioHistories;
         this.createdAt = createdAt;

@@ -37,9 +37,11 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     displayedColumns = [
-        'id',
+        'sku-supplier',
         'product-name',
         'brand-name',
         'stock-type',
@@ -64,7 +66,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private store: Store<fromSupplierInventory.FeatureState>,
@@ -104,8 +106,6 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.hasSelected = false;
         this.paginator.pageSize = this.defaultPageSize;
 
@@ -148,30 +148,30 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
                 this.initTable();
             });
 
+        const canDoActions = this.ngxPermissions.hasPermission(['INVENTORY.SI.UPDATE']);
 
-        this.ngxPermissions.hasPermission(['INVENTORY.SI.CREATE', 'INVENTORY.SI.UPDATE', 'INVENTORY.SI.DELETE'])
-            .then(result => {
-                if (result) {
-                    this.displayedColumns = [
-                        'id',
-                        'product-name',
-                        'brand-name',
-                        'stock-type',
-                        'stock',
-                        'stock-en-route',
-                        'actions'
-                    ];
-                } else {
-                    this.displayedColumns = [
-                        'id',
-                        'product-name',
-                        'brand-name',
-                        'stock-type',
-                        'stock',
-                        'stock-en-route',
-                    ];
-                }
-            });
+        canDoActions.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    'sku-supplier',
+                    'product-name',
+                    'brand-name',
+                    'stock-type',
+                    'stock',
+                    'stock-en-route',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'sku-supplier',
+                    'product-name',
+                    'brand-name',
+                    'stock-type',
+                    'stock',
+                    'stock-en-route'
+                ];
+            }
+        });
     }
 
     ngOnDestroy(): void {

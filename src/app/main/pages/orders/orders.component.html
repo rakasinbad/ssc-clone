@@ -369,73 +369,73 @@
                         <!-- <button mat-icon-button *ngIf="hasSelected">
                             <mat-icon class="secondary-text">delete</mat-icon>
                         </button> -->
+                        Actions
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <ng-template [ngxPermissionsOnly]="['OMS.UPDATE']">
-                                <button
-                                    mat-icon-button
-                                    [matMenuTriggerFor]="moreMenu"
-                                    aria-label="More"
-                                    *ngIf="
-                                        row?.status !== 'done' &&
-                                        row?.status !== 'cancel' &&
-                                        row?.status !== 'checkout'
-                                    "
-                                    (click)="$event.stopPropagation()"
-                                >
-                                    <mat-icon class="secondary-text">more_vert</mat-icon>
-                                </button>
-                            </ng-template>
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                *ngIf="
+                                    row?.status !== 'done' &&
+                                    row?.status !== 'cancel' &&
+                                    row?.status !== 'checkout'
+                                "
+                                (click)="$event.stopPropagation()"
+                            >
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Send"
-                                    *ngIf="
-                                        row?.status !== 'done' &&
-                                        row?.status !== 'cancel' &&
-                                        row?.status !== 'checkout'
-                                    "
-                                    (click)="onChangeStatus(row)"
-                                >
-                                    <mat-icon>send</mat-icon>
-                                    <span>
-                                        <ng-container [ngSwitch]="row?.status">
-                                            <ng-container *ngSwitchCase="'confirm'">
-                                                Dikemas
-                                            </ng-container>
+                                <ng-template [ngxPermissionsOnly]="['OMS.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Send"
+                                        *ngIf="
+                                            row?.status !== 'done' &&
+                                            row?.status !== 'cancel' &&
+                                            row?.status !== 'checkout'
+                                        "
+                                        (click)="onChangeStatus(row)"
+                                    >
+                                        <mat-icon>send</mat-icon>
+                                        <span>
+                                            <ng-container [ngSwitch]="row?.status">
+                                                <ng-container *ngSwitchCase="'confirm'">
+                                                    Dikemas
+                                                </ng-container>
 
-                                            <ng-container *ngSwitchCase="'packing'">
-                                                Dikirim
-                                            </ng-container>
+                                                <ng-container *ngSwitchCase="'packing'">
+                                                    Dikirim
+                                                </ng-container>
 
-                                            <ng-container *ngSwitchCase="'shipping'">
-                                                Diterima
-                                            </ng-container>
+                                                <ng-container *ngSwitchCase="'shipping'">
+                                                    Diterima
+                                                </ng-container>
 
-                                            <ng-container *ngSwitchCase="'delivered'">
-                                                Selesai
+                                                <ng-container *ngSwitchCase="'delivered'">
+                                                    Selesai
+                                                </ng-container>
                                             </ng-container>
-                                        </ng-container>
-                                        <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
-                                    </span>
-                                </button>
+                                            <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
+                                        </span>
+                                    </button>
 
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Cancel"
-                                    *ngIf="row?.status === 'confirm'"
-                                    (click)="onChangeCancelStatus(row)"
-                                >
-                                    <mat-icon>send</mat-icon>
-                                    <span>Cancel</span>
-                                </button>
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Cancel"
+                                        *ngIf="row?.status === 'confirm'"
+                                        (click)="onChangeCancelStatus(row)"
+                                    >
+                                        <mat-icon>send</mat-icon>
+                                        <span>Cancel</span>
+                                    </button>
+                                </ng-template>
 
                                 <!-- <button
                                     mat-menu-item
@@ -515,12 +515,12 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
             >
             </mat-paginator>
 
-             <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

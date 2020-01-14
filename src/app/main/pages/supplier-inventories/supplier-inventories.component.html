@@ -83,14 +83,14 @@
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
             >
-                <!-- Product ID Column -->
-                <ng-container matColumnDef="id">
+                <!-- External Product ID Column -->
+                <ng-container matColumnDef="sku-supplier">
                     <mat-header-cell *matHeaderCellDef>
-                        Product ID
+                        SKU Supplier
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.id) }}
+                            {{ safeValue(row?.externalId) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -210,16 +210,19 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Edit"
-                                    [routerLink]="[row?.id]"
-                                >
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['INVENTORY.SI.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        [routerLink]="[row?.id]"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
+
                                 <!-- <button
                                     mat-menu-item
                                     type="button"
@@ -278,7 +281,7 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 (page)="onChangePage($event)"
                 showFirstLastButtons
             >
