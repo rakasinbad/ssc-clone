@@ -10,10 +10,10 @@ app-associations {
 
         > .center {
             > .header {
-                &.sinbad {
-                    height: 100px !important;
-                    min-height: 190px !important;
-                }
+                // &.sinbad {
+                //     height: 100px !important;
+                //     min-height: 190px !important;
+                // }
 
                 .search-wrapper {
                     width: 100%;
@@ -44,12 +44,12 @@ app-associations {
                     }
                 }
 
-                @include media-breakpoint('lt-md') {
-                    padding: 8px 0;
-                    height: 192px !important;
-                    min-height: 192px !important;
-                    max-height: 192px !important;
-                }
+                // @include media-breakpoint('lt-md') {
+                //     padding: 8px 0;
+                //     height: 192px !important;
+                //     min-height: 192px !important;
+                //     max-height: 192px !important;
+                // }
             }
         }
     }
