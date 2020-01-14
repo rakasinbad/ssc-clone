@@ -16,47 +16,57 @@
             <!-- / MIDDLE HEADER -->
 
             <!-- HEADER BOTTOM -->
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16"
-                        [routerLink]="['/pages/sales-force/associations/add']">
-                        ADD
-                    </button>
-
-                    <!-- <ng-container *ngIf="selection.hasValue()">
-                        <button type="button" mat-flat-button class="sinbad" [matMenuTriggerFor]="actionMenu"
-                            aria-label="Action Menu"
-                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
-                            <span>Action</span>
-                            <mat-icon>arrow_drop_down</mat-icon>
-                        </button>
-                        <mat-menu #actionMenu="matMenu">
-                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Active"
-                                (click)="onSelectedActions('active')">
-                                <span>Set Active</span>
+            <ng-template [ngxPermissionsOnly]="['SRM.ASC.CREATE','SRM.ASC.EXPORT', 'SRM.ASC.IMPORT']">
+                <div fxLayout="row" fxLayoutAlign="space-between center">
+                    <ng-template [ngxPermissionsOnly]="['SRM.ASC.CREATE']">
+                        <div fxLayout="row" fxLayoutAlign="start center">
+                            <button type="button" mat-flat-button color="accent" class="sinbad mr-16"
+                                [routerLink]="['/pages/sales-force/associations/add']">
+                                ADD
                             </button>
-                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Inactive"
-                                (click)="onSelectedActions('inactive')">
-                                <span>Set Inactive</span>
-                            </button>
-                            <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Remove"
-                                (click)="onSelectedActions('delete')">
-                                <span>Remove</span>
-                            </button>
-                        </mat-menu>
-                    </ng-container> -->
+    
+                            <!-- <ng-container *ngIf="selection.hasValue()">
+                                <button type="button" mat-flat-button class="sinbad" [matMenuTriggerFor]="actionMenu"
+                                    aria-label="Action Menu"
+                                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
+                                    <span>Action</span>
+                                    <mat-icon>arrow_drop_down</mat-icon>
+                                </button>
+                                <mat-menu #actionMenu="matMenu">
+                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Active"
+                                        (click)="onSelectedActions('active')">
+                                        <span>Set Active</span>
+                                    </button>
+                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Set Inactive"
+                                        (click)="onSelectedActions('inactive')">
+                                        <span>Set Inactive</span>
+                                    </button>
+                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Remove"
+                                        (click)="onSelectedActions('delete')">
+                                        <span>Remove</span>
+                                    </button>
+                                </mat-menu>
+                            </ng-container> -->
+                        </div>
+                    </ng-template>
+    
+                    <ng-template [ngxPermissionsOnly]="['SRM.ASC.EXPORT', 'SRM.ASC.IMPORT']">
+                        <div fxLayout="row" fxLayoutAlign="start center">
+                            <ng-template [ngxPermissionsOnly]="['SRM.ASC.EXPORT']">
+                                <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
+                                    EXPORT
+                                </button>
+                            </ng-template>
+        
+                            <ng-template [ngxPermissionsOnly]="['SRM.ASC.IMPORT']">
+                                <button type="button" mat-stroked-button color="accent" class="sinbad">
+                                    IMPORT
+                                </button>
+                            </ng-template>
+                        </div>
+                    </ng-template>
                 </div>
-
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
-                        EXPORT
-                    </button>
-
-                    <button type="button" mat-stroked-button color="accent" class="sinbad">
-                        IMPORT
-                    </button>
-                </div>
-            </div>
+            </ng-template>
             <!-- / HEADER BOTTOM -->
         </div>
         <!-- / HEADER -->

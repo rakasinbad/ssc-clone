@@ -274,51 +274,55 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="edit"
-                                    (click)="editProduct(row.id)"
-                                >
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="edit"
+                                        (click)="editProduct(row.id)"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
 
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="remove"
-                                    (click)="onDelete(row)"
-                                >
-                                    <mat-icon>delete</mat-icon>
-                                    <span>Remove</span>
-                                </button>
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="archive"
+                                        (click)="setInactive(row)"
+                                        *ngIf="row?.status === 'active'"
+                                    >
+                                        <mat-icon>archive</mat-icon>
+                                        <span>Inactive</span>
+                                    </button>
+    
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="archive"
+                                        (click)="setActive(row)"
+                                        *ngIf="row?.status === 'inactive'"
+                                    >
+                                        <mat-icon>unarchive</mat-icon>
+                                        <span>Active</span>
+                                    </button>
+                                </ng-template>
 
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="archive"
-                                    (click)="setInactive(row)"
-                                    *ngIf="row?.status === 'active'"
-                                >
-                                    <mat-icon>archive</mat-icon>
-                                    <span>Inactive</span>
-                                </button>
-
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="archive"
-                                    (click)="setActive(row)"
-                                    *ngIf="row?.status === 'inactive'"
-                                >
-                                    <mat-icon>unarchive</mat-icon>
-                                    <span>Active</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['CATALOGUE.DELETE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="remove"
+                                        (click)="onDelete(row)"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Remove</span>
+                                    </button>
+                                </ng-template>
 
                                 <!-- <button
                                     mat-menu-item

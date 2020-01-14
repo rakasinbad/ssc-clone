@@ -27,6 +27,7 @@ import { AssociationStore } from '../../models/';
 import * as fromAssociationStores from '../../store/reducers';
 import { AssociationStoresActions } from '../../store/actions';
 import { AssociationSelectors, AssociationStoreSelectors } from '../../store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-associations-store',
@@ -96,7 +97,10 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         }
     ];
 
-    constructor(private store: Store<fromAssociationStores.FeatureState>) {}
+    constructor(
+        private ngxPermissionsService: NgxPermissionsService,
+        private store: Store<fromAssociationStores.FeatureState>,
+    ) {}
 
     /**
      * PRIVATE FUNCTIONS
@@ -136,6 +140,8 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         this.dataSource$ = this.store.select(AssociationStoreSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationStoreSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationStoreSelectors.getIsLoading);
+
+        this.updatePrivileges();
     }
 
     ngAfterViewInit(): void {
@@ -263,6 +269,16 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         }
     }
 
+    masterToggle(): void {
+        // this.isAllSelected() ?
+        //     this.selection.clear() :
+        //     this.portfolios.forEach(row => this.selection.select(row));
+    }
+
+    editAssociation(associatonId: string): void {}
+
+    viewAssociation(associatonId: string): void {}
+
     /**
      *
      * Initialize current page
@@ -312,5 +328,34 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
     private _onRefreshTable(): void {
         this._initTable();
+    }
+
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'store-code',
+                    'store-name',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'sales-rep',
+                    'date-associate',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'store-code',
+                    'store-name',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'sales-rep',
+                    'date-associate',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }

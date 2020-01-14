@@ -12,6 +12,7 @@ import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-d
 import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-stores/portfolios-filter-stores.component';
 import { PortfoliosSelectedStoresComponent } from './components/portfolios-selected-stores/portfolios-selected-stores.component';
 import { PortfoliosConflictStoresComponent } from './components/portfolios-conflict-stores/portfolios-conflict-stores.component';
+import { NgxPermissionsModule } from 'ngx-permissions';
 // import { PortfolioCreateComponent } from './pages/portfolio-create/portfolio-create.component';
 
 
@@ -32,6 +33,7 @@ import { PortfoliosConflictStoresComponent } from './components/portfolios-confl
         PortfoliosRoutingModule,
         PortfoliosStoreModule,
         MaterialModule,
+        NgxPermissionsModule.forChild(),
     ],
     entryComponents: [
         PortfoliosFilterStoresComponent,

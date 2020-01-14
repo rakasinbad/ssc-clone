@@ -45,6 +45,7 @@ import { Router } from '@angular/router';
 import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ValidationError } from '@ngx-pwa/local-storage';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-attendances',
@@ -92,7 +93,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         private router: Router,
         private sanitizer: DomSanitizer,
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private ngxPermissionsService: NgxPermissionsService,
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -182,6 +184,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(_ => {
                 this.onChangePage();
             });
+
+        this.updatePrivileges();
     }
 
     ngOnDestroy(): void {
@@ -275,5 +279,38 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+    }
+
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }

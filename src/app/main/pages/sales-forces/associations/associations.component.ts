@@ -24,6 +24,7 @@ import { Observable, Subject } from 'rxjs';
 import * as fromAssociations from './store/reducers';
 import { AssociationActions } from './store/actions';
 import { DomSanitizer } from '@angular/platform-browser';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-associations',
@@ -66,6 +67,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         private route: ActivatedRoute,
         private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
+        private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
 

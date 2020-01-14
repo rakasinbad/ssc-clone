@@ -38,6 +38,7 @@ import { AssociationsFilterPortfoliosComponent } from './components/filter-portf
 import { PortfolioStoresComponent } from './components/portfolio-stores/portfolio-stores.component';
 import { StoreEffects } from '../portfolios/store/effects/stores.effects';
 import { AssociationEffects, AssociationStoreEffects } from './store/effects';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import { AssociationEffects, AssociationStoreEffects } from './store/effects';
         RxReactiveFormsModule,
         AssociationsRoutingModule,
         MaterialModule,
+        NgxPermissionsModule.forChild(),
         StoreModule.forFeature(AssociationMainFeatureKey, AssociationMainReducers),
         StoreModule.forFeature(PortfoliosMainFeatureKey, PortfolioReducers),
         // StoreModule.forFeature(SalesRepMainFeatureKey, SalesRepMainReducers),

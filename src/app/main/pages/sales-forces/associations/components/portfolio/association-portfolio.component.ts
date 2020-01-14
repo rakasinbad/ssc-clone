@@ -42,6 +42,7 @@ import { AssociationSelectors } from '../../store/selectors';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-associations-portfolio',
@@ -114,6 +115,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         private route: ActivatedRoute,
         private domSanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
+        private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
 
@@ -155,6 +157,8 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
+
+        this.updatePrivileges();
     }
 
     ngAfterViewInit(): void {
@@ -255,6 +259,16 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         }
     }
 
+    masterToggle(): void {
+        // this.isAllSelected() ?
+        //     this.selection.clear() :
+        //     this.portfolios.forEach(row => this.selection.select(row));
+    }
+
+    editAssociation(associatonId: string): void {}
+
+    viewAssociation(associatonId: string): void {}
+
     /**
      *
      * Initialize current page
@@ -304,5 +318,32 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
     private _onRefreshTable(): void {
         this._initTable();
+    }
+
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'store-qty',
+                    'sales-target',
+                    'sales-rep',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'store-qty',
+                    'sales-target',
+                    'sales-rep',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }

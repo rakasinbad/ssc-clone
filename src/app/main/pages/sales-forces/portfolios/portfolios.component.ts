@@ -26,6 +26,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
 import { UiActions } from 'app/shared/store/actions';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-portfolios',
@@ -78,6 +79,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         private portfolioStore: NgRxStore<CoreFeatureState>,
         private router: Router,
         private readonly sanitizer: DomSanitizer,
+        private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
     ) {
         this.portfolioStore.dispatch(
@@ -185,6 +187,31 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         }
     }
 
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['SRM.PFO.UPDATE', 'SRM.PFO.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'code',
+                    'name',
+                    'salesForce',
+                    'timestamp',
+                    'actions',
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'code',
+                    'name',
+                    'salesForce',
+                    'timestamp',
+                    // 'actions',
+                ];
+            }
+        });
+    }
+
     /**
      * PUBLIC FUNCTIONS
      */
@@ -257,6 +284,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.onRefreshTable();
             });
 
+        this.updatePrivileges();
         this.onRefreshTable();
     }
 

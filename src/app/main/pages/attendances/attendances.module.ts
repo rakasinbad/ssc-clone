@@ -24,6 +24,7 @@ import { MerchantEffects } from './store/effects';
 /** USER'S STATE MANAGEMENT */
 import { fromUser } from './store/reducers';
 import { UserEffects } from './store/effects';
+import { NgxPermissionsModule } from 'ngx-permissions';
 
 /**
  *
@@ -44,6 +45,8 @@ import { UserEffects } from './store/effects';
 
         SharedModule,
         MaterialModule,
+
+        NgxPermissionsModule.forChild(),
 
         // AgmCoreModule,
         RxReactiveFormsModule,

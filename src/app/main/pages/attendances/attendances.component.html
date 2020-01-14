@@ -164,7 +164,7 @@
                 <!-- Action Column -->
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
@@ -178,15 +178,19 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['ATTENDANCE.UPDATE']">
+                                    <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
 
-                                <button mat-menu-item aria-label="remove" disabled>
-                                    <mat-icon>delete</mat-icon>
-                                    <span>Remove</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['ATTENDANCE.DELETE']">
+                                    <button mat-menu-item aria-label="remove" disabled>
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Remove</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>

@@ -43,6 +43,7 @@ import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -103,7 +104,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         public translate: TranslateService,
         private readonly sanitizer: DomSanitizer,
         private _helper: HelperService,
-        private _notice: NoticeService
+        private _notice: NoticeService,
+        private ngxPermissionsService: NgxPermissionsService,
     ) {
         this.store.dispatch(
             UiActions.createBreadcrumb({
@@ -130,7 +132,53 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
-  // -----------------------------------------------------------------------------------------------------
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['CATALOGUE.UPDATE', 'CATALOGUE.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                if (this.findCatalogueMode === 'blocked') {
+                    this.displayedColumns = [
+                        'name',
+                        'lastUpdate',
+                        'timeLimit',
+                        'blockType',
+                        'blockReason',
+                        'blockSuggest',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = this.initialDisplayedColumns;
+                }
+            } else {
+                if (this.findCatalogueMode === 'blocked') {
+                    this.displayedColumns = [
+                        'name',
+                        'lastUpdate',
+                        'timeLimit',
+                        'blockType',
+                        'blockReason',
+                        'blockSuggest',
+                        // 'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'name',
+                        'sku',
+                        'externalId',
+                        // 'variant',
+                        'price',
+                        'stock',
+                        // 'sales',
+                        'actions'
+                    ];
+        
+                }
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
@@ -141,6 +189,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.translate.set('STATUS.CATALOGUE.ALL_PARAM.TITLE', 'Semua 222', 'id');
         // this.translate.set('STATUS.CATALOGUE.ALL_PARAM.TITLE', 'Semua 222', 'en');
         // console.log(this._fuseNavigationService.getNavigationItem('all-type', this._fuseNavigationService.getNavigation('customNavigation')));
+        this.updatePrivileges();
         
         // this._unSubs$ = new Subject<void>();
         this.search = new FormControl('');
@@ -198,7 +247,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             if (status) {
                 this.onRefreshTable();
             }
-        })
+        });
     }
 
     ngAfterViewInit(): void {
@@ -254,19 +303,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             takeUntil(this._unSubs$)
         ).subscribe(index => {
             // console.log('INDEX', index);
-            if (index === 'blocked') {
-                this.displayedColumns = [
-                    'name',
-                    'lastUpdate',
-                    'timeLimit',
-                    'blockType',
-                    'blockReason',
-                    'blockSuggest',
-                    'actions'
-                ];
-            } else {
-                this.displayedColumns = this.initialDisplayedColumns;
-            }
+            // if (index === 'blocked') {
+            //     this.displayedColumns = [
+            //         'name',
+            //         'lastUpdate',
+            //         'timeLimit',
+            //         'blockType',
+            //         'blockReason',
+            //         'blockSuggest',
+            //         'actions'
+            //     ];
+            // } else {
+            //     this.displayedColumns = this.initialDisplayedColumns;
+            // }
 
             if (index === 'all-type') {
                 this.findCatalogueMode = 'all';
@@ -288,7 +337,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     tap(catalogues => console.log(catalogues))
                 // );
             }
-    
+
+            this.updatePrivileges();
             this.initTable();
         });
         // this.initTable();

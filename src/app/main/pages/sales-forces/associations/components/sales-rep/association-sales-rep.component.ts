@@ -42,6 +42,7 @@ import { AssociationSelectors } from '../../store/selectors';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-associations-sales-rep',
@@ -118,6 +119,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         private route: ActivatedRoute,
         private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
+        private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
 
@@ -144,6 +146,8 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
         this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
         this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
+
+        this.updatePrivileges();
     }
 
     ngAfterViewInit(): void {
@@ -172,6 +176,12 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    masterToggle(): void {
+        // this.isAllSelected() ?
+        //     this.selection.clear() :
+        //     this.portfolios.forEach(row => this.selection.select(row));
     }
 
     clickTab(action: 'all' | 'associated' | 'not-associated'): void {
@@ -244,6 +254,10 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         }
     }
 
+    editAssociation(associatonId: string): void {}
+
+    viewAssociation(associatonId: string): void {}
+
     /**
      *
      * Initialize current page
@@ -293,5 +307,36 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
 
     private _onRefreshTable(): void {
         this._initTable();
+    }
+
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'sales-rep',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'store-code',
+                    'store-qty',
+                    'sales-target',
+                    'date-associate',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'sales-rep',
+                    'portfolio-code',
+                    'portfolio-name',
+                    'store-code',
+                    'store-qty',
+                    'sales-target',
+                    'date-associate',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }
