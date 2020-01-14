@@ -992,63 +992,65 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
 
             /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
-            this.form.patchValue({
-                productInfo: {
-                    id: catalogue.id,
-                    externalId: catalogue.externalId,
-                    name: catalogue.name,
-                    description: catalogue.description || '-',
-                    // information: catalogue.detail || '-',
-                    // variant: ['', Validators.required],
-                    brandId: catalogue.brandId,
-                    brandName: catalogue.brand.name,
-                    // category: ['', Validators.required],
-                    stock: catalogue.stock,
-                    uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                    minQty: catalogue.minQty,
-                    packagedQty: catalogue.packagedQty,
-                    multipleQty: catalogue.multipleQty,
-                    unlimitedStock: catalogue.unlimitedStock,
-                }, productSale: {
-                    retailPrice: this.isViewMode() ? catalogue.discountedRetailBuyingPrice : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                    productPrice: this.isViewMode() ? catalogue.retailBuyingPrice : String(catalogue.retailBuyingPrice).replace('.', ','),
-                    // variants: this.fb.array([])
-                }, productMedia: {
-                    photos: [
-                        ...catalogue.catalogueImages.map(image => image.imageUrl)
-                    ],
-                    oldPhotos: [
-                        ...catalogue.catalogueImages.map(image => image.imageUrl)
-                    ]
-                },
-                productShipment: {
-                    catalogueWeight: catalogue.catalogueWeight,
-                    packagedWeight: catalogue.packagedWeight,
-                    catalogueDimension: catalogue.catalogueDimension,
-                    packagedDimension: catalogue.packagedDimension,
-                    // isDangerous: [''],
-                    // couriers: this.fb.array([
-                    //     this.fb.control({
-                    //         name: 'SiCepat REG (maks 5000g)',
-                    //         disabled: this.fb.control(false)
-                    //     }),
-                    //     this.fb.control({
-                    //         name: 'JNE REG (maks 5000g)',
-                    //         disabled: this.fb.control(false)
-                    //     }),
-                    //     this.fb.control({
-                    //         name: 'SiCepat Cargo (maks 5000g)',
-                    //         disabled: this.fb.control(false)
-                    //     })
-                    // ])
-                },
-                productCount: {
-                    qtyPerMasterBox: catalogue.packagedQty,
-                    minQtyOption: catalogue.minQtyType,
-                    minQtyValue: catalogue.minQty,
-                    additionalQtyOption: catalogue.multipleQtyType,
-                    additionalQtyValue: catalogue.multipleQty,
-                }
+            setTimeout(() => {
+                this.form.patchValue({
+                    productInfo: {
+                        id: catalogue.id,
+                        externalId: catalogue.externalId,
+                        name: catalogue.name,
+                        description: catalogue.description || '-',
+                        // information: catalogue.detail || '-',
+                        // variant: ['', Validators.required],
+                        brandId: catalogue.brandId,
+                        brandName: catalogue.brand.name,
+                        // category: ['', Validators.required],
+                        stock: catalogue.stock,
+                        uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                        minQty: catalogue.minQty,
+                        packagedQty: catalogue.packagedQty,
+                        multipleQty: catalogue.multipleQty,
+                        unlimitedStock: catalogue.unlimitedStock,
+                    }, productSale: {
+                        retailPrice: this.isViewMode() ? catalogue.discountedRetailBuyingPrice : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                        productPrice: this.isViewMode() ? catalogue.retailBuyingPrice : String(catalogue.retailBuyingPrice).replace('.', ','),
+                        // variants: this.fb.array([])
+                    }, productMedia: {
+                        photos: [
+                            ...catalogue.catalogueImages.map(image => image.imageUrl)
+                        ],
+                        oldPhotos: [
+                            ...catalogue.catalogueImages.map(image => image.imageUrl)
+                        ]
+                    },
+                    productShipment: {
+                        catalogueWeight: catalogue.catalogueWeight,
+                        packagedWeight: catalogue.packagedWeight,
+                        catalogueDimension: catalogue.catalogueDimension,
+                        packagedDimension: catalogue.packagedDimension,
+                        // isDangerous: [''],
+                        // couriers: this.fb.array([
+                        //     this.fb.control({
+                        //         name: 'SiCepat REG (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     }),
+                        //     this.fb.control({
+                        //         name: 'JNE REG (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     }),
+                        //     this.fb.control({
+                        //         name: 'SiCepat Cargo (maks 5000g)',
+                        //         disabled: this.fb.control(false)
+                        //     })
+                        // ])
+                    },
+                    productCount: {
+                        qtyPerMasterBox: catalogue.packagedQty,
+                        minQtyOption: catalogue.minQtyType,
+                        minQtyValue: catalogue.minQty,
+                        additionalQtyOption: catalogue.multipleQtyType,
+                        additionalQtyValue: catalogue.multipleQty,
+                    }
+                });
             });
 
             if (this.isViewMode()) {
