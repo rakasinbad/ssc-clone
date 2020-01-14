@@ -1,6 +1,13 @@
-<h2 mat-dialog-title>
-    Store List
-</h2>
+<div fxLayout="row" fxLayoutAlign="space-between stretch">
+    <h2 mat-dialog-title>
+        Store List
+    </h2>
+    
+    <button mat-dialog-close mat-icon-button>
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+
 
 <h3>
     {{ dialogData?.name || '-' }} ({{ dialogData?.storeQty }} stores)
