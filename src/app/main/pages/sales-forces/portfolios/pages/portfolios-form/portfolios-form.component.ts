@@ -154,7 +154,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         // const breadcrumbs = [
         //     {
         //         title: 'Home',
-        //         translate: 'BREADCRUMBS.HOME',
+        //        // translate: 'BREADCRUMBS.HOME',
         //         active: false
         //     },
         //     {
@@ -656,7 +656,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                     payload: [
                         {
                             title: 'Home',
-                            translate: 'BREADCRUMBS.HOME',
+                           // translate: 'BREADCRUMBS.HOME',
                             active: false
                         },
                         {
@@ -678,7 +678,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                     payload: [
                         {
                             title: 'Home',
-                            translate: 'BREADCRUMBS.HOME',
+                           // translate: 'BREADCRUMBS.HOME',
                             active: false
                         },
                         {

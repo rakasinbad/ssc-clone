@@ -43,7 +43,7 @@ import { MatTableDataSource, MatDialog } from '@angular/material';
 import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
-import { IQueryParams, Brand, UserSupplier, TNullable } from 'app/shared/models';
+import { IQueryParams, Brand, UserSupplier, TNullable, IBreadcrumbs } from 'app/shared/models';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { CataloguesService } from '../services';
@@ -121,10 +121,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     ) {
         this.quantityChoices = this.$helper.getQuantityChoices();
 
-        const breadcrumbs = [
+        const breadcrumbs: Array<IBreadcrumbs> = [
             {
                 title: 'Home',
-                translate: 'BREADCRUMBS.HOME',
+                // translate: 'BREADCRUMBS.HOME',
                 active: false
             },
             {

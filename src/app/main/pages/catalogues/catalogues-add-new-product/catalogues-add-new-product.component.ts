@@ -93,7 +93,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Catalogue',

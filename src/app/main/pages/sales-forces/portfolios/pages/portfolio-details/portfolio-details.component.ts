@@ -105,7 +105,7 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
         const breadcrumbs = [
             {
                 title: 'Home',
-                translate: 'BREADCRUMBS.HOME',
+               // translate: 'BREADCRUMBS.HOME',
                 active: false
             },
             {

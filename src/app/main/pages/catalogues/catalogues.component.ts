@@ -112,7 +112,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Catalogue',

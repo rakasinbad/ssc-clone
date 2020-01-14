@@ -131,7 +131,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -220,7 +220,7 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',

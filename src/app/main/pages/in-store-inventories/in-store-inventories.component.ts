@@ -92,7 +92,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',

@@ -69,7 +69,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Account',
@@ -444,7 +444,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                     payload: [
                         {
                             title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                           // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
@@ -472,7 +472,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                     payload: [
                         {
                             title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                           // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',

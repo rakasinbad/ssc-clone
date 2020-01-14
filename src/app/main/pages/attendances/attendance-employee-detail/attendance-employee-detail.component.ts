@@ -173,7 +173,7 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',

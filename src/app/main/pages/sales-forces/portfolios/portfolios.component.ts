@@ -87,7 +87,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Sales Rep Management',
