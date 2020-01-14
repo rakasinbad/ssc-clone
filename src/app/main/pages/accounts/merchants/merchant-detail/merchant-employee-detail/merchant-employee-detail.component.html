@@ -10,7 +10,7 @@
     <!-- Name Column -->
     <ng-container matColumnDef="name">
         <mat-header-cell *matHeaderCellDef>
-            Nama
+            Name
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word;">
@@ -58,9 +58,38 @@
         </mat-cell>
     </ng-container>
 
+    <!-- Status Column -->
+    <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>
+            Status
+        </mat-header-cell>
+
+        <mat-cell *matCellDef="let row">
+            <ng-container *ngIf="safeValue(row?.status) !== '-'">
+                <mat-icon
+                    class="indicator-success active-icon s-16"
+                    *ngIf="row?.status === 'active'"
+                >
+                    check
+                </mat-icon>
+
+                <mat-icon
+                    class="indicator-error active-icon s-16"
+                    *ngIf="row?.status === 'inactive'"
+                >
+                    remove
+                </mat-icon>
+            </ng-container>
+
+            <ng-container *ngIf="safeValue(row?.status) === '-'">
+                {{ safeValue(row?.status) }}
+            </ng-container>
+        </mat-cell>
+    </ng-container>
+
     <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef>
-            Action
+            Actions
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <div
@@ -78,50 +107,60 @@
                 </button>
 
                 <mat-menu #moreMenu="matMenu">
-                    <button
-                        mat-menu-item
-                        type="button"
-                        class="sinbad-mat-menu-item"
-                        aria-label="Edit"
-                        [routerLink]="[
-                            '/pages/account/stores',
-                            row?.storeId,
-                            row?.userId,
-                            'employee'
-                        ]"
-                    >
-                        <mat-icon>edit</mat-icon>
-                        <span>Edit</span>
-                    </button>
+                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.EMPLOYEE.UPDATE']">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="Edit"
+                            [routerLink]="[
+                                '/pages/account/stores',
+                                row?.storeId,
+                                row?.userId,
+                                'employee'
+                            ]"
+                        >
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+                    </ng-template>
 
-                    <button
-                        mat-menu-item
-                        type="button"
-                        class="sinbad-mat-menu-item"
-                        aria-label="Delete"
-                        (click)="onDelete(row)"
-                    >
-                        <mat-icon>delete</mat-icon>
-                        <span>Remove</span>
-                    </button>
+                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.EMPLOYEE.DELETE']">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            aria-label="Delete"
+                            *ngIf="hasOwnerRoles(row?.user?.roles)"
+                            (click)="onDelete(row)"
+                        >
+                            <mat-icon>delete</mat-icon>
+                            <span>Delete</span>
+                        </button>
+                    </ng-template>
 
-                    <button
-                        mat-menu-item
-                        type="button"
-                        class="sinbad-mat-menu-item"
-                        [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
-                        (click)="onChangeStatus(row)"
-                    >
-                        <mat-icon>
-                            {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
-                        </mat-icon>
-                        <span>
-                            {{
-                                (row?.status === 'active' ? 'ACTION.INACTIVE' : 'ACTION.ACTIVE')
-                                    | translate
-                            }}
-                        </span>
-                    </button>
+                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.EMPLOYEE.UPDATE']">
+                        <button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
+                            *ngIf="hasOwnerRoles(row?.user?.roles)"
+                            (click)="onChangeStatus(row)"
+                        >
+                            <mat-icon>
+                                {{ row?.status === 'active' ? 'archive' : 'check_circle_outline' }}
+                            </mat-icon>
+                            <span>
+                                {{
+                                    (row?.status === 'active'
+                                        ? 'ACTION.INACTIVE'
+                                        : 'ACTION.ACTIVE'
+                                    ) | translate
+                                }}
+                            </span>
+                        </button>
+                    </ng-template>
                 </mat-menu>
             </div>
         </mat-cell>
@@ -154,7 +193,7 @@
     "
     [length]="totalDataSource$ | async"
     [pageSize]="defaultPageSize"
-    [pageSizeOptions]="[5, 10, 25, 100]"
+    [pageSizeOptions]="defaultPageOpts"
     (page)="onChangePage($event)"
     showFirstLastButtons
 >

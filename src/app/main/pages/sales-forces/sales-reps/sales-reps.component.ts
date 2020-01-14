@@ -4,12 +4,12 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    ElementRef
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTable, MatTableDataSource } from '@angular/material';
@@ -17,18 +17,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { HelperService } from 'app/shared/helpers';
 import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    flatMap,
-    takeUntil,
-    tap
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -36,8 +32,6 @@ import { SalesRep, SalesRepBatchActions } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-sales-reps',
@@ -61,14 +55,16 @@ import { HelperService } from 'app/shared/helpers';
 })
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     search: FormControl;
     displayedColumns = [
         'checkbox',
         'sales-rep-id',
         'sales-rep-name',
         'phone-number',
-        'sales-rep-target',
-        'actual-sales',
+        // 'sales-rep-target',
+        // 'actual-sales',
         'invoice-group',
         'area',
         'joining-date',
@@ -111,6 +107,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private domSanitizer: DomSanitizer,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService
@@ -184,6 +181,39 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 // this.table.nativeElement.scrollTop = 0;
                 this._initTable();
             });
+
+        const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    'checkbox',
+                    'sales-rep-id',
+                    'sales-rep-name',
+                    'phone-number',
+                    // 'sales-rep-target',
+                    // 'actual-sales',
+                    'invoice-group',
+                    'area',
+                    'joining-date',
+                    'status',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'checkbox',
+                    'sales-rep-id',
+                    'sales-rep-name',
+                    'phone-number',
+                    // 'sales-rep-target',
+                    // 'actual-sales',
+                    'invoice-group',
+                    'area',
+                    'joining-date',
+                    'status'
+                ];
+            }
+        });
     }
 
     ngOnDestroy(): void {

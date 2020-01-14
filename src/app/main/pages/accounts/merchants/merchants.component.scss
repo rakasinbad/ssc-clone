@@ -188,5 +188,9 @@ app-merchants {
             flex: 0 1 80px;
             justify-content: flex-end;
         }
+
+        .active-icon {
+            border-radius: 50%;
+        }
     }
 }

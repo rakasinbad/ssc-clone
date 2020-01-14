@@ -38,15 +38,17 @@
             <!-- HEADER BOTTOM -->
             <div fxLayout="row" fxLayoutAlign="space-between center">
                 <div fxLayout="row" fxLayoutAlign="start center">
-                    <button
-                        type="button"
-                        mat-flat-button
-                        color="accent"
-                        class="sinbad mr-16"
-                        [routerLink]="['/pages/sales-force/sales-rep/new']"
-                    >
-                        ADD
-                    </button>
+                    <ng-template [ngxPermissionsOnly]="['SRM.SR.CREATE']">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="accent"
+                            class="sinbad mr-16"
+                            [routerLink]="['/pages/sales-force/sales-rep/new']"
+                        >
+                            ADD
+                        </button>
+                    </ng-template>
 
                     <ng-container *ngIf="selection.hasValue()">
                         <button
@@ -93,7 +95,7 @@
                 </div>
 
                 <div fxLayout="row" fxLayoutAlign="start center">
-                    <button
+                    <!-- <button
                         type="button"
                         mat-flat-button
                         color="accent"
@@ -111,7 +113,7 @@
                         (click)="showInfo()"
                     >
                         IMPORT
-                    </button>
+                    </button> -->
                 </div>
             </div>
             <!-- / HEADER BOTTOM -->
@@ -260,16 +262,34 @@
                         Status
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ row?.status | titlecase }}
-                        </p>
+                        <ng-container *ngIf="safeValue(row?.status) !== '-'">
+                            <mat-icon
+                                class="indicator-success active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'active'"
+                            >
+                                check
+                            </mat-icon>
+
+                            <mat-icon
+                                class="indicator-error active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'inactive'"
+                            >
+                                remove
+                            </mat-icon>
+                        </ng-container>
+
+                        <ng-container *ngIf="safeValue(row?.status) === '-'">
+                            {{ safeValue(row?.status) }}
+                        </ng-container>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
@@ -283,42 +303,44 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    type="button"
-                                    mat-menu-item
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Edit"
-                                    [routerLink]="[row?.id]"
-                                >
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
+                                    <button
+                                        type="button"
+                                        mat-menu-item
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        [routerLink]="[row?.id]"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
 
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    [attr.aria-label]="
-                                        row?.status === 'active' ? 'Inactive' : 'Active'
-                                    "
-                                    (click)="onChangeStatus(row)"
-                                >
-                                    <mat-icon>
-                                        {{
-                                            row?.status === 'active'
-                                                ? 'archive'
-                                                : 'check_circle_outline'
-                                        }}
-                                    </mat-icon>
-                                    <span>
-                                        {{
-                                            (row?.status === 'active'
-                                                ? 'ACTION.INACTIVE'
-                                                : 'ACTION.ACTIVE'
-                                            ) | translate
-                                        }}
-                                    </span>
-                                </button>
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        [attr.aria-label]="
+                                            row?.status === 'active' ? 'Inactive' : 'Active'
+                                        "
+                                        (click)="onChangeStatus(row)"
+                                    >
+                                        <mat-icon>
+                                            {{
+                                                row?.status === 'active'
+                                                    ? 'archive'
+                                                    : 'check_circle_outline'
+                                            }}
+                                        </mat-icon>
+                                        <span>
+                                            {{
+                                                (row?.status === 'active'
+                                                    ? 'ACTION.INACTIVE'
+                                                    : 'ACTION.ACTIVE'
+                                                ) | translate
+                                            }}
+                                        </span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -353,7 +375,7 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
             ></mat-paginator>
 

@@ -14,7 +14,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from 'app/shared/helpers';
+import { NoticeService } from 'app/shared/helpers';
 import { IQueryParams, LifecyclePlatform, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -40,6 +40,8 @@ import { StoreSelectors } from './store/selectors';
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
@@ -54,7 +56,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
 
-    dataSource$: Observable<SupplierStore[]>;
+    dataSource$: Observable<Array<SupplierStore>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -72,13 +74,13 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private router: Router,
-        private ngPerms: NgxPermissionsService,
-        private ngRoles: NgxRolesService,
+        private ngxPermissions: NgxPermissionsService,
+        private ngxRoles: NgxRolesService,
         private store: Store<fromMerchant.FeatureState>,
         public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$log: LogService,
-        private _$merchantApi: MerchantApiService
+        private _$merchantApi: MerchantApiService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -113,47 +115,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        localStorage.removeItem('filter.store');
-
-        // .pipe(
-        //     filter(source => source.length > 0),
-        //     delay(1000),
-        //     startWith(this._$merchantApi.initBrandStore())
-        // );
-
-        this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
-        this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
-
-        this.initTable();
-
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                if (v) {
-                    localStorage.setItem('filter.store', v);
-                }
-
-                this.onRefreshTable();
-            });
-
-        this.store
-            .select(StoreSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
-
         this._initPage();
     }
 
@@ -179,37 +140,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return localStorage.getItem('filter.store') || '';
     }
 
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-    }
-
-    onChangeStatus(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
-    }
-
-    onDelete(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
-    }
-
-    onRemoveSearchStore(): void {
-        localStorage.removeItem('filter.store');
-        this.search.reset();
-    }
-
-    onTrackBy(index: number, item: SupplierStore): string {
-        return !item ? null : item.id;
-    }
-
     goStoreInfoPage(storeId: string): void {
         if (!storeId) {
             return;
@@ -223,10 +153,70 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return item ? item : '-';
     }
 
+    onChangePage(ev: PageEvent): void {
+        console.log('Change page', ev);
+    }
+
+    onChangeStatus(item: SupplierStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
+
+        canChangeStatusStore.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
+    }
+
+    onDelete(item: SupplierStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        const canDeleteStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.DELETE');
+
+        canDeleteStore.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
+    }
+
+    onRemoveSearchStore(): void {
+        localStorage.removeItem('filter.store');
+        this.search.reset();
+    }
+
+    onTrackBy(index: number, item: SupplierStore): string {
+        return !item ? null : item.id;
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
+    /**
+     *
+     *
+     * @private
+     * @param {LifecyclePlatform} [lifeCycle]
+     * @memberof MerchantsComponent
+     */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
@@ -237,7 +227,36 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 merge(this.sort.sortChange, this.paginator.page)
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => {
-                        this.initTable();
+                        this._initTable();
+                    });
+
+                this.ngxPermissions
+                    .hasPermission(['ACCOUNT.STORE.UPDATE', 'ACCOUNT.STORE.DELETE'])
+                    .then(hasAccess => {
+                        if (hasAccess) {
+                            this.displayedColumns = [
+                                'store-code',
+                                'name',
+                                'city',
+                                'address',
+                                'owner-phone-no',
+                                'store-segment',
+                                'store-type',
+                                'status',
+                                'actions'
+                            ];
+                        } else {
+                            this.displayedColumns = [
+                                'store-code',
+                                'name',
+                                'city',
+                                'address',
+                                'owner-phone-no',
+                                'store-segment',
+                                'store-type',
+                                'status'
+                            ];
+                        }
                     });
                 break;
 
@@ -250,16 +269,62 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                localStorage.removeItem('filter.store');
+
+                // .pipe(
+                //     filter(source => source.length > 0),
+                //     delay(1000),
+                //     startWith(this._$merchantApi.initBrandStore())
+                // );
+
+                this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
+                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+
+                this._initTable();
+
+                this.search.valueChanges
+                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .subscribe(v => {
+                        if (v) {
+                            localStorage.setItem('filter.store', v);
+                        }
+
+                        this._onRefreshTable();
+                    });
+
+                this.store
+                    .select(StoreSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
                 break;
         }
     }
 
-    private onRefreshTable(): void {
+    private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
-        this.initTable();
+        this._initTable();
     }
 
-    private initTable(): void {
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantsComponent
+     */
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
@@ -282,13 +347,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ];
         }
-
-        this._$log.generateGroup('[INIT TABLE MERCHANTS]', {
-            payload: {
-                type: 'log',
-                value: data
-            }
-        });
 
         this.store.dispatch(
             StoreActions.fetchStoresRequest({

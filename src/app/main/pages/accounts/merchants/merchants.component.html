@@ -185,17 +185,19 @@
                     <mat-cell *matCellDef="let row">
                         <ng-container *ngIf="safeValue(row?.status) !== '-'">
                             <mat-icon
-                                [ngClass]="{
-                                    'indicator-success': row?.status === 'active',
-                                    'indicator-error': row?.status === 'inactive'
-                                }"
-                                [matTooltip]="row?.status | uppercase"
+                                class="indicator-success active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'active'"
                             >
-                                {{
-                                    (row?.status | uppercase) === 'ACTIVE'
-                                        ? 'check_circle_outline'
-                                        : 'remove_circle_outline'
-                                }}
+                                check
+                            </mat-icon>
+
+                            <mat-icon
+                                class="indicator-error active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'inactive'"
+                            >
+                                remove
                             </mat-icon>
                         </ng-container>
 
@@ -207,53 +209,47 @@
 
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <ng-template
-                                [ngxPermissionsOnly]="[
-                                    'ACCOUNT.STORE.UPDATE',
-                                    'ACCOUNT.STORE.DELETE'
-                                ]"
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
                             >
-                                <button
-                                    mat-icon-button
-                                    [matMenuTriggerFor]="moreMenu"
-                                    aria-label="More"
-                                    (click)="$event.stopPropagation()"
-                                >
-                                    <mat-icon class="secondary-text">more_vert</mat-icon>
-                                </button>
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
 
-                                <mat-menu #moreMenu="matMenu">
-                                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
-                                        <button
-                                            mat-menu-item
-                                            type="button"
-                                            class="sinbad-mat-menu-item"
-                                            aria-label="Edit"
-                                            [routerLink]="[row?.storeId]"
-                                        >
-                                            <mat-icon>edit</mat-icon>
-                                            <span>Edit</span>
-                                        </button>
-                                    </ng-template>
+                            <mat-menu #moreMenu="matMenu">
+                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        [routerLink]="[row?.storeId]"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
 
-                                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.DELETE']">
-                                        <button
-                                            mat-menu-item
-                                            type="button"
-                                            class="sinbad-mat-menu-item"
-                                            aria-label="Delete"
-                                            (click)="onDelete(row)"
-                                        >
-                                            <mat-icon>delete</mat-icon>
-                                            <span>Delete</span>
-                                        </button>
-                                    </ng-template>
+                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.DELETE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Delete"
+                                        (click)="onDelete(row)"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                    </button>
+                                </ng-template>
 
-                                    <!-- <button
+                                <!-- <button
                                     mat-menu-item
                                     type="button"
                                     class="sinbad-mat-menu-item"
@@ -263,31 +259,34 @@
                                     <span>Deactivate</span>
                                 </button> -->
 
-                                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
-                                        <button
-                                            mat-menu-item
-                                            type="button"
-                                            class="sinbad-mat-menu-item"
-                                            [attr.aria-label]="
-                                                row?.status === 'active' ? 'inactive' : 'active'
-                                            "
-                                            (click)="onChangeStatus(row)"
-                                        >
-                                            <mat-icon>{{
+                                <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        [attr.aria-label]="
+                                            row?.status === 'active' ? 'inactive' : 'active'
+                                        "
+                                        (click)="onChangeStatus(row)"
+                                    >
+                                        <mat-icon>
+                                            {{
                                                 row?.status === 'active'
                                                     ? 'archive'
                                                     : 'check_circle_outline'
-                                            }}</mat-icon>
-                                            <span>{{
+                                            }}
+                                        </mat-icon>
+                                        <span>
+                                            {{
                                                 (row?.status === 'active'
                                                     ? 'ACTION.INACTIVE'
                                                     : 'ACTION.ACTIVE'
                                                 ) | translate
-                                            }}</span>
-                                        </button>
-                                    </ng-template>
-                                </mat-menu>
-                            </ng-template>
+                                            }}
+                                        </span>
+                                    </button>
+                                </ng-template>
+                            </mat-menu>
                         </div>
                         <!-- <div
                             *ngIf="!row?.store"
@@ -332,7 +331,7 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 (page)="onChangePage($event)"
                 showFirstLastButtons
             >
