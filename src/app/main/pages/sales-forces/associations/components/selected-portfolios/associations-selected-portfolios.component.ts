@@ -237,9 +237,10 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     // }
 
     printPortfolioName(portfolio: Portfolio): string {
-        if (portfolio.storeQty > 1) {
+        // return `${portfolio.name || '-'} (${portfolio.storeQty} ${portfolio.storeQty === 1 ? 'store' : 'stores'})`;
+        if (portfolio.type === 'group') {
             return `${portfolio.name || '-'} (${portfolio.storeQty} stores)`;
-        } else {
+        } else if (portfolio.type === 'direct') {
             return portfolio.stores[0].name;
             // return `${store..name || '-'} - ${store.name || '-'}`;
         }

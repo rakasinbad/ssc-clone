@@ -69,10 +69,8 @@
                     [selected]="portfolio?.isSelected"
                 >
                     <span>{{ printPortfolioName(portfolio) }}</span>
-                    <a
-                        *ngIf="portfolio?.storeQty > 1"
-                        (click)="$event.stopPropagation(); showStore(portfolio)"
-                    >See details</a>
+                    <a *ngIf="portfolio?.type === 'group'" (click)="$event.stopPropagation(); showStore(portfolio)"
+                    > See details </a>
                 </mat-list-option>
             </mat-selection-list>
             <!-- / LIST -->
@@ -121,7 +119,7 @@
                     >
                         <span>{{ printPortfolioName(portfolio) }}</span>
                         <a
-                            *ngIf="portfolio?.storeQty > 1"
+                            *ngIf="portfolio?.type === 'group'"
                             (click)="$event.stopPropagation(); showStore(portfolio)"
                         >See details</a>
                     </mat-list-option>
