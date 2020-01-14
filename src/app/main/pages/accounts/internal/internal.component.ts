@@ -16,6 +16,7 @@ import { IQueryParams, Role, UserSupplier } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -26,6 +27,7 @@ import { locale as indonesian } from './i18n/id';
 import { InternalActions } from './store/actions';
 import { fromInternal } from './store/reducers';
 import { InternalSelectors } from './store/selectors';
+import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-internal',
@@ -37,12 +39,14 @@ import { InternalSelectors } from './store/selectors';
 })
 export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     total: number;
-    displayedColumns = ['user', 'email', 'role', 'actions'];
+    displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
 
     auth$: Observable<Auth>;
-    dataSource$: Observable<UserSupplier[]>;
+    dataSource$: Observable<Array<UserSupplier>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -56,11 +60,13 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromInternal.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -70,8 +76,8 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     // {
                     //     title: 'Account',
@@ -95,8 +101,6 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.paginator.pageSize = this.defaultPageSize;
         this.sort.sort({
             id: 'id',
@@ -112,7 +116,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
 
-        this.initTable();
+        this._initTable();
 
         this.search.valueChanges
             .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -121,7 +125,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
                     localStorage.setItem('filter.internal.employee', v);
                 }
 
-                this.onRefreshTable();
+                this._onRefreshTable();
             });
 
         this.store
@@ -129,7 +133,7 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(isRefresh => {
                 if (isRefresh) {
-                    this.onRefreshTable();
+                    this._onRefreshTable();
                 }
             });
     }
@@ -145,8 +149,21 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
-                this.initTable();
+                this._initTable();
             });
+
+        const canDoActions = this.ngxPermissions.hasPermission([
+            'ACCOUNT.INTERNAL.UPDATE',
+            'ACCOUNT.INTERNAL.DELETE'
+        ]);
+
+        canDoActions.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
+            } else {
+                this.displayedColumns = ['user', 'email', 'role', 'status'];
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -168,8 +185,10 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     joinRoles(roles: Role[]): string {
-        if (roles.length > 0) {
-            return roles.map(i => i.role).join(',<br>');
+        if (roles && roles.length > 0) {
+            const newRoles = roles.map(i => i.role);
+
+            return newRoles.length > 0 ? newRoles.join(',<br>') : '-';
         }
 
         return '-';
@@ -184,8 +203,21 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(InternalActions.confirmChangeStatusInternalEmployee({ payload: item }));
+        const canUpdate = this.ngxPermissions.hasPermission('ACCOUNT.INTERNAL.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(
+                    InternalActions.confirmChangeStatusInternalEmployee({ payload: item })
+                );
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onDelete(item: UserSupplier): void {
@@ -193,8 +225,21 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(InternalActions.confirmDeleteInternalEmployee({ payload: item }));
+        const canDelete = this.ngxPermissions.hasPermission('ACCOUNT.INTERNAL.DELETE');
+
+        canDelete.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(
+                    InternalActions.confirmDeleteInternalEmployee({ payload: item })
+                );
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onRemoveSearchInternalEmployee(): void {
@@ -214,12 +259,12 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private onRefreshTable(): void {
+    private _onRefreshTable(): void {
         this.paginator.pageIndex = 0;
-        this.initTable();
+        this._initTable();
     }
 
-    private initTable(): void {
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0

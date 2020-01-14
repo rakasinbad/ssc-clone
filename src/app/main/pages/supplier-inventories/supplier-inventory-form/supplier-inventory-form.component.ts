@@ -63,8 +63,8 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Inventory',

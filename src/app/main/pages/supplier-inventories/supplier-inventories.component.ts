@@ -81,8 +81,8 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',

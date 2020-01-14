@@ -90,8 +90,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Account',

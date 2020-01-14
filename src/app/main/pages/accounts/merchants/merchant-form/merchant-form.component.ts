@@ -186,8 +186,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
@@ -209,8 +209,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
@@ -2565,7 +2565,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const body = this.form.getRawValue();
 
         if (this.pageType === 'new') {
-
             // this.ngxPermissions.hasPermission();
             this.store
                 .select(AuthSelectors.getUserSupplier)

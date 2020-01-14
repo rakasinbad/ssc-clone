@@ -13,11 +13,12 @@ import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { ErrorMessageService, LogService } from 'app/shared/helpers';
+import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { Role, User } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -43,18 +44,19 @@ export class InternalFormComponent implements OnInit, OnDestroy {
 
     employee$: Observable<User>;
     isLoading$: Observable<boolean>;
-    roles$: Observable<Role[]>;
+    roles$: Observable<Array<Role>>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private ngxPermissions: NgxPermissionsService,
         private storage: StorageMap,
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
-        private _$log: LogService
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -100,8 +102,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         //    {
                         //        title: 'Account',
@@ -132,7 +134,6 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
         this.isEdit = false;
 
         this.initForm();
@@ -207,143 +208,124 @@ export class InternalFormComponent implements OnInit, OnDestroy {
         } = this.form.controls;
 
         if (this.pageType === 'new') {
-            this.store
-                .select(AuthSelectors.getUserSupplier)
-                .pipe(takeUntil(this._unSubs$))
-                .subscribe(({ supplierId }) => {
-                    // console.log('AUTH SELECTORS', user);
+            const canCreate = this.ngxPermissions.hasPermission('ACCOUNT.INTERNAL.CREATE');
 
-                    this._$log.generateGroup(`[AUTH SELECTORS]`, {
-                        supplierId: {
-                            type: 'log',
-                            value: supplierId
-                        }
-                    });
+            canCreate.then(hasAccess => {
+                if (hasAccess) {
+                    this.store
+                        .select(AuthSelectors.getUserSupplier)
+                        .pipe(takeUntil(this._unSubs$))
+                        .subscribe(({ supplierId }) => {
+                            if (supplierId) {
+                                const payload = {
+                                    fullName: body.fullName,
+                                    mobilePhoneNo: body.phoneNumber,
+                                    email: body.email,
+                                    roles: body.roles,
+                                    supplierId: supplierId
+                                };
 
-                    if (supplierId) {
-                        const payload = {
-                            fullName: body.fullName,
-                            mobilePhoneNo: body.phoneNumber,
-                            email: body.email,
-                            roles: body.roles,
-                            supplierId: supplierId
-                        };
-
-                        this._$log.generateGroup(`[SUBMIT CREATE INTERNAL EMPLOYEE]`, {
-                            body: {
-                                type: 'log',
-                                value: body
-                            },
-                            payload: {
-                                type: 'log',
-                                value: payload
+                                this.store.dispatch(
+                                    InternalActions.createInternalEmployeeRequest({ payload })
+                                );
                             }
                         });
-
-                        this.store.dispatch(
-                            InternalActions.createInternalEmployeeRequest({ payload })
-                        );
-                    }
-                });
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            });
         }
 
         if (this.isEdit && this.pageType === 'edit') {
-            this.storage.get('selected.internal.employee').subscribe({
-                next: (prev: User) => {
-                    this._$log.generateGroup('[SELECTED EMPLOYEE]', {
-                        prev: {
-                            type: 'log',
-                            value: prev
-                        }
-                    });
+            const canUpdate = this.ngxPermissions.hasPermission('ACCOUNT.INTERNAL.UPDATE');
 
-                    this._$log.generateGroup('[BEFORE FILTER]', {
-                        body: {
-                            type: 'log',
-                            value: body
-                        }
-                    });
+            canUpdate.then(hasAccess => {
+                if (hasAccess) {
+                    this.storage.get('selected.internal.employee').subscribe({
+                        next: (prev: User) => {
+                            if (
+                                (fullNameField.dirty && fullNameField.value === prev.fullName) ||
+                                (fullNameField.touched && fullNameField.value === prev.fullName) ||
+                                (fullNameField.pristine && fullNameField.value === prev.fullName)
+                            ) {
+                                delete body.fullName;
+                            }
 
-                    if (
-                        (fullNameField.dirty && fullNameField.value === prev.fullName) ||
-                        (fullNameField.touched && fullNameField.value === prev.fullName) ||
-                        (fullNameField.pristine && fullNameField.value === prev.fullName)
-                    ) {
-                        delete body.fullName;
-                    }
+                            if (
+                                (phoneNumberField.dirty &&
+                                    phoneNumberField.value === prev.mobilePhoneNo) ||
+                                (phoneNumberField.touched &&
+                                    phoneNumberField.value === prev.mobilePhoneNo) ||
+                                (phoneNumberField.pristine &&
+                                    phoneNumberField.value === prev.mobilePhoneNo)
+                            ) {
+                                delete body.phoneNumber;
+                            }
 
-                    if (
-                        (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
-                        (phoneNumberField.touched &&
-                            phoneNumberField.value === prev.mobilePhoneNo) ||
-                        (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
-                    ) {
-                        delete body.phoneNumber;
-                    }
+                            const prevRoles =
+                                prev.roles && prev.roles.length > 0
+                                    ? prev.roles.map(role => role.id)
+                                    : [];
 
-                    const prevRoles =
-                        prev.roles && prev.roles.length > 0 ? prev.roles.map(role => role.id) : [];
+                            if (
+                                (rolesField.dirty &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                                (rolesField.touched &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                                (rolesField.pristine &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
+                            ) {
+                                delete body.roles;
+                            }
 
-                    if (
-                        (rolesField.dirty &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                        (rolesField.touched &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                        (rolesField.pristine &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
-                    ) {
-                        delete body.roles;
-                    }
+                            if (
+                                (emailField.dirty && emailField.value === prev.email) ||
+                                (emailField.touched && emailField.value === prev.email) ||
+                                (emailField.pristine && emailField.value === prev.email)
+                            ) {
+                                delete body.email;
+                            }
 
-                    if (
-                        (emailField.dirty && emailField.value === prev.email) ||
-                        (emailField.touched && emailField.value === prev.email) ||
-                        (emailField.pristine && emailField.value === prev.email)
-                    ) {
-                        delete body.email;
-                    }
+                            const payload = {
+                                fullName: body.fullName,
+                                mobilePhoneNo: body.phoneNumber,
+                                email: body.email,
+                                roles: body.roles
+                            };
 
-                    const payload = {
-                        fullName: body.fullName,
-                        mobilePhoneNo: body.phoneNumber,
-                        email: body.email,
-                        roles: body.roles
-                    };
+                            if (!body.fullName) {
+                                delete payload.fullName;
+                            }
 
-                    if (!body.fullName) {
-                        delete payload.fullName;
-                    }
+                            if (!body.email) {
+                                delete payload.email;
+                            }
 
-                    if (!body.email) {
-                        delete payload.email;
-                    }
+                            if (!body.phoneNumber) {
+                                delete payload.mobilePhoneNo;
+                            }
 
-                    if (!body.phoneNumber) {
-                        delete payload.mobilePhoneNo;
-                    }
+                            if (!body.roles) {
+                                delete payload.roles;
+                            }
 
-                    if (!body.roles) {
-                        delete payload.roles;
-                    }
-
-                    this._$log.generateGroup('[AFTER FILTER]', {
-                        body: {
-                            type: 'log',
-                            value: body
+                            this.store.dispatch(
+                                InternalActions.updateInternalEmployeeRequest({
+                                    payload: { id, body: payload }
+                                })
+                            );
                         },
-                        payload: {
-                            type: 'log',
-                            value: payload
-                        }
+                        error: err => {}
                     });
-
-                    this.store.dispatch(
-                        InternalActions.updateInternalEmployeeRequest({
-                            payload: { id, body: payload }
-                        })
-                    );
-                },
-                error: err => {}
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
             });
         }
     }

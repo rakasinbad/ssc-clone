@@ -33,7 +33,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                only: ['ACCOUNT.INTERNAL.CREATE', 'ACCOUNT.INTERNAL.UPDATE'],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

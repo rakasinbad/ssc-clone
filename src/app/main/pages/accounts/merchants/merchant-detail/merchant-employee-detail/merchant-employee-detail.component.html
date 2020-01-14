@@ -68,6 +68,7 @@
             <ng-container *ngIf="safeValue(row?.status) !== '-'">
                 <mat-icon
                     class="indicator-success active-icon s-16"
+                    [matTooltip]="row?.status | titlecase"
                     *ngIf="row?.status === 'active'"
                 >
                     check
@@ -75,6 +76,7 @@
 
                 <mat-icon
                     class="indicator-error active-icon s-16"
+                    [matTooltip]="row?.status | titlecase"
                     *ngIf="row?.status === 'inactive'"
                 >
                     remove
