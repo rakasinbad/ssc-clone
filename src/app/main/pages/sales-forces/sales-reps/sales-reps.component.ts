@@ -250,7 +250,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     joinPortfolios(value: Array<Portfolio>): string {
         if (value && value.length > 0) {
-            return value.map(v => v.invoiceGroup.name).join(', ');
+            const invoiceGroup = value
+                .filter(v => v.type !== 'direct')
+                .map(v => v.invoiceGroup.name);
+
+            return invoiceGroup.length > 0 ? invoiceGroup.join(', ') : '-';
         }
 
         return '-';
@@ -263,7 +267,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         const numRows = this.dataSource.data.length;
         // const numRows = this.paginator.length;
 
-        console.log('IS ALL SELECTED', numSelected, numRows);
+        // console.log('IS ALL SELECTED', numSelected, numRows);
 
         return numSelected === numRows;
     }

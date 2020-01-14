@@ -16,12 +16,13 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { HelperService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
@@ -42,7 +43,9 @@ import { OrderSelectors } from './store/selectors';
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 50;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     filterStatus: string;
     formConfig = {
         status: {
@@ -99,14 +102,16 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private domSanitizer: DomSanitizer,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
-        private _$helper: HelperService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$helper: HelperService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -138,8 +143,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.filterStatus = '';
         this.hasSelected = false;
         this.paginator.pageSize = this.defaultPageSize;
@@ -245,6 +248,43 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             .subscribe(() => {
                 this.initTable();
             });
+
+        const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'order-code',
+                    'order-ref',
+                    'order-date',
+                    'store-name',
+                    'trx-amount',
+                    'payment-method',
+                    'total-product',
+                    'status',
+                    // 'deliveredOn',
+                    // 'actual-amount-delivered',
+                    'delivered-date',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    // 'checkbox',
+                    'order-code',
+                    'order-ref',
+                    'order-date',
+                    'store-name',
+                    'trx-amount',
+                    'payment-method',
+                    'total-product',
+                    'status',
+                    // 'deliveredOn',
+                    // 'actual-amount-delivered',
+                    'delivered-date'
+                ];
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -282,13 +322,28 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         return localStorage.getItem('filter.order') || '';
     }
 
+    safeValue(item: any): any {
+        return item ? item : '-';
+    }
+
     onChangeCancelStatus(item: any): void {
         if (!item || !item.id || item.status !== 'confirm') {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(OrderActions.confirmChangeCancelStatusOrder({ payload: item }));
+        const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(OrderActions.confirmChangeCancelStatusOrder({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onChangeStatus(item: any): void {
@@ -296,8 +351,19 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(OrderActions.confirmChangeStatusOrder({ payload: item }));
+        const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(OrderActions.confirmChangeStatusOrder({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onDelete(item): void {
@@ -384,10 +450,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     onTrackBy(index: number, item: any): string {
         return !item ? null : item.id;
-    }
-
-    safeValue(item: any): any {
-        return item ? item : '-';
     }
 
     // -----------------------------------------------------------------------------------------------------

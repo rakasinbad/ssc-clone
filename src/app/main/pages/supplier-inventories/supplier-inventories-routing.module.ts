@@ -36,13 +36,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
-                only: [
-                    'SUPER_SUPPLIER_ADMIN',
-                    'HEAD_OF_SALES',
-                    'BOS',
-                    'COUNTRY_MANAGER',
-                    'SUPPLIER_ADMIN'
-                ]
+                only: ['INVENTORY.SI.UPDATE']
             },
             redirectTo: {
                 navigationCommands: ['/pages/errors/403'],

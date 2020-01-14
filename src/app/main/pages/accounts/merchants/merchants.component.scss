@@ -86,7 +86,22 @@ app-merchants {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            // padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -94,9 +109,9 @@ app-merchants {
             min-width: 0;
             display: flex;
             align-items: center;
-            // padding-top: 8px;
-            // padding-bottom: 8px;
-            // padding-right: 8px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
         }
 
         // .mat-column-checkbox {
