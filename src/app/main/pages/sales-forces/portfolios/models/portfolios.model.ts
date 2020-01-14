@@ -1,7 +1,7 @@
 import { ITimestamp, TNullable, User, InvoiceGroup, TSource } from 'app/shared/models';
 import { Store } from '.';
 
-type TPortfolioType = 'multi' | 'single';
+type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
 
 interface IPortfolio extends ITimestamp {
     id: string;
@@ -66,7 +66,7 @@ export class Portfolio implements IPortfolio {
             invoiceGroup = null,
             storeQty = 0,
             isSelected = false,
-            stores,
+            stores = [],
             source = 'fetch'
         } = data;
 
