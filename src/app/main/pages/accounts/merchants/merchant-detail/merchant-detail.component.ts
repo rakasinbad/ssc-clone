@@ -36,7 +36,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         },
         {
             path: 'employee',
-            label: 'Karyawan'
+            label: 'Employee'
         },
         {
             path: 'location',

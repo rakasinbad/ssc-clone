@@ -67,6 +67,7 @@ const creditLimitBalanceReducer = createReducer(
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreRequest,
         CreditLimitBalanceActions.updateCreditLimitGroupRequest,
+        CreditLimitBalanceActions.updateStatusCreditLimitRequest,
         CreditLimitBalanceActions.updateStatusFreezeBalanceRequest,
         CreditLimitBalanceActions.createCreditLimitGroupRequest,
         CreditLimitBalanceActions.deleteCreditLimitGroupRequest,
@@ -87,6 +88,7 @@ const creditLimitBalanceReducer = createReducer(
     on(
         CreditLimitBalanceActions.updateCreditLimitStoreFailure,
         CreditLimitBalanceActions.updateCreditLimitGroupFailure,
+        CreditLimitBalanceActions.updateStatusCreditLimitFailure,
         CreditLimitBalanceActions.updateStatusFreezeBalanceFailure,
         CreditLimitBalanceActions.createCreditLimitGroupFailure,
         CreditLimitBalanceActions.deleteCreditLimitGroupFailure,
@@ -164,6 +166,15 @@ const creditLimitBalanceReducer = createReducer(
     //     isRefresh: true,
     //     errors: adapterError.upsertOne(payload, state.errors)
     // })),
+    on(CreditLimitBalanceActions.updateStatusCreditLimitSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        creditLimitBalanceStores: adapterCreditLimitStore.updateOne(
+            payload,
+            state.creditLimitBalanceStores
+        ),
+        errors: adapterError.removeOne('updateStatusCreditLimitFailure', state.errors)
+    })),
     on(CreditLimitBalanceActions.updateStatusFreezeBalanceSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,

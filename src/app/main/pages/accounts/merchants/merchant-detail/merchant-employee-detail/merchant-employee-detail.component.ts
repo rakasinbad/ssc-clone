@@ -15,18 +15,18 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService } from 'app/shared/helpers';
-import { IQueryParams, Role } from 'app/shared/models';
+import { NoticeService } from 'app/shared/helpers';
+import { IQueryParams, LifecyclePlatform, Role } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
 import { UserStore } from '../../models';
-import { MerchantApiService } from '../../services';
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
@@ -45,10 +45,12 @@ import { StoreSelectors } from '../../store/selectors';
 })
 export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    displayedColumns = ['name', 'role', 'phone-no', 'last-check-in', 'actions'];
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    displayedColumns = ['name', 'role', 'phone-no', 'last-check-in', 'status', 'actions'];
 
     auth$: Observable<Auth>;
-    dataSource$: Observable<UserStore[]>;
+    dataSource$: Observable<Array<UserStore>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -62,14 +64,14 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$log: LogService,
-        private _$merchantApi: MerchantApiService
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -83,73 +85,47 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        /* .pipe(
-            filter(source => source.length > 0),
-            delay(1000),
-            startWith(this._$merchantApi.initStoreEmployee())
-        ); */
-
-        this.auth$ = this.store.select(AuthSelectors.getUserState);
-        this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
-        this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
-
-        this.initTable();
-
-        this.store
-            .select(StoreSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(StoreActions.resetStoreEmployees());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    joinRoles(roles: Role[]): string {
+    hasOwnerRoles(roles: Array<Role>): boolean {
+        if (roles && roles.length > 0) {
+            const idx = roles.findIndex(role => String(role.role).toLowerCase() === 'pemilik');
+
+            return idx === -1 ? false : true;
+        }
+
+        return false;
+    }
+
+    joinRoles(roles: Array<Role>): string {
         if (roles.length > 0) {
-            return roles.map(i => i.role).join(',<br>');
+            return roles.map(i => i.role).join(', ');
         }
 
         return '-';
+    }
+
+    safeValue(item: string): string {
+        return item ? item : '-';
     }
 
     onChangePage(ev: PageEvent): void {
@@ -157,14 +133,27 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     }
 
     onChangeStatus(item: UserStore): void {
-        console.log('CHANGE', item);
-
         if (!item || !item.id) {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmChangeStatusStoreEmployee({ payload: item }));
+        const canChangeStatusEmployee = this.ngxPermissions.hasPermission(
+            'ACCOUNT.STORE.EMPLOYEE.UPDATE'
+        );
+
+        canChangeStatusEmployee.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(
+                    StoreActions.confirmChangeStatusStoreEmployee({ payload: item })
+                );
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onDelete(item: UserStore): void {
@@ -172,28 +161,118 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmDeleteStoreEmployee({ payload: item }));
+        const canDeleteEmployee = this.ngxPermissions.hasPermission(
+            'ACCOUNT.STORE.EMPLOYEE.DELETE'
+        );
+
+        canDeleteEmployee.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(StoreActions.confirmDeleteStoreEmployee({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onTrackBy(index: number, item: UserStore): string {
         return !item ? null : item.id;
     }
 
-    safeValue(item: string): string {
-        return item ? item : '-';
-    }
-
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
-        this.initTable();
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this._initTable();
+                    });
+
+                this.ngxPermissions
+                    .hasPermission([
+                        'ACCOUNT.STORE.EMPLOYEE.UPDATE',
+                        'ACCOUNT.STORE.EMPLOYEE.DELETE'
+                    ])
+                    .then(hasAccess => {
+                        if (hasAccess) {
+                            this.displayedColumns = [
+                                'name',
+                                'role',
+                                'phone-no',
+                                'last-check-in',
+                                'status',
+                                'actions'
+                            ];
+                        } else {
+                            this.displayedColumns = [
+                                'name',
+                                'role',
+                                'phone-no',
+                                'last-check-in',
+                                'status'
+                            ];
+                        }
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                this.store.dispatch(StoreActions.resetStoreEmployees());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                /* .pipe(
+            filter(source => source.length > 0),
+            delay(1000),
+            startWith(this._$merchantApi.initStoreEmployee())
+        ); */
+
+                this.auth$ = this.store.select(AuthSelectors.getUserState);
+                this.dataSource$ = this.store.select(StoreSelectors.getAllStoreEmployee);
+                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStoreEmployee);
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+
+                this._initTable();
+
+                this.store
+                    .select(StoreSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
+                break;
+        }
     }
 
-    private initTable(): void {
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
+    }
+
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0

@@ -14,12 +14,13 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { HelperService, LogService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
@@ -42,7 +43,9 @@ import { PaymentStatusSelectors } from './store/selectors';
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     filterStatus: string;
     formConfig = {
         status: {
@@ -105,15 +108,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private matDialog: MatDialog,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromPaymentStatus.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
-        private _$log: LogService
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -150,8 +154,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.filterStatus = '';
         this.hasSelected = false;
         this.paginator.pageSize = this.defaultPageSize;
@@ -237,6 +239,43 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             .subscribe(() => {
                 this.initTable();
             });
+
+        const canUpdate = this.ngxPermissions.hasPermission('FINANCE.PS.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    'order-reference',
+                    'order-code',
+                    'store-name',
+                    'account-receivable',
+                    'status',
+                    'payment-type',
+                    'payment-method',
+                    'order-date',
+                    'due-date',
+                    'paid-on',
+                    'aging-day',
+                    'd',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'order-reference',
+                    'order-code',
+                    'store-name',
+                    'account-receivable',
+                    'status',
+                    'payment-type',
+                    'payment-method',
+                    'order-date',
+                    'due-date',
+                    'paid-on',
+                    'aging-day',
+                    'd'
+                ];
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -283,6 +322,10 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         const diffDate = dueDate.diff(dateNow, 'days');
 
         return diffDate <= 0 ? '-' : diffDate;
+    }
+
+    safeValue(item: any): any {
+        return item ? item : '-';
     }
 
     onChangePage(ev: PageEvent): void {
@@ -375,58 +418,50 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onUpdate(item: any): void {
-        if (!item || !item.id) {
-            return;
-        }
+        const canUpdate = this.ngxPermissions.hasPermission('FINANCE.PS.UPDATE');
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-
-        const dialogRef = this.matDialog.open<
-            PaymentStatusFormComponent,
-            any,
-            { action: string; payload: any }
-        >(PaymentStatusFormComponent, {
-            data: {
-                title: 'Review',
-                id: item.id,
-                item: item
-            },
-            disableClose: true
-        });
-
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(({ action, payload }) => {
-                this._$log.generateGroup(
-                    '[AFTER CLOSED DIALOG] EDIT PAYMENT STATUS',
-                    {
-                        action: {
-                            type: 'log',
-                            value: action
-                        },
-                        payload: {
-                            type: 'log',
-                            value: payload
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
-                if (action === 'edit' && payload) {
-                    this.store.dispatch(
-                        PaymentStatusActions.updatePaymentStatusRequest({
-                            payload: { id: item.id, body: payload }
-                        })
-                    );
-                } else {
-                    this.store.dispatch(UiActions.resetHighlightRow());
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                if (!item || !item.id) {
+                    return;
                 }
-            });
-    }
 
-    safeValue(item: any): any {
-        return item ? item : '-';
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+
+                const dialogRef = this.matDialog.open<
+                    PaymentStatusFormComponent,
+                    any,
+                    { action: string; payload: any }
+                >(PaymentStatusFormComponent, {
+                    data: {
+                        title: 'Review',
+                        id: item.id,
+                        item: item
+                    },
+                    disableClose: true
+                });
+
+                dialogRef
+                    .afterClosed()
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(({ action, payload }) => {
+                        if (action === 'edit' && payload) {
+                            this.store.dispatch(
+                                PaymentStatusActions.updatePaymentStatusRequest({
+                                    payload: { id: item.id, body: payload }
+                                })
+                            );
+                        } else {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        }
+                    });
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -7,17 +7,17 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, LogService } from 'app/shared/helpers';
-import { Role, User } from 'app/shared/models';
+import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
+import { LifecyclePlatform, Role, User } from 'app/shared/models';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { MerchantApiService } from '../services';
 import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
@@ -37,21 +37,21 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
     employee$: Observable<User>;
     isLoading$: Observable<boolean>;
-    roles$: Observable<Role[]>;
+    roles$: Observable<Array<Role>>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private router: Router,
+        private ngxPermissions: NgxPermissionsService,
         private storage: StorageMap,
         private store: Store<fromMerchant.FeatureState>,
         private _fuseConfigService: FuseConfigService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
-        private _$log: LogService,
-        private _$merchantApi: MerchantApiService
+        private _$notice: NoticeService
     ) {
         // Configure the layout
         // this._fuseConfigService.config = {
@@ -99,34 +99,14 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
         // /^(08[0-9]{8,12}|[0-9]{6,8})?$/
 
-        this._unSubs$ = new Subject<void>();
-        this.isEdit = false;
-
-        const { id } = this.route.snapshot.params;
-
-        this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
-        this.employee$ = this.store.select(StoreSelectors.getEmployeeEdit);
-        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
-        this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
-        this.store.dispatch(StoreActions.fetchStoreEmployeeEditRequest({ payload: id }));
-
-        this.initForm();
-        this.initUpdateForm();
+        this._initPage();
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        // this.store.dispatch(UiActions.hideFooterAction());
-
-        this.store.dispatch(UiActions.resetBreadcrumb());
-        this.store.dispatch(StoreActions.resetStoreEmployee());
-
-        this.storage.delete('selected.store.employee').subscribe(() => {});
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -135,11 +115,13 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
     get userId(): string {
         const { id } = this.route.snapshot.params;
+
         return id;
     }
 
     get storeId(): string {
         const { storeId } = this.route.snapshot.params;
+
         return storeId;
     }
 
@@ -166,7 +148,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
     onEdit(isEdit: boolean): void {
         this.isEdit = isEdit ? false : true;
-        this.formStatus();
+        this._formStatus();
     }
 
     onSubmit(): void {
@@ -187,97 +169,91 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
         } = this.form.controls;
 
         if (this.isEdit) {
-            this.storage.get('selected.store.employee').subscribe({
-                next: (prev: User) => {
-                    this._$log.generateGroup('[SELECTED EMPLOYEE]', {
-                        prev: {
-                            type: 'log',
-                            value: prev
-                        }
-                    });
+            const canEditEmployee = this.ngxPermissions.hasPermission(
+                'ACCOUNT.STORE.EMPLOYEE.UPDATE'
+            );
 
-                    this._$log.generateGroup('[BEFORE FILTER]', {
-                        body: {
-                            type: 'log',
-                            value: body
-                        }
-                    });
+            canEditEmployee.then(hasAccess => {
+                if (hasAccess) {
+                    this.storage.get('selected.store.employee').subscribe({
+                        next: (prev: User) => {
+                            if (
+                                (fullNameField.dirty && fullNameField.value === prev.fullName) ||
+                                (fullNameField.touched && fullNameField.value === prev.fullName) ||
+                                (fullNameField.pristine && fullNameField.value === prev.fullName)
+                            ) {
+                                delete body.fullName;
+                            }
 
-                    if (
-                        (fullNameField.dirty && fullNameField.value === prev.fullName) ||
-                        (fullNameField.touched && fullNameField.value === prev.fullName) ||
-                        (fullNameField.pristine && fullNameField.value === prev.fullName)
-                    ) {
-                        delete body.fullName;
-                    }
+                            if (
+                                (phoneNumberField.dirty &&
+                                    phoneNumberField.value === prev.mobilePhoneNo) ||
+                                (phoneNumberField.touched &&
+                                    phoneNumberField.value === prev.mobilePhoneNo) ||
+                                (phoneNumberField.pristine &&
+                                    phoneNumberField.value === prev.mobilePhoneNo)
+                            ) {
+                                delete body.phoneNumber;
+                            }
 
-                    if (
-                        (phoneNumberField.dirty && phoneNumberField.value === prev.mobilePhoneNo) ||
-                        (phoneNumberField.touched &&
-                            phoneNumberField.value === prev.mobilePhoneNo) ||
-                        (phoneNumberField.pristine && phoneNumberField.value === prev.mobilePhoneNo)
-                    ) {
-                        delete body.phoneNumber;
-                    }
+                            const prevRoles =
+                                prev.roles && prev.roles.length > 0
+                                    ? prev.roles.map(role => role.id)
+                                    : [];
 
-                    const prevRoles =
-                        prev.roles && prev.roles.length > 0 ? prev.roles.map(role => role.id) : [];
+                            if (
+                                (rolesField.dirty &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                                (rolesField.touched &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
+                                (rolesField.pristine &&
+                                    _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
+                            ) {
+                                delete body.roles;
+                            }
 
-                    if (
-                        (rolesField.dirty &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                        (rolesField.touched &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles))) ||
-                        (rolesField.pristine &&
-                            _.isEqual(_.sortBy(rolesField.value), _.sortBy(prevRoles)))
-                    ) {
-                        delete body.roles;
-                    }
+                            // if (body.roles) {
+                            //     if (body.roles.length < 1) {
+                            //         console.log('REMOVE ROLES 1', body.roles, rolesField);
+                            //         rolesField.patchValue(null);
+                            //         rolesField.updateValueAndValidity();
+                            //         return;
+                            //     }
+                            //     console.log('REMOVE ROLES 2', body.roles);
+                            // }
 
-                    // if (body.roles) {
-                    //     if (body.roles.length < 1) {
-                    //         console.log('REMOVE ROLES 1', body.roles, rolesField);
-                    //         rolesField.patchValue(null);
-                    //         rolesField.updateValueAndValidity();
-                    //         return;
-                    //     }
-                    //     console.log('REMOVE ROLES 2', body.roles);
-                    // }
+                            const payload = {
+                                fullName: body.fullName,
+                                roles: body.roles,
+                                mobilePhoneNo: body.phoneNumber
+                            };
 
-                    const payload = {
-                        fullName: body.fullName,
-                        roles: body.roles,
-                        mobilePhoneNo: body.phoneNumber
-                    };
+                            if (!body.fullName) {
+                                delete payload.fullName;
+                            }
 
-                    if (!body.fullName) {
-                        delete payload.fullName;
-                    }
+                            if (!body.roles) {
+                                delete payload.roles;
+                            }
 
-                    if (!body.roles) {
-                        delete payload.roles;
-                    }
+                            if (!body.phoneNumber) {
+                                delete payload.mobilePhoneNo;
+                            }
 
-                    if (!body.phoneNumber) {
-                        delete payload.mobilePhoneNo;
-                    }
-
-                    this._$log.generateGroup('[AFTER FILTER]', {
-                        body: {
-                            type: 'log',
-                            value: body
+                            this.store.dispatch(
+                                StoreActions.updateStoreEmployeeRequest({
+                                    payload: { id, body: payload }
+                                })
+                            );
                         },
-                        payload: {
-                            type: 'log',
-                            value: payload
-                        }
+                        error: err => {}
                     });
-
-                    this.store.dispatch(
-                        StoreActions.updateStoreEmployeeRequest({ payload: { id, body: payload } })
-                    );
-                },
-                error: err => {}
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
             });
         }
     }
@@ -286,7 +262,39 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private initForm(): void {
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // this.store.dispatch(UiActions.hideFooterAction());
+
+                this.store.dispatch(UiActions.resetBreadcrumb());
+                this.store.dispatch(StoreActions.resetStoreEmployee());
+
+                this.storage.delete('selected.store.employee').subscribe(() => {});
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.isEdit = false;
+
+                const { id } = this.route.snapshot.params;
+
+                this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
+                this.employee$ = this.store.select(StoreSelectors.getEmployeeEdit);
+                this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+
+                this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
+                this.store.dispatch(StoreActions.fetchStoreEmployeeEditRequest({ payload: id }));
+
+                this._initForm();
+                this._initUpdateForm();
+                break;
+        }
+    }
+
+    private _initForm(): void {
         this.form = this.formBuilder.group({
             fullName: [
                 '',
@@ -343,10 +351,10 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
             ]
         });
 
-        this.formStatus();
+        this._formStatus();
     }
 
-    private initUpdateForm(): void {
+    private _initUpdateForm(): void {
         this.store
             .select(StoreSelectors.getEmployeeEdit)
             .pipe(
@@ -425,7 +433,7 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
             });
     }
 
-    private formStatus(): void {
+    private _formStatus(): void {
         if (!this.isEdit) {
             this.form.get('fullName').disable();
             this.form.get('roles').disable();

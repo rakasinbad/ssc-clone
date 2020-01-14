@@ -23,11 +23,12 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { EStatus, IQueryParams, LifecyclePlatform, Team } from 'app/shared/models';
 import { FormActions, TeamActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { TeamSelectors } from 'app/shared/store/selectors/sources';
+import { NgxPermissionsService } from 'ngx-permissions';
 import * as numeral from 'numeral';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import {
@@ -89,9 +90,11 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         private domSanitizer: DomSanitizer,
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -778,61 +781,85 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         const body = this.form.getRawValue();
 
         if (this.pageType === 'new') {
-            const team = body.team as Team;
+            const canCreate = this.ngxPermissions.hasPermission('SRM.SR.CREATE');
 
-            const payload: SalesRepForm = {
-                fullName: body.name,
-                mobilePhoneNo: body.phone,
-                password: body.newPassword,
-                confPassword: body.confirmPassword,
-                idNo: body.identityId,
-                image: body.photo,
-                status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE,
-                supplierId: null,
-                saleTeamId: team.id
-            };
+            canCreate.then(hasAccess => {
+                if (hasAccess) {
+                    const team = body.team as Team;
 
-            this.store.dispatch(SalesRepActions.createSalesRepRequest({ payload }));
+                    const payload: SalesRepForm = {
+                        fullName: body.name,
+                        mobilePhoneNo: body.phone,
+                        password: body.newPassword,
+                        confPassword: body.confirmPassword,
+                        idNo: body.identityId,
+                        image: body.photo,
+                        status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE,
+                        supplierId: null,
+                        saleTeamId: team.id
+                    };
+
+                    this.store.dispatch(SalesRepActions.createSalesRepRequest({ payload }));
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            });
         }
 
         if (this.pageType === 'edit') {
-            const { id } = this.route.snapshot.params;
-            const team = body.team as Team;
+            const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
 
-            const payload: SalesRepFormPatch = {
-                fullName: body.name,
-                mobilePhoneNo: body.phone,
-                idNo: body.identityId,
-                image: body.photo,
-                saleTeamId: team.id,
-                status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE
-            };
+            canUpdate.then(hasAccess => {
+                if (hasAccess) {
+                    const { id } = this.route.snapshot.params;
+                    const team = body.team as Team;
 
-            if (!body.name) {
-                delete payload.fullName;
-            }
+                    const payload: SalesRepFormPatch = {
+                        fullName: body.name,
+                        mobilePhoneNo: body.phone,
+                        idNo: body.identityId,
+                        image: body.photo,
+                        saleTeamId: team.id,
+                        status: body.status ? EStatus.ACTIVE : EStatus.INACTIVE
+                    };
 
-            if (!body.phone) {
-                delete payload.mobilePhoneNo;
-            }
+                    if (!body.name) {
+                        delete payload.fullName;
+                    }
 
-            if (!body.identityId) {
-                delete payload.idNo;
-            }
+                    if (!body.phone) {
+                        delete payload.mobilePhoneNo;
+                    }
 
-            if (!body.photo) {
-                delete payload.image;
-            }
+                    if (!body.identityId) {
+                        delete payload.idNo;
+                    }
 
-            if (typeof body.status !== 'boolean') {
-                delete payload.status;
-            }
+                    if (!body.photo) {
+                        delete payload.image;
+                    }
 
-            if (Object.keys(payload).length > 0) {
-                this.store.dispatch(
-                    SalesRepActions.updateSalesRepRequest({ payload: { body: payload, id } })
-                );
-            }
+                    if (typeof body.status !== 'boolean') {
+                        delete payload.status;
+                    }
+
+                    if (Object.keys(payload).length > 0) {
+                        this.store.dispatch(
+                            SalesRepActions.updateSalesRepRequest({
+                                payload: { body: payload, id }
+                            })
+                        );
+                    }
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            });
         }
     }
 

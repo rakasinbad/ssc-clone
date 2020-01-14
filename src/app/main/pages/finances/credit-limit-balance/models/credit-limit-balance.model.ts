@@ -7,123 +7,106 @@ import {
     TNullable
 } from 'app/shared/models';
 
-interface ICreditLimitStore extends ITimestamp {
+export interface ICreditLimitStore extends ITimestamp {
     readonly id: NonNullable<string>;
-    storeId: string;
-    invoiceGroupId: string;
-    creditLimitGroupId: string;
-    creditLimit: string;
-    balanceAmount: string;
-    freezeStatus: boolean;
     allowCreditLimit: boolean;
-    termOfPayment: number;
-    creditLimitGroupChanged: string;
-    updatedCreditLimit: string;
-    creditLimitGroup: CreditLimitGroup;
-    invoiceGroup: InvoiceGroup;
-    store?: Merchant;
     averageOrder: number;
-    totalOrder: number;
-}
-
-interface ICreditLimitGroup extends ITimestamp {
-    readonly id: NonNullable<string>;
-    supplierId: string;
-    hierarchyId: string;
-    storeSegmentId: string;
-    name: string;
-    defaultCreditLimit: string;
-    defaultBalanceAmount: string;
-    termOfPayment: number;
-    creditLimitAreas: CreditLimitArea[];
-    storeSegment: StoreSegment;
-}
-
-interface ICreditLimitArea extends ITimestamp {
-    readonly id: NonNullable<string>;
+    balanceAmount: string;
+    creditLimit: string;
+    creditLimitGroup: CreditLimitGroup;
+    creditLimitGroupChanged: string;
     creditLimitGroupId: string;
-    unitType: string;
-    unitValue: string;
+    freezeStatus: boolean;
+    invoiceGroup: InvoiceGroup;
+    invoiceGroupId: string;
+    store?: Merchant;
+    storeId: string;
+    termOfPayment: number;
+    totalOrder: number;
+    updatedCreditLimit: string;
 }
 
 export interface ICreditLimitStoreResponse extends IResponsePaginate {
-    data: ICreditLimitStore[];
-}
-
-export interface ICreditLimitGroupResponse extends IResponsePaginate {
-    data: ICreditLimitGroup[];
-}
-
-export interface ICreditLimitAreaResponse extends IResponsePaginate {
-    data: ICreditLimitArea[];
+    data: Array<ICreditLimitStore>;
 }
 
 export class CreditLimitStore implements ICreditLimitStore {
     readonly id: NonNullable<string>;
-    storeId: string;
-    invoiceGroupId: string;
-    creditLimitGroupId: string;
-    creditLimit: string;
-    balanceAmount: string;
-    freezeStatus: boolean;
     allowCreditLimit: boolean;
-    termOfPayment: number;
-    creditLimitGroupChanged: string;
-    updatedCreditLimit: string;
-    creditLimitGroup: CreditLimitGroup;
-    invoiceGroup: InvoiceGroup;
-    store?: Merchant;
     averageOrder: number;
+    balanceAmount: string;
+    creditLimit: string;
+    creditLimitGroup: CreditLimitGroup;
+    creditLimitGroupChanged: string;
+    creditLimitGroupId: string;
+    freezeStatus: boolean;
+    invoiceGroup: InvoiceGroup;
+    invoiceGroupId: string;
+    store?: Merchant;
+    storeId: string;
+    termOfPayment: number;
     totalOrder: number;
+    updatedCreditLimit: string;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: CreditLimitStore) {
+    constructor(data: ICreditLimitStore) {
         const {
             id,
-            storeId,
-            invoiceGroupId,
-            creditLimitGroupId,
-            creditLimit,
-            balanceAmount,
-            freezeStatus,
             allowCreditLimit,
-            termOfPayment,
-            creditLimitGroupChanged,
-            updatedCreditLimit,
-            creditLimitGroup,
-            invoiceGroup,
-            store,
             averageOrder,
+            balanceAmount,
+            creditLimit,
+            creditLimitGroup,
+            creditLimitGroupChanged,
+            creditLimitGroupId,
+            freezeStatus,
+            invoiceGroup,
+            invoiceGroupId,
+            store,
+            storeId,
+            termOfPayment,
             totalOrder,
+            updatedCreditLimit,
             createdAt,
             updatedAt,
             deletedAt
         } = data;
 
         this.id = id;
-        this.storeId = storeId;
-        this.invoiceGroupId = invoiceGroupId;
-        this.creditLimitGroupId = creditLimitGroupId;
-        this.creditLimit = creditLimit;
-        this.balanceAmount = balanceAmount;
-        this.freezeStatus = freezeStatus;
         this.allowCreditLimit = allowCreditLimit;
-        this.termOfPayment = termOfPayment;
-        this.creditLimitGroupChanged = creditLimitGroupChanged;
-        this.updatedCreditLimit = updatedCreditLimit;
-        this.creditLimitGroup = creditLimitGroup;
-        this.invoiceGroup = invoiceGroup;
         this.averageOrder = averageOrder;
+        this.balanceAmount = balanceAmount;
+        this.creditLimit = creditLimit;
+        this.creditLimitGroup = creditLimitGroup;
+        this.creditLimitGroupChanged = creditLimitGroupChanged;
+        this.creditLimitGroupId = creditLimitGroupId;
+        this.freezeStatus = freezeStatus;
+        this.invoiceGroup = invoiceGroup;
+        this.invoiceGroupId = invoiceGroupId;
+        this.setCreditLimitGroup = creditLimitGroup;
+        this.setInvoiceGroup = invoiceGroup;
+        this.setStore = store;
+        this.storeId = storeId;
+        this.termOfPayment = termOfPayment;
         this.totalOrder = totalOrder;
+        this.updatedCreditLimit = updatedCreditLimit;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
 
-        this.creditLimitGroup = creditLimitGroup ? new CreditLimitGroup(creditLimitGroup) : null;
-        this.invoiceGroup = invoiceGroup ? new InvoiceGroup(invoiceGroup) : null;
-        this.store = store ? new Merchant(store) : null;
+    set setCreditLimitGroup(value: CreditLimitGroup) {
+        this.creditLimitGroup = value ? new CreditLimitGroup(value) : null;
+    }
+
+    set setInvoiceGroup(value: InvoiceGroup) {
+        this.invoiceGroup = value ? new InvoiceGroup(value) : null;
+    }
+
+    set setStore(value: Merchant) {
+        this.store = value ? new Merchant(value) : null;
     }
 
     static patch(body: CreditLimitStoreOptions): CreditLimitStoreOptions {
@@ -133,64 +116,83 @@ export class CreditLimitStore implements ICreditLimitStore {
 
 export type CreditLimitStoreOptions = Partial<CreditLimitStore>;
 
+export interface ICreditLimitGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    creditLimitAreas: Array<CreditLimitArea>;
+    defaultBalanceAmount: string;
+    defaultCreditLimit: string;
+    hierarchyId: string;
+    name: string;
+    storeSegment: StoreSegment;
+    storeSegmentId: string;
+    supplierId: string;
+    termOfPayment: number;
+}
+
+export interface ICreditLimitGroupResponse extends IResponsePaginate {
+    data: Array<ICreditLimitGroup>;
+}
+
 export class CreditLimitGroup implements ICreditLimitGroup {
     readonly id: NonNullable<string>;
-    supplierId: string;
-    hierarchyId: string;
-    storeSegmentId: string;
-    name: string;
-    defaultCreditLimit: string;
+    creditLimitAreas: Array<CreditLimitArea>;
     defaultBalanceAmount: string;
-    termOfPayment: number;
-    creditLimitAreas: CreditLimitArea[];
+    defaultCreditLimit: string;
+    hierarchyId: string;
+    name: string;
     storeSegment: StoreSegment;
+    storeSegmentId: string;
+    supplierId: string;
+    termOfPayment: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: CreditLimitGroup) {
+    constructor(data: ICreditLimitGroup) {
         const {
             id,
-            supplierId,
-            hierarchyId,
-            storeSegmentId,
-            name,
-            defaultCreditLimit,
-            defaultBalanceAmount,
-            termOfPayment,
             creditLimitAreas,
+            defaultBalanceAmount,
+            defaultCreditLimit,
+            hierarchyId,
+            name,
             storeSegment,
+            storeSegmentId,
+            supplierId,
+            termOfPayment,
             createdAt,
             updatedAt,
             deletedAt
         } = data;
 
         this.id = id;
-        this.supplierId = supplierId;
-        this.hierarchyId = hierarchyId;
-        this.storeSegmentId = storeSegmentId;
-        this.name = name ? String(name).trim() : null;
-        this.defaultCreditLimit = defaultCreditLimit;
         this.defaultBalanceAmount = defaultBalanceAmount;
+        this.defaultCreditLimit = defaultCreditLimit;
+        this.hierarchyId = hierarchyId;
+        this.name = name ? String(name).trim() : null;
+        this.setCreditLimitAreas = creditLimitAreas;
+        this.setStoreSegment = storeSegment;
+        this.storeSegmentId = storeSegmentId;
+        this.supplierId = supplierId;
         this.termOfPayment = termOfPayment;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+    }
 
+    set setCreditLimitAreas(value: Array<CreditLimitArea>) {
         this.creditLimitAreas =
-            creditLimitAreas && creditLimitAreas.length > 0
-                ? creditLimitAreas.map(row => {
-                      return new CreditLimitArea(row);
-                  })
-                : [];
+            value && value.length > 0 ? value.map(row => new CreditLimitArea(row)) : [];
+    }
 
-        this.storeSegment = storeSegment
+    set setStoreSegment(value: StoreSegment) {
+        this.storeSegment = value
             ? new StoreSegment(
-                  storeSegment.id,
-                  storeSegment.name,
-                  storeSegment.createdAt,
-                  storeSegment.updatedAt,
-                  storeSegment.deletedAt
+                  value.id,
+                  value.name,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
               )
             : null;
     }
@@ -213,6 +215,17 @@ export type CreditLimitGroupForm = Pick<
     | 'termOfPayment'
 > &
     ICreditLimitAreaForm;
+
+export interface ICreditLimitArea extends ITimestamp {
+    readonly id: NonNullable<string>;
+    creditLimitGroupId: string;
+    unitType: string;
+    unitValue: string;
+}
+
+export interface ICreditLimitAreaResponse extends IResponsePaginate {
+    data: Array<ICreditLimitArea>;
+}
 
 export class CreditLimitArea implements ICreditLimitArea {
     readonly id: NonNullable<string>;

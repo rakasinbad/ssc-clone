@@ -40,19 +40,21 @@
                 </span>
             </div>
 
-            <button
-                mat-flat-button
-                color="accent"
-                [routerLink]="['/pages/account/stores', (store$ | async)?.storeId]"
-                *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
-            >
-                Edit
-            </button>
+            <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
+                <button
+                    mat-flat-button
+                    color="accent"
+                    [routerLink]="['/pages/account/stores', (store$ | async)?.storeId]"
+                    *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                >
+                    Edit
+                </button>
 
-            <ngx-skeleton-loader
-                *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
-                [theme]="{ width: '70px', height: '30px', margin: 0 }"
-            ></ngx-skeleton-loader>
+                <ngx-skeleton-loader
+                    *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                    [theme]="{ width: '70px', height: '30px', margin: 0 }"
+                ></ngx-skeleton-loader>
+            </ng-template>
         </div>
 
         <div fxLayout="row wrap" fxLayoutAlign="start stretch" fxLayoutGap="40px">

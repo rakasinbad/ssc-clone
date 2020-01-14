@@ -179,6 +179,10 @@
                                     Waiting for Payment
                                 </ng-container>
 
+                                <ng-container *ngSwitchCase="'payment_failed'">
+                                    Payment Failed
+                                </ng-container>
+
                                 <ng-container *ngSwitchDefault>
                                     {{ safeValue(row?.statusPayment) | titlecase }}
                                 </ng-container>
@@ -341,7 +345,7 @@
                     </mat-header-cell> -->
 
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div
@@ -359,15 +363,17 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Update Status"
-                                    (click)="onUpdate(row)"
-                                >
-                                    <span>Update Status</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['FINANCE.PS.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Update Status"
+                                        (click)="onUpdate(row)"
+                                    >
+                                        <span>Update Status</span>
+                                    </button>
+                                </ng-template>
 
                                 <!-- <button
                                     mat-menu-item
@@ -418,7 +424,7 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
             >
             </mat-paginator>

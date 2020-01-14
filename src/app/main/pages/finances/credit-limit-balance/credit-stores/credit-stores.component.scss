@@ -60,6 +60,10 @@ app-credit-stores {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .store {
             position: relative;
             // cursor: pointer;
@@ -89,21 +93,64 @@ app-credit-stores {
             padding-left: 18px;
         }
 
-        .mat-column-order {
-            flex: 0 1 84px;
+        .mat-column-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-credit-limit {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-invoice-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-receivable {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-balance {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-avg-monthly {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-credit-limit-group {
+            flex: 0 1 15%;
         }
 
         .mat-column-store-segment {
-            flex: 0 1 70px;
+            flex: 0 1 10%;
         }
 
         .mat-column-top {
             flex: 0 1 70px;
         }
 
+        .mat-column-last-update {
+            flex: 0 1 15%;
+        }
+
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+
+        .quantity-indicator {
+            display: inline-block;
+            vertical-align: middle;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+
+            & + span,
+            & + p {
+                display: inline-block;
+                vertical-align: middle;
+            }
         }
     }
 }

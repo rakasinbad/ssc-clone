@@ -78,26 +78,33 @@
             </div>
             <!-- / APP TITLE -->
 
-            <ngx-skeleton-loader
-                *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
-                [theme]="{ width: '70px', height: '30px', margin: 0 }"
-            ></ngx-skeleton-loader>
+            <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.EMPLOYEE.UPDATE']">
+                <ngx-skeleton-loader
+                    *ngIf="!(employee$ | async) || ((isLoading$ | async) && !isEdit)"
+                    [theme]="{ width: '70px', height: '30px', margin: 0 }"
+                ></ngx-skeleton-loader>
 
-            <ng-container *ngIf="employee$ | async">
-                <button mat-raised-button type="button" (click)="onEdit(isEdit)" *ngIf="!isEdit">
-                    <span>EDIT</span>
-                </button>
+                <ng-container *ngIf="employee$ | async">
+                    <button
+                        mat-raised-button
+                        type="button"
+                        (click)="onEdit(isEdit)"
+                        *ngIf="!isEdit"
+                    >
+                        <span>EDIT</span>
+                    </button>
 
-                <button
-                    mat-raised-button
-                    type="submit"
-                    [disabled]="form.invalid || form.pristine"
-                    form="account-form"
-                    *ngIf="isEdit"
-                >
-                    <span>SAVE</span>
-                </button>
-            </ng-container>
+                    <button
+                        mat-raised-button
+                        type="submit"
+                        [disabled]="form.invalid || form.pristine"
+                        form="account-form"
+                        *ngIf="isEdit"
+                    >
+                        <span>SAVE</span>
+                    </button>
+                </ng-container>
+            </ng-template>
         </div>
         <!-- / HEADER -->
 
@@ -140,7 +147,7 @@
                             "
                             *ngIf="(!(isLoading$ | async) && !isEdit) || isEdit"
                         >
-                            *Nama
+                            *Name
                         </label>
                         <div
                             fxFlexAlign="center"

@@ -59,6 +59,7 @@ import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
 import * as numeral from 'numeral';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-merchant-form',
@@ -127,6 +128,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
+        private ngxPermissions: NgxPermissionsService,
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
@@ -2563,6 +2565,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         const body = this.form.getRawValue();
 
         if (this.pageType === 'new') {
+
+            // this.ngxPermissions.hasPermission();
             this.store
                 .select(AuthSelectors.getUserSupplier)
                 .pipe(takeUntil(this._unSubs$))

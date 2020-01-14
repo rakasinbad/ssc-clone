@@ -37,10 +37,15 @@
                 </a>
             </nav>
 
-            <div class="mt-16" *ngIf="urlActive">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
+            <!-- <div class="mt-16" *ngIf="urlActive">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div> -->
 
-            <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="urlActive">
-                <div></div>
+            <div
+                class="mt-16"
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                *ngIf="urlActive"
+            >
+                <div>Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
 
                 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                     <!-- SEARCH -->
