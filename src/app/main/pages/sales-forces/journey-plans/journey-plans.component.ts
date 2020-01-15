@@ -53,6 +53,8 @@ import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selecto
 })
 export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     search: FormControl = new FormControl('');
 
     displayedColumns = [

@@ -243,10 +243,10 @@ export class FuseNavigationService {
                 if (item.id === id) {
                     return item;
                 }
-    
+
                 if (item.children) {
                     const childItem = this.getNavigationItem(id, item.children);
-    
+
                     if (childItem) {
                         return childItem;
                     }

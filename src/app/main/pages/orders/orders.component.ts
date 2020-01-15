@@ -32,6 +32,7 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 
 @Component({
     selector: 'app-orders',
@@ -109,6 +110,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
         public translate: TranslateService,
+        private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
         private _$notice: NoticeService
@@ -320,6 +322,32 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get searchStatus(): string {
         return localStorage.getItem('filter.order') || '';
+    }
+
+    onUpdateStatus(): void {
+        // this._fuseNavigationService.setCurrentNavigation('customNavigation');
+        // console.log(this._fuseNavigationService.getCurrentNavigation());
+        // this._fuseNavigationService.updateNavigationItem(
+        //     'confirm',
+        //     {
+        //         title: 'Order Baru (0)'
+        //     },
+        //     'customNavigation'
+        // );
+
+        this._fuseNavigationService.setCurrentNavigation('customNavigation');
+
+        this.store.dispatch(
+            UiActions.updateItemNavigation({
+                payload: {
+                    id: 'confirm',
+                    properties: {
+                        title: 'Order Baru (0)'
+                    }
+                    // key: 'customNavigation'
+                }
+            })
+        );
     }
 
     safeValue(item: any): any {
