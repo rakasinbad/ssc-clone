@@ -554,7 +554,6 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             this.invoiceGroupForm$,
             this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
             this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),
-            this.associationStore.select(AssociatedPortfolioSelectors.getInitialized),
         ]).pipe(
             // Keduanya harus terisi.
             filter(([salesRep, invoiceGroup]) => {
@@ -569,10 +568,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
                 return result;
             }),
+            withLatestFrom(this.associationStore.select(AssociatedPortfolioSelectors.getInitialized)),
             // Mengosongkan portfolio-nya terlebih dahulu.
             tap(() => this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios())),
             // Memproses pengambilan data portfolio dari server.
-            tap(([salesRep, invoiceGroup, portfolioEntityType, _, initialized]) => {
+            tap(([[salesRep, invoiceGroup, portfolioEntityType, _], initialized]) => {
                 // Mendapatkan portfolio yang tersedia.
                 const portfolioQuery: IQueryParams = {
                     limit: 10,
@@ -588,18 +588,34 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                 );
 
                 if (!initialized) {
-                    // Hanya mendapatkan toko yang terasosiasi dengan sales rep.
-                    const associatedPortfolioQuery: IQueryParams = {
+                    // Mendapatkan portfolio type group.
+                    const associatedPortfolioGroupQuery: IQueryParams = {
                         limit: 100,
                         skip: 0
                     };
-                    associatedPortfolioQuery['fromSalesRep'] = true;
-                    associatedPortfolioQuery['userId'] = salesRep.userId;
+                    associatedPortfolioGroupQuery['fromSalesRep'] = true;
+                    associatedPortfolioGroupQuery['type'] = 'group';
+                    associatedPortfolioGroupQuery['userId'] = salesRep.userId;
+                    associatedPortfolioGroupQuery['combined'] = true;
                     
                     this.associationStore.dispatch(
-                        AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioQuery })
+                        AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioGroupQuery })
                     );
 
+                    // Mendapatkan portfolio type direct.
+                    // const associatedPortfolioDirectQuery: IQueryParams = {
+                    //     limit: 100,
+                    //     skip: 0
+                    // };
+                    // associatedPortfolioDirectQuery['fromSalesRep'] = true;
+                    // associatedPortfolioDirectQuery['type'] = 'direct';
+                    // associatedPortfolioDirectQuery['userId'] = salesRep.userId;
+
+                    // this.associationStore.dispatch(
+                    //     AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioDirectQuery })
+                    // );
+
+                    // Menandakan permintaan sudah dilakukan di awal.
                     this.associationStore.dispatch(
                         AssociatedPortfolioActions.markInitialized()
                     );

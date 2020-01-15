@@ -55,8 +55,8 @@ export class AssociatedPortfolioApiService {
 
         if (params['type']) {
             switch (params['type']) {
-                case 'outside':
-                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+                case 'group':
+                case 'direct': newArgs.push({ key: 'type', value: params['type']} ); break;
             }
         }
 

@@ -1109,6 +1109,12 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+        this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
+        this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
         this.portfolioStore.dispatch(UiActions.hideFooterAction());
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
@@ -1122,8 +1128,5 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         
         this.shopStore.dispatch(StoreActions.setStoreEntityType({ payload: 'in-portfolio' }));
-
-        this.subs$.next();
-        this.subs$.complete();
     }
 }

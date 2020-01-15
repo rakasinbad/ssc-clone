@@ -9,7 +9,7 @@ import {
 } from '../actions';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError } from 'rxjs';
+import { of, Observable, throwError, forkJoin } from 'rxjs';
 // import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Portfolio } from '../../../portfolios/models';
@@ -120,52 +120,157 @@ export class AssociatedPortfoliosEffects {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = {
-            ...queryParams
-        };
+        // const newQuery: IQueryParams = {
+        //     ...queryParams
+        // };
     
         // Memasukkan ID supplier ke dalam parameter.
-        newQuery['supplierId'] = supplierId;
+        // newQuery['supplierId'] = supplierId;
 
-        return this.associatedPortfolioService
-            .findPortfolio<IPaginatedResponse<Portfolio>>(newQuery)
-            .pipe(
-                catchOffline(),
-                switchMap(response => {
-                    if (newQuery.paginate) {
-                        return of(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess({
-                            payload: {
-                                data: response.data.map(portfolio => new Portfolio({
-                                    ... portfolio,
-                                    source: newQuery['fromSalesRep'] ? 'list' : 'fetch',
-                                    storeQty: portfolio.storeQty || portfolio['storeAmount'],
-                                    stores: Array.isArray(portfolio['storePortfolios'])
-                                            ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
-                                            : portfolio['storePortfolios']
-                                })),
-                                total: response.total,
-                            }
-                        }));
-                    } else {
-                        const newResponse = (response as unknown as Array<Portfolio>);
-
+        if (queryParams['combined']) {
+            return forkJoin([
+                this.associatedPortfolioService.findPortfolio<IPaginatedResponse<Portfolio>>(({ ...queryParams, supplierId, type: 'group' }) as IQueryParams)
+                    .pipe(
+                        catchOffline(),
+                        catchError(err => this.sendErrorToState(err, 'fetchAssociatedPortfoliosFailure'))
+                ),
+                this.associatedPortfolioService.findPortfolio<IPaginatedResponse<Portfolio>>(({ ...queryParams, supplierId, type: 'direct' }) as IQueryParams)
+                    .pipe(
+                        catchOffline(),
+                        catchError(err => this.sendErrorToState(err, 'fetchAssociatedPortfoliosFailure'))
+                )
+            ]).pipe(
+                map(([portfolioGroup, portfolioDirect]) => {
+                    const newResponse = {
+                        group: null,
+                        direct: null
+                    };
+                    
+                    if (!(portfolioGroup as AnyAction).payload) {
+                        if (queryParams.paginate) {
+                            newResponse.group = portfolioGroup as IPaginatedResponse<Portfolio>;
+                        } else {
+                            newResponse.group = portfolioGroup as unknown as Array<Portfolio>;
+                        }
+                    }
+    
+                    if (!(portfolioDirect as AnyAction).payload) {
+                        if (queryParams.paginate) {
+                            newResponse.direct = portfolioDirect as IPaginatedResponse<Portfolio>;
+                        } else {
+                            newResponse.direct = portfolioDirect as unknown as Array<Portfolio>;
+                        }
+                    }
+    
+                    return newResponse;
+                }),
+                filter((responses) => responses.group || responses.direct),
+                switchMap(responses => {
+                    let newTotal = 0;
+                    let newResponse = [];
+    
+                    if (queryParams.paginate) {
+                        if (responses.group) {
+                            const newResponseGroup = (responses.group as IPaginatedResponse<Portfolio>);
+    
+                            newResponse = newResponse.concat(newResponseGroup.data);
+                            newTotal += newResponseGroup.total;
+                        }
+    
+                        if (responses.direct) {
+                            const newResponseDirect = (responses.group as IPaginatedResponse<Portfolio>);
+    
+                            newResponse.concat(newResponseDirect.data);
+                            newTotal += newResponseDirect.total;
+                        }
+    
                         return of(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess({
                             payload: {
                                 data: newResponse.map(portfolio => new Portfolio({
                                     ... portfolio,
-                                    source: newQuery['fromSalesRep'] ? 'list' : 'fetch',
+                                    source: queryParams['fromSalesRep'] ? 'list' : 'fetch',
                                     storeQty: portfolio.storeQty || portfolio['storeAmount'],
                                     stores: Array.isArray(portfolio['storePortfolios'])
                                             ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
                                             : portfolio['storePortfolios']
                                 })),
-                                total: newResponse.length,
+                                total: newTotal,
                             }
                         }));
+                    } else {
+                        if (responses.group) {
+                            const newResponseGroup = (responses.group as Array<Portfolio>);
+    
+                            newResponse = newResponse.concat(newResponseGroup);
+                            newTotal += newResponseGroup.length;
+                        }
+    
+                        if (responses.direct) {
+                            const newResponseDirect = (responses.direct as Array<Portfolio>);
+    
+                            newResponse = newResponse.concat(newResponseDirect);
+                            newTotal += newResponseDirect.length;
+                        }
                     }
-                }),
-                catchError(err => this.sendErrorToState(err, 'fetchAssociatedPortfoliosFailure'))
+    
+                    return of(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess({
+                        payload: {
+                            data: newResponse.map(portfolio => new Portfolio({
+                                ... portfolio,
+                                source: queryParams['fromSalesRep'] ? 'list' : 'fetch',
+                                storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                stores: Array.isArray(portfolio['storePortfolios'])
+                                        ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                        : portfolio['storePortfolios']
+                            })),
+                            total: newTotal,
+                        }
+                    }));
+                })
             );
+        } else {
+            const newQuery = { ...queryParams };
+
+            return this.associatedPortfolioService
+                .findPortfolio<IPaginatedResponse<Portfolio>>(({ ...queryParams, supplierId }) as IQueryParams)
+                .pipe(
+                    catchOffline(),
+                    switchMap(response => {
+                        if (newQuery.paginate) {
+                            return of(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess({
+                                payload: {
+                                    data: response.data.map(portfolio => new Portfolio({
+                                        ... portfolio,
+                                        source: newQuery['fromSalesRep'] ? 'list' : 'fetch',
+                                        storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                        stores: Array.isArray(portfolio['storePortfolios'])
+                                                ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                                : portfolio['storePortfolios']
+                                    })),
+                                    total: response.total,
+                                }
+                            }));
+                        } else {
+                            const newResponse = (response as unknown as Array<Portfolio>);
+    
+                            return of(AssociatedPortfolioActions.fetchAssociatedPortfoliosSuccess({
+                                payload: {
+                                    data: newResponse.map(portfolio => new Portfolio({
+                                        ... portfolio,
+                                        source: newQuery['fromSalesRep'] ? 'list' : 'fetch',
+                                        storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                        stores: Array.isArray(portfolio['storePortfolios'])
+                                                ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                                : portfolio['storePortfolios']
+                                    })),
+                                    total: newResponse.length,
+                                }
+                            }));
+                        }
+                    }),
+                    catchError(err => this.sendErrorToState(err, 'fetchAssociatedPortfoliosFailure'))
+                );
+        }
     }
 
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: associationFailureActionNames): Observable<AnyAction> => {
