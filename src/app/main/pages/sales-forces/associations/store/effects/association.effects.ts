@@ -51,7 +51,8 @@ export class AssociationEffects {
                 .pipe(
                     catchOffline(),
                     map(({ message }) => AssociationActions.createAssociationSuccess({ payload: { message } })),
-                    catchError(err => this.sendErrorToState(err, 'createAssociationFailure'))
+                    catchError(err => this.sendErrorToState(err, 'createAssociationFailure')),
+                    finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                 )
             )
         )

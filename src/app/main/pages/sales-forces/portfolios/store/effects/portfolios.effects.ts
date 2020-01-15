@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter, finalize } from 'rxjs/operators';
 
 import {
     PortfolioActions,
@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { PortfolioStoreSelector } from '../selectors';
+import { FormActions } from 'app/shared/store/actions';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 
@@ -128,7 +129,8 @@ export class PortfoliosEffects {
                 this.portfoliosService.createPortfolio(payload).pipe(
                     catchOffline(),
                     switchMap(portfolio => of(PortfolioActions.createPortfolioSuccess({ payload: portfolio }))),
-                    catchError(err => this.sendErrorToState(err, 'createPortfolioFailure'))
+                    catchError(err => this.sendErrorToState(err, 'createPortfolioFailure')),
+                    finalize(() => this.portfolioStore.dispatch(FormActions.resetClickSaveButton()))
                 )
             )
         )
@@ -158,7 +160,8 @@ export class PortfoliosEffects {
                     .pipe(
                         catchOffline(),
                         map(response => PortfolioActions.patchPortfolioSuccess({ payload: response })),
-                        catchError(err => this.sendErrorToState(err, 'patchPortfolioFailure'))
+                        catchError(err => this.sendErrorToState(err, 'patchPortfolioFailure')),
+                        finalize(() => this.portfolioStore.dispatch(FormActions.resetClickSaveButton()))
                     )
             )
         )
@@ -189,7 +192,8 @@ export class PortfoliosEffects {
                         retry(3),
                         switchMap((userData: User) => of(userData.userSuppliers[0].supplierId)),
                         switchMap<string, Observable<AnyAction>>(this.processExportPortfolioRequest),
-                        catchError(err => this.sendErrorToState(err, 'exportPortfoliosFailure'))
+                        catchError(err => this.sendErrorToState(err, 'exportPortfoliosFailure')),
+                        finalize(() => this.portfolioStore.dispatch(FormActions.resetClickSaveButton()))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -197,7 +201,8 @@ export class PortfoliosEffects {
                         retry(3),
                         switchMap((userData: User) => of(userData.userSuppliers[0].supplierId)),
                         switchMap<string, Observable<AnyAction>>(this.processExportPortfolioRequest),
-                        catchError(err => this.sendErrorToState(err, 'exportPortfoliosFailure'))
+                        catchError(err => this.sendErrorToState(err, 'exportPortfoliosFailure')),
+                        finalize(() => this.portfolioStore.dispatch(FormActions.resetClickSaveButton()))
                     );
                 }
             })
