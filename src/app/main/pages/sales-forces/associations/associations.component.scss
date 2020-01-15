@@ -10,10 +10,10 @@ app-associations {
 
         > .center {
             > .header {
-                // &.sinbad {
-                //     height: 100px !important;
-                //     min-height: 190px !important;
-                // }
+                &.sinbad {
+                    height: 100px !important;
+                    min-height: 190px !important;
+                }
 
                 .search-wrapper {
                     width: 100%;
