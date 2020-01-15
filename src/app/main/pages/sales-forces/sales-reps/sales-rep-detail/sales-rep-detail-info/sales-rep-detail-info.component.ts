@@ -28,14 +28,6 @@ export class SalesRepDetailInfoComponent {
         return status === 'active' ? true : false;
     }
 
-    safeValue(value: any): any {
-        if (typeof value === 'number') {
-            return value;
-        } else {
-            return value ? value : '-';
-        }
-    }
-
     totalPortfolio(porfolios: Array<Portfolio>): number {
         return porfolios ? porfolios.length || 0 : 0;
     }

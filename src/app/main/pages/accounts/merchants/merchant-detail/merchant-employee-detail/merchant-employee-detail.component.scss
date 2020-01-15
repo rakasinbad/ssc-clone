@@ -58,9 +58,9 @@ app-merchant-employee-detail {
             padding-right: 8px;
         }
 
-        .mat-column-name {
+        /* .mat-column-name {
             flex: 0 1 20%;
-        }
+        } */
 
         .mat-column-role {
             flex: 0 1 20%;
@@ -91,4 +91,8 @@ app-merchant-employee-detail {
             border-radius: 50%;
         }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

@@ -39,7 +39,7 @@
                 </label>
 
                 <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                    <span>{{ safeValue(salesRep?.user?.fullName) }}</span>
+                    <span>{{ salesRep?.user?.fullName || '-' }}</span>
                 </label>
             </div>
 
@@ -54,7 +54,7 @@
                 </label>
 
                 <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                    <span>{{ safeValue(salesRep?.user?.mobilePhoneNo) }}</span>
+                    <span>{{ salesRep?.user?.mobilePhoneNo || '-' }}</span>
                 </label>
             </div>
 
@@ -69,7 +69,7 @@
                 </label>
 
                 <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                    <span>{{ safeValue(salesRep?.user?.idNo) }}</span>
+                    <span>{{ salesRep?.user?.idNo || '-' }}</span>
                 </label>
             </div>
 
@@ -84,7 +84,7 @@
                 </label>
 
                 <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                    <span>{{ safeValue(salesRep?.user?.saleTeam?.name) }}</span>
+                    <span>{{ salesRep?.user?.saleTeam?.name || '-' }}</span>
                 </label>
             </div>
 
@@ -173,18 +173,18 @@
                                     <div fxFlex>{{ portfolio?.invoiceGroup?.name || '-' }}</div>
                                     <div fxFlex>
                                         {{
-                                            portfolio?.totalTargetSales
+                                            portfolio?.totalTargetSales !== 0
                                                 ? (portfolio?.totalTargetSales
                                                       | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                                : safeValue(portfolio?.totalTargetSales)
+                                                : portfolio?.totalTargetSales
                                         }}
                                     </div>
                                     <div fxFlex>
                                         {{
-                                            portfolio?.actualTargetSales
+                                            portfolio?.actualTargetSales !== 0
                                                 ? (portfolio?.actualTargetSales
                                                       | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                                : safeValue(portfolio?.actualTargetSales)
+                                                : portfolio?.actualTargetSales
                                         }}
                                     </div>
                                 </div>

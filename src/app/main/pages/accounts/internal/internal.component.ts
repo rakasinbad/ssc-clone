@@ -12,6 +12,7 @@ import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { NoticeService } from 'app/shared/helpers';
 import { IQueryParams, Role, UserSupplier } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
@@ -27,7 +28,6 @@ import { locale as indonesian } from './i18n/id';
 import { InternalActions } from './store/actions';
 import { fromInternal } from './store/reducers';
 import { InternalSelectors } from './store/selectors';
-import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-internal',
@@ -251,18 +251,9 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         return !item ? null : item.id;
     }
 
-    safeValue(item: any): any {
-        return item ? item : '-';
-    }
-
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
-
-    private _onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
-        this._initTable();
-    }
 
     private _initTable(): void {
         const data: IQueryParams = {
@@ -289,5 +280,10 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.store.dispatch(InternalActions.fetchInternalEmployeesRequest({ payload: data }));
+    }
+
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
     }
 }

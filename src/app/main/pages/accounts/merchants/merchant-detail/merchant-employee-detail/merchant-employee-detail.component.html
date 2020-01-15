@@ -133,7 +133,7 @@
                             type="button"
                             class="sinbad-mat-menu-item"
                             aria-label="Delete"
-                            *ngIf="hasOwnerRoles(row?.user?.roles)"
+                            *ngIf="!hasOwnerRoles(row?.user?.roles)"
                             (click)="onDelete(row)"
                         >
                             <mat-icon>delete</mat-icon>
@@ -147,7 +147,7 @@
                             type="button"
                             class="sinbad-mat-menu-item"
                             [attr.aria-label]="row?.status === 'active' ? 'inactive' : 'active'"
-                            *ngIf="hasOwnerRoles(row?.user?.roles)"
+                            *ngIf="!hasOwnerRoles(row?.user?.roles)"
                             (click)="onChangeStatus(row)"
                         >
                             <mat-icon>

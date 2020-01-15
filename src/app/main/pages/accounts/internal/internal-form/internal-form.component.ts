@@ -9,7 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -145,7 +145,7 @@ export class InternalFormComponent implements OnInit, OnDestroy {
             this.store.dispatch(InternalActions.fetchInternalEmployeeRequest({ payload: id }));
         }
 
-        this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
+        this.roles$ = this.store.pipe(select(DropdownSelectors.getRoleDropdownStateByType('2')));
         this.store.dispatch(DropdownActions.fetchDropdownRoleRequest());
 
         this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
@@ -480,8 +480,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                           // translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Internal',
@@ -508,8 +508,8 @@ export class InternalFormComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                           // translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Internal',
