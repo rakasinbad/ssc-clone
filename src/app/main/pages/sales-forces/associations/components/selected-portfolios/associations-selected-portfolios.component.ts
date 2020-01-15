@@ -390,7 +390,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                 tap((searchValue) => this.debug('SEARCH VALUE CHANGES CHECK (BEFORE SANITIZED)', searchValue)),
                 map(searchValue => this.sanitizer.sanitize(SecurityContext.HTML, searchValue)),
                 tap((searchValue) => this.debug('SEARCH VALUE CHANGES CHECK (AFTER SANITIZED)', searchValue)),
-                filter(searchValue => !!searchValue),
+                filter(searchValue => !!searchValue || searchValue.length === 0),
                 takeUntil(this.subs$)
             ).subscribe((searchValue: string) =>
                 this.portfolioStore.dispatch(

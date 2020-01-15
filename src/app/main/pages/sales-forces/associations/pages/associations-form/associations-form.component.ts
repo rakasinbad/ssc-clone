@@ -572,13 +572,18 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             // Mengosongkan portfolio-nya terlebih dahulu.
             tap(() => this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios())),
             // Memproses pengambilan data portfolio dari server.
-            tap(([[salesRep, invoiceGroup, portfolioEntityType, _], initialized]) => {
+            tap(([[salesRep, invoiceGroup, portfolioEntityType, keyword], initialized]) => {
                 // Mendapatkan portfolio yang tersedia.
                 const portfolioQuery: IQueryParams = {
-                    limit: 10,
+                    limit: 100,
                     skip: 0,
                     paginate: true
                 };
+
+                if (keyword) {
+                    portfolioQuery['keyword'] = keyword;
+                }
+
                 portfolioQuery['request'] = 'associations';
                 portfolioQuery['type'] = portfolioEntityType;
                 portfolioQuery['invoiceGroupId'] = invoiceGroup.id;
@@ -593,6 +598,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         limit: 100,
                         skip: 0
                     };
+
                     associatedPortfolioGroupQuery['fromSalesRep'] = true;
                     associatedPortfolioGroupQuery['type'] = 'group';
                     associatedPortfolioGroupQuery['userId'] = salesRep.userId;

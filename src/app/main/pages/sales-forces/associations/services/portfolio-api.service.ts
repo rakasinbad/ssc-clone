@@ -72,6 +72,10 @@ export class AssociatedPortfolioApiService {
             newArgs.push({ key: 'userId', value: params['userId'] });
         }
 
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
         this._url = this._$helper.handleApiRouter(this._portfolioEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
