@@ -528,6 +528,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+
         this.portfolioStore.dispatch(UiActions.hideFooterAction());
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
@@ -541,10 +544,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
 
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+        this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
         this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
-
-        this.subs$.next();
-        this.subs$.complete();
     }
 
     ngAfterViewInit(): void {
