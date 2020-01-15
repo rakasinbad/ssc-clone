@@ -141,14 +141,14 @@ export const navigation: Array<FuseNavigation> = [
             },
             {
                 id: 'portfolio',
-                title: 'Portfolio',
+                title: 'Portfolio of Store',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/portfolio'
             },
             {
                 id: 'association',
-                title: 'Association',
+                title: 'SR Assignment',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/sales-force/associations'
