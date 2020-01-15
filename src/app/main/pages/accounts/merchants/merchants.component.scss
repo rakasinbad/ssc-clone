@@ -109,8 +109,8 @@ app-merchants {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
         }
 
@@ -162,11 +162,11 @@ app-merchants {
         }
 
         .mat-column-address {
-            flex: 0 1 18%;
+            flex: 0 1 30%;
         }
 
         .mat-column-owner-phone-no {
-            flex: 0 1 18%;
+            flex: 0 1 12%;
         }
 
         .mat-column-store-segment {
@@ -174,30 +174,12 @@ app-merchants {
         }
 
         .mat-column-store-type {
-            flex: 0 1 18%;
+            flex: 0 1 10%;
         }
 
         .mat-column-status {
             flex: 0 1 70px;
         }
-
-        // .quantity-indicator {
-        //     display: inline-block;
-        //     vertical-align: middle;
-        //     width: 8px;
-        //     height: 8px;
-        //     border-radius: 4px;
-        //     margin-right: 8px;
-
-        //     & + span {
-        //         display: inline-block;
-        //         vertical-align: middle;
-        //     }
-        // }
-
-        // .active-icon {
-        //     border-radius: 50%;
-        // }
 
         .mat-column-actions {
             flex: 0 1 80px;

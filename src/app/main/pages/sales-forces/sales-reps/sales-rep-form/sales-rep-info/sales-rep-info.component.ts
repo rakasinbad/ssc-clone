@@ -109,74 +109,6 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._initPage();
-
-        this._initForm();
-
-        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
-        this.form.statusChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(status => {
-                this._setFormStatus(status);
-            });
-
-        // Handle fullName value
-        this.form
-            .get('name')
-            .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                this.fullNameValue.emit(v);
-            });
-
-        // Handle phone value
-        this.form
-            .get('phone')
-            .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                this.phoneValue.emit(v);
-            });
-
-        // Handle search sales team autocomplete & try request to endpoint
-        this.form
-            .get('team')
-            .valueChanges.pipe(
-                filter(v => {
-                    this.field.salesTeam.highlight = v;
-                    return v.length >= 3;
-                }),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                if (v) {
-                    const data: IQueryParams = {
-                        limit: 10,
-                        skip: 0
-                    };
-
-                    data['paginate'] = true;
-
-                    data['search'] = [
-                        {
-                            fieldName: 'keyword',
-                            keyword: v
-                        }
-                    ];
-
-                    this.field.salesTeam.highlight = v;
-
-                    this.store.dispatch(TeamActions.searchTeamRequest({ payload: data }));
-                }
-            });
-
-        // Handle save button action (footer)
-        this.store
-            .select(FormSelectors.getIsClickSaveButton)
-            .pipe(
-                filter(isClick => !!isClick),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(isClick => {
-                this._onSubmit();
-            });
     }
 
     ngAfterViewInit(): void {
@@ -493,6 +425,74 @@ export class SalesRepInfoComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
 
                 this.isLoadingSalesTeam$ = this.store.select(TeamSelectors.getIsLoading);
+
+                this._initForm();
+
+                // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+                this.form.statusChanges
+                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .subscribe(status => {
+                        this._setFormStatus(status);
+                    });
+
+                // Handle fullName value
+                this.form
+                    .get('name')
+                    .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(v => {
+                        this.fullNameValue.emit(v);
+                    });
+
+                // Handle phone value
+                this.form
+                    .get('phone')
+                    .valueChanges.pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(v => {
+                        this.phoneValue.emit(v);
+                    });
+
+                // Handle search sales team autocomplete & try request to endpoint
+                this.form
+                    .get('team')
+                    .valueChanges.pipe(
+                        filter(v => {
+                            this.field.salesTeam.highlight = v;
+                            return v.length >= 3;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        if (v) {
+                            const data: IQueryParams = {
+                                limit: 10,
+                                skip: 0
+                            };
+
+                            data['paginate'] = true;
+
+                            data['search'] = [
+                                {
+                                    fieldName: 'keyword',
+                                    keyword: v
+                                }
+                            ];
+
+                            this.field.salesTeam.highlight = v;
+
+                            this.store.dispatch(TeamActions.searchTeamRequest({ payload: data }));
+                        }
+                    });
+
+                // Handle save button action (footer)
+                this.store
+                    .select(FormSelectors.getIsClickSaveButton)
+                    .pipe(
+                        filter(isClick => !!isClick),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(isClick => {
+                        this._onSubmit();
+                    });
                 return;
         }
     }

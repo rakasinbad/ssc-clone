@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
@@ -68,8 +68,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Account',
@@ -281,7 +281,9 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
 
                 const { id } = this.route.snapshot.params;
 
-                this.roles$ = this.store.select(DropdownSelectors.getRoleDropdownState);
+                this.roles$ = this.store.pipe(
+                    select(DropdownSelectors.getRoleDropdownStateByType('3'))
+                );
                 this.employee$ = this.store.select(StoreSelectors.getEmployeeEdit);
                 this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
@@ -443,8 +445,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                           // translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
@@ -471,8 +473,8 @@ export class MerchantEmployeeComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                           // translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Account',
