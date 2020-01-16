@@ -107,12 +107,22 @@
                             [class.mat-error]="hasError('newPassword')"
                         >
                             *Password
+
+                            <mat-icon
+                                class="custom-field__label--icon-info blue-600-fg s-16"
+                                matTooltip="Must be at least 8 characters long and it must have a combination of
+                uppercase letters, lowercase letters and numbers."
+                            >
+                                info
+                            </mat-icon>
                         </label>
 
                         <div class="custom-field__field" fxFlex="100">
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input type="password" matInput formControlName="newPassword" />
-                                <mat-hint align="end">Must be at least 8 characters long</mat-hint>
+                                <mat-hint align="end">
+                                    Must be at least 8 characters long
+                                </mat-hint>
 
                                 <mat-error *ngIf="hasError('newPassword', true)">
                                     {{ getErrorMessage('newPassword') }}
