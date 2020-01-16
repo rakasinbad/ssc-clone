@@ -33,10 +33,10 @@ import { CataloguesService } from './services';
 
 import { Catalogue } from './models';
 
-import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+// import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+// import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 // import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
-import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
@@ -48,12 +48,12 @@ import { NgxPermissionsService } from 'ngx-permissions';
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
 @Component({
-  selector: 'app-catalogues',
-  templateUrl: './catalogues.component.html',
-  styleUrls: ['./catalogues.component.scss'],
-  animations: fuseAnimations,
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-catalogues',
+    templateUrl: './catalogues.component.html',
+    styleUrls: ['./catalogues.component.scss'],
+    animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
