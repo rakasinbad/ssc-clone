@@ -266,8 +266,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             url: this.associationsHome
                         },
                         {
-                            title: 'Edit Association',
-                            translate: 'BREADCRUMBS.ASSOCIATION_EDIT',
+                            title: 'Edit SR Assignment',
+                            // translate: 'BREADCRUMBS.ASSOCIATION_EDIT',
                             active: true
                         }
                     ]
@@ -288,8 +288,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             url: this.associationsHome
                         },
                         {
-                            title: 'Add Association',
-                            translate: 'BREADCRUMBS.ASSOCIATION_ADD',
+                            title: 'Add SR Assignment',
+                            // translate: 'BREADCRUMBS.ASSOCIATION_ADD',
                             active: true
                         }
                     ]

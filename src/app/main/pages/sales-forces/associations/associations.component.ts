@@ -90,6 +90,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add 'implements OnInit' to the class.
         this._unSubs$ = new Subject();
 
+        this._initPage();
         this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
     }
 
