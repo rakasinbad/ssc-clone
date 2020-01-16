@@ -1,7 +1,7 @@
 import { FuseNavigation } from '@fuse/types';
 import { UiActions } from 'app/shared/store/actions';
 
-export const statusOrder: FuseNavigation[] = [
+export const statusOrder: Array<FuseNavigation> = [
     {
         id: 'all-status',
         title: 'Semua',

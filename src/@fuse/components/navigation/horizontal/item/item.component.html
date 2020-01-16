@@ -29,7 +29,7 @@
         [ngClass]="item?.classes"
         [class.sinbad]="isActive(item?.id, currentCustomToolbarActive$ | async)"
         *ngIf="!item?.url && item?.function"
-        (click)="item?.function(store, '1234')"
+        (click)="item?.function(store)"
     >
         <ng-container *ngTemplateOutlet="itemContent"></ng-container>
     </span>
@@ -40,7 +40,7 @@
         [ngClass]="item?.classes"
         [class.sinbad]="isActive(item?.id, currentCustomToolbarActive$ | async)"
         *ngIf="item?.url && !item?.externalUrl && item?.function"
-        (click)="item?.function(store, '12345')"
+        (click)="item?.function(store)"
         [routerLink]="[item?.url]"
         [routerLinkActive]="['active', 'accent']"
         [routerLinkActiveOptions]="{ exact: item?.exactMatch || false }"
@@ -54,7 +54,7 @@
         class="nav-link"
         [ngClass]="item?.classes"
         *ngIf="item?.url && item?.externalUrl && item?.function"
-        (click)="item?.function(store, '123456')"
+        (click)="item?.function(store)"
         [href]="item?.url"
         [target]="item?.openInNewTab ? '_blank' : '_self'"
     >

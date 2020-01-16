@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { FuseNavigationItem } from '@fuse/types';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
@@ -111,15 +111,17 @@ export class FuseNavigationService {
     register(key, navigation): void {
         // Check if the key already being used
         if (this._registry[key]) {
-            console.error(
-                `The navigation with the key '${key}' already exists. Either unregister it first or use a unique key.`
-            );
+            if (isDevMode()) {
+                console.error(
+                    `The navigation with the key '${key}' already exists. Either unregister it first or use a unique key.`
+                );
+            }
 
             return;
         }
 
         // Add to the registry
-        this._registry[key] = navigation;
+        this._registry[key] = _.cloneDeep(navigation);
 
         // Notify the subject
         this._onNavigationRegistered.next([key, navigation]);
@@ -132,7 +134,9 @@ export class FuseNavigationService {
     unregister(key): void {
         // Check if the navigation exists
         if (!this._registry[key]) {
-            console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            if (isDevMode()) {
+                console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            }
         }
 
         // Unregister the sidebar
@@ -151,7 +155,9 @@ export class FuseNavigationService {
     getNavigation(key): any {
         // Check if the navigation exists
         if (!this._registry[key]) {
-            console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            if (isDevMode()) {
+                console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            }
 
             return;
         }
@@ -192,7 +198,9 @@ export class FuseNavigationService {
      */
     getCurrentNavigation(): any {
         if (!this._currentNavigationKey) {
-            console.warn(`The current navigation is not set.`);
+            if (isDevMode()) {
+                console.warn(`The current navigation is not set.`);
+            }
 
             return;
         }
@@ -209,7 +217,9 @@ export class FuseNavigationService {
     setCurrentNavigation(key): void {
         // Check if the sidebar exists
         if (!this._registry[key]) {
-            console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            if (isDevMode()) {
+                console.warn(`The navigation with the key '${key}' doesn't exist in the registry.`);
+            }
 
             return;
         }
