@@ -162,3 +162,15 @@ app-orders {
 .mat-menu-panel {
     min-height: 52px;
 }
+
+.nav {
+    fuse-nav-horizontal-item {
+        &.nav-item {
+            &:first-of-type {
+                .nav-link {
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+}

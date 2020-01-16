@@ -7,6 +7,7 @@ export * from './navigation.service';
 export * from './notice.service';
 export * from './window.service';
 
+export * from './calculate-order-api.service';
 export * from './cluster-api.service';
 export * from './district-api.service';
 export * from './download-api.service';

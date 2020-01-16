@@ -1,3 +1,14 @@
+export interface IStatusPayment {
+    totalOrder: string;
+    totalWaitingForPaymentOrder: string;
+    totalD7PaymentOrder: string;
+    totalD3PaymentOrder: string;
+    totalD0PaymentOrder: string;
+    totalPaidOrder: string;
+    totalPaymentFailedOrder: string;
+    totalOverdueOrder: string;
+}
+
 export interface IPaymentStatusDemo {
     id: string;
     orderRef: string;

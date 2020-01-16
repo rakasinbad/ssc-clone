@@ -4,6 +4,7 @@ import { IErrorHandler } from 'app/shared/models';
 import { TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
+import { IStatusPayment } from '../../models';
 import { PaymentStatusActions } from '../actions';
 
 export const FEATURE_KEY = 'paymentStatuses';
@@ -11,6 +12,7 @@ export const FEATURE_KEY = 'paymentStatuses';
 interface PaymentStatusState extends EntityState<any> {
     selectedPaymentStatusId: string | number;
     total: number;
+    totalStatus: IStatusPayment;
 }
 
 interface ErrorState extends EntityState<IErrorHandler> {}
@@ -33,7 +35,17 @@ const adapterPaymentStatus = createEntityAdapter<any>({
 });
 const initialPaymentStatus = adapterPaymentStatus.getInitialState({
     selectedPaymentStatusId: null,
-    total: 0
+    total: 0,
+    totalStatus: {
+        totalOrder: '0',
+        totalWaitingForPaymentOrder: '0',
+        totalD7PaymentOrder: '0',
+        totalD3PaymentOrder: '0',
+        totalD0PaymentOrder: '0',
+        totalPaidOrder: '0',
+        totalPaymentFailedOrder: '0',
+        totalOverdueOrder: '0'
+    }
 });
 
 const adapterError = createEntityAdapter<IErrorHandler>();
@@ -60,6 +72,7 @@ const paymentStatusReducer = createReducer(
     ),
     on(
         PaymentStatusActions.fetchPaymentStatusesFailure,
+        PaymentStatusActions.fetchCalculateOrdersByPaymentFailure,
         PaymentStatusActions.exportFailure,
         PaymentStatusActions.importFailure,
         (state, { payload }) => ({
@@ -94,6 +107,14 @@ const paymentStatusReducer = createReducer(
     on(PaymentStatusActions.filterStatusPayment, (state, { payload }) => ({
         ...state,
         isRefresh: true
+    })),
+    on(PaymentStatusActions.fetchCalculateOrdersByPaymentSuccess, (state, { payload }) => ({
+        ...state,
+        paymentStatuses: {
+            ...state.paymentStatuses,
+            totalStatus: payload
+        },
+        errors: adapterError.removeOne('fetchCalculateOrdersByPaymentFailure', state.errors)
     })),
     on(PaymentStatusActions.fetchPaymentStatusesSuccess, (state, { payload }) => ({
         ...state,

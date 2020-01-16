@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { filter, first, tap } from 'rxjs/operators';
 
-import { OrderActions } from '../store/actions';
 import { fromOrder } from '../store/reducers';
 import { OrderSelectors } from '../store/selectors';
 
@@ -24,7 +23,7 @@ export class OrderDetailResolver implements Resolve<any> {
         return this.store.select(OrderSelectors.getSelectedOrder).pipe(
             tap(order => {
                 if (!order) {
-                    this.store.dispatch(OrderActions.getOrderDemoDetail({ payload: id }));
+                    // this.store.dispatch(OrderActions.getOrderDemoDetail({ payload: id }));
                 }
             }),
             filter(order => !!order),

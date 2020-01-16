@@ -118,7 +118,6 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/core/errors/404/error-404.theme';
 
 // Accounts
-@import 'src/app/main/pages/accounts/accounts.theme';
 @import 'src/app/main/pages/accounts/internal/internal.theme';
 @import 'src/app/main/pages/accounts/merchants/merchants.theme';
 
@@ -170,7 +169,6 @@ $typography: mat-typography-config(
 
     // Accounts
     @include internals-theme($theme);
-    @include accounts-theme($theme);
     @include merchants-theme($theme);
 
     // Attendances

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -76,8 +77,8 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Order Managements',
@@ -256,9 +257,10 @@ export class OrderDetailComponent implements OnInit, OnDestroy {
         this.order$ = this.store.select(OrderSelectors.getSelectedOrder).pipe(
             tap(data => {
                 if (data && data.orderBrands && data.orderBrands.length > 0) {
-                    this.dataSource = new MatTableDataSource(
-                        data.orderBrands[0].orderBrandCatalogues
-                    );
+                    const orderBrandCatalogues =
+                        _.flatten(_.map(data.orderBrands, 'orderBrandCatalogues')) || [];
+
+                    this.dataSource = new MatTableDataSource(orderBrandCatalogues);
                 }
             })
         );

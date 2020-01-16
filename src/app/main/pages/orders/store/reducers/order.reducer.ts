@@ -3,6 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TSource } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
+import { IStatusOMS } from '../../models';
 import { OrderActions } from '../actions';
 
 export const FEATURE_KEY = 'orders';
@@ -10,6 +11,7 @@ export const FEATURE_KEY = 'orders';
 interface OrderState extends EntityState<any> {
     selectedOrderId: string | number;
     total: number;
+    totalStatus: IStatusOMS;
 }
 
 interface ErrorState extends EntityState<IErrorHandler> {}
@@ -29,7 +31,19 @@ export interface FeatureState extends fromRoot.State {
 const adapterOrder = createEntityAdapter<any>({
     selectId: row => row.id
 });
-const initialOrderState = adapterOrder.getInitialState({ selectedOrderId: null, total: 0 });
+const initialOrderState = adapterOrder.getInitialState({
+    selectedOrderId: null,
+    total: 0,
+    totalStatus: {
+        totalOrder: '0',
+        totalNewOrder: '0',
+        totalPackedOrder: '0',
+        totalShippedOrder: '0',
+        totalDeliveredOrder: '0',
+        totalCompletedOrder: '0',
+        totalCanceledOrder: '0'
+    }
+});
 
 const adapterError = createEntityAdapter<IErrorHandler>();
 const initialErrorState = adapterError.getInitialState();
@@ -58,6 +72,7 @@ const orderReducer = createReducer(
     on(
         OrderActions.updateCancelStatusFailure,
         OrderActions.updateStatusOrderFailure,
+        OrderActions.fetchCalculateOrdersFailure,
         OrderActions.fetchOrderFailure,
         OrderActions.fetchOrdersFailure,
         OrderActions.exportFailure,
@@ -95,6 +110,14 @@ const orderReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
+    on(OrderActions.fetchCalculateOrdersSuccess, (state, { payload }) => ({
+        ...state,
+        orders: {
+            ...state.orders,
+            totalStatus: payload
+        },
+        errors: adapterError.removeOne('fetchCalculateOrdersFailure', state.errors)
+    })),
     on(OrderActions.fetchOrderSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,

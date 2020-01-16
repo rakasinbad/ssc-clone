@@ -28,6 +28,32 @@ export const getSelectedOrder = createSelector(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Status Order State
+// -----------------------------------------------------------------------------------------------------
+
+export const getTotalStatus = createSelector(getOrderState, state => state.orders.totalStatus);
+
+export const getTotalAllOrder = createSelector(getTotalStatus, state => state.totalOrder);
+export const getTotalNewOrder = createSelector(getTotalStatus, state => state.totalNewOrder);
+export const getTotalPackedOrder = createSelector(getTotalStatus, state => state.totalPackedOrder);
+export const getTotalShippedOrder = createSelector(
+    getTotalStatus,
+    state => state.totalShippedOrder
+);
+export const getTotalDeliveredOrder = createSelector(
+    getTotalStatus,
+    state => state.totalDeliveredOrder
+);
+export const getTotalCompletedOrder = createSelector(
+    getTotalStatus,
+    state => state.totalCompletedOrder
+);
+export const getTotalCanceledOrder = createSelector(
+    getTotalStatus,
+    state => state.totalCanceledOrder
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Helper State
 // -----------------------------------------------------------------------------------------------------
 

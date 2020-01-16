@@ -1,3 +1,4 @@
+import { fetchCalculateOrdersRequest } from './store/actions/order.actions';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -17,13 +18,13 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { merge, Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
@@ -33,6 +34,7 @@ import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
+import { FuseNavigation } from '@fuse/types';
 
 @Component({
     selector: 'app-orders',
@@ -47,7 +49,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageOpts = environment.pageSizeTable;
 
     search: FormControl = new FormControl('');
-    filterStatus: string;
+    filterStatus = '';
     formConfig = {
         status: {
             label: 'Order Status',
@@ -86,7 +88,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         'delivered-date',
         'actions'
     ];
-    hasSelected: boolean;
+    hasSelected = false;
     statusOrder: any;
 
     dataSource$: Observable<any>;
@@ -145,171 +147,21 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.filterStatus = '';
-        this.hasSelected = false;
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        localStorage.removeItem('filter.order');
-
-        this.dataSource$ = this.store.select(OrderSelectors.getAllOrder);
-        this.totalDataSource$ = this.store.select(OrderSelectors.getTotalOrder);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-
-        this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
-
-        this.initTable();
-
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(v => !!v),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                const currFilter = localStorage.getItem('filter.order');
-
-                if (v !== 'all-status') {
-                    localStorage.setItem('filter.order', v);
-                    this.filterStatus = v;
-                } else {
-                    localStorage.removeItem('filter.order');
-                    this.filterStatus = '';
-                }
-
-                if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
-                    this.store.dispatch(OrderActions.filterOrder({ payload: v }));
-                }
-            });
-
-        // Filter by search column
-        this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                // filter(v => {
-                //     if (v) {
-                //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
-                //     }
-
-                //     return true;
-                // }),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                if (v) {
-                    // localStorage.setItem('filter.search.order', v);
-                }
-
-                this.onRefreshTable();
-            });
-
-        this.store
-            .select(OrderSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        // Set default first status active
-        this.store.dispatch(
-            UiActions.setCustomToolbarActive({
-                payload: 'all-status'
-            })
-        );
-
-        // Register to navigation [FuseNavigation]
-        this.store.dispatch(
-            UiActions.registerNavigation({
-                payload: { key: 'customNavigation', navigation: this.statusOrder }
-            })
-        );
-
-        // Show custom toolbar
-        this.store.dispatch(UiActions.showCustomToolbar());
-
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.initTable();
-            });
-
-        const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
-
-        canUpdate.then(hasAccess => {
-            if (hasAccess) {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'order-code',
-                    'order-ref',
-                    'order-date',
-                    'store-name',
-                    'trx-amount',
-                    'payment-method',
-                    'total-product',
-                    'status',
-                    // 'deliveredOn',
-                    // 'actual-amount-delivered',
-                    'delivered-date',
-                    'actions'
-                ];
-            } else {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'order-code',
-                    'order-ref',
-                    'order-date',
-                    'store-name',
-                    'trx-amount',
-                    'payment-method',
-                    'total-product',
-                    'status',
-                    // 'deliveredOn',
-                    // 'actual-amount-delivered',
-                    'delivered-date'
-                ];
-            }
-        });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        localStorage.removeItem('filter.order');
-        localStorage.removeItem('filter.search.order');
-
-        // Reset breadcrumb state
-        this.store.dispatch(UiActions.resetBreadcrumb());
-
-        // Reset custom toolbar state
-        this.store.dispatch(UiActions.hideCustomToolbar());
-
-        // Unregister navigation [FuseNavigation]
-        this.store.dispatch(UiActions.unregisterNavigation({ payload: 'customNavigation' }));
-
-        // Reset orders state
-        this.store.dispatch(OrderActions.resetOrders());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -322,32 +174,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get searchStatus(): string {
         return localStorage.getItem('filter.order') || '';
-    }
-
-    onUpdateStatus(): void {
-        // this._fuseNavigationService.setCurrentNavigation('customNavigation');
-        // console.log(this._fuseNavigationService.getCurrentNavigation());
-        // this._fuseNavigationService.updateNavigationItem(
-        //     'confirm',
-        //     {
-        //         title: 'Order Baru (0)'
-        //     },
-        //     'customNavigation'
-        // );
-
-        // this._fuseNavigationService.setCurrentNavigation('customNavigation');
-
-        this.store.dispatch(
-            UiActions.updateItemNavigation({
-                payload: {
-                    id: 'confirm',
-                    properties: {
-                        title: 'Order Baru (0)'
-                    },
-                    key: 'customNavigation'
-                }
-            })
-        );
     }
 
     safeValue(item: any): any {
@@ -484,12 +310,253 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
-        this.initTable();
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                // Set default first status active
+                this.store.dispatch(
+                    UiActions.setCustomToolbarActive({
+                        payload: 'all-status'
+                    })
+                );
+
+                // Register to navigation [FuseNavigation]
+                this.store.dispatch(
+                    UiActions.registerNavigation({
+                        payload: { key: 'customNavigation', navigation: this.statusOrder }
+                    })
+                );
+
+                // Show custom toolbar
+                this.store.dispatch(UiActions.showCustomToolbar());
+
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this._initTable();
+                    });
+
+                const canUpdate = this.ngxPermissions.hasPermission('OMS.UPDATE');
+
+                canUpdate.then(hasAccess => {
+                    if (hasAccess) {
+                        this.displayedColumns = [
+                            // 'checkbox',
+                            'order-code',
+                            'order-ref',
+                            'order-date',
+                            'store-name',
+                            'trx-amount',
+                            'payment-method',
+                            'total-product',
+                            'status',
+                            // 'deliveredOn',
+                            // 'actual-amount-delivered',
+                            'delivered-date',
+                            'actions'
+                        ];
+                    } else {
+                        this.displayedColumns = [
+                            // 'checkbox',
+                            'order-code',
+                            'order-ref',
+                            'order-date',
+                            'store-name',
+                            'trx-amount',
+                            'payment-method',
+                            'total-product',
+                            'status',
+                            // 'deliveredOn',
+                            // 'actual-amount-delivered',
+                            'delivered-date'
+                        ];
+                    }
+                });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                localStorage.removeItem('filter.order');
+                localStorage.removeItem('filter.search.order');
+
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset custom toolbar state
+                this.store.dispatch(UiActions.hideCustomToolbar());
+
+                // Unregister navigation [FuseNavigation]
+                this.store.dispatch(
+                    UiActions.unregisterNavigation({ payload: 'customNavigation' })
+                );
+
+                // Reset orders state
+                this.store.dispatch(OrderActions.resetOrders());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                localStorage.removeItem('filter.order');
+
+                this.dataSource$ = this.store.select(OrderSelectors.getAllOrder);
+                this.totalDataSource$ = this.store.select(OrderSelectors.getTotalOrder);
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+
+                this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
+
+                this._initStatusOrder();
+
+                combineLatest([
+                    this.store.select(OrderSelectors.getTotalAllOrder),
+                    this.store.select(OrderSelectors.getTotalNewOrder),
+                    this.store.select(OrderSelectors.getTotalPackedOrder),
+                    this.store.select(OrderSelectors.getTotalShippedOrder),
+                    this.store.select(OrderSelectors.getTotalDeliveredOrder),
+                    this.store.select(OrderSelectors.getTotalCompletedOrder),
+                    this.store.select(OrderSelectors.getTotalCanceledOrder)
+                ])
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(
+                        ([
+                            allOrder,
+                            newOrder,
+                            packedOrder,
+                            shippedOrder,
+                            deliveredOrder,
+                            completedOrder,
+                            canceledOrder
+                        ]) => {
+                            if (typeof allOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'all-status',
+                                    { title: `Semua (${allOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof newOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'confirm',
+                                    { title: `Order Baru (${newOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof packedOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'packing',
+                                    { title: `Dikemas (${packedOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof shippedOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'shipping',
+                                    { title: `Dikirim (${shippedOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof deliveredOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'delivered',
+                                    { title: `Diterima (${deliveredOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof completedOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'done',
+                                    { title: `Selesai (${completedOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof canceledOrder !== 'undefined') {
+                                this._updateStatus(
+                                    'cancel',
+                                    { title: `Batal (${canceledOrder})` },
+                                    'customNavigation'
+                                );
+                            }
+                        }
+                    );
+
+                this._initTable();
+
+                this.store
+                    .select(UiSelectors.getCustomToolbarActive)
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        const currFilter = localStorage.getItem('filter.order');
+
+                        if (v !== 'all-status') {
+                            localStorage.setItem('filter.order', v);
+                            this.filterStatus = v;
+                        } else {
+                            localStorage.removeItem('filter.order');
+                            this.filterStatus = '';
+                        }
+
+                        if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
+                            this.store.dispatch(OrderActions.filterOrder({ payload: v }));
+                        }
+                    });
+
+                // Filter by search column
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        // filter(v => {
+                        //     if (v) {
+                        //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                        //     }
+
+                        //     return true;
+                        // }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        if (v) {
+                            // localStorage.setItem('filter.search.order', v);
+                        }
+
+                        this._onRefreshTable();
+                    });
+
+                this.store
+                    .select(OrderSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
+                break;
+        }
     }
 
-    private initTable(): void {
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
@@ -546,5 +613,26 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.store.dispatch(OrderActions.fetchOrdersRequest({ payload: data }));
+    }
+
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
+    }
+
+    private _initStatusOrder(): void {
+        this.store.dispatch(OrderActions.fetchCalculateOrdersRequest());
+    }
+
+    private _updateStatus(id: string, properties: Partial<FuseNavigation>, key?: string): void {
+        this.store.dispatch(
+            UiActions.updateItemNavigation({
+                payload: {
+                    id,
+                    properties,
+                    key
+                }
+            })
+        );
     }
 }

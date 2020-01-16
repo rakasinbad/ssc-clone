@@ -42,6 +42,33 @@ export const getSelectedPaymentStatus = createSelector(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// Status Orders by Payment State
+// -----------------------------------------------------------------------------------------------------
+
+export const getTotalStatus = createSelector(
+    getPaymentStatusState,
+    state => state.paymentStatuses.totalStatus
+);
+
+export const getTotalAllPayment = createSelector(getTotalStatus, state => state.totalOrder);
+export const getTotalWaitingPayment = createSelector(
+    getTotalStatus,
+    state => state.totalWaitingForPaymentOrder
+);
+export const getTotalD7Payment = createSelector(getTotalStatus, state => state.totalD7PaymentOrder);
+export const getTotalD3Payment = createSelector(getTotalStatus, state => state.totalD3PaymentOrder);
+export const getTotalD0Payment = createSelector(getTotalStatus, state => state.totalD0PaymentOrder);
+export const getTotalPaidPayment = createSelector(getTotalStatus, state => state.totalPaidOrder);
+export const getTotalFailPayment = createSelector(
+    getTotalStatus,
+    state => state.totalPaymentFailedOrder
+);
+export const getTotalOverduePayment = createSelector(
+    getTotalStatus,
+    state => state.totalOverdueOrder
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Helper State
 // -----------------------------------------------------------------------------------------------------
 

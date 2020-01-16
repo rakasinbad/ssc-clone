@@ -31,7 +31,7 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <ng-container *ngIf="(store$ | async)?.store?.name || !(isLoading$ | async)">
-                        {{ safeValue((store$ | async)?.store?.name) }}
+                        {{ (store$ | async)?.store?.name || '-' }}
                     </ng-container>
                     <ngx-skeleton-loader
                         *ngIf="!(store$ | async)?.store?.name && (isLoading$ | async)"
@@ -98,7 +98,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.phoneNo) }}
+                                        {{ (store$ | async)?.store?.phoneNo || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -133,11 +133,45 @@
                                             (store$ | async)?.store?.taxNo || !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.taxNo) }}
+                                        {{ (store$ | async)?.store?.taxNo || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
                                             !(store$ | async)?.store?.taxNo && (isLoading$ | async)
+                                        "
+                                        [theme]="{ width: '100px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="info-title">
+                                    <ng-container
+                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                                    >
+                                        Join Date
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                                        [theme]="{ width: '60px' }"
+                                    ></ngx-skeleton-loader>
+                                </td>
+                                <td>
+                                    <ng-container
+                                        *ngIf="
+                                            (store$ | async)?.store?.createdAt ||
+                                            !(isLoading$ | async)
+                                        "
+                                    >
+                                        {{
+                                            ((store$ | async)?.store?.createdAt
+                                                | date: 'dd/MM/yyyy') || '-'
+                                        }}
+                                    </ng-container>
+                                    <ngx-skeleton-loader
+                                        *ngIf="
+                                            !(store$ | async)?.store?.createdAt &&
+                                            (isLoading$ | async)
                                         "
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
@@ -181,7 +215,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.externalId) }}
+                                        {{ (store$ | async)?.store?.externalId || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -211,7 +245,7 @@
                                             (store$ | async)?.store?.name || !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.name) }}
+                                        {{ (store$ | async)?.store?.name || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -261,11 +295,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(
-                                                (store$ | async)?.store?.urban?.province?.name
-                                            )
-                                        }}
+                                        {{ (store$ | async)?.store?.urban?.province?.name || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -296,7 +326,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.urban?.city) }}
+                                        {{ (store$ | async)?.store?.urban?.city || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -313,7 +343,7 @@
                                     <ng-container
                                         *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
-                                        Kecamatan
+                                        District
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -327,7 +357,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.urban?.district) }}
+                                        {{ (store$ | async)?.store?.urban?.district || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -344,7 +374,7 @@
                                     <ng-container
                                         *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
-                                        Kelurahan
+                                        Urban
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -358,7 +388,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.urban?.urban) }}
+                                        {{ (store$ | async)?.store?.urban?.urban || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -375,7 +405,7 @@
                                     <ng-container
                                         *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                     >
-                                        Kode Pos
+                                        Postcode
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -389,7 +419,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.urban?.zipCode) }}
+                                        {{ (store$ | async)?.store?.urban?.zipCode || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -415,12 +445,18 @@
                                 </td>
                                 <td>
                                     <ng-container
-                                        *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                                        *ngIf="
+                                            (store$ | async)?.store?.address ||
+                                            !(isLoading$ | async)
+                                        "
                                     >
-                                        -
+                                        {{ (store$ | async)?.store?.address || '-' }}-
                                     </ng-container>
                                     <ngx-skeleton-loader
-                                        *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                                        *ngIf="
+                                            !(store$ | async)?.store?.address &&
+                                            (isLoading$ | async)
+                                        "
                                         [theme]="{ width: '100px' }"
                                     ></ngx-skeleton-loader>
                                 </td>
@@ -446,10 +482,13 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{
-                                            safeValue(store$ | async)?.store?.longitude +
+                                        <!-- safeValue(store$ | async)?.store?.longitude +
                                                 ', ' +
-                                                safeValue((store$ | async)?.store?.latitude)
+                                                safeValue((store$ | async)?.store?.latitude) -->
+                                        {{
+                                            ((store$ | async)?.store?.longitude || '-') +
+                                                ', ' +
+                                                ((store$ | async)?.store?.latitude || '-')
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
@@ -502,7 +541,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.legalInfo?.idNo) }}
+                                        {{ (store$ | async)?.store?.legalInfo?.idNo || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -647,7 +686,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.legalInfo?.taxNo) }}
+                                        {{ (store$ | async)?.store?.legalInfo?.taxNo || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -696,7 +735,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.storeType?.name) }}
+                                        {{ (store$ | async)?.store?.storeType?.name || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -727,7 +766,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.storeGroup?.name) }}
+                                        {{ (store$ | async)?.store?.storeGroup?.name || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -783,7 +822,7 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.storeSegment?.name) }}
+                                        {{ (store$ | async)?.store?.storeSegment?.name || '-' }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -870,7 +909,11 @@
                                             !(isLoading$ | async)
                                         "
                                     >
-                                        {{ safeValue((store$ | async)?.store?.numberOfEmployee) }}
+                                        {{
+                                            (store$ | async)?.store?.numberOfEmployee === '0'
+                                                ? 0
+                                                : (store$ | async)?.store?.numberOfEmployee || '-'
+                                        }}
                                     </ng-container>
                                     <ngx-skeleton-loader
                                         *ngIf="
@@ -952,9 +995,8 @@
                                         "
                                     >
                                         {{
-                                            safeValue(
-                                                (store$ | async)?.store?.vehicleAccessibility?.name
-                                            )
+                                            (store$ | async)?.store?.vehicleAccessibility?.name ||
+                                                '-'
                                         }}
                                     </ng-container>
                                     <ngx-skeleton-loader
