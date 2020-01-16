@@ -135,7 +135,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             disableClear: true
         });
 
-        this._initPage();
+        // this._initPage();
 
         this._initTable();
 

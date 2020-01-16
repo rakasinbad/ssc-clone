@@ -146,7 +146,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
             disableClear: true
         });
 
-        this._initPage();
+        // this._initPage();
 
         this._initTable();
 

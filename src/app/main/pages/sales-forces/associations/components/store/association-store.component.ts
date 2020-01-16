@@ -129,7 +129,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
             disableClear: true
         });
 
-        this._initPage();
+        // this._initPage();
 
         this._initTable();
 
