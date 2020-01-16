@@ -53,7 +53,7 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
      */
     ngOnInit(): void {
         // Load the navigation either from the input or from the service
-        this.navigations = this.navigation || this._fuseNavigationService.getCurrentNavigation();
+        this.navigation = this.navigation || this._fuseNavigationService.getCurrentNavigation();
 
         if (isDevMode()) {
             console.groupCollapsed('NAVIGATION 1');
@@ -80,13 +80,12 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
         // Subscribe to the current navigation changes
         this._fuseNavigationService.onNavigationChanged
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(() => {
+            .subscribe(key => {
                 // Load the navigation
-                this.navigations =
-                    this.navigation || this._fuseNavigationService.getCurrentNavigation();
+                this.navigation = this._fuseNavigationService.getCurrentNavigation();
 
                 if (isDevMode()) {
-                    console.groupCollapsed('NAVIGATION 1 [CHANGED]');
+                    console.groupCollapsed('NAVIGATION 1 [CHANGED]', key);
 
                     console.groupCollapsed('navigations');
                     console.log(this.navigations);
@@ -113,12 +112,16 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
 
         this._fuseNavigationService.onNavigationRegistered
             .pipe(takeUntil(this._unsubscribeAll))
-            .subscribe(() => {
+            .subscribe(([key, nav]) => {
                 // Load the navigation
-                this.navigations = this.navigation;
+                // this.navigations = this.navigation;
+
+                if (key === 'customNavigation') {
+                    this.navigations = nav;
+                }
 
                 if (isDevMode()) {
-                    console.groupCollapsed('NAVIGATION 1 [REGISTERED]');
+                    console.groupCollapsed('NAVIGATION 1 [REGISTERED]', key, nav);
 
                     console.groupCollapsed('navigations');
                     console.log(this.navigations);
@@ -151,6 +154,14 @@ export class FuseNavigationComponent implements OnInit, OnDestroy {
         )
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(() => {
+                const customNavigations = this._fuseNavigationService.getNavigation(
+                    'customNavigation'
+                );
+
+                if (customNavigations) {
+                    this.navigations = customNavigations;
+                }
+
                 if (isDevMode()) {
                     console.groupCollapsed('NAVIGATION 1 [UPDATE]');
 

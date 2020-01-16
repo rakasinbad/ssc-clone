@@ -335,7 +335,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         //     'customNavigation'
         // );
 
-        this._fuseNavigationService.setCurrentNavigation('customNavigation');
+        // this._fuseNavigationService.setCurrentNavigation('customNavigation');
 
         this.store.dispatch(
             UiActions.updateItemNavigation({
@@ -343,8 +343,8 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     id: 'confirm',
                     properties: {
                         title: 'Order Baru (0)'
-                    }
-                    // key: 'customNavigation'
+                    },
+                    key: 'customNavigation'
                 }
             })
         );

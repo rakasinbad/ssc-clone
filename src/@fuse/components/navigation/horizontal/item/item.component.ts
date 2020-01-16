@@ -29,7 +29,6 @@ export class FuseNavHorizontalItemComponent implements OnInit {
     }
 
     isActive(name, selectedActive): boolean {
-        console.log('isActive', name, selectedActive, name === selectedActive);
         return name === selectedActive;
     }
 }
