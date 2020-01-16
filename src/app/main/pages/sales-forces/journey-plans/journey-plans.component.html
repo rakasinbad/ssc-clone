@@ -120,15 +120,17 @@
             <!-- HEADER BOTTOM -->
             <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="false">
                 <div fxLayout="row" fxLayoutAlign="start center">
-                    <button
-                        type="button"
-                        mat-flat-button
-                        color="accent"
-                        class="sinbad mr-16"
-                        [routerLink]="['/pages/sales-force/journey-plans/new']"
-                    >
-                        ADD
-                    </button>
+                    <ng-template [ngxPermissionsOnly]="['SRM.JP.CREATE']">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="accent"
+                            class="sinbad mr-16"
+                            [routerLink]="['/pages/sales-force/journey-plans/new']"
+                        >
+                            ADD
+                        </button>
+                    </ng-template>
 
                     <!-- <ng-container *ngIf="selection.hasValue()">
                         <button
@@ -262,7 +264,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.id }}
+                            {{ row?.id || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -274,7 +276,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.user?.fullName }}
+                            {{ row?.user?.fullName || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -320,16 +322,18 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Delete"
-                                    (click)="onDelete(row)"
-                                >
-                                    <mat-icon>delete</mat-icon>
-                                    <span>Delete</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['SRM.JP.DELETE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Delete"
+                                        (click)="onDelete(row)"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Delete</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -347,7 +351,7 @@
                             [dataSource]="detailDataSource$ | async"
                         >
                             <!-- Column -->
-                            <<!-- ng-container
+                            <!-- <ng-container
                                 matColumnDef="{{ column }}"
                                 *ngFor="let column of displayedColumns"
                             >
@@ -390,7 +394,7 @@
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let rowDet">
                                     <p style="word-break: break-word;">
-                                        {{ row?.id }}
+                                        {{ row?.id || '-' }}
                                     </p>
                                 </mat-cell>
                             </ng-container>
@@ -402,7 +406,7 @@
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let rowDet">
                                     <p style="word-break: break-word;">
-                                        {{ row?.user?.fullName }}
+                                        {{ row?.user?.fullName || '-' }}
                                     </p>
                                 </mat-cell>
                             </ng-container>
@@ -426,7 +430,7 @@
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let rowDet">
                                     <p style="word-break: break-word;">
-                                        {{ rowDet?.store?.name }}
+                                        {{ rowDet?.store?.name || '-' }}
                                     </p>
                                 </mat-cell>
                             </ng-container>
@@ -482,7 +486,7 @@
                 "
                 [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
             ></mat-paginator>
 

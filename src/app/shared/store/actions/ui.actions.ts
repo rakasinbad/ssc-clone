@@ -27,12 +27,17 @@ export const resetCustomToolbarActive = createAction('[UI] Reset Custom Toolbar 
 
 export const registerNavigation = createAction(
     '[UI] Register Navigation',
-    props<{ payload: { key: string; navigation: FuseNavigation[] } }>()
+    props<{ payload: { key: string; navigation: Array<FuseNavigation> } }>()
 );
 
 export const unregisterNavigation = createAction(
     '[UI] Unregister Navigation',
     props<{ payload: string }>()
+);
+
+export const updateItemNavigation = createAction(
+    '[UI] Update Item Navigation',
+    props<{ payload: { id: string; properties: Partial<FuseNavigation>; key?: string } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -51,5 +51,28 @@ export class UiEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [UPDATE ITEM] Navigation
+     * @memberof UiEffects
+     */
+    updateItemNavigation$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(UiActions.updateItemNavigation),
+                map(action => action.payload),
+                tap(({ id, properties, key }) => {
+                    if (id) {
+                        if (key) {
+                            this._fuseNavigationService.updateNavigationItem(id, properties, key);
+                        } else {
+                            this._fuseNavigationService.updateNavigationItem(id, properties);
+                        }
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(private actions$: Actions, private _fuseNavigationService: FuseNavigationService) {}
 }

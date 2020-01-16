@@ -4,7 +4,7 @@
 >
     <!-- Vertical Navigation Layout -->
     <ng-container *ngIf="layout === 'vertical'">
-        <ng-container *ngFor="let item of navigations">
+        <ng-container *ngFor="let item of navigation">
             <fuse-nav-vertical-group
                 *ngIf="item.type == 'group'"
                 [item]="item"
