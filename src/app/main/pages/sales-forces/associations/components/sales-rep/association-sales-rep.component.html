@@ -63,7 +63,7 @@
     <ng-container matColumnDef="store-code">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Store Code</mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p>{{ row?.storePortfolios?.store ? row?.storePortfolios?.store?.storeCode: '-' }}</p>
+            <p>{{ row?.storePortfolios?.store ? row?.storePortfolios?.store?.externalId: '-' }}</p>
         </mat-cell>
     </ng-container>
 

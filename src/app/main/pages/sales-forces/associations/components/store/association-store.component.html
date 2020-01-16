@@ -43,7 +43,7 @@
             Store Code
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p>{{ row?.store ? row?.store?.storeCode: '-' }}</p>
+            <p>{{ row?.store ? row?.store?.externalId: '-' }}</p>
         </mat-cell>
     </ng-container>
 
