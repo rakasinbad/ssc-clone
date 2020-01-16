@@ -327,8 +327,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             .pipe(
                                 map(response => {
                                     if (response.total > 0) {
-                                        if (response.data[0].id === catalogue.id) {
-                                            return null;
+                                        if (!this.isAddMode()) {
+                                            if (response.data[0].id === catalogue.id) {
+                                                return null;
+                                            }
                                         }
 
                                         return {

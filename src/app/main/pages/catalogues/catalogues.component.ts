@@ -564,10 +564,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                         fieldName: 'sku',
                         keyword: searchValue
                     },
-                    // {
-                    //     fieldName: 'external_id',
-                    //     keyword: searchValue
-                    // }
+                    {
+                        fieldName: 'external_id',
+                        keyword: searchValue
+                    }
                 ];
             }
     
