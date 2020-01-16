@@ -320,7 +320,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         };
 
                         params['externalId'] = value;
-                        params['supplierId'] = userSupplier.id;
+                        params['supplierId'] = userSupplier.supplierId;
 
                         return this.catalogueSvc
                             .findAll(params)
