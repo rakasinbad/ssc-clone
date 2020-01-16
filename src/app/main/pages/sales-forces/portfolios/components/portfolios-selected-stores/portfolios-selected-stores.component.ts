@@ -192,7 +192,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     }
 
     printStoreName(store: Store): string {
-        return `${store.storeCode || '-'} - ${store.name || '-'}`;
+        return `${store.externalId || '-'} - ${store.name || '-'}`;
     }
 
     openFilter(): void {
