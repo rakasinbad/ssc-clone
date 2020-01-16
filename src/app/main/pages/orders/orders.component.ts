@@ -45,7 +45,7 @@ import { FuseNavigation } from '@fuse/types';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = 50;
+    readonly defaultPageSize = 10;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     search: FormControl = new FormControl('');
