@@ -12,10 +12,12 @@ import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 
+import { Store as NgRxStore } from '@ngrx/store';
 import { Store as Merchant } from '../../models';
 import { MerchantApiService } from '../../services';
 import { MerchantActions } from '../actions';
 import { fromMerchant } from '../reducers';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 
 @Injectable()
 export class MerchantEffects {
@@ -69,7 +71,8 @@ export class MerchantEffects {
     fetchStoresRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(MerchantActions.fetchStoresRequest),
-            map(action => action.payload),
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserSupplier)),
+            map(([{ payload }, { supplierId }]) => ({ ...payload, supplierId }) as IQueryParams),
             switchMap(queryParams => {
                 return this.merchantApiSvc.find(queryParams).pipe(
                     catchOffline(),
@@ -127,6 +130,7 @@ export class MerchantEffects {
 
     constructor(
         private actions$: Actions,
+        private authStore: NgRxStore<fromAuth.FeatureState>,
         private merchantApiSvc: MerchantApiService,
         private logSvc: LogService
     ) {}

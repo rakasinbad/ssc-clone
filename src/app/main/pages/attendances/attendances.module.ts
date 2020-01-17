@@ -25,6 +25,8 @@ import { MerchantEffects } from './store/effects';
 import { fromUser } from './store/reducers';
 import { UserEffects } from './store/effects';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { fromAuth } from '../core/auth/store/reducers';
+import { AuthEffects } from '../core/auth/store/effects';
 
 /**
  *
@@ -51,12 +53,14 @@ import { NgxPermissionsModule } from 'ngx-permissions';
         // AgmCoreModule,
         RxReactiveFormsModule,
 
+        StoreModule.forFeature(fromAuth.FEATURE_KEY, fromAuth.reducer),
         StoreModule.forFeature(fromAttendance.FEATURE_KEY, fromAttendance.reducer),
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
         StoreModule.forFeature(fromUser.FEATURE_KEY, fromUser.reducer),
         
         EffectsModule.forFeature([
             AttendanceEffects,
+            AuthEffects,
             MerchantEffects,
             UserEffects
         ])
