@@ -400,16 +400,16 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     }
 
     ngAfterViewInit(): void {
-        this.scroll.scrolled(500)
-            .pipe(
-                tap(cdkScrollable => this.debug('CDKSCROLLABLE SCROLLED CHECK', { cdkScrollable })),
-                filter(cdkScrollable =>
-                    this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id
-                ),
-                map(cdkScrollable => (cdkScrollable as CdkScrollable).getElementRef()),
-                filter((elementRef) => this.helperSvc.isElementScrolledToBottom(elementRef)),
-                takeUntil(this.subs$)
-            ).subscribe();
+        // this.scroll.scrolled(500)
+        //     .pipe(
+        //         tap(cdkScrollable => this.debug('CDKSCROLLABLE SCROLLED CHECK', { cdkScrollable })),
+        //         filter(cdkScrollable =>
+        //             this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id
+        //         ),
+        //         map(cdkScrollable => (cdkScrollable as CdkScrollable).getElementRef()),
+        //         filter((elementRef) => this.helperSvc.isElementScrolledToBottom(elementRef)),
+        //         takeUntil(this.subs$)
+        //     ).subscribe();
     }
 
     ngOnDestroy(): void {
