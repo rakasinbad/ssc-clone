@@ -40,6 +40,11 @@ export const getAllFilters = createSelector(
     selectAllFilters
 );
 
+export const getStoreTotalEntity = createSelector(
+    getStoreEntity,
+    selectStoreTotal
+);
+
 export const getStoreEntityType = createSelector(
     getStoreEntity,
     state => state.type

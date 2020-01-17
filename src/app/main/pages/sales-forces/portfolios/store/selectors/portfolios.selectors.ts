@@ -23,6 +23,11 @@ export const getPortfolioEntity = createSelector(
     state => state[mainFeatureKey]
 );
 
+export const getPortfolioTotalEntity = createSelector(
+    getPortfolioEntity,
+    selectPortfolioTotal
+);
+
 export const getPortfolioEntityType = createSelector(
     getPortfolioEntity,
     state => state.type

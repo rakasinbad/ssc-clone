@@ -86,7 +86,7 @@ export const reducer = createReducer(
     on(
         StoreActions.fetchStoresSuccess,
         (state, { payload }) =>
-            adapter.addAll(payload.stores, {
+            adapter.upsertMany(payload.stores, {
                 ...state,
                 isLoading: false,
                 total: payload.total

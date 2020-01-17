@@ -793,8 +793,10 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
 
                     const query: IQueryParams = {
                         paginate: false,
-                        sort: 'asc',
-                        sortBy: 'id',
+                        // skip: 0,
+                        // limit: 20,
+                        // sort: 'asc',
+                        // sortBy: 'id',
                         
                     };
 

@@ -70,10 +70,20 @@
                 >
                     {{ printStoreName(store) }}
                 </mat-list-option>
+
+                <!-- LOADING OPTION -->
+                <mat-option
+                    [disabled]="true"
+                    style="text-align: center; font-style: italic; max-height: 30px;"
+                    *ngIf="(totalAvailableStore$ | async) > (availableStores$ | async)?.length"
+                >
+                    Loading ...
+                </mat-option>
+                <!-- / LOADING OPTION -->
             </mat-selection-list>
             <!-- / LIST -->
             <!-- LOADER -->
-            <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="isListStoreLoading$ | async">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
             <!-- / LOADER -->
@@ -101,6 +111,8 @@
             <mat-selection-list
                 fxFlex
                 cdkScrollable
+                #portfolioStoreScroll
+                id="portfolio-store-scroll"
                 [style.overflow]="'auto'"
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
@@ -124,6 +136,11 @@
                 </ng-container>
             </mat-selection-list>
             <!-- / LIST -->
+            <!-- LOADER -->
+            <div class="loader" *ngIf="isPortfolioStoreLoading$ | async">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+            <!-- / LOADER -->
         </div>
         <!-- / SELECTED STORES -->
     </div>
