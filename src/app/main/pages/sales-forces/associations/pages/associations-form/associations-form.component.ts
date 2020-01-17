@@ -58,6 +58,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     associationId: string;
     // Untuk menyimpan form yang akan dikirim ke server.
     form: FormGroup;
+    // Untuk menyimpan data Sales Rep sebelumnya.
+    prevSalesRep: SalesRep;
 
     // Untuk menyimpan portfolio-portfolio yang tersedia.
     availablePortfolios$: Observable<Array<Portfolio>>;
@@ -132,7 +134,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.invoiceGroups$ = this.dropdownStore
             .select(DropdownSelectors.getInvoiceGroupDropdownState)
             .pipe(
-                debounceTime(3000),
+                // debounceTime(3000),
                 filter(invoiceGroups => {
                     if (invoiceGroups.length === 0) {
                         this.dropdownStore.dispatch(
@@ -266,9 +268,10 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             url: this.associationsHome
                         },
                         {
-                            title: 'Edit Association',
-                            translate: 'BREADCRUMBS.ASSOCIATION_EDIT',
-                            active: true
+                            title: 'Edit SR Assignment',
+                            // translate: 'BREADCRUMBS.ASSOCIATION_EDIT',
+                            active: true,
+                            keepCase: true,
                         }
                     ]
                 })
@@ -288,9 +291,10 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             url: this.associationsHome
                         },
                         {
-                            title: 'Add Association',
-                            translate: 'BREADCRUMBS.ASSOCIATION_ADD',
-                            active: true
+                            title: 'Add SR Assignment',
+                            // translate: 'BREADCRUMBS.ASSOCIATION_ADD',
+                            active: true,
+                            keepCase: true,
                         }
                     ]
                 })
@@ -340,7 +344,15 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         });
 
         this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
-            tap(value => this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }))),
+            tap(value => {
+                if (value !== this.prevSalesRep) {
+                    this.prevSalesRep = value;
+                    this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
+                    this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+                }
+
+                this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }));
+            }),
             takeUntil(this.subs$)
         );
 
@@ -570,7 +582,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             }),
             withLatestFrom(this.associationStore.select(AssociatedPortfolioSelectors.getInitialized)),
             // Mengosongkan portfolio-nya terlebih dahulu.
-            tap(() => this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios())),
+            tap(() => {
+                this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+            }),
             // Memproses pengambilan data portfolio dari server.
             tap(([[salesRep, invoiceGroup, portfolioEntityType, keyword], initialized]) => {
                 // Mendapatkan portfolio yang tersedia.
@@ -631,6 +645,16 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         ).subscribe();
     }
 
+    // processSalesRepOptionSelected(): void {
+    //     this.salesRepScroll.optionSelected.pipe(
+    //         takeUntil(this.salesRepScroll.closed)
+    //     ).subscribe(() => this.autocompleteTrigger.closePanel());
+    // }
+
+    // listSalesRepOptionSelected(): void {
+    //     setTimeout(() => this.processSalesRepOptionSelected());
+    // }
+
     processSalesRepScroll(): void {
         if (this.autocompleteTrigger && this.salesRepScroll && this.salesRepScroll.panel) {
             fromEvent<Event>(this.salesRepScroll.panel.nativeElement, 'scroll')
@@ -652,7 +676,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         (totalSalesReps > salesReps.length) &&
                         this.helperSvc.isElementScrolledToBottom(this.salesRepScroll.panel)
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions)
+                    takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
+                        tap(() => console.log('closing'))
+                    ))
                 ).subscribe(({ salesReps }) =>
                     this.associationStore.dispatch(
                         SalesRepActions.fetchSalesRepsRequest({
