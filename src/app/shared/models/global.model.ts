@@ -70,6 +70,7 @@ export interface IBreadcrumbs {
     translate?: string;
     url?: string;
     active?: boolean;
+    keepCase?: boolean;
 }
 
 export interface IPaginatedResponse<T> {

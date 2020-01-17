@@ -30,9 +30,10 @@
                             *ngIf="!breadcrumb?.url; else breadWithUrl"
                         >
                             {{
-                                breadcrumb?.translate
-                                    ? (breadcrumb?.translate | translate | titlecase)
-                                    : (breadcrumb?.title | titlecase)
+                                breadcrumb?.translate && breadcrumb?.keepCase ? (breadcrumb?.translate | translate)
+                                : breadcrumb?.translate && !breadcrumb?.keepCase ? (breadcrumb?.translate | translate | titlecase)
+                                : breadcrumb?.keepCase ? (breadcrumb?.title)
+                                : (breadcrumb?.title | titlecase)
                             }}
                         </span>
                         <ng-template #breadWithUrl>
