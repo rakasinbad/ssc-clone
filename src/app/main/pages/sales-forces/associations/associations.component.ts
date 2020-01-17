@@ -59,7 +59,8 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
             title: 'Sales Rep Management'
         },
         {
-            title: 'SR Assignment'
+            title: 'SR Assignment',
+            keepCase: true,
         }
     ];
 
@@ -90,6 +91,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         // Add 'implements OnInit' to the class.
         this._unSubs$ = new Subject();
 
+        this._initPage();
         this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
     }
 
@@ -101,12 +103,13 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._unSubs$.next();
+        this._unSubs$.complete();
 
         // Reset core state sales reps
         this.store.dispatch(AssociationActions.clearState());
 
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 
     /**
