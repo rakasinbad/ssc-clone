@@ -101,6 +101,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                     {
                         title: 'In-Store Inventory',
                         translate: 'BREADCRUMBS.IN_STORE_INVENTORY',
+                        keepCase: true,
                         active: true
                     }
                 ]
