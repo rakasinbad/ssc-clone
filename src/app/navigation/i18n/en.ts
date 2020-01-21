@@ -6,7 +6,8 @@ export const locale = {
         ...globalEnLang,
         ERROR: {
             ...globalEnLang.ERROR,
-            MISMATCH_EXTENSION: '{{ fieldName }} field only accepts some file extensions: [{{ extensions }}]'
+            MISMATCH_EXTENSION:
+                '{{ fieldName }} field only accepts some file extensions: [{{ extensions }}]'
         },
         NAV: {
             ADD_PRODUCT: {
@@ -17,10 +18,10 @@ export const locale = {
                 TITLE: 'Archived'
             },
             ACCOUNTS: {
-                TITLE: 'Accounts'
+                TITLE: 'Store'
             },
             ACCOUNTS_STORE: {
-                TITLE: 'Store'
+                TITLE: 'Store List'
             },
             ACCOUNTS_INTERNAL: {
                 TITLE: 'Internal'

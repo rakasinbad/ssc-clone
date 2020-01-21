@@ -11,14 +11,14 @@ export const navigation: Array<FuseNavigation> = [
     // },
     {
         id: 'account',
-        title: 'Account',
+        title: 'Store',
         translate: 'NAV.ACCOUNTS.TITLE',
         type: 'collapsable',
         icon: 'people',
         children: [
             {
                 id: 'accountsStore',
-                title: 'Store',
+                title: 'Store List',
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
                 url: '/pages/account/stores'
