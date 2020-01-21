@@ -94,11 +94,11 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                         // translate: 'BREADCRUMBS.HOME'
                     },
                     {
-                        title: 'Account',
+                        title: 'Store',
                         translate: 'BREADCRUMBS.ACCOUNT'
                     },
                     {
-                        title: 'Store',
+                        title: 'Store List',
                         translate: 'BREADCRUMBS.STORE',
                         active: true
                     }

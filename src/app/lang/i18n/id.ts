@@ -9,7 +9,7 @@ export const globalIdLang = {
     },
     BREADCRUMBS: {
         ACCOUNTS: 'Account',
-        ACCOUNT: 'Account',
+        ACCOUNT: 'Store',
         ACCOUNTS_SETTINGS: 'Pengaturan Akun',
         ADD_PRODUCT: 'Tambah Produk',
         ADD_STORE: 'Add Toko',
@@ -36,7 +36,7 @@ export const globalIdLang = {
         SALES_REP_MANAGEMENT: 'Sales Rep Management',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
-        STORE: 'Store',
+        STORE: 'Store List',
         SUPPLIER_INVENTORY: 'Supplier Inventory'
     },
     FORM: {
