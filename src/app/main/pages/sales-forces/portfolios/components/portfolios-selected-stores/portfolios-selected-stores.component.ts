@@ -190,13 +190,13 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         if (searchValue) {
             data['search'] = [
                 {
-                    fieldName: 'store_code',
+                    fieldName: 'keyword',
                     keyword: searchValue
                 },
-                {
-                    fieldName: 'name',
-                    keyword: searchValue
-                }
+                // {
+                //     fieldName: 'name',
+                //     keyword: searchValue
+                // }
             ];
         }
 
