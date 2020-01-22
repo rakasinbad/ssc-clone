@@ -1422,6 +1422,7 @@ export class MerchantEffects {
                                             row.storeId,
                                             row.status,
                                             row.store,
+                                            row.owner,
                                             row.createdAt,
                                             row.updatedAt,
                                             row.deletedAt
@@ -1505,6 +1506,7 @@ export class MerchantEffects {
                             resp.storeId,
                             resp.status,
                             resp.store,
+                            resp.owner,
                             resp.createdAt,
                             resp.updatedAt,
                             resp.deletedAt

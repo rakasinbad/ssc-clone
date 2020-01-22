@@ -380,6 +380,7 @@ export class Store implements IStore {
                     row.storeId,
                     row.status,
                     row.store,
+                    row.owner,
                     row.createdAt,
                     row.updatedAt,
                     row.deletedAt

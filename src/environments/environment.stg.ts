@@ -1,9 +1,9 @@
 export const environment = {
-    pageSize: 100,
+    pageSize: 50,
     production: false,
     staging: true,
     hmr: false,
     freshnessData: 60, // in seconds.
-    pageSizeTable: [5, 10, 25, 50, 100],
+    pageSizeTable: [5, 10, 25, 50],
     host: 'https://kong-stg.sinbad.web.id'
 };
