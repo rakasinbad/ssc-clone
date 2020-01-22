@@ -18,7 +18,8 @@ import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, User } from 'app/shared/models';
+import { Portfolio } from 'app/main/pages/sales-forces/portfolios/models';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
@@ -36,9 +37,9 @@ import { environment } from 'environments/environment';
 // Entity model.
 import { Association } from '../../models/';
 // State management's stuffs.
-import * as fromAssociations from '../../store/reducers';
-import { AssociationActions } from '../../store/actions';
-import { AssociationSelectors } from '../../store/selectors';
+import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
+import { AssociationActions, AssociatedPortfolioActions } from '../../store/actions';
+import { AssociationSelectors, AssociatedPortfolioSelectors } from '../../store/selectors';
 import { Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormControl } from '@angular/forms';
@@ -70,7 +71,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
 export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
 
-    activeTab: string = 'all';
+    activeTab: string = null;
 
     displayedColumns = [
         'checkbox',
@@ -82,9 +83,9 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         'actions'
     ];
 
-    selection: SelectionModel<Association>;
+    selection: SelectionModel<Portfolio>;
 
-    dataSource$: Observable<Array<Association>>;
+    dataSource$: Observable<Array<Portfolio>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -114,7 +115,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
     constructor(
         private route: ActivatedRoute,
         private domSanitizer: DomSanitizer,
-        private store: Store<fromAssociations.FeatureState>,
+        private store: Store<AssociationCoreFeatureState>,
         private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {}
@@ -139,7 +140,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<Association>(true, []);
+        this.selection = new SelectionModel<Portfolio>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -150,13 +151,13 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
         this._initTable();
 
-        this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
-            this._initTable(val);
-        });
+        // this.store.select(AssociationSelectors.getSearchValue).subscribe(val => {
+        //     this._initTable(val);
+        // });
 
-        this.dataSource$ = this.store.select(AssociationSelectors.selectAll);
-        this.totalDataSource$ = this.store.select(AssociationSelectors.getTotalItem);
-        this.isLoading$ = this.store.select(AssociationSelectors.getIsLoading);
+        this.dataSource$ = this.store.select(AssociatedPortfolioSelectors.selectAll);
+        this.totalDataSource$ = this.store.select(AssociatedPortfolioSelectors.getTotalItem);
+        this.isLoading$ = this.store.select(AssociatedPortfolioSelectors.getLoadingState);
 
         this.updatePrivileges();
     }
@@ -183,7 +184,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         // Add 'implements OnDestroy' to the class.
 
         // Reset core state sales reps
-        this.store.dispatch(AssociationActions.clearState());
+        this.store.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -196,7 +197,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
 
         switch (action) {
             case 'all':
-                this.activeTab = 'all';
+                this.activeTab = null;
                 break;
             case 'associated':
                 this.activeTab = 'associated';
@@ -209,25 +210,27 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
                 return;
         }
 
-        this.loadTab(this.activeTab);
+        // this.loadTab(this.activeTab);
+        this.store.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+        this._initTable();
     }
 
-    loadTab(activeTab): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-        };
+    // loadTab(activeTab): void {
+    //     const data: IQueryParams = {
+    //         limit: this.paginator.pageSize || 5,
+    //         skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+    //     };
 
-        data['paginate'] = true;
+    //     data['paginate'] = true;
 
-        if (activeTab === 'associated') {
-            data['associated'] = true;
-        } else if (activeTab === 'not-associated') {
-            data['associated'] = false;
-        }
+    //     if (activeTab === 'associated') {
+    //         data['associated'] = true;
+    //     } else if (activeTab === 'not-associated') {
+    //         data['associated'] = false;
+    //     }
 
-        this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
-    }
+    //     this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
+    // }
 
     handleCheckbox(): void {
         this.isAllSelected()
@@ -299,20 +302,23 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
                 data['sortBy'] = this.sort.active;
             }
 
-            if (searchText) {
-                data['search'] = [
-                    {
-                        fieldName: 'code',
-                        keyword: searchText
-                    },
-                    {
-                        fieldName: 'name',
-                        keyword: searchText
-                    }
-                ];
+            // if (searchText) {
+            //     data['search'] = [
+            //         {
+            //             fieldName: 'code',
+            //             keyword: searchText
+            //         },
+            //         {
+            //             fieldName: 'name',
+            //             keyword: searchText
+            //         }
+            //     ];
+            // }
+            if (this.activeTab) {
+                data['type'] = this.activeTab;
             }
 
-            this.store.dispatch(AssociationActions.fetchAssociationRequest({ payload: data }));
+            this.store.dispatch(AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: data }));
         }
     }
 
