@@ -18,7 +18,7 @@ import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 // NgRx's Libraries
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio, User } from 'app/shared/models';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
 // RxJS' Libraries
@@ -76,19 +76,20 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
 
     displayedColumns = [
         'checkbox',
-        'sales-rep',
+        'sales-rep-code',
+        'sales-rep-name',
         'portfolio-code',
         'portfolio-name',
-        'store-code',
+        // 'store-code',
         'store-qty',
         'sales-target',
         'date-associate',
         'actions'
     ];
 
-    selection: SelectionModel<Association>;
+    selection: SelectionModel<User>;
 
-    dataSource$: Observable<Array<Association>>;
+    dataSource$: Observable<Array<User>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -128,7 +129,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
     ngOnInit(): void {
         this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<Association>(true, []);
+        this.selection = new SelectionModel<User>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -197,14 +198,15 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
                 this.activeTab = 'associated';
                 break;
             case 'not-associated':
-                this.activeTab = 'not-associated';
+                this.activeTab = 'non-associated';
                 break;
 
             default:
                 return;
         }
 
-        this.loadTab(this.activeTab);
+        this._initTable();
+        // this.loadTab(this.activeTab);
     }
 
     loadTab(activeTab): void {
@@ -258,6 +260,22 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
 
     viewAssociation(associatonId: string): void {}
 
+    generatePortfolioCode(portfolios: Array<Portfolio>): string {
+        if (!portfolios || !Array.isArray(portfolios) || portfolios.length === 0) {
+            return '-';
+        }
+
+        return portfolios.map(portfolio => portfolio.code).join(',<br/>');
+    }
+
+    generatePortfolioName(portfolios: Array<Portfolio>): string {
+        if (!portfolios || !Array.isArray(portfolios) || portfolios.length === 0) {
+            return '-';
+        }
+
+        return portfolios.map(portfolio => portfolio.name).join(',<br/>');
+    }
+
     /**
      *
      * Initialize current page
@@ -282,6 +300,8 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             };
 
             data['paginate'] = true;
+
+            data['type'] = this.activeTab;
 
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
@@ -315,10 +335,11 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             if (result) {
                 this.displayedColumns = [
                     // 'checkbox',
-                    'sales-rep',
+                    'sales-rep-code',
+                    'sales-rep-name',
                     'portfolio-code',
                     'portfolio-name',
-                    'store-code',
+                    // 'store-code',
                     'store-qty',
                     'sales-target',
                     'date-associate',
@@ -327,10 +348,11 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             } else {
                 this.displayedColumns = [
                     // 'checkbox',
-                    'sales-rep',
+                    'sales-rep-code',
+                    'sales-rep-name',
                     'portfolio-code',
                     'portfolio-name',
-                    'store-code',
+                    // 'store-code',
                     'store-qty',
                     'sales-target',
                     'date-associate',
