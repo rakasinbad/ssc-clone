@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams, InvoiceGroup } from 'app/shared/models';
+import { ErrorHandler, IQueryParams, InvoiceGroup, User } from 'app/shared/models';
 import { Association, IAssociationForm } from '../../models';
 import { Portfolio } from '../../../portfolios/models';
 import { SalesRep } from '../../../sales-reps/models';
@@ -26,7 +26,7 @@ export const fetchAssociationFailure = createAction(
 
 export const fetchAssociationSuccess = createAction(
     '[Associations API] Fetch Association Success',
-    props<{ payload: { data: Array<Association>; total: number } }>()
+    props<{ payload: { data: Array<User>; total: number } }>()
 );
 
 export const fetchAssociationsRequest = createAction(
