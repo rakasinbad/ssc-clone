@@ -208,7 +208,7 @@ export class Store implements IStore {
             deletedAt,
             isSelected = false,
             source = 'fetch',
-            isLoading = false,
+            isLoading = false
         } = data;
 
         this.id = id;
@@ -245,26 +245,27 @@ export class Store implements IStore {
         this.userStores =
             userStores && userStores.length > 0
                 ? userStores.map(row => {
-                    const newUserStore = new UserStore(
-                        row.id,
-                        row.userId,
-                        row.storeId,
-                        row.status,
-                        row.createdAt,
-                        row.updatedAt,
-                        row.deletedAt
-                    );
+                      const newUserStore = new UserStore(
+                          row.id,
+                          row.userId,
+                          row.storeId,
+                          row.status,
+                          row.createdAt,
+                          row.updatedAt,
+                          row.deletedAt
+                      );
 
-                    if (row.user) {
-                        newUserStore.setUser = row.user;
-                    }
+                      if (row.user) {
+                          newUserStore.setUser = row.user;
+                      }
 
-                    if (row.store) {
-                        newUserStore.setStore = row.store;
-                    }
+                      if (row.store) {
+                          newUserStore.setStore = row.store;
+                      }
 
-                    return newUserStore;
-                }) : [];
+                      return newUserStore;
+                  })
+                : [];
 
         if (supplierStores) {
             this.setSupplierStores = supplierStores;
@@ -276,30 +277,33 @@ export class Store implements IStore {
 
         this.storeType = storeType
             ? new StoreType(
-                storeType.id,
-                storeType.name,
-                storeType.createdAt,
-                storeType.updatedAt,
-                storeType.deletedAt
-            ) : null;
+                  storeType.id,
+                  storeType.name,
+                  storeType.createdAt,
+                  storeType.updatedAt,
+                  storeType.deletedAt
+              )
+            : null;
 
         this.storeGroup = storeGroup
             ? new StoreGroup(
-                storeGroup.id,
-                storeGroup.name,
-                storeGroup.createdAt,
-                storeGroup.updatedAt,
-                storeGroup.deletedAt
-            ) : null;
+                  storeGroup.id,
+                  storeGroup.name,
+                  storeGroup.createdAt,
+                  storeGroup.updatedAt,
+                  storeGroup.deletedAt
+              )
+            : null;
 
         this.storeSegment = storeSegment
             ? new StoreSegment(
-                storeSegment.id,
-                storeSegment.name,
-                storeSegment.createdAt,
-                storeSegment.updatedAt,
-                storeSegment.deletedAt
-            ) : null;
+                  storeSegment.id,
+                  storeSegment.name,
+                  storeSegment.createdAt,
+                  storeSegment.updatedAt,
+                  storeSegment.deletedAt
+              )
+            : null;
 
         this.setHierarchy = hierarchy;
         this.setUrban = urban;
@@ -310,15 +314,16 @@ export class Store implements IStore {
 
         this.storeConfig = storeConfig
             ? new StoreConfig(
-                storeConfig.id,
-                storeConfig.startingWorkHour,
-                storeConfig.finishedWorkHour,
-                storeConfig.status,
-                storeConfig.storeId,
-                storeConfig.createdAt,
-                storeConfig.updatedAt,
-                storeConfig.deletedAt
-            ) : null;
+                  storeConfig.id,
+                  storeConfig.startingWorkHour,
+                  storeConfig.finishedWorkHour,
+                  storeConfig.status,
+                  storeConfig.storeId,
+                  storeConfig.createdAt,
+                  storeConfig.updatedAt,
+                  storeConfig.deletedAt
+              )
+            : null;
 
         if (storeClusters) {
             this.setStoreClusters = storeClusters;
@@ -398,12 +403,13 @@ export class Store implements IStore {
     set setVehicleAccessibility(value: VehicleAccessibility) {
         this.vehicleAccessibility = value
             ? new VehicleAccessibility(
-                value.id,
-                value.name,
-                value.createdAt,
-                value.updatedAt,
-                value.deletedAt
-            ) : null;
+                  value.id,
+                  value.name,
+                  value.createdAt,
+                  value.updatedAt,
+                  value.deletedAt
+              )
+            : null;
     }
 
     set setCustomerHierarchies(value: CustomerHierarchy[]) {
@@ -448,7 +454,9 @@ export class Store implements IStore {
         }
 
         const storePortfolios = this.storePortfolios;
-        const isPart = storePortfolios.filter(storePortfolio => storePortfolio.portfolio.invoiceGroupId === invoiceGroupId);
+        const isPart = storePortfolios.filter(
+            storePortfolio => storePortfolio.portfolio.invoiceGroupId === invoiceGroupId
+        );
 
         return isPart.length > 0;
     }
