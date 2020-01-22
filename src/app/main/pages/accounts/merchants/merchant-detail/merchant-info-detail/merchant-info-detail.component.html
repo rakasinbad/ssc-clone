@@ -65,7 +65,7 @@
                         <header>
                             <div class="title">
                                 <ng-container *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
-                                    Profile Information
+                                    Owner Information
                                 </ng-container>
                                 <ngx-skeleton-loader
                                     *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -80,38 +80,6 @@
                                     <td class="info-title">User</td>
                                     <td>Ivan</td>
                                 </tr> -->
-
-                                <tr>
-                                    <td class="info-title">
-                                        <ng-container
-                                            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
-                                        >
-                                            Created Date
-                                        </ng-container>
-                                        <ngx-skeleton-loader
-                                            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
-                                            [theme]="{ width: '60px' }"
-                                        ></ngx-skeleton-loader>
-                                    </td>
-                                    <td>
-                                        <ng-container
-                                            *ngIf="
-                                                (store$ | async)?.store?.phoneNo ||
-                                                !(isLoading$ | async)
-                                            "
-                                        >
-                                            {{ (store$ | async)?.store?.phoneNo || '-' }}
-                                        </ng-container>
-                                        <ngx-skeleton-loader
-                                            *ngIf="
-                                                !(store$ | async)?.store?.phoneNo &&
-                                                (isLoading$ | async)
-                                            "
-                                            [theme]="{ width: '100px' }"
-                                        ></ngx-skeleton-loader>
-                                    </td>
-                                </tr>
-                                
                                 <tr>
                                     <td class="info-title">
                                         <ng-container
@@ -127,15 +95,15 @@
                                     <td>
                                         <ng-container
                                             *ngIf="
-                                                (store$ | async)?.store?.phoneNo ||
+                                                (store$ | async)?.store?.legalInfo?.fullName ||
                                                 !(isLoading$ | async)
                                             "
                                         >
-                                            {{ (store$ | async)?.store?.phoneNo || '-' }}
+                                            {{ (store$ | async)?.store?.legalInfo?.fullName || '-' }}
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="
-                                                !(store$ | async)?.store?.phoneNo &&
+                                                !(store$ | async)?.store?.legalInfo?.fullName &&
                                                 (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
@@ -158,15 +126,15 @@
                                     <td>
                                         <ng-container
                                             *ngIf="
-                                                (store$ | async)?.store?.phoneNo ||
+                                                (store$ | async)?.store?.legalInfo?.mobilePhoneNo ||
                                                 !(isLoading$ | async)
                                             "
                                         >
-                                            {{ (store$ | async)?.store?.phoneNo || '-' }}
+                                            {{ (store$ | async)?.store?.legalInfo?.mobilePhoneNo || '-' }}
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="
-                                                !(store$ | async)?.store?.phoneNo &&
+                                                !(store$ | async)?.store?.legalInfo?.mobilePhoneNo &&
                                                 (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
@@ -194,14 +162,14 @@
                                     <td>
                                         <ng-container
                                             *ngIf="
-                                                (store$ | async)?.store?.taxNo || !(isLoading$ | async)
+                                                (store$ | async)?.store?.legalInfo?.taxNo || !(isLoading$ | async)
                                             "
                                         >
-                                            {{ (store$ | async)?.store?.taxNo || '-' }}
+                                            {{ (store$ | async)?.store?.legalInfo?.taxNo || '-' }}
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="
-                                                !(store$ | async)?.store?.taxNo && (isLoading$ | async)
+                                                !(store$ | async)?.store?.legalInfo?.taxNo && (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
                                         ></ngx-skeleton-loader>
@@ -213,7 +181,7 @@
                                         <ng-container
                                             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                         >
-                                            Join Date
+                                        Date Created
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -223,18 +191,18 @@
                                     <td>
                                         <ng-container
                                             *ngIf="
-                                                (store$ | async)?.store?.createdAt ||
+                                                (store$ | async)?.store?.legalInfo?.createdAt ||
                                                 !(isLoading$ | async)
                                             "
                                         >
                                             {{
-                                                ((store$ | async)?.store?.createdAt
-                                                    | date: 'dd/MM/yyyy') || '-'
+                                                ((store$ | async)?.store?.legalInfo?.createdAt
+                                                    | date: 'dd/MM/yyyy HH:mm:ss') || '-'
                                             }}
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="
-                                                !(store$ | async)?.store?.createdAt &&
+                                                !(store$ | async)?.store?.legalInfo?.createdAt &&
                                                 (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
@@ -468,7 +436,7 @@
                                         <ng-container
                                             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                         >
-                                            Store ID
+                                            Supplier Store ID
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -528,6 +496,35 @@
                                         <ng-container
                                             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
                                         >
+                                            Store Phone Number
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                                            [theme]="{ width: '60px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <ng-container
+                                            *ngIf="
+                                                (store$ | async)?.store?.name || !(isLoading$ | async)
+                                            "
+                                        >
+                                            {{ (store$ | async)?.store?.name || '-' }}
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="
+                                                !(store$ | async)?.store?.name && (isLoading$ | async)
+                                            "
+                                            [theme]="{ width: '100px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">
+                                        <ng-container
+                                            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                                        >
                                             Sales Rep Name
                                         </ng-container>
                                         <ngx-skeleton-loader
@@ -547,6 +544,40 @@
                                         <ngx-skeleton-loader
                                             *ngIf="
                                                 !(store$ | async)?.store?.externalId &&
+                                                (isLoading$ | async)
+                                            "
+                                            [theme]="{ width: '100px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="info-title">
+                                        <ng-container
+                                            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+                                        >
+                                        Date Created
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+                                            [theme]="{ width: '60px' }"
+                                        ></ngx-skeleton-loader>
+                                    </td>
+                                    <td>
+                                        <ng-container
+                                            *ngIf="
+                                                (store$ | async)?.store?.createdAt ||
+                                                !(isLoading$ | async)
+                                            "
+                                        >
+                                            {{
+                                                ((store$ | async)?.store?.createdAt
+                                                    | date: 'dd/MM/yyyy HH:mm:ss') || '-'
+                                            }}
+                                        </ng-container>
+                                        <ngx-skeleton-loader
+                                            *ngIf="
+                                                !(store$ | async)?.store?.createdAt &&
                                                 (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
