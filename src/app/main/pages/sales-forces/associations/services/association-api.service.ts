@@ -34,7 +34,7 @@ export class AssociationApiService {
      * @private
      * @memberof AssociationApiService
      */
-    private readonly _endpoint = '/portfolios';
+    private readonly _endpoint = '/sales-reps?&type=all';
     private readonly _associationsEndpoint = '/associations';
 
     /**
@@ -54,11 +54,12 @@ export class AssociationApiService {
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         const newArg = supplierId
             ? [
-                {
-                    key: 'supplierId',
-                    value: supplierId
-                }
-            ] : [];
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
 
         if (params['associated']) {
             newArg.push({
@@ -80,10 +81,13 @@ export class AssociationApiService {
 
     findById(id: string, supplierId?: string): Observable<IAssociation> {
         const newArg = supplierId
-            ? [{
-                    key: 'supplierId',
-                    value: supplierId
-                }] : [];
+            ? [
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
 
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
@@ -102,7 +106,9 @@ export class AssociationApiService {
         if (params['type']) {
             switch (params['type']) {
                 case 'outside':
-                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+                case 'inside':
+                    newArgs.push({ key: 'type', value: params['type'] });
+                    break;
             }
         }
 
@@ -120,7 +126,7 @@ export class AssociationApiService {
         // Mendapatkan toko yang tersedia.
         const portfolioQuery: IQueryParams = {
             limit: 10,
-            skip: 0,
+            skip: 0
         };
         portfolioQuery['type'] = portfolioEntityType;
         portfolioQuery['invoiceGroupId'] = invoiceGroupId;
@@ -135,7 +141,7 @@ export class AssociationApiService {
             skip: 0
         };
         associatedPortfolioQuery['userId'] = userId;
-        
+
         this.portfolioStore.dispatch(
             PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
         );
