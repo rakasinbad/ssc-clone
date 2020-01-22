@@ -34,7 +34,7 @@ export class AssociationApiService {
      * @private
      * @memberof AssociationApiService
      */
-    private readonly _endpoint = '/sales-reps?&type=all';
+    private readonly _endpoint = '/sales-reps';
     private readonly _associationsEndpoint = '/associations';
 
     /**
@@ -54,12 +54,11 @@ export class AssociationApiService {
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         const newArg = supplierId
             ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+                {
+                key: 'supplierId',
+                value: supplierId
+                }
+            ] : [];
 
         if (params['associated']) {
             newArg.push({
@@ -70,6 +69,13 @@ export class AssociationApiService {
             newArg.push({
                 key: 'associated',
                 value: 'false'
+            });
+        }
+
+        if (params['type']) {
+            newArg.push({
+                key: 'type',
+                value: params['type']
             });
         }
 
