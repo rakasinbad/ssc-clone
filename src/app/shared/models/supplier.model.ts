@@ -105,6 +105,7 @@ interface ISupplierStore {
     storeId: string;
     status: TStatus;
     store: Merchant;
+    owner: any; // TOLONG DI CHECK LAGI @AULIA RAHMAN
 }
 
 export class SupplierStore extends Timestamp implements ISupplierStore {
@@ -114,6 +115,7 @@ export class SupplierStore extends Timestamp implements ISupplierStore {
         public storeId: string,
         public status: TStatus,
         public store: Merchant,
+        public owner: any,
         createdAt: string,
         updatedAt: string,
         deletedAt: TNullable<string>
