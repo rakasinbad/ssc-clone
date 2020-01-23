@@ -28,12 +28,13 @@
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- SEARCH -->
-                <div class="search-wrapper mx-12">
+                <!-- <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
                         <input #filter [formControl]="search" placeholder="Search" />
                     </div>
-                </div>
+                </div> -->
+                <sinbad-search-bar placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
                 <!-- / SEARCH -->
             </div>
         </div>

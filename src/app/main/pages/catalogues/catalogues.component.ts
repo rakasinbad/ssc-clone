@@ -71,7 +71,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     displayedColumns = this.initialDisplayedColumns;
     hasSelected: boolean;
-    search: FormControl;
+    search: string;
     statusCatalogue: any;
     findCatalogueMode: TFindCatalogueMode = 'all';
 
@@ -192,33 +192,33 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.updatePrivileges();
         
         // this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
+        this.search = '';
         this.hasSelected = false;
 
         this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading);
         
-        this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(value => {
-                    const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+        // this.search.valueChanges
+        //     .pipe(
+        //         distinctUntilChanged(),
+        //         debounceTime(1000),
+        //         filter(value => {
+        //             const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
 
-                    if (sanitized) {
-                        return true;
-                    } else {
-                        if (value.length === 0) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                }),
-                takeUntil(this._unSubs$)
-            ).subscribe(() => {
-                this.onRefreshTable();
-            });
+        //             if (sanitized) {
+        //                 return true;
+        //             } else {
+        //                 if (value.length === 0) {
+        //                     return true;
+        //                 } else {
+        //                     return false;
+        //                 }
+        //             }
+        //         }),
+        //         takeUntil(this._unSubs$)
+        //     ).subscribe(() => {
+        //         this.onRefreshTable();
+        //     });
 
         // Need for demo
         // this.store
@@ -342,6 +342,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             this.initTable();
         });
         // this.initTable();
+    }
+
+    onSearch($event: string): void {
+        // console.log($event);
+        const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, $event);
+
+        if (!!sanitized) {
+            this.search = sanitized;
+            this.onRefreshTable();
+        } else if ($event.length === 0) {
+            this.search = sanitized;
+            this.onRefreshTable();
+        }
     }
 
     ngOnDestroy(): void {
@@ -553,20 +566,20 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     break;
             }
     
-            const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
-            if (searchValue) {
+            // const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search);
+            if (this.search) {
                 data['search'] = [
                     {
                         fieldName: 'name',
-                        keyword: searchValue
+                        keyword: this.search
                     },
                     {
                         fieldName: 'sku',
-                        keyword: searchValue
+                        keyword: this.search
                     },
                     {
                         fieldName: 'external_id',
-                        keyword: searchValue
+                        keyword: this.search
                     }
                 ];
             }
