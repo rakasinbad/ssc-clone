@@ -105,6 +105,25 @@ export const fetchStoreEmployeeEditSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// EXPORT Order
+// -----------------------------------------------------------------------------------------------------
+
+export const exportRequest = createAction(
+    '[Store Page] Export Request',
+    props<{ payload: { status?: any; dateGte?: string; dateLte?: string } }>()
+);
+
+export const exportFailure = createAction(
+    '[Store Page] Export Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const exportSuccess = createAction(
+    '[Store Page] Export Success',
+    props<{ payload: string }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // [CRUD - CREATE STORE] Stores
 // -----------------------------------------------------------------------------------------------------
 

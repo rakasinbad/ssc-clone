@@ -14,18 +14,18 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { NoticeService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IQueryParams, LifecyclePlatform, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
@@ -43,6 +43,28 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageOpts = environment.pageSizeTable;
 
     search: FormControl = new FormControl('');
+    formConfig = {
+        status: {
+            label: 'Store Status',
+            placeholder: 'Choose Store Status',
+            sources: this._$helper.storeStatus(),
+            rules: {
+                required: true
+            }
+        },
+        startDate: {
+            label: 'Start Date',
+            rules: {
+                required: true
+            }
+        },
+        endDate: {
+            label: 'End Date',
+            rules: {
+                required: true
+            }
+        }
+    };
     total: number;
     displayedColumns = [
         'store-code',
@@ -79,7 +101,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromMerchant.FeatureState>,
         public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$merchantApi: MerchantApiService,
+        private _$helper: HelperService,
         private _$notice: NoticeService
     ) {
         // Load translate
@@ -195,6 +217,34 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
             }
         });
+    }
+
+    onExport(ev: { action: string; payload: any }): void {
+        if (!ev) {
+            return;
+        }
+
+        const { action, payload } = ev;
+
+        if (action === 'export') {
+            const body = {
+                status: payload.status,
+                dateGte:
+                    moment.isMoment(payload.start) && payload.start
+                        ? (payload.start as moment.Moment).format('YYYY-MM-DD')
+                        : payload.start
+                        ? moment(payload.start).format('YYYY-MM-DD')
+                        : null,
+                dateLte:
+                    moment.isMoment(payload.end) && payload.end
+                        ? (payload.end as moment.Moment).format('YYYY-MM-DD')
+                        : payload.end
+                        ? moment(payload.end).format('YYYY-MM-DD')
+                        : null
+            };
+
+            this.store.dispatch(StoreActions.exportRequest({ payload: body }));
+        }
     }
 
     onRemoveSearchStore(): void {

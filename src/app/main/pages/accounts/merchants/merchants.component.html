@@ -8,32 +8,75 @@
     <!-- CENTER -->
     <div class="center">
         <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+        <div
+            class="header sinbad"
+            fxLayout="column"
+            fxLayoutAlign="center stretch"
+            fxLayoutGap="10px"
+        >
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.CREATE']">
-                    <button type="button" mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
-                        <mat-icon>add</mat-icon>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- APP TITLE -->
+                <span
+                    class="mat-title mb-24 mb-md-0"
+                    fxFlexAlign="center"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Store List
+                </span>
+                <!-- / APP TITLE -->
 
-                        TAMBAH TOKO
-                    </button>
-                </ng-template>
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-32 mx-md-0">
+                    <!-- mx-12 -->
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search for a store" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
 
                 <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button> -->
             </div>
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <div class="search-wrapper">
-                    <!-- mx-12 -->
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Cari Disini" />
-                    </div>
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.CREATE']">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="accent"
+                            [routerLink]="['/pages/account/stores/new']"
+                        >
+                            ADD
+                        </button>
+                    </ng-template>
                 </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <!-- <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
+                        EXPORT
+                    </button> -->
+
+                    <app-export-advanced
+                        title="EXPORT"
+                        color="accent"
+                        action="export"
+                        [formConfig]="formConfig"
+                        (clickExport)="onExport($event)"
+                    ></app-export-advanced>
+                </div>
+                <!-- SEARCH -->
+                <!--  <div class="search-wrapper mx-32 mx-md-0"> -->
+                <!-- mx-12 -->
+                <!-- <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search for a store" />
+                    </div> -->
+                <!-- </div> -->
                 <!-- / SEARCH -->
 
                 <!-- <button mat-flat-button class="grey-600">
@@ -75,8 +118,15 @@
 
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <mat-table class="merchants-table" #table [dataSource]="dataSource$ | async" [trackBy]="onTrackBy" matSort
-                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+            <mat-table
+                class="merchants-table"
+                #table
+                [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
                 <!-- ID Column -->
                 <ng-container matColumnDef="store-code">
                     <mat-header-cell *matHeaderCellDef>
@@ -168,13 +218,19 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <ng-container *ngIf="row?.status">
-                            <mat-icon class="indicator-success active-icon s-16" [matTooltip]="row?.status | titlecase"
-                                *ngIf="row?.status === 'active'">
+                            <mat-icon
+                                class="indicator-success active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'active'"
+                            >
                                 check
                             </mat-icon>
 
-                            <mat-icon class="indicator-error active-icon s-16" [matTooltip]="row?.status | titlecase"
-                                *ngIf="row?.status === 'inactive'">
+                            <mat-icon
+                                class="indicator-error active-icon s-16"
+                                [matTooltip]="row?.status | titlecase"
+                                *ngIf="row?.status === 'inactive'"
+                            >
                                 remove
                             </mat-icon>
                         </ng-container>
@@ -191,23 +247,37 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
-                                (click)="$event.stopPropagation()">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
-                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Edit"
-                                        [routerLink]="[row?.storeId]">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        [routerLink]="[row?.storeId]"
+                                    >
                                         <mat-icon>edit</mat-icon>
                                         <span>Edit</span>
                                     </button>
                                 </ng-template>
 
                                 <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.DELETE']">
-                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Delete"
-                                        (click)="onDelete(row)">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Delete"
+                                        (click)="onDelete(row)"
+                                    >
                                         <mat-icon>delete</mat-icon>
                                         <span>Delete</span>
                                     </button>
@@ -224,9 +294,15 @@
                                 </button> -->
 
                                 <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.UPDATE']">
-                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" [attr.aria-label]="
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        [attr.aria-label]="
                                             row?.status === 'active' ? 'inactive' : 'active'
-                                        " (click)="onChangeStatus(row)">
+                                        "
+                                        (click)="onChangeStatus(row)"
+                                    >
                                         <mat-icon>
                                             {{
                                                 row?.status === 'active'
@@ -261,9 +337,13 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="merchant"
-                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }" matRipple
-                    (click)="goStoreInfoPage(row?.id)">
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="merchant"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    matRipple
+                    (click)="goStoreInfoPage(row?.id)"
+                >
                 </mat-row>
             </mat-table>
 
@@ -271,15 +351,24 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
-            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
                 No records found
             </div>
 
-            <mat-paginator [fxHide]="
+            <mat-paginator
+                [fxHide]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
-                (page)="onChangePage($event)" showFirstLastButtons>
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                (page)="onChangePage($event)"
+                showFirstLastButtons
+            >
             </mat-paginator>
 
             <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">

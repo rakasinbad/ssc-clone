@@ -3,13 +3,21 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline, Network } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService, StoreApiService, UserApiService } from 'app/shared/helpers';
+import {
+    DownloadApiService,
+    LogService,
+    NoticeService,
+    StoreApiService,
+    UserApiService
+} from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { PaginateResponse, SupplierStore, TStatus, User } from 'app/shared/models';
-import { FormActions, UiActions } from 'app/shared/store/actions';
+import { ErrorHandler, PaginateResponse, SupplierStore, TStatus, User } from 'app/shared/models';
+import { FormActions, ProgressActions, UiActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';
 import {
@@ -2147,13 +2155,156 @@ export class MerchantEffects {
     //     { dispatch: false }
     // );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ EXPORT methods
+    // -----------------------------------------------------------------------------------------------------
+
+    /**
+     *
+     *  [REQUEST] Export
+     * @memberof MerchantEffects
+     */
+    exportRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.exportRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(([filter, data]: [any, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        StoreActions.exportFailure({
+                            payload: { id: 'exportFailure', errors: 'Not Found!' }
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        StoreActions.exportFailure({
+                            payload: {
+                                id: 'exportFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$downloadApi.download('export-stores', supplierId, filter).pipe(
+                    map(resp => {
+                        return StoreActions.exportSuccess({
+                            payload: resp.url
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            StoreActions.exportFailure({
+                                payload: { id: 'exportFailure', errors: err }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [REQUEST - FAILURE] Export
+     * @memberof MerchantEffects
+     */
+    exportFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.exportFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    this.store.dispatch(
+                        ProgressActions.downloadFailure({
+                            payload: { id: 'export-order', error: new ErrorHandler(resp) }
+                        })
+                    );
+
+                    let message;
+
+                    if (resp.errors.code === 406) {
+                        message = resp.errors.error.errors
+                            .map(r => {
+                                return `${r.errCode}<br>${r.solve}`;
+                            })
+                            .join('<br><br>');
+                    } else {
+                        if (typeof resp.errors === 'string') {
+                            message = resp.errors;
+                        } else {
+                            message =
+                                resp.errors.error && resp.errors.error.message
+                                    ? resp.errors.error.message
+                                    : resp.errors.message;
+                        }
+                    }
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [REQUEST - SUCCESS] Export
+     * @memberof MerchantEffects
+     */
+    exportSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.exportSuccess),
+                map(action => action.payload),
+                tap(url => {
+                    if (url) {
+                        window.open(url, '_blank');
+
+                        this._$notice.open('Export completed successfully ', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
         private router: Router,
+        private storage: StorageMap,
         private store: Store<fromMerchant.FeatureState>,
         protected network: Network,
         private _$log: LogService,
+        private _$downloadApi: DownloadApiService,
         private _$merchantApi: MerchantApiService,
         private _$merchantEmployeeApi: MerchantEmployeeApiService,
         private _$notice: NoticeService,

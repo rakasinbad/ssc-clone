@@ -1,15 +1,15 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Inject, Injectable, ElementRef } from '@angular/core';
-import { environment } from 'environments/environment';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, filter } from 'rxjs/operators';
-
-import { IQueryParams } from '../models/query.model';
-import * as jwt_decode from 'jwt-decode';
+import { ElementRef, Inject, Injectable } from '@angular/core';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
-import { User, TNullable, ErrorHandler } from '../models';
+import { environment } from 'environments/environment';
+import * as jwt_decode from 'jwt-decode';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { ErrorHandler, TNullable, User } from '../models';
+import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
 
 type TTemplateFiles = {
@@ -319,6 +319,27 @@ export class HelperService {
         ];
     }
 
+    storeStatus(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'all',
+                label: 'Semua'
+            },
+            {
+                id: 'active',
+                label: 'Active'
+            },
+            {
+                id: 'inactive',
+                label: 'Inactive'
+            },
+            {
+                id: 'banned',
+                label: 'Banned'
+            }
+        ];
+    }
+
     stockType(): { id: boolean; label: string }[] {
         return [
             {
@@ -470,7 +491,7 @@ export class HelperService {
             // Tidak akan diteruskan jika elemen tersebut tidak di-scroll hingga dasarnya.
             return false;
         }
-        
+
         return true;
     }
 }
