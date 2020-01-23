@@ -6,7 +6,7 @@ import { OrderActions } from './store/actions';
 export const statusOrder: Array<FuseNavigation> = [
     {
         id: 'all-status',
-        title: 'Semua (-)',
+        title: 'All (-)',
         // title: 'All',
         // translate: 'STATUS.ORDER.ALL.TITLE',
         type: 'item',
@@ -17,7 +17,7 @@ export const statusOrder: Array<FuseNavigation> = [
     },
     {
         id: 'confirm',
-        title: 'Order Baru (-)',
+        title: 'New Order (-)',
         // title: 'New Order',
         // translate: 'STATUS.ORDER.NEW_ORDER.TITLE',
         type: 'item',
@@ -28,7 +28,7 @@ export const statusOrder: Array<FuseNavigation> = [
     },
     {
         id: 'packing',
-        title: 'Dikemas (-)',
+        title: 'Packed (-)',
         // title: 'Packing',
         // translate: 'STATUS.ORDER.PACKING.TITLE',
         type: 'item',
@@ -49,7 +49,7 @@ export const statusOrder: Array<FuseNavigation> = [
     // },
     {
         id: 'shipping',
-        title: 'Dikirim (-)',
+        title: 'Shipped (-)',
         //    title: 'Shipped',
         //    translate: 'STATUS.ORDER.SHIPPED.TITLE',
         type: 'item',
@@ -60,7 +60,7 @@ export const statusOrder: Array<FuseNavigation> = [
     },
     {
         id: 'delivered',
-        title: 'Diterima (-)',
+        title: 'Delivered (-)',
         //    title: 'Received',
         //    translate: 'STATUS.ORDER.RECEIVED.TITLE',
         type: 'item',
@@ -71,7 +71,7 @@ export const statusOrder: Array<FuseNavigation> = [
     },
     {
         id: 'done',
-        title: 'Selesai (-)',
+        title: 'Done (-)',
         // title: 'Completed',
         // translate: 'STATUS.ORDER.COMPLETED.TITLE',
         type: 'item',
@@ -82,7 +82,7 @@ export const statusOrder: Array<FuseNavigation> = [
     },
     {
         id: 'cancel',
-        title: 'Batal (-)',
+        title: 'Canceled (-)',
         // title: 'Completed',
         // translate: 'STATUS.ORDER.COMPLETED.TITLE',
         type: 'item',

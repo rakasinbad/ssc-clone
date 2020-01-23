@@ -265,7 +265,7 @@ export class HelperService {
         return [
             {
                 id: 'all',
-                label: 'Semua'
+                label: 'All'
             },
             {
                 id: 'checkout',
@@ -273,27 +273,27 @@ export class HelperService {
             },
             {
                 id: 'confirm',
-                label: 'Order Baru'
+                label: 'New Order'
             },
             {
                 id: 'packing',
-                label: 'Dikemas'
+                label: 'Packed'
             },
             {
                 id: 'shipping',
-                label: 'Dikirim'
+                label: 'Shipped'
             },
             {
                 id: 'delivered',
-                label: 'Diterima'
+                label: 'Delivered'
             },
             {
                 id: 'done',
-                label: 'Selesai'
+                label: 'Done'
             },
             {
                 id: 'cancel',
-                label: 'Batal'
+                label: 'Canceled'
             }
         ];
     }
@@ -470,7 +470,7 @@ export class HelperService {
             // Tidak akan diteruskan jika elemen tersebut tidak di-scroll hingga dasarnya.
             return false;
         }
-        
+
         return true;
     }
 }

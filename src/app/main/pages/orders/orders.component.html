@@ -14,33 +14,17 @@
                     EXPORT
                 </button> -->
                 <ng-template [ngxPermissionsOnly]="['OMS.EXPORT']">
-                    <app-export-advanced
-                        title="EXPORT"
-                        color="accent"
-                        action="export"
-                        [formConfig]="formConfig"
-                        (clickExport)="onExport($event)"
-                    ></app-export-advanced>
+                    <app-export-advanced title="EXPORT" color="accent" action="export" [formConfig]="formConfig"
+                        (clickExport)="onExport($event)"></app-export-advanced>
                 </ng-template>
 
                 <ng-template [ngxPermissionsOnly]="['OMS.IMPORT']">
-                    <button
-                        type="button"
-                        mat-stroked-button
-                        color="accent"
-                        class="sinbad"
-                        (click)="filePicker.click()"
-                    >
+                    <button type="button" mat-stroked-button color="accent" class="sinbad" (click)="filePicker.click()">
                         IMPORT
                     </button>
 
-                    <input
-                        type="file"
-                        #filePicker
-                        class="custom-file"
-                        (click)="filePicker.value = null"
-                        (change)="onFileBrowse($event, 'docs')"
-                    />
+                    <input type="file" #filePicker class="custom-file" (click)="filePicker.value = null"
+                        (change)="onFileBrowse($event, 'docs')" />
                 </ng-template>
 
                 <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
@@ -55,7 +39,7 @@
                 <div class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Cari Disini" />
+                        <input [formControl]="search" placeholder="Search" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -88,27 +72,27 @@
 
                             <ng-container [ngSwitch]="searchStatus">
                                 <ng-container *ngSwitchCase="'confirm'">
-                                    Order Baru
+                                    New Order
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'packing'">
-                                    Dikemas
+                                    Packed
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'shipping'">
-                                    Dikirim
+                                    Shipped
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'delivered'">
-                                    Diterima
+                                    Delivered
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'done'">
-                                    Selesai
+                                    Done
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'cancel'">
-                                    Batal
+                                    Canceled
                                 </ng-container>
                             </ng-container>
 
@@ -131,15 +115,8 @@
 
         <!-- CONTENT CARD [class.mt-8]="!filterStatus || filterStatus === 'all-status'" -->
         <div class="content-card">
-            <mat-table
-                class="orders-table"
-                #table
-                [dataSource]="dataSource$ | async"
-                [trackBy]="onTrackBy"
-                matSort
-                [@animateStagger]="{ value: '50' }"
-                fusePerfectScrollbar
-            >
+            <mat-table class="orders-table" #table [dataSource]="dataSource$ | async" [trackBy]="onTrackBy" matSort
+                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Checkbox Column -->
                 <!-- <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
@@ -266,11 +243,11 @@
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'confirm'">
-                                    Order Baru
+                                    New Order
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'packing'">
-                                    Dikemas
+                                    Packed
                                 </ng-container>
 
                                 <!-- <ng-container *ngSwitchCase="'confirm'">
@@ -278,19 +255,19 @@
                                 </ng-container> -->
 
                                 <ng-container *ngSwitchCase="'shipping'">
-                                    Dikirim
+                                    Shipped
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'delivered'">
-                                    Diterima
+                                    Delivered
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'done'">
-                                    Selesai
+                                    Done
                                 </ng-container>
 
                                 <ng-container *ngSwitchCase="'cancel'">
-                                    Batal
+                                    Canceled
                                 </ng-container>
 
                                 <ng-container *ngSwitchDefault>
@@ -373,65 +350,47 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button
-                                mat-icon-button
-                                [matMenuTriggerFor]="moreMenu"
-                                aria-label="More"
-                                *ngIf="
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More" *ngIf="
                                     row?.status !== 'done' &&
                                     row?.status !== 'cancel' &&
                                     row?.status !== 'checkout'
-                                "
-                                (click)="$event.stopPropagation()"
-                            >
+                                " (click)="$event.stopPropagation()">
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['OMS.UPDATE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="Send"
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Send"
                                         *ngIf="
                                             row?.status !== 'done' &&
                                             row?.status !== 'cancel' &&
                                             row?.status !== 'checkout'
-                                        "
-                                        (click)="onChangeStatus(row)"
-                                    >
+                                        " (click)="onChangeStatus(row)">
                                         <mat-icon>send</mat-icon>
                                         <span>
                                             <ng-container [ngSwitch]="row?.status">
                                                 <ng-container *ngSwitchCase="'confirm'">
-                                                    Dikemas
+                                                    Packed
                                                 </ng-container>
 
                                                 <ng-container *ngSwitchCase="'packing'">
-                                                    Dikirim
+                                                    Shipped
                                                 </ng-container>
 
                                                 <ng-container *ngSwitchCase="'shipping'">
-                                                    Diterima
+                                                    Delivered
                                                 </ng-container>
 
                                                 <ng-container *ngSwitchCase="'delivered'">
-                                                    Selesai
+                                                    Done
                                                 </ng-container>
                                             </ng-container>
                                             <!--  {{ 'GLOBAL_STATUS.TO_BE_SHIPPED' | translate }} -->
                                         </span>
                                     </button>
 
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="Cancel"
-                                        *ngIf="row?.status === 'confirm'"
-                                        (click)="onChangeCancelStatus(row)"
-                                    >
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Cancel"
+                                        *ngIf="row?.status === 'confirm'" (click)="onChangeCancelStatus(row)">
                                         <mat-icon>send</mat-icon>
                                         <span>Cancel</span>
                                     </button>
@@ -485,12 +444,8 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row
-                    *matRowDef="let row; columns: displayedColumns"
-                    class="order"
-                    matRipple
-                    [routerLink]="['/pages/orders', row.id, 'detail']"
-                >
+                <mat-row *matRowDef="let row; columns: displayedColumns" class="order" matRipple
+                    [routerLink]="['/pages/orders', row.id, 'detail']">
                 </mat-row>
             </mat-table>
 
@@ -498,26 +453,18 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
-            <div
-                class="no-records"
-                *ngIf="
+            <div class="no-records" *ngIf="
                     !(isLoading$ | async) &&
                     ((totalDataSource$ | async) === 0 || (dataSource$ | async)?.length === 0)
-                "
-            >
+                ">
                 No records found
             </div>
 
-            <mat-paginator
-                [fxHide]="
+            <mat-paginator [fxHide]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-                "
-                [length]="totalDataSource$ | async"
-                [pageSize]="defaultPageSize"
-                [pageSizeOptions]="defaultPageOpts"
-                showFirstLastButtons
-            >
+                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons>
             </mat-paginator>
 
             <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">

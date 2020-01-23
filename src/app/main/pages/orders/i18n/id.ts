@@ -10,25 +10,25 @@ export const locale = {
         STATUS: {
             ORDER: {
                 ALL: {
-                    TITLE: 'Semua'
+                    TITLE: 'All'
                 },
                 COMPLETED: {
-                    TITLE: 'Selesai'
+                    TITLE: 'Done'
                 },
                 NEW_ORDER: {
-                    TITLE: 'Order Baru'
+                    TITLE: 'New Order'
                 },
                 PACKING: {
-                    TITLE: 'Dikemas'
+                    TITLE: 'Packed'
                 },
                 RECEIVED: {
-                    TITLE: 'Diterima'
+                    TITLE: 'Delivered'
                 },
                 SHIPPED: {
-                    TITLE: 'Dikirim'
+                    TITLE: 'Shipped'
                 },
                 TO_BE_SHIPPED: {
-                    TITLE: 'Siap Dikirim'
+                    TITLE: 'Ready To Ship'
                 }
             }
         }

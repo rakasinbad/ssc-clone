@@ -174,7 +174,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     },
                     action: {
                         save: {
-                            label: 'Simpan',
+                            label: 'Save',
                             active: true
                         },
                         draft: {
@@ -182,11 +182,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                             active: false
                         },
                         cancel: {
-                            label: 'Batal',
+                            label: 'Cancel',
                             active: false
                         },
                         goBack: {
-                            label: 'Kembali',
+                            label: 'Back',
                             active: true,
                             url: '/pages/catalogues/list'
                         }

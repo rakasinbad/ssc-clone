@@ -381,22 +381,22 @@ export class OrderEffects {
 
                 switch (params.status) {
                     case 'confirm':
-                        title = 'Dikemas';
+                        title = 'Packed';
                         body = 'packing';
                         break;
 
                     case 'packing':
-                        title = 'Dikirim';
+                        title = 'Shipped';
                         body = 'shipping';
                         break;
 
                     case 'shipping':
-                        title = 'Diterima';
+                        title = 'Delivered';
                         body = 'delivered';
                         break;
 
                     case 'delivered':
-                        title = 'Selesai';
+                        title = 'Done';
                         body = 'done';
                         break;
                 }

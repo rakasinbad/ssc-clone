@@ -24,7 +24,7 @@ export class GeneratorService {
                         ]);
 
                         break;
-                    
+
                     case 'catalogue.block.suggest':
                         entity[key] = faker.random.arrayElement([
                             null,
@@ -33,10 +33,7 @@ export class GeneratorService {
                         break;
 
                     case 'catalogue.block.type':
-                        entity[key] = faker.random.arrayElement([
-                            null,
-                            'Spam'
-                        ]);
+                        entity[key] = faker.random.arrayElement([null, 'Spam']);
                         break;
 
                     case 'catalogue.isArchived':
@@ -144,12 +141,12 @@ export class GeneratorService {
 
                     case 'order.status':
                         entity[key] = faker.random.arrayElement([
-                            'Dikemas',
-                            'Dikirim',
-                            'Diterima',
-                            'Order Baru',
-                            'Selesai',
-                            'Siap Dikirim'
+                            'Packed',
+                            'Shipped',
+                            'Delivered',
+                            'New Order',
+                            'Done',
+                            'Ready To Ship'
                         ]);
                         break;
 
@@ -255,7 +252,7 @@ export class GeneratorService {
             proofOfPaymentStatus: '{{random.boolean}}'
         };
     }
-    
+
     static get cataloguesSchema(): any {
         return {
             id: '{{random.number}}',

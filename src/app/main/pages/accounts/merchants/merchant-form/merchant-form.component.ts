@@ -155,7 +155,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     },
                     action: {
                         save: {
-                            label: 'Simpan',
+                            label: 'Save',
                             active: true
                         },
                         draft: {
@@ -163,11 +163,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             active: false
                         },
                         cancel: {
-                            label: 'Batal',
+                            label: 'Cancel',
                             active: true
                         },
                         goBack: {
-                            label: 'Kembali',
+                            label: 'Back',
                             active: true,
                             url: '/pages/account/stores'
                         }

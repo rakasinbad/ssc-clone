@@ -17,8 +17,6 @@ fuse-sidebar {
                         .logo {
 
                             .logo-text {
-                                font-weight: 'bold';
-                                font-size: 17px;
                                 opacity: 0;
                                 transition: opacity 200ms ease;
                             }
@@ -93,8 +91,9 @@ navbar {
 
                 .logo-text {
                     margin-left: 8px;
-                    font-size: 20px;
-                    font-weight: 300;
+                    font-size: 16px;
+                    line-height: 24px;
+                    color: '#25282b';
                     letter-spacing: 0.4px;
                 }
             }
