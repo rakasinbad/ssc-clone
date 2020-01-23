@@ -84,11 +84,11 @@
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
                     <mat-header-cell *matHeaderCellDef>
-                        Store ID
+                        Store Code
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeCode }}
+                            {{ row?.store?.storeCode || row?.store?.externalId || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
