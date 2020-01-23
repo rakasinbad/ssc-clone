@@ -10,10 +10,10 @@ export const locale = {
         STATUS: {
             CATALOGUE: {
                 ALL: {
-                    TITLE: 'Semua'
+                    TITLE: 'All'
                 },
                 ALL_PARAM: {
-                    TITLE: 'Semua ({{ allCount }})'
+                    TITLE: 'All ({{ allCount }})'
                 },
                 LIVE: {
                     TITLE: 'Live'
@@ -22,16 +22,16 @@ export const locale = {
                     TITLE: 'Live ({{ liveCount }})'
                 },
                 EMPTY: {
-                    TITLE: 'Habis'
+                    TITLE: 'Empty'
                 },
                 EMPTY_PARAM: {
-                    TITLE: 'Habis ({{ emptyCount }})'
+                    TITLE: 'Empty ({{ emptyCount }})'
                 },
                 BLOCKED: {
-                    TITLE: 'Diblokir'
+                    TITLE: 'Banned'
                 },
                 BLOCKED_PARAM: {
-                    TITLE: 'Diblokir ({{ blockedCount }})'
+                    TITLE: 'Banned ({{ blockedCount }})'
                 },
                 INACTIVE: {
                     TITLE: 'Inactive'

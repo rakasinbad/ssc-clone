@@ -52,21 +52,12 @@
             <!-- <div class="content p-24"></div> -->
             <!-- / CONTENT -->
 
-            <mat-table
-                class="catalogues-table"
-                #table
-                [dataSource]="dataSource$ | async"
-                matSort
-                [@animateStagger]="{ value: '50' }"
-                fusePerfectScrollbar
-            >
+            <mat-table class="catalogues-table" #table [dataSource]="dataSource$ | async" matSort
+                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox
-                            [(ngModel)]="hasSelected"
-                            (click)="$event.stopPropagation()"
-                        ></mat-checkbox>
+                        <mat-checkbox [(ngModel)]="hasSelected" (click)="$event.stopPropagation()"></mat-checkbox>
                     </mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
@@ -77,27 +68,18 @@
                 <!-- Product Name Column -->
                 <ng-container matColumnDef="name">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>
-                        Nama Produk
+                        Product Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="space-between center">
                             <div class="img-container">
-                                <ng-container
-                                    *ngIf="row?.catalogueImages.length > 0; else noPhoto;"
-                                >
-                                    <img
-                                        class="fit-image"
-                                        [defaultImage]="'assets/images/logos/sinbad.svg'"
-                                        [useSrcset]="true"
-                                        [lazyLoad]="row?.catalogueImages[0]?.imageUrl"
-                                        [errorImage]="'assets/images/logos/sinbad.svg'"
-                                    />
+                                <ng-container *ngIf="row?.catalogueImages.length > 0; else noPhoto;">
+                                    <img class="fit-image" [defaultImage]="'assets/images/logos/sinbad.svg'"
+                                        [useSrcset]="true" [lazyLoad]="row?.catalogueImages[0]?.imageUrl"
+                                        [errorImage]="'assets/images/logos/sinbad.svg'" />
                                 </ng-container>
                                 <ng-template #noPhoto>
-                                    <img
-                                        class="fit-image"
-                                        [src]="'assets/images/logos/sinbad.svg'"
-                                    />
+                                    <img class="fit-image" [src]="'assets/images/logos/sinbad.svg'" />
                                 </ng-template>
                             </div>
                             <div>
@@ -109,25 +91,17 @@
                                         SKU Induk:
                                     </p> -->
                                     <mat-chip-list aria-label="Catalogue status">
-                                        <mat-chip
-                                            *ngIf="row?.status === 'active'"
-                                            class="green-800"
-                                        >
+                                        <mat-chip *ngIf="row?.status === 'active'" class="green-800">
                                             <strong>Live</strong>
                                         </mat-chip>
-                                        <mat-chip
-                                            *ngIf="row?.status === 'inactive'"
-                                            class="orange-800"
-                                        >
+                                        <mat-chip *ngIf="row?.status === 'inactive'" class="orange-800">
                                             <strong>Inactive</strong>
                                         </mat-chip>
                                         <mat-chip *ngIf="row?.status === 'banned'" class="warn">
                                             <strong>Diblokir</strong>
                                         </mat-chip>
-                                        <mat-chip
-                                            *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
-                                            class="fuse-black"
-                                        >
+                                        <mat-chip *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
+                                            class="fuse-black">
                                             <strong>Habis</strong>
                                         </mat-chip>
                                     </mat-chip-list>
@@ -165,12 +139,10 @@
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Harga</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <a
-                            class="fuse-black-fg clickable"
-                            matTooltip="Click to edit price"
-                            (click)="$event.stopPropagation(); editCatalogue('price', row)"
-                        >
-                            <p *ngIf="!!(row?.discountedRetailBuyingPrice) || row?.discountedRetailBuyingPrice === 0; else noDiscount;" class="text-truncate">
+                        <a class="fuse-black-fg clickable" matTooltip="Click to edit price"
+                            (click)="$event.stopPropagation(); editCatalogue('price', row)">
+                            <p *ngIf="!!(row?.discountedRetailBuyingPrice) || row?.discountedRetailBuyingPrice === 0; else noDiscount;"
+                                class="text-truncate">
                                 {{ row?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
                             </p>
                             <ng-template #noDiscount>
@@ -186,11 +158,8 @@
                 <ng-container matColumnDef="stock">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Stock</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <a
-                            class="fuse-black-fg clickable"
-                            matTooltip="Click to edit stock"
-                            (click)="$event.stopPropagation(); editCatalogue('stock', row)"
-                        >
+                        <a class="fuse-black-fg clickable" matTooltip="Click to edit stock"
+                            (click)="$event.stopPropagation(); editCatalogue('stock', row)">
                             <p class="text-truncate">{{ row?.stock | number }}</p>
                         </a>
                     </mat-cell>
@@ -265,61 +234,37 @@
 
                     <mat-cell class="pr-8" *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button
-                                mat-icon-button
-                                [matMenuTriggerFor]="moreMenu"
-                                aria-label="More"
-                                (click)="$event.stopPropagation()"
-                            >
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                                (click)="$event.stopPropagation()">
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="edit"
-                                        (click)="editProduct(row.id)"
-                                    >
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="edit"
+                                        (click)="editProduct(row.id)">
                                         <mat-icon>edit</mat-icon>
                                         <span>Edit</span>
                                     </button>
 
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="archive"
-                                        (click)="setInactive(row)"
-                                        *ngIf="row?.status === 'active'"
-                                    >
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                        aria-label="archive" (click)="setInactive(row)"
+                                        *ngIf="row?.status === 'active'">
                                         <mat-icon>archive</mat-icon>
                                         <span>Inactive</span>
                                     </button>
-    
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="archive"
-                                        (click)="setActive(row)"
-                                        *ngIf="row?.status === 'inactive'"
-                                    >
+
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                        aria-label="archive" (click)="setActive(row)"
+                                        *ngIf="row?.status === 'inactive'">
                                         <mat-icon>unarchive</mat-icon>
                                         <span>Active</span>
                                     </button>
                                 </ng-template>
 
                                 <ng-template [ngxPermissionsOnly]="['CATALOGUE.DELETE']">
-                                    <button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        aria-label="remove"
-                                        (click)="onDelete(row)"
-                                    >
+                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="remove"
+                                        (click)="onDelete(row)">
                                         <mat-icon>delete</mat-icon>
                                         <span>Remove</span>
                                     </button>
@@ -354,25 +299,18 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewProduct(row?.id)" class="catalogue">
+                <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewProduct(row?.id)"
+                    class="catalogue">
                 </mat-row>
 
-                <div
-                    class="no-records"
-                    *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
-                >
+                <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
                     No records found
                 </div>
             </mat-table>
 
-            <mat-paginator
-                [fxHide]="(totalDataSource$ | async) === 0"
-                [length]="totalDataSource$ | async"
-                [pageSize]="defaultPageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
-                (page)="onChangePage($event)"
-                showFirstLastButtons
-            >
+            <mat-paginator [fxHide]="(totalDataSource$ | async) === 0" [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize" [pageSizeOptions]="[5, 10, 25, 100]" (page)="onChangePage($event)"
+                showFirstLastButtons>
             </mat-paginator>
 
             <div class="loader" *ngIf="isLoading$ | async">

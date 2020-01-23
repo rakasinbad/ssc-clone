@@ -441,7 +441,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof allOrder !== 'undefined') {
                                 this._updateStatus(
                                     'all-status',
-                                    { title: `Semua (${allOrder})` },
+                                    { title: `All (${allOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -449,7 +449,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof newOrder !== 'undefined') {
                                 this._updateStatus(
                                     'confirm',
-                                    { title: `Order Baru (${newOrder})` },
+                                    { title: `New Order (${newOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -457,7 +457,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof packedOrder !== 'undefined') {
                                 this._updateStatus(
                                     'packing',
-                                    { title: `Dikemas (${packedOrder})` },
+                                    { title: `Packed (${packedOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -465,7 +465,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof shippedOrder !== 'undefined') {
                                 this._updateStatus(
                                     'shipping',
-                                    { title: `Dikirim (${shippedOrder})` },
+                                    { title: `Shipped (${shippedOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -473,7 +473,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof deliveredOrder !== 'undefined') {
                                 this._updateStatus(
                                     'delivered',
-                                    { title: `Diterima (${deliveredOrder})` },
+                                    { title: `Delivered (${deliveredOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -481,7 +481,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof completedOrder !== 'undefined') {
                                 this._updateStatus(
                                     'done',
-                                    { title: `Selesai (${completedOrder})` },
+                                    { title: `Done (${completedOrder})` },
                                     'customNavigation'
                                 );
                             }
@@ -489,7 +489,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                             if (typeof canceledOrder !== 'undefined') {
                                 this._updateStatus(
                                     'cancel',
-                                    { title: `Batal (${canceledOrder})` },
+                                    { title: `Canceled (${canceledOrder})` },
                                     'customNavigation'
                                 );
                             }

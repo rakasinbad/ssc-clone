@@ -11,7 +11,7 @@ export const globalIdLang = {
         ACCOUNTS: 'Account',
         ACCOUNT: 'Store',
         ACCOUNTS_SETTINGS: 'Pengaturan Akun',
-        ADD_PRODUCT: 'Tambah Produk',
+        ADD_PRODUCT: 'Add Product',
         ADD_STORE: 'Add Toko',
         ATTENDANCES: 'Attendances',
         CATALOGUE: 'Catalogue',
@@ -30,7 +30,7 @@ export const globalIdLang = {
         MANAGE_PRODUCT: 'Manage Product',
         MERCHANTS: 'Merchants',
         MERCHANT: 'Merchant',
-        ORDER_DETAILS: 'Rincian Order',
+        ORDER_DETAILS: 'Order Detail',
         ORDER_MANAGEMENTS: 'Order Management',
         PAYMENT_STATUS: 'Payment Status',
         SALES_REP_MANAGEMENT: 'Sales Management',
@@ -64,16 +64,16 @@ export const globalIdLang = {
         USERNAME: 'Username'
     },
     GLOBAL_STATUS: {
-        ALL: 'Semua',
-        ARCHIVED: 'Diarsip',
+        ALL: 'All',
+        ARCHIVED: 'Archive',
         BLOCKED: 'Blocked',
-        COMPLETED: 'Selesai',
-        EMPTY: 'Habis',
-        NEW_ORDER: 'Order Baru',
-        PACKING: 'Dikemas',
-        RECEIVED: 'Diterima',
-        SHIPPED: 'Dikirim',
-        TO_BE_SHIPPED: 'Siap Dikirim'
+        COMPLETED: 'Done',
+        EMPTY: 'Empety',
+        NEW_ORDER: 'New Order',
+        PACKING: 'Packed',
+        RECEIVED: 'Delivered',
+        SHIPPED: 'Shipped',
+        TO_BE_SHIPPED: 'Ready To Ship'
     },
     ERROR: {
         ALPHA_PATTERN: '{{ fieldName }} field may only contain letters.',
