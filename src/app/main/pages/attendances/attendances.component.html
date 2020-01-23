@@ -79,7 +79,7 @@
                 <ng-container matColumnDef="idToko">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>ID Toko</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.storeCode }}</p>
+                        <p>{{ row.storeCode || row?.externalId || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -88,7 +88,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Nama Toko</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.name }}</p>
+                        <p>{{ row.name || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -97,7 +97,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Alamat Toko</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.address }}</p>
+                        <p>{{ row.address || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -106,7 +106,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Nomor Telepon Toko</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.phoneNo }}</p>
+                        <p>{{ row.phoneNo || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -115,7 +115,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>GS</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.user?.fullname }}</p>
+                        <p>{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -124,7 +124,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>SPV</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.user?.fullname }}</p>
+                        <p class="text-truncate">{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 

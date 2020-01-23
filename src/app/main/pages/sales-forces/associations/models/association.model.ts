@@ -1,5 +1,6 @@
 import { ITimestamp, TNullable, User, InvoiceGroup, Supplier } from 'app/shared/models';
 import { StorePortfolio } from 'app/main/pages/attendances/models';
+import { Portfolio } from '../../portfolios/models';
 
 type TStatusType = 'active' | 'inactive';
 
@@ -18,7 +19,8 @@ export interface IAssociation extends ITimestamp {
     user_id: string;
     storePortfolios: StorePortfolio;
     storeQty: string;
-    associated: [];
+    portfolios: Array<Portfolio>;
+    lastAssociated?: string;
     totalTargetSales: number;
     actualTargetSales: number;
 }
@@ -44,7 +46,8 @@ export class Association implements IAssociation {
     user_id: string;
     storePortfolios: StorePortfolio;
     storeQty: string;
-    associated: [];
+    portfolios: Array<Portfolio>;
+    lastAssociated?: string;
     totalTargetSales: number;
     actualTargetSales: number;
 
@@ -63,7 +66,8 @@ export class Association implements IAssociation {
             user_id,
             storePortfolios,
             storeQty,
-            associated,
+            portfolios = [],
+            lastAssociated,
             totalTargetSales,
             actualTargetSales
         } = data;
@@ -80,7 +84,7 @@ export class Association implements IAssociation {
         this.totalTargetSales = totalTargetSales;
         this.storeQty = storeQty;
         this.actualTargetSales = actualTargetSales;
-        this.associated = associated;
+        this.portfolios = Array.isArray(portfolios) && portfolios.length > 0 ? portfolios.map(portfolio => new Portfolio(portfolio)) : portfolios;
         this.storePortfolios = storePortfolios
             ? new StorePortfolio(storePortfolios)
             : storePortfolios;

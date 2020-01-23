@@ -33,7 +33,7 @@ export const globalEnLang = {
         ORDER_DETAILS: 'Order Details',
         ORDER_MANAGEMENTS: 'Order Managements',
         PAYMENT_STATUS: 'Payment Status',
-        SALES_REP_MANAGEMENT: 'Sales Rep Management',
+        SALES_REP_MANAGEMENT: 'Sales Management',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
         STORE: 'Store List',

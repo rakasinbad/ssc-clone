@@ -158,7 +158,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
         //         active: false
         //     },
         //     {
-        //         title: 'Sales Rep Management',
+        //         title: 'Sales Management',
         //         translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
         //         url: '/pages/sales-force/portfolio'
         //     },
@@ -660,7 +660,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                             active: false
                         },
                         {
-                            title: 'Sales Rep Management',
+                            title: 'Sales Management',
                             translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                             url: '/pages/sales-force/portfolio'
                         },
@@ -682,7 +682,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                             active: false
                         },
                         {
-                            title: 'Sales Rep Management',
+                            title: 'Sales Management',
                             translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                             url: '/pages/sales-force/portfolio'
                         },

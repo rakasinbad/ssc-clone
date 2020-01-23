@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayoutAlign="start center" class="tab-container">
-    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab===null" (click)="clickTab('all')">
         <span>All</span>
     </div>
     <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated'"

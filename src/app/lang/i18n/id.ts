@@ -33,7 +33,7 @@ export const globalIdLang = {
         ORDER_DETAILS: 'Rincian Order',
         ORDER_MANAGEMENTS: 'Order Management',
         PAYMENT_STATUS: 'Payment Status',
-        SALES_REP_MANAGEMENT: 'Sales Rep Management',
+        SALES_REP_MANAGEMENT: 'Sales Management',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
         STORE: 'Store List',

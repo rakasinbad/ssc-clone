@@ -4,7 +4,7 @@ import { createReducer, on } from '@ngrx/store';
 import { Association } from '../../models';
 import { AssociationActions } from '../actions';
 import { SalesRep } from '../../../sales-reps/models';
-import { InvoiceGroup } from 'app/shared/models';
+import { InvoiceGroup, User } from 'app/shared/models';
 
 // Keyname for reducer
 const featureKey = 'associations';
@@ -13,9 +13,9 @@ const featureKey = 'associations';
  *
  * Main interface for reducer
  * @interface State
- * @extends {EntityState<Association>}
+ * @extends {EntityState<User>}
  */
-interface State extends EntityState<Association> {
+interface State extends EntityState<User> {
     isRefresh?: boolean;
     isRequesting: boolean;
     isLoading: boolean;
@@ -28,7 +28,7 @@ interface State extends EntityState<Association> {
 }
 
 // Adapter for Association state
-const adapter = createEntityAdapter<Association>({ selectId: row => row.id });
+const adapter = createEntityAdapter<User>({ selectId: row => row.id });
 
 // Initialize state
 const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({

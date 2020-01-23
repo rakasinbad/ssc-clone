@@ -16,6 +16,7 @@ export enum UserStatus {
 
 export interface IUser extends ITimestamp {
     readonly id: NonNullable<string>;
+    userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
     fullName: string;
@@ -39,10 +40,13 @@ export interface IUser extends ITimestamp {
     urbanId: string;
     userStores?: Array<UserStore>;
     userSuppliers?: Array<UserSupplier>;
+    lastAssociated?: TNullable<string>;
+    storeQty?: number;
 }
 
 export class User implements IUser {
     readonly id: NonNullable<string>;
+    userCode?: TNullable<string>;
     attendances?: any;
     email: TNullable<string>;
     fullName: string;
@@ -66,6 +70,8 @@ export class User implements IUser {
     urbanId: string;
     userStores?: Array<UserStore>;
     userSuppliers?: Array<UserSupplier>;
+    lastAssociated?: TNullable<string>;
+    storeQty?: number;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -73,6 +79,7 @@ export class User implements IUser {
     constructor(data: IUser) {
         const {
             id,
+            userCode,
             attendances,
             email,
             fullName,
@@ -96,12 +103,14 @@ export class User implements IUser {
             urbanId,
             userStores,
             userSuppliers,
+            storeQty = 0,
             createdAt,
             updatedAt,
             deletedAt
         } = data;
 
         this.id = id;
+        this.userCode = userCode;
         this.attendances = attendances;
         this.email = email ? String(email).trim() : null;
         this.fullName = fullName ? String(fullName).trim() : null;
@@ -114,6 +123,8 @@ export class User implements IUser {
         this.saleTeamId = saleTeamId;
         this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
         this.setPortfolios = portfolios;
+        this.lastAssociated = Array.isArray(portfolios) && portfolios.length > 0 ? portfolios.sort((a, b) => (+a.id) - (+b.id)).pop().createdAt : null;
+        this.storeQty = +storeQty;
         this.setRoles = roles;
         this.setSaleTeam = saleTeam;
         this.setUserStores = userStores;

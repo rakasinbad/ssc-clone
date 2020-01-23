@@ -18,6 +18,8 @@ interface IPortfolio extends ITimestamp {
     storeQty?: number;
     isSelected?: boolean;
     stores?: Array<Store>;
+    totalTargetSales?: number;
+    actualTargetSales?: number;
     source?: 'fetch' | 'list';
 }
 
@@ -49,6 +51,8 @@ export class Portfolio implements IPortfolio {
     storeQty?: number;
     stores?: Array<Store>;
     isSelected?: boolean;
+    totalTargetSales?: number;
+    actualTargetSales?: number;
     source?: 'fetch' | 'list';
 
     constructor(data: IPortfolio) {
@@ -67,7 +71,9 @@ export class Portfolio implements IPortfolio {
             storeQty = 0,
             isSelected = false,
             stores = [],
-            source = 'fetch'
+            source = 'fetch',
+            totalTargetSales,
+            actualTargetSales,
         } = data;
 
         this.id = id;
@@ -81,6 +87,8 @@ export class Portfolio implements IPortfolio {
         this.deletedAt = deletedAt;
         this.storeQty = storeQty;
         this.isSelected = isSelected;
+        this.actualTargetSales = actualTargetSales;
+        this.totalTargetSales = totalTargetSales;
         this.source = source;
 
         this.stores = Array.isArray(stores) && stores.length > 0 ? stores.map(store => new Store(store)) : stores;

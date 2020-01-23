@@ -14,7 +14,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Store',
         translate: 'NAV.ACCOUNTS.TITLE',
         type: 'collapsable',
-        icon: 'people',
+        icon: 'store',
         children: [
             {
                 id: 'accountsStore',
@@ -37,7 +37,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Catalogue',
         translate: 'NAV.CATALOGUES.TITLE',
         type: 'collapsable',
-        icon: 'custom-icons8-open-box',
+        icon: 'custom-sinbad-catalogue-logo',
         children: [
             {
                 id: 'addProduct',
@@ -127,7 +127,7 @@ export const navigation: Array<FuseNavigation> = [
     },
     {
         id: 'sales-force',
-        title: 'Sales Rep Management',
+        title: 'Sales Management',
         //    translate: 'NAV.INVENTORIES.TITLE',
         type: 'collapsable',
         icon: 'layerassessments',

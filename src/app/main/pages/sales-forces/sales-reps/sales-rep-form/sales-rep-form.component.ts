@@ -44,7 +44,7 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'New Sales Rep'
@@ -140,7 +140,7 @@ export class SalesRepFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     title: 'Home'
                 },
                 {
-                    title: 'Sales Rep Management'
+                    title: 'Sales Management'
                 },
                 {
                     title: 'Edit Sales Rep'

@@ -263,7 +263,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             active: false
                         },
                         {
-                            title: 'Sales Rep Management',
+                            title: 'Sales Management',
                             translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                             url: this.associationsHome
                         },
@@ -286,7 +286,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                             active: false
                         },
                         {
-                            title: 'Sales Rep Management',
+                            title: 'Sales Management',
                             translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                             url: this.associationsHome
                         },

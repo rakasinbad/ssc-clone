@@ -221,6 +221,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         };
 
         data['paginate'] = true;
+        data['calculateStock'] = true;
 
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';

@@ -33,7 +33,7 @@ export class JourneyPlanFormComponent implements OnInit {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'New Journey Plan'
@@ -68,7 +68,7 @@ export class JourneyPlanFormComponent implements OnInit {
                     title: 'Home'
                 },
                 {
-                    title: 'Sales Rep Management'
+                    title: 'Sales Management'
                 },
                 {
                     title: 'Edit Journey Plan'

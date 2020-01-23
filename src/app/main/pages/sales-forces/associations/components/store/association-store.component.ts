@@ -90,7 +90,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Association'

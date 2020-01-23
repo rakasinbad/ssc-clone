@@ -90,7 +90,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
-                        title: 'Sales Rep Management',
+                        title: 'Sales Management',
                         translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT'
                     },
                     {

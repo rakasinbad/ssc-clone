@@ -7,7 +7,7 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse, AnyAction } from 'app/shared/models';
+import { ErrorHandler, IQueryParams, PaginateResponse, AnyAction, User } from 'app/shared/models';
 import { FormActions } from 'app/shared/store/actions';
 import { of, Observable } from 'rxjs';
 import {
@@ -140,7 +140,7 @@ export class AssociationEffects {
                 }
 
                 return this._$associationApi
-                    .findAll<PaginateResponse<Association>>(params, supplierId)
+                    .findAll<PaginateResponse<User>>(params, supplierId)
                     .pipe(
                         catchOffline(),
                         map(resp => {
@@ -154,7 +154,7 @@ export class AssociationEffects {
                                     ...newResp,
                                     data:
                                         newResp.data && newResp.data.length > 0
-                                            ? newResp.data.map(r => new Association(r))
+                                            ? newResp.data.map(r => new User(r))
                                             : []
                                 }
                             });
@@ -163,7 +163,7 @@ export class AssociationEffects {
                             of(
                                 AssociationActions.fetchAssociationFailure({
                                     payload: new ErrorHandler({
-                                        id: 'fetchAssociationsFailure',
+                                        id: 'fetchAssociationFailure',
                                         errors: err
                                     })
                                 })
@@ -174,7 +174,7 @@ export class AssociationEffects {
         )
     );
 
-    fetchAssociationsFailure$ = createEffect(
+    fetchAssociationFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(AssociationActions.fetchAssociationFailure),

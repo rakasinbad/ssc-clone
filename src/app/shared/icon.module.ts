@@ -54,5 +54,11 @@ export class IconModule {
             'icons8-open-box',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/icons8/open-box.svg')
         );
+
+        // Catalogue logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-catalogue-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/catalogue-logo.svg')
+        );
     }
 }
