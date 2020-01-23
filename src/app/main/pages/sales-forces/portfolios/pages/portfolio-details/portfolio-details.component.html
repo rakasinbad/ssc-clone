@@ -120,9 +120,9 @@
 
                         <!-- Store Code Column -->
                         <ng-container matColumnDef="code">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header>Code</mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Supplier's Store ID</mat-header-cell>
                             <mat-cell *matCellDef="let row">
-                                <p>{{ row?.storeCode || row?.externalId || '-' }}</p>
+                                <p>{{ row?.externalId || '-' }}</p>
                             </mat-cell>
                         </ng-container>
                         <!-- / Store Code Column -->

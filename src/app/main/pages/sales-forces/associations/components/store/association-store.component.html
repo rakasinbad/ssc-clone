@@ -40,10 +40,10 @@
     <!-- "Store Code" Column -->
     <ng-container matColumnDef="store-code">
         <mat-header-cell *matHeaderCellDef mat-sort-header>
-            Store Code
+            Supplier's Store ID
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p>{{ row?.store?. storeCode || row?.store?.externalId || '-' }}</p>
+            <p>{{ row?.store?.externalId || '-' }}</p>
         </mat-cell>
     </ng-container>
 
