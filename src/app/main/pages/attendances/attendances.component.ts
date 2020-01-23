@@ -76,7 +76,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
-    search: FormControl;
+    search: string;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -109,23 +109,24 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this._unSubs$ = new Subject<void>();
 
-        this.search = new FormControl('', [
-            Validators.required,
-            control => {
-                const value = control.value;
-                const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+        this.search = '';
+        // this.search = new FormControl('', [
+        //     Validators.required,
+        //     control => {
+        //         const value = control.value;
+        //         const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
 
-                if (sanitized) {
-                    return null;
-                } else {
-                    if (value.length === 0) {
-                        return null;
-                    } else {
-                        return { unsafe: true };
-                    }
-                }
-            }
-        ]);
+        //         if (sanitized) {
+        //             return null;
+        //         } else {
+        //             if (value.length === 0) {
+        //                 return null;
+        //             } else {
+        //                 return { unsafe: true };
+        //             }
+        //         }
+        //     }
+        // ]);
 
         this.dataSource$ = this._fromStore.select(MerchantSelectors.getAllMerchant).pipe(
             map(stores =>
@@ -145,11 +146,11 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.onChangePage();
-            });
+        // this.search.valueChanges
+        //     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+        //     .subscribe(() => {
+        //         this.onChangePage();
+        //     });
 
         this.onChangePage();
     }
@@ -215,11 +216,11 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                 data['sortBy'] = this.sort.active;
             }
     
-            if (this.search.status === 'VALID') {
+            if (this.search) {
                 data['search'] = [
                     {
                         fieldName: 'name',
-                        keyword: this.search.value
+                        keyword: this.search
                     }
                 ];
             }
@@ -229,6 +230,19 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                     payload: data
                 })
             );
+        }
+    }
+
+    onSearch($event: string): void {
+        // console.log($event);
+        const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, $event);
+
+        if (!!sanitized) {
+            this.search = sanitized;
+            this.onChangePage();
+        } else if ($event.length === 0) {
+            this.search = sanitized;
+            this.onChangePage();
         }
     }
 
