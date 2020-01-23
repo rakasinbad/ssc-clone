@@ -150,6 +150,7 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.patchCatalogueRequest,
         CatalogueActions.patchCataloguesRequest,
+        CatalogueActions.importCataloguesRequest,
         CatalogueActions.setCatalogueToActiveRequest,
         CatalogueActions.setCatalogueToInactiveRequest,
         (state) => ({
@@ -186,6 +187,7 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.patchCatalogueFailure,
         CatalogueActions.patchCataloguesFailure,
+        CatalogueActions.importCataloguesFailure,
         CatalogueActions.setCatalogueToActiveFailure,
         CatalogueActions.setCatalogueToInactiveFailure,
         (state, { payload }) => ({
@@ -270,6 +272,16 @@ const catalogueReducer = createReducer(
             isDeleting: initialState.isDeleting,
             isUpdating: initialState.isUpdating,
             errors: adapterError.removeOne('fetchCatalogueFailure', state.errors)
+        })
+    ),
+    on(
+        CatalogueActions.importCataloguesSuccess,
+        (state) => ({
+            ...state,
+            isLoading: initialState.isLoading,
+            isDeleting: initialState.isDeleting,
+            isUpdating: initialState.isUpdating,
+            errors: adapterError.removeOne('importCataloguesFailure', state.errors)
         })
     ),
     on(

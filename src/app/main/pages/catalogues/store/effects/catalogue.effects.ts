@@ -162,6 +162,112 @@ export class CatalogueEffects {
         ), { dispatch: false }
     );
 
+    importCataloguesRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.importCataloguesRequest),
+            map(action => action.payload),
+            withLatestFrom(
+                this.store.select(AuthSelectors.getUserSupplier)
+            ),
+            switchMap(([{ file, type }, userSupplier]) => {
+                if (!userSupplier) {
+                    return of(CatalogueActions.patchCataloguesFailure({
+                        payload: {
+                            id: 'importCataloguesFailure',
+                            errors: 'Not authenticated'
+                        }
+                    }));
+                }
+
+                const formData: FormData = new FormData();
+                formData.append('file', file);
+                formData.append('supplierId', userSupplier.supplierId);
+                formData.append('type', type);
+
+                return this._$catalogueApi.updateCataloguePrices(formData)
+                    .pipe(
+                        catchOffline(),
+                        map(response => {
+                            return CatalogueActions.importCataloguesSuccess({
+                                payload: {
+                                    status: response.status
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.importCataloguesFailure({
+                                    payload: {
+                                        id: 'importCataloguesFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
+                    );
+            })
+        )
+    );
+
+    importCataloguesFailure$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.importCataloguesFailure),
+            map(action => action.payload),
+            tap(resp => {
+                let message: string;
+
+                if (resp.errors.code === 406) {
+                    message = resp.errors.error.errors
+                        .map(r => {
+                            return `${r.errCode}<br>${r.solve}`;
+                        })
+                        .join('<br><br>');
+                } else {
+                    if (typeof resp.errors === 'string') {
+                        message = resp.errors;
+                    } else {
+                        message =
+                            resp.errors.error && resp.errors.error.message
+                                ? resp.errors.error.message
+                                : resp.errors.message;
+                    }
+                }
+
+                this._$notice.open(message, 'error', {
+                    duration: 10000,
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                // this.matDialog.closeAll();
+
+                // this.store.dispatch(
+                //     CatalogueActions.setRefreshStatus({ status: true })
+                // );
+            })
+        ), { dispatch: false }
+    );
+
+    importCataloguesSuccess$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCataloguesSuccess),
+            map(action => action.payload),
+            tap(() => {
+                this._$notice.open('Import produk berhasil.', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.matDialog.closeAll();
+
+                this.store.dispatch(
+                    CatalogueActions.setRefreshStatus({ status: true })
+                );
+            })
+        ), { dispatch: false }
+    );
+
     fetchCatalogueCategorySuccess$ = createEffect(() => 
         this.actions$.pipe(
             ofType(CatalogueActions.fetchCatalogueCategorySuccess),
