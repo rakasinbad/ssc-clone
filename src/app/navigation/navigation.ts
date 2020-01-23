@@ -14,7 +14,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Store',
         translate: 'NAV.ACCOUNTS.TITLE',
         type: 'collapsable',
-        icon: 'store',
+        icon: 'custom-sinbad-store-logo',
         children: [
             {
                 id: 'accountsStore',
@@ -60,7 +60,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Attendance',
         translate: 'NAV.ATTENDANCES.TITLE',
         type: 'item',
-        icon: 'event_available',
+        icon: 'custom-sinbad-attendance-logo',
         url: '/pages/attendances'
     },
     {
@@ -68,7 +68,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Finance',
         translate: 'NAV.FINANCES.TITLE',
         type: 'collapsable',
-        icon: 'monetization_on',
+        icon: 'custom-sinbad-finance-logo',
         children: [
             {
                 id: 'creditLimitBalance',
@@ -98,7 +98,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'OMS',
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
-        icon: 'shopping_cart',
+        icon: 'custom-sinbad-oms-logo',
         url: '/pages/orders'
     },
     {
@@ -106,7 +106,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Inventory',
         translate: 'NAV.INVENTORIES.TITLE',
         type: 'collapsable',
-        icon: 'layers',
+        icon: 'custom-sinbad-inventory-logo',
         children: [
             {
                 id: 'supp',
@@ -130,7 +130,7 @@ export const navigation: Array<FuseNavigation> = [
         title: 'Sales Management',
         //    translate: 'NAV.INVENTORIES.TITLE',
         type: 'collapsable',
-        icon: 'layerassessments',
+        icon: 'custom-sinbad-sales-force-logo',
         children: [
             {
                 id: 'sales-rep',
