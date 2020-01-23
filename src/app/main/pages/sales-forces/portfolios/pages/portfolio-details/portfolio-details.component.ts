@@ -109,7 +109,7 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
                 active: false
             },
             {
-                title: 'Sales Rep Management',
+                title: 'Sales Management',
                 translate: 'BREADCRUMBS.SALES_REP_MANAGEMENT',
                 url: '/pages/sales-force/portfolio'
             },

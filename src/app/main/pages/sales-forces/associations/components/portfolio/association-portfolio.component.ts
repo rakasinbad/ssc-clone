@@ -105,7 +105,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Association'

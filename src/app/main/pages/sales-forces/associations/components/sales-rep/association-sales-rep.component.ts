@@ -109,7 +109,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Association'

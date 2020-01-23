@@ -56,7 +56,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'SR Assignment',

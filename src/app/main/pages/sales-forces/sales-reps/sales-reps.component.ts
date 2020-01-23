@@ -98,7 +98,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Sales Rep'

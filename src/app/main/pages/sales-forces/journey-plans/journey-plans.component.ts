@@ -116,7 +116,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Journey Plan'
