@@ -11,7 +11,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { LogService } from 'app/shared/helpers';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
-import { SupplierStore } from 'app/shared/models';
+import { SupplierStore, User } from 'app/shared/models';
 import { Observable, Subject } from 'rxjs';
 
 import { StoreActions } from '../../store/actions';
@@ -76,6 +76,15 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    generateSalesRep(salesRep: Array<User>): string {
+        console.log(salesRep, 'ini apa');
+        if (!salesRep || !Array.isArray(salesRep) || salesRep.length === 0) {
+            return '-';
+        }
+
+        return salesRep.map(salesRep => salesRep.fullName).join(',<br/>');
     }
 
     // -----------------------------------------------------------------------------------------------------

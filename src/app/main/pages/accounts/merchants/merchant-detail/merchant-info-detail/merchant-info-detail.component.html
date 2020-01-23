@@ -506,14 +506,14 @@
                                     <td>
                                         <ng-container
                                             *ngIf="
-                                                (store$ | async)?.store?.name || !(isLoading$ | async)
+                                                (store$ | async)?.store?.phoneNo || !(isLoading$ | async)
                                             "
                                         >
-                                            {{ (store$ | async)?.store?.name || '-' }}
+                                            {{ (store$ | async)?.store?.phoneNo || '-' }}
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="
-                                                !(store$ | async)?.store?.name && (isLoading$ | async)
+                                                !(store$ | async)?.store?.phoneNo && (isLoading$ | async)
                                             "
                                             [theme]="{ width: '100px' }"
                                         ></ngx-skeleton-loader>
@@ -539,7 +539,7 @@
                                                 !(isLoading$ | async)
                                             "
                                         >
-                                            {{ (store$ | async)?.store?.externalId || '-' }}
+                                        <p [innerHTML]="(generateSalesRep((store$ | async)?.store?.sales) | safe: 'html')"></p>
                                         </ng-container>
                                         <ngx-skeleton-loader
                                             *ngIf="

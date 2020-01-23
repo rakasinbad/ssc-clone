@@ -155,6 +155,7 @@ export class Store implements IStore {
     vehicleAccessibility?: VehicleAccessibility;
     vehicleAccessibilityId: string;
     warehouseId: string;
+    sales: Array<User>;
     createdAt: string;
     updatedAt: string;
     deletedAt: TNullable<string>;
@@ -203,6 +204,7 @@ export class Store implements IStore {
             vehicleAccessibility,
             vehicleAccessibilityId,
             warehouseId,
+            sales,
             createdAt,
             updatedAt,
             deletedAt,
@@ -234,6 +236,7 @@ export class Store implements IStore {
         this.urbanId = urbanId;
         this.vehicleAccessibilityId = vehicleAccessibilityId;
         this.warehouseId = warehouseId;
+        this.sales = sales;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
