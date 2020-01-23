@@ -172,7 +172,11 @@ app-merchants {
         }
 
         .mat-column-address {
-            flex: 0 1 30%;
+            flex: 0 1 20%;
+        }
+
+        .mat-column-store-phone-no {
+            flex: 0 1 12%;
         }
 
         .mat-column-owner-phone-no {
