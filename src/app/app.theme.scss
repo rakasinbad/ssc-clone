@@ -112,6 +112,9 @@ $typography: mat-typography-config(
 @import 'src/app/layout/components/chat-panel/chat-panel.theme';
 @import 'src/app/layout/components/toolbar/toolbar.theme';
 
+// Search bar
+@import 'src/app/shared/components/search-bar/search-bar.theme';
+
 // Core
 @import 'src/app/main/pages/core/auth/login/login.theme';
 @import 'src/app/main/pages/core/profile/profile.theme';
@@ -159,6 +162,9 @@ $typography: mat-typography-config(
     // Layout components
     @include chat-panel-theme($theme);
     @include toolbar-theme($theme);
+
+    // Search bar
+    @include search-bar-theme($theme);
 
     // Pages
 
