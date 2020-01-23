@@ -71,6 +71,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'name',
         'city',
         'address',
+        'store-phone-no',
         'owner-phone-no',
         'store-segment',
         'store-type',
