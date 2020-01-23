@@ -926,16 +926,28 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         combineLatest([
             this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
             this.store.select(CatalogueSelectors.getCatalogueCategories),
+            this.store.select(CatalogueSelectors.getCatalogueUnits),
             this.store.select(AuthSelectors.getUserSupplier),
         ]).pipe(
             takeUntil(this._unSubs$)
-        ).subscribe(([catalogue, categories, userSupplier]) => {
+        ).subscribe(([catalogue, categories, units, userSupplier]) => {
             /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
             const { id } = this.route.snapshot.params;
             
             /** Butuh fetch kategori katalog jika belum ada di state. */
             if (categories.length === 0) {
                 return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
+            }
+
+            /** Butuh fetch unit kategori jika belum ada di state. */
+            if (units.length === 0) {
+                return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
+                    payload: {
+                        paginate: false,
+                        sort: 'asc',
+                        sortBy: 'id'
+                    }
+                }));
             }
 
             /** Butuh mengambil data katalog jika belum ada di state. */
@@ -1053,6 +1065,16 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                         additionalQtyValue: catalogue.multipleQty,
                     }
                 });
+
+                const uom = this.form.get('productInfo.uom').value;
+                const selectedUnit = units.filter(unit => unit.id === uom);
+                if (selectedUnit.length > 0) {
+                    this.form.patchValue({
+                        productInfo: {
+                            uomName: selectedUnit[0].unit
+                        }
+                    });
+                }
             });
 
             if (this.isViewMode()) {
