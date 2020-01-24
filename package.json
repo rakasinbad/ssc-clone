@@ -82,7 +82,7 @@
         "ngrx-store-freeze": "0.2.4",
         "ngx-color-picker": "8.1.0",
         "ngx-cookie-service": "2.2.0",
-        "ngx-image-zoom": "github:wittlock/ngx-image-zoom#master",
+        "ngx-image-zoom": "0.4.1",
         "ngx-mask": "8.1.6",
         "ngx-moment": "3.5.0",
         "ngx-permissions": "7.0.3",
