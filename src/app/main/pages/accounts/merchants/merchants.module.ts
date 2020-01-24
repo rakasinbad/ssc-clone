@@ -44,7 +44,7 @@ import { fromMerchant } from './store/reducers';
         MaterialModule,
 
         // AgmCoreModule,
-        LeafletModule,
+        // LeafletModule,
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),

@@ -23,6 +23,9 @@ export const locale = {
             ACCOUNTS_STORE: {
                 TITLE: 'Store List'
             },
+            ACCOUNTS_STORE_SETTING: {
+                TITLE: 'Store Setting'
+            },
             ACCOUNTS_INTERNAL: {
                 TITLE: 'Internal'
             },
