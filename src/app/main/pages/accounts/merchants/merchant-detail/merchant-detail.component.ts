@@ -17,6 +17,7 @@ import { filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
+import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
 
@@ -43,13 +44,14 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
             label: 'Location'
         }
     ];
-    urlActive: boolean;
+    urlActive = false;
+    urlStore = false;
 
     fuseConfig$: Observable<FuseConfig>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
@@ -68,8 +70,8 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Account',
@@ -93,9 +95,6 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.urlActive = false;
-
         // Only show loading when url is active "(store-detail:employee)"
         this.router.events
             .pipe(
@@ -104,6 +103,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
             )
             .subscribe(ev => {
                 this.urlActive = this.router.url.endsWith('(store-detail:employee)');
+                this.urlStore = this.router.url.endsWith('(store-detail:location)');
             });
 
         // Handle nav tab change
@@ -134,5 +134,9 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
 
         this._unSubs$.next();
         this._unSubs$.complete();
+    }
+
+    onEditLocation(): void {
+        this.store.dispatch(StoreActions.setEditLocation());
     }
 }

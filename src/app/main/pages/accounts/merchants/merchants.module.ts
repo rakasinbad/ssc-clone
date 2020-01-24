@@ -1,4 +1,3 @@
-import { AgmCoreModule } from '@agm/core';
 import { NgModule } from '@angular/core';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { EffectsModule } from '@ngrx/effects';
@@ -15,6 +14,7 @@ import { MerchantInfoDetailComponent } from './merchant-detail/merchant-info-det
 import { MerchantLocationDetailComponent } from './merchant-detail/merchant-location-detail/merchant-location-detail.component';
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
+import { MerchantSettingComponent } from './merchant-setting/merchant-setting.component';
 import { MerchantsRoutingModule } from './merchants-routing.module';
 import { MerchantsComponent } from './merchants.component';
 import { MerchantEffects } from './store/effects';
@@ -34,7 +34,8 @@ import { fromMerchant } from './store/reducers';
         MerchantInfoDetailComponent,
         MerchantLocationDetailComponent,
         MerchantEmployeeComponent,
-        MerchantFormComponent
+        MerchantFormComponent,
+        MerchantSettingComponent
     ],
     imports: [
         MerchantsRoutingModule,

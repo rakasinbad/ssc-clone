@@ -33,6 +33,16 @@
                     </div> -->
                 </div>
             </div>
+
+            <button
+                type="button"
+                mat-raised-button
+                class="accent-fg"
+                (click)="onEditLocation()"
+                *ngIf="urlStore"
+            >
+                <span>EDIT</span>
+            </button>
         </div>
 
         <!-- CONTENT HEADER fxLayout="column" fxLayoutAlign="center stretch" -->

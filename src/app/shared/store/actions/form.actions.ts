@@ -8,6 +8,9 @@ export const resetClickSaveButton = createAction('[Helper Form] Reset Click Save
 export const clickResetButton = createAction('[Helper Form] Click Reset Button');
 export const resetClickResetButton = createAction('[Helper Form] Reset Click Reset Button');
 
+export const clickCancelButton = createAction('[Helper Form] Click Cancel Button');
+export const resetClickCancelButton = createAction('[Helper Form] Reset Click Cancel Button');
+
 export const setCancelButtonAction = createAction(
     '[Helper Form] Set Cancel Button Action',
     props<{ payload: string }>()
