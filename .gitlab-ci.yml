@@ -51,7 +51,7 @@ deploy-to-aws_staging:
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
    - ls -la ${CI_PROJECT_DIR}
-   - ssh -i ~/.ssh/id_rsa_deploy deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-dev.sinbad.web.id/* /var/www/seller-dev.sinbad.web.id-bak/"
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-dev.sinbad.web.id/* /var/www/seller-dev.sinbad.web.id-bak/"
    - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-dev.sinbad.web.id/
  only:
    - staging
