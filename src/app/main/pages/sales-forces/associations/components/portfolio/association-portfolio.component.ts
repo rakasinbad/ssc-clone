@@ -80,7 +80,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
         'store-qty',
         'sales-target',
         'sales-rep',
-        'actions'
+        // 'actions'
     ];
 
     selection: SelectionModel<Portfolio>;
@@ -337,7 +337,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
                     'store-qty',
                     'sales-target',
                     'sales-rep',
-                    'actions'
+                    // 'actions'
                 ];
             } else {
                 this.displayedColumns = [
