@@ -4,7 +4,7 @@ stages:
  - deploy
  - stop_instance
 
-stop_runner_staging:
+start_runner_staging:
   stage: start_instance
   image: mikesir87/aws-cli:latest
   script:
@@ -35,7 +35,7 @@ build_staging:
  only:
    - staging
  tags:
-  - aws-runner-docker
+  - aws-docker-runner
 
 deploy-to-aws_staging:
  stage: deploy
@@ -56,7 +56,7 @@ deploy-to-aws_staging:
  only:
    - staging
  tags:
-   - aws-runner-docker
+   - aws-docker-runner
 
 stop_runner_staging:
   stage: stop_instance
