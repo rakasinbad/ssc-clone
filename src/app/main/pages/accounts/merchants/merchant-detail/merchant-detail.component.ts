@@ -49,6 +49,7 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
 
     fuseConfig$: Observable<FuseConfig>;
     totalDataSource$: Observable<number>;
+    isEditLocation$: Observable<boolean>;
     isLoading$: Observable<boolean>;
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -121,6 +122,8 @@ export class MerchantDetailComponent implements OnInit, OnDestroy {
                     });
                 }
             });
+
+        this.isEditLocation$ = this.store.select(StoreSelectors.getIsEditLocation);
 
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
     }

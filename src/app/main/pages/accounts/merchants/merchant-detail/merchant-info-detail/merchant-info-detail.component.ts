@@ -9,7 +9,6 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { LogService } from 'app/shared/helpers';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
 import { SupplierStore, User } from 'app/shared/models';
 import { Observable, Subject } from 'rxjs';
@@ -30,14 +29,13 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     store$: Observable<SupplierStore>;
     isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
-        private store: Store<fromMerchant.FeatureState>,
-        private _$log: LogService
+        private store: Store<fromMerchant.FeatureState>
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -47,8 +45,6 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject<void>();
 
         const { id } = this.route.parent.snapshot.params;
 
@@ -79,7 +75,6 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     }
 
     generateSalesRep(salesRep: Array<User>): string {
-        console.log(salesRep, 'ini apa');
         if (!salesRep || !Array.isArray(salesRep) || salesRep.length === 0) {
             return '-';
         }
@@ -96,17 +91,6 @@ export class MerchantInfoDetailComponent implements OnInit, OnDestroy {
     }
 
     onShowImage(imageUrl: string, title: string): void {
-        this._$log.generateGroup(`[SHOW IMAGE]`, {
-            imageUrl: {
-                type: 'log',
-                value: imageUrl
-            },
-            title: {
-                type: 'log',
-                value: title
-            }
-        });
-
         this.matDialog.open(ShowImageComponent, {
             data: {
                 title: title || '',

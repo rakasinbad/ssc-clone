@@ -1,24 +1,29 @@
 import { AgmGeocoder, LatLngBounds, MouseEvent } from '@agm/core';
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ViewChild
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatCheckboxChange, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { SupplierStore } from 'app/shared/models';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { SupplierStore, District } from 'app/shared/models';
+import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
+import { FormSelectors, DropdownSelectors } from 'app/shared/store/selectors';
 import { icon } from 'leaflet';
-import { Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject, fromEvent } from 'rxjs';
+import { filter, takeUntil, tap, map } from 'rxjs/operators';
 
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
-import { NoticeService } from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
 
 @Component({
     selector: 'app-merchant-location-detail',
@@ -60,17 +65,33 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     };
     draggAble = false;
 
+    districtHighlight: string;
+    urbanHighlight: string;
+
+    isDistrictTyping = false;
+    isUrbanTyping = false;
+
     store$: Observable<SupplierStore>;
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
+    isLoadingDistrict$: Observable<boolean>;
+
+    @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
+    @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
+    triggerDistrict: MatAutocompleteTrigger;
+    @ViewChild('triggerUrban', { static: false, read: MatAutocompleteTrigger })
+    triggerUrban: MatAutocompleteTrigger;
 
     private _unSubs$: Subject<void> = new Subject<void>();
+    private _timer: Array<NodeJS.Timer> = [];
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
         private agmGeocoder: AgmGeocoder,
         private store: Store<fromMerchant.FeatureState>,
+        private _$errorMessage: ErrorMessageService,
         private _$notice: NoticeService
     ) {}
 
@@ -86,6 +107,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             tap(data => {
                 if (data && data.store) {
                     this.form.get('address').setValue(data.store.address);
+                    this.cdRef.detectChanges();
                 }
             })
         );
@@ -127,16 +149,35 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                     );
 
                     this.store.dispatch(UiActions.showFooterAction());
+
+                    this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
                 } else {
                     this.store.dispatch(UiActions.hideFooterAction());
+
+                    this.store.dispatch(FormActions.resetClickCancelButton());
+                    this.store.dispatch(FormActions.resetCancelButtonAction());
                 }
-                console.log(this.draggAble, isEditLocation);
             })
         );
 
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
+
+        // Handle cancel button action (footer)
+        this.store
+            .select(FormSelectors.getIsClickCancelButton)
+            .pipe(
+                filter(isClick => !!isClick),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(isClick => {
+                console.log('CLICK CANCEL', isClick);
+                this.store.dispatch(StoreActions.unsetEditLocation());
+
+                this.store.dispatch(FormActions.resetClickCancelButton());
+                this.store.dispatch(FormActions.resetCancelButtonAction());
+            });
     }
 
     ngOnDestroy(): void {
@@ -181,8 +222,54 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         return errors && ((touched && dirty) || touched);
     }
 
+    hasLength(field: string, minLength: number): boolean {
+        if (!field || !minLength) {
+            return;
+        }
+
+        const value = this.form.get(field).value;
+
+        return !value ? false : value.length <= minLength;
+    }
+
     onChangeBound(ev: LatLngBounds): void {
         console.log('Change Bound', ev);
+    }
+
+    onChangeManually(ev: MatCheckboxChange): void {
+        console.log('Manually', ev);
+
+        if (ev.checked === true) {
+            this.form.get('district').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                })
+            ]);
+
+            this.form.get('urban').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                })
+            ]);
+        } else {
+            this.form.get('district').setValidators(null);
+            this.form.get('urban').setValidators(null);
+        }
+
+        this.form.get('district').updateValueAndValidity();
+        this.form.get('urban').updateValueAndValidity();
+    }
+
+    onDisplayDistrict(item: District): string {
+        if (!item) {
+            return;
+        }
+
+        return HelperService.truncateText(
+            `${item.province.name}, ${item.city}, ${item.district}`,
+            40,
+            'start'
+        );
     }
 
     onDragEnd(ev: MouseEvent): void {
@@ -190,6 +277,58 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
         if (ev.coords.lat && ev.coords.lng) {
             this._getAddress(ev.coords.lat, ev.coords.lng);
+        }
+    }
+
+    onKeydown(ev: KeyboardEvent, field: string): void {
+        if (!field) {
+            return;
+        }
+
+        clearTimeout(this._timer[field]);
+    }
+
+    onKeyup(ev: KeyboardEvent, field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    if (!(ev.target as any).value || (ev.target as any).value.length < 3) {
+                        this.store.dispatch(DropdownActions.resetDistrictsState());
+                        return;
+                    }
+
+                    this.isDistrictTyping = true;
+
+                    clearTimeout(this._timer[field]);
+
+                    this._timer[field] = setTimeout(() => {
+                        this.isDistrictTyping = false;
+                    }, 100);
+                }
+                break;
+
+            case 'urban':
+                {
+                    if (!(ev.target as any).value) {
+                        // this.store.dispatch(DropdownActions.resetDistrictsState());
+                        return;
+                    }
+
+                    this.isUrbanTyping = true;
+
+                    clearTimeout(this._timer[field]);
+
+                    this._timer[field] = setTimeout(() => {
+                        this.isUrbanTyping = false;
+
+                        // Detect change manually
+                        this.cdRef.markForCheck();
+                    }, 100);
+                }
+                break;
+
+            default:
+                return;
         }
     }
 
@@ -250,9 +389,81 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         //     });
     }
 
+    /* onOpenAutocomplete(field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    if (this.autoDistrict && this.autoDistrict.panel && this.autoCompleteTrigger) {
+                        fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
+                            .pipe(
+                                map(x => this.autoDistrict.panel.nativeElement.scrollTop),
+                                withLatestFrom(
+                                    this.store.select(DropdownSelectors.getTotalDistrictEntity),
+                                    this.store.select(DropdownSelectors.getTotalDistrict)
+                                ),
+                                takeUntil(this.autoCompleteTrigger.panelClosingActions)
+                            )
+                            .subscribe(([x, skip, total]) => {
+                                const scrollTop = this.autoDistrict.panel.nativeElement.scrollTop;
+                                const scrollHeight = this.autoDistrict.panel.nativeElement
+                                    .scrollHeight;
+                                const elementHeight = this.autoDistrict.panel.nativeElement
+                                    .clientHeight;
+                                const atBottom = scrollHeight === scrollTop + elementHeight;
+
+                                if (atBottom && skip && total && skip < total) {
+                                    const data: IQueryParams = {
+                                        limit: 10,
+                                        skip: skip
+                                    };
+
+                                    data['paginate'] = true;
+
+                                    if (this.districtHighlight) {
+                                        data['search'] = [
+                                            {
+                                                fieldName: 'keyword',
+                                                keyword: this.districtHighlight
+                                            }
+                                        ];
+
+                                        this.store.dispatch(
+                                            DropdownActions.fetchScrollDistrictRequest({
+                                                payload: data
+                                            })
+                                        );
+                                    }
+                                }
+                            });
+                    }
+                }
+                break;
+
+            default:
+                return;
+        }
+    } */
+
     private _initForm(): void {
         this.form = this.formBuilder.group({
             address: '',
+            manually: false,
+            district: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            urban: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             notes: ''
         });
     }
@@ -267,6 +478,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
                 if (res && res[0]) {
                     this.form.get('address').setValue(res[0].formatted_address);
+                    this.cdRef.detectChanges();
                 } else {
                     this._$notice.open('No results found', 'error', {
                         verticalPosition: 'bottom',
