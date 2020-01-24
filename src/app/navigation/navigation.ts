@@ -24,7 +24,7 @@ export const navigation: Array<FuseNavigation> = [
                 url: '/pages/account/stores'
             },
             {
-                id: 'accountsStoreSetting',
+                id: 'storeSetting',
                 title: 'Store Setting',
                 translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
