@@ -441,8 +441,8 @@
                         <span fxFlexAlign="center" class="grey-fg" fxFlex="80" *ngIf="isViewMode() && form.get('productInfo.stock').value">
                             {{ form.get('productInfo.stock').value }}
                         </span>
-                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
-                            &nbsp;
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
+                            -
                         </span>
                     </div>
                     <!-- / PRODUK STOK -->
@@ -1026,7 +1026,9 @@
                                                 class="mat-error"
                                                 style="margin-bottom: 0px;"
                                             >    
-                                                * Main Photo
+                                                <span
+                                                    class="red-200-fg"
+                                                >* </span>Main Photo
                                             </p>
                                             <ng-template #noPhotoError>
                                                 <p
@@ -1035,7 +1037,7 @@
                                                 >    
                                                     <span
                                                         class="red-200-fg"
-                                                    >* </span>M
+                                                    >* </span>Main Photo
                                                 </p>
                                             </ng-template>
                                             <button
