@@ -73,6 +73,10 @@ app-payment-status {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .payment {
             position: relative;
             // cursor: pointer;
@@ -82,7 +86,22 @@ app-payment-status {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -90,8 +109,8 @@ app-payment-status {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
 
             p[data-content='-'] {
@@ -110,36 +129,52 @@ app-payment-status {
         // }
 
         .mat-column-order-reference {
+            flex: 0 1 15%;
         }
 
-        .mat-column-order-store {
-            flex: 0 1 100px;
+        .mat-column-order-code {
+            flex: 0 1 18%;
         }
 
-        .mat-column-checkbox {
-            flex: 0 1 64px;
-            padding-left: 18px;
+        .mat-column-store-name {
+            flex: 0 1 15%;
         }
 
-        .mat-column-id {
-            flex: 0 1 84px;
+        .mat-column-account-receivable {
+            flex: 0 1 12%;
         }
 
-        .mat-column-phone {
-            flex: 0 1 160px;
+        .mat-column-status {
+            flex: 0 1 12%;
         }
 
-        .mat-column-roles {
-            flex: 0 1 160px;
+        .mat-column-payment-type {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-payment-method {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-order-date {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-due-date {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-paid-on {
+            flex: 0 1 10%;
         }
 
         .mat-column-aging-day {
-            flex: 0 1 50px;
+            flex: 0 1 10%;
             // justify-content: flex-end;
         }
 
-        .mat-column-active {
-            flex: 0 1 80px;
+        .mat-column-d {
+            flex: 0 1 50px;
         }
 
         .mat-column-actions {
@@ -151,4 +186,16 @@ app-payment-status {
 
 .mat-menu-panel {
     min-height: 52px;
+}
+
+.nav {
+    fuse-nav-horizontal-item {
+        &.nav-item {
+            &:first-of-type {
+                .nav-link {
+                    padding-left: 0;
+                }
+            }
+        }
+    }
 }

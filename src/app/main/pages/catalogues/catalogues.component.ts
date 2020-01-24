@@ -33,26 +33,27 @@ import { CataloguesService } from './services';
 
 import { Catalogue } from './models';
 
-import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+// import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+// import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 // import { CataloguesBlockComponent } from './catalogues-block/catalogues-block.component';
 import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
-import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
 import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
 import { CatalogueActions } from './store/actions';
 import { fromCatalogue } from './store/reducers';
 import { CatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
 @Component({
-  selector: 'app-catalogues',
-  templateUrl: './catalogues.component.html',
-  styleUrls: ['./catalogues.component.scss'],
-  animations: fuseAnimations,
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-catalogues',
+    templateUrl: './catalogues.component.html',
+    styleUrls: ['./catalogues.component.scss'],
+    animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -70,7 +71,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     displayedColumns = this.initialDisplayedColumns;
     hasSelected: boolean;
-    search: FormControl;
+    search: string;
     statusCatalogue: any;
     findCatalogueMode: TFindCatalogueMode = 'all';
 
@@ -79,7 +80,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
-    table: ElementRef;
+    table: ElementRef<HTMLElement>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -103,14 +104,15 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         public translate: TranslateService,
         private readonly sanitizer: DomSanitizer,
         private _helper: HelperService,
-        private _notice: NoticeService
+        private _notice: NoticeService,
+        private ngxPermissionsService: NgxPermissionsService,
     ) {
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Catalogue',
@@ -130,7 +132,53 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
-  // -----------------------------------------------------------------------------------------------------
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['CATALOGUE.UPDATE', 'CATALOGUE.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                if (this.findCatalogueMode === 'blocked') {
+                    this.displayedColumns = [
+                        'name',
+                        'lastUpdate',
+                        'timeLimit',
+                        'blockType',
+                        'blockReason',
+                        'blockSuggest',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = this.initialDisplayedColumns;
+                }
+            } else {
+                if (this.findCatalogueMode === 'blocked') {
+                    this.displayedColumns = [
+                        'name',
+                        'lastUpdate',
+                        'timeLimit',
+                        'blockType',
+                        'blockReason',
+                        'blockSuggest',
+                        // 'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'name',
+                        'sku',
+                        'externalId',
+                        // 'variant',
+                        'price',
+                        'stock',
+                        // 'sales',
+                        'actions'
+                    ];
+        
+                }
+            }
+        });
+    }
+
+    // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
@@ -141,35 +189,36 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.translate.set('STATUS.CATALOGUE.ALL_PARAM.TITLE', 'Semua 222', 'id');
         // this.translate.set('STATUS.CATALOGUE.ALL_PARAM.TITLE', 'Semua 222', 'en');
         // console.log(this._fuseNavigationService.getNavigationItem('all-type', this._fuseNavigationService.getNavigation('customNavigation')));
+        this.updatePrivileges();
         
         // this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
+        this.search = '';
         this.hasSelected = false;
 
         this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading);
         
-        this.search.valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(value => {
-                    const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+        // this.search.valueChanges
+        //     .pipe(
+        //         distinctUntilChanged(),
+        //         debounceTime(1000),
+        //         filter(value => {
+        //             const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
 
-                    if (sanitized) {
-                        return true;
-                    } else {
-                        if (value.length === 0) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                }),
-                takeUntil(this._unSubs$)
-            ).subscribe(() => {
-                this.onRefreshTable();
-            });
+        //             if (sanitized) {
+        //                 return true;
+        //             } else {
+        //                 if (value.length === 0) {
+        //                     return true;
+        //                 } else {
+        //                     return false;
+        //                 }
+        //             }
+        //         }),
+        //         takeUntil(this._unSubs$)
+        //     ).subscribe(() => {
+        //         this.onRefreshTable();
+        //     });
 
         // Need for demo
         // this.store
@@ -198,7 +247,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             if (status) {
                 this.onRefreshTable();
             }
-        })
+        });
     }
 
     ngAfterViewInit(): void {
@@ -224,6 +273,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
+                this.table.nativeElement.scrollTop = 0;
                 this.initTable();
             });
 
@@ -254,19 +304,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             takeUntil(this._unSubs$)
         ).subscribe(index => {
             // console.log('INDEX', index);
-            if (index === 'blocked') {
-                this.displayedColumns = [
-                    'name',
-                    'lastUpdate',
-                    'timeLimit',
-                    'blockType',
-                    'blockReason',
-                    'blockSuggest',
-                    'actions'
-                ];
-            } else {
-                this.displayedColumns = this.initialDisplayedColumns;
-            }
+            // if (index === 'blocked') {
+            //     this.displayedColumns = [
+            //         'name',
+            //         'lastUpdate',
+            //         'timeLimit',
+            //         'blockType',
+            //         'blockReason',
+            //         'blockSuggest',
+            //         'actions'
+            //     ];
+            // } else {
+            //     this.displayedColumns = this.initialDisplayedColumns;
+            // }
 
             if (index === 'all-type') {
                 this.findCatalogueMode = 'all';
@@ -288,10 +338,24 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                 //     tap(catalogues => console.log(catalogues))
                 // );
             }
-    
+
+            this.updatePrivileges();
             this.initTable();
         });
         // this.initTable();
+    }
+
+    onSearch($event: string): void {
+        // console.log($event);
+        const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, $event);
+
+        if (!!sanitized) {
+            this.search = sanitized;
+            this.onRefreshTable();
+        } else if ($event.length === 0) {
+            this.search = sanitized;
+            this.onRefreshTable();
+        }
     }
 
     ngOnDestroy(): void {
@@ -457,7 +521,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
+        // this.paginator.pageIndex = 0;
         this.initTable();
     }
 
@@ -503,21 +567,21 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     break;
             }
     
-            const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
-            if (searchValue) {
+            // const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search);
+            if (this.search) {
                 data['search'] = [
                     {
                         fieldName: 'name',
-                        keyword: searchValue
+                        keyword: this.search
                     },
                     {
                         fieldName: 'sku',
-                        keyword: searchValue
+                        keyword: this.search
                     },
-                    // {
-                    //     fieldName: 'external_id',
-                    //     keyword: searchValue
-                    // }
+                    {
+                        fieldName: 'external_id',
+                        keyword: this.search
+                    }
                 ];
             }
     

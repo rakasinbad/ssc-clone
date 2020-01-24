@@ -1,6 +1,6 @@
 import { FuseNavigation } from '@fuse/types';
 
-export const navigation: FuseNavigation[] = [
+export const navigation: Array<FuseNavigation> = [
     // {
     //     id: 'dashboard',
     //     title: 'Dashboard',
@@ -11,17 +11,24 @@ export const navigation: FuseNavigation[] = [
     // },
     {
         id: 'account',
-        title: 'Account',
+        title: 'Store',
         translate: 'NAV.ACCOUNTS.TITLE',
         type: 'collapsable',
-        icon: 'people',
+        icon: 'custom-sinbad-store-logo',
         children: [
             {
                 id: 'accountsStore',
-                title: 'Store',
+                title: 'Store List',
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
                 url: '/pages/account/stores'
+            },
+            {
+                id: 'storeSetting',
+                title: 'Store Setting',
+                translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
+                type: 'item',
+                url: '/pages/account/stores/setting'
             }
             // {
             //     id: 'accountsInternal',
@@ -37,7 +44,7 @@ export const navigation: FuseNavigation[] = [
         title: 'Catalogue',
         translate: 'NAV.CATALOGUES.TITLE',
         type: 'collapsable',
-        icon: 'custom-icons8-open-box',
+        icon: 'custom-sinbad-catalogue-logo',
         children: [
             {
                 id: 'addProduct',
@@ -60,7 +67,7 @@ export const navigation: FuseNavigation[] = [
         title: 'Attendance',
         translate: 'NAV.ATTENDANCES.TITLE',
         type: 'item',
-        icon: 'event_available',
+        icon: 'custom-sinbad-attendance-logo',
         url: '/pages/attendances'
     },
     {
@@ -68,7 +75,7 @@ export const navigation: FuseNavigation[] = [
         title: 'Finance',
         translate: 'NAV.FINANCES.TITLE',
         type: 'collapsable',
-        icon: 'monetization_on',
+        icon: 'custom-sinbad-finance-logo',
         children: [
             {
                 id: 'creditLimitBalance',
@@ -98,7 +105,7 @@ export const navigation: FuseNavigation[] = [
         title: 'OMS',
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
-        icon: 'shopping_cart',
+        icon: 'custom-sinbad-oms-logo',
         url: '/pages/orders'
     },
     {
@@ -106,7 +113,7 @@ export const navigation: FuseNavigation[] = [
         title: 'Inventory',
         translate: 'NAV.INVENTORIES.TITLE',
         type: 'collapsable',
-        icon: 'layers',
+        icon: 'custom-sinbad-inventory-logo',
         children: [
             {
                 id: 'supp',
@@ -125,33 +132,40 @@ export const navigation: FuseNavigation[] = [
             }
         ]
     },
-    // {
-    //     id: 'sales-force',
-    //     title: 'Sales Rep Management',
-    //     //    translate: 'NAV.INVENTORIES.TITLE',
-    //     type: 'collapsable',
-    //     icon: 'layerassessments',
-    //     children: [
-    //         {
-    //             id: 'sales-rep',
-    //             title: 'Sales Rep',
-    //             //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
-    //             type: 'item',
-    //             url: '/pages/sales-force/sales-rep'
-    //         },
-    //         {
-    //             id: 'portfolio',
-    //             title: 'Portfolio',
-    //             //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
-    //             type: 'item',
-    //             url: '/pages/sales-force/portfolio'
-    //         },
-    //         {
-    //             id: 'journey-plan',
-    //             title: 'Journey Plan',
-    //             type: 'item',
-    //             url: '/pages/sales-force/journey-plans'
-    //         }
-    //     ]
-    // }
+    {
+        id: 'sales-force',
+        title: 'Sales Management',
+        //    translate: 'NAV.INVENTORIES.TITLE',
+        type: 'collapsable',
+        icon: 'custom-sinbad-sales-force-logo',
+        children: [
+            {
+                id: 'sales-rep',
+                title: 'Sales Rep',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/sales-rep'
+            },
+            {
+                id: 'portfolio',
+                title: 'Portfolio of Store',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/portfolio'
+            },
+            {
+                id: 'association',
+                title: 'SR Assignment',
+                //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+                type: 'item',
+                url: '/pages/sales-force/associations'
+            },
+            {
+                id: 'journey-plan',
+                title: 'Journey Plan',
+                type: 'item',
+                url: '/pages/sales-force/journey-plans'
+            }
+        ]
+    }
 ];

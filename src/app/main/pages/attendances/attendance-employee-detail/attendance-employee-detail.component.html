@@ -285,11 +285,19 @@
                     >
                     </mat-row>
                 </mat-table>
+                
+                <div
+                    class="no-records"
+                    *ngIf="!(isAttendanceLoading$ | async) && (totalEmployeeActivities$ | async) === 0"
+                >
+                    No records found
+                </div>
     
                 <mat-paginator
+                    [fxHide]="(totalEmployeeActivities$ | async) === 0"
                     [length]="totalEmployeeActivities$ | async"
-                    [pageSize]="5"
-                    [pageSizeOptions]="[5, 10, 25, 100]"
+                    [pageSize]="defaultPageSize"
+                    [pageSizeOptions]="defaultPageSizeTable"
                     (page)="onChangePage()"
                     showFirstLastButtons
                 >

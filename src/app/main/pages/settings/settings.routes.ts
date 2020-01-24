@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 
@@ -11,7 +12,19 @@ const routes: Routes = [
             import('./accounts-settings/accounts-settings.module').then(
                 m => m.AccountsSettingsModule
             ),
-        canLoad: [AuthGuard]
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN']
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true
+                }
+            }
+        }
     }
 ];
 
@@ -19,4 +32,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class SettingsRoutingModule { }
+export class SettingsRoutingModule {}

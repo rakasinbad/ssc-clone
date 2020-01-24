@@ -2,13 +2,13 @@
     <!-- CONTENT -->
     <div class="center px-32" fxLayout="column" fxLayoutGap="20px">
         <!-- TOOLBAR -->
-        <div class="header mb-0 h-200" fxLayout="column">
+        <div class="portfolio-header mb-0" fxLayout="column">
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
                 <!-- TITLE -->
                 <p class="h2" fxFlexAlign="center">Portfolio</p>
                 <!-- / TITLE -->
                 <!-- SEARCH -->
-                <div fxFlexAlign="center" class="search-wrapper mx-12">
+                <div fxFlexAlign="center" fxFlex="30" class="search-wrapper">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
                         <input #filter [formControl]="search" placeholder="Cari di sini" />
@@ -17,57 +17,63 @@
                 <!-- / SEARCH -->
             </div>
             <div fxLayout="row" fxLayoutAlign="space-between stretch">
-                <!-- ADD BUTTON -->
-                <button
-                    mat-flat-button
-                    color="accent"
-                    fxFlexAlign="center"
-                    (click)="addPortfolio()"
-                >
-                    <mat-icon>add</mat-icon>
-                    Add
-                </button>
+                <ng-template [ngxPermissionsOnly]="['SRM.PFO.CREATE']">
+                    <!-- ADD BUTTON -->
+                    <button
+                        mat-flat-button
+                        color="accent"
+                        fxFlexAlign="center"
+                        (click)="addPortfolio()"
+                    >
+                        <!-- <mat-icon>add</mat-icon> -->
+                        ADD
+                    </button>
+                </ng-template>
                 <!-- / ADD BUTTON -->
                 <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
                 <div fxLayout="row" fxLayoutGap="16px">
-                    <!-- EXPORT BUTTON -->
-                    <button
-                        mat-stroked-button
-                        color="accent"
-                        fxFlexAlign="center"
-                        class="red-border"
-                        (click)="exportPortfolio()"
-                    >
-                        Export
-                    </button>
-                    <!-- / EXPORT BUTTON -->
-                    <!-- IMPORT BUTTON -->
-                    <button
-                        mat-stroked-button
-                        color="accent"
-                        class="red-border"
-                        fxFlexAlign="center"
-                    >
-                        Import
-                    </button>
-                    <!-- / IMPORT BUTTON -->
+                    <ng-template [ngxPermissionsOnly]="['SRM.PFO.EXPORT']">
+                        <!-- EXPORT BUTTON -->
+                        <button
+                            mat-flat-button
+                            color="accent"
+                            fxFlexAlign="center"
+                            class="red-border"
+                            (click)="exportPortfolio()"
+                        >
+                            EXPORT
+                        </button>
+                        <!-- / EXPORT BUTTON -->
+                    </ng-template>
+                    <ng-template [ngxPermissionsOnly]="['SRM.PFO.IMPORT']">
+                        <!-- IMPORT BUTTON -->
+                        <button
+                            mat-stroked-button
+                            color="accent"
+                            class="red-border"
+                            fxFlexAlign="center"
+                        >
+                            IMPORT
+                        </button>
+                        <!-- / IMPORT BUTTON -->
+                    </ng-template>
                     <!-- FILTER BUTTON -->
-                    <button
+                    <!-- <button
                         mat-flat-button
                         color="primary"
                         fxFlexAlign="center"
                     >
                         Filter List
-                    </button>
+                    </button> -->
                     <!-- / FILTER BUTTON -->
                     <!-- "GROUP BY" BUTTON -->
-                    <button
+                    <!-- <button
                         mat-flat-button
                         color="primary"
                         fxFlexAlign="center"
                     >
                         Group By
-                    </button>
+                    </button> -->
                     <!-- / "GROUP BY" BUTTON -->
                 </div>
                 <!-- / IMPORT, EXPORT, FILTER, GROUP BY -->
@@ -109,7 +115,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p>
-                            {{ row?.code }}
+                            {{ row?.code || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -126,7 +132,7 @@
                 <ng-container matColumnDef="salesForce">
                     <mat-header-cell *matHeaderCellDef>Sales Rep.</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="word-wrap">{{ row?.user?.fullName }}</p>
+                        <p class="word-wrap">{{ row?.user?.fullName || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -156,16 +162,18 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="edit"
-                                    (click)="editPortfolio(row.id)"
-                                >
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['SRM.PFO.UPDATE']">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="edit"
+                                        (click)="editPortfolio(row.id)"
+                                    >
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -175,6 +183,14 @@
 
                 <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewPortfolio(row?.id)" class="portfolio"></mat-row>
             </mat-table>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && portfolios.length === 0"
+            >
+                No records found
+            </div>
+
 
             <mat-paginator
                 [length]="totalPortfolios$ | async"

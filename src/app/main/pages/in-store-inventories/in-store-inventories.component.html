@@ -72,7 +72,7 @@
         <!-- CONTENT CARD -->
         <!-- <div class="content-card"></div> -->
 
-        <div class="sinbad-content mat-elevation-z1">
+        <div class="content-card mat-elevation-z1">
             <mat-table
                 class="merchants-table"
                 #table
@@ -84,11 +84,11 @@
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
                     <mat-header-cell *matHeaderCellDef>
-                        Store ID
+                        Supplier's Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeCode }}
+                            {{ row?.store?.externalId || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>

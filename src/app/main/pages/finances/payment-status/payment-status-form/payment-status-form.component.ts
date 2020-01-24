@@ -9,9 +9,10 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import * as moment from 'moment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -29,17 +30,18 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
     minDate: Date;
     maxDate: Date;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        @Inject(MAT_DIALOG_DATA) public data: any,
         private _cd: ChangeDetectorRef,
         private dialogRef: MatDialogRef<PaymentStatusFormComponent>,
         private formBuilder: FormBuilder,
         private matDialog: MatDialog,
-        @Inject(MAT_DIALOG_DATA) public data: any,
+        private ngxPermissions: NgxPermissionsService,
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
-        private _$log: LogService
+        private _$notice: NoticeService
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -51,8 +53,6 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         // Add 'implements OnInit' to the class.
         this.minDate = moment(this.data.item.createdAt).toDate();
         this.maxDate = moment().toDate();
-
-        this._unSubs$ = new Subject<void>();
 
         if (this.data.id === 'new') {
             this.pageType = 'new';
@@ -93,6 +93,10 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    safeValue(item: any): any {
+        return item ? item : '-';
+    }
+
     onCheckMinDate(orderDate: string): Date {
         if (!orderDate) {
             return;
@@ -119,59 +123,65 @@ export class PaymentStatusFormComponent implements OnInit, OnDestroy {
 
         if (action === 'new') {
         } else if (action === 'edit') {
-            const payload = {
-                statusPayment,
-                paidTime: moment(paidDate).toISOString()
-            };
+            const canUpdate = this.ngxPermissions.hasPermission('FINANCE.PS.UPDATE');
+            canUpdate.then(hasAccess => {
+                if (hasAccess) {
+                    const payload = {
+                        statusPayment,
+                        paidTime: moment(paidDate).toISOString()
+                    };
 
-            if (!statusPayment) {
-                delete payload.statusPayment;
-                delete payload.paidTime;
-            }
-
-            if (statusPayment !== 'paid') {
-                delete payload.paidTime;
-            }
-
-            if (!paidDate) {
-                delete payload.paidTime;
-            }
-
-            if (payload) {
-                const dialogRef = this.matDialog.open<
-                    ChangeConfirmationComponent,
-                    any,
-                    {
-                        id: string;
-                        change: {
-                            statusPayment: string;
-                            paidTime: any;
-                        };
+                    if (!statusPayment) {
+                        delete payload.statusPayment;
+                        delete payload.paidTime;
                     }
-                >(ChangeConfirmationComponent, {
-                    data: {
-                        title: 'Confirmation',
-                        message: 'Are you sure want to change ?',
-                        id: this.data.id,
-                        change: payload
-                    },
-                    disableClose: true
-                });
 
-                dialogRef
-                    .afterClosed()
-                    .pipe(takeUntil(this._unSubs$))
-                    .subscribe(({ id, change }) => {
-                        if (id && change) {
-                            this.dialogRef.close({ action, payload });
-                        }
+                    if (statusPayment !== 'paid') {
+                        delete payload.paidTime;
+                    }
+
+                    if (!paidDate) {
+                        delete payload.paidTime;
+                    }
+
+                    if (payload) {
+                        const dialogRef = this.matDialog.open<
+                            ChangeConfirmationComponent,
+                            any,
+                            {
+                                id: string;
+                                change: {
+                                    statusPayment: string;
+                                    paidTime: any;
+                                };
+                            }
+                        >(ChangeConfirmationComponent, {
+                            data: {
+                                title: 'Confirmation',
+                                message: 'Are you sure want to change ?',
+                                id: this.data.id,
+                                change: payload
+                            },
+                            disableClose: true
+                        });
+
+                        dialogRef
+                            .afterClosed()
+                            .pipe(takeUntil(this._unSubs$))
+                            .subscribe(({ id, change }) => {
+                                if (id && change) {
+                                    this.dialogRef.close({ action, payload });
+                                }
+                            });
+                    }
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
                     });
-            }
+                }
+            });
         }
-    }
-
-    safeValue(item: any): any {
-        return item ? item : '-';
     }
 
     // -----------------------------------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+#journey-plan-store-form {
+    .mat-card {
+        &.sinbad-card {
+            padding: 0;
+
+            .mat-tab-label {
+                height: 48px;
+            }
+        }
+    }
+}

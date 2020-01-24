@@ -14,6 +14,7 @@ import {
     fromForm,
     fromNetwork,
     fromProgress,
+    fromSource,
     fromUi
 } from 'app/shared/store/reducers';
 import { environment } from 'environments/environment';
@@ -24,23 +25,25 @@ import { RouterStateUrl } from './custom-serializer';
 
 export interface State {
     router: RouterReducerState<RouterStateUrl>;
+    [fromAuth.FEATURE_KEY]: fromAuth.State;
     [fromDropdown.FEATURE_KEY]: fromDropdown.State;
     [fromForm.FEATURE_KEY]: fromForm.State;
-    [fromProgress.FEATURE_KEY]: fromProgress.State;
     [fromNetwork.FEATURE_KEY]: fromNetwork.State;
+    [fromProgress.FEATURE_KEY]: fromProgress.State;
+    [fromSource.featureKey]: fromSource.State;
     [fromUi.FEAUTURE_KEY]: fromUi.State;
-    [fromAuth.FEATURE_KEY]: fromAuth.State;
 }
 
 export const appReducer = new InjectionToken<ActionReducerMap<State>>('Root Reducer', {
     factory: () => ({
         router: routerReducer,
+        [fromAuth.FEATURE_KEY]: fromAuth.reducer,
         [fromDropdown.FEATURE_KEY]: fromDropdown.reducer,
         [fromForm.FEATURE_KEY]: fromForm.reducer,
-        [fromProgress.FEATURE_KEY]: fromProgress.reducer,
         [fromNetwork.FEATURE_KEY]: fromNetwork.reducer,
-        [fromUi.FEAUTURE_KEY]: fromUi.reducer,
-        [fromAuth.FEATURE_KEY]: fromAuth.reducer
+        [fromProgress.FEATURE_KEY]: fromProgress.reducer,
+        [fromSource.featureKey]: fromSource.reducers,
+        [fromUi.FEAUTURE_KEY]: fromUi.reducer
     })
 });
 

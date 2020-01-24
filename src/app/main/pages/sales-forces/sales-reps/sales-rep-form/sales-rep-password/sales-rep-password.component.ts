@@ -12,7 +12,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService } from 'app/shared/helpers';
+import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
 import { LifecyclePlatform } from 'app/shared/models';
 import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
@@ -25,6 +25,7 @@ import { SalesRep, SalesRepFormPasswordPut } from '../../models';
 import { SalesRepActions } from '../../store/actions';
 import * as fromSalesReps from '../../store/reducers';
 import { SalesRepSelectors } from '../../store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-sales-rep-password',
@@ -41,14 +42,16 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
 
     @Input() readonly pageType: 'new' | 'edit' = 'edit';
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$errorMessage: ErrorMessageService
+        private _$errorMessage: ErrorMessageService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -61,8 +64,6 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject<void>();
 
         this._initPage();
 
@@ -128,14 +129,6 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
         return errors && ((touched && dirty) || touched);
     }
 
-    safeValue(value: any): any {
-        if (typeof value === 'number') {
-            return value;
-        } else {
-            return value ? value : '-';
-        }
-    }
-
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -152,6 +145,9 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
 
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
+                // Reset form status state
+                this.store.dispatch(FormActions.resetFormStatus());
+
                 // Reset click save button state
                 this.store.dispatch(FormActions.resetClickSaveButton());
 
@@ -234,21 +230,32 @@ export class SalesRepPasswordComponent implements OnInit, OnDestroy {
         const body = this.form.getRawValue();
 
         if (this.pageType === 'edit') {
-            const { id } = this.route.snapshot.params;
+            const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
 
-            const payload: SalesRepFormPasswordPut = {
-                // oldPassword: body.oldPassword,
-                password: body.newPassword,
-                confPassword: body.confirmPassword
-            };
+            canUpdate.then(hasAccess => {
+                if (hasAccess) {
+                    const { id } = this.route.snapshot.params;
 
-            if (Object.keys(payload).length === 3) {
-                this.store.dispatch(
-                    SalesRepActions.changePasswordSalesRepRequest({
-                        payload: { body: payload, id }
-                    })
-                );
-            }
+                    const payload: SalesRepFormPasswordPut = {
+                        // oldPassword: body.oldPassword,
+                        password: body.newPassword,
+                        confPassword: body.confirmPassword
+                    };
+
+                    if (Object.keys(payload).length === 3) {
+                        this.store.dispatch(
+                            SalesRepActions.changePasswordSalesRepRequest({
+                                payload: { body: payload, id }
+                            })
+                        );
+                    }
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            });
         }
     }
 

@@ -1,12 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { fetchCalculateOrdersFailure } from './../actions/order.actions';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import {
+    CalculateOrderApiService,
     DownloadApiService,
     LogService,
     NoticeService,
@@ -14,23 +17,24 @@ import {
     UploadApiService
 } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { UiActions, ProgressActions } from 'app/shared/store/actions';
+import { ErrorHandler } from 'app/shared/models';
+import { ProgressActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
     catchError,
     exhaustMap,
     finalize,
     map,
+    retry,
     switchMap,
     tap,
-    withLatestFrom,
-    flatMap
+    withLatestFrom
 } from 'rxjs/operators';
 
+import { IStatusOMS } from '../../models';
 import { OrderApiService } from '../../services';
 import { OrderActions } from '../actions';
 import { fromOrder } from '../reducers';
-import { ErrorHandler } from 'app/shared/models';
 
 /**
  *
@@ -377,22 +381,22 @@ export class OrderEffects {
 
                 switch (params.status) {
                     case 'confirm':
-                        title = 'Dikemas';
+                        title = 'Packed';
                         body = 'packing';
                         break;
 
                     case 'packing':
-                        title = 'Dikirim';
+                        title = 'Shipped';
                         body = 'shipping';
                         break;
 
                     case 'shipping':
-                        title = 'Diterima';
+                        title = 'Delivered';
                         body = 'delivered';
                         break;
 
                     case 'delivered':
-                        title = 'Selesai';
+                        title = 'Done';
                         body = 'done';
                         break;
                 }
@@ -679,6 +683,94 @@ export class OrderEffects {
         { dispatch: false }
     );
 
+    fetchCalculateOrdersRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(OrderActions.fetchCalculateOrdersRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(([_, data]: [any, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        OrderActions.fetchCalculateOrdersFailure({
+                            payload: {
+                                id: 'fetchCalculateOrdersFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        OrderActions.fetchCalculateOrdersFailure({
+                            payload: {
+                                id: 'fetchCalculateOrdersFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$calculateOrderApi.getStatusOrders<IStatusOMS>('oms', supplierId).pipe(
+                    catchOffline(),
+                    retry(3),
+                    map(resp => {
+                        return OrderActions.fetchCalculateOrdersSuccess({ payload: resp });
+                    }),
+                    catchError(err =>
+                        of(
+                            OrderActions.fetchCalculateOrdersFailure({
+                                payload: {
+                                    id: 'fetchCalculateOrdersFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
+
+    fetchCalculateOrdersFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(OrderActions.fetchCalculateOrdersFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ EXPORT methods
     // -----------------------------------------------------------------------------------------------------
@@ -934,12 +1026,13 @@ export class OrderEffects {
 
     constructor(
         private actions$: Actions,
-        private http: HttpClient,
         private matDialog: MatDialog,
         private router: Router,
+        private storage: StorageMap,
         private store: Store<fromOrder.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
+        private _$calculateOrderApi: CalculateOrderApiService,
         private _$downloadApi: DownloadApiService,
         private _$orderApi: OrderApiService,
         private _$orderBrandCatalogueApi: OrderBrandCatalogueApiService,

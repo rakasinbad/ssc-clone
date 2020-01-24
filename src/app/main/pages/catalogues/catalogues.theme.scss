@@ -2,20 +2,20 @@
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
-    app-catalogues {
-        .search-wrapper {
-            background: map-get($background, card);
+    // app-catalogues {
+    //     .search-wrapper {
+    //         background: map-get($background, card);
 
-            .search {
-                .mat-icon {
-                    color: map-get($foreground, icon);
-                }
+    //         .search {
+    //             .mat-icon {
+    //                 color: map-get($foreground, icon);
+    //             }
 
-                input {
-                    background: map-get($background, card);
-                    color: map-get($foreground, text);
-                }
-            }
-        }
-    }
+    //             input {
+    //                 background: map-get($background, card);
+    //                 color: map-get($foreground, text);
+    //             }
+    //         }
+    //     }
+    // }
 }

@@ -247,8 +247,16 @@
                     >
                     </mat-row>
                 </mat-table>
+
+                <div
+                    class="no-records h-100"
+                    *ngIf="!(isHistoryLoading$ | async) && (totalCatalogueHistories$ | async) === 0"
+                >
+                    No records found
+                </div>
     
                 <mat-paginator
+                    [fxHide]="(totalCatalogueHistories$ | async) === 0"
                     [length]="totalCatalogueHistories$ | async"
                     [pageSize]="5"
                     [pageSizeOptions]="[5, 10, 25, 100]"

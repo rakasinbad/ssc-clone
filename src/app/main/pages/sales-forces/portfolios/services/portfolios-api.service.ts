@@ -14,6 +14,7 @@ export class PortfoliosApiService {
     private _url: string;
 
     private readonly _endpoint = '/portfolios';
+    private readonly _associationEndpoint = '/associations';
     private readonly _storeEndpoint = '/stores';
     private readonly _exportEndpoint = '/download/export-portfolios';
 
@@ -42,7 +43,27 @@ export class PortfoliosApiService {
             });
         }
 
-        this._url = this.helper$.handleApiRouter(this._endpoint);
+        if (params['type']) {
+            switch (params['type']) {
+                case 'outside':
+                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+            }
+        }
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (!isNaN(params['invoiceGroupId'])) {
+            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+        }
+
+        if (params['request'] === 'associations') {
+            this._url = this.helper$.handleApiRouter(this._associationEndpoint);
+        } else {
+            this._url = this.helper$.handleApiRouter(this._endpoint);
+        }
+
         const newParams = this.helper$.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<IPaginatedResponse<Portfolio>>(this._url, { params: newParams });
@@ -67,5 +88,10 @@ export class PortfoliosApiService {
     createPortfolio(data: IPortfolioAddForm): Observable<Portfolio> {
         this._url = this.helper$.handleApiRouter(this._endpoint);
         return this.http.post<Portfolio>(this._url, data);
+    }
+
+    patchPortfolio(id: string, data: IPortfolioAddForm): Observable<Portfolio> {
+        this._url = this.helper$.handleApiRouter(this._endpoint);
+        return this.http.patch<Portfolio>(`${this._url}/${id}`, data);
     }
 }

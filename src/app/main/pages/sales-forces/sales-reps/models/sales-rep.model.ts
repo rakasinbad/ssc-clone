@@ -61,6 +61,7 @@ interface ISalesRepForm {
     supplierId: string;
     password: string;
     confPassword: string;
+    saleTeamId: string;
 }
 
 interface ISalesRepOldPasswordForm {
@@ -70,7 +71,7 @@ interface ISalesRepOldPasswordForm {
 export type SalesRepForm = Required<Pick<User, AddForm> & ISalesRepForm>;
 
 export type SalesRepFormPatch = Partial<
-    Pick<SalesRepForm, 'fullName' | 'mobilePhoneNo' | 'idNo' | 'status' | 'image'>
+    Pick<SalesRepForm, 'fullName' | 'mobilePhoneNo' | 'idNo' | 'status' | 'image' | 'saleTeamId'>
 >;
 
 export type SalesRepFormPasswordPut = Required<Pick<SalesRepForm, 'password' | 'confPassword'>>;

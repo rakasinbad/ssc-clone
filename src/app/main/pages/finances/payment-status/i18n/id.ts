@@ -7,8 +7,8 @@ export const locale = {
         STATUS: {
             PAYMENT: {
                 ALL: {
-                    TITLE: 'Semua',
-                    TITLE_PARAM: 'Semua {{ count }}'
+                    TITLE: 'All',
+                    TITLE_PARAM: 'All {{ count }}'
                 },
                 D_0: {
                     TITLE: 'D-0'

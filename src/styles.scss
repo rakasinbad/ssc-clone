@@ -1,9 +1,9 @@
 // Import Fuse core library
 @import '@fuse/scss/core';
 
-// Import app.theme.scss
 @import 'app/app.theme';
 
+// Import app.theme.scss
 /* mat-editor should be applied to the container of contenteditable (<mat-form-field>)*/
 // .mat-editor .mat-form-field-wrapper,
 // .mat-editor .mat-form-field-infix {
@@ -121,6 +121,18 @@ quill-editor {
     justify-content: center;
 }
 
+.loader-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .highlight-row {
     background-color: #e5e5e5 !important;
 }
@@ -143,6 +155,26 @@ quill-editor {
 .panel-warning {
     color: #856404 !important;
     background-color: rgba(255, 243, 205, 0.9) !important;
+}
+
+.indicator-error {
+    background-color: #d8000c !important;
+    color: #fff !important;
+}
+
+.indicator-info {
+    background-color: #0c5460 !important;
+    color: #fff !important;
+}
+
+.indicator-success {
+    background-color: #4f8a10 !important;
+    color: #fff !important;
+}
+
+.indicator-warning {
+    background-color: #856404 !important;
+    color: #fff !important;
 }
 
 .skeleton {
@@ -336,11 +368,19 @@ body.theme-sinbad-light {
     }
 
     .sinbad-file-field {
-        + button {
+        + button:not(.single-file-btn) {
             position: relative;
             top: -0.78em;
             left: -0.8em;
             height: 42px;
+        }
+
+        + button {
+            &.single-file-btn {
+                position: relative;
+                top: -0.78em;
+                height: 42px;
+            }
         }
     }
 

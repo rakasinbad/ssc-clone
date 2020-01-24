@@ -9,7 +9,7 @@ export const globalEnLang = {
     },
     BREADCRUMBS: {
         ACCOUNTS: 'Accounts',
-        ACCOUNT: 'Account',
+        ACCOUNT: 'Store',
         ACCOUNTS_SETTINGS: 'Account Settings',
         ADD_PRODUCT: 'Add Product',
         ADD_STORE: 'Add Store',
@@ -33,9 +33,10 @@ export const globalEnLang = {
         ORDER_DETAILS: 'Order Details',
         ORDER_MANAGEMENTS: 'Order Managements',
         PAYMENT_STATUS: 'Payment Status',
+        SALES_REP_MANAGEMENT: 'Sales Management',
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
-        STORE: 'Store',
+        STORE: 'Store List',
         SUPPLIER_INVENTORY: 'Supplier Inventory'
     },
     FORM: {

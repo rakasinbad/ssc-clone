@@ -12,6 +12,8 @@ app-journey-plans {
             > .header {
                 &.sinbad {
                     height: 100px !important;
+                    /*  height: 145px !important; */
+                    max-height: 150px !important;
                     min-height: 100px !important;
                 }
 
@@ -66,10 +68,48 @@ app-journey-plans {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+
+            &.expanded-row {
+                .mat-cell {
+                    border-bottom-width: 0;
+                }
+            }
+
+            &.detail-row {
+                border-bottom-width: 0;
+
+                &.detail-expand-row {
+                    border-bottom-width: 1px;
+                }
+
+                .mat-cell {
+                    padding-left: 0;
+                    padding-right: 0;
+                }
+            }
+        }
+
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .journey-plan {
@@ -82,12 +122,106 @@ app-journey-plans {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
         }
 
-        .mat-column-checkbox {
+        .mat-column-checkbox,
+        .mat-column-expand-action {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-visit-date {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-sales-rep-id {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-sales-rep-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-store-id {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-store-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            justify-content: flex-end;
+        }
+    }
+
+    .journey-plan-details-table {
+        flex: 1 1 auto;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        .mat-header-row {
+            background: white;
+            height: 0;
+            min-height: 0;
+            display: none;
+        }
+
+        .mat-row {
+            background-color: rgba(240, 68, 76, 0.1);
+            min-height: unset;
+
+            &:last-of-type {
+                border-bottom-width: 0;
+
+                .mat-cell {
+                    border-bottom-width: 0;
+                }
+            }
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            // &:not(:last-of-type) {
+            //     padding-right: 8px;
+            // }
+        }
+
+        // mat-header-cell:first-of-type,
+        // .mat-header-cell:first-of-type,
+        // .mat-cell:first-of-type {
+        //     padding-left: 12px;
+        // }
+
+        // mat-cell:last-of-type,
+        // .mat-header-cell:last-of-type,
+        // .mat-cell:last-of-type {
+        //     padding-right: 12px;
+        // }
+
+        .journey-plan {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
+            // padding-right: 8px;
+        }
+
+        .mat-column-checkbox,
+        .mat-column-expand-action {
             flex: 0 1 80px;
         }
 
@@ -96,4 +230,8 @@ app-journey-plans {
             justify-content: flex-end;
         }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

@@ -6,12 +6,15 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSelectChange } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { ErrorMessageService, HelperService, LogService } from 'app/shared/helpers';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
@@ -20,8 +23,6 @@ import { locale as indonesian } from '../i18n/id';
 import { SupplierInventoryActions } from '../store/actions';
 import { fromSupplierInventory } from '../store/reducers';
 import { SupplierInventorySelectors } from '../store/selectors';
-import { MatSelectChange } from '@angular/material';
-import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
 
 @Component({
     selector: 'app-supplier-inventory-form',
@@ -39,16 +40,17 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
     catalog$: Observable<any>;
     isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private formBuilder: FormBuilder,
         private route: ActivatedRoute,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSupplierInventory.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
         private _$helper: HelperService,
-        private _$log: LogService
+        private _$notice: NoticeService
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -61,8 +63,8 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
                 UiActions.createBreadcrumb({
                     payload: [
                         {
-                            title: 'Home',
-                            translate: 'BREADCRUMBS.HOME'
+                            title: 'Home'
+                            // translate: 'BREADCRUMBS.HOME'
                         },
                         {
                             title: 'Inventory',
@@ -89,10 +91,9 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-
         if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
+
             this.catalog$ = this.store.select(
                 SupplierInventorySelectors.getSelectedSupplierInventory
             );
@@ -161,30 +162,30 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
         // } = this.form.controls;
 
         if (this.pageType === 'edit') {
-            if (body.name) {
-                delete body.name;
-            }
+            const canUpdate = this.ngxPermissions.hasPermission('');
 
-            if (body.unlimitedStock) {
-                body.stock = 0;
-            }
-
-            this._$log.generateGroup(
-                'SUBMIT EDIT',
-                {
-                    body: {
-                        type: 'log',
-                        value: body
+            canUpdate.then(hasAccess => {
+                if (hasAccess) {
+                    if (body.name) {
+                        delete body.name;
                     }
-                },
-                'groupCollapsed'
-            );
 
-            this.store.dispatch(
-                SupplierInventoryActions.updateSupplierInventoryRequest({
-                    payload: { id, body }
-                })
-            );
+                    if (body.unlimitedStock) {
+                        body.stock = 0;
+                    }
+
+                    this.store.dispatch(
+                        SupplierInventoryActions.updateSupplierInventoryRequest({
+                            payload: { id, body }
+                        })
+                    );
+                } else {
+                    this._$notice.open('Sorry, permission denied!', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                }
+            });
         }
     }
 
@@ -231,17 +232,6 @@ export class SupplierInventoryFormComponent implements OnInit, OnDestroy {
             .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
             .subscribe(catalog => {
                 if (catalog) {
-                    this._$log.generateGroup(
-                        'SELECTED SUPPLIER INVENTORY',
-                        {
-                            response: {
-                                type: 'log',
-                                value: catalog
-                            }
-                        },
-                        'groupCollapsed'
-                    );
-
                     if (catalog.name) {
                         this.form.get('name').patchValue(catalog.name);
                         this.form.get('name').markAsTouched();

@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
 import { Portfolio, IPortfolioAddForm } from '../../models/portfolios.model';
 import { Store } from 'app/main/pages/attendances/models';
+import { Update } from '@ngrx/entity';
 
 export type requestActionNames =
     'exportPortfoliosRequest' |
@@ -11,6 +12,7 @@ export type requestActionNames =
 
 export type failureActionNames =
     'createPortfolioFailure' |
+    'patchPortfolioFailure' |
     'exportPortfoliosFailure' |
     'fetchPortfolioFailure' |
     'fetchPortfoliosFailure' |
@@ -31,6 +33,49 @@ export const fetchPortfolioFailure = createAction(
 export const fetchPortfolioSuccess = createAction(
     '[Portfolios API] Fetch Portfolio Success',
     props<{ payload: { portfolio?: Portfolio; source: TSource } }>()
+);
+
+export const addSelectedPortfolios = createAction(
+    '[Portfolios] Add Selected Portfolios',
+    props<{ payload: Array<string> }>()
+);
+
+export const removeSelectedPortfolios = createAction(
+    '[Portfolios] Remove Selected Portfolio',
+    props<{ payload: Array<string> }>()
+);
+
+export const setSearchKeywordPortfolio = createAction(
+    '[Portfolios Page] Set Search Keyword Portfolios',
+    props<{ payload: string }>()
+);
+
+export const setSelectedPortfolios = createAction(
+    '[Portfolios Page] Set Selected Portfolios',
+    props<{ payload: Array<string> }>()
+);
+
+export const resetSearchKeywordPortfolio = createAction('[Portfolios] Reset Search Keyword Portfolio');
+
+export const truncateSelectedPortfolios = createAction('[Portfolios Page] Truncate Selected Portfolios');
+
+export const truncatePortfolioStores = createAction('[Portfolios Page] Truncate All of Portfolio Stores');
+
+/** PATCH PORTFOLIO */
+
+export const patchPortfolioRequest = createAction(
+    '[Portfolios API] Patch Portfolio Request',
+    props<{ payload: { id: string; portfolio: IPortfolioAddForm } }>()
+);
+
+export const patchPortfolioFailure = createAction(
+    '[Portfolios API] Patch Portfolio Failure',
+    props<{ payload: IErrorHandler }>()
+);
+    
+export const patchPortfolioSuccess = createAction(
+    '[Portfolios API] Patch Portfolio Success',
+    props<{ payload: Portfolio }>()
 );
 
 /** CREATE PORTFOLIO */
@@ -82,6 +127,11 @@ export const fetchPortfoliosSuccess = createAction(
     props<{ payload: { portfolios?: Array<Portfolio>; source: TSource; total?: number } }>()
 );
 
+export const updateStore = createAction(
+    '[Portfolios] Update Store',
+    props<{ payload: Update<Store> }>()
+);
+
 export const addSelectedStores = createAction(
     '[Portfolios Page] Add Selected Portfolio Stores',
     props<{ payload: Array<Store> }>()
@@ -92,6 +142,35 @@ export const removeSelectedStores = createAction(
     props<{ payload: Array<string> }>()
 );
 
+export const markStoreAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Mark Store as Removed from Portfolio',
+    props<{ payload: string }>()
+);
+
+export const markStoresAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Mark Stores as Removed from Portfolio',
+    props<{ payload: Array<string> }>()
+);
+
+export const abortStoreAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Abort Store as Removed from Portfolio',
+    props<{ payload: string }>()
+);
+
+export const abortStoresAsRemovedFromPortfolio = createAction(
+    '[Portfolios Page] Abort Stores as Removed from Portfolio',
+    props<{ payload: Array<string> }>()
+);
+
+export const setSelectedInvoiceGroupId = createAction(
+    '[Portfolios Page] Set Selected Invoice Group ID',
+    props<{ payload: string }>()
+);
+
+export const resetSelectedInvoiceGroupId = createAction('[Portfolios Page] Reset Selected Invoice Group ID');
+
+export const confirmRemoveAllSelectedStores = createAction('[Portfolios Page] Confirm to Remove All Selected Stores');
+
 export const exportPortfoliosRequest = createAction('[Portfolios API] Export Portfolios Request');
 
 export const exportPortfoliosFailure = createAction(
@@ -101,6 +180,11 @@ export const exportPortfoliosFailure = createAction(
 
 export const exportPortfoliosSuccess = createAction(
     '[Portfolios API] Export Portfolios Success',
+    props<{ payload: string }>()
+);
+
+export const setPortfolioEntityType = createAction(
+    '[Portfolios Page] Set Portfolio Entity Type',
     props<{ payload: string }>()
 );
 

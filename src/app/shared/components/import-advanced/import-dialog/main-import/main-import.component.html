@@ -1,0 +1,58 @@
+<form id="main-import-form" [formGroup]="form" novalidate>
+    <div class="section pb-44">
+        <div class="box-info horizontal" fxLayout="column">
+            <div fxLayout="row">
+                <div fxLayout="column" fxFlex>
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
+                    >
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            [class.mat-error]="hasError('mode')"
+                        >
+                            *Import Mode
+                        </label>
+
+                        <div class="custom-field__field" fxFlex="100">
+                            <mat-form-field
+                                class="sinbad-file-field"
+                                appearance="outline"
+                                fxFlex="60"
+                            >
+                                <mat-select formControlName="mode">
+                                    <mat-option>None</mat-option>
+                                    <mat-option value="stock">Stock</mat-option>
+                                </mat-select>
+
+                                <mat-error *ngIf="hasError('mode', true)">
+                                    {{ getErrorMessage('mode') }}
+                                </mat-error>
+                            </mat-form-field>
+
+                            <button
+                                mat-flat-button
+                                class="single-file-btn ml-16"
+                                color="accent"
+                                type="button"
+                                fxFlexAlign="center"
+                            >
+                                Upload file
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section pb-44">
+        <div class="pb-16 mb-16 section__top--contents" fxLayout="row" fxLayoutAlign="start center">
+            <div class="h2 section__title">Download Template</div>
+        </div>
+    </div>
+</form>

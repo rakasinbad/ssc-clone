@@ -97,6 +97,30 @@ export const updateStatusFreezeBalanceSuccess = createAction(
 );
 
 // -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS CREDIT LIMIT] Credit Limit Status
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeCreditLimitStatus = createAction(
+    '[Credit Limit Stores Page] Confirm Change Credit Limit Status',
+    props<{ payload: CreditLimitStore }>()
+);
+
+export const updateStatusCreditLimitRequest = createAction(
+    '[Credit Limit Stores API] Update Status Credit Limit Request',
+    props<{ payload: { body: boolean; id: string } }>()
+);
+
+export const updateStatusCreditLimitFailure = createAction(
+    '[Credit Limit Stores API] Update Status Credit Limit Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateStatusCreditLimitSuccess = createAction(
+    '[Credit Limit Stores API] Update Status Credit Limit Success',
+    props<{ payload: Update<CreditLimitStore> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
 // Fetch Credit Limit Groups
 // -----------------------------------------------------------------------------------------------------
 

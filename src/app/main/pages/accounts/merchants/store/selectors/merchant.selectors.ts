@@ -91,6 +91,11 @@ export const getSelectedStoreEmployee = createSelector(
 // Helper State
 // -----------------------------------------------------------------------------------------------------
 
+export const getIsEditLocation = createSelector(
+    getAccountStoreState,
+    state => state.stores.isEditLocation
+);
+
 export const getGoPage = createSelector(getAccountStoreState, state => state.goPage);
 
 export const getIsRefresh = createSelector(getAccountStoreState, state => state.isRefresh);

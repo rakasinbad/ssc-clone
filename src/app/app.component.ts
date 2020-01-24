@@ -24,13 +24,15 @@ import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
+import { LifecyclePlatform } from 'app/shared/models';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
 
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
 import { statusOrder } from './main/pages/orders/status';
-import { NoticeService } from './shared/helpers';
+import { NavigationService, NoticeService } from './shared/helpers';
 import * as fromRoot from './store/app.reducer';
 
 @Component({
@@ -56,6 +58,8 @@ export class AppComponent implements OnInit, OnDestroy {
         @Inject(DOCUMENT) private document: any,
         private swUpdate: SwUpdate,
         private appRef: ApplicationRef,
+        private ngxPermissions: NgxPermissionsService,
+        private ngxRoles: NgxRolesService,
         private idle: Idle,
         private keepAlive: Keepalive,
         private store: Store<fromRoot.State>,
@@ -66,6 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _translateService: TranslateService,
         private _platform: Platform,
+        private _$navigation: NavigationService,
         private _$notice: NoticeService
     ) {
         // Get default navigation
@@ -194,12 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        ReactiveFormConfig.set({
-            allowDecimalSymbol: '.',
-            validationMessage: {
-                required: 'This field is required'
-            }
-        });
+        this._initPage();
 
         this.store
             .select(AuthSelectors.getUserState)
@@ -281,9 +281,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
-        this._unsubscribeAll.complete();
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -319,5 +320,26 @@ export class AppComponent implements OnInit, OnDestroy {
         this.idle.watch();
         this.idleState = 'Started';
         this.timedOut = false;
+    }
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                // Unsubscribe from all subscriptions
+                this._unsubscribeAll.next();
+                this._unsubscribeAll.complete();
+                break;
+
+            default:
+                ReactiveFormConfig.set({
+                    allowDecimalSymbol: '.',
+                    validationMessage: {
+                        required: 'This field is required'
+                    }
+                });
+
+                this._$navigation.initNavigation();
+                break;
+        }
     }
 }

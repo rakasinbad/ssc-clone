@@ -56,6 +56,10 @@ export const getAllPortfolioStores = createSelector(
     selectAllPortfolioStores
 );
 
+export const getTotalRemovedPortfolioStoresEntity = createSelector(
+    getAllPortfolioStores,
+    stores => stores.filter(store => store.deletedAt).length
+);
 
 export const getLoadingState = createSelector(
     getPortfolioStoreEntity,

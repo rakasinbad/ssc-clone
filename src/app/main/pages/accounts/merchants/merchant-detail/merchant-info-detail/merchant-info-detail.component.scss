@@ -25,7 +25,7 @@ app-merchant-info-detail {
             border-bottom: 1px solid #dfdfdf;
 
             .title {
-                // font-size: 17px;
+                font-size: 17px;
                 font-weight: bold;
             }
         }
@@ -48,14 +48,14 @@ app-merchant-info-detail {
             .info-title {
                 // font-weight: bold;
 
-                + td {
+                +td {
                     padding-left: 15px;
                 }
             }
 
             .info-group-1 {
                 .info-title {
-                    width: 80px;
+                    // width: 80px;
                 }
             }
 
@@ -66,7 +66,6 @@ app-merchant-info-detail {
             }
         }
 
-        &.info-box {
-        }
+        &.info-box {}
     }
 }

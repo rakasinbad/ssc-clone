@@ -23,9 +23,29 @@ export const getPortfolioEntity = createSelector(
     state => state[mainFeatureKey]
 );
 
+export const getPortfolioTotalEntity = createSelector(
+    getPortfolioEntity,
+    selectPortfolioTotal
+);
+
+export const getPortfolioEntityType = createSelector(
+    getPortfolioEntity,
+    state => state.type
+);
+
 export const getSelectedPortfolioIds = createSelector(
     getPortfolioEntity,
     state => state.selectedIds
+);
+
+export const getSearchKeywordPortfolio = createSelector(
+    getPortfolioEntity,
+    state => state.search
+);
+
+export const getSelectedInvoiceGroupId = createSelector(
+    getPortfolioEntity,
+    state => state.selectedInvoiceGroupId
 );
 
 export const getTotalPortfolios = createSelector(
@@ -41,13 +61,13 @@ export const getAllPortfolios = createSelector(
 export const getSelectedPortfolio = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => (portfolios[ids[0]] as Portfolio)
+    (portfolios, ids) => (portfolios.entities[ids[0]] as Portfolio)
 );
 
 export const getSelectedPortfolios = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => ids ? ids.map(id => portfolios[id]) : ids
+    (portfolios, ids) => ids.map(id => portfolios.entities[id])
 );
 
 export const getLoadingState = createSelector(

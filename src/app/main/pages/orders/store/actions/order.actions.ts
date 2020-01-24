@@ -2,7 +2,7 @@ import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
-import { IOrderDemo } from '../../models';
+import { IStatusOMS } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Orders
@@ -40,6 +40,24 @@ export const fetchOrderFailure = createAction(
 export const fetchOrderSuccess = createAction(
     '[Order API] Fetch Order Success',
     props<{ payload: any }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Calculate Orders
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCalculateOrdersRequest = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Request'
+);
+
+export const fetchCalculateOrdersFailure = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCalculateOrdersSuccess = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Success',
+    props<{ payload: IStatusOMS }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -188,17 +206,3 @@ export const filterToBeShippedOrder = createAction('[Orders Page] Filter To be S
 export const filterShippedOrder = createAction('[Orders Page] Filter Shipped Order');
 export const filterReceivedOrder = createAction('[Orders Page] Filter Received Order');
 export const filterCompletedOrder = createAction('[Orders Page] Filter Completed Order');
-
-// -----------------------------------------------------------------------------------------------------
-// For Demo
-// -----------------------------------------------------------------------------------------------------
-
-export const generateOrdersDemo = createAction(
-    '[Orders Page] Generate Orders Demo',
-    props<{ payload: IOrderDemo[] }>()
-);
-
-export const getOrderDemoDetail = createAction(
-    '[Orders Page] Get Order Demo Detail',
-    props<{ payload: string }>()
-);

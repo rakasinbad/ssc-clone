@@ -73,6 +73,10 @@ app-supplier-inventories {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .supplier-inventory {
             position: relative;
             // cursor: pointer;
@@ -82,7 +86,22 @@ app-supplier-inventories {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -100,70 +119,28 @@ app-supplier-inventories {
         //     height: 100% !important;
         // }
 
-        .mat-column-order-store {
-            flex: 0 1 100px;
+        .mat-column-sku-supplier {
+            flex: 0 1 15%;
         }
 
-        .mat-column-checkbox {
-            flex: 0 1 64px;
-            padding-left: 18px;
+        .mat-column-product-name {
+            flex: 0 1 35%;
         }
 
-        .mat-column-id {
-            flex: 0 1 95px;
+        .mat-column-brand-name {
+            flex: 0 1 12%;
         }
 
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .account-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
+        .mat-column-stock-type {
+            flex: 0 1 12%;
         }
 
-        .mat-column-phone {
-            flex: 0 1 160px;
+        .mat-column-stock {
+            flex: 0 1 10%;
         }
 
-        .mat-column-roles {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-aging-day {
-            flex: 0 1 50px;
-            // justify-content: flex-end;
-        }
-
-        .mat-column-totalProduct {
-            flex: 0 1 80px;
-        }
-
-        .mat-column-odooid {
-            flex: 0 1 120px;
-        }
-
-        .mat-column-active {
-            flex: 0 1 80px;
-        }
-
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
-
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
-        }
-
-        .active-icon {
-            border-radius: 50%;
+        .mat-column-stock-en-route {
+            flex: 0 1 10%;
         }
 
         .mat-column-actions {

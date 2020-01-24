@@ -1,4 +1,9 @@
-<div id="merchants" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
+<div
+    id="merchants"
+    class="page-layout carded fullwidth inner-scroll"
+    cdkScrollable
+    fusePerfectScrollbar
+>
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -1073,6 +1078,7 @@
                                         formControlName="numberOfEmployee"
                                         placeholder="Choose Number of Employees"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of numberOfEmployees"
                                             [value]="row?.id"
@@ -1130,6 +1136,7 @@
                                         formControlName="vehicleAccessibility"
                                         placeholder="Choose Vehicle Accessibility"
                                     >
+                                        <mat-option>None</mat-option>
                                         <mat-option
                                             *ngFor="let row of vehicleAccessibilities"
                                             [value]="row?.id"

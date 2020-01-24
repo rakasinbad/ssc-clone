@@ -48,7 +48,7 @@ $fuse-navy: (
     )
 );
 
-$sinbad-accent: (
+$sinbad: (
     50: #fde9ea,
     100: #fbc7c9,
     200: #f8a2a6,
@@ -59,21 +59,25 @@ $sinbad-accent: (
     700: #ec353c,
     800: #e92d33,
     900: #e51f24,
+    A100: #ffffff,
+    A200: #ffe8e8,
+    A400: #ffb5b6,
+    A700: #ff9c9d,
     contrast: (
         50: $dark-primary-text,
         100: $dark-primary-text,
         200: $dark-primary-text,
-        300: $light-primary-text,
-        400: $light-primary-text,
+        300: $dark-primary-text,
+        400: $dark-primary-text,
         500: $light-primary-text,
         600: $light-primary-text,
         700: $light-primary-text,
         800: $light-primary-text,
         900: $light-primary-text,
         A100: $dark-primary-text,
-        A200: $light-primary-text,
-        A400: $light-primary-text,
-        A700: $light-primary-text
+        A200: $dark-primary-text,
+        A400: $dark-primary-text,
+        A700: $dark-primary-text
     )
 );
 
@@ -82,7 +86,7 @@ $custom_palettes: (
     fuse-white: $fuse-white,
     fuse-black: $fuse-black,
     fuse-navy: $fuse-navy,
-    sinbad-accent: $sinbad-accent
+    sinbad-accent: $sinbad
 );
 
 @include fuse-color-classes($custom_palettes);
@@ -90,7 +94,6 @@ $custom_palettes: (
 // -----------------------------------------------------------------------------------------------------
 // @ Typography
 // -----------------------------------------------------------------------------------------------------
-
 // Angular Material typography
 $typography: mat-typography-config(
     $font-family: 'Muli, Helvetica Neue, Arial, sans-serif',
@@ -99,45 +102,58 @@ $typography: mat-typography-config(
     $button: mat-typography-level(14px, 14px, 600),
     $input: mat-typography-level(16px, 1.125, 400)
 );
-
 // line-height must be unitless !!!
-
 // Setup the typography
 @include angular-material-typography($typography);
-
 // -----------------------------------------------------------------------------------------------------
 // @ Component theming
 // -----------------------------------------------------------------------------------------------------
-
 // Import app and page component themes here to enable theming for them
 @import 'src/app/layout/components/chat-panel/chat-panel.theme';
 @import 'src/app/layout/components/toolbar/toolbar.theme';
 
+// Search bar
+@import 'src/app/shared/components/search-bar/search-bar.theme';
+
+// Core
 @import 'src/app/main/pages/core/auth/login/login.theme';
 @import 'src/app/main/pages/core/profile/profile.theme';
-@import 'src/app/main/pages/accounts/accounts.theme';
-@import 'src/app/main/pages/catalogues/catalogues.theme';
-@import 'src/app/main/pages/accounts/merchants/merchants.theme';
+@import 'src/app/main/pages/core/errors/404/error-404.theme';
+
+// Accounts
 @import 'src/app/main/pages/accounts/internal/internal.theme';
+@import 'src/app/main/pages/accounts/merchants/merchants.theme';
+
+// Attendances
 @import 'src/app/main/pages/attendances/attendances.theme';
-@import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
+
+// Catalogues
+@import 'src/app/main/pages/catalogues/catalogues.theme';
+
+// Finances
 @import 'src/app/main/pages/finances/banks/banks.theme';
+@import 'src/app/main/pages/finances/credit-limit-balance/credit-limit-balance.theme';
 @import 'src/app/main/pages/finances/payment-status/payment-status.theme';
+
+// Inventories
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
-@import 'src/app/main/pages/orders/orders.theme';
 @import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
-@import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
-@import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
+
+// OMS
+@import 'src/app/main/pages/orders/orders.theme';
 
 // Sales force
+@import 'src/app/main/pages/sales-forces/associations/associations.theme';
 @import 'src/app/main/pages/sales-forces/journey-plans/journey-plans.theme';
 @import 'src/app/main/pages/sales-forces/portfolios/portfolios.theme';
 @import 'src/app/main/pages/sales-forces/sales-reps/sales-reps.theme';
 
+// Settings
+@import 'src/app/main/pages/settings/accounts-settings/accounts-settings.theme';
+
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
 // @import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
-
 // Plugin https://github.com/SaturnTeam/saturn-datepicker
 @import '~saturn-datepicker/theming';
 
@@ -147,25 +163,46 @@ $typography: mat-typography-config(
     @include chat-panel-theme($theme);
     @include toolbar-theme($theme);
 
+    // Search bar
+    @include search-bar-theme($theme);
+
     // Pages
+
+    // Core
+    @include error-404-theme($theme);
     @include login-theme($theme);
-    @include accounts-theme($theme);
-    @include attendances-theme($theme);
-    @include banks-theme($theme);
-    @include catalogues-theme($theme);
-    @include credit-limit-balance-theme($theme);
-    @include in-store-inventories-theme($theme);
+    @include profile-theme($theme);
+
+    // Accounts
     @include internals-theme($theme);
     @include merchants-theme($theme);
-    @include orders-theme($theme);
+
+    // Attendances
+    @include attendances-theme($theme);
+
+    // Catalogues
+    @include catalogues-theme($theme);
+
+    // Finances
+    @include banks-theme($theme);
+    @include credit-limit-balance-theme($theme);
     @include payment-status-theme($theme);
-    @include profile-theme($theme);
+
+    // Inventories
+    @include in-store-inventories-theme($theme);
     @include supplier-inventories-theme($theme);
 
+    // OMS
+    @include orders-theme($theme);
+
     // Sales force
+    @include associations-theme($theme);
     @include journey-plans-theme($theme);
     @include portfolios-theme($theme);
     @include sales-reps-theme($theme);
+
+    // Settings
+    @include accounts-settings-theme($theme);
 
     // Plugin
     // @include mat-datepicker-theme($theme);
@@ -177,7 +214,6 @@ $typography: mat-typography-config(
 // -----------------------------------------------------------------------------------------------------
 // @ Define the default theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $default-primary-palette: mat-palette($fuse-navy);
 $default-accent-palette: mat-palette($mat-light-blue, 600, 400, 700);
@@ -211,7 +247,6 @@ body.theme-default {
 // -----------------------------------------------------------------------------------------------------
 // @ Define a yellow light theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $yellow-light-theme-primary-palette: mat-palette($fuse-navy, 600, 400, 700);
 $yellow-light-theme-accent-palette: mat-palette($mat-yellow, 600, 400, 700);
@@ -249,7 +284,6 @@ body.theme-yellow-light {
 // -----------------------------------------------------------------------------------------------------
 // @ Define a blue-gray dark theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $blue-gray-dark-theme-primary-palette: mat-palette($mat-blue);
 $blue-gray-dark-theme-accent-palette: mat-palette($mat-blue-gray);
@@ -287,7 +321,6 @@ body.theme-blue-gray-dark {
 // -----------------------------------------------------------------------------------------------------
 // @ Define a pink dark theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
 $pink-dark-theme-primary-palette: mat-palette($mat-pink);
 $pink-dark-theme-accent-palette: mat-palette($mat-pink);
@@ -325,10 +358,9 @@ body.theme-pink-dark {
 // -----------------------------------------------------------------------------------------------------
 // @ Define a sinbad light theme
 // -----------------------------------------------------------------------------------------------------
-
 // Define the primary, accent and warn palettes
-$sinbad-light-theme-primary-palette: mat-palette($fuse-navy);
-$sinbad-light-theme-accent-palette: mat-palette($sinbad-accent);
+$sinbad-light-theme-primary-palette: mat-palette($fuse-navy, 600, 400, 700);
+$sinbad-light-theme-accent-palette: mat-palette($sinbad);
 $sinbad-light-theme-warn-palette: mat-palette($mat-red);
 
 // Create the Material theme object

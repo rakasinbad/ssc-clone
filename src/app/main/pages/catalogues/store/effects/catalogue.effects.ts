@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
 // import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService } from 'app/shared/helpers';
-import { UiActions } from 'app/shared/store/actions';
+import { UiActions, FormActions } from 'app/shared/store/actions';
 // import { getParams } from 'app/store/app.reducer';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { of } from 'rxjs';
@@ -59,7 +59,8 @@ export class CatalogueEffects {
                                     }
                                 })
                             )
-                        )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                     );
             })
         )
@@ -135,7 +136,8 @@ export class CatalogueEffects {
                                     }
                                 })
                             )
-                        )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                     );
             })
         )
@@ -147,6 +149,112 @@ export class CatalogueEffects {
             map(action => action.payload),
             tap(() => {
                 this._$notice.open('Produk berhasil di-update', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.matDialog.closeAll();
+
+                this.store.dispatch(
+                    CatalogueActions.setRefreshStatus({ status: true })
+                );
+            })
+        ), { dispatch: false }
+    );
+
+    importCataloguesRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.importCataloguesRequest),
+            map(action => action.payload),
+            withLatestFrom(
+                this.store.select(AuthSelectors.getUserSupplier)
+            ),
+            switchMap(([{ file, type }, userSupplier]) => {
+                if (!userSupplier) {
+                    return of(CatalogueActions.patchCataloguesFailure({
+                        payload: {
+                            id: 'importCataloguesFailure',
+                            errors: 'Not authenticated'
+                        }
+                    }));
+                }
+
+                const formData: FormData = new FormData();
+                formData.append('file', file);
+                formData.append('supplierId', userSupplier.supplierId);
+                formData.append('type', type);
+
+                return this._$catalogueApi.updateCataloguePrices(formData)
+                    .pipe(
+                        catchOffline(),
+                        map(response => {
+                            return CatalogueActions.importCataloguesSuccess({
+                                payload: {
+                                    status: response.status
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.importCataloguesFailure({
+                                    payload: {
+                                        id: 'importCataloguesFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
+                    );
+            })
+        )
+    );
+
+    importCataloguesFailure$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.importCataloguesFailure),
+            map(action => action.payload),
+            tap(resp => {
+                let message: string;
+
+                if (resp.errors.code === 406) {
+                    message = resp.errors.error.errors
+                        .map(r => {
+                            return `${r.errCode}<br>${r.solve}`;
+                        })
+                        .join('<br><br>');
+                } else {
+                    if (typeof resp.errors === 'string') {
+                        message = resp.errors;
+                    } else {
+                        message =
+                            resp.errors.error && resp.errors.error.message
+                                ? resp.errors.error.message
+                                : resp.errors.message;
+                    }
+                }
+
+                this._$notice.open(message, 'error', {
+                    duration: 10000,
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                // this.matDialog.closeAll();
+
+                // this.store.dispatch(
+                //     CatalogueActions.setRefreshStatus({ status: true })
+                // );
+            })
+        ), { dispatch: false }
+    );
+
+    importCataloguesSuccess$ = createEffect(() => 
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCataloguesSuccess),
+            map(action => action.payload),
+            tap(() => {
+                this._$notice.open('Import produk berhasil.', 'success', {
                     verticalPosition: 'bottom',
                     horizontalPosition: 'right'
                 });
@@ -261,7 +369,8 @@ export class CatalogueEffects {
                                     payload: { id: 'addNewCatalogueFailure', errors: err }
                                 })
                             )
-                        )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                     );
             })
         )
@@ -300,99 +409,99 @@ export class CatalogueEffects {
     );
 
     fetchCatalogueCategoriesRequest$ = createEffect(() =>
-    this.actions$.pipe(
-        ofType(CatalogueActions.fetchCatalogueCategoriesRequest),
-        map(action => action.payload),
-        switchMap(payload => {
-            return this._$catalogueApi
-                .getCatalogueCategories(payload)
-                .pipe(
-                    catchOffline(),
-                    map<Array<CatalogueCategory>, any>(categories => {
-                        if (categories.length > 0) {
-                            return CatalogueActions.fetchCatalogueCategoriesSuccess({
-                                payload: {
-                                    categories: [
-                                        ...categories.map(category => ({
-                                            ...new CatalogueCategory(
-                                                category.id,
-                                                category.parentId,
-                                                category.category,
-                                                category.iconHome,
-                                                category.iconTree,
-                                                category.sequence,
-                                                category.hasChild,
-                                                category.status,
-                                                category.createdAt,
-                                                category.updatedAt,
-                                                category.deletedAt,
-                                                category.children
-                                            )
-                                        }))
-                                    ],
-                                    source: 'fetch'
-                                }
-                            });
-                        }
-                    }),
-                    catchError(err =>
-                        of(
-                            CatalogueActions.fetchCatalogueCategoryFailure({
-                                payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
-                            })
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCatalogueCategoriesRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$catalogueApi
+                    .getCatalogueCategories(payload)
+                    .pipe(
+                        catchOffline(),
+                        map<Array<CatalogueCategory>, any>(categories => {
+                            if (categories.length > 0) {
+                                return CatalogueActions.fetchCatalogueCategoriesSuccess({
+                                    payload: {
+                                        categories: [
+                                            ...categories.map(category => ({
+                                                ...new CatalogueCategory(
+                                                    category.id,
+                                                    category.parentId,
+                                                    category.category,
+                                                    category.iconHome,
+                                                    category.iconTree,
+                                                    category.sequence,
+                                                    category.hasChild,
+                                                    category.status,
+                                                    category.createdAt,
+                                                    category.updatedAt,
+                                                    category.deletedAt,
+                                                    category.children
+                                                )
+                                            }))
+                                        ],
+                                        source: 'fetch'
+                                    }
+                                });
+                            }
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.fetchCatalogueCategoryFailure({
+                                    payload: { id: 'fetchCatalogueCategoryFailure', errors: err }
+                                })
+                            )
                         )
-                    )
-                );
-            })
-        )
-    );
+                    );
+                })
+            )
+        );
 
     fetchCategoryTreeRequest$ = createEffect(() =>
-    this.actions$.pipe(
-        ofType(CatalogueActions.fetchCategoryTreeRequest),
-        switchMap(_ => {
-            return this._$catalogueApi
-                .getCategoryTree()
-                .pipe(
-                    catchOffline(),
-                    map<Array<CatalogueCategory>, any>(categories => {
-                        if (categories.length > 0) {
-                            return CatalogueActions.fetchCategoryTreeSuccess({
-                                payload: {
-                                    categoryTree: [
-                                        ...categories.map(category => ({
-                                            ...new CatalogueCategory(
-                                                category.id,
-                                                category.parentId,
-                                                category.category,
-                                                category.iconHome,
-                                                category.iconTree,
-                                                category.sequence,
-                                                category.hasChild,
-                                                category.status,
-                                                category.createdAt,
-                                                category.updatedAt,
-                                                category.deletedAt,
-                                                category.children
-                                            )
-                                        }))
-                                    ],
-                                    source: 'fetch'
-                                }
-                            });
-                        }
-                    }),
-                    catchError(err =>
-                        of(
-                            CatalogueActions.fetchCategoryTreeFailure({
-                                payload: { id: 'fetchCategoryTreeFailure', errors: err }
-                            })
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCategoryTreeRequest),
+            switchMap(_ => {
+                return this._$catalogueApi
+                    .getCategoryTree()
+                    .pipe(
+                        catchOffline(),
+                        map<Array<CatalogueCategory>, any>(categories => {
+                            if (categories.length > 0) {
+                                return CatalogueActions.fetchCategoryTreeSuccess({
+                                    payload: {
+                                        categoryTree: [
+                                            ...categories.map(category => ({
+                                                ...new CatalogueCategory(
+                                                    category.id,
+                                                    category.parentId,
+                                                    category.category,
+                                                    category.iconHome,
+                                                    category.iconTree,
+                                                    category.sequence,
+                                                    category.hasChild,
+                                                    category.status,
+                                                    category.createdAt,
+                                                    category.updatedAt,
+                                                    category.deletedAt,
+                                                    category.children
+                                                )
+                                            }))
+                                        ],
+                                        source: 'fetch'
+                                    }
+                                });
+                            }
+                        }),
+                        catchError(err =>
+                            of(
+                                CatalogueActions.fetchCategoryTreeFailure({
+                                    payload: { id: 'fetchCategoryTreeFailure', errors: err }
+                                })
+                            )
                         )
-                    )
-                );
-            })
-        )
-    );
+                    );
+                })
+            )
+        );
 
     fetchCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
@@ -530,6 +639,7 @@ export class CatalogueEffects {
                     ),
                     finalize(() => {
                         this.store.dispatch(UiActions.resetHighlightRow());
+                        this.store.dispatch(FormActions.resetClickSaveButton());
                     })
                 );
             })

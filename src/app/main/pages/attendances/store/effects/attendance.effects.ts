@@ -4,11 +4,11 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { LogService, NoticeService } from 'app/shared/helpers';
-import { NetworkActions } from 'app/shared/store/actions';
+import { NetworkActions, FormActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { NetworkSelectors } from 'app/shared/store/selectors';
 import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, concatMap, map, switchMap, tap, withLatestFrom, finalize } from 'rxjs/operators';
 
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { Attendance } from '../../models';
@@ -66,7 +66,8 @@ export class AttendanceEffects {
                                     }
                                 })
                             )
-                        )
+                        ),
+                        finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                     );
                 }
 
@@ -152,7 +153,7 @@ export class AttendanceEffects {
                                 }
                             })
                         )
-                    )
+                    ),
                 );
             })
         )
@@ -357,7 +358,8 @@ export class AttendanceEffects {
                                 }
                             })
                         )
-                    )
+                    ),
+                    finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                 );
             })
         )

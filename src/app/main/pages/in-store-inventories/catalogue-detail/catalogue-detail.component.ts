@@ -127,7 +127,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',

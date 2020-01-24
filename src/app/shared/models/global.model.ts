@@ -70,6 +70,7 @@ export interface IBreadcrumbs {
     translate?: string;
     url?: string;
     active?: boolean;
+    keepCase?: boolean;
 }
 
 export interface IPaginatedResponse<T> {
@@ -89,7 +90,7 @@ export interface IPaginateResponse<T> {
     total: number;
     limit: number;
     skip: number;
-    data: T[];
+    data: Array<T>;
 }
 
 export class PaginateResponse<T> implements IPaginateResponse<T> {
@@ -97,7 +98,7 @@ export class PaginateResponse<T> implements IPaginateResponse<T> {
         public total: number,
         public limit: number,
         public skip: number,
-        public data: T[]
+        public data: Array<T>
     ) {}
 }
 

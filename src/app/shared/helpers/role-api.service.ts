@@ -29,7 +29,7 @@ export class RoleApiService {
      * @private
      * @memberof RoleApiService
      */
-    private readonly _endpoint = '/roles';
+    private readonly _endpoint = '/roles?id[$ne]=6';
 
     /**
      * Creates an instance of RoleApiService.

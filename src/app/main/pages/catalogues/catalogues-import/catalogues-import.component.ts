@@ -127,7 +127,7 @@ export class CataloguesImportComponent implements OnInit {
     }
 
     submit(): void {
-        this.store.dispatch(CatalogueActions.patchCataloguesRequest({
+        this.store.dispatch(CatalogueActions.importCataloguesRequest({
             payload: {
                 file: this.form.get('file').value,
                 type: 'update_current_stock'

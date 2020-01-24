@@ -1,0 +1,138 @@
+<div
+    fxLayout="column"
+    fxLayoutGap="25px"
+    fxLayoutAlign="start start"
+>
+    <!-- "FILTER LIST" BUTTON -->
+    <!-- <button
+        fxFlex="none"
+        mat-flat-button
+        color="primary"
+        (click)="openFilter()"
+    >
+        Filter List
+    </button> -->
+    <!-- / "FILTER LIST" BUTTON -->
+
+    <!-- FILTER LISTS -->
+    <!-- <div class="grey-300-border p-16 w-100-p" style="border: 1px solid #fafafa;" fxLayout="column" fxLayoutGap="10px" *ngIf="(filters$ | async)?.length > 0">
+        <strong>Filter by</strong>
+        <mat-chip-list [selectable]="false">
+            <mat-chip [removable]="true" [selectable]="false" *ngFor="let filter of (filters$ | async)" (removed)="removeFilter$.next(filter.id)">
+                {{ filter.title }}: {{ filter.value.title }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+    </div> -->
+    <!-- / FILTER LISTS -->
+
+    <!-- STORE LIST -->
+    <div
+        class="w-100-p"
+        fxLayout="row"
+        fxLayoutGap="16px"
+        fxLayoutAlign="space-between stretch"
+    >
+        <!-- AVAILABLE STORES -->
+        <div class="content" fxLayout="column" fxFlex>
+            <!-- HEADER -->
+            <div class="h-72 grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
+                <!-- LABEL -->
+                <p fxFlexAlign="center">Find:</p>
+                <!-- / LABEL -->
+                <!-- SEARCH -->
+                <div fxFlexAlign="center" fxFlex class="search-wrapper grey-300-border">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Find Store"/>
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <!-- / HEADER -->
+            <!-- LIST -->
+            <mat-selection-list
+                fxFlex
+                cdkScrollable
+                #availableStoreScroll
+                id="available-portfolio-scroll"
+                [style.overflow]="'auto'"
+                [style.border]="'1px solid'"
+                class="grey-300-border h-400"
+                [disableRipple]="true"
+                (selectionChange)="selectedPortfolioSub$.next($event)"
+            >
+                <mat-list-option
+                    *ngFor="let portfolio of (availablePortfolios$ | async)"
+                    [checkboxPosition]="'before'"
+                    [value]="portfolio"
+                    [selected]="portfolio?.isSelected"
+                >
+                    <span>{{ printPortfolioName(portfolio) }}</span>
+                    <a *ngIf="portfolio?.type === 'group'" (click)="$event.stopPropagation(); showStore(portfolio)"
+                    > See details </a>
+                </mat-list-option>
+            </mat-selection-list>
+            <!-- / LIST -->
+            <!-- LOADER -->
+            <div class="loader" *ngIf="(isPortfolioLoading$ | async) || (isAssociatedPortfolioLoading$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+            <!-- / LOADER -->
+        </div>
+        <!-- / AVAILABLE STORES -->
+        <!-- SELECTED STORES -->
+        <div class="content" fxLayout="column" fxFlex>
+            <!-- HEADER -->
+            <div class="h-72 grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <!-- LABEL -->
+                <p fxFlexAlign="center">Your Selections ({{ totalSelectedPortfolios$ | async }})</p>
+                <!-- / LABEL -->
+                <!-- CLEAR ALL -->
+                <!-- <a
+                    fxFlexAlign="center"
+                    [style.cursor]="'pointer'"
+                    class="red-500-fg"
+                    (click)="clearAllSelectedStores()"
+                    *ngIf="(totalSelectedPortfolios$ | async) > 0"
+                >Clear All</a> -->
+                <!-- / CLEAR ALL -->
+            </div>
+            <!-- / HEADER -->
+            <!-- LIST -->
+            <mat-selection-list
+                fxFlex
+                cdkScrollable
+                id="selected-portfolio-scroll"
+                [style.overflow]="'auto'"
+                [style.border]="'1px solid'"
+                class="grey-300-border h-400"
+                [disableRipple]="true"
+                (selectionChange)="selectedPortfolioSub$.next($event)"
+            >
+                <ng-container *ngFor="let portfolio of (selectedPortfolios$ | async)" class="relative">
+                    <mat-list-option
+                        *ngIf="!portfolio?.deletedAt"
+                        [checkboxPosition]="'before'"
+                        [selected]="true"
+                        [value]="portfolio"
+                    >
+                        <span>{{ printPortfolioName(portfolio) }}</span>
+                        <a
+                            *ngIf="portfolio?.type === 'group'"
+                            (click)="$event.stopPropagation(); showStore(portfolio)"
+                        >See details</a>
+                    </mat-list-option>
+                </ng-container>
+            </mat-selection-list>
+            <!-- / LIST -->
+            <!-- LOADER -->
+            <div class="loader" *ngIf="(isPortfolioLoading$ | async) || (isAssociatedPortfolioLoading$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+            <!-- / LOADER -->
+        </div>
+        <!-- / SELECTED STORES -->
+    </div>
+    <!-- / STORE LIST -->
+</div>

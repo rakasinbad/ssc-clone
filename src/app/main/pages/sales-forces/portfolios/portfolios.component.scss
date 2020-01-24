@@ -1,10 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
 app-portfolios {
-    .header {
-        // height: 80px;
-        // min-height: 80px;
-        // max-height: 136px;
+    .portfolio-header {
+        height: 120px !important;
+        min-height: 120px !important;
+        max-height: 120px !important;
 
         .search-wrapper {
             width: 100%;

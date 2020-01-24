@@ -1,11 +1,13 @@
 <div fxLayout="row wrap" fxLayoutGap="15px">
-    <div class="credit-box-action" fxLayout="column" fxLayoutAlign="center center">
-        <button mat-icon-button type="button" (click)="onSetup()">
-            <mat-icon>add_circle</mat-icon>
-        </button>
+    <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.CLG.CREATE']">
+        <div class="credit-box-action" fxLayout="column" fxLayoutAlign="center center">
+            <button mat-icon-button type="button" (click)="onSetup()">
+                <mat-icon>add_circle</mat-icon>
+            </button>
 
-        <div>Tambah Credit Limit</div>
-    </div>
+            <div>Tambah Credit Limit</div>
+        </div>
+    </ng-template>
 
     <ng-container *ngIf="creditLimitGroups$ | async as creditLimitGroups">
         <div
@@ -25,15 +27,17 @@
                 <div class="top" style="background:#666666" fxFlex="35">
                     <div fxLayout="row" fxLayoutAlign="end stretch" fxFlex>
                         <div style="min-height:70px">
-                            <button
-                                mat-icon-button
-                                type="button"
-                                aria-label="Delete"
-                                class="fuse-white-fg"
-                                (click)="$event.stopPropagation(); onDelete(row)"
-                            >
-                                <mat-icon>delete</mat-icon>
-                            </button>
+                            <ng-template [ngxPermissionsOnly]="['FINANCE.CLB.CLG.DELETE']">
+                                <button
+                                    mat-icon-button
+                                    type="button"
+                                    aria-label="Delete"
+                                    class="fuse-white-fg"
+                                    (click)="$event.stopPropagation(); onDelete(row)"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </ng-template>
                         </div>
                         <!-- <span style="color:#757575;font-size:48px">CL01</span> -->
                     </div>
@@ -69,7 +73,7 @@
                                     {{
                                         +row?.defaultCreditLimit > 0
                                             ? (+row?.defaultCreditLimit | price: 'short')
-                                            : +row?.defaultCreditLimit
+                                            : safeValue(row?.defaultCreditLimit)
                                     }}
                                 </span>
                             </div>

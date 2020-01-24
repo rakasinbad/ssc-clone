@@ -10,6 +10,8 @@ export const getAuthState = createFeatureSelector<fromAuth.State>(fromAuth.FEATU
 
 export const getUserState = createSelector(getAuthState, state => state.user);
 
+export const getIsAuth = createSelector(getAuthState, state => !!state.user.token);
+
 // -----------------------------------------------------------------------------------------------------
 // User Suppliers State
 // -----------------------------------------------------------------------------------------------------

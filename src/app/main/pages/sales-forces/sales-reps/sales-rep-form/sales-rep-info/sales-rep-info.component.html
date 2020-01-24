@@ -1,63 +1,46 @@
-<form id="sales-form" [formGroup]="form" novalidate>
+<form id="sales-form" [formGroup]="form" cdkScrollable novalidate>
     <div class="section pb-48">
         <div class="pb-16 section__top--contents" fxLayout="row" fxLayoutAlign="start center">
             <div class="h2 section__title">Sales Rep Detail</div>
         </div>
 
-        <div class="box-info horizontal" fxLayout="column">
+        <div class="box-info horizontal" fxLayout="row" fxLayoutAlign="start start">
             <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
+                *ngIf="salesRep$ | async"
+                class="sales-image"
+                fxFlexAlign="start"
+                [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
             >
-                <label
-                    class="custom-field__label"
-                    fxFlexAlign="center"
-                    fxFlex="13"
-                    [class.mat-error]="hasError('name')"
-                >
-                    *Sales Rep Name
-                </label>
+                <ng-container *ngIf="tmp.photo.value && tmp.photo.value.url">
+                    <img [src]="tmp.photo.value.url" />
+                </ng-container>
 
-                <div class="custom-field__field" fxFlex="100">
-                    <mat-form-field appearance="outline" fxFlex="50">
-                        <input type="text" matInput formControlName="name" />
-
-                        <mat-error *ngIf="hasError('name', true)">
-                            {{ getErrorMessage('name') }}
-                        </mat-error>
-                    </mat-form-field>
-                </div>
+                <ng-container *ngIf="!tmp.photo.value || !tmp.photo.value.url">
+                    <img
+                        [defaultImage]="'assets/images/avatars/profile.jpg'"
+                        [useSrcset]="true"
+                        [lazyLoad]="(salesRep$ | async)?.user?.imageUrl"
+                        [errorImage]="'assets/images/avatars/profile.jpg'"
+                    />
+                </ng-container>
             </div>
 
             <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
+                *ngIf="!(salesRep$ | async)"
+                class="sales-image"
+                fxFlexAlign="start"
+                [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
             >
-                <label
-                    class="custom-field__label"
-                    fxFlexAlign="center"
-                    fxFlex="13"
-                    [class.mat-error]="hasError('phone')"
-                >
-                    *Phone Number
-                </label>
+                <ng-container *ngIf="tmp.photo.value && tmp.photo.value.url">
+                    <img [src]="tmp.photo.value.url" />
+                </ng-container>
 
-                <div class="custom-field__field" fxFlex="100">
-                    <mat-form-field appearance="outline" fxFlex="50">
-                        <input type="tel" matInput formControlName="phone" />
-
-                        <mat-error *ngIf="hasError('phone', true)">
-                            {{ getErrorMessage('phone') }}
-                        </mat-error>
-                    </mat-form-field>
-                </div>
+                <ng-container *ngIf="!tmp.photo.value || !tmp.photo.value.url">
+                    <img [src]="'assets/images/avatars/profile.jpg'" />
+                </ng-container>
             </div>
 
-            <ng-container *ngIf="pageType === 'new'">
+            <div fxLayout="column" fxFlex>
                 <div
                     class="custom-field"
                     fxLayout="row"
@@ -68,18 +51,17 @@
                         class="custom-field__label"
                         fxFlexAlign="center"
                         fxFlex="13"
-                        [class.mat-error]="hasError('newPassword')"
+                        [class.mat-error]="hasError('name')"
                     >
-                        *New Password
+                        *Sales Rep Name
                     </label>
 
                     <div class="custom-field__field" fxFlex="100">
                         <mat-form-field appearance="outline" fxFlex="50">
-                            <input type="password" matInput formControlName="newPassword" />
-                            <mat-hint align="end">Must be at least 8 characters long</mat-hint>
+                            <input type="text" matInput formControlName="name" />
 
-                            <mat-error *ngIf="hasError('newPassword', true)">
-                                {{ getErrorMessage('newPassword') }}
+                            <mat-error *ngIf="hasError('name', true)">
+                                {{ getErrorMessage('name') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
@@ -95,143 +77,299 @@
                         class="custom-field__label"
                         fxFlexAlign="center"
                         fxFlex="13"
-                        [class.mat-error]="hasError('confirmPassword')"
+                        [class.mat-error]="hasError('phone')"
                     >
-                        *re-Type Pass..
+                        *Phone Number
                     </label>
 
                     <div class="custom-field__field" fxFlex="100">
                         <mat-form-field appearance="outline" fxFlex="50">
-                            <input type="password" matInput formControlName="confirmPassword" />
+                            <input type="tel" matInput formControlName="phone" />
 
-                            <mat-error *ngIf="hasError('confirmPassword', true)">
-                                {{ getErrorMessage('confirmPassword') }}
+                            <mat-error *ngIf="hasError('phone', true)">
+                                {{ getErrorMessage('phone') }}
                             </mat-error>
                         </mat-form-field>
                     </div>
                 </div>
-            </ng-container>
 
-            <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <label
-                    class="custom-field__label"
-                    fxFlexAlign="center"
-                    fxFlex="13"
-                    [class.mat-error]="hasError('photo')"
-                >
-                    Sales Photo
-                </label>
-
-                <div class="custom-field__field" fxFlex="50">
-                    <mat-form-field
-                        class="sinbad-file-field"
-                        appearance="outline"
-                        fxFlex="59"
-                        [class.mat-form-field-invalid]="hasError('photo')"
+                <ng-container *ngIf="pageType === 'new'">
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
                     >
-                        <input
-                            #photoPicker
-                            type="file"
-                            class="custom-file"
-                            accept=".jpg, .jpeg, .png"
-                            formControlName="photo"
-                            (change)="onFileBrowse($event, 'photo')"
-                        />
-                        <input matInput [formControl]="tmp.photo" placeholder="No file choose" />
-
-                        <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
-                            {{ getErrorMessage('photo') }}
-                        </mat-hint>
-                    </mat-form-field>
-
-                    <button
-                        mat-flat-button
-                        color="accent"
-                        type="button"
-                        (click)="photoPicker.click()"
-                        fxFlexAlign="center"
-                    >
-                        Upload your file
-                    </button>
-
-                    <ng-container *ngIf="pageType === 'edit' && (salesRep$ | async) as salesRep">
-                        <a
-                            [href]="salesRep?.user?.imageUrl"
-                            target="_blank"
-                            *ngIf="salesRep?.user?.imageUrl"
-                            style="position: relative;top: 0.8em"
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="13"
+                            [class.mat-error]="hasError('newPassword')"
                         >
-                            <mat-icon>remove_red_eye</mat-icon>
-                        </a>
-                    </ng-container>
-                </div>
-            </div>
+                            *Password
 
-            <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <label
-                    class="custom-field__label"
-                    fxFlexAlign="center"
-                    fxFlex="13"
-                    [class.mat-error]="hasError('identityId')"
+                            <mat-icon
+                                class="custom-field__label--icon-info blue-600-fg s-16"
+                                matTooltip="Must be at least 8 characters long and it must have a combination of
+                uppercase letters, lowercase letters and numbers."
+                            >
+                                info
+                            </mat-icon>
+                        </label>
+
+                        <div class="custom-field__field" fxFlex="100">
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input type="password" matInput formControlName="newPassword" />
+                                <mat-hint align="end">
+                                    Must be at least 8 characters long
+                                </mat-hint>
+
+                                <mat-error *ngIf="hasError('newPassword', true)">
+                                    {{ getErrorMessage('newPassword') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start center"
+                        fxLayoutGap="15px"
+                    >
+                        <label
+                            class="custom-field__label"
+                            fxFlexAlign="center"
+                            fxFlex="13"
+                            [class.mat-error]="hasError('confirmPassword')"
+                        >
+                            *Re-Type Password
+                        </label>
+
+                        <div class="custom-field__field" fxFlex="100">
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input type="password" matInput formControlName="confirmPassword" />
+
+                                <mat-error *ngIf="hasError('confirmPassword', true)">
+                                    {{ getErrorMessage('confirmPassword') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </ng-container>
+
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
                 >
-                    *Identity ID
-                </label>
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('photo')"
+                    >
+                        Sales Photo
+                    </label>
 
-                <div class="custom-field__field" fxFlex="100">
-                    <mat-form-field appearance="outline" fxFlex="50">
-                        <input
-                            type="text"
-                            matInput
-                            formControlName="identityId"
-                            mask="0000000000000000"
-                        />
+                    <div class="custom-field__field" fxFlex="50">
+                        <mat-form-field
+                            class="sinbad-file-field"
+                            appearance="outline"
+                            fxFlex="62"
+                            [class.mat-form-field-invalid]="hasError('photo')"
+                        >
+                            <input
+                                #photoPicker
+                                type="file"
+                                class="custom-file"
+                                accept=".jpg, .jpeg, .png"
+                                formControlName="photo"
+                                (change)="onFileBrowse($event, 'photo')"
+                            />
+                            <input
+                                matInput
+                                [formControl]="tmp.photo"
+                                [value]="
+                                    tmp.photo.value && tmp.photo.value.name
+                                        ? tmp.photo.value.name
+                                        : null
+                                "
+                                placeholder="No file choose"
+                            />
 
-                        <mat-error *ngIf="hasError('identityId', true)">
-                            {{ getErrorMessage('identityId') }}
-                        </mat-error>
-                    </mat-form-field>
+                            <mat-hint class="mat-error" *ngIf="hasError('photo', true)">
+                                {{ getErrorMessage('photo') }}
+                            </mat-hint>
+                        </mat-form-field>
+
+                        <button
+                            mat-flat-button
+                            color="accent"
+                            type="button"
+                            (click)="photoPicker.click()"
+                            fxFlexAlign="center"
+                        >
+                            Upload your file
+                        </button>
+
+                        <ng-container
+                            *ngIf="pageType === 'edit' && (salesRep$ | async) as salesRep"
+                        >
+                            <a
+                                [href]="sanitize(salesRep?.user?.imageUrl)"
+                                target="_blank"
+                                *ngIf="salesRep?.user?.imageUrl"
+                                style="position: relative;top: 0.8em"
+                            >
+                                <mat-icon>remove_red_eye</mat-icon>
+                            </a>
+                        </ng-container>
+                    </div>
                 </div>
-            </div>
 
-            <!-- <div
-                class="custom-field"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <label class="custom-field__label" fxFlexAlign="center" fxFlex="12">
-                    Area
-                </label>
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('identityId')"
+                    >
+                        *KTP ID
+                    </label>
 
-                <div class="custom-field__field" fxFlex="100">
-                    <mat-form-field appearance="outline" fxFlex="50">
-                        <input type="text" matInput formControlName="area" />
-                    </mat-form-field>
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input
+                                type="text"
+                                matInput
+                                formControlName="identityId"
+                                mask="0000000000000000"
+                            />
+
+                            <mat-error *ngIf="hasError('identityId', true)">
+                                {{ getErrorMessage('identityId') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
                 </div>
-            </div> -->
 
-            <div
-                class="custom-field mt-16"
-                fxLayout="row"
-                fxLayoutAlign="start center"
-                fxLayoutGap="15px"
-            >
-                <label fxFlex="13"></label>
+                <div
+                    class="custom-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label
+                        class="custom-field__label"
+                        fxFlexAlign="center"
+                        fxFlex="13"
+                        [class.mat-error]="hasError('team')"
+                    >
+                        *Sales Team
+                    </label>
 
-                <div class="custom-field__field" fxFlex="100">
-                    <mat-slide-toggle formControlName="status">
-                        Active
-                    </mat-slide-toggle>
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-form-field appearance="outline" fxFlex="50">
+                            <input
+                                #triggerSalesTeam
+                                matInput
+                                formControlName="team"
+                                placeholder="Search Sales Team"
+                                aria-label="Sales Team"
+                                [matAutocomplete]="autoSalesTeam"
+                                (keyup)="onKeyup($event, 'salesTeam')"
+                                (keydown)="onKeydown($event, 'salesTeam')"
+                            />
+
+                            <mat-autocomplete
+                                #autoSalesTeam="matAutocomplete"
+                                [displayWith]="onDisplaySalesTeam"
+                                (opened)="onOpenAutocomplete('salesTeam')"
+                                (optionSelected)="onSelectAutocomplete($event, 'salesTeam')"
+                            >
+                                <mat-option
+                                    *ngIf="!(isLoadingSalesTeam$ | async) && field.salesTeam.typing"
+                                >
+                                    Searching...
+                                </mat-option>
+
+                                <ng-container
+                                    *ngIf="
+                                        !field.salesTeam.typing && (salesTeams$ | async)?.length > 0
+                                    "
+                                >
+                                    <ng-container
+                                        *ngIf="salesTeams$ | async as salesTeams; else noSalesTeams"
+                                    >
+                                        <mat-option
+                                            *ngFor="let source of salesTeams"
+                                            [value]="source"
+                                            [attr.title]="displayOption(source, 'salesTeam')"
+                                        >
+                                            <ng-container
+                                                *ngIf="source && !(isLoadingSalesTeam$ | async)"
+                                            >
+                                                <span
+                                                    [innerHtml]="
+                                                        displayOption(source, 'salesTeam', true)
+                                                            | highlight: getHighlight('salesTeam')
+                                                    "
+                                                ></span>
+                                            </ng-container>
+
+                                            <ng-container
+                                                *ngIf="!source || (isLoadingSalesTeam$ | async)"
+                                            >
+                                                Loading...
+                                            </ng-container>
+                                        </mat-option>
+                                    </ng-container>
+
+                                    <ng-template #noSalesTeams>
+                                        <mat-option>None</mat-option>
+                                    </ng-template>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="
+                                        !field.salesTeam.typing && !(salesTeams$ | async)?.length
+                                    "
+                                >
+                                    <mat-option>None</mat-option>
+                                </ng-container>
+                            </mat-autocomplete>
+
+                            <mat-hint align="end" *ngIf="hasLength('team', 3)">
+                                Please enter 3 or more characters.
+                            </mat-hint>
+
+                            <mat-error *ngIf="hasError('team', true)">
+                                {{ getErrorMessage('team') }}
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field mt-16"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <label fxFlex="13"></label>
+
+                    <div class="custom-field__field" fxFlex="100">
+                        <mat-slide-toggle formControlName="status">
+                            Active
+                        </mat-slide-toggle>
+                    </div>
                 </div>
             </div>
         </div>

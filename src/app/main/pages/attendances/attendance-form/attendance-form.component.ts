@@ -266,7 +266,7 @@ export class AttendanceFormComponent implements OnInit, OnDestroy, AfterViewInit
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',

@@ -531,6 +531,144 @@ export class CreditLimitBalanceEffects {
         { dispatch: false }
     );
 
+    /**
+     *
+     * [UPDATE - DIALOG] Credit Limit Status
+     * @memberof CreditLimitBalanceEffects
+     */
+    confirmChangeCreditLimitStatus$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.confirmChangeCreditLimitStatus),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const title = params.allowCreditLimit
+                    ? 'Disallow Credit Limit'
+                    : 'Allow Credit Limit';
+                const body = !params.allowCreditLimit;
+                const dialogRef = this.matDialog.open<
+                    ChangeConfirmationComponent,
+                    any,
+                    { id: string; change: boolean }
+                >(ChangeConfirmationComponent, {
+                    data: {
+                        title: title,
+                        message: `Are you sure want to ${title.toLowerCase()} <strong>${
+                            params.store.name
+                        }</strong> ?`,
+                        id: params.id,
+                        change: body
+                    },
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && typeof change === 'boolean') {
+                    return CreditLimitBalanceActions.updateStatusCreditLimitRequest({
+                        payload: { id, body: change }
+                    });
+                } else {
+                    return UiActions.resetHighlightRow();
+                }
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - REQUEST] Credit Limit Status
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateStatusCreditLimitRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CreditLimitBalanceActions.updateStatusCreditLimitRequest),
+            map(action => action.payload),
+            switchMap(({ body, id }) => {
+                const change = CreditLimitStore.patch({ allowCreditLimit: body });
+
+                return this._$creditLimitBalanceApi.updatePatch(change, id).pipe(
+                    map(resp => {
+                        return CreditLimitBalanceActions.updateStatusCreditLimitSuccess({
+                            payload: {
+                                id: id,
+                                changes: {
+                                    ...change,
+                                    updatedAt: resp.updatedAt
+                                }
+                            }
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            CreditLimitBalanceActions.updateStatusCreditLimitFailure({
+                                payload: {
+                                    id: 'updateStatusCreditLimitFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    ),
+                    finalize(() => {
+                        this.store.dispatch(UiActions.resetHighlightRow());
+                    })
+                );
+            })
+        )
+    );
+
+    /**
+     *
+     * [UPDATE - FAILURE] Credit Limit Status
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateStatusCreditLimitFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.updateStatusCreditLimitFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    let title = 'Allow Credit Limit/Disallow Credit Limit';
+
+                    if (typeof resp.errors.body.allowCreditLimit === 'boolean') {
+                        title = resp.errors.body.allowCreditLimit
+                            ? 'Allow Credit Limit'
+                            : 'Disallow Credit Limit';
+                    }
+
+                    this._$notice.open(`${title} gagal`, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    /**
+     *
+     * [UPDATE - SUCCESS] Credit Limit Status
+     * @memberof CreditLimitBalanceEffects
+     */
+    updateStatusCreditLimitSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(CreditLimitBalanceActions.updateStatusCreditLimitSuccess),
+                map(action => action.payload),
+                tap(resp => {
+                    const title = resp.changes.allowCreditLimit
+                        ? 'Allow Credit Limit'
+                        : 'Disallow Credit Limit';
+
+                    this._$notice.open(`${title} berhasil`, 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods
     // -----------------------------------------------------------------------------------------------------

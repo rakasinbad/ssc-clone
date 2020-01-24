@@ -1,15 +1,15 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
-import { environment } from 'environments/environment';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, filter } from 'rxjs/operators';
-
-import { IQueryParams } from '../models/query.model';
-import * as jwt_decode from 'jwt-decode';
+import { ElementRef, Inject, Injectable } from '@angular/core';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
-import { User, TNullable, ErrorHandler } from '../models';
+import { environment } from 'environments/environment';
+import * as jwt_decode from 'jwt-decode';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { ErrorHandler, TNullable, User } from '../models';
+import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
 
 type TTemplateFiles = {
@@ -265,7 +265,7 @@ export class HelperService {
         return [
             {
                 id: 'all',
-                label: 'Semua'
+                label: 'All'
             },
             {
                 id: 'checkout',
@@ -273,27 +273,27 @@ export class HelperService {
             },
             {
                 id: 'confirm',
-                label: 'Order Baru'
+                label: 'New Order'
             },
             {
                 id: 'packing',
-                label: 'Dikemas'
+                label: 'Packed'
             },
             {
                 id: 'shipping',
-                label: 'Dikirim'
+                label: 'Shipped'
             },
             {
                 id: 'delivered',
-                label: 'Diterima'
+                label: 'Delivered'
             },
             {
                 id: 'done',
-                label: 'Selesai'
+                label: 'Done'
             },
             {
                 id: 'cancel',
-                label: 'Batal'
+                label: 'Canceled'
             }
         ];
     }
@@ -315,6 +315,27 @@ export class HelperService {
             {
                 id: 'overdue',
                 label: 'Overdue'
+            }
+        ];
+    }
+
+    storeStatus(): { id: string; label: string }[] {
+        return [
+            {
+                id: 'all',
+                label: 'Semua'
+            },
+            {
+                id: 'active',
+                label: 'Active'
+            },
+            {
+                id: 'inactive',
+                label: 'Inactive'
+            },
+            {
+                id: 'banned',
+                label: 'Banned'
             }
         ];
     }
@@ -449,5 +470,28 @@ export class HelperService {
             horizontalPosition: 'right',
             duration: 7000
         });
+    }
+
+    isElementScrolledToBottom(element: ElementRef<HTMLElement>): boolean {
+        // Mengambil element native dari CdkScrollable yang sedang di-scroll.
+        const { nativeElement } = element;
+
+        // Tidak dilanjutkan jika tidak meneumukan nativeElement.
+        if (!nativeElement) {
+            console.error('nativeElement not found.');
+            return false;
+        }
+
+        // Mengambil beberapa property dari element native.
+        const { clientHeight, scrollTop, scrollHeight } = nativeElement;
+
+        // Pemeriksaan jika scroll sudah mencapai dasar.
+        const isReachedBottom = scrollHeight - scrollTop < clientHeight + 48;
+        if (!isReachedBottom) {
+            // Tidak akan diteruskan jika elemen tersebut tidak di-scroll hingga dasarnya.
+            return false;
+        }
+
+        return true;
     }
 }

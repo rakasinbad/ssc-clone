@@ -1,0 +1,138 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="tab-container">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
+        <span>All</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated-portfolio'"
+        (click)="clickTab('associated-portfolio')">
+        <span>Assigned to SR / in portfolio</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='associated-direct'"
+        (click)="clickTab('associated-direct')">
+        <span>Assigned to SR / out of portfolio</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated-portfolio'"
+        (click)="clickTab('not-associated-portfolio')">
+        <span>Not assigned to SR / in portfolio</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-associated-direct'"
+        (click)="clickTab('not-associated-direct')">
+        <span>Not assigned to SR / out of portfolio</span>
+    </div>
+</div>
+
+<mat-table class="association-store-table" #table [dataSource]="dataSource$ | async" matSort
+    [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+    <!-- Checkbox Column -->
+    <ng-container matColumnDef="checkbox">
+        <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? masterToggle() : null" (click)="$event.stopPropagation()"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+        </mat-header-cell>
+
+        <mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Store Code" Column -->
+    <ng-container matColumnDef="store-code">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Supplier's Store ID
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.store?.externalId || '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Store Name" Column -->
+    <ng-container matColumnDef="store-name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Store Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.store ? row?.store?.name: '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Portfolio Code" Column -->
+    <ng-container matColumnDef="portfolio-code">
+        <mat-header-cell *matHeaderCellDef>Portfolio Code</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.portfolio ? row?.portfolio?.code : '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Portfolio Name Column -->
+    <ng-container matColumnDef="portfolio-name">
+        <mat-header-cell *matHeaderCellDef>Portfolio Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.portfolio ? row?.portfolio?.name : '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Sales Rep Column -->
+    <ng-container matColumnDef="sales-rep">
+        <mat-header-cell *matHeaderCellDef>Sales Rep</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-truncate">{{ row?.portfolio?.user?.fullName ? row?.portfolio?.user?.fullName : '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Date Of Associate Column -->
+    <ng-container matColumnDef="date-associate">
+        <mat-header-cell *matHeaderCellDef>Date Of Associate</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p class="text-truncate">
+                {{ row?.portfolio?.portfolioHistories.length > 0 ? (row?.portfolio?.portfolioHistories[0].createdAt | date: 'dd/MM/yyyy HH:mm:ss') : '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+
+        <mat-cell class="pr-8" *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                    (click)="$event.stopPropagation()">
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['SRM.ASC.UPDATE']">
+                        <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="edit"
+                            (click)="editAssociation(row.id)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+    <mat-row matRipple *matRowDef="let row; columns: displayedColumns" (click)="viewAssociation(row?.id)"
+        class="association"></mat-row>
+</mat-table>
+
+<div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    No records found
+</div>
+
+<mat-paginator [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+
+<div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

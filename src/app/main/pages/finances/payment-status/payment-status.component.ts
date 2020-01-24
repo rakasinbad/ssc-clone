@@ -12,15 +12,17 @@ import { FormControl } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { HelperService, LogService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { HelperService, NoticeService } from 'app/shared/helpers';
+import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
-import { merge, Observable, Subject } from 'rxjs';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
@@ -42,8 +44,10 @@ import { PaymentStatusSelectors } from './store/selectors';
 })
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
-    filterStatus: string;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
+    filterStatus = '';
     formConfig = {
         status: {
             label: 'Payment Status',
@@ -84,7 +88,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // 'proof-of-payment-status',
         'actions'
     ];
-    hasSelected: boolean;
+    hasSelected = false;
     statusPayment: any;
     today = new Date();
 
@@ -105,15 +109,16 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private matDialog: MatDialog,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromPaymentStatus.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         public translate: TranslateService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
-        private _$log: LogService
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -123,8 +128,8 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Finance',
@@ -150,115 +155,21 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
-        this.filterStatus = '';
-        this.hasSelected = false;
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        localStorage.removeItem('filter.payment.status');
-
-        this.dataSource$ = this.store.select(PaymentStatusSelectors.getAllPaymentStatus);
-        this.totalDataSource$ = this.store.select(PaymentStatusSelectors.getTotalPaymentStatus);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
-
-        this.initTable();
-
-        this.store
-            .select(UiSelectors.getCustomToolbarActive)
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(1000),
-                filter(v => !!v),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                const currFilter = localStorage.getItem('filter.payment.status');
-
-                if (v !== 'all-status') {
-                    localStorage.setItem('filter.payment.status', v);
-                    this.filterStatus = v;
-                } else {
-                    localStorage.removeItem('filter.payment.status');
-                    this.filterStatus = '';
-                }
-
-                if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
-                    this.store.dispatch(PaymentStatusActions.filterStatusPayment({ payload: v }));
-                }
-            });
-
-        this.store
-            .select(PaymentStatusSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        // Set default first status active
-        this.store.dispatch(
-            UiActions.setCustomToolbarActive({
-                payload: 'all-status'
-            })
-        );
-
-        // Register to navigation [FuseNavigation]
-        this.store.dispatch(
-            UiActions.registerNavigation({
-                payload: {
-                    key: 'customNavigation',
-                    navigation: this.statusPayment
-                }
-            })
-        );
-
-        // Show custom toolbar
-        this.store.dispatch(UiActions.showCustomToolbar());
-
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        localStorage.removeItem('filter.payment.status');
-
-        // Reset breadcrumb state
-        this.store.dispatch(UiActions.resetBreadcrumb());
-
-        // Reset custom toolbar state
-        this.store.dispatch(UiActions.hideCustomToolbar());
-
-        // Unregister navigation [FuseNavigation]
-        this.store.dispatch(UiActions.unregisterNavigation({ payload: 'customNavigation' }));
-
-        // Reset payment statuses state
-        this.store.dispatch(PaymentStatusActions.resetPaymentStatuses());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -285,10 +196,15 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         return diffDate <= 0 ? '-' : diffDate;
     }
 
+    safeValue(item: any): any {
+        return item ? item : '-';
+    }
+
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
 
         this.table.nativeElement.scrollIntoView();
+        // this.table.nativeElement.scrollTop = 0;
     }
 
     onDelete(item): void {
@@ -375,70 +291,296 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     onUpdate(item: any): void {
-        if (!item || !item.id) {
-            return;
-        }
+        const canUpdate = this.ngxPermissions.hasPermission('FINANCE.PS.UPDATE');
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-
-        const dialogRef = this.matDialog.open<
-            PaymentStatusFormComponent,
-            any,
-            { action: string; payload: any }
-        >(PaymentStatusFormComponent, {
-            data: {
-                title: 'Review',
-                id: item.id,
-                item: item
-            },
-            disableClose: true
-        });
-
-        dialogRef
-            .afterClosed()
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(({ action, payload }) => {
-                this._$log.generateGroup(
-                    '[AFTER CLOSED DIALOG] EDIT PAYMENT STATUS',
-                    {
-                        action: {
-                            type: 'log',
-                            value: action
-                        },
-                        payload: {
-                            type: 'log',
-                            value: payload
-                        }
-                    },
-                    'groupCollapsed'
-                );
-
-                if (action === 'edit' && payload) {
-                    this.store.dispatch(
-                        PaymentStatusActions.updatePaymentStatusRequest({
-                            payload: { id: item.id, body: payload }
-                        })
-                    );
-                } else {
-                    this.store.dispatch(UiActions.resetHighlightRow());
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                if (!item || !item.id) {
+                    return;
                 }
-            });
-    }
 
-    safeValue(item: any): any {
-        return item ? item : '-';
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+
+                const dialogRef = this.matDialog.open<
+                    PaymentStatusFormComponent,
+                    any,
+                    { action: string; payload: any }
+                >(PaymentStatusFormComponent, {
+                    data: {
+                        title: 'Review',
+                        id: item.id,
+                        item: item
+                    },
+                    disableClose: true
+                });
+
+                dialogRef
+                    .afterClosed()
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(({ action, payload }) => {
+                        if (action === 'edit' && payload) {
+                            this.store.dispatch(
+                                PaymentStatusActions.updatePaymentStatusRequest({
+                                    payload: { id: item.id, body: payload }
+                                })
+                            );
+                        } else {
+                            this.store.dispatch(UiActions.resetHighlightRow());
+                        }
+                    });
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
-        this.initTable();
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                // Set default first status active
+                this.store.dispatch(
+                    UiActions.setCustomToolbarActive({
+                        payload: 'all-status'
+                    })
+                );
+
+                // Register to navigation [FuseNavigation]
+                this.store.dispatch(
+                    UiActions.registerNavigation({
+                        payload: {
+                            key: 'customNavigation',
+                            navigation: this.statusPayment
+                        }
+                    })
+                );
+
+                // Show custom toolbar
+                this.store.dispatch(UiActions.showCustomToolbar());
+
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this._initTable();
+                    });
+
+                const canUpdate = this.ngxPermissions.hasPermission('FINANCE.PS.UPDATE');
+
+                canUpdate.then(hasAccess => {
+                    if (hasAccess) {
+                        this.displayedColumns = [
+                            'order-reference',
+                            'order-code',
+                            'store-name',
+                            'account-receivable',
+                            'status',
+                            'payment-type',
+                            'payment-method',
+                            'order-date',
+                            'due-date',
+                            'paid-on',
+                            'aging-day',
+                            'd',
+                            'actions'
+                        ];
+                    } else {
+                        this.displayedColumns = [
+                            'order-reference',
+                            'order-code',
+                            'store-name',
+                            'account-receivable',
+                            'status',
+                            'payment-type',
+                            'payment-method',
+                            'order-date',
+                            'due-date',
+                            'paid-on',
+                            'aging-day',
+                            'd'
+                        ];
+                    }
+                });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                localStorage.removeItem('filter.payment.status');
+
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset custom toolbar state
+                this.store.dispatch(UiActions.hideCustomToolbar());
+
+                // Unregister navigation [FuseNavigation]
+                this.store.dispatch(
+                    UiActions.unregisterNavigation({ payload: 'customNavigation' })
+                );
+
+                // Reset payment statuses state
+                this.store.dispatch(PaymentStatusActions.resetPaymentStatuses());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                localStorage.removeItem('filter.payment.status');
+
+                this.dataSource$ = this.store.select(PaymentStatusSelectors.getAllPaymentStatus);
+                this.totalDataSource$ = this.store.select(
+                    PaymentStatusSelectors.getTotalPaymentStatus
+                );
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(PaymentStatusSelectors.getIsLoading);
+
+                this._initStatusPayment();
+
+                combineLatest([
+                    this.store.select(PaymentStatusSelectors.getTotalAllPayment),
+                    this.store.select(PaymentStatusSelectors.getTotalWaitingPayment),
+                    this.store.select(PaymentStatusSelectors.getTotalD7Payment),
+                    this.store.select(PaymentStatusSelectors.getTotalD3Payment),
+                    this.store.select(PaymentStatusSelectors.getTotalD0Payment),
+                    this.store.select(PaymentStatusSelectors.getTotalPaidPayment),
+                    this.store.select(PaymentStatusSelectors.getTotalFailPayment),
+                    this.store.select(PaymentStatusSelectors.getTotalOverduePayment)
+                ])
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(
+                        ([
+                            allPayment,
+                            waitingPayment,
+                            d7Payment,
+                            d3Payment,
+                            d0Payment,
+                            paidPayment,
+                            failPayment,
+                            overduePayment
+                        ]) => {
+                            if (typeof allPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'all-status',
+                                    { title: `All (${allPayment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof waitingPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'waiting_for_payment',
+                                    { title: `Waiting for Payment (${waitingPayment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof d7Payment !== 'undefined') {
+                                this._updateStatus(
+                                    'd-7',
+                                    { title: `D-7 (${d7Payment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof d3Payment !== 'undefined') {
+                                this._updateStatus(
+                                    'd-3',
+                                    { title: `D-3 (${d3Payment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof d0Payment !== 'undefined') {
+                                this._updateStatus(
+                                    'd-0',
+                                    { title: `D-0 (${d0Payment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof paidPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'paid',
+                                    { title: `Paid (${paidPayment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof failPayment !== 'undefined') {
+                                this._updateStatus(
+                                    'payment_failed',
+                                    { title: `Cancel (${failPayment})` },
+                                    'customNavigation'
+                                );
+                            }
+
+                            if (typeof overduePayment !== 'undefined') {
+                                this._updateStatus(
+                                    'overdue',
+                                    { title: `Overdue (${overduePayment})` },
+                                    'customNavigation'
+                                );
+                            }
+                        }
+                    );
+
+                this._initTable();
+
+                this.store
+                    .select(UiSelectors.getCustomToolbarActive)
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        const currFilter = localStorage.getItem('filter.payment.status');
+
+                        if (v !== 'all-status') {
+                            localStorage.setItem('filter.payment.status', v);
+                            this.filterStatus = v;
+                        } else {
+                            localStorage.removeItem('filter.payment.status');
+                            this.filterStatus = '';
+                        }
+
+                        if (this.filterStatus || (currFilter && currFilter !== this.filterStatus)) {
+                            this.store.dispatch(
+                                PaymentStatusActions.filterStatusPayment({ payload: v })
+                            );
+                        }
+                    });
+
+                this.store
+                    .select(PaymentStatusSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
+                break;
+        }
     }
 
-    private initTable(): void {
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
@@ -511,5 +653,26 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         }
 
         this.store.dispatch(PaymentStatusActions.fetchPaymentStatusesRequest({ payload: data }));
+    }
+
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
+    }
+
+    private _initStatusPayment(): void {
+        this.store.dispatch(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest());
+    }
+
+    private _updateStatus(id: string, properties: Partial<FuseNavigation>, key?: string): void {
+        this.store.dispatch(
+            UiActions.updateItemNavigation({
+                payload: {
+                    id,
+                    properties,
+                    key
+                }
+            })
+        );
     }
 }

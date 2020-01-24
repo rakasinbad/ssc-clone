@@ -56,7 +56,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // 'employeeName',
         // 'role',
         'date',
-        'actions',
+        // 'actions',
     ];
     environment = environment;
 
@@ -92,7 +92,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',
@@ -101,6 +101,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
                     {
                         title: 'In-Store Inventory',
                         translate: 'BREADCRUMBS.IN_STORE_INVENTORY',
+                        keepCase: true,
                         active: true
                     }
                 ]

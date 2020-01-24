@@ -25,6 +25,7 @@ import { locale as indonesian } from './i18n/id';
 import { SupplierInventoryActions } from './store/actions';
 import { fromSupplierInventory } from './store/reducers';
 import { SupplierInventorySelectors } from './store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-supplier-inventories',
@@ -36,9 +37,11 @@ import { SupplierInventorySelectors } from './store/selectors';
 })
 export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     displayedColumns = [
-        'id',
+        'sku-supplier',
         'product-name',
         'brand-name',
         'stock-type',
@@ -63,10 +66,11 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private store: Store<fromSupplierInventory.FeatureState>,
+        private ngxPermissions: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         // Load translate
@@ -77,8 +81,8 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',
@@ -102,8 +106,6 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
         this.hasSelected = false;
         this.paginator.pageSize = this.defaultPageSize;
 
@@ -145,6 +147,31 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
             .subscribe(() => {
                 this.initTable();
             });
+
+        const canDoActions = this.ngxPermissions.hasPermission(['INVENTORY.SI.UPDATE']);
+
+        canDoActions.then(hasAccess => {
+            if (hasAccess) {
+                this.displayedColumns = [
+                    'sku-supplier',
+                    'product-name',
+                    'brand-name',
+                    'stock-type',
+                    'stock',
+                    'stock-en-route',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'sku-supplier',
+                    'product-name',
+                    'brand-name',
+                    'stock-type',
+                    'stock',
+                    'stock-en-route'
+                ];
+            }
+        });
     }
 
     ngOnDestroy(): void {
@@ -194,6 +221,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
         };
 
         data['paginate'] = true;
+        data['calculateStock'] = true;
 
         if (this.sort.direction) {
             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
