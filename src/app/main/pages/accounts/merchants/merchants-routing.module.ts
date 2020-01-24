@@ -12,11 +12,39 @@ import {
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
 import { MerchantsComponent } from './merchants.component';
+import { MerchantSettingComponent } from './merchant-setting/merchant-setting.component';
 
 const routes: Routes = [
     {
         path: '',
         component: MerchantsComponent,
+        canActivate: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+        // resolve: {
+        //     merchants: MerchantResolver
+        // }
+    },
+    {
+        path: 'setting',
+        component: MerchantSettingComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -136,7 +164,7 @@ const routes: Routes = [
         // resolve: {
         //     roles: DropdownRolesResolver
         // }
-    }
+    },
 ];
 
 /**

@@ -22,6 +22,13 @@ export const navigation: Array<FuseNavigation> = [
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
                 url: '/pages/account/stores'
+            },
+            {
+                id: 'accountsStoreSetting',
+                title: 'Store Setting',
+                translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
+                type: 'item',
+                url: '/pages/account/stores/setting'
             }
             // {
             //     id: 'accountsInternal',
