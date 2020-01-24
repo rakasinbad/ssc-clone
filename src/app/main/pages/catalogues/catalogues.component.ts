@@ -80,7 +80,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
-    table: ElementRef;
+    table: ElementRef<HTMLElement>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -273,6 +273,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(() => {
+                this.table.nativeElement.scrollTop = 0;
                 this.initTable();
             });
 
@@ -520,7 +521,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
+        // this.paginator.pageIndex = 0;
         this.initTable();
     }
 

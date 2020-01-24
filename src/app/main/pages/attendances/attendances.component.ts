@@ -78,6 +78,9 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
     search: string;
 
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef<HTMLElement>;
+
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
@@ -183,6 +186,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(_ => {
+                this.table.nativeElement.scrollTop = 0;
                 this.onChangePage();
             });
 
