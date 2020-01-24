@@ -1,15 +1,18 @@
 <mat-card>
     <div fxLayout="column">
         <span class="mat-headline" *ngIf="(store$ | async)?.store || !(isLoading$ | async)">
-            Lokasi Toko
+            {{ (isEdit$ | async) ? 'Edit Store Location' : 'Store Location' }}
         </span>
 
         <ngx-skeleton-loader
-            *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
+            *ngIf="!(store$ | async)?.store && (isLoading$ | async) && !(isEdit$ | async)"
             [theme]="{ width: '150px', height: '40px' }"
         ></ngx-skeleton-loader>
 
-        <div class="address h4" *ngIf="(store$ | async)?.store?.address && !(isLoading$ | async)">
+        <div
+            class="address h4"
+            *ngIf="(store$ | async)?.store?.address && !(isLoading$ | async) && !(isEdit$ | async)"
+        >
             {{ (store$ | async)?.store?.address }}
         </div>
 
@@ -18,13 +21,36 @@
             [theme]="{ width: '100px' }"
         ></ngx-skeleton-loader>
 
-        <div
+        <!-- <div
             class="map w-100-p h-400"
             leaflet
             [leafletOptions]="options"
             (leafletMapReady)="onMapReady($event)"
             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
-        ></div>
+        ></div> -->
+
+        <agm-map
+            class="w-100-p h-400"
+            [zoom]="opts.zoom"
+            [minZoom]="opts.minZoom"
+            [maxZoom]="opts.maxZoom"
+            [streetViewControl]="false"
+            [latitude]="(store$ | async)?.store?.latitude"
+            [longitude]="(store$ | async)?.store?.longitude"
+            [fitBounds]="true"
+            (boundsChange)="onChangeBound($event)"
+            *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
+        >
+            <agm-marker
+                [latitude]="(store$ | async)?.store?.latitude"
+                [longitude]="(store$ | async)?.store?.longitude"
+                [iconUrl]="opts.icon"
+                [agmFitBounds]="true"
+                [markerDraggable]="draggAble"
+                (dragEnd)="onDragEnd($event)"
+            >
+            </agm-marker>
+        </agm-map>
 
         <ngx-skeleton-loader
             *ngIf="!(store$ | async)?.store && (isLoading$ | async)"
@@ -43,5 +69,39 @@
                 }"
             ></agm-marker>
         </agm-map> -->
+
+        <ng-container *ngIf="isEdit$ | async">
+            <form
+                id="account-form"
+                name="accountForm"
+                class="account w-100-p mt-16"
+                [formGroup]="form"
+                fxLayout="column"
+                fxFlex
+                novalidate
+            >
+                <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" fxFlex="12" style="top:0">
+                        Address
+                    </label>
+
+                    <div>{{ form.get('address').value }}</div>
+                </div>
+
+                <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="hasError('notes')">
+                        Notes Address
+                    </label>
+
+                    <mat-form-field appearance="outline" fxFlex="30">
+                        <textarea matInput formControlName="notes" rows="5"></textarea>
+
+                        <mat-error *ngIf="hasError('notes', true)">
+                            {{ getErrorMessage('notes') }}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </form>
+        </ng-container>
     </div>
 </mat-card>

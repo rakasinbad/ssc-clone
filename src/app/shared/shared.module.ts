@@ -1,3 +1,4 @@
+import { AgmCoreModule } from '@agm/core';
 import { TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FuseSharedModule } from '@fuse/shared.module';
@@ -72,6 +73,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule
@@ -98,6 +100,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule,

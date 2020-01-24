@@ -9,6 +9,7 @@ import { StoreActions } from '../actions';
 export const FEATURE_KEY = 'accountStores';
 
 interface StoreState extends EntityState<SupplierStore> {
+    isEditLocation: boolean;
     selectedStoreId: string | number;
     total: number;
 }
@@ -49,7 +50,11 @@ export interface FeatureState extends fromRoot.State {
 const adapterStore = createEntityAdapter<SupplierStore>({
     selectId: row => row.id
 });
-const initialStoreState = adapterStore.getInitialState({ selectedStoreId: null, total: 0 });
+const initialStoreState = adapterStore.getInitialState({
+    isEditLocation: false,
+    selectedStoreId: null,
+    total: 0
+});
 
 const adapterStoreEmployee = createEntityAdapter<UserStore>({
     selectId: row => row.id
@@ -307,6 +312,20 @@ const brandStoreReducer = createReducer(
         isLoading: false,
         employees: adapterStoreEmployee.updateOne(payload, state.employees),
         errors: adapterError.removeOne('updateStatusStoreEmployeeFailure', state.errors)
+    })),
+    on(StoreActions.setEditLocation, state => ({
+        ...state,
+        stores: {
+            ...state.stores,
+            isEditLocation: true
+        }
+    })),
+    on(StoreActions.unsetEditLocation, state => ({
+        ...state,
+        stores: {
+            ...state.stores,
+            isEditLocation: false
+        }
     })),
     on(StoreActions.resetStores, state => ({
         ...state,

@@ -1,3 +1,4 @@
+import { AgmGeocoder, LatLngBounds, MouseEvent } from '@agm/core';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -5,16 +6,18 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { SupplierStore } from 'app/shared/models';
-import { icon, latLng, latLngBounds, Map, MapOptions, marker, tileLayer } from 'leaflet';
+import { icon } from 'leaflet';
 import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
+import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-merchant-location-detail',
@@ -24,26 +27,51 @@ import { StoreSelectors } from '../../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
-    options: MapOptions = {
-        layers: [
-            tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                detectRetina: true,
-                maxZoom: 18,
-                maxNativeZoom: 18,
-                minZoom: 3,
-                attribution: 'Open Street Map'
-            })
-        ],
+    form: FormGroup;
+
+    // options: MapOptions = {
+    //     layers: [
+    //         tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //             detectRetina: true,
+    //             maxZoom: 18,
+    //             maxNativeZoom: 18,
+    //             minZoom: 3,
+    //             attribution: 'Open Street Map'
+    //         })
+    //     ],
+    //     zoom: 5,
+    //     center: latLng([-2.5, 117.86])
+    // };
+
+    opts = {
+        minZoom: 3,
+        maxZoom: 18,
         zoom: 5,
-        center: latLng([-2.5, 117.86])
+        lat: -2.5,
+        lng: 117.86,
+        icon: {
+            url: 'assets/images/marker.png',
+            scaledSize: {
+                width: 18,
+                height: 30
+            }
+        }
     };
+    draggAble = false;
 
     store$: Observable<SupplierStore>;
+    isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
-    constructor(private route: ActivatedRoute, private store: Store<fromMerchant.FeatureState>) {}
+    constructor(
+        private formBuilder: FormBuilder,
+        private route: ActivatedRoute,
+        private agmGeocoder: AgmGeocoder,
+        private store: Store<fromMerchant.FeatureState>,
+        private _$notice: NoticeService
+    ) {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -51,9 +79,24 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
         const { id } = this.route.parent.snapshot.params;
 
-        this._unSubs$ = new Subject<void>();
-        this.store$ = this.store.select(StoreSelectors.getSelectedStore);
+        this._initForm();
+
+        this.store$ = this.store.select(StoreSelectors.getSelectedStore).pipe(
+            tap(data => {
+                if (data) {
+                    // this.form.get('province').setValue()
+                }
+            })
+        );
+        this.isEdit$ = this.store.select(StoreSelectors.getIsEditLocation).pipe(
+            tap(isEditLocation => {
+                this.draggAble = isEditLocation;
+                console.log(this.draggAble, isEditLocation);
+            })
+        );
+
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+
         this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
     }
 
@@ -67,7 +110,50 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         this._unSubs$.complete();
     }
 
-    onMapReady(map: Map): void {
+    getErrorMessage(field: string): string {
+        if (field) {
+            const { errors } = this.form.get(field);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        }
+    }
+
+    hasError(field: string, isMatError = false): boolean {
+        if (!field) {
+            return;
+        }
+
+        const errors = this.form.get(field).errors;
+        const touched = this.form.get(field).touched;
+        const dirty = this.form.get(field).dirty;
+
+        if (isMatError) {
+            return errors && (dirty || touched);
+        }
+
+        return errors && ((touched && dirty) || touched);
+    }
+
+    onChangeBound(ev: LatLngBounds): void {
+        console.log('Change Bound', ev);
+    }
+
+    onDragEnd(ev: MouseEvent): void {
+        console.log('DraggEnd', ev.coords);
+
+        if (ev.coords.lat && ev.coords.lng) {
+            this._getAddress(ev.coords.lat, ev.coords.lng);
+        }
+    }
+
+    onMapReady(map: any): void {
+        console.log('MAP READY', map);
         // const newMarker = marker([46.879966, -121.726909], {
         //     icon: icon({
         //         iconSize: [25, 41],
@@ -77,26 +163,82 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         // });
         // this.options.layers.push(newMarker);
 
-        this.store
-            .select(StoreSelectors.getSelectedStore)
-            .pipe(
-                filter(row => !!row),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(state => {
-                if (state && state.store && state.store.latitude && state.store.longitude) {
-                    const newMarker = marker([state.store.latitude, state.store.longitude], {
-                        icon: icon({
-                            iconSize: [18, 30],
-                            iconUrl: 'assets/images/marker.png'
-                        })
+        // this.store
+        //     .select(StoreSelectors.getSelectedStore)
+        //     .pipe(
+        //         filter(row => !!row),
+        //         takeUntil(this._unSubs$)
+        //     )
+        //     .subscribe(state => {
+        //         if (state && state.store && state.store.latitude && state.store.longitude) {
+        //             // const newMarker = marker([state.store.latitude, state.store.longitude], {
+        //             //     icon: icon({
+        //             //         iconSize: [18, 30],
+        //             //         iconUrl: 'assets/images/marker.png'
+        //             //     })
+        //             // });
+        //             // newMarker.addTo(map);
+        //             // const markerBound = latLngBounds([newMarker.getLatLng()]);
+        //             // map.fitBounds(markerBound);
+        //             const imageMarker = {
+        //                 url: 'assets/images/marker.png',
+        //                 // This marker is 18 pixels wide by 30 pixels high.
+        //                 size: new google.maps.Size(50, 50),
+        //                 // The origin for this image is (0, 0).
+        //                 origin: new google.maps.Point(0, 0),
+        //                 // The anchor for this image is the base of the flagpole at (0, 32).
+        //                 anchor: new google.maps.Point(0, 32)
+        //             };
+        //             const newMarker = new google.maps.Marker({
+        //                 draggable: true,
+        //                 position: {
+        //                     lat: state.store.latitude,
+        //                     lng: state.store.longitude
+        //                 },
+        //                 icon: imageMarker,
+        //                 map: map
+        //             });
+        //             newMarker.setMap(map);
+        //             // const newMarker: AgmMarker = {
+        //             //     iconUrl: 'assets/images/marker.png',
+        //             //     latitude: state.store.latitude,
+        //             //     longitude: state.store.longitude
+        //             // };
+        //             // this.markerManager.addMarker(newMarker);
+        //         }
+        //     });
+    }
+
+    private _initForm(): void {
+        this.form = this.formBuilder.group({
+            address: '',
+            notes: ''
+        });
+    }
+
+    private _getAddress(lat: number, lng: number): void {
+        // this.fitBoundService.getBounds$.subscribe(x => {
+        //     console.log('Fit Bound', x);
+        // });
+        this.agmGeocoder.geocode({ location: { lat: lat, lng: lng } }).subscribe({
+            next: res => {
+                console.log('GEOCODE', res);
+
+                if (res && res[0]) {
+                    this.form.get('address').setValue(res[0].formatted_address);
+                } else {
+                    this._$notice.open('No results found', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
                     });
-
-                    newMarker.addTo(map);
-
-                    const markerBound = latLngBounds([newMarker.getLatLng()]);
-                    map.fitBounds(markerBound);
                 }
-            });
+            },
+            error: err => {
+                this._$notice.open('Failed geocoder', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 }
