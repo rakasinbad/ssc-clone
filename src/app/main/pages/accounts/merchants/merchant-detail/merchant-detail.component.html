@@ -39,7 +39,7 @@
                 mat-raised-button
                 class="accent-fg"
                 (click)="onEditLocation()"
-                *ngIf="urlStore"
+                *ngIf="urlStore && !(isEditLocation$ | async)"
             >
                 <span>EDIT</span>
             </button>

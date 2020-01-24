@@ -88,6 +88,95 @@
                     <div>{{ form.get('address').value }}</div>
                 </div>
 
+                <div fxLayout="column" fxFlex="50">
+                    <mat-checkbox formControlName="manually" (change)="onChangeManually($event)">
+                        Input address manually
+                    </mat-checkbox>
+                </div>
+
+                <!-- <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label
+                        fxFlexAlign="center"
+                        fxFlex="12"
+                        [class.mat-error]="hasError('district')"
+                    >
+                        *District
+                    </label>
+
+                    <mat-form-field appearance="outline" fxFlex="50">
+                        <input
+                            #triggerDistrict
+                            matInput
+                            formControlName="district"
+                            placeholder="Search District"
+                            aria-label="District"
+                            [matAutocomplete]="autoDistrict"
+                            (keyup)="onKeyup($event, 'district')"
+                            (keydown)="onKeydown($event, 'district')"
+                        />
+
+                        <mat-autocomplete
+                            #autoDistrict="matAutocomplete"
+                            [displayWith]="onDisplayDistrict"
+                            (opened)="onOpenAutocomplete('district')"
+                            (optionSelected)="onSelectAutocomplete($event, 'district')"
+                        >
+                            <mat-option *ngIf="!(isLoadingDistrict$ | async) && isDistrictTyping">
+                                Searching...
+                            </mat-option>
+
+                            <ng-container
+                                *ngIf="!isDistrictTyping && (districts$ | async)?.length > 0"
+                            >
+                                <ng-container
+                                    *ngIf="districts$ | async as districts; else noDistricts"
+                                >
+                                    <mat-option
+                                        *ngFor="let source of districts"
+                                        [value]="source"
+                                        [attr.title]="displayDistrictOption(source)"
+                                    >
+                                        <ng-container
+                                            *ngIf="source && !(isLoadingDistrict$ | async)"
+                                        >
+                                            <span
+                                                [innerHtml]="
+                                                    displayDistrictOption(source, true)
+                                                        | highlight: districtHighlight
+                                                "
+                                            ></span>
+                                        </ng-container>
+
+                                        <ng-container
+                                            *ngIf="!source || (isLoadingDistrict$ | async)"
+                                        >
+                                            Loading...
+                                        </ng-container>
+                                    </mat-option>
+                                </ng-container>
+
+                                <ng-template #noDistricts>
+                                    <mat-option>None</mat-option>
+                                </ng-template>
+                            </ng-container>
+
+                            <ng-container
+                                *ngIf="!isDistrictTyping && !(districts$ | async)?.length"
+                            >
+                                <mat-option>None</mat-option>
+                            </ng-container>
+                        </mat-autocomplete>
+
+                        <mat-hint align="end" *ngIf="hasLength('district', 3)">
+                            Please enter 3 or more characters.
+                        </mat-hint>
+
+                        <mat-error *ngIf="hasError('district', true)">
+                            {{ getErrorMessage('district') }}
+                        </mat-error>
+                    </mat-form-field>
+                </div> -->
+
                 <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                     <label fxFlexAlign="center" fxFlex="12" [class.mat-error]="hasError('notes')">
                         Notes Address
