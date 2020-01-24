@@ -1,5 +1,6 @@
 import 'hammerjs';
 
+import { AgmCoreModule } from '@agm/core';
 import { getCurrencySymbol, registerLocaleData } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localId from '@angular/common/locales/id';
@@ -101,10 +102,9 @@ registerLocaleData(localId, 'id');
         // Store
         AppStoreModule,
 
-        // AgmCoreModule.forRoot({
-        //     // apiKey: 'AIzaSyAYbXdwC3U-zzUFkSVNIq7-xEO_ika4B98'
-        //     apiKey: 'AIzaSyCJOq7jyP66ozbV2hXxLaTE_B9sx_y06vg'
-        // }),
+        AgmCoreModule.forRoot({
+            apiKey: 'AIzaSyC-VPAr6zLzdC8NYplwHKPhm4GI0xfTd9g'
+        }),
 
         QuillModule.forRoot(),
         LeafletModule.forRoot(),

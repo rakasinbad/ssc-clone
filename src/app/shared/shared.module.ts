@@ -1,3 +1,4 @@
+import { AgmCoreModule } from '@agm/core';
 import { TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FuseSharedModule } from '@fuse/shared.module';
@@ -75,6 +76,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule
@@ -101,6 +103,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule,

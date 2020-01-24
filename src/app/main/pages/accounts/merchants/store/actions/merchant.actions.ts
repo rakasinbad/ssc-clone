@@ -529,6 +529,10 @@ export const resetGoPage = createAction('[Accounts Page] Reset Go Page State');
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
 
+export const setEditLocation = createAction('[Edit Location] Set Edit Location');
+
+export const unsetEditLocation = createAction('[Edit Location] Unset Edit Location');
+
 export const startLoading = createAction('[Brand Stores Page] Start Loading');
 
 export const endLoading = createAction('[Brand Stores Page] End Loading');
