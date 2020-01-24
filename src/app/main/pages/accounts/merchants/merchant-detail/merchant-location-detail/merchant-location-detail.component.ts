@@ -18,6 +18,7 @@ import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
 import { StoreSelectors } from '../../store/selectors';
 import { NoticeService } from 'app/shared/helpers';
+import { UiActions } from 'app/shared/store/actions';
 
 @Component({
     selector: 'app-merchant-location-detail',
@@ -83,14 +84,52 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
         this.store$ = this.store.select(StoreSelectors.getSelectedStore).pipe(
             tap(data => {
-                if (data) {
-                    // this.form.get('province').setValue()
+                if (data && data.store) {
+                    this.form.get('address').setValue(data.store.address);
                 }
             })
         );
         this.isEdit$ = this.store.select(StoreSelectors.getIsEditLocation).pipe(
             tap(isEditLocation => {
                 this.draggAble = isEditLocation;
+
+                if (this.draggAble) {
+                    // Set footer action
+                    this.store.dispatch(
+                        UiActions.setFooterActionConfig({
+                            payload: {
+                                progress: {
+                                    title: {
+                                        label: 'Skor tambah toko',
+                                        active: false
+                                    },
+                                    value: {
+                                        active: false
+                                    },
+                                    active: false
+                                },
+                                action: {
+                                    save: {
+                                        label: 'Save',
+                                        active: true
+                                    },
+                                    draft: {
+                                        label: 'Save Draft',
+                                        active: false
+                                    },
+                                    cancel: {
+                                        label: 'Cancel',
+                                        active: true
+                                    }
+                                }
+                            }
+                        })
+                    );
+
+                    this.store.dispatch(UiActions.showFooterAction());
+                } else {
+                    this.store.dispatch(UiActions.hideFooterAction());
+                }
                 console.log(this.draggAble, isEditLocation);
             })
         );
@@ -105,6 +144,8 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         // Add 'implements OnDestroy' to the class.
 
         this.store.dispatch(StoreActions.resetStore());
+
+        this.store.dispatch(UiActions.hideFooterAction());
 
         this._unSubs$.next();
         this._unSubs$.complete();
