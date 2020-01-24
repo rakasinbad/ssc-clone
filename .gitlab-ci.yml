@@ -1,0 +1,57 @@
+stages:
+ - build
+ - deploy
+ - stop_instance
+
+build:
+ stage: build
+ image: node:12-alpine
+ before_script:
+   - npm ci
+ script:
+   - npm run build-prod
+ artifacts:
+   paths:
+     - dist/supplier-center/
+   expire_in: 1 week
+ only:
+   - staging
+ tags:
+  - aws-runner-docker
+
+deploy-to-aws:
+ stage: deploy
+ image: instrumentisto/rsync-ssh:latest
+ artifacts:
+   paths:
+     - dist/supplier-center/
+ before_script:
+   - mkdir -p ~/.ssh
+   - echo "$deploy_private_key" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - chmod 600 ~/.ssh/id_rsa
+   - chmod 600 ~/.ssh/id_rsa.pub
+ script:
+   - ls -la ${CI_PROJECT_DIR}
+   - ssh -i ~/.ssh/id_rsa_deploy deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-dev.sinbad.web.id/* /var/www/seller-dev.sinbad.web.id-bak/"
+   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-dev.sinbad.web.id/
+ only:
+   - staging
+ tags:
+   - aws-runner-docker
+
+stop_runner:
+  stage: stop_instance
+  image: mikesir87/aws-cli:latest
+  script:
+    - echo "Stopping the instance"
+    - mkdir ~/.aws/
+    - touch ~/.aws/credentials
+    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+    - aws ec2 stop-instances --instance-ids i-084dc62cdc7b30b29
+    - rm -rf ~/.aws/
+  only:
+    - staging
+  tags:
+    - docker
