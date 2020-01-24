@@ -1,31 +1,13 @@
 stages:
- - start_instance
  - build
  - deploy
  - stop_instance
-
-start_runner_staging:
-  stage: start_instance
-  image: mikesir87/aws-cli:latest
-  script:
-    - echo "Starting the instance"
-    - mkdir ~/.aws/
-    - touch ~/.aws/credentials
-    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
-    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
-    - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
-    - rm -rf ~/.aws/
-    - sleep 60
-  only:
-    - staging
-  tags:
-    - docker
 
 build_staging:
  stage: build
  image: node:12-alpine
  before_script:
-   - npm ci
+   - npm install
  script:
    - npm run build-prod
  artifacts:
