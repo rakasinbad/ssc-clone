@@ -59,8 +59,8 @@ deploy-to-aws_staging:
      - dist/supplier-center/
  before_script:
    - mkdir -p ~/.ssh
-   - echo "$deploy_private_key_stg" | tr -d '\r' > ~/.ssh/id_rsa
-   - echo "$deploy_public_key_stg" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - echo "$deploy_private_key" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key" | tr -d '\r' > ~/.ssh/id_rsa.pub
    - chmod 600 ~/.ssh/id_rsa
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
