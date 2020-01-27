@@ -11,6 +11,8 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
+import { Subject } from 'rxjs';
+import { takeUntil, filter, take, distinctUntilChanged, debounceTime } from 'rxjs/operators';
 
 @Component({
     selector: 'app-merchant-setting',
@@ -21,6 +23,9 @@ import { ErrorMessageService } from 'app/shared/helpers';
 })
 export class MerchantSettingComponent implements OnInit, OnDestroy {
     form: FormGroup;
+    checked: Array<boolean> = [false];
+    hasZeroLead = false;
+    subs$: Subject<void> = new Subject<void>();
     
     constructor(
         private fb: FormBuilder,
@@ -56,8 +61,6 @@ export class MerchantSettingComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
         this.form = this.fb.group({
             maxDigit: ['', [
                 RxwebValidators.required({
@@ -75,11 +78,100 @@ export class MerchantSettingComponent implements OnInit, OnDestroy {
                 }),
             ]],
         });
+
+        // setInterval(() => this.onUpdateZeroLeading(), 200);
+
+        this.form.get('maxDigit').valueChanges
+        .pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            value = !value ? 4 : value;
+
+            this.form.get('nextNumber').setValue(String('').padStart(value, '0'));
+        });
+
+        this.form.get('nextNumber').valueChanges
+        .pipe(
+            debounceTime(100),
+            distinctUntilChanged(),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            // if (!this.checked.every(check => check === true)) {
+            //     this.checked = [true];
+                
+            //     const maxDigit = this.form.get('maxDigit').value || 4;
+            //     const optNextNumber = { emitEvent: false };
+    
+            //     if (!value) {
+            //         this.form.get('nextNumber').patchValue(String('').padStart(+maxDigit, '0'), optNextNumber);
+            //     } else {
+            //         const nonZeroLeading = String(value).split(/^0+/);
+    
+            //         if (nonZeroLeading.length === 0) {
+            //             this.form.get('nextNumber').patchValue(String('0').padStart(+maxDigit, '0'), optNextNumber);
+            //         } else if (nonZeroLeading.length === 1) {
+            //             this.form.get('nextNumber').patchValue(String(nonZeroLeading[0]).padStart(+maxDigit, '0'), optNextNumber);
+            //         } else {
+            //             this.form.get('nextNumber').patchValue(String(nonZeroLeading[1]).padStart(+maxDigit, '0'), optNextNumber);
+            //         }
+            //     }
+            // } else {
+            //     this.checked.push(true);
+
+            //     if (this.checked.length >= 4 && this.checked.every(check => check === true)) {
+            //         this.checked = [false];
+            //     }
+            // }
+            const maxDigit = this.form.get('maxDigit').value || 4;
+            const optNextNumber = { emitEvent: false };
+
+            if (!value) {
+                this.form.get('nextNumber').patchValue(String('').padStart(+maxDigit, '0'), optNextNumber);
+            } else {
+                const nonZeroLeading = String(value).split(/^0+/);
+
+                if (nonZeroLeading.length === 0) {
+                    this.form.get('nextNumber').patchValue(String('0').padStart(+maxDigit, '0'), optNextNumber);
+                } else if (nonZeroLeading.length === 1) {
+                    this.form.get('nextNumber').patchValue(String(nonZeroLeading[0]).padStart(+maxDigit, '0'), optNextNumber);
+                } else {
+                    this.form.get('nextNumber').patchValue(String(nonZeroLeading[1]).padStart(+maxDigit, '0'), optNextNumber);
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+
         this.merchantStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
+
+    // onUpdateZeroLeading(): void {
+    //     const value = this.form.get('nextNumber').value;
+    //     const maxDigit = this.form.get('maxDigit').value || 4;
+    //     const optNextNumber = { onlySelf: true };
+
+    //     this.form.get('nextNumber').disable(optNextNumber);
+    //     this.form.get('nextNumber').enable(optNextNumber);
+
+    //     if (!value) {
+    //         this.form.get('nextNumber').patchValue(String('').padStart(+maxDigit, '0'), optNextNumber);
+    //     } else {
+    //         const nonZeroLeading = String(value).split(/^0+/);
+
+    //         if (nonZeroLeading.length === 0) {
+    //             this.form.get('nextNumber').patchValue(String('0').padStart(+maxDigit, '0'), optNextNumber);
+    //         } else if (nonZeroLeading.length === 1) {
+    //             this.form.get('nextNumber').patchValue(String(nonZeroLeading[0]).padStart(+maxDigit, '0'), optNextNumber);
+    //         } else {
+    //             this.form.get('nextNumber').patchValue(String(nonZeroLeading[1]).padStart(+maxDigit, '0'), optNextNumber);
+    //         }
+    //     }
+    // }
 
     generateStoreNumber(): string {
         if (this.form.status !== 'VALID') {
