@@ -28,7 +28,7 @@ build_staging:
    - npm run build-staging
  artifacts:
    paths:
-     - dist/supplier-center-staging/
+     - dist/supplier-center/
    expire_in: 1 week
  only:
    - staging
@@ -44,7 +44,7 @@ build_production:
    - npm run build-production
  artifacts:
    paths:
-     - dist/supplier-center-production/
+     - dist/supplier-center/
    expire_in: 1 week
  only:
    - master
@@ -56,7 +56,7 @@ deploy-to-aws_staging:
  image: instrumentisto/rsync-ssh:latest
  artifacts:
    paths:
-     - dist/supplier-center-staging/
+     - dist/supplier-center/
  before_script:
    - mkdir -p ~/.ssh
    - echo "$deploy_private_key_stg" | tr -d '\r' > ~/.ssh/id_rsa
@@ -64,7 +64,7 @@ deploy-to-aws_staging:
    - chmod 600 ~/.ssh/id_rsa
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
-   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center-staging/
+   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
    - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-stg.sinbad.web.id/* /var/www/seller-stg.sinbad.web.id-bak/"
    - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-stg.sinbad.web.id/
  only:
@@ -77,7 +77,7 @@ deploy-to-aws_production:
  image: instrumentisto/rsync-ssh:latest
  artifacts:
    paths:
-     - dist/supplier-center-production/
+     - dist/supplier-center/
  before_script:
    - mkdir -p ~/.ssh
    - echo "$deploy_private_key_prod" | tr -d '\r' > ~/.ssh/id_rsa
@@ -85,7 +85,7 @@ deploy-to-aws_production:
    - chmod 600 ~/.ssh/id_rsa
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
-   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center-production/
+   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
    - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller.sinbad.web.id-bak/"
    - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller.sinbad.web.id/
  only:
