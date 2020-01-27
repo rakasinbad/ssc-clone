@@ -73,6 +73,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'address',
         'store-phone-no',
         'owner-phone-no',
+        'owner-name',
         'store-segment',
         'store-type',
         'status',
@@ -292,6 +293,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'address',
                                 'store-phone-no',
                                 'owner-phone-no',
+                                'owner-name',
                                 'store-segment',
                                 'store-type',
                                 'status',
@@ -305,6 +307,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'address',
                                 'store-phone-no',
                                 'owner-phone-no',
+                                'owner-name',
                                 'store-segment',
                                 'store-type',
                                 'status'
