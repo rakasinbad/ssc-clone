@@ -44,7 +44,7 @@ export class MerchantSettingComponent implements OnInit, OnDestroy {
                     {
                         title: 'Store',
                         translate: 'BREADCRUMBS.STORE',
-                        url: '/pages/account/stores'
+                        url: '/pages/account/store-setting'
                     },
                     {
                         title: 'Store Setting',

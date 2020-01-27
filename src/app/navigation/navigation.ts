@@ -28,7 +28,7 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Store Setting',
                 translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
-                url: '/pages/account/stores/setting'
+                url: '/pages/account/store-setting'
             }
             // {
             //     id: 'accountsInternal',
