@@ -64,6 +64,14 @@ app-associations-store {
         .mat-header-row,
         .mat-row {
             background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+        }
+
+        mat-header-row {
+            border-top-width: 1px;
+            border-top-color: rgba(0, 0, 0, 0.12);
         }
 
         .mat-header-cell {
