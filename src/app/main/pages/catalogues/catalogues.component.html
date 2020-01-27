@@ -84,20 +84,20 @@
                             </div>
                             <div>
                                 <div fxLayout="column" fxLayoutGap="2px">
-                                    <p>
-                                        {{ row?.name }}
+                                    <p class="catalogue-name">
+                                        {{ row?.name | uppercase }}
                                     </p>
                                     <!-- <p class="text-truncate" style="color: grey">
                                         SKU Induk:
                                     </p> -->
                                     <mat-chip-list aria-label="Catalogue status">
-                                        <mat-chip *ngIf="row?.status === 'active'" class="green-800">
+                                        <mat-chip *ngIf="row?.status === 'active'" class="h-20 green-800">
                                             <strong>Live</strong>
                                         </mat-chip>
-                                        <mat-chip *ngIf="row?.status === 'inactive'" class="orange-800">
+                                        <mat-chip *ngIf="row?.status === 'inactive'" class="h-20 orange-800">
                                             <strong>Inactive</strong>
                                         </mat-chip>
-                                        <mat-chip *ngIf="row?.status === 'banned'" class="warn">
+                                        <mat-chip *ngIf="row?.status === 'banned'" class="h-20 warn">
                                             <strong>Diblokir</strong>
                                         </mat-chip>
                                         <mat-chip *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
@@ -228,7 +228,7 @@
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
-                    <mat-header-cell *matHeaderCellDef>
+                    <mat-header-cell class="pr-8" *matHeaderCellDef>
                         Actions
                     </mat-header-cell>
 
