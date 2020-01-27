@@ -60,6 +60,16 @@ app-catalogues {
         //     height: 84px;
         // }
 
+        mat-chip {
+            font-size: 10px;
+        }
+
+        mat-row {
+            height: 63px !important;
+            min-height: 63px !important;
+            max-height: 63px !important;
+        }
+
         img.ng-failed-lazyloaded {
             filter: grayscale(1);
         }
@@ -106,12 +116,12 @@ app-catalogues {
         }
 
         .mat-column-name {
-            flex: 0 1 50%;
+            flex: 0 1 75%;
             padding-left: 10px;
 
             .img-container {
-                width: 70px; /*any size*/
-                height: 70px; /*any size*/
+                width: 50px; /*any size*/
+                height: 50px; /*any size*/
 
                 .fit-image {
                     width: 100%;
@@ -119,11 +129,16 @@ app-catalogues {
                     object-fit: cover; /*magic*/
                 }
             }
+
+            p.catalogue-name {
+                margin-top: 8px !important;
+                margin-bottom: 2px !important;
+            }
         }
 
         .mat-column-sku, .mat-column-externalId {
-            flex: 0 1 10%;
-            margin-right: 50px;
+            flex: 0 1 15%;
+            margin-right: 20px;
         }
 
         .mat-column-variant {
@@ -170,9 +185,9 @@ app-catalogues {
             border-radius: 50%;
         }
 
-        .mat-column-actions {
-            flex: 0 1 80px;
-            justify-content: flex-end;
-        }
+        // .mat-column-actions {
+        //     flex: 0 1 80px;
+        //     justify-content: flex-end;
+        // }
     }
 }

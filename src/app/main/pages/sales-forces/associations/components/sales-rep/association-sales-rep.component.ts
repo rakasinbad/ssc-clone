@@ -84,7 +84,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         'store-qty',
         'sales-target',
         'date-associate',
-        'actions'
+        // 'actions'
     ];
 
     selection: SelectionModel<User>;
@@ -343,7 +343,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
                     'store-qty',
                     'sales-target',
                     'date-associate',
-                    'actions'
+                    // 'actions'
                 ];
             } else {
                 this.displayedColumns = [

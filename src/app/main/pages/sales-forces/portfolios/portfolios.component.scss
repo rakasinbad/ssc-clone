@@ -58,6 +58,9 @@ app-portfolios {
         .mat-header-row,
         .mat-row {
             background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
         }
 
         .mat-row:hover {

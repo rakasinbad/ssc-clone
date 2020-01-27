@@ -59,7 +59,7 @@
                         Next Number
                     </label>
                     <mat-form-field appearance="outline" fxFlex="80">
-                        <input matInput formControlName="nextNumber" [attr.maxlength]="form.get('maxDigit').value || 4" mask="0*"/>
+                        <input matInput formControlName="nextNumber" [attr.maxlength]="+(form.get('maxDigit').value) + 1 || 4" mask="0*"/>
     
                         <mat-error>
                             {{ getFormError(form.get('nextNumber')) }}

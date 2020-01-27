@@ -1,25 +1,30 @@
-import { AgmGeocoder, LatLngBounds, MouseEvent } from '@agm/core';
+import { AgmGeocoder, LatLngBounds, MouseEvent, GeocoderResult } from '@agm/core';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
     OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    ViewChild
+    ViewChild,
+    ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatCheckboxChange, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material';
+import {
+    MatAutocomplete,
+    MatAutocompleteTrigger,
+    MatCheckboxChange,
+    MatAutocompleteSelectedEvent
+} from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { SupplierStore, District } from 'app/shared/models';
+import { District, IQueryParams, SupplierStore, Urban } from 'app/shared/models';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
-import { FormSelectors, DropdownSelectors } from 'app/shared/store/selectors';
+import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { icon } from 'leaflet';
-import { Observable, Subject, fromEvent } from 'rxjs';
-import { filter, takeUntil, tap, map } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { filter, map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
@@ -64,6 +69,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         }
     };
     draggAble = false;
+    isManually = false;
 
     districtHighlight: string;
     urbanHighlight: string;
@@ -71,6 +77,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     isDistrictTyping = false;
     isUrbanTyping = false;
 
+    districts$: Observable<Array<District>>;
     store$: Observable<SupplierStore>;
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
@@ -83,6 +90,8 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     triggerUrban: MatAutocompleteTrigger;
 
     private _unSubs$: Subject<void> = new Subject<void>();
+    private _selectedDistrict = null;
+    private _selectedUrban = null;
     private _timer: Array<NodeJS.Timer> = [];
 
     constructor(
@@ -107,6 +116,11 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             tap(data => {
                 if (data && data.store) {
                     this.form.get('address').setValue(data.store.address);
+
+                    if (data.store.urban) {
+                        this.form.get('district').setValue(data.store.urban);
+                    }
+
                     this.cdRef.detectChanges();
                 }
             })
@@ -192,6 +206,14 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         this._unSubs$.complete();
     }
 
+    displayDistrictOption(item: District, isHtml = false): string {
+        if (!isHtml) {
+            return `${item.province.name}, ${item.city}, ${item.district}`;
+        }
+
+        return `<span class="subtitle">${item.province.name}, ${item.city}, ${item.district}</span>`;
+    }
+
     getErrorMessage(field: string): string {
         if (field) {
             const { errors } = this.form.get(field);
@@ -239,7 +261,14 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     onChangeManually(ev: MatCheckboxChange): void {
         console.log('Manually', ev);
 
+        this.isManually = ev.checked;
+
+        // this.form.get('district').reset();
+        this.form.get('urban').reset();
+
         if (ev.checked === true) {
+            this.draggAble = false;
+
             this.form.get('district').setValidators([
                 RxwebValidators.required({
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required')
@@ -252,6 +281,8 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                 })
             ]);
         } else {
+            this.draggAble = true;
+
             this.form.get('district').setValidators(null);
             this.form.get('urban').setValidators(null);
         }
@@ -389,11 +420,11 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         //     });
     }
 
-    /* onOpenAutocomplete(field: string): void {
+    onOpenAutocomplete(field: string): void {
         switch (field) {
             case 'district':
                 {
-                    if (this.autoDistrict && this.autoDistrict.panel && this.autoCompleteTrigger) {
+                    if (this.autoDistrict && this.autoDistrict.panel && this.triggerDistrict) {
                         fromEvent(this.autoDistrict.panel.nativeElement, 'scroll')
                             .pipe(
                                 map(x => this.autoDistrict.panel.nativeElement.scrollTop),
@@ -401,7 +432,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                                     this.store.select(DropdownSelectors.getTotalDistrictEntity),
                                     this.store.select(DropdownSelectors.getTotalDistrict)
                                 ),
-                                takeUntil(this.autoCompleteTrigger.panelClosingActions)
+                                takeUntil(this.triggerDistrict.panelClosingActions)
                             )
                             .subscribe(([x, skip, total]) => {
                                 const scrollTop = this.autoDistrict.panel.nativeElement.scrollTop;
@@ -442,56 +473,103 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             default:
                 return;
         }
-    } */
+    }
+
+    onSelectAutocomplete(ev: MatAutocompleteSelectedEvent, field: string): void {
+        switch (field) {
+            case 'district':
+                {
+                    const value = (ev.option.value as District) || '';
+
+                    if (!value) {
+                        this.form.get('district').reset();
+                        this.form.get('postcode').reset();
+                    } else {
+                        if (value.urbans.length > 0) {
+                            // this.form.get('urban').enable();
+
+                            this.store.dispatch(
+                                DropdownActions.setUrbanSource({ payload: value.urbans })
+                            );
+                        }
+                    }
+
+                    this._selectedDistrict = value ? JSON.stringify(value) : '';
+                }
+                break;
+
+            case 'urban':
+                {
+                    const value = (ev.option.value as Urban) || '';
+
+                    if (!value) {
+                        this.form.get('postcode').reset();
+                    } else {
+                        this.form.get('postcode').setValue(value.zipCode);
+                    }
+
+                    this._selectedUrban = value ? JSON.stringify(value) : '';
+                }
+                break;
+
+            default:
+                return;
+        }
+    }
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
             address: '',
             manually: false,
-            district: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            urban: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
+            district: '',
+            lat: '',
+            lng: '',
+            urban: '',
             notes: ''
         });
+    }
+
+    private _decomposeAddress(address: Array<GeocoderResult>): void {
+        console.log(address);
+
+        if (address.length === 0) {
+            this._$notice.open('No results found', 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right'
+            });
+            return;
+        }
+
+        const formatAddress = address[0].formatted_address;
+
+        this.form.get('address').setValue(formatAddress);
+        this.cdRef.detectChanges();
     }
 
     private _getAddress(lat: number, lng: number): void {
         // this.fitBoundService.getBounds$.subscribe(x => {
         //     console.log('Fit Bound', x);
         // });
-        this.agmGeocoder.geocode({ location: { lat: lat, lng: lng } }).subscribe({
-            next: res => {
-                console.log('GEOCODE', res);
+        this.agmGeocoder
+            .geocode({ location: { lat, lng } })
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe({
+                next: res => {
+                    console.log('GEOCODE', res);
+                    this._decomposeAddress(res);
 
-                if (res && res[0]) {
-                    this.form.get('address').setValue(res[0].formatted_address);
-                    this.cdRef.detectChanges();
-                } else {
-                    this._$notice.open('No results found', 'error', {
+                    if (res && res[0]) {
+                        this.form.get('address').setValue(res[0].formatted_address);
+                        this.cdRef.detectChanges();
+                    } else {
+                    }
+                },
+                error: err => {
+                    this._$notice.open('Failed geocoder', 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
                 }
-            },
-            error: err => {
-                this._$notice.open('Failed geocoder', 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
-            }
-        });
+            });
     }
 }

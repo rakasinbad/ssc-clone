@@ -65,7 +65,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         'portfolio-name',
         'sales-rep',
         'date-associate',
-        'actions'
+        // 'actions'
     ];
 
     selection: SelectionModel<AssociationStore>;
@@ -342,7 +342,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
                     'portfolio-name',
                     'sales-rep',
                     'date-associate',
-                    'actions'
+                    // 'actions'
                 ];
             } else {
                 this.displayedColumns = [
