@@ -16,8 +16,6 @@ start_runner_staging:
     - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
     - rm -rf ~/.aws/
     - sleep 30
-  only:
-    - staging
   tags:
     - docker
 
@@ -30,10 +28,26 @@ build_staging:
    - npm run build-staging
  artifacts:
    paths:
-     - dist/supplier-center/
+     - dist/supplier-center-staging/
    expire_in: 1 week
  only:
    - staging
+ tags:
+  - aws-docker-runner
+
+build_production:
+ stage: build
+ image: node:12-alpine
+ before_script:
+   - npm install
+ script:
+   - npm run build-production
+ artifacts:
+   paths:
+     - dist/supplier-center-production/
+   expire_in: 1 week
+ only:
+   - master
  tags:
   - aws-docker-runner
 
@@ -42,19 +56,40 @@ deploy-to-aws_staging:
  image: instrumentisto/rsync-ssh:latest
  artifacts:
    paths:
-     - dist/supplier-center/
+     - dist/supplier-center-staging/
  before_script:
    - mkdir -p ~/.ssh
-   - echo "$deploy_private_key" | tr -d '\r' > ~/.ssh/id_rsa
-   - echo "$deploy_public_key" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - echo "$deploy_private_key_stg" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key_stg" | tr -d '\r' > ~/.ssh/id_rsa.pub
    - chmod 600 ~/.ssh/id_rsa
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
-   - ls -la ${CI_PROJECT_DIR}
-   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-dev.sinbad.web.id/* /var/www/seller-dev.sinbad.web.id-bak/"
-   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-dev.sinbad.web.id/
+   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center-staging/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-stg.sinbad.web.id/* /var/www/seller-stg.sinbad.web.id-bak/"
+   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-stg.sinbad.web.id/
  only:
    - staging
+ tags:
+   - aws-docker-runner
+
+deploy-to-aws_production:
+ stage: deploy
+ image: instrumentisto/rsync-ssh:latest
+ artifacts:
+   paths:
+     - dist/supplier-center-production/
+ before_script:
+   - mkdir -p ~/.ssh
+   - echo "$deploy_private_key_prod" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key_prod" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - chmod 600 ~/.ssh/id_rsa
+   - chmod 600 ~/.ssh/id_rsa.pub
+ script:
+   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center-production/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller.sinbad.web.id-bak/"
+   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller.sinbad.web.id/
+ only:
+   - master
  tags:
    - aws-docker-runner
 
@@ -69,7 +104,5 @@ stop_runner_staging:
     - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
     - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
     - rm -rf ~/.aws/
-  only:
-    - staging
   tags:
     - docker
