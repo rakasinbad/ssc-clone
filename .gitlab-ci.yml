@@ -159,8 +159,8 @@ deploy_production:
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
    - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-   - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-center/* /var/www/seller-center-bak/"
-   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller-center/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller-center-bak/"
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller.sinbad.web.id/
  only:
    - master
  tags:
