@@ -23,13 +23,13 @@ export const navigation: Array<FuseNavigation> = [
                 type: 'item',
                 url: '/pages/account/stores'
             },
-            {
-                id: 'storeSetting',
-                title: 'Store Setting',
-                translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
-                type: 'item',
-                url: '/pages/account/store-setting'
-            }
+            // {
+            //     id: 'storeSetting',
+            //     title: 'Store Setting',
+            //     translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
+            //     type: 'item',
+            //     url: '/pages/account/store-setting'
+            // }
             // {
             //     id: 'accountsInternal',
             //     title: 'Internal',
