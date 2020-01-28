@@ -138,8 +138,8 @@ deploy_staging:
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
    - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-   - ssh -i ~/.ssh/id_rsa deploy@10.0.30.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-center-stg/* /var/www/seller-center-bak-stg/"
-   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.30.30:/var/www/seller-center-stg/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.30.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-stg.sinbad.web.id/* /var/www/seller-center-bak/"
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.30.30:/var/www/seller-stg.sinbad.web.id/
  only:
    - staging
  tags:
@@ -160,7 +160,7 @@ deploy_production:
  script:
    - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
    - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-center/* /var/www/seller-center-bak/"
-   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller-center/
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller-center/
  only:
    - master
  tags:
