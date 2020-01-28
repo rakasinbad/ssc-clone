@@ -14,17 +14,18 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { LogService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore } from 'app/shared/models';
+import { HelperService, NoticeService } from 'app/shared/helpers';
+import { IQueryParams, LifecyclePlatform, SupplierStore, User } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import * as moment from 'moment';
+import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { MerchantApiService } from './services';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
@@ -39,21 +40,49 @@ import { StoreSelectors } from './store/selectors';
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
+    formConfig = {
+        status: {
+            label: 'Store Status',
+            placeholder: 'Choose Store Status',
+            sources: this._$helper.storeStatus(),
+            rules: {
+                required: true
+            }
+        },
+        startDate: {
+            label: 'Start Date',
+            rules: {
+                required: true
+            }
+        },
+        endDate: {
+            label: 'End Date',
+            rules: {
+                required: true
+            }
+        }
+    };
     total: number;
     displayedColumns = [
         'store-code',
         'name',
         'city',
         'address',
+        'store-phone-no',
         'owner-phone-no',
+        'owner-name',
         'store-segment',
         'store-type',
+        'sr-name',
+        'joining-date',
         'status',
         'actions'
     ];
 
-    dataSource$: Observable<SupplierStore[]>;
+    dataSource$: Observable<Array<SupplierStore>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
@@ -67,15 +96,17 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ViewChild('filter', { static: true })
     // filter: ElementRef;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private router: Router,
+        private ngxPermissions: NgxPermissionsService,
+        private ngxRoles: NgxRolesService,
         private store: Store<fromMerchant.FeatureState>,
+        public translate: TranslateService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$log: LogService,
-        private _$merchantApi: MerchantApiService,
-        public translate: TranslateService
+        private _$helper: HelperService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -85,15 +116,15 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
-                    },
-                    {
-                        title: 'Account',
-                        translate: 'BREADCRUMBS.ACCOUNT'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Store',
+                        translate: 'BREADCRUMBS.ACCOUNT'
+                    },
+                    {
+                        title: 'Store List',
                         translate: 'BREADCRUMBS.STORE',
                         active: true
                     }
@@ -110,74 +141,21 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        localStorage.removeItem('filter.store');
-
-        // .pipe(
-        //     filter(source => source.length > 0),
-        //     delay(1000),
-        //     startWith(this._$merchantApi.initBrandStore())
-        // );
-
-        this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
-        this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
-
-        this.initTable();
-
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                if (v) {
-                    localStorage.setItem('filter.store', v);
-                }
-
-                this.onRefreshTable();
-            });
-
-        this.store
-            .select(StoreSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this.onRefreshTable();
-                }
-            });
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.resetBreadcrumb());
-        this.store.dispatch(StoreActions.resetStore());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -186,37 +164,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get searchStore(): string {
         return localStorage.getItem('filter.store') || '';
-    }
-
-    onChangePage(ev: PageEvent): void {
-        console.log('Change page', ev);
-    }
-
-    onChangeStatus(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
-    }
-
-    onDelete(item: SupplierStore): void {
-        if (!item || !item.id) {
-            return;
-        }
-
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
-    }
-
-    onRemoveSearchStore(): void {
-        localStorage.removeItem('filter.store');
-        this.search.reset();
-    }
-
-    onTrackBy(index: number, item: SupplierStore): string {
-        return !item ? null : item.id;
     }
 
     goStoreInfoPage(storeId: string): void {
@@ -232,16 +179,222 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return item ? item : '-';
     }
 
+    onChangePage(ev: PageEvent): void {
+        console.log('Change page', ev);
+    }
+
+    onChangeStatus(item: SupplierStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        const canChangeStatusStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.UPDATE');
+
+        canChangeStatusStore.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(StoreActions.confirmChangeStatusStore({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
+    }
+
+    onDelete(item: SupplierStore): void {
+        if (!item || !item.id) {
+            return;
+        }
+
+        const canDeleteStore = this.ngxPermissions.hasPermission('ACCOUNT.STORE.DELETE');
+
+        canDeleteStore.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(StoreActions.confirmDeleteStore({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
+    }
+
+    onExport(ev: { action: string; payload: any }): void {
+        if (!ev) {
+            return;
+        }
+
+        const { action, payload } = ev;
+
+        if (action === 'export') {
+            const body = {
+                status: payload.status,
+                dateGte:
+                    moment.isMoment(payload.start) && payload.start
+                        ? (payload.start as moment.Moment).format('YYYY-MM-DD')
+                        : payload.start
+                        ? moment(payload.start).format('YYYY-MM-DD')
+                        : null,
+                dateLte:
+                    moment.isMoment(payload.end) && payload.end
+                        ? (payload.end as moment.Moment).format('YYYY-MM-DD')
+                        : payload.end
+                        ? moment(payload.end).format('YYYY-MM-DD')
+                        : null
+            };
+
+            this.store.dispatch(StoreActions.exportRequest({ payload: body }));
+        }
+    }
+
+    onRemoveSearchStore(): void {
+        localStorage.removeItem('filter.store');
+        this.search.reset();
+    }
+
+    onTrackBy(index: number, item: SupplierStore): string {
+        return !item ? null : item.id;
+    }
+
+    generateSalesRep(salesRep: Array<User>): string {
+        if (!salesRep || !Array.isArray(salesRep) || salesRep.length === 0) {
+            return '-';
+        }
+
+        return salesRep.map(salesRep => salesRep.fullName).join(',<br/>');
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private onRefreshTable(): void {
-        this.paginator.pageIndex = 0;
-        this.initTable();
+    /**
+     *
+     *
+     * @private
+     * @param {LifecyclePlatform} [lifeCycle]
+     * @memberof MerchantsComponent
+     */
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this._initTable();
+                    });
+
+                this.ngxPermissions
+                    .hasPermission(['ACCOUNT.STORE.UPDATE', 'ACCOUNT.STORE.DELETE'])
+                    .then(hasAccess => {
+                        if (hasAccess) {
+                            this.displayedColumns = [
+                                'store-code',
+                                'name',
+                                'city',
+                                'address',
+                                'store-phone-no',
+                                'owner-phone-no',
+                                'owner-name',
+                                'store-segment',
+                                'store-type',
+                                'sr-name',
+                                'joining-date',
+                                'status',
+                                'actions'
+                            ];
+                        } else {
+                            this.displayedColumns = [
+                                'store-code',
+                                'name',
+                                'city',
+                                'address',
+                                'store-phone-no',
+                                'owner-phone-no',
+                                'owner-name',
+                                'store-segment',
+                                'store-type',
+                                'sr-name',
+                                'joining-date',
+                                'status'
+                            ];
+                        }
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                this.store.dispatch(UiActions.resetBreadcrumb());
+                this.store.dispatch(StoreActions.resetStore());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                localStorage.removeItem('filter.store');
+
+                // .pipe(
+                //     filter(source => source.length > 0),
+                //     delay(1000),
+                //     startWith(this._$merchantApi.initBrandStore())
+                // );
+
+                this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
+                this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+
+                this._initTable();
+
+                this.search.valueChanges
+                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .subscribe(v => {
+                        if (v) {
+                            localStorage.setItem('filter.store', v);
+                        }
+
+                        this._onRefreshTable();
+                    });
+
+                this.store
+                    .select(StoreSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
+                break;
+        }
     }
 
-    private initTable(): void {
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
+    }
+
+    /**
+     *
+     *
+     * @private
+     * @memberof MerchantsComponent
+     */
+    private _initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
@@ -264,13 +417,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             ];
         }
-
-        this._$log.generateGroup('[INIT TABLE MERCHANTS]', {
-            payload: {
-                type: 'log',
-                value: data
-            }
-        });
 
         this.store.dispatch(
             StoreActions.fetchStoresRequest({

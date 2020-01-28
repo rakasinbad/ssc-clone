@@ -2,6 +2,9 @@ import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromJourneyPlanErrs from './error.reducer';
+import * as fromJourneyPlanSales from './journey-plan-sales.reducer';
+import * as fromJourneyPlanStoresSelected from './journey-plan-store-selected.reducer';
+import * as fromJourneyPlanStoresSource from './journey-plan-store.reducer';
 import * as fromJourneyPlans from './journey-plan.reducer';
 
 // Keyname for core reducer
@@ -13,8 +16,11 @@ const featureKey = 'journeyPlans';
  * @interface State
  */
 interface State {
-    [fromJourneyPlans.featureKey]: fromJourneyPlans.State;
     [fromJourneyPlanErrs.featureKey]: fromJourneyPlanErrs.State;
+    [fromJourneyPlans.featureKey]: fromJourneyPlans.State;
+    [fromJourneyPlanSales.featureKey]: fromJourneyPlanSales.State;
+    [fromJourneyPlanStoresSelected.featureKey]: fromJourneyPlanStoresSelected.State;
+    [fromJourneyPlanStoresSource.featureKey]: fromJourneyPlanStoresSource.State;
 }
 
 /**
@@ -36,8 +42,11 @@ interface FeatureState extends fromRoot.State {
  */
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
+        [fromJourneyPlanErrs.featureKey]: fromJourneyPlanErrs.reducer,
         [fromJourneyPlans.featureKey]: fromJourneyPlans.reducer,
-        [fromJourneyPlanErrs.featureKey]: fromJourneyPlanErrs.reducer
+        [fromJourneyPlanSales.featureKey]: fromJourneyPlanSales.reducer,
+        [fromJourneyPlanStoresSelected.featureKey]: fromJourneyPlanStoresSelected.reducer,
+        [fromJourneyPlanStoresSource.featureKey]: fromJourneyPlanStoresSource.reducer
     })(state, action);
 }
 

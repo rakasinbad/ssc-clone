@@ -21,6 +21,27 @@ import {
 // import { Role } from 'app/main/pages/roles/role.model';
 
 // -----------------------------------------------------------------------------------------------------
+// Fetch Location Base Google Data [Location]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchLocationRequest = createAction(
+    '[Helper Location] Fetch Location Request',
+    props<{ payload: { province: string; city: string; district: string; urban: string } }>()
+);
+
+export const fetchLocationFailure = createAction(
+    '[Helper Location] Fetch Location Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchLocationSuccess = createAction(
+    '[Helper Location] Fetch Location Success',
+    props<{ payload: Urban }>()
+);
+
+export const resetLocation = createAction('[Helper Location] Reset Location State');
+
+// -----------------------------------------------------------------------------------------------------
 // Fetch Autocomplete [Districts]
 // -----------------------------------------------------------------------------------------------------
 

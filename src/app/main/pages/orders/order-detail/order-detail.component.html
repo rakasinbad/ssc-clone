@@ -1,8 +1,4 @@
-<div
-    id="order-detail"
-    class="page-layout carded fullwidth inner-scroll line-height-1.75"
-    fusePerfectScrollbar
->
+<div id="order-detail" class="page-layout carded fullwidth inner-scroll line-height-1.75" fusePerfectScrollbar>
     <!-- TOP BACKGROUND -->
     <div class="top-bg accent with-navigation"></div>
     <!-- / TOP BACKGROUND -->
@@ -12,22 +8,14 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    type="button"
-                    mat-icon-button
-                    class="mr-0 mr-sm-16"
-                    [routerLink]="['/pages/orders']"
-                >
+                <button type="button" mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/orders']">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
-                <div
-                    fxLayout="column"
-                    fxLayoutAlign="start start"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
-                >
+                <div fxLayout="column" fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
                     <div class="h2">
-                        Rincian Order
+                        Order Detail
                     </div>
                     <div class="subtitle secondary-text">
                         <span>{{ (order$ | async)?.orderRef }}</span>
@@ -68,22 +56,16 @@
                 </div>
 
                 <!-- SMALL BREADCRUMBS -->
-                <div
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb"
-                >
+                <div fxLayout="row" fxLayoutAlign="start center"
+                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb">
                     <!-- <span class="secondary-text">Quotations</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Quotations Send</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Sales Order</span> -->
                     <ng-container *ngFor="let smallBreadcrumb of smallBreadcrumbs; last as isLast">
-                        <span
-                            [class.secondary-text]="!smallBreadcrumb?.active"
-                            [class.active]="smallBreadcrumb?.active"
-                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl"
-                        >
+                        <span [class.secondary-text]="!smallBreadcrumb?.active" [class.active]="smallBreadcrumb?.active"
+                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl">
                             {{
                                 smallBreadcrumb?.translate
                                     ? (smallBreadcrumb?.translate | translate | titlecase)
@@ -309,27 +291,27 @@
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'confirm'">
-                                                        Order Baru
+                                                        New Order
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'packing'">
-                                                        Dikemas
+                                                        Packed
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'shipping'">
-                                                        Dikirim
+                                                        Shipped
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'delivered'">
-                                                        Diterima
+                                                        Delivered
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'done'">
-                                                        Selesai
+                                                        Done
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchCase="'cancel'">
-                                                        Batal
+                                                        Canceled
                                                     </ng-container>
 
                                                     <ng-container *ngSwitchDefault>
@@ -414,7 +396,7 @@
                     <div class="tracking-info px-36">
                         <header>
                             <div class="title h4">
-                                Status Pengiriman -
+                                Delivery Status -
 
                                 <ng-container [ngSwitch]="(order$ | async)?.status">
                                     <ng-container *ngSwitchCase="'checkout'">
@@ -422,27 +404,27 @@
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'confirm'">
-                                        Order Baru
+                                        New Order
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'packing'">
-                                        Dikemas
+                                        Packed
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'shipping'">
-                                        Dikirim
+                                        Shipped
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'delivered'">
-                                        Diterima
+                                        Delivered
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'done'">
-                                        Selesai
+                                        Done
                                     </ng-container>
 
                                     <ng-container *ngSwitchCase="'cancel'">
-                                        Batal
+                                        Canceled
                                     </ng-container>
 
                                     <ng-container *ngSwitchDefault>
@@ -453,18 +435,12 @@
                         </header>
 
                         <div class="content">
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'checkout'"
-                            >
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'checkout'">
                                 <div class="header">Quotation</div>
                             </div>
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'confirm'"
-                            >
-                                <div class="header">Order Baru</div>
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'confirm'">
+                                <div class="header">New Order</div>
                                 <!-- <div class="header">Verifikasi</div> -->
 
                                 <!-- <div class="detail">
@@ -575,11 +551,8 @@
                                     </ul> -->
                             </div>
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'packing'"
-                            >
-                                <div class="header">Dikemas</div>
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'packing'">
+                                <div class="header">Packed</div>
 
                                 <!-- FIX <div
                                     class="detail py-4 px-12"
@@ -632,11 +605,8 @@
                                 <div class="header">Siap Dikirim</div>
                             </div> -->
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'shipping'"
-                            >
-                                <div class="header">Dikirim</div>
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'shipping'">
+                                <div class="header">Shipped</div>
 
                                 <!-- FIX <div
                                     class="detail py-4 px-12"
@@ -772,25 +742,17 @@
                                 </div> -->
                             </div>
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'delivered'"
-                            >
-                                <div class="header">Diterima</div>
+                            <div class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'delivered'">
+                                <div class="header">Delivered</div>
                             </div>
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'done'"
-                            >
-                                <div class="header">Selesai</div>
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'done'">
+                                <div class="header">Done</div>
                             </div>
 
-                            <div
-                                class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'cancel'"
-                            >
-                                <div class="header">Batal</div>
+                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'cancel'">
+                                <div class="header">Cancel</div>
                             </div>
                         </div>
                     </div>
@@ -811,27 +773,27 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'confirm'">
-                            Order Baru
+                            New Order
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'packing'">
-                            Dikemas
+                            Packed
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'shipping'">
-                            Dikirim
+                            Shipped
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'delivered'">
-                            Diterima
+                            Delivered
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'done'">
-                            Selesai
+                            Done
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'cancel'">
-                            Batal
+                            Canceled
                         </ng-container>
 
                         <ng-container *ngSwitchDefault>
@@ -845,12 +807,8 @@
                         <div class="content">
                             <div class="status secondary-text">
                                 <div class="detail" fxLayout="row" fxFlex="70">
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'checkout'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'checkout'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -868,12 +826,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'confirm'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'confirm'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -882,7 +836,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Order Baru
+                                                New Order
                                             </div>
 
                                             <div class="time line-height-8">
@@ -891,12 +845,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'packing'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'packing'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -905,7 +855,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Dikemas
+                                                Packed
                                             </div>
 
                                             <div class="time line-height-8">
@@ -914,12 +864,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'shipping'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'shipping'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -928,7 +874,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Dikirim
+                                                Shipped
                                             </div>
 
                                             <div class="time line-height-8">
@@ -937,12 +883,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'delivered'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'delivered'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -951,7 +893,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Diterima
+                                                Delivered
                                             </div>
 
                                             <div class="time line-height-8">
@@ -960,12 +902,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'done'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'done'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -974,7 +912,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Selesai
+                                                Done
                                             </div>
 
                                             <div class="time line-height-8">
@@ -983,12 +921,8 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="step"
-                                        [class.active]="(order$ | async)?.status === 'cancel'"
-                                        fxLayout="column"
-                                        fxFlex
-                                    >
+                                    <div class="step" [class.active]="(order$ | async)?.status === 'cancel'"
+                                        fxLayout="column" fxFlex>
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -997,7 +931,7 @@
 
                                         <div class="content" fxFlex="90">
                                             <div class="label">
-                                                Batal
+                                                Canceled
                                             </div>
 
                                             <div class="time line-height-8">
@@ -1383,15 +1317,10 @@
                         </mat-cell>
                     </ng-container> -->
 
-                    <mat-header-row
-                        *matHeaderRowDef="displayedColumns; sticky: true"
-                    ></mat-header-row>
+                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                    <mat-row
-                        *matRowDef="let row; columns: displayedColumns"
-                        class="order-line"
-                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
-                    >
+                    <mat-row *matRowDef="let row; columns: displayedColumns" class="order-line"
+                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }">
                     </mat-row>
                 </mat-table>
             </div>

@@ -12,19 +12,19 @@
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
             <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
-                <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
+            <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
                     <mat-icon>add</mat-icon>
 
                     TAMBAH TOKO
                 </button> -->
 
-                <!-- <button mat-stroked-button color="accent" class="sinbad">
+            <!-- <button mat-stroked-button color="accent" class="sinbad">
                     IMPORT
                 </button> -->
             <!-- </div> -->
 
             <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
-                <!-- <button mat-flat-button class="grey-600">
+            <!-- <button mat-flat-button class="grey-600">
                     <mat-icon>filter_list</mat-icon>
                     Filter Lists
                 </button>
@@ -40,7 +40,7 @@
                 <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
-                        <input #filter [formControl]='search' placeholder="Cari di sini"/>
+                        <input #filter [formControl]='search' placeholder="Search" />
                     </div>
                 </div>
                 <!-- / SEARCH -->
@@ -72,23 +72,17 @@
         <!-- CONTENT CARD -->
         <!-- <div class="content-card"></div> -->
 
-        <div class="sinbad-content mat-elevation-z1">
-            <mat-table
-                class="merchants-table"
-                #table
-                [dataSource]="dataSource$ | async"
-                matSort
-                [@animateStagger]="{ value: '50' }"
-                fusePerfectScrollbar
-            >
+        <div class="content-card mat-elevation-z1">
+            <mat-table class="merchants-table" #table [dataSource]="dataSource$ | async" matSort
+                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
                     <mat-header-cell *matHeaderCellDef>
-                        Store ID
+                        Supplier's Store ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ row?.store?.storeCode }}
+                            {{ row?.store?.externalId || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -232,23 +226,14 @@
 
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button
-                                mat-icon-button
-                                [matMenuTriggerFor]="moreMenu"
-                                aria-label="More"
-                                (click)="$event.stopPropagation()"
-                            >
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                                (click)="$event.stopPropagation()">
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button
-                                    mat-menu-item
-                                    type="button"
-                                    class="sinbad-mat-menu-item"
-                                    aria-label="Edit"
-                                    [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']"
-                                >
+                                <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="Edit"
+                                    [routerLink]="['/pages/in-store-inventories/store/' + row?.storeId + '/catalogue/' + row?.catalogueId + '/detail']">
                                     <mat-icon>edit</mat-icon>
                                     <span>Edit</span>
                                 </button>
@@ -308,12 +293,8 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row
-                    *matRowDef="let row; columns: displayedColumns"
-                    class="merchant"
-                    matRipple
-                    (click)="openStoreHistoryInventories(row?.id)"
-                >
+                <mat-row *matRowDef="let row; columns: displayedColumns" class="merchant h-40" matRipple
+                    (click)="openStoreHistoryInventories(row?.id)">
                 </mat-row>
             </mat-table>
 
@@ -321,24 +302,15 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div> -->
 
-            <div
-                class="no-records"
-                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
-            >
+            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
                 No records found
             </div>
 
-            <mat-paginator
-                [fxHide]="
+            <mat-paginator [fxHide]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-                "
-                [length]="totalDataSource$ | async"
-                [pageSize]="environment.pageSize"
-                [pageSizeOptions]="[5, 10, 25, 100]"
-                (page)="onChangePage($event)"
-                showFirstLastButtons
-            >
+                " [length]="totalDataSource$ | async" [pageSize]="environment.pageSize"
+                [pageSizeOptions]="[5, 10, 25, 100]" (page)="onChangePage($event)" showFirstLastButtons>
             </mat-paginator>
 
             <div class="loader" *ngIf="(isLoading$ | async)">

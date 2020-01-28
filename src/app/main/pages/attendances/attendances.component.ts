@@ -1,4 +1,4 @@
-import { Subject, merge, Observable } from 'rxjs';
+import { Subject, merge, Observable, combineLatest } from 'rxjs';
 import {
     Component,
     ElementRef,
@@ -21,8 +21,10 @@ import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 
 import { IQueryParams } from 'app/shared/models';
-import { tap, distinctUntilChanged, takeUntil, map, debounceTime } from 'rxjs/operators';
+import { tap, distinctUntilChanged, takeUntil, map, debounceTime, take } from 'rxjs/operators';
 import { Store, Attendance } from './models';
+
+import { environment } from 'environments/environment';
 
 /**
  * ACTIONS
@@ -43,6 +45,7 @@ import { Router } from '@angular/router';
 import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ValidationError } from '@ngx-pwa/local-storage';
+import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-attendances',
@@ -67,10 +70,16 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
 
+    defaultPageSize = environment.pageSize;
+    defaultPageSizeTable = environment.pageSizeTable;
+
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
-    search: FormControl;
+    search: string;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef<HTMLElement>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -87,7 +96,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         private router: Router,
         private sanitizer: DomSanitizer,
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private ngxPermissionsService: NgxPermissionsService,
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -101,24 +111,25 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('', [
-            Validators.required,
-            control => {
-                const value = control.value;
-                const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
 
-                if (sanitized) {
-                    return null;
-                } else {
-                    if (value.length === 0) {
-                        return null;
-                    } else {
-                        return { unsafe: true };
-                    }
-                }
-            }
-        ]);
-        this.paginator.pageSize = 5;
+        this.search = '';
+        // this.search = new FormControl('', [
+        //     Validators.required,
+        //     control => {
+        //         const value = control.value;
+        //         const sanitized = !!this.sanitizer.sanitize(SecurityContext.HTML, value);
+
+        //         if (sanitized) {
+        //             return null;
+        //         } else {
+        //             if (value.length === 0) {
+        //                 return null;
+        //             } else {
+        //                 return { unsafe: true };
+        //             }
+        //         }
+        //     }
+        // ]);
 
         this.dataSource$ = this._fromStore.select(MerchantSelectors.getAllMerchant).pipe(
             map(stores =>
@@ -138,11 +149,11 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             distinctUntilChanged(),
             takeUntil(this._unSubs$)
         );
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this.onChangePage();
-            });
+        // this.search.valueChanges
+        //     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+        //     .subscribe(() => {
+        //         this.onChangePage();
+        //     });
 
         this.onChangePage();
     }
@@ -155,7 +166,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -175,8 +186,11 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         merge(this.sort.sortChange, this.paginator.page)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(_ => {
+                this.table.nativeElement.scrollTop = 0;
                 this.onChangePage();
             });
+
+        this.updatePrivileges();
     }
 
     ngOnDestroy(): void {
@@ -193,32 +207,47 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     public onChangePage(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize,
-            skip: this.paginator.pageSize * this.paginator.pageIndex
-        };
-
-        data['paginate'] = true;
-
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.defaultPageSize * this.paginator.pageIndex
+            };
+    
+            data['paginate'] = true;
+    
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+    
+            if (this.search) {
+                data['search'] = [
+                    {
+                        fieldName: 'name',
+                        keyword: this.search
+                    }
+                ];
+            }
+    
+            this._fromStore.dispatch(
+                MerchantActions.fetchStoresRequest({
+                    payload: data
+                })
+            );
         }
+    }
 
-        if (this.search.status === 'VALID') {
-            data['search'] = [
-                {
-                    fieldName: 'name',
-                    keyword: this.search.value
-                }
-            ];
+    onSearch($event: string): void {
+        // console.log($event);
+        const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, $event);
+
+        if (!!sanitized) {
+            this.search = sanitized;
+            this.onChangePage();
+        } else if ($event.length === 0) {
+            this.search = sanitized;
+            this.onChangePage();
         }
-
-        this._fromStore.dispatch(
-            MerchantActions.fetchStoresRequest({
-                payload: data
-            })
-        );
     }
 
     getDiffTime(
@@ -268,5 +297,38 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private onRefreshTable(): void {
         this.paginator.pageIndex = 0;
+    }
+
+    private updatePrivileges(): void {
+        this.ngxPermissionsService.hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }

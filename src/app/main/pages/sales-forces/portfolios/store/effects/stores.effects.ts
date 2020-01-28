@@ -19,6 +19,7 @@ import { HelperService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
 import { Store } from 'app/main/pages/attendances/models';
+import { CoreFeatureState } from '../reducers';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 
@@ -29,6 +30,7 @@ export class StoreEffects {
         private authStore: NgRxStore<fromAuth.FeatureState>,
         private storesService: StoresApiService,
         private helper$: HelperService,
+        private portfolioStore: NgRxStore<CoreFeatureState>
     ) {}
 
     fetchStoresRequest$ = createEffect(() =>
@@ -63,6 +65,44 @@ export class StoreEffects {
         )
     );
 
+    checkStoreAtInvoiceGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.checkStoreAtInvoiceGroupRequest),
+            map(action => action.payload),
+            switchMap<{ storeId: string; invoiceGroupId: string }, Observable<AnyAction>>((payload) =>
+                this.checkStoreAtInvoiceGroup(payload.storeId, payload.invoiceGroupId)
+            ),
+            catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
+        )
+    );
+
+    checkStoreAtInvoiceGroupSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
+            map(action => action.payload),
+            tap(({ portfolioId, code, name, storeId }) => {
+                this.portfolioStore.dispatch(PortfolioActions.updateStore({
+                    payload: {
+                        id: storeId,
+                        changes: {
+                            portfolio: portfolioId ? { code, name, id: portfolioId } : null
+                        }
+                    }
+                }));
+            })
+    ) , { dispatch: false });
+
+    checkStoreAtInvoiceGroup = (storeId: string, invoiceGroupId: string): Observable<AnyAction> => {
+        return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId)
+            .pipe(
+                catchOffline(),
+                switchMap(response =>
+                    of(StoreActions.checkStoreAtInvoiceGroupSuccess({ payload: { ...response, storeId } }))
+                ),
+                catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
+            );
+    }
+
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
@@ -80,12 +120,7 @@ export class StoreEffects {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = {
-            ...queryParams
-        };
-    
-        // Memasukkan ID supplier ke dalam parameter.
-        newQuery['supplierId'] = supplierId;
+        const newQuery: IQueryParams = Object.assign({}, queryParams, { supplierId });
 
         return this.storesService
             .findStores(newQuery)
@@ -94,7 +129,9 @@ export class StoreEffects {
                 switchMap(response =>
                     of(StoreActions.fetchStoresSuccess({
                         payload: {
-                            stores: response.data.map(store => new Store(store)),
+                            stores: queryParams.paginate
+                                    ? response.data.map(store => new Store(store))
+                                    : ((response as unknown) as Array<Store>).map(store => new Store(store)),
                             total: response.total,
                             source: 'fetch',
                         }

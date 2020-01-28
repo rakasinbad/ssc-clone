@@ -19,7 +19,8 @@ import {
     StoreSegmentApiService,
     StoreTypeApiService,
     UrbanApiService,
-    VehicleAccessibilityApiService
+    VehicleAccessibilityApiService,
+    LocationSearchApiService
 } from 'app/shared/helpers';
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
 import {
@@ -64,6 +65,41 @@ import { DropdownActions } from '../actions';
 @Injectable()
 export class DropdownEffects {
     private _isOnline = this.network.online;
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH location base google data methods [Location]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchLocationRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(DropdownActions.fetchLocationRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$locationSearchApi.findLocation<PaginateResponse<Urban>>(payload).pipe(
+                    map(resp => {
+                        const newResp =
+                            resp && resp.data && resp.data.length > 0
+                                ? resp.data.map(r => new Urban(r))[0]
+                                : null;
+
+                        return DropdownActions.fetchLocationSuccess({
+                            payload: newResp
+                        });
+                    }),
+                    catchError(err =>
+                        of(
+                            DropdownActions.fetchLocationFailure({
+                                payload: {
+                                    id: 'fetchLocationFailure',
+                                    errors: err
+                                }
+                            })
+                        )
+                    )
+                );
+            })
+        )
+    );
 
     searchDistrictRequest$ = createEffect(
         () => ({ debounce = 300, scheduler = asyncScheduler } = {}) =>
@@ -424,8 +460,8 @@ export class DropdownEffects {
         this.actions$.pipe(
             ofType(DropdownActions.fetchDropdownInvoiceGroupRequest),
             withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-            switchMap(([_, { supplierId }]) => {
-                if (!supplierId) {
+            switchMap(([_, userSupplier]) => {
+                if (!userSupplier || !userSupplier.supplierId) {
                     return of(
                         DropdownActions.fetchDropdownInvoiceGroupFailure({
                             payload: {
@@ -435,6 +471,8 @@ export class DropdownEffects {
                         })
                     );
                 }
+
+                const { supplierId } = userSupplier;
 
                 return this._$invoiceGroupApi.findAll({ paginate: false }, supplierId).pipe(
                     catchOffline(),
@@ -956,6 +994,7 @@ export class DropdownEffects {
         private _$districtApi: DistrictApiService,
         private _$hierarchyApi: HierarchyApiService,
         private _$invoiceGroupApi: InvoiceGroupApiService,
+        private _$locationSearchApi: LocationSearchApiService,
         private _$provinceApi: ProvinceApiService,
         private _$roleApi: RoleApiService,
         private _$storeClusterApi: StoreClusterApiService,

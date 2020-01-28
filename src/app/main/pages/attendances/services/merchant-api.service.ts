@@ -19,7 +19,17 @@ export class MerchantApiService {
     
     find(params: IQueryParams): Observable<Array<Merchant> | IPaginatedResponse<Merchant>> {
         this._url = this.helperSvc.handleApiRouter(this._endpoint);
-        const newParams = this.helperSvc.handleParams(this._url, params);
+
+        const newArgs = [];
+
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+
+        const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
         if (params.paginate) {
             return this.http.get<IPaginatedResponse<Merchant>>(this._url, { params: newParams });

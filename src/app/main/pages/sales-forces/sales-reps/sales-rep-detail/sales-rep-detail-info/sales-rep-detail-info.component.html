@@ -3,56 +3,120 @@
         <div class="h2 section__title">Sales Rep Detail</div>
     </div>
 
-    <div class="box-info horizontal" fxLayout="column" fxLayoutGap="30px">
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
-                Sales Rep Name
-            </label>
-
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                <span>{{ safeValue(salesRep?.user?.fullName) }}</span>
-            </label>
-        </div>
-
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
-                Phone Number
-            </label>
-
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                <span>{{ safeValue(salesRep?.user?.mobilePhoneNo) }}</span>
-            </label>
-        </div>
-
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="15px">
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
-                Identity ID
-            </label>
-
-            <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
-                <span>{{ safeValue(salesRep?.user?.idNo) }}</span>
-            </label>
+    <div class="box-info horizontal" fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="10px">
+        <div
+            *ngIf="salesRep"
+            class="sales-image"
+            fxFlexAlign="start"
+            [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
+        >
+            <img
+                [defaultImage]="'assets/images/avatars/profile.jpg'"
+                [useSrcset]="true"
+                [lazyLoad]="salesRep?.user?.imageUrl"
+                [errorImage]="'assets/images/avatars/profile.jpg'"
+            />
         </div>
 
         <div
-            class="custom-field mt-16"
-            fxLayout="row"
-            fxLayoutAlign="start center"
-            fxLayoutGap="15px"
+            *ngIf="!salesRep"
+            class="sales-image"
+            fxFlexAlign="start"
+            [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }"
         >
-            <label fxFlex="13"></label>
-
-            <div class="custom-field__field" fxFlex="100">
-                <mat-slide-toggle [checked]="isChecked(salesRep?.status)" disabled>
-                    Active
-                </mat-slide-toggle>
-            </div>
+            <img [src]="'assets/images/avatars/profile.jpg'" />
         </div>
 
-        <div class="custom-field" fxLayout="row" fxLayoutAlign="end end" fxLayoutGap="15px">
-            <label class="custom-field__label" fxFlexAlign="center">
-                Join Date: {{ (salesRep?.user?.joinDate | date: 'dd/MM/yyyy') || '-' }}
-            </label>
+        <div fxLayout="column" fxFlex fxLayoutGap="30px">
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
+                    Sales Rep Name
+                </label>
+
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
+                    <span>{{ salesRep?.user?.fullName || '-' }}</span>
+                </label>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
+                    Phone Number
+                </label>
+
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
+                    <span>{{ salesRep?.user?.mobilePhoneNo || '-' }}</span>
+                </label>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
+                    KTP ID
+                </label>
+
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
+                    <span>{{ salesRep?.user?.idNo || '-' }}</span>
+                </label>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
+                    Sales Team
+                </label>
+
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
+                    <span>{{ salesRep?.user?.saleTeam?.name || '-' }}</span>
+                </label>
+            </div>
+
+            <div
+                class="custom-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="13">
+                    Join Date
+                </label>
+
+                <label class="custom-field__label" fxFlexAlign="center" fxFlex="100">
+                    <span>{{ (salesRep?.user?.joinDate | date: 'dd/MM/yyyy') || '-' }}</span>
+                </label>
+            </div>
+
+            <div
+                class="custom-field mt-16"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <label fxFlex="13"></label>
+
+                <div class="custom-field__field" fxFlex="100">
+                    <mat-slide-toggle [checked]="isChecked(salesRep?.status)" disabled>
+                        Active
+                    </mat-slide-toggle>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -109,18 +173,18 @@
                                     <div fxFlex>{{ portfolio?.invoiceGroup?.name || '-' }}</div>
                                     <div fxFlex>
                                         {{
-                                            portfolio?.totalTargetSales
+                                            portfolio?.totalTargetSales !== 0
                                                 ? (portfolio?.totalTargetSales
                                                       | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                                : safeValue(portfolio?.totalTargetSales)
+                                                : portfolio?.totalTargetSales
                                         }}
                                     </div>
                                     <div fxFlex>
                                         {{
-                                            portfolio?.totalActualSales
-                                                ? (portfolio?.totalActualSales
+                                            portfolio?.actualTargetSales !== 0
+                                                ? (portfolio?.actualTargetSales
                                                       | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                                : safeValue(portfolio?.totalActualSales)
+                                                : portfolio?.actualTargetSales
                                         }}
                                     </div>
                                 </div>

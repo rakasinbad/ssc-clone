@@ -22,6 +22,12 @@ export const getDropdownState = createFeatureSelector<fromDropdown.State>(fromDr
 // );
 
 // -----------------------------------------------------------------------------------------------------
+// Location State
+// -----------------------------------------------------------------------------------------------------
+
+export const getLocationState = createSelector(getDropdownState, state => state.location);
+
+// -----------------------------------------------------------------------------------------------------
 // Credit Limit Groups State
 // -----------------------------------------------------------------------------------------------------
 
@@ -375,5 +381,7 @@ export const getIsError = createSelector(getErrorEntities, (entities, { errorId 
 
 export const getRoleDropdownStateByType = (typeId: string) =>
     createSelector(getRoleDropdownState, roles => {
-        return roles.length ? roles.filter(role => role.roleTypeId === typeId) : roles;
+        return roles && roles.length && typeId
+            ? roles.filter(role => role.roleTypeId === typeId)
+            : roles;
     });

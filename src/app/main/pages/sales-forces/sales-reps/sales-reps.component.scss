@@ -66,10 +66,29 @@ app-sales-reps {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .sales-rep {
@@ -82,8 +101,8 @@ app-sales-reps {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
         }
 
@@ -91,9 +110,41 @@ app-sales-reps {
             flex: 0 1 80px;
         }
 
+        .mat-column-sales-rep-id {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-sales-rep-name {
+            flex: 0 1 18%;
+        }
+
+        .mat-column-phone-number {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-invoice-group {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-area {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-joining-date {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-status {
+            flex: 0 1 70px;
+        }
+
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+
+        .active-icon {
+            border-radius: 50%;
         }
     }
 }

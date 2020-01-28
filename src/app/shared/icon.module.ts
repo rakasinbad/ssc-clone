@@ -54,5 +54,57 @@ export class IconModule {
             'icons8-open-box',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/icons8/open-box.svg')
         );
+
+        // Store logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-store-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/store-logo.svg')
+        );
+
+        // Catalogue logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-catalogue-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                './assets/icons/sinbad/catalogue-logo.svg'
+            )
+        );
+
+        // Attendance logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-attendance-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                './assets/icons/sinbad/attendance-logo.svg'
+            )
+        );
+
+        // Finance logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-finance-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                './assets/icons/sinbad/finance-logo.svg'
+            )
+        );
+
+        // OMS logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-oms-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/oms-logo.svg')
+        );
+
+        // Inventory logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-inventory-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                './assets/icons/sinbad/inventory-logo.svg'
+            )
+        );
+
+        // Sales Force logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-sales-force-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl(
+                './assets/icons/sinbad/sales-force-logo.svg'
+            )
+        );
     }
 }

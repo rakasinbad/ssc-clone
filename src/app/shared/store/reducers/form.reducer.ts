@@ -6,6 +6,7 @@ export const FEATURE_KEY = 'forms';
 
 export interface State {
     isShowSaveButton: boolean;
+    isClickCancelButton: boolean;
     isClickResetButton: boolean;
     isClickSaveButton: boolean;
     cancelButtonAction: string;
@@ -14,6 +15,7 @@ export interface State {
 
 const initialState: State = {
     isShowSaveButton: false,
+    isClickCancelButton: false,
     isClickResetButton: false,
     isClickSaveButton: false,
     cancelButtonAction: 'RESET',
@@ -22,6 +24,14 @@ const initialState: State = {
 
 const formReducer = createReducer(
     initialState,
+    on(FormActions.clickCancelButton, state => ({
+        ...state,
+        isClickCancelButton: true
+    })),
+    on(FormActions.resetClickCancelButton, state => ({
+        ...state,
+        isClickCancelButton: initialState.isClickCancelButton
+    })),
     on(FormActions.clickSaveButton, state => ({
         ...state,
         isClickSaveButton: true

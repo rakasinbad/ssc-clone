@@ -1,0 +1,17 @@
+<div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+    <p>View By :</p>
+    <button type="button" mat-stroked-button color="accent"
+        [class.sinbad]="(buttonViewByActive$ | async) ==='sales-rep'" (click)="clickTabViewBy('sales-rep')">
+        Sales Rep
+    </button>
+
+    <button type="button" mat-stroked-button color="accent" [class.sinbad]="(buttonViewByActive$ | async)==='portfolio'"
+        (click)="clickTabViewBy('portfolio')">
+        Portfolio
+    </button>
+
+    <button type="button" mat-stroked-button color="accent" [class.sinbad]="(buttonViewByActive$ | async)==='store'"
+        (click)="clickTabViewBy('store')">
+        Store
+    </button>
+</div>

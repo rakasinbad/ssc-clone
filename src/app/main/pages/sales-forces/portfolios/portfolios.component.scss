@@ -1,10 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
 app-portfolios {
-    .header {
-        // height: 80px;
-        // min-height: 80px;
-        // max-height: 136px;
+    .portfolio-header {
+        height: 120px !important;
+        min-height: 120px !important;
+        max-height: 120px !important;
 
         .search-wrapper {
             width: 100%;
@@ -58,6 +58,9 @@ app-portfolios {
         .mat-header-row,
         .mat-row {
             background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
         }
 
         .mat-row:hover {

@@ -2,13 +2,14 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 
+import { JourneyPlanEffects, JourneyPlanStoreEffects } from './store/effects';
 import * as fromJourneyPlans from './store/reducers';
 
 @NgModule({
     imports: [
         // Third Party (Ngrx: https://ngrx.io)
         StoreModule.forFeature(fromJourneyPlans.featureKey, fromJourneyPlans.reducers),
-        EffectsModule.forFeature([])
+        EffectsModule.forFeature([JourneyPlanEffects, JourneyPlanStoreEffects])
     ]
 })
 export class JourneyPlansStoreModule {}

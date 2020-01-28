@@ -4,12 +4,12 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    ElementRef
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTable, MatTableDataSource } from '@angular/material';
@@ -17,18 +17,14 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    flatMap,
-    takeUntil,
-    tap
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -36,8 +32,6 @@ import { SalesRep, SalesRepBatchActions } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-sales-reps',
@@ -61,13 +55,16 @@ import { HelperService } from 'app/shared/helpers';
 })
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
-    search: FormControl;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    search: FormControl = new FormControl('');
     displayedColumns = [
         'checkbox',
+        'sales-rep-id',
         'sales-rep-name',
         'phone-number',
-        'sales-rep-target',
-        'actual-sales',
+        // 'sales-rep-target',
+        // 'actual-sales',
         'invoice-group',
         'area',
         'joining-date',
@@ -75,7 +72,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
     dataSource: MatTableDataSource<SalesRep>;
-    selection: SelectionModel<SalesRep>;
+    selection: SelectionModel<SalesRep> = new SelectionModel<SalesRep>(true, []);
 
     dataSource$: Observable<Array<SalesRep>>;
     selectedRowIndex$: Observable<string>;
@@ -94,14 +91,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject();
 
     private readonly _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Sales Rep'
@@ -110,9 +107,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private domSanitizer: DomSanitizer,
+        private ngxPermissions: NgxPermissionsService,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private _$helper: HelperService
+        private _$helper: HelperService,
+        private _$notice: NoticeService
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -126,10 +125,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject();
         this.paginator.pageSize = this.defaultPageSize;
-        this.search = new FormControl('');
-        this.selection = new SelectionModel<SalesRep>(true, []);
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -172,28 +168,14 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                // this.table.nativeElement.scrollIntoView(true);
-                // this.table.nativeElement.scrollTop = 0;
-                this._initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        // Reset core state sales reps
-        this.store.dispatch(SalesRepActions.clearState());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -219,7 +201,11 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     joinPortfolios(value: Array<Portfolio>): string {
         if (value && value.length > 0) {
-            return value.map(v => v.invoiceGroup.name).join(', ');
+            const invoiceGroup = value
+                .filter(v => v.type !== 'direct')
+                .map(v => v.invoiceGroup.name);
+
+            return invoiceGroup.length > 0 ? invoiceGroup.join(', ') : '-';
         }
 
         return '-';
@@ -232,17 +218,9 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         const numRows = this.dataSource.data.length;
         // const numRows = this.paginator.length;
 
-        console.log('IS ALL SELECTED', numSelected, numRows);
+        // console.log('IS ALL SELECTED', numSelected, numRows);
 
         return numSelected === numRows;
-    }
-
-    safeValue(value: any): any {
-        if (typeof value === 'number') {
-            return value;
-        } else {
-            return value ? value : '-';
-        }
     }
 
     showInfo(): void {
@@ -254,8 +232,19 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             return;
         }
 
-        this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
-        this.store.dispatch(SalesRepActions.confirmChangeStatusSalesRep({ payload: item }));
+        const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
+
+        canUpdate.then(hasAccess => {
+            if (hasAccess) {
+                this.store.dispatch(UiActions.setHighlightRow({ payload: item.id }));
+                this.store.dispatch(SalesRepActions.confirmChangeStatusSalesRep({ payload: item }));
+            } else {
+                this._$notice.open('Sorry, permission denied!', 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+            }
+        });
     }
 
     onSelectedActions(action: SalesRepBatchActions): void {
@@ -323,12 +312,71 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
      * @memberof SalesRepsComponent
      */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
-        // Set breadcrumbs
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: this._breadCrumbs
-            })
-        );
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        // this.table.nativeElement.scrollIntoView(true);
+                        // this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+
+                const canUpdate = this.ngxPermissions.hasPermission('SRM.SR.UPDATE');
+
+                canUpdate.then(hasAccess => {
+                    if (hasAccess) {
+                        this.displayedColumns = [
+                            'checkbox',
+                            'sales-rep-id',
+                            'sales-rep-name',
+                            'phone-number',
+                            // 'sales-rep-target',
+                            // 'actual-sales',
+                            'invoice-group',
+                            'area',
+                            'joining-date',
+                            'status',
+                            'actions'
+                        ];
+                    } else {
+                        this.displayedColumns = [
+                            'checkbox',
+                            'sales-rep-id',
+                            'sales-rep-name',
+                            'phone-number',
+                            // 'sales-rep-target',
+                            // 'actual-sales',
+                            'invoice-group',
+                            'area',
+                            'joining-date',
+                            'status'
+                        ];
+                    }
+                });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state sales reps
+                this.store.dispatch(SalesRepActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs
+                    })
+                );
+                break;
+        }
     }
 
     private _initTable(): void {

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 
@@ -11,7 +12,25 @@ const routes: Routes = [
             import('./credit-limit-balance/credit-limit-balance.module').then(
                 m => m.CreditLimitBalanceModule
             ),
-        canLoad: [AuthGuard]
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     },
     // {
     //     path: 'banks',
@@ -22,7 +41,25 @@ const routes: Routes = [
         path: 'payment-status',
         loadChildren: () =>
             import('./payment-status/payment-status.module').then(m => m.PaymentStatusModule),
-        canLoad: [AuthGuard]
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER'
+                ],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
     }
 ];
 

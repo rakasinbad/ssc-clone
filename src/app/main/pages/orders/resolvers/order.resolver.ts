@@ -5,7 +5,6 @@ import { GeneratorService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 import { filter, first, tap } from 'rxjs/operators';
 
-import { OrderActions } from '../store/actions';
 import { fromOrder } from '../store/reducers';
 import { OrderSelectors } from '../store/selectors';
 
@@ -28,11 +27,11 @@ export class OrderResolver implements Resolve<any> {
                         200
                     );
 
-                    this.store.dispatch(
-                        OrderActions.generateOrdersDemo({
-                            payload: generator
-                        })
-                    );
+                    // this.store.dispatch(
+                    //     OrderActions.generateOrdersDemo({
+                    //         payload: generator
+                    //     })
+                    // );
                 }
             }),
             filter(total => !!total),

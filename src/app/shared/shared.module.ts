@@ -1,3 +1,4 @@
+import { AgmCoreModule } from '@agm/core';
 import { TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FuseSharedModule } from '@fuse/shared.module';
@@ -25,6 +26,7 @@ import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
 /**
  *
@@ -49,6 +51,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ScrollTopComponent,
 
         // Component (Dialog, Modal, Snackbar)
+        SearchBarComponent,
+
         ErrorNoticeComponent,
         InfoNoticeComponent,
         SuccessNoticeComponent,
@@ -72,6 +76,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule
@@ -98,6 +103,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         LazyLoadImageModule,
         NgxMaskModule,
         NgxSkeletonLoaderModule,
+        AgmCoreModule,
 
         // Fuse Theme
         FuseSharedModule,
@@ -108,7 +114,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         // Component (Dialog, Modal, Snackbar)
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
-        ShowImageComponent
+        ShowImageComponent,
+        SearchBarComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -121,7 +128,8 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         DeleteConfirmationComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent
+        ShowImageComponent,
+        SearchBarComponent
     ]
 })
 export class SharedModule {}

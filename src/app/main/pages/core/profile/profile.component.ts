@@ -69,7 +69,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'My Account'

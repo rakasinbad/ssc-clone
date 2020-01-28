@@ -1,0 +1,139 @@
+@import 'src/@fuse/scss/fuse';
+
+app-associations-portfolio {
+    #associations {
+        .top-bg {
+            @include media-breakpoint('lt-md') {
+                height: 256px;
+            }
+        }
+
+        >.center {
+            >.header {
+                // &.sinbad {
+                //     height: 100px !important;
+                //     min-height: 190px !important;
+                // }
+
+                .search-wrapper {
+                    width: 100%;
+                    max-width: 480px;
+                    border-radius: 28px;
+                    overflow: hidden;
+
+                    @include media-breakpoint('xs') {
+                        width: 100%;
+                    }
+
+                    .search {
+                        width: 100%;
+                        height: 40px;
+                        line-height: 36px;
+                        padding: 0 18px;
+
+                        input {
+                            width: 100%;
+                            height: 40px;
+                            min-height: 40px;
+                            max-height: 40px;
+                            padding: 10px 16px 10px 4px;
+                            border: none;
+                            outline: none;
+                            font-size: 13px;
+                        }
+                    }
+                }
+
+                // @include media-breakpoint('lt-md') {
+                //     padding: 8px 0;
+                //     height: 192px !important;
+                //     min-height: 192px !important;
+                //     max-height: 192px !important;
+                // }
+            }
+        }
+    }
+
+    .association-portfolio-table {
+        flex: 1 1 auto;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+        }
+
+        mat-header-row {
+            border-top-width: 1px;
+            border-top-color: rgba(0, 0, 0, 0.12);
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            padding-right: 8px;
+        }
+
+        .associations {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
+        }
+
+        .mat-column-checkbox {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 80px;
+            justify-content: flex-end;
+        }
+    }
+
+    .tab-container {
+        background-color: '#ffffff';
+    }
+
+    .button-tab-custom {
+        min-height: 50px !important;
+        max-height: 50px !important;
+        min-width: 120px !important;
+        padding: 20px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .button-tab-custom-active {
+        min-height: 50px !important;
+        max-height: 50px !important;
+        min-width: 120px !important;
+        padding: 20px;
+        cursor: pointer;
+        text-align: center;
+        color: #f34247;
+        border-bottom: 1px solid #f34247;
+
+        span {
+            color: #f34247;
+        }
+    }
+
+    .text-tab-custom {
+        color: 'red';
+    }
+}

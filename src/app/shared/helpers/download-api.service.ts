@@ -58,6 +58,19 @@ export class DownloadApiService {
                   }
               ];
 
+        if (filter) {
+            if (!filter.status) {
+                const idx = newArg.findIndex(r => r.key === 'status');
+
+                if (idx !== -1) {
+                    newArg.splice(
+                        newArg.findIndex(r => r.key === 'status'),
+                        1
+                    );
+                }
+            }
+        }
+
         const newParams = this._$helper.handleParams(this._url, null, ...newArg);
 
         return this.http.get(`${this._url}/${endpoint}`, {

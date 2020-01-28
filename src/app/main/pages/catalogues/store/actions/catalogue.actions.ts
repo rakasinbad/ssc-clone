@@ -142,6 +142,26 @@ export const fetchCatalogueStockSuccess = createAction(
 );
 
 /**
+ * IMPORT CATALOGUE
+ */
+
+export const importCataloguesRequest = createAction(
+    '[Catalogues API] Import Catalogues Request',
+    props<{ payload: { file: File; type: string; } }>()
+);
+
+export const importCataloguesFailure = createAction(
+    '[Catalogues API] Import Catalogues Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const importCataloguesSuccess = createAction(
+    '[Catalogues API] Import Catalogues Success',
+    props<{ payload: { status: string; } }>()
+);
+
+
+/**
  * UPDATE CATALOGUE
  */
 

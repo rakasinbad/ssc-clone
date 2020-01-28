@@ -1,13 +1,8 @@
 <mat-toolbar class="p-0 mat-elevation-z1">
     <div fxFlex fxFill fxLayout="row" fxLayoutAlign="start center">
         <div fxFlex="1 0 auto" fxLayout="row" fxLayoutAlign="start center">
-            <button
-                mat-icon-button
-                class="navbar-toggle-button"
-                *ngIf="!hiddenNavbar && !rightNavbar"
-                (click)="toggleSidebarOpen('navbar')"
-                fxHide.gt-md
-            >
+            <button mat-icon-button class="navbar-toggle-button" *ngIf="!hiddenNavbar && !rightNavbar"
+                (click)="toggleSidebarOpen('navbar')" fxHide.gt-md>
                 <mat-icon class="secondary-text">menu</mat-icon>
             </button>
 
@@ -19,24 +14,20 @@
                 </div>
             </div>
 
-            <div
-                class="px-8 px-md-16"
-                *ngIf="breadcrumbs$ | async as breadcrumbs; else noBreadcrumb"
-            >
+            <div class="px-8 px-md-16" *ngIf="breadcrumbs$ | async as breadcrumbs; else noBreadcrumb">
                 <div fxLayout="row" fxLayoutAlign="start center">
                     <ng-container *ngFor="let breadcrumb of breadcrumbs; last as isLast">
-                        <span
-                            [class.secondary-text]="!breadcrumb?.active"
-                            *ngIf="!breadcrumb?.url; else breadWithUrl"
-                        >
+                        <span [class.secondary-text]="!breadcrumb?.active" *ngIf="!breadcrumb?.url; else breadWithUrl"
+                            class="breadcrumb-text">
                             {{
-                                breadcrumb?.translate
-                                    ? (breadcrumb?.translate | translate | titlecase)
-                                    : (breadcrumb?.title | titlecase)
+                                breadcrumb?.translate && breadcrumb?.keepCase ? (breadcrumb?.translate | translate)
+                                : breadcrumb?.translate && !breadcrumb?.keepCase ? (breadcrumb?.translate | translate | titlecase)
+                                : breadcrumb?.keepCase ? (breadcrumb?.title)
+                                : (breadcrumb?.title | titlecase)
                             }}
                         </span>
                         <ng-template #breadWithUrl>
-                            <a [routerLink]="[breadcrumb?.url]">
+                            <a [routerLink]="[breadcrumb?.url]" class="breadcrumb-text">
                                 <span [class.secondary]="!breadcrumb?.active">
                                     {{ breadcrumb?.title | titlecase }}
                                 </span>

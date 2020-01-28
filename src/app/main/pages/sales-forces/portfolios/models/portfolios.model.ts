@@ -1,6 +1,7 @@
-import { ITimestamp, TNullable, User, InvoiceGroup } from 'app/shared/models';
+import { ITimestamp, TNullable, User, InvoiceGroup, TSource } from 'app/shared/models';
+import { Store } from '.';
 
-type TPortfolioType = 'multi' | 'single';
+type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
 
 interface IPortfolio extends ITimestamp {
     id: string;
@@ -14,6 +15,12 @@ interface IPortfolio extends ITimestamp {
     deletedAt: TNullable<string>;
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
+    storeQty?: number;
+    isSelected?: boolean;
+    stores?: Array<Store>;
+    totalTargetSales?: number;
+    actualTargetSales?: number;
+    source?: 'fetch' | 'list';
 }
 
 interface IPortfolioStore {
@@ -26,6 +33,7 @@ export interface IPortfolioAddForm {
     type: 'direct' | 'group';
     invoiceGroupId: string;
     stores: Array<IPortfolioStore>;
+    removedStore?: Array<{ storeId: string; portfolioId: string; }>;
 }
 
 export class Portfolio implements IPortfolio {
@@ -40,6 +48,12 @@ export class Portfolio implements IPortfolio {
     deletedAt: TNullable<string>;
     user: TNullable<User>;
     invoiceGroup: TNullable<InvoiceGroup>;
+    storeQty?: number;
+    stores?: Array<Store>;
+    isSelected?: boolean;
+    totalTargetSales?: number;
+    actualTargetSales?: number;
+    source?: 'fetch' | 'list';
 
     constructor(data: IPortfolio) {
         const {
@@ -54,6 +68,12 @@ export class Portfolio implements IPortfolio {
             deletedAt,
             user = null,
             invoiceGroup = null,
+            storeQty = 0,
+            isSelected = false,
+            stores = [],
+            source = 'fetch',
+            totalTargetSales,
+            actualTargetSales,
         } = data;
 
         this.id = id;
@@ -65,6 +85,13 @@ export class Portfolio implements IPortfolio {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
+        this.storeQty = storeQty;
+        this.isSelected = isSelected;
+        this.actualTargetSales = actualTargetSales;
+        this.totalTargetSales = totalTargetSales;
+        this.source = source;
+
+        this.stores = Array.isArray(stores) && stores.length > 0 ? stores.map(store => new Store(store)) : stores;
 
         this.user = user ? new User(user) : user;
 

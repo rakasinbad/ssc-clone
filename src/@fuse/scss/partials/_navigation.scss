@@ -14,7 +14,7 @@
     .nav-group {
         display: block;
 
-        > .group-title {
+        >.group-title {
             position: relative;
             display: flex;
             align-items: center;
@@ -33,15 +33,15 @@
             text-decoration: none !important;
             display: flex;
             align-items: center;
-            height: 48px;
-            padding: 0 24px;
+            height: 40px;
+            padding: 0px 12px 0px 24px;
             position: relative;
             overflow: hidden;
             cursor: pointer;
             user-select: none;
             color: currentColor;
 
-            > .nav-link-title {
+            >.nav-link-title {
                 flex: 1 1 auto;
                 white-space: nowrap;
             }
@@ -58,7 +58,7 @@
                 transition: opacity 0.2s ease-in-out 0.1s;
                 margin-left: 8px;
 
-                + .collapsable-arrow {
+                +.collapsable-arrow {
                     margin-left: 8px;
                 }
             }
@@ -101,23 +101,23 @@
         &.nav-collapsable {
             display: block;
 
-            > .children {
+            >.children {
 
-                > .nav-item {
+                >.nav-item {
 
-                    > .nav-link,
-                    &.nav-group > .group-title,
-                    &.nav-group > .group-items > .nav-item > .nav-link {
+                    >.nav-link,
+                    &.nav-group>.group-title,
+                    &.nav-group>.group-items>.nav-item>.nav-link {
                         padding-left: 56px;
                     }
 
-                    > .children {
+                    >.children {
 
-                        > .nav-item {
+                        >.nav-item {
 
-                            > .nav-link,
-                            &.nav-group > .group-title,
-                            &.nav-group > .group-items > .nav-item > .nav-link {
+                            >.nav-link,
+                            &.nav-group>.group-title,
+                            &.nav-group>.group-items>.nav-item>.nav-link {
                                 padding-left: 72px;
                             }
                         }
@@ -128,23 +128,23 @@
 
     }
 
-    > .nav-item {
+    >.nav-item {
 
         &.nav-collapsable {
             background: transparent;
             transition: background 200ms ease-in-out;
 
             &.open {
-                background: rgba(0, 0, 0, 0.12);
+                background: rgba(255, 255, 255, 0.12);
             }
         }
     }
 
-    > .nav-group {
+    >.nav-group {
 
-        > .group-items {
+        >.group-items {
 
-            > .nav-collapsable {
+            >.nav-collapsable {
                 background: transparent;
                 transition: background 200ms ease-in-out;
 
@@ -194,16 +194,16 @@
             }
         }
 
-        > .nav-item {
+        >.nav-item {
 
-            > .nav-link {
+            >.nav-link {
                 height: 56px;
             }
 
             &.nav-collapsable {
                 position: relative;
 
-                > .nav-link {
+                >.nav-link {
                     height: 56px;
 
                     .collapsable-arrow {
@@ -211,7 +211,7 @@
                     }
                 }
 
-                > .children {
+                >.children {
                     top: 100%;
                     left: 0;
                 }
@@ -229,10 +229,11 @@
 
         .nav-group {
 
-            > .group-title {
+            >.group-title {
                 height: 40px;
             }
         }
+
         .nav-item {
 
             .nav-link {

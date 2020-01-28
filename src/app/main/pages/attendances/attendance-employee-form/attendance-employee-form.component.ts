@@ -281,7 +281,7 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',

@@ -14,6 +14,12 @@ export const adapterPortfolioNewStore: EntityAdapter<Store> = createEntityAdapte
     selectId: store => (store.id as string)
 });
 
+// New Portfolio's Store
+interface NewPortfolioState extends EntityState<Portfolio> {}
+export const adapterNewPortfolio: EntityAdapter<Portfolio> = createEntityAdapter<Portfolio>({
+    selectId: portfolio => (portfolio.id as string)
+});
+
 // Portfolio
 interface PortfolioStoreState extends EntityState<Store> {
     isLoading: boolean;
@@ -42,10 +48,14 @@ export interface State extends EntityState<Portfolio> {
     isLoading: boolean;
     needRefresh: boolean;
     selectedIds: Array<string>;
+    selectedInvoiceGroupId: string;
     urlExport: string;
+    search: string;
     stores: PortfolioStoreState;
     newStores: PortfolioNewStoreState;
+    newPortfolios: NewPortfolioState;
     total: number;
+    type: string; // Jenis store yang sedang ada di dalam state.
 }
 
 // Entity Adapter for the Entity State.
@@ -58,9 +68,13 @@ export const initialState = adapter.getInitialState<Omit<State, 'ids' | 'entitie
     isLoading: false,
     needRefresh: false,
     selectedIds: [],
+    selectedInvoiceGroupId: null,
     urlExport: null,
+    search: null,
     stores: initialPortfolioStoreState,
     newStores: adapterPortfolioNewStore.getInitialState(),
+    newPortfolios: adapterNewPortfolio.getInitialState(),
+    type: 'inside',
     total: 0,
 });
 
@@ -69,6 +83,7 @@ export const reducer = createReducer(
     initialState,
     on(
         PortfolioActions.createPortfolioRequest,
+        PortfolioActions.patchPortfolioRequest,
         PortfolioActions.exportPortfoliosRequest,
         PortfolioActions.fetchPortfolioRequest,
         PortfolioActions.fetchPortfoliosRequest,
@@ -93,7 +108,21 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.patchPortfolioFailure,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
         PortfolioActions.createPortfolioSuccess,
+        (state) => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(
+        PortfolioActions.patchPortfolioSuccess,
         (state) => ({
             ...state,
             isLoading: false
@@ -132,18 +161,62 @@ export const reducer = createReducer(
             ...state,
             stores: adapterPortfolioStore.addAll(payload.stores, {
                 ...state.stores,
-                isLoading: false
+                isLoading: false,
+                total: payload.total
             })
         })
     ),
     on(
-        PortfolioActions.addSelectedStores,
+        PortfolioActions.setSelectedInvoiceGroupId,
         (state, { payload }) => ({
             ...state,
-            newStores: adapterPortfolioNewStore.upsertMany(payload, {
-                ...state.newStores
-            }),
+            selectedInvoiceGroupId: payload
         })
+    ),
+    on(
+        PortfolioActions.resetSelectedInvoiceGroupId,
+        (state) => ({
+            ...state,
+            selectedInvoiceGroupId: null
+        })
+    ),
+    on(
+        PortfolioActions.setPortfolioEntityType,
+        (state, { payload }) => ({
+            ...state,
+            type: payload
+        })
+    ),
+    on(
+        PortfolioActions.setSearchKeywordPortfolio,
+        (state, { payload }) => ({
+            ...state,
+            search: payload
+        })
+    ),
+    on(
+        PortfolioActions.resetSearchKeywordPortfolio,
+        (state) => ({
+            ...state,
+            search: null
+        })
+    ),
+    on(
+        PortfolioActions.addSelectedStores,
+        (state, { payload }) => {
+            const newStores = (payload as Array<Store>).map(store => {
+                const newStore = new Store(store);
+                newStore.setSelectedStore = true;
+                return newStore;
+            });
+
+            return {
+                ...state,
+                newStores: adapterPortfolioNewStore.upsertMany(newStores, {
+                    ...state.newStores
+                }),
+            };
+        }
     ),
     on(
         PortfolioActions.removeSelectedStores,
@@ -155,7 +228,115 @@ export const reducer = createReducer(
         })
     ),
     on(
+        PortfolioActions.addSelectedPortfolios,
+        (state, { payload }) => {
+            // Add the payload to state.
+            let selectedIds = Array.from(state.selectedIds);
+            selectedIds.push(...payload);
+
+            // Create a Set to make sure all of the elements is unique.
+            const set = new Set(selectedIds);
+            // Convert to Array.
+            selectedIds = Array.from<string>(set);
+
+            // Return the new state.
+            return { ...state, selectedIds };
+        }
+    ),
+    on(
+        PortfolioActions.markStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = new Date().toISOString();
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.markStoresAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore: Array<Store> = [];
+            
+            for (const storeId of payload) {
+                const _store = new Store(state.stores.entities[storeId]);
+                _store.setDeletedAt = new Date().toISOString();
+
+                newStore.push(_store);
+            }
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertMany(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.abortStoreAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore = new Store(state.stores.entities[payload]);
+            newStore.setDeletedAt = null;
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertOne(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.abortStoresAsRemovedFromPortfolio,
+        (state, { payload }) => {
+            const newStore: Array<Store> = [];
+            
+            for (const storeId of payload) {
+                const _store = new Store(state.stores.entities[storeId]);
+                _store.setDeletedAt = null;
+
+                newStore.push(_store);
+            }
+
+            return {
+                ...state,
+                stores: adapterPortfolioStore.upsertMany(newStore, state.stores)
+            };
+        }
+    ),
+    on(
+        PortfolioActions.setSelectedPortfolios,
+        (state, { payload }) => ({
+            ...state,
+            selectedIds: payload
+        })
+    ),
+    on(
+        PortfolioActions.truncateSelectedPortfolios,
+        (state) => ({
+            ...state,
+            selectedIds: []
+        })
+    ),
+    on(
+        PortfolioActions.truncatePortfolioStores,
+        (state) => ({
+            ...state,
+            stores: adapterPortfolioStore.removeAll({
+                ...state.stores,
+                total: 0
+            }),
+            newStores: adapterPortfolioNewStore.removeAll(state.newStores),
+        })
+    ),
+    on(
         PortfolioActions.truncatePortfolios,
         state => adapter.removeAll(state)
+    ),
+    on(
+        PortfolioActions.updateStore,
+        (state, { payload }) => ({
+            ...state,
+            newStores: adapterPortfolioNewStore.updateOne(payload, state.newStores)
+        })
     )
 );

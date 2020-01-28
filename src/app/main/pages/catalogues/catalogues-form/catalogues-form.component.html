@@ -54,7 +54,7 @@
         <!-- CONTENT CARD (INFORMASI PRODUK) -->
         <div [ngClass]="catalogueContent">
             <div class="p-40">
-                <div class="font-weight-600 font-size-24 line-height-20">Informasi Produk</div>
+                <div class="font-weight-600 font-size-24 line-height-20">Product Information</div>
             </div>
         
             <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -131,7 +131,7 @@
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Nama Produk
+                            >* </span>Product Name
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
@@ -166,7 +166,7 @@
                             [class.pt-20]="!isViewMode()"
                             [class.mat-error]="hasError(form.get('productInfo.information'))"
                         >
-                            Detail Produk
+                            Product Detail
                         </label>
                 
                         <div fxFlex="80" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="20px" *ngIf="!isViewMode()">
@@ -213,7 +213,7 @@
                             [class.pt-28]="!isViewMode()"
                             [class.mat-error]="hasError(form.get('productInfo.description'))"
                         >
-                            Deskripsi Produk
+                            Product Description
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80" *ngIf="!isViewMode()">
@@ -332,7 +332,7 @@
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Kategori
+                            >* </span>Category
                         </label>
 
                         <span class="ml-20 grey-fg"  fxFlexAlign="center" fxFlex="80" fxLayout="column" fxLayoutAlign="start start">
@@ -364,6 +364,50 @@
                         </span>
                     </div>
                     <!-- / KATEGORI PRODUK -->
+                    <!-- OPSI STOK UNLIMITED -->
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between start"
+                        formGroupName="productInfo"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="!isViewMode() && hasError(form.get('productInfo.unlimitedStock'))"
+                        >
+                            Unlimited Stock
+                        </label>
+                
+                        <mat-checkbox
+                            formControlName="unlimitedStock"
+                            labelPosition="after"
+                            fxFlexAlign="center"
+                            fxFlex="80"
+                        ></mat-checkbox>
+                        <!-- <mat-form-field appearance="outline" fxFlexAlign="center" fxFlex="80" *ngIf="!isViewMode()">
+                            <input
+                                matInput
+                                name="stock"
+                                formControlName="stock"
+                                mask="separator"
+                                thousandSeparator="."
+                            />
+                            <mat-error
+                                *ngIf="hasError(form.get('productInfo.stock'))"
+                            >
+                                {{ getFormError(form.get('productInfo.stock')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <span fxFlexAlign="center" class="grey-fg" fxFlex="80" *ngIf="isViewMode() && form.get('productInfo.stock').value">
+                            {{ form.get('productInfo.stock').value }}
+                        </span>
+                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
+                            &nbsp;
+                        </span> -->
+                    </div>
+                    <!-- / OPSI STOK UNLIMITED -->
                     <!-- PRODUK STOK -->
                     <div
                         [ngClass]="formClass"
@@ -397,8 +441,8 @@
                         <span fxFlexAlign="center" class="grey-fg" fxFlex="80" *ngIf="isViewMode() && form.get('productInfo.stock').value">
                             {{ form.get('productInfo.stock').value }}
                         </span>
-                        <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
-                            &nbsp;
+                        <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('productInfo.stock').value">
+                            -
                         </span>
                     </div>
                     <!-- / PRODUK STOK -->
@@ -454,7 +498,7 @@
         <!-- CONTENT CARD (INFORMASI PENJUALAN) -->
         <div class="content-card">
             <div class="p-40">
-                <div class="font-weight-600 font-size-24 line-height-20">Informasi Penjualan</div>
+                <div class="font-weight-600 font-size-24 line-height-20">Sales Information</div>
             </div>
         
             <div class="p-40 pt-0 line-height-1.75">
@@ -900,7 +944,7 @@
         <!-- CONTENT CARD (MEDIA PRODUK) -->
         <div class="content-card">
             <div class="p-40">
-                <div class="font-weight-600 font-size-24 line-height-20">Pengaturan Media</div>
+                <div class="font-weight-600 font-size-24 line-height-20">Media Settings</div>
             </div>
         
             <div class="p-16 pt-0 line-height-1.75">
@@ -918,7 +962,7 @@
                             fxFlexAlign="start"
                             [class.mat-error]="hasError(form.get('productMedia.photos.0'), { ignoreTouched: true, ignoreDirty: true })"
                         >
-                            Foto Produk
+                            Product Photos
                         </label>
                                         
                         <div appearance="outline"
@@ -982,7 +1026,9 @@
                                                 class="mat-error"
                                                 style="margin-bottom: 0px;"
                                             >    
-                                                * Foto Utama
+                                                <span
+                                                    class="red-200-fg"
+                                                >* </span>Main Photo
                                             </p>
                                             <ng-template #noPhotoError>
                                                 <p
@@ -991,7 +1037,7 @@
                                                 >    
                                                     <span
                                                         class="red-200-fg"
-                                                    >* </span>Foto Utama
+                                                    >* </span>Main Photo
                                                 </p>
                                             </ng-template>
                                             <button
@@ -1020,7 +1066,7 @@
                                             fxLayoutAlign="space-between center"
                                             *ngIf="(!isViewMode()) || (isViewMode() && photo.value)"
                                         >
-                                            <p class="grey-400-fg" style="margin-bottom: 0px;">Foto {{ i }}</p>
+                                            <p class="grey-400-fg" style="margin-bottom: 0px;">Photo {{ i }}</p>
                                             <button
                                                 class="red-fg"
                                                 matTooltip="Reset to original image"
@@ -1061,7 +1107,7 @@
         <!-- CONTENT CARD (PENGIRIMAN PRODUK) -->
         <div class="content-card">
             <div class="p-40">
-                <div class="font-weight-600 font-size-24 line-height-20">Pengiriman</div>
+                <div class="font-weight-600 font-size-24 line-height-20">Delivery</div>
             </div>
         
             <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -1081,7 +1127,7 @@
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Berat per Pcs
+                            >* </span>Weight per Pcs
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
@@ -1121,7 +1167,7 @@
                             fxFlex="18"
                             [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.packagedWeight'))"
                         >
-                            Berat per <br/>Master Box
+                            Weight per <br/>Master Box
                         </label>
                 
                         <mat-form-field appearance="outline" fxFlex="80"  fxFlexAlign="center" *ngIf="!isViewMode()">
@@ -1163,7 +1209,7 @@
                         >
                             <span
                                 class="red-500-fg"
-                            >* </span>Dimensi per <br/>Pcs
+                            >* </span>Dimension per <br/>Pcs
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
@@ -1202,7 +1248,7 @@
                             class="pr-0"
                             [class.mat-error]="!isViewMode() && hasError(form.get('productShipment.packagedDimension'))"
                         >
-                            Dimensi per <br/>Master Box
+                            Dimension per <br/>Master Box
                         </label>
 
                         <mat-form-field appearance="outline" fxFlex="80" fxFlexAlign="center" *ngIf="!isViewMode()">
@@ -1301,7 +1347,7 @@
         <!-- CONTENT CARD (PENGATURAN JUMLAH PRODUK) -->
         <div class="content-card">
             <div class="p-40">
-                <div class="font-weight-600 font-size-24 line-height-20">Pengaturan Jumlah</div>
+                <div class="font-weight-600 font-size-24 line-height-20">Amount Settings</div>
             </div>
         
             <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -1444,4 +1490,9 @@
         <!-- / CONTENT CARD (PENGIRIMAN PRODUK) -->
     </div>
     <!-- / CENTER -->
+    <!-- Spinner Loader -->
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- Spinner Loader -->
 </div>

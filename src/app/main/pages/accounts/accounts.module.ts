@@ -7,12 +7,6 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { AccountsRoutingModule } from './accounts-routing.module';
 
-// import { AccountDetailComponent } from './account-detail/account-detail.component';
-// import { AccountFormComponent } from './account-form/account-form.component';
-// import { AccountsComponent } from './accounts.component';
-
-// import * as fromAccount from './store/reducers/account.reducer';
-
 /**
  *
  *
@@ -31,9 +25,6 @@ import { AccountsRoutingModule } from './accounts-routing.module';
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild()
-
-        // StoreModule.forFeature(fromAccount.FEATURE_KEY, fromAccount.reducer),
-        // EffectsModule.forFeature([AccountEffects])
     ]
 })
 export class AccountsModule {}

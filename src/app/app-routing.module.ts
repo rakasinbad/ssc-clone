@@ -2,12 +2,35 @@ import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 const routes: Routes = [
     {
         path: '',
         redirectTo: 'pages',
         pathMatch: 'full'
+    },
+    {
+        path: 'auth',
+        loadChildren: () => import('./main/pages/core/auth/auth.module').then(m => m.AuthModule)
+    },
+    {
+        path: 'profile',
+        loadChildren: () =>
+            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN']
+            },
+            redirectTo: {
+                navigationCommands: ['/pages/errors/403'],
+                navigationExtras: {
+                    replaceUrl: true,
+                    skipLocationChange: true
+                }
+            }
+        }
     },
     {
         path: 'pages',
@@ -32,7 +55,26 @@ const routes: Routes = [
                 path: 'account',
                 loadChildren: () =>
                     import('./main/pages/accounts/accounts.module').then(m => m.AccountsModule),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'FINANCE',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'attendances',
@@ -40,7 +82,19 @@ const routes: Routes = [
                     import('./main/pages/attendances/attendances.module').then(
                         m => m.AttendancesModule
                     ),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'BOS', 'COUNTRY_MANAGER', 'SUPPLIER_ADMIN'],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'finances',
@@ -61,13 +115,50 @@ const routes: Routes = [
                 // ]
                 loadChildren: () =>
                     import('./main/pages/finances/finances.module').then(m => m.FinancesModule),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'FINANCE',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER'
+                        ],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'orders',
                 loadChildren: () =>
                     import('./main/pages/orders/orders.module').then(m => m.OrdersModule),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'FINANCE',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'catalogues',
@@ -75,7 +166,25 @@ const routes: Routes = [
                     import('./main/pages/catalogues/catalogues.module').then(
                         m => m.CataloguesModule
                     ),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'in-store-inventories',
@@ -83,7 +192,25 @@ const routes: Routes = [
                     import('./main/pages/in-store-inventories/in-store-inventories.module').then(
                         m => m.InStoreInventoriesModule
                     ),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ],
+                        redirectTo: {
+                            navigationCommands: ['/pages/errors/403'],
+                            navigationExtras: {
+                                replaceUrl: true,
+                                skipLocationChange: true
+                            }
+                        }
+                    }
+                }
             },
             {
                 path: 'sales-force',
@@ -91,7 +218,25 @@ const routes: Routes = [
                     import('./main/pages/sales-forces/sales-forces.module').then(
                         m => m.SalesForcesModule
                     ),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ]
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true
+                        }
+                    }
+                }
             },
             {
                 path: 'supplier-inventories',
@@ -99,25 +244,55 @@ const routes: Routes = [
                     import('./main/pages/supplier-inventories/supplier-inventories.module').then(
                         m => m.SupplierInventoriesModule
                     ),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: [
+                            'SUPER_SUPPLIER_ADMIN',
+                            'HEAD_OF_SALES',
+                            'BOS',
+                            'COUNTRY_MANAGER',
+                            'SUPPLIER_ADMIN'
+                        ]
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true
+                        }
+                    }
+                }
             },
             {
                 path: 'settings',
                 loadChildren: () =>
                     import('./main/pages/settings/settings.module').then(m => m.SettingsModule),
-                canLoad: [AuthGuard]
+                canLoad: [AuthGuard, NgxPermissionsGuard],
+                data: {
+                    permissions: {
+                        only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN']
+                    },
+                    redirectTo: {
+                        navigationCommands: ['/pages/errors/403'],
+                        navigationExtras: {
+                            replaceUrl: true,
+                            skipLocationChange: true
+                        }
+                    }
+                }
+            },
+            {
+                path: 'errors',
+                loadChildren: () =>
+                    import('./main/pages/core/errors/errors.module').then(m => m.ErrorsModule)
             }
         ]
     },
     {
-        path: 'auth',
-        loadChildren: () => import('./main/pages/core/auth/auth.module').then(m => m.AuthModule)
-    },
-    {
-        path: 'profile',
+        path: '**',
         loadChildren: () =>
-            import('./main/pages/core/profile/profile.module').then(m => m.ProfileModule),
-        canLoad: [AuthGuard]
+            import('./main/pages/core/errors/errors.module').then(m => m.ErrorsModule)
     }
 ];
 

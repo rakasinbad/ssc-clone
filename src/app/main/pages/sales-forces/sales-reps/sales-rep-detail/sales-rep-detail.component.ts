@@ -39,7 +39,7 @@ export class SalesRepDetailComponent implements OnInit, OnDestroy {
             title: 'Home'
         },
         {
-            title: 'Sales Rep Management'
+            title: 'Sales Management'
         },
         {
             title: 'Detail Sales Rep'

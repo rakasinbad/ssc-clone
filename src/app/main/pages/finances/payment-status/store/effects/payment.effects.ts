@@ -3,9 +3,12 @@ import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import {
+    CalculateOrderApiService,
     DownloadApiService,
     LogService,
     NoticeService,
@@ -13,8 +16,18 @@ import {
 } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
-import { catchError, finalize, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    catchError,
+    exhaustMap,
+    finalize,
+    map,
+    retry,
+    switchMap,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
+import { IStatusPayment } from '../../models';
 import { PaymentStatusApiService } from '../../services';
 import { PaymentStatusActions } from '../actions';
 import { fromPaymentStatus } from '../reducers';
@@ -235,6 +248,98 @@ export class PaymentEffects {
         { dispatch: false }
     );
 
+    fetchCalculateOrdersByPaymentRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PaymentStatusActions.fetchCalculateOrdersByPaymentRequest),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(([_, data]: [any, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        PaymentStatusActions.fetchCalculateOrdersByPaymentFailure({
+                            payload: {
+                                id: 'fetchCalculateOrdersByPaymentFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        PaymentStatusActions.fetchCalculateOrdersByPaymentFailure({
+                            payload: {
+                                id: 'fetchCalculateOrdersByPaymentFailure',
+                                errors: 'Not Found!'
+                            }
+                        })
+                    );
+                }
+
+                return this._$calculateOrderApi
+                    .getStatusOrders<IStatusPayment>('payment', supplierId)
+                    .pipe(
+                        catchOffline(),
+                        retry(3),
+                        map(resp => {
+                            return PaymentStatusActions.fetchCalculateOrdersByPaymentSuccess({
+                                payload: resp
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                PaymentStatusActions.fetchCalculateOrdersByPaymentFailure({
+                                    payload: {
+                                        id: 'fetchCalculateOrdersByPaymentFailure',
+                                        errors: err
+                                    }
+                                })
+                            )
+                        )
+                    );
+            })
+        )
+    );
+
+    fetchCalculateOrdersByPaymentFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PaymentStatusActions.fetchCalculateOrdersByPaymentFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message =
+                        typeof resp.errors === 'string'
+                            ? resp.errors
+                            : resp.errors.error.message || resp.errors.message;
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ EXPORT methods
     // -----------------------------------------------------------------------------------------------------
@@ -445,9 +550,11 @@ export class PaymentEffects {
         private actions$: Actions,
         private matDialog: MatDialog,
         private router: Router,
+        private storage: StorageMap,
         private store: Store<fromPaymentStatus.FeatureState>,
         private _$log: LogService,
         private _$notice: NoticeService,
+        private _$calculateOrderApi: CalculateOrderApiService,
         private _$downloadApi: DownloadApiService,
         private _$paymentStatusApi: PaymentStatusApiService,
         private _$uploadApi: UploadApiService

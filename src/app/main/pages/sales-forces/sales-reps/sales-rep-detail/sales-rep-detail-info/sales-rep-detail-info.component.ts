@@ -1,14 +1,11 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    Input,
-    OnInit,
-    ViewEncapsulation
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-
-import { SalesRep } from '../../models';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Portfolio } from 'app/shared/models';
+
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { SalesRep } from '../../models';
 
 @Component({
     selector: 'app-sales-rep-detail-info',
@@ -18,27 +15,17 @@ import { Portfolio } from 'app/shared/models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SalesRepDetailInfoComponent implements OnInit {
+export class SalesRepDetailInfoComponent {
     @Input() salesRep: SalesRep;
     @Input() isLoading: boolean;
 
-    constructor() {}
-
-    ngOnInit(): void {
-        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-        // Add 'implements OnInit' to the class.
+    constructor(private _fuseTranslationLoaderService: FuseTranslationLoaderService) {
+        // Load translate
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     isChecked(status: string): boolean {
         return status === 'active' ? true : false;
-    }
-
-    safeValue(value: any): any {
-        if (typeof value === 'number') {
-            return value;
-        } else {
-            return value ? value : '-';
-        }
     }
 
     totalPortfolio(porfolios: Array<Portfolio>): number {

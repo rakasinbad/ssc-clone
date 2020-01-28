@@ -41,7 +41,6 @@ interface CatalogueCategoryFlatNode {
     level: number;
 }
 
-
 interface ISelectedCategory {
     selected: string;
     data: Array<CatalogueCategory>;
@@ -55,9 +54,7 @@ interface ISelectedCategory {
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-
 export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, OnDestroy {
-
     isFulfilled = false;
     productName: FormControl;
     search: FormControl;
@@ -77,7 +74,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
     categoryTree: Array<CatalogueCategory>;
 
     private _unSubs$: Subject<void>;
-    
+
     constructor(
         private router: Router,
         private fb: FormBuilder,
@@ -92,8 +89,8 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Catalogue',
@@ -109,10 +106,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
             })
         );
 
-        this._fuseTranslationLoaderService.loadTranslations(
-            indonesian,
-            english
-        );
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     ngOnInit(): void {
@@ -125,66 +119,71 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
         ]);
         this.search = new FormControl('', Validators.required);
 
-        this.selectedCategory = this.fb.array([
-            // Level 1
-            this.fb.group({
-                id: this.fb.control(null, Validators.required),
-                idx: this.fb.control(null, Validators.required),
-                name: this.fb.control(null, Validators.required)
-            }, Validators.required),
-            // Level 2
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null)
-            }),
-            // Level 3
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null)
-            }),
-            // Level 4
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null)
-            }),
-        ], Validators.required);
+        this.selectedCategory = this.fb.array(
+            [
+                // Level 1
+                this.fb.group(
+                    {
+                        id: this.fb.control(null, Validators.required),
+                        idx: this.fb.control(null, Validators.required),
+                        name: this.fb.control(null, Validators.required)
+                    },
+                    Validators.required
+                ),
+                // Level 2
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null)
+                }),
+                // Level 3
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null)
+                }),
+                // Level 4
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null)
+                })
+            ],
+            Validators.required
+        );
 
         combineLatest([
             this.store.select(CatalogueSelectors.getCategoryTree),
             this.store.select(CatalogueSelectors.getCatalogueCategories)
         ])
-        .pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(([tree, categories]) => {
-            if (categories.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({
-                    payload: {
-                        paginate: false
-                    }
-                }));
-            }
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(([tree, categories]) => {
+                if (categories.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueCategoriesRequest({
+                            payload: {
+                                paginate: false
+                            }
+                        })
+                    );
+                }
 
-            if (tree.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
-            }
+                if (tree.length === 0) {
+                    return this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
+                }
 
-            this.categories = categories;
-            this.categoryTree = tree;
-            this._cd.markForCheck();
-        });
+                this.categories = categories;
+                this.categoryTree = tree;
+                this._cd.markForCheck();
+            });
 
-        this.selectedCategories$ 
-            = this.selectedCategory.valueChanges
-                .pipe(
-                    map(forms => {
-                        const form: [] = forms.filter(f => f.id).map(f => f.name);
+        this.selectedCategories$ = this.selectedCategory.valueChanges.pipe(
+            map(forms => {
+                const form: [] = forms.filter(f => f.id).map(f => f.name);
 
-                        return form.join(' > ');
-                    })
-                );
+                return form.join(' > ');
+            })
+        );
     }
 
     ngAfterViewInit(): void {
@@ -196,7 +195,14 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
         this._unSubs$.complete();
     }
 
-    onSelectCategory(_: Event, id: string, data: CatalogueCategory, name: string, level: number, hasChild: any): void {
+    onSelectCategory(
+        _: Event,
+        id: string,
+        data: CatalogueCategory,
+        name: string,
+        level: number,
+        hasChild: any
+    ): void {
         const resetTree = lvl => {
             let tempLevel = lvl;
 
@@ -208,7 +214,7 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
                 tempLevel++;
             }
         };
-//
+        //
         if (hasChild) {
             this.isFulfilled = false;
 
@@ -233,27 +239,32 @@ export class CataloguesAddNewProductComponent implements AfterViewInit, OnInit, 
     addNewCatalogue(): void {
         const categories = this.selectedCategory.getRawValue().filter(selected => selected.id);
         const lastSelectedCategory = categories[categories.length - 1];
-        const lastCategory = this.categories.filter(category => lastSelectedCategory.id === category.id);
+        const lastCategory = this.categories.filter(
+            category => lastSelectedCategory.id === category.id
+        );
 
-        this.store.dispatch(CatalogueActions.setSelectedCategories({
-            payload: [
-                ...this.selectedCategory.controls
-                    .filter(control => control.get('id').value)
-                    .map((control, idx, controls) => ({
-                        id: control.get('id').value,
-                        name: control.get('name').value,
-                        parent: idx === 0 ? null : controls[idx - 1].get('id').value,
-                        hasChildren: lastCategory[0].children.length === 0 ? false : true
-                    })
-                )
-            ]
-        }));
+        this.store.dispatch(
+            CatalogueActions.setSelectedCategories({
+                payload: [
+                    ...this.selectedCategory.controls
+                        .filter(control => control.get('id').value)
+                        .map((control, idx, controls) => ({
+                            id: control.get('id').value,
+                            name: control.get('name').value,
+                            parent: idx === 0 ? null : controls[idx - 1].get('id').value,
+                            hasChildren: lastCategory[0].children.length === 0 ? false : true
+                        }))
+                ]
+            })
+        );
 
-        this.store.dispatch(CatalogueActions.setProductName({
-            payload: this.productName.value
-        }));
+        this.store.dispatch(
+            CatalogueActions.setProductName({
+                payload: this.productName.value
+            })
+        );
 
-        this.router.navigate([ 'pages', 'catalogues', 'add', 'new' ]);
+        this.router.navigate(['pages', 'catalogues', 'add', 'new']);
     }
 
     hasChild = (_: number, node: CatalogueCategoryFlatNode) => node.expandable;

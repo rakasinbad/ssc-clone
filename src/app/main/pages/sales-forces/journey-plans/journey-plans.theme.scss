@@ -20,4 +20,21 @@
             }
         }
     }
+
+    app-journey-plan-selected-stores {
+        .search-wrapper {
+            background: map-get($background, card);
+
+            .search {
+                .mat-icon {
+                    color: map-get($foreground, icon);
+                }
+
+                input {
+                    background: map-get($background, card);
+                    color: map-get($foreground, text);
+                }
+            }
+        }
+    }
 }

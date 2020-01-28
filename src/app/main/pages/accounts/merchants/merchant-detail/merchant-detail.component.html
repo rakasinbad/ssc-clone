@@ -33,10 +33,20 @@
                     </div> -->
                 </div>
             </div>
+
+            <button
+                type="button"
+                mat-raised-button
+                class="accent-fg"
+                (click)="onEditLocation()"
+                *ngIf="urlStore && !(isEditLocation$ | async)"
+            >
+                <span>EDIT</span>
+            </button>
         </div>
 
         <!-- CONTENT HEADER fxLayout="column" fxLayoutAlign="center stretch" -->
-        <div class="header sinbad" fxLayout="column" fxLayoutAlign="center stretch">
+        <div class="header sinbad mt-8" fxLayout="column" fxLayoutAlign="center stretch">
             <nav
                 mat-tab-nav-bar
                 class="mat-elevation-z1 sinbad-tab"

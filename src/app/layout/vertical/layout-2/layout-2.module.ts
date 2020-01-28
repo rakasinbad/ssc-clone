@@ -8,9 +8,10 @@ import { NavbarModule } from 'app/layout/components/navbar/navbar.module';
 import { QuickPanelModule } from 'app/layout/components/quick-panel/quick-panel.module';
 import { ToolbarModule } from 'app/layout/components/toolbar/toolbar.module';
 import { VerticalLayout2Component } from 'app/layout/vertical/layout-2/layout-2.component';
-import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account-detail/account-merchant-quick-panel/account-merchant-quick-panel.module';
 
 import { FooterActionModule } from './../../components/footer-action/footer-action.module';
+
+// import { AccountMerchantQuickPanelModule } from 'app/main/pages/accounts/account-detail/account-merchant-quick-panel/account-merchant-quick-panel.module';
 
 @NgModule({
     declarations: [VerticalLayout2Component],
@@ -26,8 +27,8 @@ import { FooterActionModule } from './../../components/footer-action/footer-acti
         QuickPanelModule,
         ToolbarModule,
 
-        FooterActionModule,
-        AccountMerchantQuickPanelModule
+        FooterActionModule
+        // AccountMerchantQuickPanelModule
     ],
     exports: [VerticalLayout2Component]
 })

@@ -66,6 +66,10 @@ app-orders {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .order {
             position: relative;
             cursor: pointer;
@@ -75,7 +79,22 @@ app-orders {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -83,14 +102,54 @@ app-orders {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
         }
 
         .mat-column-checkbox {
             flex: 0 1 64px;
             padding-left: 18px;
+        }
+
+        .mat-column-order-code {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-order-ref {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-order-ref {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-order-date {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-store-name {
+            flex: 0 1 15%;
+        }
+
+        .mat-column-trx-amount {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-payment-method {
+            flex: 0 1 12%;
+        }
+
+        .mat-column-total-product {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 70px;
+        }
+
+        .mat-column-delivered-date {
+            flex: 0 1 12%;
         }
 
         .mat-column-actions {
@@ -102,4 +161,16 @@ app-orders {
 
 .mat-menu-panel {
     min-height: 52px;
+}
+
+.nav {
+    fuse-nav-horizontal-item {
+        &.nav-item {
+            &:first-of-type {
+                .nav-link {
+                    padding-left: 0;
+                }
+            }
+        }
+    }
 }

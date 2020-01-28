@@ -32,12 +32,13 @@
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <!-- SEARCH -->
-                <div class="search-wrapper mx-12">
+                <!-- <div class="search-wrapper mx-12">
                     <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
                         <mat-icon>search</mat-icon>
                         <input #filter [formControl]='search' placeholder="Cari di sini"/>
                     </div>
-                </div>
+                </div> -->
+                <sinbad-search-bar placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
                 <!-- / SEARCH -->
             </div>
             <!-- ADD BUTTON -->
@@ -77,36 +78,36 @@
 
                 <!-- "ID Toko" Column -->
                 <ng-container matColumnDef="idToko">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>ID Toko</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Supplier's Store ID</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.storeCode }}</p>
+                        <p>{{ row?.externalId || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Store Name Column -->
                 <ng-container matColumnDef="storeName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Nama Toko</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Store Name</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.name }}</p>
+                        <p>{{ row.name || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Store Address Column -->
                 <ng-container matColumnDef="storeAddress">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Alamat Toko</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Store Address</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.address }}</p>
+                        <p>{{ row.address || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
                 <!-- Store Address Column -->
                 <ng-container matColumnDef="storePhoneNumber">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Nomor Telepon Toko</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Store Phone Number</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row.phoneNo }}</p>
+                        <p>{{ row.phoneNo || '-' }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -115,7 +116,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>GS</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p>{{ row?.user?.fullname }}</p>
+                        <p>{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -124,7 +125,7 @@
                     <mat-header-cell *matHeaderCellDef mat-sort-header>SPV</mat-header-cell>
 
                     <mat-cell *matCellDef="let row">
-                        <p class="text-truncate">{{ row?.user?.fullname }}</p>
+                        <p class="text-truncate">{{ row?.user?.fullName }}</p>
                     </mat-cell>
                 </ng-container>
 
@@ -164,7 +165,7 @@
                 <!-- Action Column -->
                 <ng-container matColumnDef="actions">
                     <mat-header-cell *matHeaderCellDef>
-                        Action
+                        Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
@@ -178,15 +179,19 @@
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
-                                <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
-                                    <mat-icon>edit</mat-icon>
-                                    <span>Edit</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['ATTENDANCE.UPDATE']">
+                                    <button mat-menu-item aria-label="edit" (click)="openStoreAttendanceDetail(row)">
+                                        <mat-icon>edit</mat-icon>
+                                        <span>Edit</span>
+                                    </button>
+                                </ng-template>
 
-                                <button mat-menu-item aria-label="remove" disabled>
-                                    <mat-icon>delete</mat-icon>
-                                    <span>Remove</span>
-                                </button>
+                                <ng-template [ngxPermissionsOnly]="['ATTENDANCE.DELETE']">
+                                    <button mat-menu-item aria-label="remove" disabled>
+                                        <mat-icon>delete</mat-icon>
+                                        <span>Remove</span>
+                                    </button>
+                                </ng-template>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -196,17 +201,25 @@
 
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
-                    class="attendance"
+                    class="attendance h-40"
                     matRipple
                     (click)="openStoreAttendanceDetail(row)"
                 >
                 </mat-row>
             </mat-table>
 
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
+                [fxHide]="(totalDataSource$ | async) === 0"
                 [length]="totalDataSource$ | async"
-                [pageSize]="5"
-                [pageSizeOptions]="[5, 10, 25, 100]"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageSizeTable"
                 (page)="onChangePage()"
                 showFirstLastButtons
             >

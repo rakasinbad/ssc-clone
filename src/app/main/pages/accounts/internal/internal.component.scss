@@ -73,6 +73,10 @@ app-internal {
             background: white;
         }
 
+        .mat-row {
+            min-height: unset;
+        }
+
         .internal {
             position: relative;
             // cursor: pointer;
@@ -82,7 +86,22 @@ app-internal {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            padding-right: 8px;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -90,27 +109,34 @@ app-internal {
             min-width: 0;
             display: flex;
             align-items: center;
-            padding-top: 8px;
-            padding-bottom: 8px;
+            // padding-top: 8px;
+            // padding-bottom: 8px;
             padding-right: 8px;
         }
 
-        .mat-column-checkbox {
-            flex: 0 1 64px;
-            padding-left: 18px;
+        // .mat-column-user {
+        //     flex: 0 1 20%;
+        // }
+
+        // .mat-column-email {
+        //     flex: 0 1 20%;
+        // }
+
+        .mat-column-role {
+            flex: 0 1 20%;
         }
 
-        .mat-column-phone {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-roles {
-            flex: 0 1 160px;
+        .mat-column-status {
+            flex: 0 1 80px;
         }
 
         .mat-column-actions {
             flex: 0 1 80px;
             justify-content: flex-end;
+        }
+
+        .active-icon {
+            border-radius: 50%;
         }
     }
 }

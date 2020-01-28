@@ -31,7 +31,7 @@ import { CreditLimitBalanceSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
-    search: FormControl;
+    search: FormControl = new FormControl('');
     links = [
         {
             path: 'stores',
@@ -42,14 +42,14 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
             label: 'Set Credit Limit Group'
         }
     ];
-    urlActive: boolean;
+    urlActive = false;
     today = new Date();
 
     fuseConfig$: Observable<FuseConfig>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
         private route: ActivatedRoute,
@@ -69,7 +69,7 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
                 payload: [
                     {
                         title: 'Home',
-                        translate: 'BREADCRUMBS.HOME'
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Finance',
@@ -92,10 +92,6 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('');
-        this.urlActive = false;
 
         // { outlets: { 'credit-limit-balance': 'stores' } }
         this.router.navigate(['stores'], {

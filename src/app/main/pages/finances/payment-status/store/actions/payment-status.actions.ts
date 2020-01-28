@@ -2,7 +2,7 @@ import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, IQueryParams } from 'app/shared/models';
 
-import { IPaymentStatusDemo } from './../../models';
+import { IPaymentStatusDemo, IStatusPayment } from './../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Payment Statuses
@@ -21,6 +21,24 @@ export const fetchPaymentStatusesFailure = createAction(
 export const fetchPaymentStatusesSuccess = createAction(
     '[Payment Statuses API] Fetch Payment Statuses Success',
     props<{ payload: { data: any; total: number } }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Calculate Orders by Payment
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchCalculateOrdersByPaymentRequest = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Type Payment Request'
+);
+
+export const fetchCalculateOrdersByPaymentFailure = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Type Payment Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCalculateOrdersByPaymentSuccess = createAction(
+    '[Calculate Orders API] Fetch Calculate Orders Type Payment Success',
+    props<{ payload: IStatusPayment }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
