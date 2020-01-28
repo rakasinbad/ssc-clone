@@ -4,6 +4,23 @@ stages:
  - deploy
  - stop_instance
 
+start_runner_development:
+  stage: start_instance
+  image: mikesir87/aws-cli:latest
+  script:
+    - echo "Starting the instance"
+    - mkdir ~/.aws/
+    - touch ~/.aws/credentials
+    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+    - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
+    - rm -rf ~/.aws/
+    - sleep 30
+  only:
+    - development
+  tags:
+    - docker
+
 start_runner_staging:
   stage: start_instance
   image: mikesir87/aws-cli:latest
@@ -16,8 +33,43 @@ start_runner_staging:
     - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
     - rm -rf ~/.aws/
     - sleep 30
+  only:
+    - staging
   tags:
     - docker
+
+start_runner_production:
+  stage: start_instance
+  image: mikesir87/aws-cli:latest
+  script:
+    - echo "Starting the instance"
+    - mkdir ~/.aws/
+    - touch ~/.aws/credentials
+    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+    - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
+    - rm -rf ~/.aws/
+    - sleep 30
+  only:
+    - master
+  tags:
+    - docker
+
+build_development:
+ stage: build
+ image: node:12-alpine
+ before_script:
+   - npm install
+ script:
+   - npm run build-development
+ artifacts:
+   paths:
+     - dist/supplier-center/
+   expire_in: 1 week
+ only:
+   - development
+ tags:
+  - sinbad-aws-docker-runner
 
 build_staging:
  stage: build
@@ -33,7 +85,7 @@ build_staging:
  only:
    - staging
  tags:
-  - aws-docker-runner
+  - sinbad-aws-docker-runner
 
 build_production:
  stage: build
@@ -49,9 +101,9 @@ build_production:
  only:
    - master
  tags:
-  - aws-docker-runner
+  - sinbad-aws-docker-runner
 
-deploy-to-aws_staging:
+deploy_development:
  stage: deploy
  image: instrumentisto/rsync-ssh:latest
  artifacts:
@@ -59,20 +111,41 @@ deploy-to-aws_staging:
      - dist/supplier-center/
  before_script:
    - mkdir -p ~/.ssh
-   - echo "$deploy_private_key" | tr -d '\r' > ~/.ssh/id_rsa
-   - echo "$deploy_public_key" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - echo "$deploy_private_key_dev" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key_dev" | tr -d '\r' > ~/.ssh/id_rsa.pub
    - chmod 600 ~/.ssh/id_rsa
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
    - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-stg.sinbad.web.id/* /var/www/seller-stg.sinbad.web.id-bak/"
-   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller-stg.sinbad.web.id/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-dev.sinbad.web.id/* /var/www/seller-center-bak/"
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id/
+ only:
+   - development
+ tags:
+   - sinbad-aws-docker-runner
+
+deploy_staging:
+ stage: deploy
+ image: instrumentisto/rsync-ssh:latest
+ artifacts:
+   paths:
+     - dist/supplier-center/
+ before_script:
+   - mkdir -p ~/.ssh
+   - echo "$deploy_private_key_stg" | tr -d '\r' > ~/.ssh/id_rsa
+   - echo "$deploy_public_key_stg" | tr -d '\r' > ~/.ssh/id_rsa.pub
+   - chmod 600 ~/.ssh/id_rsa
+   - chmod 600 ~/.ssh/id_rsa.pub
+ script:
+   - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.30.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-stg.sinbad.web.id/* /var/www/seller-center-bak/"
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.30.30:/var/www/seller-stg.sinbad.web.id/
  only:
    - staging
  tags:
-   - aws-docker-runner
+   - sinbad-aws-docker-runner
 
-deploy-to-aws_production:
+deploy_production:
  stage: deploy
  image: instrumentisto/rsync-ssh:latest
  artifacts:
@@ -86,12 +159,28 @@ deploy-to-aws_production:
    - chmod 600 ~/.ssh/id_rsa.pub
  script:
    - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
-   - ssh -i ~/.ssh/id_rsa deploy@10.0.20.141 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller.sinbad.web.id-bak/"
-   - rsync -v -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.20.141:/var/www/seller.sinbad.web.id/
+   - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller-center/* /var/www/seller-center-bak/"
+   - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller-center/
  only:
    - master
  tags:
-   - aws-docker-runner
+   - sinbad-aws-docker-runner
+
+stop_runner_development:
+  stage: stop_instance
+  image: mikesir87/aws-cli:latest
+  script:
+    - echo "Stopping the instance"
+    - mkdir ~/.aws/
+    - touch ~/.aws/credentials
+    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+    - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
+    - rm -rf ~/.aws/
+  only:
+    - development
+  tags:
+    - docker
 
 stop_runner_staging:
   stage: stop_instance
@@ -104,5 +193,23 @@ stop_runner_staging:
     - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
     - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
     - rm -rf ~/.aws/
+  only:
+    - staging
+  tags:
+    - docker
+
+stop_runner_production:
+  stage: stop_instance
+  image: mikesir87/aws-cli:latest
+  script:
+    - echo "Stopping the instance"
+    - mkdir ~/.aws/
+    - touch ~/.aws/credentials
+    - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+    - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+    - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
+    - rm -rf ~/.aws/
+  only:
+    - master
   tags:
     - docker
