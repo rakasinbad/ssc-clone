@@ -214,7 +214,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
              * INFORMASI PRODUK
              */
             externalId: formValues.productInfo.externalId,
-            name: formValues.productInfo.name,
+            name: String(formValues.productInfo.name).charAt(0).toUpperCase() + String(formValues.productInfo.name).slice(1),
             description: formValues.productInfo.description,
             information: formValues.productInfo.information,
             detail: formValues.productInfo.information,
