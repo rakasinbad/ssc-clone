@@ -1,5 +1,6 @@
-import { AgmGeocoder, LatLngBounds, MouseEvent, GeocoderResult } from '@agm/core';
+import { AgmGeocoder, GeocoderResult, LatLngBounds, MouseEvent } from '@agm/core';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
@@ -11,9 +12,9 @@ import {
 import { FormBuilder, FormGroup } from '@angular/forms';
 import {
     MatAutocomplete,
+    MatAutocompleteSelectedEvent,
     MatAutocompleteTrigger,
-    MatCheckboxChange,
-    MatAutocompleteSelectedEvent
+    MatCheckboxChange
 } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -24,7 +25,15 @@ import { DropdownActions, FormActions, UiActions } from 'app/shared/store/action
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { icon } from 'leaflet';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { filter, map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    takeUntil,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
 import { StoreActions } from '../../store/actions';
 import { fromMerchant } from '../../store/reducers';
@@ -37,7 +46,7 @@ import { StoreSelectors } from '../../store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
+export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     form: FormGroup;
 
     // options: MapOptions = {
@@ -79,6 +88,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
     districts$: Observable<Array<District>>;
     store$: Observable<SupplierStore>;
+    urbans$: Observable<Array<Urban>>;
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
@@ -116,15 +126,23 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             tap(data => {
                 if (data && data.store) {
                     this.form.get('address').setValue(data.store.address);
+                    this.form.get('notes').setValue(data.store.noteAddress);
 
                     if (data.store.urban) {
+                        this._onSearchDistrict(data.store.urban.district);
+
                         this.form.get('district').setValue(data.store.urban);
+                        this.form.get('urban').setValue(data.store.urban);
+                        this.form.get('postcode').setValue(data.store.urban.zipCode);
                     }
+
+                    this.form.markAsPristine();
 
                     this.cdRef.detectChanges();
                 }
             })
         );
+
         this.isEdit$ = this.store.select(StoreSelectors.getIsEditLocation).pipe(
             tap(isEditLocation => {
                 this.draggAble = isEditLocation;
@@ -174,9 +192,77 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             })
         );
 
+        this.districts$ = this.store.select(DropdownSelectors.getAllDistrict).pipe(
+            tap(sources => {
+                if (sources && sources.length > 0) {
+                    const districtCtrl = this.form.get('district').value as Urban;
+                    const filterDistrict = sources.filter(
+                        v =>
+                            String(v.district)
+                                .trim()
+                                .toUpperCase() ===
+                                String(districtCtrl.district)
+                                    .trim()
+                                    .toUpperCase() &&
+                            String(v.city)
+                                .trim()
+                                .toUpperCase() ===
+                                String(districtCtrl.city)
+                                    .trim()
+                                    .toUpperCase()
+                    );
+                    const urbanSources =
+                        filterDistrict && filterDistrict.length > 0
+                            ? filterDistrict[0].urbans
+                            : null;
+
+                    if (urbanSources) {
+                        this.store.dispatch(
+                            DropdownActions.setUrbanSource({ payload: urbanSources })
+                        );
+                    }
+                }
+            })
+        );
+
+        this.urbans$ = this.store.select(DropdownSelectors.getAllUrban);
+
+        this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
+
         this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
         this.store.dispatch(StoreActions.fetchStoreRequest({ payload: id }));
+
+        // Handle search district autocomplete & try request to endpoint
+        this.form
+            .get('district')
+            .valueChanges.pipe(
+                filter(v => {
+                    this.districtHighlight = v;
+                    return v && v.length >= 3;
+                }),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(v => {
+                this._onSearchDistrict(v);
+            });
+
+        // Handle search urban autocomplete & refresh source data with filter
+        this.form
+            .get('urban')
+            .valueChanges.pipe(takeUntil(this._unSubs$))
+            .subscribe(v => {
+                this.urbanHighlight = v;
+
+                this._onSearchUrban(v);
+            });
+
+        // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+        this.form.statusChanges
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(status => {
+                this._setFormStatus(status);
+            });
 
         // Handle cancel button action (footer)
         this.store
@@ -186,12 +272,69 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                 takeUntil(this._unSubs$)
             )
             .subscribe(isClick => {
-                console.log('CLICK CANCEL', isClick);
                 this.store.dispatch(StoreActions.unsetEditLocation());
 
                 this.store.dispatch(FormActions.resetClickCancelButton());
                 this.store.dispatch(FormActions.resetCancelButtonAction());
             });
+
+        // Handle save button action (footer)
+        this.store
+            .select(FormSelectors.getIsClickSaveButton)
+            .pipe(
+                filter(isClick => !!isClick),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(() => {
+                this._onSubmit();
+            });
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        // Handle trigger autocomplete district force selected from options
+        if (this.triggerDistrict) {
+            this.triggerDistrict.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+                const value = this.form.get('district').value;
+
+                if (!this._selectedDistrict || this._selectedDistrict !== JSON.stringify(value)) {
+                    // Set input district empty
+                    this.form.get('district').setValue('');
+
+                    // Reset input urban
+                    this.form.get('urban').reset();
+
+                    // Reset input postcode
+                    this.form.get('postcode').reset();
+
+                    // Reset state urban
+                    this.store.dispatch(DropdownActions.resetUrbansState());
+
+                    // Set selected district empty (helper check User is choose from option or not)
+                    this._selectedDistrict = '';
+                }
+            });
+        }
+
+        // Handle trigger autocomplete urban force selected from options
+        if (this.triggerUrban) {
+            this.triggerUrban.panelClosingActions.pipe(takeUntil(this._unSubs$)).subscribe(e => {
+                const value = this.form.get('urban').value;
+
+                if (!this._selectedUrban || this._selectedUrban !== JSON.stringify(value)) {
+                    // Set input urban empty
+                    this.form.get('urban').setValue('');
+
+                    // Reset input postcode
+                    this.form.get('postcode').reset();
+
+                    // Set selected urban empty (helper check User is choose from option or not)
+                    this._selectedUrban = '';
+                }
+            });
+        }
     }
 
     ngOnDestroy(): void {
@@ -201,6 +344,12 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         this.store.dispatch(StoreActions.resetStore());
 
         this.store.dispatch(UiActions.hideFooterAction());
+
+        // Reset district state
+        this.store.dispatch(DropdownActions.resetDistrictsState());
+
+        // Reset urban state
+        this.store.dispatch(DropdownActions.resetUrbansState());
 
         this._unSubs$.next();
         this._unSubs$.complete();
@@ -212,6 +361,10 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         }
 
         return `<span class="subtitle">${item.province.name}, ${item.city}, ${item.district}</span>`;
+    }
+
+    displayUrbanOption(item: Urban, isHtml = false): string {
+        return `${item.urban}`;
     }
 
     getErrorMessage(field: string): string {
@@ -255,44 +408,101 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     }
 
     onChangeBound(ev: LatLngBounds): void {
-        console.log('Change Bound', ev);
+        // console.log('Change Bound', ev);
     }
 
     onChangeManually(ev: MatCheckboxChange): void {
-        console.log('Manually', ev);
-
         this.isManually = ev.checked;
 
         // this.form.get('district').reset();
-        this.form.get('urban').reset();
+        // this.form.get('urban').reset();
 
         if (ev.checked === true) {
             this.draggAble = false;
 
-            this.form.get('district').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                })
-            ]);
+            // this.form.get('district').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+            //     })
+            // ]);
 
-            this.form.get('urban').setValidators([
-                RxwebValidators.required({
-                    message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                })
-            ]);
+            // this.form.get('urban').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+            //     })
+            // ]);
+
+            // this.form.get('postcode').setValidators([
+            //     RxwebValidators.required({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+            //     }),
+            //     RxwebValidators.digit({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //     }),
+            //     RxwebValidators.minLength({
+            //         value: 5,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //     }),
+            //     RxwebValidators.maxLength({
+            //         value: 5,
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //     })
+            // ]);
+
+            // this.form.get('lat').setValidators([
+            //     RxwebValidators.latitude({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //     })
+            // ]);
+
+            // this.form.get('lng').setValidators([
+            //     RxwebValidators.longitude({
+            //         message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+            //     })
+            // ]);
         } else {
             this.draggAble = true;
 
-            this.form.get('district').setValidators(null);
-            this.form.get('urban').setValidators(null);
+            this.form.get('district').reset();
+            this.form.get('urban').reset();
+            this.form.get('postcode').reset();
+            this.form.get('lat').reset();
+            this.form.get('lng').reset();
+
+            this.store
+                .select(StoreSelectors.getSelectedStore)
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(data => {
+                    if (data && data.store) {
+                        this.form.get('address').setValue(data.store.address);
+                        this.form.get('notes').setValue(data.store.noteAddress);
+
+                        if (data.store.urban) {
+                            this._onSearchDistrict(data.store.urban.district);
+
+                            this.form.get('district').setValue(data.store.urban);
+                            this.form.get('urban').setValue(data.store.urban);
+                            this.form.get('postcode').setValue(data.store.urban.zipCode);
+                        }
+
+                        this.form.markAsPristine();
+
+                        this.cdRef.detectChanges();
+                    }
+                });
         }
 
         this.form.get('district').updateValueAndValidity();
         this.form.get('urban').updateValueAndValidity();
+        this.form.get('postcode').updateValueAndValidity();
+        this.form.get('lat').updateValueAndValidity();
+        this.form.get('lng').updateValueAndValidity();
+
+        this.form.markAsPristine();
     }
 
     onDisplayDistrict(item: District): string {
-        if (!item) {
+        if (!item || !item.province) {
             return;
         }
 
@@ -304,11 +514,19 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
     }
 
     onDragEnd(ev: MouseEvent): void {
-        console.log('DraggEnd', ev.coords);
+        console.log('DraggEnd', ev.coords, this.form);
 
         if (ev.coords.lat && ev.coords.lng) {
             this._getAddress(ev.coords.lat, ev.coords.lng);
         }
+    }
+
+    onDisplayUrban(item: Urban): string {
+        if (!item) {
+            return;
+        }
+
+        return item.urban;
     }
 
     onKeydown(ev: KeyboardEvent, field: string): void {
@@ -334,6 +552,9 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
 
                     this._timer[field] = setTimeout(() => {
                         this.isDistrictTyping = false;
+
+                        // Detect change manually
+                        this.cdRef.markForCheck();
                     }, 100);
                 }
                 break;
@@ -481,9 +702,11 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                 {
                     const value = (ev.option.value as District) || '';
 
+                    this.form.get('urban').reset();
+                    this.form.get('postcode').reset();
+
                     if (!value) {
                         this.form.get('district').reset();
-                        this.form.get('postcode').reset();
                     } else {
                         if (value.urbans.length > 0) {
                             // this.form.get('urban').enable();
@@ -502,8 +725,10 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                 {
                     const value = (ev.option.value as Urban) || '';
 
+                    this.form.get('postcode').reset();
+
                     if (!value) {
-                        this.form.get('postcode').reset();
+                        this.form.get('urban').reset();
                     } else {
                         this.form.get('postcode').setValue(value.zipCode);
                     }
@@ -521,17 +746,76 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         this.form = this.formBuilder.group({
             address: '',
             manually: false,
-            district: '',
-            lat: '',
-            lng: '',
-            urban: '',
+            district: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            urban: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            postcode: [
+                { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.minLength({
+                        value: 5,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.maxLength({
+                        value: 5,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
+            lat: [
+                '',
+                [
+                    RxwebValidators.latitude({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
+            lng: [
+                '',
+                [
+                    RxwebValidators.longitude({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
             notes: ''
         });
     }
 
-    private _decomposeAddress(address: Array<GeocoderResult>): void {
-        console.log(address);
+    private _addressValid(): boolean {
+        console.log('CHECK', this.form.pristine, this.form.dirty);
+        if (this.isManually) {
+            return (
+                this.form.get('district').valid &&
+                this.form.get('urban').valid &&
+                this.form.get('postcode').value &&
+                !this.form.pristine
+            );
+        } else {
+            return !this.form.pristine;
+        }
+    }
 
+    private _decomposeAddress(address: Array<GeocoderResult>, lat: number, lng: number): void {
         if (address.length === 0) {
             this._$notice.open('No results found', 'error', {
                 verticalPosition: 'bottom',
@@ -541,9 +825,76 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
         }
 
         const formatAddress = address[0].formatted_address;
+        const addressComponent = address[0].address_components;
 
         this.form.get('address').setValue(formatAddress);
         this.cdRef.detectChanges();
+
+        const locSearch = {
+            province: '',
+            city: '',
+            district: '',
+            urban: ''
+        };
+
+        for (const item of addressComponent) {
+            if (item.types.length === 0 && !item.types) {
+                continue;
+            }
+
+            if (item.types.indexOf('administrative_area_level_1') > -1) {
+                locSearch.province = item.long_name;
+                continue;
+            }
+
+            if (item.types.indexOf('administrative_area_level_2') > -1) {
+                locSearch.city = item.long_name;
+                continue;
+            }
+
+            if (item.types.indexOf('administrative_area_level_3') > -1) {
+                locSearch.district = item.long_name;
+                continue;
+            }
+
+            if (item.types.indexOf('administrative_area_level_4') > -1) {
+                locSearch.urban = item.long_name;
+                continue;
+            }
+        }
+
+        this.store.dispatch(DropdownActions.fetchLocationRequest({ payload: locSearch }));
+
+        this.store
+            .select(DropdownSelectors.getLocationState)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(x => {
+                if (x) {
+                    this._onSearchDistrict(x.district);
+
+                    this.form.get('district').setValue(x);
+                    this.form.get('urban').setValue(x);
+                    this.form.get('postcode').setValue(x.zipCode);
+                    this.form.get('lat').setValue(lat);
+                    this.form.get('lng').setValue(lng);
+                }
+
+                this.form.markAsPristine();
+            });
+    }
+
+    private _filterUrban(source: Array<Urban>, value: string): Array<Urban> {
+        if (!value || !source || (source && source.length < 1)) {
+            return source;
+        }
+
+        const filterValue = String(value).toLowerCase();
+
+        return source.filter(r =>
+            String(r.urban)
+                .toLowerCase()
+                .includes(filterValue)
+        );
     }
 
     private _getAddress(lat: number, lng: number): void {
@@ -555,14 +906,7 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this._unSubs$))
             .subscribe({
                 next: res => {
-                    console.log('GEOCODE', res);
-                    this._decomposeAddress(res);
-
-                    if (res && res[0]) {
-                        this.form.get('address').setValue(res[0].formatted_address);
-                        this.cdRef.detectChanges();
-                    } else {
-                    }
+                    this._decomposeAddress(res, lat, lng);
                 },
                 error: err => {
                     this._$notice.open('Failed geocoder', 'error', {
@@ -571,5 +915,86 @@ export class MerchantLocationDetailComponent implements OnInit, OnDestroy {
                     });
                 }
             });
+    }
+
+    private _setFormStatus(status: string): void {
+        if (!status) {
+            return;
+        }
+
+        if (status === 'VALID' && this._addressValid()) {
+            this.store.dispatch(FormActions.setFormStatusValid());
+        }
+
+        if (status === 'INVALID' || !this._addressValid()) {
+            this.store.dispatch(FormActions.setFormStatusInvalid());
+        }
+    }
+
+    private _onSearchDistrict(v: string): void {
+        if (v) {
+            const data: IQueryParams = {
+                limit: 10,
+                skip: 0
+            };
+
+            data['paginate'] = true;
+
+            data['search'] = [
+                {
+                    fieldName: 'keyword',
+                    keyword: v
+                }
+            ];
+
+            this.districtHighlight = v;
+
+            this.store.dispatch(DropdownActions.searchDistrictRequest({ payload: data }));
+        }
+    }
+
+    private _onSearchUrban(v: string): void {
+        this.urbans$ = this.store
+            .select(DropdownSelectors.getAllUrban)
+            .pipe(map(source => this._filterUrban(source, v)));
+    }
+
+    private _onSubmit(): void {
+        if (this.form.invalid) {
+            return;
+        }
+
+        const { id } = this.route.parent.snapshot.params;
+        const body = this.form.getRawValue();
+        const urban = body.urban as Urban;
+        const payload = {
+            urbanId: urban.id,
+            longitude: body.lng,
+            latitude: body.lat,
+            noteAddress: body.notes,
+            address: body.address
+        };
+
+        if (!body.longitude) {
+            delete payload.longitude;
+        }
+
+        if (!body.latitude) {
+            delete payload.latitude;
+        }
+
+        if (!body.address) {
+            delete payload.address;
+        }
+
+        if (!body.notes) {
+            delete payload.noteAddress;
+        }
+
+        if (id && Object.keys(payload).length > 0) {
+            this.store.dispatch(
+                StoreActions.updateStoreRequest({ payload: { id, body: payload } })
+            );
+        }
     }
 }

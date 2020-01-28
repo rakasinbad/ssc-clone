@@ -12,6 +12,7 @@ export * from './cluster-api.service';
 export * from './district-api.service';
 export * from './download-api.service';
 export * from './hierarchy-api.service';
+export * from './location-search-api.service';
 export * from './invoice-group-api.service';
 export * from './order-brand-catalogue-api.service';
 export * from './order-parcel-api.service';
