@@ -8,8 +8,8 @@ app-merchants {
             }
         }
 
-        > .center {
-            > .header {
+        >.center {
+            >.header {
                 &.sinbad {
                     height: 100px !important;
                     min-height: 100px !important;
@@ -192,6 +192,14 @@ app-merchants {
         }
 
         .mat-column-store-type {
+            flex: 0 1 10%;
+        }
+
+        .mat-column-sr-name {
+            flex: 0 1 10%;
+        }
+
+        .mat-column-joining-date {
             flex: 0 1 10%;
         }
 

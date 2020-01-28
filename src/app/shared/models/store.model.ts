@@ -83,6 +83,7 @@ export interface IStore extends ITimestamp {
     legalInfo?: User;
     longitude: number;
     name: string;
+    noteAddress: string;
     numberOfEmployee: TNullable<string>;
     owner?: User;
     parent: boolean;
@@ -126,6 +127,7 @@ export class Store implements IStore {
     legalInfo?: User;
     longitude: number;
     name: string;
+    noteAddress: string;
     numberOfEmployee: TNullable<string>;
     owner?: User;
     parent: boolean;
@@ -172,6 +174,7 @@ export class Store implements IStore {
             legalInfo,
             longitude,
             name,
+            noteAddress,
             numberOfEmployee,
             owner,
             parent,
@@ -213,6 +216,7 @@ export class Store implements IStore {
         this.latitude = latitude;
         this.longitude = longitude;
         this.name = name ? String(name).trim() : null;
+        this.noteAddress = noteAddress ? String(noteAddress).trim() : null;
         this.numberOfEmployee = numberOfEmployee ? String(numberOfEmployee).trim() : null;
         this.parent = parent;
         this.parentId = parentId;

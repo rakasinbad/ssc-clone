@@ -15,7 +15,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { IQueryParams, LifecyclePlatform, SupplierStore } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform, SupplierStore, User } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -76,6 +76,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'owner-name',
         'store-segment',
         'store-type',
+        'sr-name',
+        'joining-date',
         'status',
         'actions'
     ];
@@ -258,6 +260,14 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return !item ? null : item.id;
     }
 
+    generateSalesRep(salesRep: Array<User>): string {
+        if (!salesRep || !Array.isArray(salesRep) || salesRep.length === 0) {
+            return '-';
+        }
+
+        return salesRep.map(salesRep => salesRep.fullName).join(',<br/>');
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -296,6 +306,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'owner-name',
                                 'store-segment',
                                 'store-type',
+                                'sr-name',
+                                'joining-date',
                                 'status',
                                 'actions'
                             ];
@@ -310,6 +322,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'owner-name',
                                 'store-segment',
                                 'store-type',
+                                'sr-name',
+                                'joining-date',
                                 'status'
                             ];
                         }

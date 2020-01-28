@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>{{ data.editMode === 'price' ? 'Edit Harga' : 'Edit Stock' }}</h2>
+<h2 mat-dialog-title>{{ data.editMode === 'price' ? 'Edit Price' : 'Edit Stock' }}</h2>
 
 <mat-dialog-content class="mat-typography" style="min-width: 50em;">
     <div class="line-height-1.75">
@@ -7,41 +7,29 @@
                 <div fxFlex="25" fxLayout="column" fxLayoutAlign="space-between end">
                     <!-- FORM INPUT LABEL -->
                     <p fxFlex="20"></p>
-                    <p fxFlex="25">Harga Sekarang</p>
-                    <p 
-                        fxFlex="25"
-                        [class.mat-error]="
+                    <p fxFlex="25">Current Price</p>
+                    <p fxFlex="25" [class.mat-error]="
                             (form.get('retailPrice').errors &&
                             (form.get('retailPrice').dirty || form.get('retailPrice').touched))
                             ||
                             (form.get('salePrice').errors &&
                             (form.get('salePrice').dirty || form.get('salePrice').touched))
-                        "
-                    >
-                        Harga Baru
+                        ">
+                        New Price
                     </p>
                     <!-- / FORM INPUT LABEL -->
                 </div>
                 <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
-                    <p class="mb-36"
-                        [class.mat-error]="
+                    <p class="mb-36" [class.mat-error]="
                             form.get('retailPrice').errors &&
                             (form.get('retailPrice').dirty || form.get('retailPrice').touched)
-                        "
-                    >
+                        ">
                         <strong>Retailer Buying Price</strong>
                     </p>
                     <!-- RETAILER BUYING PRICE (NOW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            [hidden]="true"
-                            matInput
-                            name="oldRetailPrice"
-                            prefix="Rp"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="oldRetailPrice"
-                        />
+                        <input [hidden]="true" matInput name="oldRetailPrice" prefix="Rp" mask="separator"
+                            thousandSeparator="." formControlName="oldRetailPrice" />
                         <span class="grey-500-fg">
                             {{ data?.catalogue?.retailBuyingPrice  | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </span>
@@ -49,48 +37,30 @@
                     <!-- / RETAILER BUYING PRICE (NOW) -->
                     <!-- RETAILER BUYING PRICE (NEW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            matInput
-                            type="text"
-                            name="retailPrice"
-                            prefix="Rp"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="retailPrice"
-                        />
-                        <mat-error
-                            *ngIf="
+                        <input matInput type="text" name="retailPrice" prefix="Rp" mask="separator"
+                            thousandSeparator="." formControlName="retailPrice" />
+                        <mat-error *ngIf="
                                 form.get('retailPrice').errors &&
                                 (form.get('retailPrice').dirty || form.get('retailPrice').touched)
-                            "
-                        >
+                            ">
                             {{ getFormError(form, 'retailPrice') }}
                         </mat-error>
                     </mat-form-field>
                     <!-- / RETAILER BUYING PRICE (NEW) -->
                 </div>
                 <div fxFlex="35" fxLayout="column" fxLayoutAlign="space-between center">
-                    <p class="text-center"
-                        [class.mat-error]="
+                    <p class="text-center" [class.mat-error]="
                             form.get('salePrice').errors &&
                             (form.get('salePrice').dirty || form.get('salePrice').touched)
-                        "
-                    >
+                        ">
                         <strong>
-                            Discounted Retailer<br/>Buying Price
+                            Discounted Retailer<br />Buying Price
                         </strong>
                     </p>
                     <!-- DISCOUNTED PRICE FOR RETAILER (SALE PRICE) (NOW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            [hidden]="true"
-                            matInput
-                            name="oldSalePrice"
-                            prefix="Rp"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="oldSalePrice"
-                        />
+                        <input [hidden]="true" matInput name="oldSalePrice" prefix="Rp" mask="separator"
+                            thousandSeparator="." formControlName="oldSalePrice" />
                         <span class="grey-500-fg">
                             {{ !data?.catalogue?.discountedRetailBuyingPrice 
                                 ? ('Rp')
@@ -100,21 +70,12 @@
                     <!-- / DISCOUNTED FOR RETAILER (SALE PRICE) (NOW) -->
                     <!-- DISCOUNTED FOR RETAILER (SALE PRICE) (NEW) -->
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            matInput
-                            type="text"
-                            name="salePrice"
-                            prefix="Rp"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="salePrice"
-                        />
-                        <mat-error
-                            *ngIf="
+                        <input matInput type="text" name="salePrice" prefix="Rp" mask="separator" thousandSeparator="."
+                            formControlName="salePrice" />
+                        <mat-error *ngIf="
                                 form.get('salePrice').errors &&
                                 (form.get('salePrice').dirty || form.get('salePrice').touched)
-                            "
-                        >
+                            ">
                             {{ getFormError(form, 'salePrice') }}
                         </mat-error>
                     </mat-form-field>
@@ -123,14 +84,8 @@
                 <div fxFlex="15" fxLayout="column" fxLayoutAlign="center center">
                     <!-- MARGIN (?) -->
                     <p fxFlex="20"><strong>Discount (%)</strong></p>
-                    <p
-                        fxFlex="40"
-                        fxLayout="row"
-                        fxLayoutAlign="center center"
-                        [class.green-900-fg]="oldMargin > 0.00"
-                        [class.orange-700-fg]="oldMargin === 0.00"
-                        [class.red-800-fg]="oldMargin < 0.00"
-                    >
+                    <p fxFlex="40" fxLayout="row" fxLayoutAlign="center center" [class.green-900-fg]="oldMargin > 0.00"
+                        [class.orange-700-fg]="oldMargin === 0.00" [class.red-800-fg]="oldMargin < 0.00">
                         <ng-container *ngIf="oldMargin < 0.00; else oldHasDiscount;">
                             <mat-icon>arrow_drop_down</mat-icon>
                         </ng-container>
@@ -147,14 +102,8 @@
                             {{ !oldMargin && oldMargin !== 0 ? '-' : (oldMargin | number: '1.0-2') }} %
                         </span>
                     </p>
-                    <p
-                        fxFlex="40"
-                        fxLayout="row"
-                        fxLayoutAlign="center center"
-                        [class.green-900-fg]="newMargin > 0.00"
-                        [class.orange-700-fg]="newMargin === 0.00"
-                        [class.red-800-fg]="newMargin < 0.00"
-                    >
+                    <p fxFlex="40" fxLayout="row" fxLayoutAlign="center center" [class.green-900-fg]="newMargin > 0.00"
+                        [class.orange-700-fg]="newMargin === 0.00" [class.red-800-fg]="newMargin < 0.00">
                         <ng-container *ngIf="newMargin < 0.00; else newHasDiscount;">
                             <mat-icon>arrow_drop_down</mat-icon>
                         </ng-container>
@@ -176,11 +125,12 @@
             </form>
         </ng-container>
         <ng-template #editStock>
-            <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutAlign="space-between stretch" fxLayoutGap="10px" novalidate>
+            <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutAlign="space-between stretch"
+                fxLayoutGap="10px" novalidate>
                 <!-- PROCESSED STOCK INFORMATION -->
                 <!-- <div fxLayout="row" fxLayoutAlign="space-between stretch" fxLayoutGap="30px"> -->
-                    <!-- RESERVED STOCK -->
-                    <!-- <div class="custom-field" fxLayout="row" fxLayoutGap="35px">
+                <!-- RESERVED STOCK -->
+                <!-- <div class="custom-field" fxLayout="row" fxLayoutGap="35px">
                         <label fxFlexAlign="center">
                             Reserved Stock
                         </label>
@@ -199,9 +149,9 @@
                             {{ data?.price | price: 'full':'IDR':'narrow':'1.0-2' }}
                         </mat-form-field>
                     </div> -->
-                    <!-- / RESERVED STOCK -->
-                    <!-- STOCK EN ROUTE -->
-                    <!-- <div class="custom-field" fxLayout="row">
+                <!-- / RESERVED STOCK -->
+                <!-- STOCK EN ROUTE -->
+                <!-- <div class="custom-field" fxLayout="row">
                         <label fxFlex="20" fxFlexAlign="center">
                             Stock en route
                         </label>
@@ -216,7 +166,7 @@
                             />
                         </mat-form-field>
                     </div> -->
-                    <!-- / STOCK EN ROUTE -->
+                <!-- / STOCK EN ROUTE -->
                 <!-- </div> -->
                 <!-- / PROCESSED STOCK INFORMATION -->
                 <!-- STOCK EN ROUTE -->
@@ -225,14 +175,8 @@
                         Stock en route
                     </label>
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            matInput
-                            name="stockEnroute"
-                            mask="separator"
-                            thousandSeparator="."
-                            placeholder="Loading ..."
-                            formControlName="stockEnroute"
-                        />
+                        <input matInput name="stockEnroute" mask="separator" thousandSeparator="."
+                            placeholder="Loading ..." formControlName="stockEnroute" />
                         <!-- <span class="grey-500-fg">
                             {{ form.get('stockEnroute').value || 'Loading ...'  }}
                         </span> -->
@@ -246,13 +190,8 @@
                         Stock Sekarang
                     </label>
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            matInput
-                            name="oldStock"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="oldStock"
-                        />
+                        <input matInput name="oldStock" mask="separator" thousandSeparator="."
+                            formControlName="oldStock" />
                         <!-- <span class="grey-500-fg">
                             {{ data?.catalogue?.stock | number: '1.0-2' }}
                         </span> -->
@@ -261,31 +200,19 @@
                 <!-- / AVAILABLE STOCK INFORMATION -->
                 <!-- NEW STOCK -->
                 <div class="custom-field-right" fxLayout="row">
-                    <label
-                        fxFlex="20"
-                        fxFlexAlign="center"
-                        [class.mat-error]="
+                    <label fxFlex="20" fxFlexAlign="center" [class.mat-error]="
                             form.get('stock').errors &&
                             (form.get('stock').dirty || form.get('stock').touched)
-                        "
-                    >
+                        ">
                         Stock Baru
                     </label>
                     <mat-form-field fxFlex="80" appearance="outline">
-                        <input
-                            matInput
-                            type="text"
-                            name="stock"
-                            mask="separator"
-                            thousandSeparator="."
-                            formControlName="stock"
-                        />
-                        <mat-error
-                            *ngIf="
+                        <input matInput type="text" name="stock" mask="separator" thousandSeparator="."
+                            formControlName="stock" />
+                        <mat-error *ngIf="
                                 form.get('stock').errors &&
                                 (form.get('stock').dirty || form.get('stock').touched)
-                            "
-                        >
+                            ">
                             {{ getFormError(form, 'stock') }}
                         </mat-error>
                     </mat-form-field>
@@ -298,19 +225,10 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-    <button
-        mat-raised-button
-        mat-dialog-close
-        [disabled]="isUpdating"
-    >
+    <button mat-raised-button mat-dialog-close [disabled]="isUpdating">
         Cancel
     </button>
-    <button
-        mat-button
-        class="warn-900"
-        [disabled]="form.invalid || isUpdating"
-        (click)="updateData()"
-    >
+    <button mat-button class="warn-900" [disabled]="form.invalid || isUpdating" (click)="updateData()">
         OK
     </button>
 </mat-dialog-actions>
