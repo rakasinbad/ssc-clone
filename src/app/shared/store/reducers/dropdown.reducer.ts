@@ -62,6 +62,7 @@ export interface State {
     storeTypes?: StoreType[];
     geoParameters: GeoParameterState;
     vehicleAccessibilities?: VehicleAccessibility[];
+    location: Urban;
     errors: ErrorState;
 }
 // const adapterAccount = createEntityAdapter<Account>();
@@ -89,6 +90,7 @@ export const initialState: State = {
     districts: initialDistrictState,
     geoParameters: initialGeoParameterState,
     urbans: initialUrbanState,
+    location: undefined,
     errors: initialErrorState
 };
 
@@ -125,12 +127,17 @@ const dropdownReducer = createReducer<State>(
         DropdownActions.fetchDropdownStoreSegmentFailure,
         DropdownActions.fetchDropdownStoreTypeFailure,
         DropdownActions.fetchDropdownVehicleAccessibilityFailure,
+        DropdownActions.fetchLocationFailure,
         DropdownActions.fetchSearchAccountFailure,
         (state, { payload }) => ({
             ...state,
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
+    on(DropdownActions.fetchLocationSuccess, (state, { payload }) => ({
+        ...state,
+        location: payload
+    })),
     on(DropdownActions.fetchDropdownCreditLimitGroupSuccess, (state, { payload }) => ({
         ...state,
         creditLimitGroups: payload,
