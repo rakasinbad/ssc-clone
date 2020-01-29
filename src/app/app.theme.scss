@@ -123,6 +123,7 @@ $typography: mat-typography-config(
 // Accounts
 @import 'src/app/main/pages/accounts/internal/internal.theme';
 @import 'src/app/main/pages/accounts/merchants/merchants.theme';
+@import 'src/app/main/pages/accounts/merchants/merchant-setting/merchant-setting.theme';
 
 // Attendances
 @import 'src/app/main/pages/attendances/attendances.theme';
@@ -176,6 +177,7 @@ $typography: mat-typography-config(
     // Accounts
     @include internals-theme($theme);
     @include merchants-theme($theme);
+    @include merchant-setting-theme($theme);
 
     // Attendances
     @include attendances-theme($theme);
