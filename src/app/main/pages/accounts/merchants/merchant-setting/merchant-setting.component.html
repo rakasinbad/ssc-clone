@@ -75,10 +75,18 @@
             </form>
             <!-- / FORM -->
             <div fxLayout="row" fxLayoutAlign="end center">
-                <button mat-flat-button color="accent">Save</button>
+                <button
+                    mat-flat-button
+                    color="accent"
+                    (click)="onSubmit()"
+                    [disabled]="form.status !== 'VALID' || (isLoading$ | async) || form.pristine"
+                > Save </button>
             </div>
         </div>
     </div>
     <!-- / CENTER WRAPPER -->
 </div>
 <!-- / CARD -->
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

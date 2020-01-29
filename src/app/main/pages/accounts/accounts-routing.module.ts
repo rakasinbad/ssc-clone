@@ -37,7 +37,7 @@ const routes: Routes = [
     },
     {
         path: 'store-setting',
-        component: MerchantSettingComponent,
+        loadChildren: () => import('./merchants/merchant-setting/merchant-setting.module').then(m => m.MerchantSettingModule),
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {

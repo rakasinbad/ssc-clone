@@ -19,6 +19,7 @@ import { MerchantsRoutingModule } from './merchants-routing.module';
 import { MerchantsComponent } from './merchants.component';
 import { MerchantEffects } from './store/effects';
 import { fromMerchant } from './store/reducers';
+import { StoreSettingEffects } from './store/effects/store-setting.effects';
 
 /**
  *
@@ -35,7 +36,7 @@ import { fromMerchant } from './store/reducers';
         MerchantLocationDetailComponent,
         MerchantEmployeeComponent,
         MerchantFormComponent,
-        MerchantSettingComponent
+        // MerchantSettingComponent
     ],
     imports: [
         MerchantsRoutingModule,
@@ -50,7 +51,7 @@ import { fromMerchant } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
-        EffectsModule.forFeature([MerchantEffects])
+        EffectsModule.forFeature([MerchantEffects, StoreSettingEffects])
     ]
 })
 export class MerchantsModule {}
