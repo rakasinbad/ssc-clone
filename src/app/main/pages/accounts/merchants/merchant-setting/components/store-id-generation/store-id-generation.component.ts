@@ -56,6 +56,7 @@ export class MerchantSettingStoreIdGenerationComponent implements OnInit, OnDest
                     {
                         title: 'Store Setting',
                         translate: 'BREADCRUMBS.STORE_SETTING',
+                        active: true
                     },
                 ]
             })
