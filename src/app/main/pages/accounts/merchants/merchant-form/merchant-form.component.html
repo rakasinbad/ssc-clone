@@ -189,7 +189,7 @@
                                 fxFlexAlign="start"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.storeId.id')"
-                                class="pt-8"
+                                class="pt-16"
                             >
                                 *ID
                             </label>
@@ -197,14 +197,11 @@
                             <div
                                 fxLayout="column"
                                 fxLayoutAlign="start stretch"
+                                fxFlex="50"
                             >
-                                <!-- UPPER ID FORM -->
-                                <div
-                                    fxLayout="row"
-                                    fxLayoutAlign="start center"
-                                >
+                                <div fxLayout="row" fxLayoutAlign="start start" class="mt-8">
                                     <!-- RADIO GROUP -->
-                                    <mat-radio-group [formControl]="storeIdType">
+                                    <mat-radio-group [formControl]="storeIdType" class="pt-8">
                                         <mat-radio-button value="manual">Manually</mat-radio-button>
                                         <mat-radio-button value="auto" [disabled]="!storeIdNextNumber">Auto Generate
                                             <span class="grey-fg">({{ storeIdNextNumber }})</span>
@@ -212,12 +209,11 @@
                                     </mat-radio-group>
                                     <!-- / RADIO GROUP -->
                                     <!-- HELP -->
-                                    <mat-icon class="grey-fg mb-16" style="font-size: 16px;" matTooltip="You can change this AutoGenerate Store ID Number in Store Setting">help</mat-icon>
+                                    <mat-icon class="grey-fg" style="font-size: 16px;" matTooltip="You can change this AutoGenerate Store ID Number in Store Setting">help</mat-icon>
                                     <!-- / HELP -->
                                 </div>
-                                <!-- / UPPER ID FORM -->
                                 <!-- FORM FIELD INPUT -->
-                                <mat-form-field appearance="outline" fxFlex="50" [fxHide]="this.storeIdType.value === 'auto'">
+                                <mat-form-field appearance="outline" [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }" [fxHide]="this.storeIdType.value === 'auto'">
                                     <input matInput name="id" formControlName="id" />
 
                                     <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
