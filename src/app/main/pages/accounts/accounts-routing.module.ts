@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 import { NgxPermissionsGuard } from 'ngx-permissions';
-import { MerchantSettingComponent } from './merchants/merchant-setting/merchant-setting.component';
 
 const routes: Routes = [
     {
