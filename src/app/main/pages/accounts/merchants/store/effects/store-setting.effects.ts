@@ -8,13 +8,15 @@ import { IQueryParams, TNullable, User, ErrorHandler, AnyAction, IPaginatedRespo
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { throwError, Observable, of } from 'rxjs';
-import { map, retry, switchMap, catchError, withLatestFrom, tap } from 'rxjs/operators';
+import { map, retry, switchMap, catchError, withLatestFrom, tap, exhaustMap } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { StoreSettingApiService } from '../../services';
 import { StoreSetting } from '../../models';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Router } from '@angular/router';
-import { MatSnackBarConfig } from '@angular/material';
+import { MatSnackBarConfig, MatDialog } from '@angular/material';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { fromMerchant } from '../reducers';
 
 interface PayloadUpdateStoreSetting {
     id: string;
@@ -23,6 +25,36 @@ interface PayloadUpdateStoreSetting {
 
 @Injectable()
 export class StoreSettingEffects {
+
+    confirmUpdateStoreSetting$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreSettingActions.confirmUpdateStoreSetting),
+            map(action => action.payload),
+            exhaustMap((payload: PayloadUpdateStoreSetting) => {
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: 'Alert',
+                        message: `Are you sure want to save changes?`,
+                        id: 'yes'
+                    }, disableClose: true
+                });
+
+                return dialogRef.afterClosed().pipe(
+                    map((id: string) => ([id, payload]))
+                );
+            }),
+            map(([id, payload]: [string, PayloadUpdateStoreSetting]) => {
+                if (id) {
+                    this.merchantStore.dispatch(
+                        StoreSettingActions.updateStoreSettingRequest({ payload: {
+                            body: payload.body,
+                            id: payload.id
+                        }})
+                    );
+                }
+            })
+        ), { dispatch: false }
+    );
 
     fetchStoreSettingsRequest$ = createEffect(() =>
         this.actions$.pipe(
@@ -316,7 +348,9 @@ export class StoreSettingEffects {
         private helper$: HelperService,
         private notice$: NoticeService,
         private router$: Router,
+        private matDialog: MatDialog,
         private storeSettingApi: StoreSettingApiService,
+        private merchantStore: NgRxStore<fromMerchant.FeatureState>,
         private authStore: NgRxStore<fromAuth.FeatureState>,
     ) {}
 

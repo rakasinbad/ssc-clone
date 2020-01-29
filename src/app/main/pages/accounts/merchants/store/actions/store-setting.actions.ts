@@ -72,6 +72,11 @@ export const setSelectedStoreSettingId = createAction(
     props<{ payload: string }>()
 );
 
+export const confirmUpdateStoreSetting = createAction(
+    '[Store Setting] Confirm Update Store Setting',
+    props<{ payload: { body: Partial<StoreSetting>; id: string } }>()
+);
+
 export const resetSelectedStoreSettingId = createAction('[Store Setting] Reset Selected Store Setting ID');
 
 export const truncateStoreSetting = createAction('[Store Setting] Truncate Store Settings');

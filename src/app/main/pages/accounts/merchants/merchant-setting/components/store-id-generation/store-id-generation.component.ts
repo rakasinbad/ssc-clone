@@ -184,14 +184,12 @@ export class MerchantSettingStoreIdGenerationComponent implements OnInit, OnDest
                 setTimeout(() => {
                     this.form.get('nextNumber').enable();
                     this.form.get('nextNumber').setValue(storeSetting.storeIterationNumber);
+                    setTimeout(() => {
+                        this.form.markAsPristine();
+                        this._cd.markForCheck();
+                    }, 200);
                 }, 1000);
                 this.selectedStoreSetting = storeSetting.id;
-
-                setTimeout(() => {
-                    this.form.markAsPristine();
-                    this._cd.markForCheck();
-                }, 200);
-
                 this.isEdit = true;
             } else {
                 this.isEdit = false;
@@ -246,7 +244,7 @@ export class MerchantSettingStoreIdGenerationComponent implements OnInit, OnDest
         const formValue = this.form.getRawValue();
 
         if (this.isEdit) {
-            this.merchantStore.dispatch(StoreSettingActions.updateStoreSettingRequest({
+            this.merchantStore.dispatch(StoreSettingActions.confirmUpdateStoreSetting({
                 payload: {
                     id: this.selectedStoreSetting,
                     body: {
