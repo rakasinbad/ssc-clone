@@ -206,7 +206,9 @@
                                     <!-- RADIO GROUP -->
                                     <mat-radio-group [formControl]="storeIdType">
                                         <mat-radio-button value="manual">Manually</mat-radio-button>
-                                        <mat-radio-button value="auto" [disabled]="!storeIdNextNumber">Auto Generate ({{ storeIdNextNumber }})</mat-radio-button>
+                                        <mat-radio-button value="auto" [disabled]="!storeIdNextNumber">Auto Generate
+                                            <span class="grey-fg">({{ storeIdNextNumber }})</span>
+                                        </mat-radio-button>
                                     </mat-radio-group>
                                     <!-- / RADIO GROUP -->
                                     <!-- HELP -->
