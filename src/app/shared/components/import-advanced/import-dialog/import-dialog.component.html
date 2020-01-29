@@ -16,18 +16,18 @@
                 [disabled]="tab.disabled"
             >
                 <ng-template matTabContent>
-                    <div class="tab-content p-24" fusePerfectScrollbar>
+                    <div class="tab-content p-16" fusePerfectScrollbar>
                         <ng-container [ngSwitch]="tab.id">
                             <ng-container *ngSwitchCase="'import'">
                                 <ng-container *ngTemplateOutlet="mainImport"></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchCase="'import-history'">
-                                <ng-container *ngTemplateOutlet="notFoundPage"></ng-container>
+                                <ng-container *ngTemplateOutlet="importHistory"></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchCase="'template-history'">
-                                <ng-container *ngTemplateOutlet="notFoundPage"></ng-container>
+                                <ng-container *ngTemplateOutlet="templateHistory"></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchDefault>
@@ -143,6 +143,14 @@
 
 <ng-template #mainImport>
     <app-main-import></app-main-import>
+</ng-template>
+
+<ng-template #importHistory>
+    <app-import-history></app-import-history>
+</ng-template>
+
+<ng-template #templateHistory>
+    <app-template-history></app-template-history>
 </ng-template>
 
 <ng-template #notFoundPage>

@@ -5,20 +5,34 @@ import {
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatPaginatorModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatTableModule,
     MatTabsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatTooltipModule
 } from '@angular/material';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 import { ImportAdvancedComponent } from './import-advanced.component';
-import { ImportDialogComponent, MainImportComponent } from './import-dialog';
+import {
+    ImportDialogComponent,
+    ImportHistoryComponent,
+    MainImportComponent,
+    TemplateHistoryComponent
+} from './import-dialog';
 
 @NgModule({
-    declarations: [ImportAdvancedComponent, ImportDialogComponent, MainImportComponent],
+    declarations: [
+        ImportAdvancedComponent,
+        ImportDialogComponent,
+        MainImportComponent,
+        ImportHistoryComponent,
+        TemplateHistoryComponent
+    ],
     imports: [
         FuseSharedModule,
 
@@ -28,10 +42,13 @@ import { ImportDialogComponent, MainImportComponent } from './import-dialog';
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatPaginatorModule,
         MatSelectModule,
         MatSlideToggleModule,
+        MatTableModule,
         MatTabsModule,
         MatToolbarModule,
+        MatTooltipModule,
 
         // Third Party
         RxReactiveFormsModule,

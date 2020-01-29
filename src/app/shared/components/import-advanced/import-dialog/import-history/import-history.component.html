@@ -1,0 +1,98 @@
+<div class="section pb-44" fxLayout="column">
+    <div class="search-wrapper mx-32 mx-md-0 mb-16">
+        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+            <input matInput placeholder="Search" />
+            <mat-icon>search</mat-icon>
+        </div>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="simple">
+        <!-- User Column -->
+        <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>
+                User
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.user }}
+            </td>
+        </ng-container>
+
+        <!-- Created Column -->
+        <ng-container matColumnDef="created">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.createdAt }}
+            </td>
+        </ng-container>
+
+        <!-- Filename Column -->
+        <ng-container matColumnDef="file-name">
+            <th mat-header-cell *matHeaderCellDef>Filename</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.fileName }}
+            </td>
+        </ng-container>
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.action }}
+            </td>
+        </ng-container>
+
+        <!-- Processed Column -->
+        <ng-container matColumnDef="processed">
+            <th mat-header-cell *matHeaderCellDef>Processed</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.processed }}
+            </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row?.status">
+                    <mat-icon
+                        class="active-icon s-16"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-check-active"
+                        *ngIf="row?.status === 'active'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-16"
+                        [matTooltip]="row?.status | titlecase"
+                        svgIcon="sinbad-cross-red"
+                        *ngIf="row?.status === 'inactive'"
+                    >
+                    </mat-icon>
+                </ng-container>
+
+                <ng-container *ngIf="!row?.status">
+                    -
+                </ng-container>
+            </td>
+        </ng-container>
+
+        <!-- Progress Column -->
+        <ng-container matColumnDef="progress">
+            <th mat-header-cell *matHeaderCellDef>Progress</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.progress }}
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>

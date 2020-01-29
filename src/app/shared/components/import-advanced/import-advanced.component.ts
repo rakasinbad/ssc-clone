@@ -40,12 +40,12 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
         {
             id: 'import-history',
             label: 'Import History',
-            disabled: true
+            disabled: false
         },
         {
             id: 'template-history',
             label: 'Template History',
-            disabled: true
+            disabled: false
         }
     ];
 

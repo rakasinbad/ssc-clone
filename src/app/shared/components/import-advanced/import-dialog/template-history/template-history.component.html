@@ -1,0 +1,70 @@
+<div class="section pb-44" fxLayout="column">
+    <div class="search-wrapper mx-32 mx-md-0 mb-16">
+        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+            <input matInput placeholder="Search" />
+            <mat-icon>search</mat-icon>
+        </div>
+    </div>
+
+    <table mat-table [dataSource]="dataSource" class="simple">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>
+                #
+            </th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.id }}
+            </td>
+        </ng-container>
+
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Created</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.createdAt }}
+            </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.type }}
+            </td>
+        </ng-container>
+
+        <!-- Username Column -->
+        <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.userName }}
+            </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.status }}
+            </td>
+        </ng-container>
+
+        <!-- Download Column -->
+        <ng-container matColumnDef="download">
+            <th mat-header-cell *matHeaderCellDef>Download</th>
+            <td mat-cell *matCellDef="let row">
+                {{ row.download ? 'Download' : '-' }}
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>
