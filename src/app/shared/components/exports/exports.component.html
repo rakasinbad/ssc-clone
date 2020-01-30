@@ -1,0 +1,114 @@
+<!-- DIALOG HEADER WRAPPER -->
+<div fxLayout="row" fxLayoutAlign="space-between stretch">
+    <!-- DIALOG TITLE -->
+    <h2 class="mt-8" mat-dialog-title>
+        Export
+    </h2>
+    <!-- / DIALOG TITLE -->
+    
+    <!-- DIALOG CLOSE BUTTON -->
+    <button mat-dialog-close mat-icon-button>
+        <mat-icon>close</mat-icon>
+    </button>
+    <!-- / DIALOG CLOSE BUTTON -->
+</div>
+<!-- / DIALOG HEADER WRAPPER -->
+
+<!-- DIALOG SEARCH WRAPPER -->
+<!-- <div fxLayout="row" fxLayoutAlign="end center"> -->
+    <!-- SEARCH -->
+    <!-- <sinbad-search-bar [useBorder]="true"></sinbad-search-bar> -->
+    <!-- / SEARCH -->
+<!-- </div> -->
+<!-- / DIALOG SEARCH WRAPPER -->
+
+<!-- DIALOG CONTENT -->
+<div
+    fxLayout="column"
+    fxLayoutAlign="center stretch"
+    class="mat-typography"
+>
+    <!-- DIALOG CONTENT BODY -->
+    <div>
+        <!-- EXPORT HISTORY -->
+        <table
+            matSort
+            mat-table
+            class="mt-16 w-100-p grey-300-border simple"
+            [dataSource]="dataSource"
+            [@animateStagger]="{ value: '50' }"
+            fusePerfectScrollbar
+        >
+            <!-- "User" Column -->
+            <ng-container matColumnDef="user">
+                <th mat-header-cell *matHeaderCellDef>
+                    User
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <p>
+                        {{ row?.user?.fullName || '-' }}
+                    </p>
+                </td>
+            </ng-container>
+
+            <!-- "Date" Column -->
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>
+                    Date
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <p>
+                        {{ row?.createdAt | date:'MMM dd,yyyy HH:mm:ss' }}
+                    </p>
+                </td>
+            </ng-container>
+
+            <!-- "File Name" Column -->
+            <ng-container matColumnDef="fileName">
+                <th mat-header-cell *matHeaderCellDef>
+                    File Name
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <!-- <p>
+                        {{ row?.externalId || '-' }}
+                    </p> -->
+                </td>
+            </ng-container>
+
+            <!-- "Progress" Column -->
+            <ng-container matColumnDef="progress">
+                <th mat-header-cell *matHeaderCellDef>
+                    Progress
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <p *ngIf="row?.status !== 'done'; else hasDone;">
+                        {{ row?.status === 'on_process' ? 'On Process' : row?.status | titlecase }}
+                    </p>
+                    <ng-template #hasDone>
+                        <a class="red-fg" [href]="row?.url" target="_blank"> Download </a>
+                    </ng-template>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+            <tr mat-row class="pt-12" *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <!-- / EXPORT HISTORY -->
+
+        <!-- PAGINATOR -->
+        <mat-paginator
+            [length]="dataSource.length"
+            [pageSize]="defaultPageSize"
+            [pageSizeOptions]="defaultPageOpts"
+            showFirstLastButtons
+        ></mat-paginator>
+        <!-- / PAGINATOR -->
+    </div>
+    <!-- / DIALOG CONTENT BODY -->
+</div>
+<!-- / DIALOG CONTENT -->
+
+<!-- <mat-dialog-actions align="end">
+    <button mat-flat-button mat-dialog-close color="accent" cdkFocusInitial>Cancel</button>
+    <button mat-flat-button mat-dialog-close="overwrite-confirmed" color="primary">Yes, confirm.</button>
+</mat-dialog-actions> -->
