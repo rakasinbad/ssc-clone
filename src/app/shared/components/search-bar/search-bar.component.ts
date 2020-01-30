@@ -12,6 +12,9 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
 
+    // Untuk menandakan penggunaan border atau tidak
+    @Input('useBorder') useBorder = false;
+
     // Untuk meletakkan placeholder.
     @Input('placeholder') placeholder: string;
 
