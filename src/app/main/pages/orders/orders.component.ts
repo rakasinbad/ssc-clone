@@ -35,6 +35,9 @@ import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseNavigation } from '@fuse/types';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportActions } from 'app/shared/components/exports/store/actions';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 
 @Component({
     selector: 'app-orders',
@@ -95,6 +98,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    isRequestingExport$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -111,6 +115,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
+        private exportStore: Store<fromExport.State>,
         public translate: TranslateService,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -257,7 +262,11 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                         : null
             };
 
-            this.store.dispatch(OrderActions.exportRequest({ payload: body }));
+            // this.store.dispatch(OrderActions.exportRequest({ payload: body }));
+            this.exportStore.dispatch(ExportActions.startExportRequest({ payload: {
+                ...body,
+                exportType: 'orders'
+            }}));
         }
     }
 
@@ -415,6 +424,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
 
                 this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
+                this.isRequestingExport$ = this.exportStore.select(ExportSelector.getRequestingState);
 
                 this._initStatusOrder();
 
