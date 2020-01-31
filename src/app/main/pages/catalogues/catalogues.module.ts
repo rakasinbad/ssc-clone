@@ -24,6 +24,9 @@ import { CatalogueEffects } from './store/effects';
 import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { BrandEffects } from './store/effects/brand.effects';
+import { ExportsComponent } from '../../../shared/components/exports/exports.component';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 // import { style } from '@angular/animations';
 
 @NgModule({
@@ -59,8 +62,9 @@ import { BrandEffects } from './store/effects/brand.effects';
 
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
+        StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
 
-        EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
+        EffectsModule.forFeature([ BrandEffects, CatalogueEffects, ExportsEffects ])
     ],
     entryComponents: [
         CataloguesImportComponent,
@@ -68,7 +72,7 @@ import { BrandEffects } from './store/effects/brand.effects';
         CataloguesEditPriceStockComponent,
         CataloguesSelectCategoryComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent
+        CataloguesActiveInactiveComponent,
     ]
 })
 export class CataloguesModule { }
