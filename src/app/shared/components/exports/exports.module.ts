@@ -13,7 +13,7 @@ import { ExportsStoreModule } from './exports-store.module';
 @NgModule({
     declarations: [
         ExportsComponent,
-        FilterCataloguesComponent,
+        // FilterCataloguesComponent,
         SearchBarComponent,
     ],
     imports: [
@@ -45,7 +45,7 @@ import { ExportsStoreModule } from './exports-store.module';
     ],
     entryComponents: [
         ExportsComponent,
-        FilterCataloguesComponent,
+        // FilterCataloguesComponent,
     ]
 })
 export class ExportsModule { }
