@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ExportsComponent } from './exports.component';
-import { FilterCataloguesComponent } from './components/filter/filter-catalogues/filter-catalogues.component';
+// import { FilterCataloguesComponent } from './components/filter/filter-catalogues/filter-catalogues.component';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { MatButtonModule, MatDatepickerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatToolbarModule, MatTableModule, MatDialogModule, MatPaginatorModule, MatProgressSpinnerModule } from '@angular/material';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
