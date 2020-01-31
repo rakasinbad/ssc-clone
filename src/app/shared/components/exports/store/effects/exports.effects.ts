@@ -24,6 +24,7 @@ import { MatDialog, MatSnackBarConfig } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { ExportsComponent } from '../../exports.component';
 import { ExportsApiService } from '../../services';
+import { ExportModuleNames } from '../actions/exports.actions';
 // import { PortfoliosApiService } from '../../../portfolios/services';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
@@ -41,37 +42,37 @@ export class ExportsEffects {
         private matDialog: MatDialog,
     ) {}
 
-    // startExportRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         // Hanya untuk action me-request untuk export.
-    //         ofType(ExportActions.startExportRequest),
-    //         // Hanya mengambil payload-nya saja dari action.
-    //         map(action => action.payload),
-    //         // Mengambil data dari store-nya auth.
-    //         withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
-    //         // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-    //         switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
-    //             // Jika tidak ada data supplier-nya user dari state.
-    //             if (!authState) {
-    //                 return this.helper$.decodeUserToken().pipe(
-    //                     map(this.checkUserSupplier),
-    //                     retry(3),
-    //                     switchMap(userData => of([userData, queryParams])),
-    //                     switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStartExportRequest),
-    //                     catchError(err => this.sendErrorToState(err, 'startExportFailure'))
-    //                 );
-    //             } else {
-    //                 return of(authState.user).pipe(
-    //                     map(this.checkUserSupplier),
-    //                     retry(3),
-    //                     switchMap(userData => of([userData, queryParams])),
-    //                     switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStartExportRequest),
-    //                     catchError(err => this.sendErrorToState(err, 'startExportFailure'))
-    //                 );
-    //             }
-    //         })
-    //     )
-    // );
+    startExportRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action me-request untuk export.
+            ofType(ExportActions.startExportRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [IQueryParams & { exportType: ExportModuleNames }, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams & { exportType: ExportModuleNames }], Observable<AnyAction>>(this.processStartExportRequest),
+                        catchError(err => this.sendErrorToState(err, 'startExportFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams & { exportType: ExportModuleNames }], Observable<AnyAction>>(this.processStartExportRequest),
+                        catchError(err => this.sendErrorToState(err, 'startExportFailure'))
+                    );
+                }
+            })
+        )
+    );
 
     startExportSuccess$ = createEffect(() =>
         this.actions$.pipe(
@@ -247,6 +248,32 @@ export class ExportsEffects {
                     }
                 }),
                 catchError(err => this.sendErrorToState(err, 'fetchExportLogsFailure'))
+            );
+    }
+
+    processStartExportRequest = ([userData, queryParams]: [User, IQueryParams & { exportType: ExportModuleNames }]): Observable<AnyAction> => {
+        // Hanya mengambil ID supplier saja.
+        const { supplierId } = userData.userSupplier;
+        // Membentuk parameter query yang baru.
+        const newQuery: IQueryParams & { exportType: ExportModuleNames } = {
+            ...queryParams
+        };
+    
+        // Memasukkan ID supplier ke dalam parameter.
+        newQuery['supplierId'] = supplierId;
+
+        return this.exportsApiService
+            .requestExport(newQuery)
+            .pipe(
+                catchOffline(),
+                switchMap(response => {
+                    return of(ExportActions.startExportSuccess({
+                        payload: {
+                            message: response.message
+                        }
+                    }));
+                }),
+                catchError(err => this.sendErrorToState(err, 'startExportFailure'))
             );
     }
 

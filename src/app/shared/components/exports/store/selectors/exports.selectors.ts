@@ -32,7 +32,7 @@ export const getTotalExportEntity = createSelector(
 );
 
 export const getTotalExports = createSelector(
-    getExportEntity,
+    getExportState,
     state => state.total
 );
 
@@ -42,12 +42,17 @@ export const getAllExports = createSelector(
 );
 
 export const getLoadingState = createSelector(
-    getExportEntity,
+    getExportState,
     state => state.isLoading
 );
 
+export const getRequestingState = createSelector(
+    getExportState,
+    state => state.isRequesting
+);
+
 export const getNeedRefreshState = createSelector(
-    getExportEntity,
+    getExportState,
     state => state.needRefresh
 );
 

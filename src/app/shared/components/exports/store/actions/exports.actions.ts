@@ -12,7 +12,7 @@ export type failureActionNames =
     'startExportFailure'
 ;
 
-export type exportModuleNames =
+export type ExportModuleNames =
     'catalogues' |
     'journey-plans' |
     'payments' |
@@ -40,7 +40,7 @@ export const fetchExportLogsSuccess = createAction(
 /** START EXPORT */
 export const startExportRequest = createAction(
     '[Export API] Start Export Request',
-    props<{ payload: IQueryParams }>()
+    props<{ payload: IQueryParams & { exportType: ExportModuleNames } }>()
 );
 
 export const startExportFailure = createAction(
@@ -50,7 +50,7 @@ export const startExportFailure = createAction(
     
 export const startExportSuccess = createAction(
     '[Portfolios API] Start Export Success',
-    props<{ payload: any }>()
+    props<{ payload: { message: string } }>()
 );
 
 export const truncateExportLogs = createAction('[Export Page] Truncate Export Logs');

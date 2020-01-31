@@ -4,6 +4,8 @@ import { GeneratorService, HelperService } from 'app/shared/helpers';
 import { IQueryParams, SupplierStore, SupplierStoreOptions } from 'app/shared/models';
 import { Observable } from 'rxjs';
 import { Export } from '../models';
+import { StoreSetting } from 'app/main/pages/attendances/models';
+import { ExportModuleNames } from '../store/actions/exports.actions';
 
 /**
  *
@@ -30,7 +32,8 @@ export class ExportsApiService {
      * @private
      * @memberof ExportsApiService
      */
-    private readonly _endpoint = '/export-logs';
+    private readonly _exportEndpoint = '/download/export-';
+    private readonly _exportLogsEndpoint = '/export-logs';
 
     /**
      * Creates an instance of ExportsApiService.
@@ -52,17 +55,56 @@ export class ExportsApiService {
                 value: params['userId']
             });
         }
+
+        if (params['keyword']) {
+            newArgs.push({
+                key: 'keyword',
+                value: params['keyword']
+            });
+        }
         
-        this._url = this.helperSvc.handleApiRouter(this._endpoint);
+        this._url = this.helperSvc.handleApiRouter(this._exportLogsEndpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    // requestExport(body: Partial<StoreSetting>): Observable<StoreSetting> {
-    //     this._url = this._$helper.handleApiRouter(this._endpoint);
-    //     return this.http.post<StoreSetting>(this._url, body);
-    // }
+    requestExport(params: IQueryParams & { exportType: ExportModuleNames }): Observable<{ message: string }> {
+        const newArgs = [];
+
+        if (params['supplierId']) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+
+        if (params['status']) {
+            newArgs.push({
+                key: 'status',
+                value: params['status']
+            });
+        }
+
+        if (params['dateGte']) {
+            newArgs.push({
+                key: 'dateGte',
+                value: params['dateGte']
+            });
+        }
+
+        if (params['dateLte']) {
+            newArgs.push({
+                key: 'dateLte',
+                value: params['dateLte']
+            });
+        }
+
+        this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params.exportType);
+        const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<{ message: string }>(this._url, { params: newParams });
+    }
 
     // patch<T>(body: SupplierStoreOptions, id: string): Observable<T> {
     //     this._url = this._$helper.handleApiRouter(this._endpoint);

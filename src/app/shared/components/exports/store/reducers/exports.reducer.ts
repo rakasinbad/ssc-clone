@@ -14,6 +14,7 @@ export const adapterExport: EntityAdapter<Export> = createEntityAdapter<Export>(
 // Export
 export interface State extends EntityState<Export> {
     isLoading: boolean;
+    isRequesting: boolean;
     needRefresh: boolean;
     total: number;
 }
@@ -21,6 +22,7 @@ export interface State extends EntityState<Export> {
 // Set the reducer's initial state.
 export const initialState = adapterExport.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
+    isRequesting: false,
     needRefresh: false,
     total: 0,
 });
@@ -29,8 +31,28 @@ export const initialState = adapterExport.getInitialState<Omit<State, 'ids' | 'e
 const exportReducer = createReducer(
     initialState,
     on(
-        ExportActions.fetchExportLogsRequest,
         ExportActions.startExportRequest,
+        state => ({
+            ...state,
+            isRequesting: true
+        })
+    ),
+    on(
+        ExportActions.startExportFailure,
+        state => ({
+            ...state,
+            isRequesting: false
+        })
+    ),
+    on(
+        ExportActions.startExportSuccess,
+        (state) => ({
+            ...state,
+            isRequesting: false
+        })
+    ),
+    on(
+        ExportActions.fetchExportLogsRequest,
         state => ({
             ...state,
             isLoading: true
@@ -38,7 +60,6 @@ const exportReducer = createReducer(
     ),
     on(
         ExportActions.fetchExportLogsFailure,
-        ExportActions.startExportFailure,
         state => ({
             ...state,
             isLoading: false
@@ -50,13 +71,6 @@ const exportReducer = createReducer(
             ...state,
             isLoading: false,
             total: payload.total,
-        })
-    ),
-    on(
-        ExportActions.startExportSuccess,
-        (state, { payload }) => adapterExport.upsertOne(payload, {
-            ...state,
-            isLoading: false
         })
     ),
     on(
