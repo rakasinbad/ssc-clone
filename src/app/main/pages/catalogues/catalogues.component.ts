@@ -44,6 +44,10 @@ import { CatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { ExportsComponent } from '../../../shared/components/exports/exports.component';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportActions } from 'app/shared/components/exports/store/actions';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -78,6 +82,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     defaultPageSize = 100;
     dataSource$: Observable<Array<Catalogue>>;
     isLoading$: Observable<boolean>;
+    isRequestingExport$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef<HTMLElement>;
@@ -96,6 +101,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
+        private exportStore: Store<fromExport.State>,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$catalogue: CataloguesService,
@@ -197,6 +203,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading);
+        this.isRequestingExport$ = this.store.select(ExportSelector.getRequestingState);
         
         // this.search.valueChanges
         //     .pipe(
@@ -470,6 +477,19 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         //         catalogue: item
         //     }
         // });
+    }
+
+    onExportProduct(): void {
+        // this.matDialog.open(ExportsComponent, {
+        //     disableClose: true,
+        //     width: '70vw'
+        // });
+        this.exportStore.dispatch(ExportActions.startExportRequest({
+            payload: {
+                paginate: false,
+                exportType: 'catalogues'
+            }
+        }));
     }
 
     onImportProduct(): void {
