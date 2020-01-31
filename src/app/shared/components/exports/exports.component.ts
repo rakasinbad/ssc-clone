@@ -1,14 +1,16 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, ViewChild, SecurityContext } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
 import { Export } from './models/exports.model';
-import { User, UserStatus } from 'app/shared/models';
-import { Subject } from 'rxjs';
+import { User, UserStatus, IQueryParams } from 'app/shared/models';
+import { Subject, Observable } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fromExport } from './store/reducers';
 import { ExportActions } from './store/actions';
 import { ExportSelector } from './store/selectors';
 import { takeUntil } from 'rxjs/operators';
+import { MatPaginator } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-exports',
@@ -23,6 +25,9 @@ export class ExportsComponent implements OnInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
+    search: string;
+    isLoading$: Observable<boolean>;
+    totalDataSource$: Observable<number>;
     subs$: Subject<void> = new Subject<void>();
 
     displayedColumns: Array<string> = [
@@ -66,20 +71,52 @@ export class ExportsComponent implements OnInit, OnDestroy {
         // }
     ];
 
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
     constructor(
+        private readonly sanitizer: DomSanitizer,
         private exportStore: NgRxStore<fromExport.State>,
         private _cd: ChangeDetectorRef,
-    ) {}
+    ) {
+        this.isLoading$ = this.exportStore.select(ExportSelector.getLoadingState);
+        this.totalDataSource$ = this.exportStore.select(ExportSelector.getTotalExports);
+    }
+
+    private refreshTable(): void {
+        if (this.paginator) {
+            // Menyiapkan query params yang akan dilempar.
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
+
+            // Menyalakan pagination.
+            data['paginate'] = true;
+
+            // Mengurutkan log export berdasarkan kapan dibuat.
+            data['sort'] = 'desc';
+            data['sortBy'] = 'created_at';
+
+            if (this.search) {
+                data['keyword'] = this.search;
+            }
+    
+            this.exportStore.dispatch(ExportActions.fetchExportLogsRequest({
+                payload: data
+            }));
+        }
+    }
+
+    onSearch(value: string): void {
+        const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, value);
+        this.search = searchValue;
+
+        this.exportStore.dispatch(ExportActions.truncateExportLogs());
+        this.refreshTable();
+    }
 
     ngOnInit(): void {
-        this.exportStore.dispatch(ExportActions.fetchExportLogsRequest({
-            payload: {
-                paginate: true,
-                skip: 0,
-                limit: this.defaultPageSize
-            }
-        }));
-
         this.exportStore.select(ExportSelector.getAllExports)
             .pipe(
                 takeUntil(this.subs$)
@@ -87,6 +124,16 @@ export class ExportsComponent implements OnInit, OnDestroy {
                 this.dataSource = logs;
                 this._cd.markForCheck();
             });
+
+        this.paginator.page
+        .pipe(
+            takeUntil(this.subs$)
+        ).subscribe(() => {
+            this.exportStore.dispatch(ExportActions.truncateExportLogs());
+            this.refreshTable();
+        });
+
+        this.refreshTable();
     }
 
     ngOnDestroy(): void {
