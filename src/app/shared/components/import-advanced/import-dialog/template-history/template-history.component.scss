@@ -1,41 +1,44 @@
 @import 'src/@fuse/scss/fuse';
 
 app-template-history {
-    .search-wrapper {
-        width: 100%;
-        max-width: 200px;
-        border: 1px solid #e8e8e8;
-        border-radius: 4px;
-        overflow: hidden;
+    .header-wrapper {
         align-self: flex-end;
 
-        @include media-breakpoint('xs') {
+        .search-wrapper {
             width: 100%;
-        }
+            max-width: 200px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            overflow: hidden;
 
-        .search {
-            width: 100%;
-            height: 40px;
-            line-height: 36px;
-            padding: 0 18px;
-
-            input {
+            @include media-breakpoint('xs') {
                 width: 100%;
-                // height: 48px;
-                // min-height: 48px;
-                // max-height: 48px;
-                // padding: 0 16px;
-                // height: 36px;
-                // min-height: 36px;
-                // max-height: 36px;
-                // padding: 0 16px 0 4px;
+            }
+
+            .search {
+                width: 100%;
                 height: 40px;
-                min-height: 40px;
-                max-height: 40px;
-                padding: 10px 16px 10px 4px;
-                border: none;
-                outline: none;
-                font-size: 13px;
+                line-height: 36px;
+                padding: 0 18px;
+
+                input {
+                    width: 100%;
+                    // height: 48px;
+                    // min-height: 48px;
+                    // max-height: 48px;
+                    // padding: 0 16px;
+                    // height: 36px;
+                    // min-height: 36px;
+                    // max-height: 36px;
+                    // padding: 0 16px 0 4px;
+                    height: 40px;
+                    min-height: 40px;
+                    max-height: 40px;
+                    padding: 10px 16px 10px 4px;
+                    border: none;
+                    outline: none;
+                    font-size: 13px;
+                }
             }
         }
     }

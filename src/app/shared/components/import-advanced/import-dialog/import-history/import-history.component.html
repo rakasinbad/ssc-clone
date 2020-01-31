@@ -6,14 +6,20 @@
         </div>
     </div>
 
-    <table mat-table [dataSource]="dataSource" class="simple">
+    <table
+        mat-table
+        [dataSource]="dataSource$ | async"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+        class="simple"
+    >
         <!-- User Column -->
         <ng-container matColumnDef="user">
             <th mat-header-cell *matHeaderCellDef>
                 User
             </th>
             <td mat-cell *matCellDef="let row">
-                {{ row.user }}
+                {{ row?.user?.fullName || '-' }}
             </td>
         </ng-container>
 
@@ -21,7 +27,7 @@
         <ng-container matColumnDef="created">
             <th mat-header-cell *matHeaderCellDef>Created</th>
             <td mat-cell *matCellDef="let row">
-                {{ row.createdAt }}
+                {{ (row?.createdAt | date: 'MMM dd, yyyy h:mm:ss aa') || '-' }}
             </td>
         </ng-container>
 
@@ -56,17 +62,33 @@
                 <ng-container *ngIf="row?.status">
                     <mat-icon
                         class="active-icon s-16"
-                        [matTooltip]="row?.status | titlecase"
+                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
                         svgIcon="sinbad-check-active"
-                        *ngIf="row?.status === 'active'"
+                        *ngIf="row?.status === 'done'"
                     >
                     </mat-icon>
 
                     <mat-icon
                         class="active-icon s-16"
-                        [matTooltip]="row?.status | titlecase"
+                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
+                        svgIcon="sinbad-pending"
+                        *ngIf="row?.status === 'pending'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-16"
+                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
+                        svgIcon="sinbad-on-process"
+                        *ngIf="row?.status === 'on_process'"
+                    >
+                    </mat-icon>
+
+                    <mat-icon
+                        class="active-icon s-16"
+                        [matTooltip]="convertStatus('progress', row?.status) | titlecase"
                         svgIcon="sinbad-cross-red"
-                        *ngIf="row?.status === 'inactive'"
+                        *ngIf="row?.status === 'failed'"
                     >
                     </mat-icon>
                 </ng-container>
@@ -81,7 +103,7 @@
         <ng-container matColumnDef="progress">
             <th mat-header-cell *matHeaderCellDef>Progress</th>
             <td mat-cell *matCellDef="let row">
-                {{ row.progress }}
+                {{ convertStatus('progress', row?.status) }}
             </td>
         </ng-container>
 
@@ -89,8 +111,20 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
+    <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+
+    <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+        No records found
+    </div>
+
     <mat-paginator
-        [length]="dataSource.length"
+        [fxHide]="
+            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+        "
+        [length]="totalDataSource$ | async"
         [pageSize]="defaultPageSize"
         [pageSizeOptions]="defaultPageOpts"
         showFirstLastButtons

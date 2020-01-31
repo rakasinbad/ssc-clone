@@ -49,7 +49,16 @@
         .section {
             .section__top--contents {
                 .section__title {
-                    font-size: 18px;
+                    color: #25282b;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+            }
+
+            .section__bottom--contents {
+                .section__subtitle {
+                    color: #25282b;
+                    font-size: 14px;
                     font-weight: 600;
                 }
             }
