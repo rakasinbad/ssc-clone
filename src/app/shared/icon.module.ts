@@ -123,6 +123,18 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/oms-logo.svg')
         );
 
+        // On Process logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-on-process',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/on_process.svg')
+        );
+
+        // Pending logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-pending',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/pending.svg')
+        );
+
         // Sales Force logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-sales-force-logo',
