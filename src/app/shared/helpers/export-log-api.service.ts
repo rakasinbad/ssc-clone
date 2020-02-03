@@ -48,21 +48,37 @@ export class ExportLogApiService {
      * @template T
      * @param {IQueryParams} params
      * @param {string} type
+     * @param {string} page
      * @returns {Observable<T>}
      * @memberof ExportLogApiService
      */
-    findAll<T>(params: IQueryParams, type: string): Observable<T> {
-        const newArg = type
-            ? [
-                  {
-                      key: 'type',
-                      value: type
-                  }
-              ]
-            : [];
+    findAll<T>(params: IQueryParams, type: string, page: string): Observable<T> {
+        const newArg =
+            type && page
+                ? [
+                      {
+                          key: 'type',
+                          value: type
+                      },
+                      {
+                          key: 'page',
+                          value: page
+                      }
+                  ]
+                : [];
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
+    }
+
+    create(payload: {
+        page: string;
+        userId: string;
+        type: string;
+        status: string;
+        url: string;
+    }): Observable<any> {
+        return this.http.post(this._url, payload);
     }
 }

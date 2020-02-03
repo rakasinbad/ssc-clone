@@ -71,6 +71,10 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
 
     constructor(private store: Store<fromImportAdvanced.FeatureState>) {}
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
@@ -91,6 +95,10 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
 
         this._initPage(LifecyclePlatform.OnDestroy);
     }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
 
     convertStatus(type: string, status: string): string {
         if (!type) {
@@ -116,6 +124,14 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
             }
         }
     }
+
+    onSearch(searchValue: string): void {
+        this._initTable(searchValue);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
@@ -159,7 +175,7 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
         }
     }
 
-    private _initTable(): void {
+    private _initTable(keyword?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -171,6 +187,15 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
             if (this.sort && this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
+            }
+
+            if (keyword) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: keyword
+                    }
+                ];
             }
 
             if (this.pageType && typeof this.pageType === 'string') {

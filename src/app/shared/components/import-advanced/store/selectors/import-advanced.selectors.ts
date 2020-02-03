@@ -38,3 +38,5 @@ export const getTotalImportLogs = createSelector(getImportLogsState, state => st
 export const getTotalTemplateLogs = createSelector(getTemplateLogsState, state => state.total);
 
 export const getIsLoading = createSelector(getImportAdvancedState, state => state.isLoading);
+
+export const getIsDownload = createSelector(getImportAdvancedState, state => state.isDownload);

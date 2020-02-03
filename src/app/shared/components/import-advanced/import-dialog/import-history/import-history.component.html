@@ -1,9 +1,17 @@
 <div class="section pb-44" fxLayout="column">
-    <div class="search-wrapper mx-32 mx-md-0 mb-16">
+    <!-- <div class="search-wrapper mx-32 mx-md-0 mb-16">
         <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
             <input matInput placeholder="Search" />
             <mat-icon>search</mat-icon>
         </div>
+    </div> -->
+
+    <div class="header-wrapper mb-16" fxLayout="row" fxLayoutAlign="start center">
+        <sinbad-search-bar
+            useBorder="true"
+            placeholder="Search"
+            (changed)="onSearch($event)"
+        ></sinbad-search-bar>
     </div>
 
     <table
@@ -112,11 +120,15 @@
     </table>
 
     <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
-        <mat-spinner color="accent"></mat-spinner>
+        <mat-spinner color="accent" diameter="50"></mat-spinner>
     </div>
 
     <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
         No records found
+    </div>
+
+    <div class="loader-content" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+        <mat-spinner color="accent" diameter="50"></mat-spinner>
     </div>
 
     <mat-paginator

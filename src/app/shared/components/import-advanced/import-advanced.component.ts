@@ -20,7 +20,7 @@ import { fromImportAdvanced } from './store/reducers';
 import { ImportAdvancedActions } from './store/actions';
 
 @Component({
-    selector: 'app-import-advanced',
+    selector: 'sinbad-import-advanced',
     templateUrl: './import-advanced.component.html',
     styleUrls: ['./import-advanced.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush

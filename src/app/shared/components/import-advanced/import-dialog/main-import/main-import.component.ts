@@ -20,7 +20,7 @@ import { locale as indonesian } from '../../i18n/id';
 import { IConfigImportAdvanced, IConfigMode, IConfigTemplate } from '../../models';
 import { fromImportAdvanced } from '../../store/reducers';
 import { ImportAdvancedSelectors } from '../../store/selectors';
-import { ImportAdvancedActions } from '../../store/actions';
+import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actions';
 
 @Component({
     selector: 'app-main-import',
@@ -60,6 +60,18 @@ export class MainImportComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this._initPage();
+
+        this.store
+            .select(ImportAdvancedSelectors.getIsLoading)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(isLoading => {
+                if (isLoading) {
+                    this.form.disable();
+                } else {
+                    this.form.enable();
+                    this.form.reset();
+                }
+            });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -107,11 +119,30 @@ export class MainImportComponent implements OnInit {
     }
 
     onDownload(url: string): void {
-        if (!url) {
+        if (!url || !this.pageType) {
             return;
         }
 
-        window.open(url, '_blank');
+        this.store.dispatch(
+            TemplateHistoryActions.createTemplateHistoryRequest({
+                payload: {
+                    url,
+                    page: this.pageType,
+                    type: 'export_template',
+                    status: 'done',
+                    userId: null
+                }
+            })
+        );
+
+        this.store
+            .select(ImportAdvancedSelectors.getIsDownload)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(isDownload => {
+                if (isDownload) {
+                    window.open(url, '_blank');
+                }
+            });
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -124,15 +155,7 @@ export class MainImportComponent implements OnInit {
             if (file) {
                 switch (type) {
                     case 'docs':
-                        console.log('DOCS', file, {});
-
-                        if (this.pageType === 'oms' && mode) {
-                            this.store.dispatch(
-                                ImportAdvancedActions.importConfirmRequest({
-                                    payload: { file, mode, type: this.pageType }
-                                })
-                            );
-                        }
+                        this._handlePage(file, mode);
 
                         /* this.store.dispatch(
                             OrderActions.importRequest({
@@ -170,12 +193,6 @@ export class MainImportComponent implements OnInit {
                 this.modes$ = this.store.select(ImportAdvancedSelectors.getMode);
                 this.templates$ = this.store.select(ImportAdvancedSelectors.getTemplate);
 
-                this.store
-                    .select(ImportAdvancedSelectors.getConfig)
-                    .pipe(takeUntil(this._unSubs$))
-                    .subscribe(x => {
-                        console.log('X', x);
-                    });
                 this._initForm();
                 break;
         }
@@ -190,5 +207,25 @@ export class MainImportComponent implements OnInit {
                 })
             ]
         });
+    }
+
+    private _handlePage(file: File, mode: string): void {
+        switch (this.pageType) {
+            case 'oms':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-order-parcels'
+                        }
+                    })
+                );
+                break;
+
+            default:
+                break;
+        }
     }
 }

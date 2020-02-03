@@ -28,8 +28,9 @@ export interface IDialogData {
 
 export interface IImportAdvanced {
     file: NonNullable<File>;
-    mode?: string;
+    page: string;
     type: NonNullable<string>;
+    endpoint: NonNullable<string>;
 }
 
 export type TemplateType = 'CREATE' | 'UPDATE';
@@ -180,4 +181,12 @@ export class ExportLog implements IExportLog {
     private _handleString(value: string): string {
         return value ? String(value).trim() || null : null;
     }
+}
+
+export interface PayloadTemplateHistory {
+    page: string;
+    status: string;
+    type: string;
+    url: string;
+    userId: string;
 }

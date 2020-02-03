@@ -12,6 +12,8 @@ import { catchError, exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/ope
 import { IImportAdvanced } from '../../models';
 import { ImportAdvancedActions } from '../actions';
 import { fromImportAdvanced } from '../reducers';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { Auth } from 'app/main/pages/core/auth/models';
 
 @Injectable()
 export class ImportAdvancedEffects {
@@ -91,14 +93,42 @@ export class ImportAdvancedEffects {
         )
     );
 
-    importRequest$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(ImportAdvancedActions.importRequest),
-                map(action => action.payload),
-                withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-                switchMap(([{ file, type, mode }, { supplierId }]) => {
-                    if (!supplierId || !file || !type) {
+    importRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ImportAdvancedActions.importRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(
+                ([{ file, type, page, endpoint }, data]: [IImportAdvanced, string | Auth]) => {
+                    if (!data || !file || !type || !page || !endpoint) {
+                        return of(
+                            ImportAdvancedActions.importFailure({
+                                payload: { id: 'importFailure', errors: 'Not Found!' }
+                            })
+                        );
+                    }
+
+                    let supplierId;
+
+                    if (typeof data === 'string') {
+                        supplierId = data;
+                    } else {
+                        supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                    }
+
+                    if (!supplierId) {
                         return of(
                             ImportAdvancedActions.importFailure({
                                 payload: { id: 'importFailure', errors: 'Not Found!' }
@@ -110,9 +140,9 @@ export class ImportAdvancedEffects {
                     formData.append('file', file);
                     formData.append('supplierId', supplierId);
                     formData.append('type', type);
-                    formData.append('page', mode);
+                    formData.append('page', page);
 
-                    return this._$uploadApi.uploadFormData('import-order-parcels', formData).pipe(
+                    return this._$uploadApi.uploadFormData(endpoint, formData).pipe(
                         map(resp => {
                             return ImportAdvancedActions.importSuccess();
                         }),
@@ -124,14 +154,15 @@ export class ImportAdvancedEffects {
                             )
                         )
                     );
-                })
-            ),
-        { dispatch: false }
+                }
+            )
+        )
     );
 
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
+        private storage: StorageMap,
         private store: Store<fromImportAdvanced.FeatureState>,
         private _$notice: NoticeService,
         private _$exportServiceApi: ExportServiceApiService,

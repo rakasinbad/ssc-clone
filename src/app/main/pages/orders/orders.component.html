@@ -24,24 +24,35 @@
                 </ng-template>
 
                 <ng-template [ngxPermissionsOnly]="['OMS.IMPORT']">
-                    <app-import-advanced
+                    <!-- <sinbad-import-advanced
                         class="mr-16"
                         pageType="oms"
                         [btnConfig]="importBtnConfig"
-                    ></app-import-advanced>
-                    <!-- <button type="button" mat-stroked-button color="accent" class="sinbad" (click)="filePicker.click()">
+                    ></sinbad-import-advanced> -->
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="filePicker.click()"
+                    >
                         IMPORT
                     </button>
 
-                    <input type="file" #filePicker class="custom-file" (click)="filePicker.value = null"
-                        (change)="onFileBrowse($event, 'docs')" /> -->
+                    <input
+                        type="file"
+                        #filePicker
+                        class="custom-file"
+                        (click)="filePicker.value = null"
+                        (change)="onFileBrowse($event, 'docs')"
+                    />
                 </ng-template>
 
-                <!-- <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
+                <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
                     <button type="button" mat-flat-button color="primary" (click)="onDownload()">
                         <span>DOWNLOAD TEMPLATE</span>
                     </button>
-                </ng-template> -->
+                </ng-template>
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
@@ -514,7 +525,13 @@
             >
             </mat-paginator>
 
-            <div class="loader" *ngIf="((isLoading$ | async) && (totalDataSource$ | async)) || (isRequestingExport$ | async)">
+            <div
+                class="loader"
+                *ngIf="
+                    ((isLoading$ | async) && (totalDataSource$ | async)) ||
+                    (isRequestingExport$ | async)
+                "
+            >
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

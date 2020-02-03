@@ -17,7 +17,7 @@ import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { ExportLog } from '../../models';
-import { TemplateHistroyActions } from '../../store/actions';
+import { TemplateHistoryActions } from '../../store/actions';
 import { fromImportAdvanced } from '../../store/reducers';
 import { ImportAdvancedSelectors } from '../../store/selectors';
 
@@ -51,6 +51,10 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
 
     constructor(private store: Store<fromImportAdvanced.FeatureState>) {}
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
@@ -72,6 +76,10 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
         this._initPage(LifecyclePlatform.OnDestroy);
     }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
     convertStatus(type: string, status: string): string {
         if (!type) {
             return;
@@ -91,6 +99,9 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
                 case 'pending':
                     return 'Pending';
 
+                case 'validating':
+                    return 'Validating';
+
                 default:
                     return;
             }
@@ -104,6 +115,18 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
 
         window.open(url, '_blank');
     }
+
+    onRefresh(): void {
+        this._onRefreshTable();
+    }
+
+    onSearch(searchValue: string): void {
+        this._initTable(searchValue);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
@@ -126,7 +149,7 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
 
             case LifecyclePlatform.OnDestroy:
                 // Reset templateLogs state
-                this.store.dispatch(TemplateHistroyActions.resetTemplateHistory());
+                this.store.dispatch(TemplateHistoryActions.resetTemplateHistory());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -145,7 +168,7 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
-    private _initTable(): void {
+    private _initTable(keyword?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || 5,
@@ -159,13 +182,26 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
                 data['sortBy'] = this.sort.active;
             }
 
+            if (keyword) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: keyword
+                    }
+                ];
+            }
+
             if (this.pageType && typeof this.pageType === 'string') {
                 this.store.dispatch(
-                    TemplateHistroyActions.templateHistoryRequest({
-                        payload: { params: data, type: 'export_template' }
+                    TemplateHistoryActions.templateHistoryRequest({
+                        payload: { params: data, type: 'export_template', page: this.pageType }
                     })
                 );
             }
         }
+    }
+
+    private _onRefreshTable(): void {
+        this._initTable();
     }
 }

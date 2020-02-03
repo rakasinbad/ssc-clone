@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { FuseSharedModule } from '@fuse/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
+import { SharedModule } from 'app/shared/shared.module';
 
 import { ImportAdvancedComponent } from './import-advanced.component';
 import {
@@ -23,7 +23,7 @@ import { ImportAdvancedStoreModule } from './store/import-advanced-store.module'
         TemplateHistoryComponent
     ],
     imports: [
-        FuseSharedModule,
+        SharedModule,
 
         // Material
         MaterialModule,
