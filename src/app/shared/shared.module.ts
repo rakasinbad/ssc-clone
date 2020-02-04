@@ -84,7 +84,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         FuseSharedModule,
         // ExportsModule,
         // CardHeaderModule,
-        SharedComponentsModule,
+        // SharedComponentsModule,
     ],
     exports: [
         // Pipe
@@ -104,7 +104,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         FilterAdvancedModule,
         // ExportsModule,
         // CardHeaderModule,
-        SharedComponentsModule,
+        // SharedComponentsModule,
 
         // Third Party
         TranslateModule,

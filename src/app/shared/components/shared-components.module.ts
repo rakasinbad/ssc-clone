@@ -3,6 +3,7 @@ import { FuseSharedModule } from '@fuse/shared.module';
 import { CardHeaderModule } from './card-header/card-header.module';
 import { ExportsModule } from './exports/exports.module';
 import { SearchBarModule } from './search-bar/search-bar.module';
+import { ImportAdvancedModule } from './import-advanced/import-advanced.module';
 
 
 
@@ -11,11 +12,13 @@ import { SearchBarModule } from './search-bar/search-bar.module';
         FuseSharedModule,
         CardHeaderModule,
         ExportsModule,
+        ImportAdvancedModule,
         SearchBarModule,
     ],
     exports: [
         CardHeaderModule,
         ExportsModule,
+        ImportAdvancedModule,
         SearchBarModule,
     ],
 })
