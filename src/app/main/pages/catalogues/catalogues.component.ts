@@ -48,6 +48,7 @@ import { ExportsComponent } from '../../../shared/components/exports/exports.com
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportActions } from 'app/shared/components/exports/store/actions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -60,6 +61,25 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Catalogue'
+        },
+        search: {
+            active: true,
+        },
+        add: {
+            permissions: ['CATALOGUE.CREATE']
+        },
+        export: {
+            permissions: ['CATALOGUE.EXPORT']
+        },
+        import: {
+            permissions: ['CATALOGUE.IMPORT']
+        },
+    };
 
     dataSource: MatTableDataSource<Catalogue>;
     initialDisplayedColumns = [
@@ -189,6 +209,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        this.cardHeaderConfig.search.changed = (value: string) => this.onSearch(value);
+
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
         // this.store.dispatch(UiActions.showCustomToolbar());
