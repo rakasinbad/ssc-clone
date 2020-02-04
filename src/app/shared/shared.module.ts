@@ -28,6 +28,8 @@ import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 import { ExportsModule } from 'app/shared/components/exports/exports.module';
+import { CardHeaderModule } from './components/card-header/card-header.module';
+import { SharedComponentsModule } from './components/shared-components.module';
 
 /**
  *
@@ -80,7 +82,9 @@ import { ExportsModule } from 'app/shared/components/exports/exports.module';
 
         // Fuse Theme
         FuseSharedModule,
-        ExportsModule,
+        // ExportsModule,
+        // CardHeaderModule,
+        SharedComponentsModule,
     ],
     exports: [
         // Pipe
@@ -98,7 +102,9 @@ import { ExportsModule } from 'app/shared/components/exports/exports.module';
         ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
-        ExportsModule,
+        // ExportsModule,
+        // CardHeaderModule,
+        SharedComponentsModule,
 
         // Third Party
         TranslateModule,
@@ -130,7 +136,7 @@ import { ExportsModule } from 'app/shared/components/exports/exports.module';
 
         FilterAdvancedFormComponent,
         ShowImageComponent,
-        SearchBarComponent,
+        // SearchBarComponent,
     ]
 })
 export class SharedModule {}
