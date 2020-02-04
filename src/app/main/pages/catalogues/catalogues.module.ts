@@ -27,6 +27,7 @@ import { BrandEffects } from './store/effects/brand.effects';
 import { ExportsComponent } from '../../../shared/components/exports/exports.component';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 // import { style } from '@angular/animations';
 
 @NgModule({
@@ -44,6 +45,7 @@ import { ExportsEffects } from 'app/shared/components/exports/store/effects';
         CataloguesRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         RxReactiveFormsModule,

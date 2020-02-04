@@ -71,7 +71,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             active: true,
         },
         add: {
-            permissions: ['CATALOGUE.CREATE']
+            permissions: ['CATALOGUE.CREATE'],
         },
         export: {
             permissions: ['CATALOGUE.EXPORT']
@@ -204,12 +204,23 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    private applyCardHeaderEvent(): void {
+        // Mengimplementasi event klik tombol "Add" dari card header menuju halaman Add Product.
+        this.cardHeaderConfig.add.onClick = () => {
+            this.router.navigate(['/pages/catalogues/add']);
+        };
+        
+        // Mengimplementasi event "Search" dari card header menuju fungsi onSearch.
+        this.cardHeaderConfig.search.changed = (value: string) => this.onSearch(value);
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        this.cardHeaderConfig.search.changed = (value: string) => this.onSearch(value);
+        // Mengimplementasi event-event dari konfigurasi card header.
+        this.applyCardHeaderEvent();
 
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
