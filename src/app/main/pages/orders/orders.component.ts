@@ -38,6 +38,7 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-orders',
@@ -50,6 +51,31 @@ import { OrderSelectors } from './store/selectors';
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 10;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Order Management'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+                setTimeout(() => this._onRefreshTable(), 100);
+            }
+        },
+        add: {
+            // permissions: ['INVENTORY.ISI.CREATE'],
+        },
+        export: {
+            permissions: ['OMS.EXPORT']
+        },
+        import: {
+            permissions: ['OMS.IMPORT'],
+            useAdvanced: true,
+            pageType: 'oms'
+        },
+    };
 
     search: FormControl = new FormControl('');
     filterStatus = '';
@@ -550,26 +576,26 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
 
                 // Filter by search column
-                this.search.valueChanges
-                    .pipe(
-                        distinctUntilChanged(),
-                        debounceTime(1000),
-                        // filter(v => {
-                        //     if (v) {
-                        //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
-                        //     }
+                // this.search.valueChanges
+                //     .pipe(
+                //         distinctUntilChanged(),
+                //         debounceTime(1000),
+                //         // filter(v => {
+                //         //     if (v) {
+                //         //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                //         //     }
 
-                        //     return true;
-                        // }),
-                        takeUntil(this._unSubs$)
-                    )
-                    .subscribe(v => {
-                        if (v) {
-                            // localStorage.setItem('filter.search.order', v);
-                        }
+                //         //     return true;
+                //         // }),
+                //         takeUntil(this._unSubs$)
+                //     )
+                //     .subscribe(v => {
+                //         if (v) {
+                //             // localStorage.setItem('filter.search.order', v);
+                //         }
 
-                        this._onRefreshTable();
-                    });
+                //         this._onRefreshTable();
+                //     });
 
                 this.store
                     .select(OrderSelectors.getIsRefresh)

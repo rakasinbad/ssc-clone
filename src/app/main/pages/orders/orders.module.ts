@@ -17,6 +17,7 @@ import { OrderEffects } from './store/effects';
 import { fromOrder } from './store/reducers';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportsEffects } from 'app/shared/components/exports/store/effects';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -30,6 +31,7 @@ import { ExportsEffects } from 'app/shared/components/exports/store/effects';
         OrdersRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         QuillModule,
