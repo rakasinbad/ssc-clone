@@ -13,15 +13,19 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 export class SearchBarComponent implements OnInit, OnDestroy {
 
     // Untuk menandakan penggunaan border atau tidak
+    // tslint:disable-next-line:no-input-rename
     @Input('useBorder') useBorder = false;
 
     // Untuk meletakkan placeholder.
+    // tslint:disable-next-line:no-input-rename
     @Input('placeholder') placeholder: string;
 
     // Untuk mengubah debounceTime.
+    // tslint:disable-next-line:no-input-rename
     @Input('threshold') threshold: number;
 
     // Untuk mengirim event ketika teks telah berubah.
+    // tslint:disable-next-line:no-output-rename
     @Output('changed') changed: EventEmitter<string> = new EventEmitter<string>();
 
     // Untuk mengambil nilai search pada search bar.

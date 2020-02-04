@@ -7,7 +7,7 @@ sinbad-search-bar {
 
     .search-wrapper {
         width: 100%;
-        max-width: 200px;
+//         max-width: 200px;
         border-radius: 4px;
         overflow: hidden;
         // @include mat-elevation(1);
@@ -18,7 +18,7 @@ sinbad-search-bar {
 
         .search {
             width: 100%;
-            height: 36px;
+            height: 32px;
             line-height: 36px;
             padding: 0px 8px 0px 16px;
 
