@@ -88,7 +88,7 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
         if (type === 'progress') {
             switch (status) {
                 case 'done':
-                    return 'Done';
+                    return 'Success';
 
                 case 'error':
                     return 'Error';
@@ -144,7 +144,6 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
                             this._initTable();
                         });
                 }
-
                 break;
 
             case LifecyclePlatform.OnDestroy:
@@ -156,6 +155,8 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
                 break;
 
             default:
+                this.paginator.pageSize = this.defaultPageSize;
+
                 this.dataSource$ = this.store.select(ImportAdvancedSelectors.selectAllTemplateLogs);
                 this.totalDataSource$ = this.store.select(
                     ImportAdvancedSelectors.getTotalTemplateLogs

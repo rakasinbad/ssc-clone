@@ -5,7 +5,7 @@ import { ImportLog } from '../../models';
 
 export const importHistoryRequest = createAction(
     '[Import] Import History Request',
-    props<{ payload: { params: IQueryParams; type: string } }>()
+    props<{ payload: { params: IQueryParams; page: string } }>()
 );
 
 export const importHistoryFailure = createAction(

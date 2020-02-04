@@ -15,8 +15,8 @@ export class ImportHistoryEffects {
         this.actions$.pipe(
             ofType(ImportHistroyActions.importHistoryRequest),
             map(action => action.payload),
-            switchMap(({ params, type }) => {
-                return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(params, type).pipe(
+            switchMap(({ params, page }) => {
+                return this._$importLogApi.findAll<PaginateResponse<IImportLog>>(params, page).pipe(
                     catchOffline(),
                     map(resp => {
                         const newResp = {

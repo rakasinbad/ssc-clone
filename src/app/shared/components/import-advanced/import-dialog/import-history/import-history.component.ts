@@ -108,7 +108,7 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
         if (type === 'progress') {
             switch (status) {
                 case 'done':
-                    return 'Done';
+                    return 'Success';
 
                 case 'error':
                     return 'Error';
@@ -119,10 +119,21 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 case 'pending':
                     return 'Pending';
 
+                case 'validating':
+                    return 'Validating';
+
                 default:
                     return;
             }
         }
+    }
+
+    onDownload(url: string): void {
+        if (!url) {
+            return;
+        }
+
+        window.open(url, '_blank');
     }
 
     onSearch(searchValue: string): void {
@@ -136,8 +147,6 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
-                // this._initTable();
-
                 if (this.sort) {
                     this.sort.sortChange
                         .pipe(takeUntil(this._unSubs$))
@@ -151,7 +160,6 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                             this._initTable();
                         });
                 }
-
                 break;
 
             case LifecyclePlatform.OnDestroy:
@@ -163,6 +171,8 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 break;
 
             default:
+                this.paginator.pageSize = this.defaultPageSize;
+
                 this.dataSource$ = this.store.select(ImportAdvancedSelectors.selectAllImportLogs);
                 this.totalDataSource$ = this.store.select(
                     ImportAdvancedSelectors.getTotalImportLogs
@@ -201,7 +211,7 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
             if (this.pageType && typeof this.pageType === 'string') {
                 this.store.dispatch(
                     ImportHistroyActions.importHistoryRequest({
-                        payload: { params: data, type: this.pageType }
+                        payload: { params: data, page: this.pageType }
                     })
                 );
             }

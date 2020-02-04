@@ -90,7 +90,7 @@
                         class="active-icon s-16"
                         [matTooltip]="convertStatus('progress', row?.status) | titlecase"
                         svgIcon="sinbad-on-process"
-                        *ngIf="row?.status === 'on_process'"
+                        *ngIf="row?.status === 'on_process' || row?.status === 'validating'"
                     >
                     </mat-icon>
 
@@ -98,7 +98,7 @@
                         class="active-icon s-16"
                         [matTooltip]="convertStatus('progress', row?.status) | titlecase"
                         svgIcon="sinbad-cross-red"
-                        *ngIf="row?.status === 'failed'"
+                        *ngIf="row?.status === 'error'"
                     >
                     </mat-icon>
                 </ng-container>

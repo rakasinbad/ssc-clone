@@ -24,12 +24,13 @@
                 </ng-template>
 
                 <ng-template [ngxPermissionsOnly]="['OMS.IMPORT']">
-                    <!-- <sinbad-import-advanced
+                    <sinbad-import-advanced
                         class="mr-16"
                         pageType="oms"
                         [btnConfig]="importBtnConfig"
-                    ></sinbad-import-advanced> -->
-                    <button
+                    ></sinbad-import-advanced>
+
+                    <!-- <button
                         type="button"
                         mat-stroked-button
                         color="accent"
@@ -45,14 +46,14 @@
                         class="custom-file"
                         (click)="filePicker.value = null"
                         (change)="onFileBrowse($event, 'docs')"
-                    />
+                    /> -->
                 </ng-template>
 
-                <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
+                <!-- <ng-template [ngxPermissionsOnly]="['OMS.DOWNLOAD_TEMPLATE']">
                     <button type="button" mat-flat-button color="primary" (click)="onDownload()">
                         <span>DOWNLOAD TEMPLATE</span>
                     </button>
-                </ng-template>
+                </ng-template> -->
             </div>
 
             <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">

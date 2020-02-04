@@ -47,21 +47,21 @@ export class ImportLogApiService {
      *
      * @template T
      * @param {IQueryParams} params
-     * @param {string} type
+     * @param {string} page
      * @returns {Observable<T>}
      * @memberof ImportLogApiService
      */
-    findAll<T>(params: IQueryParams, type: string): Observable<T> {
-        const newArg = type
+    findAll<T>(params: IQueryParams, page: string): Observable<T> {
+        const newArg = page
             ? [
                   {
-                      key: 'type',
-                      value: type
+                      key: 'page',
+                      value: page
                   }
               ]
             : [];
 
-        const newParams = this._$helper.handleParams(this._url, params);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
     }

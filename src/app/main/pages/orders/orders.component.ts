@@ -92,7 +92,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
     importBtnConfig: IButtonImportConfig = {
-        id: 'import-journey-plan',
+        id: 'import-oms',
         cssClass: 'sinbad',
         color: 'accent',
         dialogConf: {
