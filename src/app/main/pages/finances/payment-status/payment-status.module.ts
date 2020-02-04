@@ -3,6 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { ImportAdvancedModule } from 'app/shared';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxImageZoomModule } from 'ngx-image-zoom';
@@ -33,6 +34,8 @@ import { fromPaymentStatus } from './store/reducers';
         RxReactiveDynamicFormsModule,
         NgxImageZoomModule.forRoot(),
         NgxPermissionsModule.forChild(),
+
+        ImportAdvancedModule,
 
         StoreModule.forFeature(fromPaymentStatus.FEATURE_KEY, fromPaymentStatus.reducer),
         EffectsModule.forFeature([PaymentEffects])

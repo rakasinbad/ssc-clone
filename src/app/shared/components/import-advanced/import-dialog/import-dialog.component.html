@@ -16,18 +16,24 @@
                 [disabled]="tab.disabled"
             >
                 <ng-template matTabContent>
-                    <div class="tab-content p-24" fusePerfectScrollbar>
+                    <div class="tab-content p-16" fusePerfectScrollbar>
                         <ng-container [ngSwitch]="tab.id">
                             <ng-container *ngSwitchCase="'import'">
-                                <ng-container *ngTemplateOutlet="mainImport"></ng-container>
+                                <ng-container
+                                    *ngTemplateOutlet="mainImport; context: importContext"
+                                ></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchCase="'import-history'">
-                                <ng-container *ngTemplateOutlet="notFoundPage"></ng-container>
+                                <ng-container
+                                    *ngTemplateOutlet="importHistory; context: importContext"
+                                ></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchCase="'template-history'">
-                                <ng-container *ngTemplateOutlet="notFoundPage"></ng-container>
+                                <ng-container
+                                    *ngTemplateOutlet="templateHistory; context: importContext"
+                                ></ng-container>
                             </ng-container>
 
                             <ng-container *ngSwitchDefault>
@@ -141,8 +147,16 @@
     </div>
 </div>
 
-<ng-template #mainImport>
-    <app-main-import></app-main-import>
+<ng-template #mainImport let-pageType>
+    <app-main-import [pageType]="pageType"></app-main-import>
+</ng-template>
+
+<ng-template #importHistory let-pageType>
+    <app-import-history [pageType]="pageType"></app-import-history>
+</ng-template>
+
+<ng-template #templateHistory let-pageType>
+    <app-template-history [pageType]="pageType"></app-template-history>
 </ng-template>
 
 <ng-template #notFoundPage>

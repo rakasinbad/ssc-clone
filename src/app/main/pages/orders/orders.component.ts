@@ -1,4 +1,3 @@
-import { fetchCalculateOrdersRequest } from './store/actions/order.actions';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -14,17 +13,23 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { ExportActions } from 'app/shared/components/exports/store/actions';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
+import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { merge, Observable, Subject, combineLatest } from 'rxjs';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
@@ -33,11 +38,6 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { FuseNavigation } from '@fuse/types';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
-import { ExportActions } from 'app/shared/components/exports/store/actions';
-import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 
 @Component({
     selector: 'app-orders',
@@ -91,6 +91,17 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         'delivered-date',
         'actions'
     ];
+    importBtnConfig: IButtonImportConfig = {
+        id: 'import-oms',
+        cssClass: 'sinbad',
+        color: 'accent',
+        dialogConf: {
+            title: 'Import',
+            cssToolbar: 'fuse-white-bg'
+        },
+        title: 'IMPORT',
+        type: ButtonDesignType.MAT_STROKED_BUTTON
+    };
     hasSelected = false;
     statusOrder: any;
 
@@ -263,10 +274,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             };
 
             // this.store.dispatch(OrderActions.exportRequest({ payload: body }));
-            this.exportStore.dispatch(ExportActions.startExportRequest({ payload: {
-                ...body,
-                exportType: 'orders'
-            }}));
+            this.exportStore.dispatch(
+                ExportActions.startExportRequest({
+                    payload: {
+                        ...body,
+                        exportType: 'orders'
+                    }
+                })
+            );
         }
     }
 
@@ -424,7 +439,9 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
 
                 this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
-                this.isRequestingExport$ = this.exportStore.select(ExportSelector.getRequestingState);
+                this.isRequestingExport$ = this.exportStore.select(
+                    ExportSelector.getRequestingState
+                );
 
                 this._initStatusOrder();
 
