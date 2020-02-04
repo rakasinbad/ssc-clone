@@ -45,7 +45,7 @@
         <div fxLayout="row" fxLayoutGap="16px">
             <ng-template [ngxPermissionsOnly]="exportPermissions">
                 <!-- EXPORT BUTTON -->
-                <button
+                <!-- <button
                     mat-stroked-button
                     *ngIf="exportPermissions"
                     [ngClass]="buttonClasses"
@@ -55,22 +55,54 @@
                     (click)="onExportClicked()"
                 >
                     {{ exportTitle }}
-                </button>
+                </button> -->
+                <!-- / EXPORT BUTTON -->
+                <!-- EXPORT BUTTON -->
+                <ng-container *ngIf="config.export.useAdvanced; else useSimple;">
+                    <!-- <app-export-advanced
+                        [title]="config.export.label"
+                        color="primary"
+                        action="export"
+                        [formConfig]="formConfig"
+                        (clickExport)="onExport($event)"
+                    ></app-export-advanced> -->
+                </ng-container>
+                <ng-template #useSimple>
+                    <button
+                        mat-stroked-button
+                        *ngIf="exportPermissions"
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        (click)="onExportClicked()"
+                    >
+                        {{ exportTitle }}
+                    </button>
+                </ng-template>
                 <!-- / EXPORT BUTTON -->
             </ng-template>
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
-                <button
-                    mat-stroked-button
-                    *ngIf="importPermissions"
-                    color="primary"
-                    [ngClass]="buttonClasses"
-                    class="grey-300-border"
-                    fxFlexAlign="center"
-                    (click)="onImportClicked()"
-                >
-                    {{ importTitle }}
-                </button>
+                <ng-container *ngIf="config.import.useAdvanced; else useSimple;">
+                    <sinbad-import-advanced
+                        [pageType]="config?.import?.pageType || ''"
+                        [btnConfig]="importBtnConfig"
+                    ></sinbad-import-advanced>
+                </ng-container>
+                <ng-template #useSimple>
+                    <button
+                        mat-stroked-button
+                        *ngIf="importPermissions"
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        (click)="onImportClicked()"
+                    >
+                        {{ importTitle }}
+                    </button>
+                </ng-template>
                 <!-- / IMPORT BUTTON -->
             </ng-template>
             <ng-template [ngxPermissionsOnly]="filterListPermissions">

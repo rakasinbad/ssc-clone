@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 import { ICardHeaderConfiguration } from './models/card-header.model';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { TNullable } from 'app/shared/models';
+import { TNullable, ButtonDesignType } from 'app/shared/models';
+import { IButtonImportConfig } from '../import-advanced/models';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -11,6 +12,8 @@ import { TNullable } from 'app/shared/models';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CardHeaderComponent implements OnInit {
+
+    importBtnConfig: IButtonImportConfig;
 
     // Class-class untuk mengatur ukuran tombol.
     buttonClasses = {
@@ -209,6 +212,19 @@ export class CardHeaderComponent implements OnInit {
                 // Memeriksa konfigurasi label untuk permission tombol "Import".
                 if (this.config.import.permissions) {
                     this.importPermissions = this.config.import.permissions;
+                }
+
+                if (this.config.import.useAdvanced) {
+                    this.importBtnConfig = {
+                        id: 'import-oms',
+                        cssClass: ['w-92', 'h-32'],
+                        dialogConf: {
+                            title: 'Import',
+                            cssToolbar: 'fuse-white-bg'
+                        },
+                        title: 'Import',
+                        type: ButtonDesignType.MAT_STROKED_BUTTON
+                    };
                 }
             }
 

@@ -6,6 +6,8 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { SearchBarModule } from '../search-bar/search-bar.module';
+import { ImportAdvancedModule } from '../import-advanced/import-advanced.module';
+import { ExportAdvancedModule } from '../export-advanced/export-advanced.module';
 
 
 
@@ -18,6 +20,8 @@ import { SearchBarModule } from '../search-bar/search-bar.module';
         FuseSharedModule,
 
         SearchBarModule,
+        ImportAdvancedModule,
+        ExportAdvancedModule,
 
         // Material
         MatButtonModule,
