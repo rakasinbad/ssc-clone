@@ -13,6 +13,7 @@ import {
     TemplateHistoryComponent
 } from './import-dialog';
 import { ImportAdvancedStoreModule } from './store/import-advanced-store.module';
+import { SearchBarModule } from '../search-bar/search-bar.module';
 
 @NgModule({
     declarations: [
@@ -24,6 +25,7 @@ import { ImportAdvancedStoreModule } from './store/import-advanced-store.module'
     ],
     imports: [
         SharedModule,
+        SearchBarModule,
 
         // Material
         MaterialModule,
