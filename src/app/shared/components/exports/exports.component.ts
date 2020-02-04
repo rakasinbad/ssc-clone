@@ -113,7 +113,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
         this.search = searchValue;
 
         this.exportStore.dispatch(ExportActions.truncateExportLogs());
-        this.refreshTable();
+        setTimeout(() => this.refreshTable(), 100);
     }
 
     ngOnInit(): void {
@@ -130,10 +130,12 @@ export class ExportsComponent implements OnInit, OnDestroy {
             takeUntil(this.subs$)
         ).subscribe(() => {
             this.exportStore.dispatch(ExportActions.truncateExportLogs());
-            this.refreshTable();
+            // this.refreshTable();
+            setTimeout(() => this.refreshTable(), 100);
         });
 
-        this.refreshTable();
+        // this.refreshTable();
+        setTimeout(() => this.refreshTable(), 100);
     }
 
     ngOnDestroy(): void {
