@@ -117,6 +117,12 @@ export class IconModule {
             )
         );
 
+        // Logistics logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-logistics',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/logistics.svg')
+        );
+
         // OMS logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-oms-logo',

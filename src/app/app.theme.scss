@@ -140,6 +140,9 @@ $typography: mat-typography-config(
 @import 'src/app/main/pages/in-store-inventories/in-store-inventories.theme';
 @import 'src/app/main/pages/supplier-inventories/supplier-inventories.theme';
 
+// Logistics
+@import 'src/app/main/pages/logistics/warehouses/warehouses.theme';
+
 // OMS
 @import 'src/app/main/pages/orders/orders.theme';
 
@@ -193,6 +196,9 @@ $typography: mat-typography-config(
     // Inventories
     @include in-store-inventories-theme($theme);
     @include supplier-inventories-theme($theme);
+
+    // Logistics
+    @include warehouses-theme($theme);
 
     // OMS
     @include orders-theme($theme);

@@ -73,6 +73,13 @@ quill-editor {
     font-family: 'Aref Ruqaa';
 }
 
+.table-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    overflow: hidden;
+}
+
 // .ql-container {
 //     height: auto;
 // }
