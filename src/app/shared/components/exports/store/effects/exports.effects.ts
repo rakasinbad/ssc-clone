@@ -171,7 +171,7 @@ export class ExportsEffects {
                 this.matDialog.open(ExportsComponent, {
                     disableClose: true,
                     width: '70vw',
-                    height: '90vh',
+                    height: '85vh',
                     panelClass: ['sinbad-export-dialog-container']
                 });
             })
@@ -382,7 +382,7 @@ export class ExportsEffects {
         return userData;
     }
 
-    processFetchExportLogsRequest = ([userData, exportPage, queryParams]: [User, string, IQueryParams]): Observable<AnyAction> => {
+    processFetchExportLogsRequest = ([userData, exportPage, queryParams]: [User, ExportConfiguration['page'], IQueryParams]): Observable<AnyAction> => {
         // Hanya mengambil ID user saja.
         const { userId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
@@ -393,8 +393,35 @@ export class ExportsEffects {
         // Memasukkan ID user ke dalam parameter.
         newQuery['userId'] = userId;
 
-        // Memasukkan nama modul yang ingin diliat log export-nya.
-        newQuery['page'] = exportPage;
+        switch (exportPage) {
+            case 'stores': {
+                newQuery['page'] = 'stores';
+                break;
+            }
+            case 'catalogues': {
+                newQuery['page'] = 'catalogues';
+                break;
+            }
+            case 'payments': {
+                newQuery['page'] = 'fms';
+                break;
+            }
+            case 'orders': {
+                newQuery['page'] = 'oms';
+                break;
+            }
+            case 'portfolios': {
+                newQuery['page'] = 'portfolios';
+                break;
+            }
+            case 'journey-plans': {
+                newQuery['page'] = 'journey_plans';
+                break;
+            }
+            default: {
+                newQuery['page'] = exportPage;
+            }
+        }
 
         return this.exportsApiService
             .findExportLogs<IPaginatedResponse<Export>>(newQuery)
@@ -468,11 +495,22 @@ export class ExportsEffects {
             );
     }
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: exportFailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | any), dispatchTo: exportFailureActionNames): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             return of(ExportActions[dispatchTo]({
                 payload: err
             }));
+        }
+
+        if (err.message) {
+            if (err.message.startsWith('Http failure response')) {
+                return of(ExportActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_HTTP_${err.error.name.toUpperCase()}`,
+                        errors: err.toString()
+                    }
+                }));
+            }
         }
         
         if (err instanceof HttpErrorResponse) {

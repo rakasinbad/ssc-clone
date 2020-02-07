@@ -1,11 +1,11 @@
-sinbad-exports {
+sinbad-export {
     table {
         &.simple {
             border: 1px solid rgba(0, 0, 0, 0.12) !important;
             border-collapse: collapse;
 
             p {
-                margin: 0;
+                margin: 0 !important;
             }
 
             thead[role='rowgroup'] {
@@ -28,9 +28,9 @@ sinbad-exports {
                 padding-left: 8px !important;
             }
 
-            .mat-typography p {
-                margin: 0 !important;
-            }
+            // .mat-typography p {
+            //     margin: 0 !important;
+            // }
         }
     }
 
