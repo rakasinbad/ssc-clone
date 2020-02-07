@@ -8,6 +8,11 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 import { SearchBarModule } from '../search-bar/search-bar.module';
 import { ImportAdvancedModule } from '../import-advanced/import-advanced.module';
 import { ExportAdvancedModule } from '../export-advanced/export-advanced.module';
+import { ExportsModule } from '../exports/exports.module';
+import { StoreModule } from '@ngrx/store';
+import { fromExport } from '../exports/store/reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { ExportsEffects } from '../exports/store/effects';
 
 
 
@@ -21,7 +26,8 @@ import { ExportAdvancedModule } from '../export-advanced/export-advanced.module'
 
         SearchBarModule,
         ImportAdvancedModule,
-        ExportAdvancedModule,
+        ExportsModule,
+        // ExportAdvancedModule,
 
         // Material
         MatButtonModule,
@@ -43,8 +49,16 @@ import { ExportAdvancedModule } from '../export-advanced/export-advanced.module'
         // RxReactive
         RxReactiveFormsModule,
         RxReactiveDynamicFormsModule,
+
+        // NgRx
+        StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
+        EffectsModule.forFeature([
+            ExportsEffects
+        ]),
     ],
     exports: [
+        StoreModule,
+        EffectsModule,
         CardHeaderComponent,
     ],
     entryComponents: [

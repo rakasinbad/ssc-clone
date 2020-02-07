@@ -68,12 +68,14 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             // permissions: ['INVENTORY.ISI.CREATE'],
         },
         export: {
-            permissions: ['OMS.EXPORT']
+            permissions: ['OMS.EXPORT'],
+            useAdvanced: true,
+            pageType: 'stores'
         },
         import: {
             permissions: ['OMS.IMPORT'],
             useAdvanced: true,
-            pageType: 'oms'
+            pageType: 'stores'
         },
     };
 
@@ -300,14 +302,15 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             };
 
             // this.store.dispatch(OrderActions.exportRequest({ payload: body }));
-            this.exportStore.dispatch(
-                ExportActions.startExportRequest({
-                    payload: {
-                        ...body,
-                        exportType: 'orders'
-                    }
-                })
-            );
+            // this.exportStore.dispatch(
+            //     ExportActions.startExportRequest({
+            //         payload: {
+            //             ...body,
+            //             page: 'oms',
+            //             configuration: {}
+            //         }
+            //     })
+            // );
         }
     }
 

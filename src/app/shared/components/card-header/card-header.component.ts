@@ -3,6 +3,9 @@ import { ICardHeaderConfiguration } from './models/card-header.model';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { TNullable, ButtonDesignType } from 'app/shared/models';
 import { IButtonImportConfig } from '../import-advanced/models';
+import { Store as NgRxStore } from '@ngrx/store';
+import { fromExport } from '../exports/store/reducers';
+import { ExportActions } from '../exports/store/actions';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -136,7 +139,8 @@ export class CardHeaderComponent implements OnInit {
      * Constructor.
      */
     constructor(
-        private ngxPermissionsService: NgxPermissionsService
+        private ngxPermissionsService: NgxPermissionsService,
+        private exportStore: NgRxStore<fromExport.State>,
     ) {}
 
     /**
@@ -286,10 +290,19 @@ export class CardHeaderComponent implements OnInit {
      * Fungsi untuk meneruskan "event" ketika menekan tombol "Export".
      */
     onExportClicked(): void {
-        if (this.config.export.onClick) {
-            this.config.export.onClick();
+        // Pemeriksaan konfigurasi export menggunakan advanced.
+        if (!this.config.export.useAdvanced) {
+            if (this.config.export.onClick) {
+                this.config.export.onClick();
+            } else {
+                this.clickExport.emit();
+            }
         } else {
-            this.clickExport.emit();
+            this.exportStore.dispatch(ExportActions.prepareExportCheck({
+                payload: {
+                    page: this.config.export.pageType,
+                }
+            }));
         }
     }
 

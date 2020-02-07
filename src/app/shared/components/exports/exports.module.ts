@@ -9,6 +9,8 @@ import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { ExportsStoreModule } from './exports-store.module';
 // import { SharedComponentsModule } from '../shared-components.module';
 import { SearchBarModule } from '../search-bar/search-bar.module';
+// import { OrderManagementExportFilterComponent } from './components/filters/oms/oms.component';
+import { ExportFilterComponent } from './components/export-filter/export-filter.component';
 // import { MaterialModule } from 'app/shared/material.module';
 
 
@@ -16,6 +18,8 @@ import { SearchBarModule } from '../search-bar/search-bar.module';
 @NgModule({
     declarations: [
         ExportsComponent,
+        ExportFilterComponent,
+        // OrderManagementExportFilterComponent,
     ],
     imports: [
         // Shared components
@@ -46,9 +50,12 @@ import { SearchBarModule } from '../search-bar/search-bar.module';
     ],
     exports: [
         // SearchBarComponent,
+        ExportsComponent,
     ],
     entryComponents: [
         ExportsComponent,
+        ExportFilterComponent,
+        // OrderManagementExportFilterComponent,
         // FilterCataloguesComponent,
     ]
 })

@@ -61,3 +61,13 @@ export const getExport = createSelector(
     getExportEntityIds,
     (Exports, ids) => (Exports[ids[0]] as TNullable<Export>)
 );
+
+export const getExportFilter = createSelector(
+    getExportState,
+    state => state.filter
+);
+
+export const getExportPage = createSelector(
+    getExportState,
+    state => state.exportPage
+);

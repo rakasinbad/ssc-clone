@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore, SupplierStoreOptions } from 'app/shared/models';
+import { IQueryParams, SupplierStore, SupplierStoreOptions, ErrorHandler } from 'app/shared/models';
 import { Observable } from 'rxjs';
-import { Export } from '../models';
+import { Export, ExportConfiguration } from '../models';
 import { StoreSetting } from 'app/main/pages/attendances/models';
-import { ExportModuleNames } from '../store/actions/exports.actions';
+// import { ExportModuleNames } from '../store/actions/exports.actions';
 
 /**
  *
@@ -62,6 +62,13 @@ export class ExportsApiService {
                 value: params['keyword']
             });
         }
+
+        if (params['page']) {
+            newArgs.push({
+                key: 'page',
+                value: params['page']
+            });
+        }
         
         this._url = this.helperSvc.handleApiRouter(this._exportLogsEndpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
@@ -69,8 +76,25 @@ export class ExportsApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    requestExport(params: IQueryParams & { exportType: ExportModuleNames }): Observable<{ message: string }> {
+    requestExport(params: IQueryParams): Observable<{ message: string }> {
         const newArgs = [];
+
+        switch (params['page'] as ExportConfiguration['page']) {
+            case 'stores': params['page'] = 'stores'; break;
+            case 'catalogues': params['page'] = 'catalogues'; break;
+            case 'payments': params['page'] = 'payments'; break;
+            case 'orders': params['page'] = 'orders'; break;
+            case 'portfolios': params['page'] = 'portfolios'; break;
+            case 'journey-plans': params['page'] = 'orders'; break;
+            default: {
+                const err: ErrorHandler = {
+                    id: 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED',
+                    errors: params
+                };
+
+                throw new ErrorHandler(err);
+            }
+        }
 
         if (params['supplierId']) {
             newArgs.push({
@@ -100,7 +124,7 @@ export class ExportsApiService {
             });
         }
 
-        this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params.exportType);
+        this._url = this.helperSvc.handleApiRouter(this._exportEndpoint + params['page']);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<{ message: string }>(this._url, { params: newParams });

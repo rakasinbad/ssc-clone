@@ -1,6 +1,6 @@
 import { createReducer, on, Action } from '@ngrx/store';
 import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { Export } from '../../models';
+import { Export, ExportConfiguration } from '../../models';
 import { ExportActions } from '../actions';
 
 // Set reducer's feature key
@@ -13,6 +13,8 @@ export const adapterExport: EntityAdapter<Export> = createEntityAdapter<Export>(
 
 // Export
 export interface State extends EntityState<Export> {
+    filter: Exclude<ExportConfiguration, 'page'>;
+    exportPage: string;
     isLoading: boolean;
     isRequesting: boolean;
     needRefresh: boolean;
@@ -21,6 +23,11 @@ export interface State extends EntityState<Export> {
 
 // Set the reducer's initial state.
 export const initialState = adapterExport.getInitialState<Omit<State, 'ids' | 'entities'>>({
+    filter: {
+        page: '',
+        configuration: {}
+    },
+    exportPage: '',
     isLoading: false,
     isRequesting: false,
     needRefresh: false,
@@ -31,10 +38,25 @@ export const initialState = adapterExport.getInitialState<Omit<State, 'ids' | 'e
 const exportReducer = createReducer(
     initialState,
     on(
-        ExportActions.startExportRequest,
+        ExportActions.prepareExportCheck,
         state => ({
             ...state,
-            isRequesting: true
+            filter: initialState.filter
+        })
+    ),
+    on(
+        ExportActions.truncateExportFilter,
+        state => ({
+            ...state,
+            filter: initialState.filter
+        })
+    ),
+    on(
+        ExportActions.startExportRequest,
+        (state, { payload }) => ({
+            ...state,
+            isRequesting: true,
+            exportPage: payload.page,
         })
     ),
     on(
