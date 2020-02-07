@@ -13,7 +13,7 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { LifecyclePlatform } from 'app/shared/models';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
@@ -31,6 +31,7 @@ import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actio
 })
 export class MainImportComponent implements OnInit {
     form: FormGroup;
+    importSub$: Subject<{ $event: Event; type: string; }> = new Subject();
 
     config$: Observable<IConfigImportAdvanced>;
     modes$: Observable<Array<IConfigMode>>;
@@ -72,6 +73,28 @@ export class MainImportComponent implements OnInit {
                     this.form.reset();
                 }
             });
+
+        this.importSub$.pipe(
+            withLatestFrom(this.store.select(ImportAdvancedSelectors.getConfig)),
+            takeUntil(this._unSubs$)
+        ).subscribe(([{ $event }, config]) => {
+            const inputEl = $event.target as HTMLInputElement;
+
+            if (inputEl.files && inputEl.files.length > 0) {
+                const file = inputEl.files[0];
+                const mode = this.form.get('mode').value;
+
+                if (file) {
+                    if (config.mode) {
+                        const modeIds = config.mode.map(configMode => configMode.id);
+
+                        if (modeIds.includes(mode)) {
+                            this._handlePage(file, mode);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -146,38 +169,51 @@ export class MainImportComponent implements OnInit {
     }
 
     onFileBrowse(ev: Event, type: string): void {
-        const inputEl = ev.target as HTMLInputElement;
+        this.importSub$.next({
+            $event: ev,
+            type
+        });
+        // const inputEl = ev.target as HTMLInputElement;
 
-        if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
-            const mode = this.form.get('mode').value;
+        // const stateConfig = this.importSub$.pipe(
+        //     withLatestFrom(this.store.select(ImportAdvancedSelectors.getConfig)),
+        //     takeUntil(this._unSubs$)
+        // ).toPromise();
 
-            if (file) {
-                switch (type) {
-                    case 'docs':
-                        this._handlePage(file, mode);
+        // return stateConfig.then(([{ $event }, config]) => {
+            
+        // });
 
-                        /* this.store.dispatch(
-                            OrderActions.importRequest({
-                                payload: { file, type: 'update_order_status' }
-                            })
-                        ); */
-                        // {
-                        //     const photoField = this.form.get('profileInfo.photos');
-                        //     const fileReader = new FileReader();
-                        //     fileReader.onload = () => {
-                        //         photoField.patchValue(fileReader.result);
-                        //         this.tmpPhoto.patchValue(file.name);
-                        //     };
-                        //     fileReader.readAsDataURL(file);
-                        // }
-                        break;
+        // if (inputEl.files && inputEl.files.length > 0) {
+        //     const file = inputEl.files[0];
+        //     const mode = this.form.get('mode').value;
 
-                    default:
-                        break;
-                }
-            }
-        }
+        //     if (file) {
+        //         switch (type) {
+        //             case 'docs':
+        //                 this._handlePage(file, mode);
+
+        //                 /* this.store.dispatch(
+        //                     OrderActions.importRequest({
+        //                         payload: { file, type: 'update_order_status' }
+        //                     })
+        //                 ); */
+        //                 // {
+        //                 //     const photoField = this.form.get('profileInfo.photos');
+        //                 //     const fileReader = new FileReader();
+        //                 //     fileReader.onload = () => {
+        //                 //         photoField.patchValue(fileReader.result);
+        //                 //         this.tmpPhoto.patchValue(file.name);
+        //                 //     };
+        //                 //     fileReader.readAsDataURL(file);
+        //                 // }
+        //                 break;
+
+        //             default:
+        //                 break;
+        //         }
+        //     }
+        // }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -211,7 +247,7 @@ export class MainImportComponent implements OnInit {
 
     private _handlePage(file: File, mode: string): void {
         switch (this.pageType) {
-            case 'oms':
+            case 'orders':
                 this.store.dispatch(
                     ImportAdvancedActions.importConfirmRequest({
                         payload: {
