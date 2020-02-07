@@ -58,34 +58,24 @@
                 </button> -->
                 <!-- / EXPORT BUTTON -->
                 <!-- EXPORT BUTTON -->
-                <ng-container *ngIf="config.export.useAdvanced; else useSimple;">
-                    <!-- <app-export-advanced
-                        [title]="config.export.label"
-                        color="primary"
-                        action="export"
-                        [formConfig]="formConfig"
-                        (clickExport)="onExport($event)"
-                    ></app-export-advanced> -->
-                </ng-container>
-                <ng-template #useSimple>
-                    <button
-                        mat-stroked-button
-                        *ngIf="exportPermissions"
-                        color="primary"
-                        [ngClass]="buttonClasses"
-                        class="grey-300-border"
-                        fxFlexAlign="center"
-                        (click)="onExportClicked()"
-                    >
-                        {{ exportTitle }}
-                    </button>
-                </ng-template>
+                <button
+                    mat-stroked-button
+                    *ngIf="exportPermissions"
+                    color="primary"
+                    [ngClass]="buttonClasses"
+                    class="grey-300-border"
+                    fxFlexAlign="center"
+                    (click)="onExportClicked()"
+                >
+                    {{ exportTitle }}
+                </button>
                 <!-- / EXPORT BUTTON -->
             </ng-template>
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
                 <ng-container *ngIf="config.import.useAdvanced; else useSimple;">
                     <sinbad-import-advanced
+                        *ngIf="importPermissions"
                         [pageType]="config?.import?.pageType || ''"
                         [btnConfig]="importBtnConfig"
                     ></sinbad-import-advanced>

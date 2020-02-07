@@ -1,25 +1,28 @@
 import { createAction, props } from '@ngrx/store';
 import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
-import { Export } from '../../models';
+import { Export, ExportConfiguration, ExportFormData } from '../../models';
 
 export type requestActionNames =
     'fetchExportLogsRequest' |
+    'prepareExportCheck' |
     'startExportRequest'
 ;
 
 export type failureActionNames =
     'fetchExportLogsFailure' |
+    'prepareExportFailure' |
     'startExportFailure'
 ;
 
-export type ExportModuleNames =
-    'catalogues' |
-    'journey-plans' |
-    'payments' |
-    'portfolios' |
-    'orders' |
-    'stores'
-;
+// export type ExportModuleNames =
+//     'catalogues' |
+//     'journey-plans' |
+//     'payments' |
+//     'portfolios' |
+//     'orders' |
+//     'stores'
+// ;
+
 
 /** FETCH EXPORT LOGS */
 export const fetchExportLogsRequest = createAction(
@@ -37,10 +40,27 @@ export const fetchExportLogsSuccess = createAction(
     props<{ payload: { data: Array<Export>; total: number } }>()
 );
 
+/** EXPORT PREPARATION */
+
+export const prepareExportCheck = createAction(
+    '[Export API] Prepare Export Check',
+    props<{ payload: IQueryParams & ExportConfiguration }>()
+);
+    
+export const prepareExportFailure = createAction(
+    '[Export API] Prepare Export Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const setExportPage = createAction(
+    '[Export API] Set Export Page',
+    props<{ payload: string }>()
+);
+
 /** START EXPORT */
 export const startExportRequest = createAction(
     '[Export API] Start Export Request',
-    props<{ payload: IQueryParams & { exportType: ExportModuleNames } }>()
+    props<{ payload: IQueryParams & ExportConfiguration & { formData: ExportFormData; } }>()
 );
 
 export const startExportFailure = createAction(
@@ -52,5 +72,7 @@ export const startExportSuccess = createAction(
     '[Portfolios API] Start Export Success',
     props<{ payload: { message: string } }>()
 );
+
+export const truncateExportFilter = createAction('[Export Page] Truncate Export Filter');
 
 export const truncateExportLogs = createAction('[Export Page] Truncate Export Logs');

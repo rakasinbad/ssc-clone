@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter, exhaust } from 'rxjs/operators';
 
 import {
     exportFailureActionNames, ExportActions,
 } from '../actions';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError, forkJoin } from 'rxjs';
+import { of, Observable, throwError, forkJoin, iif } from 'rxjs';
 // import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { Export } from '../../models';
-import { IQueryParams, TNullable, ErrorHandler, IPaginatedResponse, User } from 'app/shared/models';
+import { Export, ExportConfiguration, ExportFilterConfiguration, ExportFormData, defaultExportFilterConfiguration } from '../../models';
+import { IQueryParams, TNullable, ErrorHandler, IPaginatedResponse, User, IErrorHandler } from 'app/shared/models';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,10 +24,13 @@ import { MatDialog, MatSnackBarConfig } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { ExportsComponent } from '../../exports.component';
 import { ExportsApiService } from '../../services';
-import { ExportModuleNames } from '../actions/exports.actions';
-// import { PortfoliosApiService } from '../../../portfolios/services';
+import { ExportFilterComponent } from '../../components/export-filter/export-filter.component';
+import { ExportSelector } from '../selectors';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
+
+// Konfigurasi export untuk halaman
+const EXPORT_CONFIGURATION: ExportFilterConfiguration = defaultExportFilterConfiguration;
 
 @Injectable()
 export class ExportsEffects {
@@ -42,6 +45,81 @@ export class ExportsEffects {
         private matDialog: MatDialog,
     ) {}
 
+    prepareExport$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action pemeriksaan konfigurasi export.
+            ofType(ExportActions.prepareExportCheck),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [IQueryParams & ExportConfiguration, TNullable<Auth>]) => {
+                return of([queryParams, authState] as [IQueryParams & ExportConfiguration, TNullable<Auth>])
+                .pipe(
+                    // Pemeriksaan error.
+                    tap(([_, __]) => this.checkExportConfiguration(queryParams)),
+                    // Memeriksa penekanan tombol pada dialog filter export.
+                    exhaustMap(([_, __]: [IQueryParams & ExportConfiguration, TNullable<Auth>]) => {
+                        // Memeriksa konfigurasi kebutuhan filter dari export global.
+                        const isFilterRequired = this.isNeedFilter(queryParams.page);
+
+                        if (!isFilterRequired) {
+                            // Jika tidak dibutuhkan, maka akan diteruskan ke pipe selanjutnya.
+                            return of([queryParams, authState]);
+                        } else {
+                            // Membuka dialog.
+                            const dialogRef = this.matDialog.open<ExportFilterComponent, ExportConfiguration>(ExportFilterComponent, {
+                                data: {
+                                    page: queryParams.page,
+                                    configuration: queryParams.configuration
+                                },
+                                panelClass: 'event-form-dialog',
+                            });
+
+                            // Mengembalikan nilai ketika sudah menutup dialog filter export.
+                            return dialogRef.afterClosed().pipe(
+                                map((val: undefined | { page: string; payload: ExportFormData; }) => {
+                                    if (!val) {
+                                        return val;
+                                    } else {
+                                        return [{
+                                            ...queryParams,
+                                            formData: val.payload
+                                        }, authState];
+                                    }
+                                }),
+                                filter(val => !!val),
+                            );
+                        }
+                    }),
+                    // Memulai pemeriksaan auth user dan memulai permintaan export.
+                    switchMap(([query, __]: [IQueryParams & ExportConfiguration & { formData: ExportFormData }, TNullable<Auth>]) => {
+                        // Jika tidak ada data supplier-nya user dari state.
+                        if (!authState) {
+                            return this.helper$.decodeUserToken().pipe(
+                                map(this.checkUserSupplier),
+                                retry(3),
+                                switchMap(userData => of([userData, query])),
+                                switchMap<[User, IQueryParams & ExportConfiguration & { formData: ExportFormData }], Observable<AnyAction>>(this.continueToStartExport),
+                                catchError(err => this.sendErrorToState(err, 'startExportFailure'))
+                            );
+                        } else {
+                            return of(authState.user).pipe(
+                                map(this.checkUserSupplier),
+                                retry(3),
+                                switchMap(userData => of([userData, query])),
+                                switchMap<[User, IQueryParams & ExportConfiguration & { formData: ExportFormData }], Observable<AnyAction>>(this.continueToStartExport),
+                                catchError(err => this.sendErrorToState(err, 'startExportFailure'))
+                            );
+                        }
+                    }),
+                    catchError(err => this.sendErrorToState(err, 'prepareExportFailure')),
+                );
+            }),
+        )
+    );
+
     startExportRequest$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action me-request untuk export.
@@ -51,14 +129,14 @@ export class ExportsEffects {
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParams & { exportType: ExportModuleNames }, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [IQueryParams & ExportConfiguration & { formData: ExportFormData }, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams & { exportType: ExportModuleNames }], Observable<AnyAction>>(this.processStartExportRequest),
+                        switchMap<[User, IQueryParams & ExportConfiguration & { formData: ExportFormData }], Observable<AnyAction>>(this.processStartExportRequest),
                         catchError(err => this.sendErrorToState(err, 'startExportFailure'))
                     );
                 } else {
@@ -66,11 +144,12 @@ export class ExportsEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams & { exportType: ExportModuleNames }], Observable<AnyAction>>(this.processStartExportRequest),
+                        switchMap<[User, IQueryParams & ExportConfiguration & { formData: ExportFormData }], Observable<AnyAction>>(this.processStartExportRequest),
                         catchError(err => this.sendErrorToState(err, 'startExportFailure'))
                     );
                 }
-            })
+            }),
+            catchError(err => this.sendErrorToState(err, 'startExportFailure'))
         )
     );
 
@@ -78,19 +157,42 @@ export class ExportsEffects {
         this.actions$.pipe(
             // Hanya untuk action start export success.
             ofType(ExportActions.startExportSuccess),
-            // Memunculkan notif bahwa request export berhasil.
             tap(() => {
-                this.notice$.open('An export request sent.', 'success', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'bottom',
-                    duration: 5000,
-                });
+                setTimeout(() => {
+                    // Memunculkan notif bahwa request export berhasil.
+                    this.notice$.open('An export request sent.', 'success', {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
+                        duration: 5000,
+                    });
+                }, 300);
 
                 // Kemudian, memunculkan dialog log export-nya.
                 this.matDialog.open(ExportsComponent, {
                     disableClose: true,
-                    width: '70vw'
+                    width: '70vw',
+                    height: '90vh',
+                    panelClass: ['sinbad-export-dialog-container']
                 });
+            })
+        )
+    , { dispatch: false });
+
+    prepareExportFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action start export failure.
+            ofType(ExportActions.prepareExportFailure),
+            // Hanya mengambil payload-nya saja.
+            map(action => action.payload),
+            // Memunculkan notif bahwa request export gagal.
+            tap(error => {
+                const noticeSetting: MatSnackBarConfig = {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom',
+                    duration: 5000,
+                };
+
+                this.notice$.open(`Something wrong with our web while preparing export dialog. Please contact Sinbad Team. Error code: ${error.id}`, 'error', noticeSetting);
             })
         )
     , { dispatch: false });
@@ -109,12 +211,7 @@ export class ExportsEffects {
                     duration: 5000,
                 };
 
-                if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-                    this.notice$.open(`Failed to request export. Reason: ${error.errors}`, 'error', noticeSetting);
-                } else {
-                    this.notice$.open(`Something wrong with our web while exporting. Please contact Sinbad Team.`, 'error', noticeSetting);
-                }
-
+                this.notice$.open(`Something wrong with our web while exporting. Please contact Sinbad Team. Error code: ${error.id}`, 'error', noticeSetting);
             })
         )
     , { dispatch: false });
@@ -126,24 +223,27 @@ export class ExportsEffects {
             // Hanya mengambil payload-nya saja dari action.
             map(action => action.payload),
             // Mengambil data dari store-nya auth.
-            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            withLatestFrom(
+                this.exportStore.select(ExportSelector.getExportPage),
+                this.authStore.select(AuthSelectors.getUserState),
+            ),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
+            switchMap(([queryParams, exportPage, authState]: [IQueryParams, string, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
-                        switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processFetchExportLogsRequest),
+                        switchMap(userData => of([userData, exportPage, queryParams])),
+                        switchMap<[User, string, IQueryParams], Observable<AnyAction>>(this.processFetchExportLogsRequest),
                         catchError(err => this.sendErrorToState(err, 'fetchExportLogsFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
                         map(this.checkUserSupplier),
                         retry(3),
-                        switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processFetchExportLogsRequest),
+                        switchMap(userData => of([userData, exportPage, queryParams])),
+                        switchMap<[User, string, IQueryParams], Observable<AnyAction>>(this.processFetchExportLogsRequest),
                         catchError(err => this.sendErrorToState(err, 'fetchExportLogsFailure'))
                     );
                 }
@@ -196,20 +296,93 @@ export class ExportsEffects {
         )
     , { dispatch: false });
 
-    checkUserSupplier = (userData: User): User => {
+    isNeedFilter(pageType: ExportConfiguration['page']): boolean {
+        switch (pageType) {
+            case 'stores':
+            case 'catalogues':
+            case 'payments':
+            case 'portfolios':
+            case 'journey-plans':
+            case 'orders': { 
+                return (EXPORT_CONFIGURATION[pageType].requireFilter);
+            }
+        }
+
+        return false;
+    }
+
+    // Fungsi ini untuk memeriksa apakah nilainya terisi atau tidak.
+    isFilterRequirementOverriden(pageType: ExportConfiguration['page'], value: ExportFilterConfiguration): boolean {
+        const isSupplied = (arg: any) => (arg !== null || arg !== undefined);
+
+        return (isSupplied(value[pageType].requireFilter) && value[pageType].requireFilter !== EXPORT_CONFIGURATION[pageType].requireFilter);
+    }
+
+    checkExportConfiguration(payload: IQueryParams & ExportConfiguration): void {
+        const err: IErrorHandler = {
+            errors: payload,
+            id: 'NO_ERROR'
+        };
+
+        if (!payload.page) {
+            // Error terlempar jika tidak memberikan halaman apa yang ingin di-export.
+            err.id = 'ERR_MISCONFIGURED_EXPORT_PAGE_TYPE';
+            throw new ErrorHandler(err);
+        } else {
+            // Mengambil konfigurasi export dari payload.
+            const { configuration = {} } = payload;
+    
+            switch (payload.page) {
+                case 'catalogues':
+                case 'orders':
+                case 'payments':
+                case 'stores': {
+                    // Memeriksa konfigurasi OMS.
+                    if (configuration[payload.page]) {
+                        // Memeriksa apakah requirement filter telah tertimpa oleh payload-nya action atau tidak.
+                        if (this.isFilterRequirementOverriden(payload.page, configuration)) {
+                            if (payload.page === 'catalogues') {
+                                err.id = 'ERR_CATALOGUE_FILTER_REQUIRED';
+                            } else if (payload.page === 'orders') {
+                                err.id = 'ERR_OMS_FILTER_REQUIRED';
+                            } else if (payload.page === 'payments') {
+                                err.id = 'ERR_PAYMENT_FILTER_REQUIRED';
+                            } else if (payload.page === 'stores') {
+                                err.id = 'ERR_STORE_LIST_FILTER_REQUIRED';
+                            }
+
+                            // Melempar error jika filter dibutuhkan, namun konfigurasi dari payload 'ngomong' bahwa filter tidak dibutuhkan.
+                            throw new ErrorHandler(err);
+                        } else {
+                            throw new ErrorHandler(err);
+                        }
+                    }
+
+                    break;
+                }
+                default: {
+                    // Error terlempar jika tipe halaman tidak dikenal.
+                    err.id = 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED';
+                    throw new ErrorHandler(err);
+                }
+            }
+        }
+    }
+
+    checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(new ErrorHandler({
+            throw new ErrorHandler({
                 id: 'ERR_USER_SUPPLIER_NOT_FOUND',
                 errors: `User Data: ${userData}`
-            }));
+            });
         }
     
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
     }
 
-    processFetchExportLogsRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processFetchExportLogsRequest = ([userData, exportPage, queryParams]: [User, string, IQueryParams]): Observable<AnyAction> => {
         // Hanya mengambil ID user saja.
         const { userId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
@@ -219,6 +392,9 @@ export class ExportsEffects {
     
         // Memasukkan ID user ke dalam parameter.
         newQuery['userId'] = userId;
+
+        // Memasukkan nama modul yang ingin diliat log export-nya.
+        newQuery['page'] = exportPage;
 
         return this.exportsApiService
             .findExportLogs<IPaginatedResponse<Export>>(newQuery)
@@ -251,16 +427,31 @@ export class ExportsEffects {
             );
     }
 
-    processStartExportRequest = ([userData, queryParams]: [User, IQueryParams & { exportType: ExportModuleNames }]): Observable<AnyAction> => {
+    continueToStartExport = ([_, queryParams]: [User, IQueryParams & ExportConfiguration & { formData: ExportFormData }]): Observable<AnyAction> => {
+        return of(ExportActions.startExportRequest({
+            payload: queryParams
+        }));
+    }
+
+    processStartExportRequest = ([userData, queryParams]: [User, IQueryParams & ExportConfiguration & { formData: ExportFormData }]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams & { exportType: ExportModuleNames } = {
-            ...queryParams
+        const newQuery: IQueryParams = {
+            // limit: queryParams.limit,
+            // paginate: queryParams.paginate,
+            // search: queryParams.search,
+            skip: queryParams.skip,
+            // sort: queryParams.sort,
+            // sortBy: queryParams.sortBy,
+            ...queryParams.formData,
         };
     
         // Memasukkan ID supplier ke dalam parameter.
         newQuery['supplierId'] = supplierId;
+
+        // Memasukkan tipe halaman yang ingin di-export.
+        newQuery['page'] = queryParams.page;
 
         return this.exportsApiService
             .requestExport(newQuery)

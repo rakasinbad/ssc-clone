@@ -1,7 +1,7 @@
-app-exports {
+sinbad-exports {
     table {
         &.simple {
-            border: 1px solid #e8e8e8;
+            border: 1px solid rgba(0, 0, 0, 0.12) !important;
             border-collapse: collapse;
 
             p {

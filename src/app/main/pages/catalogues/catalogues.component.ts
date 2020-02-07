@@ -517,12 +517,13 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         //     disableClose: true,
         //     width: '70vw'
         // });
-        this.exportStore.dispatch(ExportActions.startExportRequest({
-            payload: {
-                paginate: false,
-                exportType: 'catalogues'
-            }
-        }));
+        // this.exportStore.dispatch(ExportActions.startExportRequest({
+        //     payload: {
+        //         paginate: false,
+        //         page: '',
+        //         configuration: {}
+        //     }
+        // }));
     }
 
     onImportProduct(): void {

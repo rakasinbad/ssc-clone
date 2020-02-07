@@ -1,4 +1,5 @@
 import { ISearchBarConfiguration } from '../../search-bar/models';
+import { ExportConfiguration } from '../../exports/models';
 
 interface CardHeaderBaseConfig {
     // Label yang ingin ditampilkan di view.
@@ -21,14 +22,14 @@ interface CardHeaderButtonConfig extends CardHeaderBaseConfig {
 
 interface CardHeaderAdvancedButtonConfig extends CardHeaderButtonConfig {
     // Berisi nama tipe halaman yang ingin dituju.
-    pageType?: string;
+    pageType?: ExportConfiguration['page'];
 }
 
 export interface ICardHeaderConfiguration {
     title?: CardHeaderBaseConfig;
     search?: CardHeaderSearchConfig;
     add?: CardHeaderButtonConfig;
-    export?: CardHeaderButtonConfig;
+    export?: CardHeaderAdvancedButtonConfig;
     import?: CardHeaderAdvancedButtonConfig;
     filter?: CardHeaderButtonConfig;
     groupBy?: CardHeaderButtonConfig;

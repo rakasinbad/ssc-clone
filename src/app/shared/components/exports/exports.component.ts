@@ -13,7 +13,7 @@ import { MatPaginator } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-    selector: 'app-exports',
+    selector: 'sinbad-export',
     templateUrl: './exports.component.html',
     styleUrls: ['./exports.component.scss'],
     animations: fuseAnimations,
@@ -142,6 +142,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
         this.subs$.next();
         this.subs$.complete();
 
+        this.exportStore.dispatch(ExportActions.setExportPage({ payload: '' }));
         this.exportStore.dispatch(ExportActions.truncateExportLogs());
     }
 
