@@ -19,7 +19,6 @@ import { AttendanceEffects } from '../attendances/store/effects';
 import { MerchantEffects } from '../attendances/store/effects';
 import { fromMerchant } from '../attendances/store/reducers';
 import { fromCatalogue } from '../catalogues/store/reducers';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -36,7 +35,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         InStoreInventoriesRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         // AgmCoreModule,

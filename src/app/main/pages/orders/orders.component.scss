@@ -52,9 +52,7 @@ app-orders {
 
     .orders-table {
         flex: 1 1 auto;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        min-height: 40px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;

@@ -3,7 +3,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { ImportAdvancedModule } from 'app/shared';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -15,9 +14,6 @@ import { OrdersRoutingModule } from './orders-routing.module';
 import { OrdersComponent } from './orders.component';
 import { OrderEffects } from './store/effects';
 import { fromOrder } from './store/reducers';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
-import { ExportsEffects } from 'app/shared/components/exports/store/effects';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -31,7 +27,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         OrdersRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         QuillModule,
@@ -39,11 +34,8 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         RxReactiveDynamicFormsModule,
         NgxPermissionsModule.forChild(),
 
-        ImportAdvancedModule,
-
         StoreModule.forFeature(fromOrder.FEATURE_KEY, fromOrder.reducer),
-        StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
-        EffectsModule.forFeature([ ExportsEffects, OrderEffects ])
+        EffectsModule.forFeature([OrderEffects])
     ],
     entryComponents: [OrderQtyFormComponent]
 })

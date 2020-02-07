@@ -1,3 +1,4 @@
+import { fetchCalculateOrdersRequest } from './store/actions/order.actions';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -13,23 +14,17 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { ExportActions } from 'app/shared/components/exports/store/actions';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
-import { ExportSelector } from 'app/shared/components/exports/store/selectors';
-import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { combineLatest, merge, Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject, combineLatest } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
@@ -38,7 +33,8 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
+import { FuseNavigation } from '@fuse/types';
 
 @Component({
     selector: 'app-orders',
@@ -51,33 +47,6 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = 10;
     readonly defaultPageOpts = environment.pageSizeTable;
-
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Order Management'
-        },
-        search: {
-            active: true,
-            changed: (value: string) => {
-                this.search.setValue(value);
-                setTimeout(() => this._onRefreshTable(), 100);
-            }
-        },
-        add: {
-            // permissions: ['INVENTORY.ISI.CREATE'],
-        },
-        export: {
-            permissions: ['OMS.EXPORT'],
-            useAdvanced: true,
-            pageType: 'stores'
-        },
-        import: {
-            permissions: ['OMS.IMPORT'],
-            useAdvanced: true,
-            pageType: 'stores'
-        },
-    };
 
     search: FormControl = new FormControl('');
     filterStatus = '';
@@ -119,17 +88,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         'delivered-date',
         'actions'
     ];
-    importBtnConfig: IButtonImportConfig = {
-        id: 'import-oms',
-        cssClass: 'sinbad',
-        color: 'accent',
-        dialogConf: {
-            title: 'Import',
-            cssToolbar: 'fuse-white-bg'
-        },
-        title: 'IMPORT',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
-    };
     hasSelected = false;
     statusOrder: any;
 
@@ -137,7 +95,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
-    isRequestingExport$: Observable<boolean>;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -154,7 +111,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromOrder.FeatureState>,
-        private exportStore: Store<fromExport.State>,
         public translate: TranslateService,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -301,16 +257,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                         : null
             };
 
-            // this.store.dispatch(OrderActions.exportRequest({ payload: body }));
-            // this.exportStore.dispatch(
-            //     ExportActions.startExportRequest({
-            //         payload: {
-            //             ...body,
-            //             page: 'oms',
-            //             configuration: {}
-            //         }
-            //     })
-            // );
+            this.store.dispatch(OrderActions.exportRequest({ payload: body }));
         }
     }
 
@@ -468,9 +415,6 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
 
                 this.isLoading$ = this.store.select(OrderSelectors.getIsLoading);
-                this.isRequestingExport$ = this.exportStore.select(
-                    ExportSelector.getRequestingState
-                );
 
                 this._initStatusOrder();
 
@@ -579,26 +523,26 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
                     });
 
                 // Filter by search column
-                // this.search.valueChanges
-                //     .pipe(
-                //         distinctUntilChanged(),
-                //         debounceTime(1000),
-                //         // filter(v => {
-                //         //     if (v) {
-                //         //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
-                //         //     }
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        // filter(v => {
+                        //     if (v) {
+                        //         return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                        //     }
 
-                //         //     return true;
-                //         // }),
-                //         takeUntil(this._unSubs$)
-                //     )
-                //     .subscribe(v => {
-                //         if (v) {
-                //             // localStorage.setItem('filter.search.order', v);
-                //         }
+                        //     return true;
+                        // }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        if (v) {
+                            // localStorage.setItem('filter.search.order', v);
+                        }
 
-                //         this._onRefreshTable();
-                //     });
+                        this._onRefreshTable();
+                    });
 
                 this.store
                     .select(OrderSelectors.getIsRefresh)

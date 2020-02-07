@@ -184,44 +184,22 @@
                     <div class="form-box" formGroupName="storeId">
                         <span class="mat-subheading-2">Store ID</span>
 
-                        <div class="custom-field-right mt-20" fxLayout="row" fxLayoutAlign="start center">
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
-                                fxFlexAlign="start"
+                                fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="hasError('storeInfo.storeId.id')"
-                                class="pt-16"
                             >
                                 *ID
                             </label>
 
-                            <div
-                                fxLayout="column"
-                                fxLayoutAlign="start stretch"
-                                fxFlex="50"
-                            >
-                                <div fxLayout="row" fxLayoutAlign="start start" class="mt-8">
-                                    <!-- RADIO GROUP -->
-                                    <mat-radio-group [formControl]="storeIdType" class="pt-8">
-                                        <mat-radio-button value="manual">Manually</mat-radio-button>
-                                        <mat-radio-button value="auto" [disabled]="!storeIdNextNumber">Auto Generate
-                                            <span class="grey-fg">({{ storeIdNextNumber }})</span>
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                    <!-- / RADIO GROUP -->
-                                    <!-- HELP -->
-                                    <mat-icon class="grey-fg" style="font-size: 16px;" matTooltip="You can change this AutoGenerate Store ID Number in Store Setting">help</mat-icon>
-                                    <!-- / HELP -->
-                                </div>
-                                <!-- FORM FIELD INPUT -->
-                                <mat-form-field appearance="outline" [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }" [fxHide]="this.storeIdType.value === 'auto'">
-                                    <input matInput name="id" formControlName="id" />
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="id" formControlName="id" />
 
-                                    <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
-                                        {{ getErrorMessage('storeInfo.storeId.id') }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <!-- / FORM FIELD INPUT -->
-                            </div>
+                                <mat-error *ngIf="hasError('storeInfo.storeId.id', true)">
+                                    {{ getErrorMessage('storeInfo.storeId.id') }}
+                                </mat-error>
+                            </mat-form-field>
                         </div>
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
