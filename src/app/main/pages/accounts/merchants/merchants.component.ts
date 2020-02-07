@@ -63,7 +63,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         },
         add: {
-            // permissions: ['INVENTORY.ISI.CREATE'],
+            permissions: ['ACCOUNT.STORE.CREATE'],
+            onClick: () => {
+                this.router.navigate(['/pages/account/stores/new']);
+            }
         },
         export: {
             permissions: ['ACCOUNT.STORE.EXPORT'],
@@ -311,7 +314,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             return '-';
         }
 
-        return salesRep.map(salesRep => salesRep.fullName).join(',<br/>');
+        return salesRep.map(sR => sR.fullName).join(',<br/>');
     }
 
     // -----------------------------------------------------------------------------------------------------
