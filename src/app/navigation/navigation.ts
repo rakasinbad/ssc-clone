@@ -167,25 +167,25 @@ export const navigation: Array<FuseNavigation> = [
                 url: '/pages/sales-force/journey-plans'
             }
         ]
+    },
+    {
+        id: 'logistic',
+        title: 'Logistics',
+        type: 'collapsable',
+        icon: 'custom-sinbad-logistics',
+        children: [
+            {
+                id: 'wh-list',
+                title: 'Warehouse List',
+                type: 'item',
+                url: '/pages/logistics/warehouses'
+            },
+            {
+                id: 'wh-coverage',
+                title: 'Warehouse Coverage',
+                type: 'item',
+                url: '/pages/logistics/warehouse-coverage'
+            }
+        ]
     }
-    // {
-    //     id: 'logistic',
-    //     title: 'Logistics',
-    //     type: 'collapsable',
-    //     icon: 'custom-sinbad-logistics',
-    //     children: [
-    //         {
-    //             id: 'wh-list',
-    //             title: 'Warehouse List',
-    //             type: 'item',
-    //             url: '/pages/logistics/warehouses'
-    //         },
-    //         {
-    //             id: 'wh-coverage',
-    //             title: 'Warehouse Coverage',
-    //             type: 'item',
-    //             url: '/pages/logistics/warehouse-coverage'
-    //         }
-    //     ]
-    // }
 ];

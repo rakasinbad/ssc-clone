@@ -65,12 +65,6 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-
-        if (this.pageType && typeof this.pageType === 'string') {
-            const pageType = this.pageType.toLowerCase();
-
-            this.store.dispatch(ImportAdvancedActions.importConfigRequest({ payload: pageType }));
-        }
     }
 
     ngAfterViewInit(): void {
@@ -81,13 +75,17 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
     }
 
     onSetup(): void {
-        if (!this.pageType) {
+        if (!this.pageType || typeof this.pageType !== 'string') {
             this._$notice.open('Please set page type first!', 'error', {
                 verticalPosition: 'bottom',
                 horizontalPosition: 'right'
             });
             return;
         }
+
+        const pageType = this.pageType.toLowerCase();
+
+        this.store.dispatch(ImportAdvancedActions.importConfigRequest({ payload: pageType }));
 
         const dialogRef = this.matDialog.open<ImportDialogComponent, IDialogData>(
             ImportDialogComponent,

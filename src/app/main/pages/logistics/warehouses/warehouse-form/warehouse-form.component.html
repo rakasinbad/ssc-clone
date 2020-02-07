@@ -1,1 +1,117 @@
-<p>warehouse-form works!</p>
+<div
+    id="warehouse"
+    class="page-layout carded fullwidth inner-scroll"
+    cdkScrollable
+    fusePerfectScrollbar
+>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form
+            id="warehouse-form"
+            name="warehouseForm"
+            class="merchant pt-24 w-100-p"
+            fxLayout="column"
+            fxFlex
+            novalidate
+        >
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Warehouse Information
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                *Warehouse ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="whId" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                *Warehouse Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="whName" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                *Faktur
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select placeholder="Choose Faktur">
+                                    <mat-option>None</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card>
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Warehouse Location
+                    </span>
+
+                    <div class="form-box">
+                        <div
+                            class="custom-field mb-16"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Warehouse Location
+                            </label>
+
+                            <agm-map
+                                fxFlex="50"
+                                class="h-230"
+                                [zoom]="opts.zoom"
+                                [minZoom]="opts.minZoom"
+                                [maxZoom]="opts.maxZoom"
+                                [streetViewControl]="false"
+                                [latitude]="opts.lat"
+                                [longitude]="opts.lng"
+                                [fitBounds]="true"
+                            ></agm-map>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                *Address
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea matInput rows="5"></textarea>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Notes Address
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <textarea matInput rows="5"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+</div>
