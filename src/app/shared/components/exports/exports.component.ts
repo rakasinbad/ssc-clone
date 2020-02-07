@@ -116,6 +116,11 @@ export class ExportsComponent implements OnInit, OnDestroy {
         setTimeout(() => this.refreshTable(), 100);
     }
 
+    refreshLog(): void {
+        this.exportStore.dispatch(ExportActions.truncateExportLogs());
+        setTimeout(() => this.refreshTable(), 100);
+    }
+
     ngOnInit(): void {
         this.exportStore.select(ExportSelector.getAllExports)
             .pipe(

@@ -15,7 +15,10 @@
 <!-- / DIALOG HEADER WRAPPER -->
 
 <!-- DIALOG SEARCH WRAPPER -->
-<div class="mb-16" fxLayout="row" fxLayoutAlign="end center">
+<div class="mb-16" fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+    <!-- REFRESH BUTTON -->
+    <button mat-flat-button class="sinbad-orange" (click)="refreshLog()"> Refresh </button>
+    <!-- / REFRESH BUTTON -->
     <!-- SEARCH -->
     <sinbad-search-bar useBorder="true" threshold="500" (changed)="onSearch($event)"></sinbad-search-bar>
     <!-- / SEARCH -->
