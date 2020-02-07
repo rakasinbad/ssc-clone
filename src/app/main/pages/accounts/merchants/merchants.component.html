@@ -6,116 +6,14 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
-        <!-- CONTENT HEADER -->
-        <div
-            class="header sinbad"
-            fxLayout="column"
-            fxLayoutAlign="center stretch"
-            fxLayoutGap="10px"
-        >
-            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
-
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <!-- APP TITLE -->
-                <span
-                    class="mat-title mb-24 mb-md-0"
-                    fxFlexAlign="center"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
-                >
-                    Store List
-                </span>
-                <!-- / APP TITLE -->
-
-                <!-- SEARCH -->
-                <div class="search-wrapper mx-32 mx-md-0">
-                    <!-- mx-12 -->
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Search for a store" />
-                    </div>
-                </div>
-                <!-- / SEARCH -->
-
-                <!-- <button mat-stroked-button color="accent" class="sinbad">
-                    IMPORT
-                </button> -->
-            </div>
-
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <ng-template [ngxPermissionsOnly]="['ACCOUNT.STORE.CREATE']">
-                        <button
-                            type="button"
-                            mat-flat-button
-                            color="accent"
-                            [routerLink]="['/pages/account/stores/new']"
-                        >
-                            ADD
-                        </button>
-                    </ng-template>
-                </div>
-
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <!-- <button type="button" mat-flat-button color="accent" class="sinbad mr-16">
-                        EXPORT
-                    </button> -->
-
-                    <app-export-advanced
-                        title="EXPORT"
-                        color="accent"
-                        action="export"
-                        [formConfig]="formConfig"
-                        (clickExport)="onExport($event)"
-                    ></app-export-advanced>
-
-                    <!-- <app-import-advanced
-                        class="mr-16"
-                        [btnConfig]="importBtnConfig"
-                    ></app-import-advanced> -->
-                </div>
-
-                <!-- <button mat-flat-button class="grey-600">
-                    <mat-icon>filter_list</mat-icon>
-                    Filter Lists
-                </button>
-
-                <button mat-flat-button class="grey-600">
-                    Group By
-                </button> -->
-            </div>
-        </div>
-        <!-- / CONTENT HEADER -->
-
-        <!-- <mat-card class="mb-24" *ngIf="search.value">
-            <div fxLayout="column" fxLayoutGap="10px">
-                <small>
-                    Filter & Group By
-                </small>
-
-                <div>
-                    <mat-chip-list aria-label="Filter">
-                        <mat-chip *ngIf="searchStore || search.value">
-                            {{ searchStore || search.value }}
-
-                            <mat-icon matChipRemove (click)="onRemoveSearchStore()">
-                                cancel
-                            </mat-icon>
-                        </mat-chip>
-
-                        <mat-chip>
-                            Geo Coverage
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-                    </mat-chip-list>
-                </div>
-            </div>
-        </mat-card> -->
-
+    <div class="center pt-12">
         <!-- CONTENT CARD -->
         <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
             <mat-table
-                class="merchants-table"
+                class="merchants-table grey-300-border mx-12"
+                style="border: 1px solid;"
                 #table
                 [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy"

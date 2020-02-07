@@ -19,6 +19,7 @@ import { MerchantsComponent } from './merchants.component';
 import { MerchantEffects } from './store/effects';
 import { fromMerchant } from './store/reducers';
 import { StoreSettingEffects } from './store/effects/store-setting.effects';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -41,6 +42,7 @@ import { StoreSettingEffects } from './store/effects/store-setting.effects';
         MerchantsRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         ImportAdvancedModule,

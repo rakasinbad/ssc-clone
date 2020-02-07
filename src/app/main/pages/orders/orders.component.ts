@@ -70,12 +70,12 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
         export: {
             permissions: ['OMS.EXPORT'],
             useAdvanced: true,
-            pageType: 'stores'
+            pageType: 'orders'
         },
         import: {
             permissions: ['OMS.IMPORT'],
             useAdvanced: true,
-            pageType: 'stores'
+            pageType: 'orders'
         },
     };
 

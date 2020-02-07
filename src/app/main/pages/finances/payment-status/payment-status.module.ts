@@ -15,6 +15,7 @@ import { PaymentStatusComponent } from './payment-status.component';
 import { ProofOfPaymentFormComponent } from './proof-of-payment-form/proof-of-payment-form.component';
 import { PaymentEffects } from './store/effects';
 import { fromPaymentStatus } from './store/reducers';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -28,6 +29,7 @@ import { fromPaymentStatus } from './store/reducers';
         PaymentStatusRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         RxReactiveFormsModule,

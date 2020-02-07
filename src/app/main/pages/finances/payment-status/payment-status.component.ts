@@ -34,6 +34,7 @@ import { statusPayment } from './status';
 import { PaymentStatusActions } from './store/actions';
 import { fromPaymentStatus } from './store/reducers';
 import { PaymentStatusSelectors } from './store/selectors';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-payment-status',
@@ -46,6 +47,33 @@ import { PaymentStatusSelectors } from './store/selectors';
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Payment Status'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+                setTimeout(() => this._onRefreshTable(), 100);
+            }
+        },
+        add: {
+            // permissions: ['INVENTORY.ISI.CREATE'],
+        },
+        export: {
+            permissions: ['FINANCE.PS.EXPORT'],
+            useAdvanced: true,
+            pageType: 'payments'
+        },
+        import: {
+            permissions: ['FINANCE.PS.IMPORT'],
+            useAdvanced: true,
+            pageType: 'payments'
+        },
+    };
 
     search: FormControl = new FormControl('');
     filterStatus = '';

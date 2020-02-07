@@ -74,10 +74,14 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['CATALOGUE.CREATE'],
         },
         export: {
-            permissions: ['CATALOGUE.EXPORT']
+            permissions: ['CATALOGUE.EXPORT'],
+            useAdvanced: true,
+            pageType: 'catalogues'
         },
         import: {
-            permissions: ['CATALOGUE.IMPORT']
+            permissions: ['CATALOGUE.IMPORT'],
+            useAdvanced: true,
+            pageType: 'catalogues'
         },
     };
 
