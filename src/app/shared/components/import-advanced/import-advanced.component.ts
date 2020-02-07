@@ -1,21 +1,26 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    Input,
-    ViewChild,
     ElementRef,
+    Input,
     OnInit,
     Renderer2,
-    AfterViewInit
+    ViewChild
 } from '@angular/core';
 import { MatDialog, ThemePalette } from '@angular/material';
-import { ImportDialogComponent } from './import-dialog/import-dialog.component';
+import { Store } from '@ngrx/store';
+import { NoticeService } from 'app/shared/helpers';
+import { ButtonDesignType, ITab, LifecyclePlatform } from 'app/shared/models';
 import { take } from 'rxjs/operators';
-import { LifecyclePlatform, ButtonDesignType, ITab } from 'app/shared/models';
+
+import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { IButtonImportConfig, IDialogData } from './models';
+import { fromImportAdvanced } from './store/reducers';
+import { ImportAdvancedActions } from './store/actions';
 
 @Component({
-    selector: 'app-import-advanced',
+    selector: 'sinbad-import-advanced',
     templateUrl: './import-advanced.component.html',
     styleUrls: ['./import-advanced.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -23,6 +28,7 @@ import { IButtonImportConfig, IDialogData } from './models';
 export class ImportAdvancedComponent implements OnInit, AfterViewInit {
     BtnDesignType = ButtonDesignType;
 
+    @Input() pageType: string;
     @Input() title?: string;
     @Input() action?: string;
     @Input() color?: ThemePalette;
@@ -40,20 +46,31 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
         {
             id: 'import-history',
             label: 'Import History',
-            disabled: true
+            disabled: false
         },
         {
             id: 'template-history',
             label: 'Template History',
-            disabled: true
+            disabled: false
         }
     ];
 
-    constructor(private matDialog: MatDialog, private renderer: Renderer2) {}
+    constructor(
+        private matDialog: MatDialog,
+        private renderer: Renderer2,
+        private store: Store<fromImportAdvanced.FeatureState>,
+        private _$notice: NoticeService
+    ) {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        if (this.pageType && typeof this.pageType === 'string') {
+            const pageType = this.pageType.toLowerCase();
+
+            this.store.dispatch(ImportAdvancedActions.importConfigRequest({ payload: pageType }));
+        }
     }
 
     ngAfterViewInit(): void {
@@ -64,6 +81,14 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
     }
 
     onSetup(): void {
+        if (!this.pageType) {
+            this._$notice.open('Please set page type first!', 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right'
+            });
+            return;
+        }
+
         const dialogRef = this.matDialog.open<ImportDialogComponent, IDialogData>(
             ImportDialogComponent,
             {
@@ -72,6 +97,7 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
                         title: this.btnConfig.dialogConf.title || 'Import',
                         cssToolbar: this.btnConfig.dialogConf.cssToolbar || null
                     },
+                    pageType: this.pageType,
                     formConfig: this.formConfig,
                     tabConfig: this._tabs
                 },

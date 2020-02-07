@@ -2,16 +2,16 @@
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
     <!-- TOP BACKGROUND -->
-    <div class="accent"></div>
+    <!-- <div class="accent"></div> -->
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
+    <div class="center pt-12">
         <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+        <!-- <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center"> -->
             <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <button mat-flat-button color="accent" (click)="addProduct()">
                     <mat-icon>add</mat-icon>
                     Add Product
@@ -24,20 +24,12 @@
                 <button type="button" mat-flat-button color="primary" (click)="onDownload('catalogueStock')">
                     <span>DOWNLOAD TEMPLATE</span>
                 </button>
-            </div>
+            </div> -->
 
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <!-- <div class="search-wrapper mx-12">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input #filter [formControl]="search" placeholder="Search" />
-                    </div>
-                </div> -->
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
                 <sinbad-search-bar placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
-                <!-- / SEARCH -->
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
         <!-- / CONTENT HEADER -->
 
         <!-- CONTENT CARD -->
@@ -51,8 +43,9 @@
             <!-- CONTENT -->
             <!-- <div class="content p-24"></div> -->
             <!-- / CONTENT -->
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
-            <mat-table class="catalogues-table" #table [dataSource]="dataSource$ | async" matSort
+            <mat-table class="catalogues-table mx-16" #table [dataSource]="dataSource$ | async" matSort
                 [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
@@ -101,7 +94,7 @@
                                             <strong>Diblokir</strong>
                                         </mat-chip>
                                         <mat-chip *ngIf="row?.stock < row?.minQty && !row?.unlimitedStock"
-                                            class="fuse-black">
+                                            class="h-20 fuse-black">
                                             <strong>Habis</strong>
                                         </mat-chip>
                                     </mat-chip-list>
@@ -313,7 +306,7 @@
                 showFirstLastButtons>
             </mat-paginator>
 
-            <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) || (isRequestingExport$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

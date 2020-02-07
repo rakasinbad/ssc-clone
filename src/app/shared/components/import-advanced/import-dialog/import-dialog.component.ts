@@ -18,6 +18,7 @@ import { IDialogData } from '../models';
 })
 export class ImportDialogComponent implements OnInit {
     dialogTitle: string;
+    importContext = { $implicit: this.data.pageType };
     cssToolbar: string | Array<string>;
     tabs: Array<ITab>;
 

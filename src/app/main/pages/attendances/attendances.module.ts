@@ -27,6 +27,7 @@ import { UserEffects } from './store/effects';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { fromAuth } from '../core/auth/store/reducers';
 import { AuthEffects } from '../core/auth/store/effects';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -46,6 +47,7 @@ import { AuthEffects } from '../core/auth/store/effects';
         AttendancesRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         NgxPermissionsModule.forChild(),
