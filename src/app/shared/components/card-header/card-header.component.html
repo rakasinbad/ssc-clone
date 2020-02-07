@@ -1,0 +1,131 @@
+<div class="m-16" fxLayout="column" fxLayoutGap="16px">
+    <div
+        style="margin-top: 19px;"
+        fxLayout="row"
+        fxLayoutAlign="space-between stretch"
+        [class.mb-0]="!addPermissions && !exportPermissions && !importPermissions && !filterListPermissions && !groupByPermissions"
+    >
+        <!-- TITLE -->
+        <p
+            class="h2 font-weight-800 m-0"
+            fxFlexAlign="center"
+        >
+            {{ cardTitle }}
+        </p>
+        <!-- / TITLE -->
+        <!-- SEARCH -->
+        <ng-container *ngIf="isSearchActive">
+            <sinbad-search-bar
+                class="w-416"
+                [useBorder]="searchUseBorder"
+                [threshold]="searchThreshold"
+                [placeholder]="searchPlaceholder"
+                (changed)="onSearchChanged($event)"
+            ></sinbad-search-bar>
+        </ng-container>
+        <!-- / SEARCH -->
+    </div>
+    <div fxLayout="row" fxLayoutGap="8px" [fxLayoutAlign]="addPermissions ? 'space-between stretch' : 'end stretch'">
+        <ng-template [ngxPermissionsOnly]="addPermissions">
+            <!-- ADD BUTTON -->
+            <button
+                mat-flat-button
+                *ngIf="addPermissions"
+                [ngClass]="buttonClasses"
+                color="accent"
+                fxFlexAlign="center"
+                (click)="onAddClicked()"
+            >
+                <!-- <mat-icon>add</mat-icon> -->
+                {{ addTitle }}
+            </button>
+        </ng-template>
+        <!-- / ADD BUTTON -->
+        <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
+        <div fxLayout="row" fxLayoutGap="16px">
+            <ng-template [ngxPermissionsOnly]="exportPermissions">
+                <!-- EXPORT BUTTON -->
+                <!-- <button
+                    mat-stroked-button
+                    *ngIf="exportPermissions"
+                    [ngClass]="buttonClasses"
+                    color="primary"
+                    fxFlexAlign="center"
+                    class="grey-300-border"
+                    (click)="onExportClicked()"
+                >
+                    {{ exportTitle }}
+                </button> -->
+                <!-- / EXPORT BUTTON -->
+                <!-- EXPORT BUTTON -->
+                <button
+                    mat-stroked-button
+                    *ngIf="exportPermissions"
+                    color="primary"
+                    [ngClass]="buttonClasses"
+                    class="grey-300-border"
+                    fxFlexAlign="center"
+                    (click)="onExportClicked()"
+                >
+                    {{ exportTitle }}
+                </button>
+                <!-- / EXPORT BUTTON -->
+            </ng-template>
+            <ng-template [ngxPermissionsOnly]="importPermissions">
+                <!-- IMPORT BUTTON -->
+                <ng-container *ngIf="config.import.useAdvanced; else useSimple;">
+                    <sinbad-import-advanced
+                        *ngIf="importPermissions"
+                        [pageType]="config?.import?.pageType || ''"
+                        [btnConfig]="importBtnConfig"
+                    ></sinbad-import-advanced>
+                </ng-container>
+                <ng-template #useSimple>
+                    <button
+                        mat-stroked-button
+                        *ngIf="importPermissions"
+                        color="primary"
+                        [ngClass]="buttonClasses"
+                        class="grey-300-border"
+                        fxFlexAlign="center"
+                        (click)="onImportClicked()"
+                    >
+                        {{ importTitle }}
+                    </button>
+                </ng-template>
+                <!-- / IMPORT BUTTON -->
+            </ng-template>
+            <ng-template [ngxPermissionsOnly]="filterListPermissions">
+                <!-- "FILTER LIST" BUTTON -->
+                <button
+                    mat-flat-button
+                    color="primary"
+                    *ngIf="filterListPermissions"
+                    [ngClass]="buttonClasses"
+                    class="red-border"
+                    fxFlexAlign="center"
+                    (click)="onFilterListClicked()"
+                >
+                    {{ filterListTitle }}
+                </button>
+                <!-- / "FILTER LIST" BUTTON -->
+            </ng-template>
+            <ng-template [ngxPermissionsOnly]="groupByPermissions">
+                <!-- "GROUP BY" BUTTON -->
+                <button
+                    mat-flat-button
+                    color="primary"
+                    *ngIf="groupByPermissions"
+                    [ngClass]="buttonClasses"
+                    class="red-border"
+                    fxFlexAlign="center"
+                    (click)="onGroupByClicked()"
+                >
+                    {{ groupByTitle }}
+                </button>
+                <!-- / "GROUP BY" BUTTON -->
+            </ng-template>
+        </div>
+        <!-- / EXPORT, IMPORT, FILTER LIST, GROUP BY -->
+    </div>
+</div>

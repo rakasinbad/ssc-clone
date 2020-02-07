@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { ImportAdvancedModule } from 'app/shared';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -14,11 +14,11 @@ import { MerchantInfoDetailComponent } from './merchant-detail/merchant-info-det
 import { MerchantLocationDetailComponent } from './merchant-detail/merchant-location-detail/merchant-location-detail.component';
 import { MerchantEmployeeComponent } from './merchant-employee/merchant-employee.component';
 import { MerchantFormComponent } from './merchant-form/merchant-form.component';
-import { MerchantSettingComponent } from './merchant-setting/merchant-setting.component';
 import { MerchantsRoutingModule } from './merchants-routing.module';
 import { MerchantsComponent } from './merchants.component';
 import { MerchantEffects } from './store/effects';
 import { fromMerchant } from './store/reducers';
+import { StoreSettingEffects } from './store/effects/store-setting.effects';
 
 /**
  *
@@ -35,13 +35,15 @@ import { fromMerchant } from './store/reducers';
         MerchantLocationDetailComponent,
         MerchantEmployeeComponent,
         MerchantFormComponent,
-        MerchantSettingComponent
+        // MerchantSettingComponent
     ],
     imports: [
         MerchantsRoutingModule,
 
         SharedModule,
         MaterialModule,
+
+        ImportAdvancedModule,
 
         // AgmCoreModule,
         // LeafletModule,
@@ -50,7 +52,7 @@ import { fromMerchant } from './store/reducers';
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
-        EffectsModule.forFeature([MerchantEffects])
+        EffectsModule.forFeature([MerchantEffects, StoreSettingEffects])
     ]
 })
 export class MerchantsModule {}

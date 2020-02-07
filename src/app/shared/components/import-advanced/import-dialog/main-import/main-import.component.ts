@@ -1,8 +1,26 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { Store } from '@ngrx/store';
+import { TranslateService } from '@ngx-translate/core';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
 import { LifecyclePlatform } from 'app/shared/models';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { IConfigImportAdvanced, IConfigMode, IConfigTemplate } from '../../models';
+import { fromImportAdvanced } from '../../store/reducers';
+import { ImportAdvancedSelectors } from '../../store/selectors';
+import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actions';
 
 @Component({
     selector: 'app-main-import',
@@ -14,7 +32,24 @@ import { LifecyclePlatform } from 'app/shared/models';
 export class MainImportComponent implements OnInit {
     form: FormGroup;
 
-    constructor(private formBuilder: FormBuilder, private _$errorMessage: ErrorMessageService) {}
+    config$: Observable<IConfigImportAdvanced>;
+    modes$: Observable<Array<IConfigMode>>;
+    templates$: Observable<Array<IConfigTemplate>>;
+
+    @Input() pageType: string;
+
+    private _unSubs$: Subject<void> = new Subject<void>();
+
+    constructor(
+        private formBuilder: FormBuilder,
+        private store: Store<fromImportAdvanced.FeatureState>,
+        public translate: TranslateService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _$errorMessage: ErrorMessageService
+    ) {
+        // Load translate
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -25,6 +60,18 @@ export class MainImportComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this._initPage();
+
+        this.store
+            .select(ImportAdvancedSelectors.getIsLoading)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(isLoading => {
+                if (isLoading) {
+                    this.form.disable();
+                } else {
+                    this.form.enable();
+                    this.form.reset();
+                }
+            });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -71,12 +118,81 @@ export class MainImportComponent implements OnInit {
         return !value ? true : value.length <= minLength;
     }
 
+    onDownload(url: string): void {
+        if (!url || !this.pageType) {
+            return;
+        }
+
+        this.store.dispatch(
+            TemplateHistoryActions.createTemplateHistoryRequest({
+                payload: {
+                    url,
+                    page: this.pageType,
+                    type: 'export_template',
+                    status: 'done',
+                    userId: null
+                }
+            })
+        );
+
+        this.store
+            .select(ImportAdvancedSelectors.getIsDownload)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(isDownload => {
+                if (isDownload) {
+                    window.open(url, '_blank');
+                }
+            });
+    }
+
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+            const mode = this.form.get('mode').value;
+
+            if (file) {
+                switch (type) {
+                    case 'docs':
+                        this._handlePage(file, mode);
+
+                        /* this.store.dispatch(
+                            OrderActions.importRequest({
+                                payload: { file, type: 'update_order_status' }
+                            })
+                        ); */
+                        // {
+                        //     const photoField = this.form.get('profileInfo.photos');
+                        //     const fileReader = new FileReader();
+                        //     fileReader.onload = () => {
+                        //         photoField.patchValue(fileReader.result);
+                        //         this.tmpPhoto.patchValue(file.name);
+                        //     };
+                        //     fileReader.readAsDataURL(file);
+                        // }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
                 break;
 
             default:
+                this.modes$ = this.store.select(ImportAdvancedSelectors.getMode);
+                this.templates$ = this.store.select(ImportAdvancedSelectors.getTemplate);
+
                 this._initForm();
                 break;
         }
@@ -91,5 +207,25 @@ export class MainImportComponent implements OnInit {
                 })
             ]
         });
+    }
+
+    private _handlePage(file: File, mode: string): void {
+        switch (this.pageType) {
+            case 'oms':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-order-parcels'
+                        }
+                    })
+                );
+                break;
+
+            default:
+                break;
+        }
     }
 }
