@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from '../core/auth/auth.guard';
 import { NgxPermissionsGuard } from 'ngx-permissions';
+import { MerchantSettingComponent } from './merchants/merchant-setting/merchant-setting.component';
 
 const routes: Routes = [
     {
@@ -36,7 +37,7 @@ const routes: Routes = [
     },
     {
         path: 'store-setting',
-        loadChildren: () => import('./merchants/merchant-setting/merchant-setting.module').then(m => m.MerchantSettingModule),
+        component: MerchantSettingComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {

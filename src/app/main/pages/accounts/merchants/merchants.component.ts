@@ -15,13 +15,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import {
-    IQueryParams,
-    LifecyclePlatform,
-    SupplierStore,
-    User,
-    ButtonDesignType
-} from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform, SupplierStore, User } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -35,7 +29,6 @@ import { locale as indonesian } from './i18n/id';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
-import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 
 @Component({
     selector: 'app-merchants',
@@ -88,17 +81,6 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'status',
         'actions'
     ];
-    importBtnConfig: IButtonImportConfig = {
-        id: 'import-journey-plan',
-        cssClass: 'sinbad',
-        color: 'accent',
-        dialogConf: {
-            title: 'Import',
-            cssToolbar: 'fuse-white-bg'
-        },
-        title: 'IMPORT ADV',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
-    };
 
     dataSource$: Observable<Array<SupplierStore>>;
     selectedRowIndex$: Observable<string>;

@@ -8,8 +8,8 @@ app-merchants {
             }
         }
 
-        > .center {
-            > .header {
+        >.center {
+            >.header {
                 &.sinbad {
                     height: 100px !important;
                     min-height: 100px !important;
@@ -96,7 +96,6 @@ app-merchants {
         .mat-header-cell {
             text-align: left;
             font-weight: 700;
-            word-break: break-word;
 
             &:not(:last-of-type) {
                 padding-right: 8px;
@@ -177,11 +176,11 @@ app-merchants {
         }
 
         .mat-column-store-phone-no {
-            flex: 0 1 15%;
+            flex: 0 1 12%;
         }
 
         .mat-column-owner-phone-no {
-            flex: 0 1 15%;
+            flex: 0 1 12%;
         }
 
         .mat-column-owner-name {
@@ -189,7 +188,7 @@ app-merchants {
         }
 
         .mat-column-store-segment {
-            flex: 0 1 100px;
+            flex: 0 1 70px;
         }
 
         .mat-column-store-type {
@@ -205,11 +204,11 @@ app-merchants {
         }
 
         .mat-column-status {
-            flex: 0 1 75px;
+            flex: 0 1 70px;
         }
 
         .mat-column-actions {
-            flex: 0 1 90px;
+            flex: 0 1 80px;
             justify-content: flex-end;
         }
 

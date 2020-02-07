@@ -31,7 +31,6 @@ import { StoreCatalogueActions } from './store/actions';
 import { fromStoreCatalogue } from './store/reducers';
 import { StoreCatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-in-store-inventories',
@@ -42,25 +41,6 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'In-Store Inventory'
-        },
-        search: {
-            active: true,
-        },
-        add: {
-            // permissions: ['INVENTORY.ISI.CREATE'],
-        },
-        export: {
-            // permissions: ['INVENTORY.ISI.EXPORT']
-        },
-        import: {
-            // permissions: ['INVENTORY.ISI.IMPORT']
-        },
-    };
-    
     total: number;
     search: FormControl;
     displayedColumns = [
@@ -129,14 +109,6 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         );
     }
 
-    private applyCardHeaderEvent(): void {
-        // Mengimplementasi event "Search" dari card header menuju fungsi onSearch.
-        this.cardHeaderConfig.search.changed = (value: string) => {
-            this.search.setValue(value);
-            setTimeout(() => this.onRefreshTable(), 100);
-        };
-    }
-
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
@@ -144,7 +116,6 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
-        this.applyCardHeaderEvent();
 
         this._unSubs$ = new Subject<void>();
         this.search = new FormControl('' , [
@@ -195,11 +166,11 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 
         this.initTable();
 
-        // this.search.valueChanges
-        //     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-        //     .subscribe(() => {
-        //         this.onRefreshTable();
-        //     });
+        this.search.valueChanges
+            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+            .subscribe(() => {
+                this.onRefreshTable();
+            });
 
         // this.store
         //     .select(StoreSelectors.getIsRefresh)

@@ -15,9 +15,8 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -89,17 +88,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // 'proof-of-payment-status',
         'actions'
     ];
-    importBtnConfig: IButtonImportConfig = {
-        id: 'import-payment-status',
-        cssClass: 'sinbad',
-        color: 'accent',
-        dialogConf: {
-            title: 'Import',
-            cssToolbar: 'fuse-white-bg'
-        },
-        title: 'IMPORT',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
-    };
     hasSelected = false;
     statusPayment: any;
     today = new Date();

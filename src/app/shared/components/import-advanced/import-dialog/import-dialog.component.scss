@@ -36,7 +36,6 @@
 
     .mat-tab-label {
         height: 64px;
-        opacity: 1;
 
         &.mat-tab-label-active {
             > .mat-tab-label-content {
@@ -49,16 +48,7 @@
         .section {
             .section__top--contents {
                 .section__title {
-                    color: #25282b;
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-            }
-
-            .section__bottom--contents {
-                .section__subtitle {
-                    color: #25282b;
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: 600;
                 }
             }

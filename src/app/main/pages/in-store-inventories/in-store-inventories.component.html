@@ -6,11 +6,74 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center pt-12">
-        <div class="content-card mat-elevation-z1">
-            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+    <div class="center">
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="end center">
+            <!--  <h2 class="m-0">Full width with content scroll</h2> -->
 
-            <mat-table class="merchants-table mx-16" #table [dataSource]="dataSource$ | async" matSort
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
+            <!-- <button mat-flat-button color="accent" [routerLink]="['/pages/account/stores/new']">
+                    <mat-icon>add</mat-icon>
+
+                    TAMBAH TOKO
+                </button> -->
+
+            <!-- <button mat-stroked-button color="accent" class="sinbad">
+                    IMPORT
+                </button> -->
+            <!-- </div> -->
+
+            <!-- <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px"> -->
+            <!-- <button mat-flat-button class="grey-600">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter Lists
+                </button>
+
+                <button mat-flat-button class="grey-600">
+                    Group By
+                </button> -->
+            <!-- </div> -->
+            <div fxFlex="grow" fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- TODAY DATE -->
+                <p>Today : {{ today | date: 'dd-MMMM-yyyy' }}</p>
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-12">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input #filter [formControl]='search' placeholder="Search" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- <mat-card class="mb-24" *ngIf="search.value">
+            <div fxLayout="column" fxLayoutGap="10px">
+                <small>
+                    Filter & Group By
+                </small>
+
+                <div>
+                    <mat-chip-list aria-label="Filter">
+                        <mat-chip *ngIf="searchStore || search.value">
+                            {{ searchStore || search.value }}
+
+                            <mat-icon matChipRemove (click)="onRemoveSearchStore()">
+                                cancel
+                            </mat-icon>
+                        </mat-chip>
+
+                    </mat-chip-list>
+                </div>
+            </div>
+        </mat-card> -->
+
+        <!-- CONTENT CARD -->
+        <!-- <div class="content-card"></div> -->
+
+        <div class="content-card mat-elevation-z1">
+            <mat-table class="merchants-table" #table [dataSource]="dataSource$ | async" matSort
                 [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
