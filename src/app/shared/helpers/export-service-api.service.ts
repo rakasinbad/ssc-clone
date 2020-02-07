@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { IConfigImportAdvanced } from '../components/import-advanced/models';
 import { HelperService } from './helper.service';
+import { ExportConfiguration } from '../components/exports/models';
 
 /**
  *
@@ -53,7 +54,35 @@ export class ExportServiceApiService {
         let params = new HttpParams();
 
         if (!params.has('type')) {
-            params = params.set('type', type);
+            switch (type as ExportConfiguration['page']) {
+                case 'stores': {
+                    params = params.set('type', 'stores');
+                    break;
+                }
+                case 'catalogues': {
+                    params = params.set('type', 'catalogues');
+                    break;
+                }
+                case 'payments': {
+                    params = params.set('type', 'fms');
+                    break;
+                }
+                case 'orders': {
+                    params = params.set('type', 'oms');
+                    break;
+                }
+                case 'portfolios': {
+                    params = params.set('type', 'portfolios');
+                    break;
+                }
+                case 'journey-plans': {
+                    params = params.set('type', 'journey_plans');
+                    break;
+                }
+                default: {
+                    params = params.set('type', type);
+                }
+            }
         }
 
         return this.http.get<IConfigImportAdvanced>(this._url, { params });
