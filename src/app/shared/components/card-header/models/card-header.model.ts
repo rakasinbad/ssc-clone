@@ -6,6 +6,13 @@ interface CardHeaderBaseConfig {
     label?: string;
 }
 
+interface CardHeaderViewByConfig {
+    // Berisi daftar view by yang tersedia untuk dipilih.
+    list?: Array<{ id: string; label: string }>;
+    // Berisi function yang akan dilakukan ketika memilih view by.
+    onChanged?(viewBy: { id: string; label: string }): void;
+}
+
 interface CardHeaderSearchConfig extends ISearchBarConfiguration {
     // Berisi nilai untuk memunculkan fitur search.
     active?: boolean;
@@ -28,6 +35,7 @@ interface CardHeaderAdvancedButtonConfig extends CardHeaderButtonConfig {
 export interface ICardHeaderConfiguration {
     title?: CardHeaderBaseConfig;
     search?: CardHeaderSearchConfig;
+    viewBy?: CardHeaderViewByConfig ;
     add?: CardHeaderButtonConfig;
     export?: CardHeaderAdvancedButtonConfig;
     import?: CardHeaderAdvancedButtonConfig;

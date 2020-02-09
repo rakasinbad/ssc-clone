@@ -1,8 +1,6 @@
 <div class="m-16" fxLayout="column" fxLayoutGap="16px">
-    <div
-        style="margin-top: 19px;"
-        fxLayout="row"
-        fxLayoutAlign="space-between stretch"
+    <!-- TITLE & SEARCH SECTION -->
+    <div style="margin-top: 19px;" fxLayout="row" fxLayoutAlign="space-between stretch"
         [class.mb-0]="!addPermissions && !exportPermissions && !importPermissions && !filterListPermissions && !groupByPermissions"
     >
         <!-- TITLE -->
@@ -25,6 +23,28 @@
         </ng-container>
         <!-- / SEARCH -->
     </div>
+    <!-- / TITLE & SEARCH SECTION -->
+    <!-- "VIEW BY" SECTION -->
+    <div *ngIf="viewByList.length > 0" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <!-- "VIEW BY" LABEL -->
+        <p>View by :</p>
+        <!-- / "VIEW BY" LABEL -->
+        <!-- "VIEW BY" LIST -->
+        <mat-chip-list class="custom-chip-list" aria-label="View by selection">
+            <mat-chip
+                *ngFor="let viewBy of viewByList"
+                [ngClass]="viewBy.id === selectedViewById ? selectedViewByClasses : notSelectedViewByClasses"
+                [class.fuse-white-bg]="true"
+                [disableRipple]="true"
+                (click)="onViewByChanged(viewBy)"
+            >
+                {{ viewBy.label }}
+            </mat-chip>
+        </mat-chip-list>
+        <!-- / "VIEW BY" LIST -->
+    </div>
+    <!-- / "VIEW BY" SECTION -->
+    <!-- BUTTONS SECTION -->
     <div fxLayout="row" fxLayoutGap="8px" [fxLayoutAlign]="addPermissions ? 'space-between stretch' : 'end stretch'">
         <ng-template [ngxPermissionsOnly]="addPermissions">
             <!-- ADD BUTTON -->
@@ -128,4 +148,5 @@
         </div>
         <!-- / EXPORT, IMPORT, FILTER LIST, GROUP BY -->
     </div>
+    <!-- BUTTONS SECTION -->
 </div>

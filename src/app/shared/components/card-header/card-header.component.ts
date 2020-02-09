@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { ICardHeaderConfiguration } from './models/card-header.model';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { TNullable, ButtonDesignType } from 'app/shared/models';
@@ -6,6 +6,7 @@ import { IButtonImportConfig } from '../import-advanced/models';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fromExport } from '../exports/store/reducers';
 import { ExportActions } from '../exports/store/actions';
+import { MatChip } from '@angular/material';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -17,6 +18,16 @@ import { ExportActions } from '../exports/store/actions';
 export class CardHeaderComponent implements OnInit {
 
     importBtnConfig: IButtonImportConfig;
+
+    selectedViewByClasses = {
+        'red-fg': true,
+        'red-border': true,
+    };
+
+    notSelectedViewByClasses = {
+        'black-fg': true,
+        'grey-300-border': true,
+    };
 
     // Class-class untuk mengatur ukuran tombol.
     buttonClasses = {
@@ -134,11 +145,22 @@ export class CardHeaderComponent implements OnInit {
     // tslint:disable-next-line:no-output-rename
     @Output('onClickGroupBy') clickGroupBy: EventEmitter<void> = new EventEmitter<void>();
 
+    /**
+     * Konfigurasi "View by".
+     */
+    // Menyimpan ID view by yang terpilih.
+    selectedViewById = '';
+    // tslint:disable-next-line:no-input-rename
+    @Input('viewByList') viewByList: Array<{ id: string; label: string; }> = [];
+    // tslint:disable-next-line:no-output-rename
+    @Output('onViewByChanged') viewByChanged: EventEmitter<{ id: string; label: string; }> = new EventEmitter<{ id: string; label: string; }>();
+
 
     /**
      * Constructor.
      */
     constructor(
+        private cd$: ChangeDetectorRef,
         private ngxPermissionsService: NgxPermissionsService,
         private exportStore: NgRxStore<fromExport.State>,
     ) {}
@@ -177,6 +199,18 @@ export class CardHeaderComponent implements OnInit {
                 // Memeriksa konfigurasi penggunaan border pada "Search".
                 if (this.config.search.useBorder) {
                     this.searchUseBorder = this.config.search.useBorder;
+                }
+            }
+
+            // Memeriksa konfigurasi "View by".
+            if (this.config.viewBy) {
+                // Memeriksa konfigurasi daftar pilihan view by.
+                if (this.config.viewBy.list) {
+                    this.viewByList = this.config.viewBy.list;
+
+                    if (this.config.viewBy.list.length > 0) {
+                        this.onViewByChanged(this.config.viewBy.list[0]);
+                    }
                 }
             }
 
@@ -260,10 +294,6 @@ export class CardHeaderComponent implements OnInit {
         }
     }
 
-    private processOnSearchChanged(value: string): void {
-
-    }
-
     /**
      * Fungsi untuk meneruskan "event" ketika menekan tombol "Add".
      */
@@ -272,6 +302,19 @@ export class CardHeaderComponent implements OnInit {
             this.config.add.onClick();
         } else {
             this.clickAdd.emit();
+        }
+    }
+
+    /**
+     * Fungsi untuk meneruskan "event" ketika menekan pilih "View by" berubah.
+     */
+    onViewByChanged(viewBy: { id: string; label: string }): void {
+        this.selectedViewById = viewBy.id;
+
+        if (this.config.viewBy.onChanged) {
+            this.config.viewBy.onChanged(viewBy);
+        } else {
+            this.viewByChanged.emit(viewBy);
         }
     }
 
