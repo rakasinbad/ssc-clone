@@ -49,7 +49,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = 10;
+    readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     // Untuk menentukan konfigurasi card header.

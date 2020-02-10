@@ -49,6 +49,7 @@ import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportActions } from 'app/shared/components/exports/store/actions';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { environment } from 'environments/environment';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -61,6 +62,8 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -103,7 +106,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     statusCatalogue: any;
     findCatalogueMode: TFindCatalogueMode = 'all';
 
-    defaultPageSize = 100;
+    // defaultPageSize = 100;
     dataSource$: Observable<Array<Catalogue>>;
     isLoading$: Observable<boolean>;
     isRequestingExport$: Observable<boolean>;

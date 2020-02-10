@@ -54,6 +54,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
 
     activeTab: string = 'all';
 

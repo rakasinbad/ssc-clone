@@ -41,6 +41,9 @@ import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 })
 export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
 
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -80,8 +83,6 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     totalPortfolios$: Observable<number>;
     // Untuk unsubscribe semua Observable.
     subs$: Subject<void> = new Subject<void>();
-    // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
-    defaultPageSize: number = environment.pageSize;
     // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
     displayedColumns: Array<string> = [
         // 'checkbox',

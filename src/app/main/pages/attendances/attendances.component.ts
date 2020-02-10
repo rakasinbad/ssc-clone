@@ -57,6 +57,9 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
     total: number;
     displayedColumns = [
         'idToko',
@@ -81,9 +84,6 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             changed: (value: string) => this.onSearch(value)
         },
     };
-
-    defaultPageSize = environment.pageSize;
-    defaultPageSizeTable = environment.pageSizeTable;
 
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;

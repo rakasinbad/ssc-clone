@@ -42,6 +42,9 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+    
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -269,7 +272,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
 // 
     private initTable(): void {
         const data: IQueryParams = {
-            limit: this.paginator.pageSize || environment.pageSize,
+            limit: this.paginator.pageSize || this.defaultPageSize,
             skip: this.paginator.pageSize * this.paginator.pageIndex || 0
         };
 

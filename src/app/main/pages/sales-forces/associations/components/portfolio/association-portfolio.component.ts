@@ -70,6 +70,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
 
     activeTab: string = null;
 
@@ -291,7 +292,7 @@ export class AssociationPortfolioComponent implements OnInit, OnDestroy, AfterVi
     private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || 5,
+                limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0
             };
 
