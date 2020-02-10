@@ -5,7 +5,8 @@
     >
         <!-- TITLE -->
         <p
-            class="h2 font-weight-800 m-0"
+            class="font-weight-600 m-0"
+            style="font-size: 18px;"
             fxFlexAlign="center"
         >
             {{ cardTitle }}
@@ -93,7 +94,7 @@
             </ng-template>
             <ng-template [ngxPermissionsOnly]="importPermissions">
                 <!-- IMPORT BUTTON -->
-                <ng-container *ngIf="config.import.useAdvanced; else useSimple;">
+                <ng-container *ngIf="config?.import?.useAdvanced; else useSimple;">
                     <sinbad-import-advanced
                         *ngIf="importPermissions"
                         [pageType]="config?.import?.pageType || ''"

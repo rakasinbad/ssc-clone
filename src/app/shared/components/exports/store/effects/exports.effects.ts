@@ -360,6 +360,7 @@ export class ExportsEffects {
 
                     break;
                 }
+                case 'portfolios': break;
                 default: {
                     // Error terlempar jika tipe halaman tidak dikenal.
                     err.id = 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED';

@@ -56,7 +56,7 @@ app-sales-reps {
 
     .sales-reps-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;

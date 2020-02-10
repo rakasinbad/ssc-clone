@@ -4,64 +4,14 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
-        <!-- HEADER -->
-        <div
-            class="header sinbad"
-            fxLayout="row"
-            fxLayoutAlign="end center"
-        >
-            <!-- <div class="logo mb-24 mb-md-0" fxLayout="row" fxLayoutAlign="start center">
-                <button
-                    mat-raised-button
-                    color="accent"
-                    class="sinbad"
-                    type="button"
-                >
-                    EXPORT
-                </button>
-                <button
-                    mat-stroked-button
-                    color="accent"
-                    class="sinbad"
-                    type="button"
-                >
-                    IMPOORT
-                </button>
-            </div> -->
-
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH -->
-                <!-- <div class="search-wrapper mx-12">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input #filter [formControl]='search' placeholder="Cari di sini"/>
-                    </div>
-                </div> -->
-                <sinbad-search-bar placeholder="Search" (changed)="onSearch($event)"></sinbad-search-bar>
-                <!-- / SEARCH -->
-            </div>
-            <!-- ADD BUTTON -->
-            <!-- <mat-button-toggle-group class="fuse-white mt-24 mt-md-0" #group="matButtonToggleGroup">
-                <mat-button-toggle value="left" aria-label="Filter">
-                    <mat-icon>filter_list</mat-icon>
-                </mat-button-toggle>
-
-                <mat-button-toggle
-                    value="center"
-                    aria-label="Add New Attendance"
-                    [routerLink]="['/pages/attendances/new']"
-                >
-                    <mat-icon>add</mat-icon>
-                </mat-button-toggle>
-            </mat-button-toggle-group> -->
-        </div>
-        <!-- / HEADER -->
-
-        <!-- CONTENT CARD -->
+    <div class="center pt-12">
+        <!-- CONTENT CARD -->        
         <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
             <mat-table
-                class="attendances-table"
+                class="attendances-table grey-300-border mx-12"
+                style="border: 1px solid;"
                 #table
                 [dataSource]="dataSource$ | async"
                 matSort

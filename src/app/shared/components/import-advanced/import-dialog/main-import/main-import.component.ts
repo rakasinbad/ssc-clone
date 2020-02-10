@@ -247,6 +247,7 @@ export class MainImportComponent implements OnInit {
 
     private _handlePage(file: File, mode: string): void {
         switch (this.pageType) {
+            case 'payments':
             case 'orders':
                 this.store.dispatch(
                     ImportAdvancedActions.importConfirmRequest({
@@ -255,6 +256,42 @@ export class MainImportComponent implements OnInit {
                             page: this.pageType,
                             type: mode,
                             endpoint: 'import-order-parcels'
+                        }
+                    })
+                );
+                break;
+            case 'catalogues':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-catalogues'
+                        }
+                    })
+                );
+                break;
+            case 'journey-plans':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-journey-plans'
+                        }
+                    })
+                );
+                break;
+            case 'stores':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-stores'
                         }
                     })
                 );

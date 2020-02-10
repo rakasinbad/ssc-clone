@@ -137,6 +137,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         private _notice: NoticeService,
         private ngxPermissionsService: NgxPermissionsService,
     ) {
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -158,7 +160,6 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         this.statusCatalogue = statusCatalogue;
 
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
@@ -326,19 +327,62 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         ).pipe(
             takeUntil(this._unSubs$)
         ).subscribe(payload => {
-            const newNavigations = this._$catalogue
-                                        .getCatalogueStatuses({
-                                            allCount: payload.totalAllStatus,
-                                            liveCount: payload.totalActive,
-                                            emptyCount: payload.totalEmptyStock,
-                                            blockedCount: payload.totalBanned
-                                        });
-            
-            if (Array.isArray(Object.keys(newNavigations))) {
-                for (const [idx, navigation] of Object.keys(newNavigations).entries()) {
-                    this._fuseNavigationService.updateNavigationItem(statusCatalogue[idx].id, { title: newNavigations[navigation] }, 'customNavigation');
-                }
-            }
+            const {
+                totalAllStatus: allCount,
+                totalActive: liveCount,
+                totalEmptyStock: emptyStock,
+                totalBanned: blockedCount,
+            } = payload;
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'all-type',
+                        properties: { title: `All (${allCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'live',
+                        properties: { title: `Live (${liveCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'empty',
+                        properties: { title: `Empty (${emptyStock})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'banned',
+                        properties: { title: `Banned (${blockedCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'inactive',
+                        properties: { title: `Inactive` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
         });
 
         this.store.select(

@@ -46,6 +46,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ValidationError } from '@ngx-pwa/local-storage';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-attendances',
@@ -69,6 +70,17 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // 'inventory',
         'actions'
     ];
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Attendances'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => this.onSearch(value)
+        },
+    };
 
     defaultPageSize = environment.pageSize;
     defaultPageSizeTable = environment.pageSizeTable;

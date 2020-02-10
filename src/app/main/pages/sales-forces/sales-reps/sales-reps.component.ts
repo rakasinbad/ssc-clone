@@ -32,6 +32,8 @@ import { SalesRep, SalesRepBatchActions } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-sales-reps',
@@ -56,6 +58,25 @@ import { SalesRepSelectors } from './store/selectors';
 export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Sales Rep'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
+        },
+        add: {
+            permissions: ['SRM.SR.CREATE'],
+            onClick: () => {
+                this.router.navigate(['/pages/sales-force/sales-rep/new']);
+            }
+        }
+    };
 
     search: FormControl = new FormControl('');
     displayedColumns = [
@@ -108,6 +129,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private domSanitizer: DomSanitizer,
         private ngxPermissions: NgxPermissionsService,
+        private router: Router,
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
