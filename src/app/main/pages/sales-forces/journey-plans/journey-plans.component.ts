@@ -363,6 +363,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Load translate
                 this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
+                this.paginator.pageSize = this.defaultPageSize;
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',
