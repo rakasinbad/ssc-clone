@@ -36,56 +36,75 @@ $sinbadPalettes: (
         '5': '#FAFAFA',
         '10': '#E8E8E8',
         '40': '#CACCCF',
+        '50': '#25282B',
         '60': '#A0A4A8',
         '80': '#52575C',
         '100': '#25282B',
     ),
 );
 
-// -----------------------------------------------------------------------------------------------------
-// @ Sinbad color classes
-// -----------------------------------------------------------------------------------------------------
-@mixin sinbad-color-classes($palettes) {
-    @each $colorName, $colorLevels in $sinbadPalettes {
-        @each $level, $color in $colorLevels {
-            $_color: unquote($color);
+@mixin generate-sinbad-color-classes($colorName, $level, $color) {
+    $_color: unquote($color);
 
-            .#{$sinbadPrefix}-#{$colorName}-#{$level} {
-                color: $_color !important;
-            }
+    .#{$sinbadPrefix}-#{$colorName}#{$level} {
+        background-color: $_color !important;
 
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-bg {
-                background-color: $_color !important;
-            }
+        @if ($colorName != 'white') {
+            color: white !important;
+        } @else {
+            $black: map-get($sinbadPalettes, 'black');
+            $black50: map-get($black, '50');
 
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-fg {
-                color: $_color !important;
-            }
-
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-border {
-                border-color: $_color !important;
-            }
-        
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-border-top {
-                border-top-color: $_color !important;
-            }
-        
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-border-right {
-                border-right-color: $_color !important;
-            }
-        
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-border-bottom {
-                border-bottom-color: $_color !important;
-            }
-        
-            .#{$sinbadPrefix}-#{$colorName}-#{$level}-border-left {
-                border-left-color: $_color !important;
-            }
+            color: $black50 !important;
         }
     }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-bg {
+        background-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-fg {
+        color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border {
+        border-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-top {
+        border-top-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-right {
+        border-right-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-bottom {
+        border-bottom-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-left {
+        border-left-color: $_color !important;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Prepare Sinbad color classes
+// -----------------------------------------------------------------------------------------------------
+@mixin prepare-sinbad-color-classes($palettes) {
+    @each $colorName, $colorLevels in $sinbadPalettes {
+        $color50: map-get($colorLevels, '50');
+        @include generate-sinbad-color-classes($colorName, '', $color50);
+
+        @each $level, $color in $colorLevels {
+            @include generate-sinbad-color-classes($colorName, '-#{$level}', $color);
+        }
+    }
+    
+    @include generate-sinbad-color-classes('white', '', '#FFFFFF');
 }
 
 // -----------------------------------------------------------------------------------------------------
 // @ Generate Sinbad color classes for default Material palettes
 // -----------------------------------------------------------------------------------------------------
-@include sinbad-color-classes($matPalettes);
+@include prepare-sinbad-color-classes($matPalettes);
