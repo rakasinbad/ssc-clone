@@ -50,7 +50,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
     templateUrl: './association-portfolio.component.html',
     styleUrls: ['./association-portfolio.component.scss'],
     host: {
-        class: 'content-card'
+        class: 'content-card mx-16 sinbad-black-10-border'
     },
     animations: [
         fuseAnimations,

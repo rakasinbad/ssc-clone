@@ -49,7 +49,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
     templateUrl: './association-sales-rep.component.html',
     styleUrls: ['./association-sales-rep.component.scss'],
     host: {
-        class: 'content-card'
+        class: 'content-card mx-16 sinbad-black-10-border'
     },
     animations: [
         fuseAnimations,
