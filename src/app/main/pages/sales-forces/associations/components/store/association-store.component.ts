@@ -34,7 +34,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
     templateUrl: './association-store.component.html',
     styleUrls: ['./association-store.component.scss'],
     host: {
-        class: 'content-card'
+        class: 'content-card mx-16 sinbad-black-10-border'
     },
     animations: [
         fuseAnimations,
