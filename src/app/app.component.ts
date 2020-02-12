@@ -35,6 +35,10 @@ import { statusOrder } from './main/pages/orders/status';
 import { NavigationService, NoticeService } from './shared/helpers';
 import * as fromRoot from './store/app.reducer';
 
+import * as LogRocket from 'logrocket';
+
+LogRocket.init('y6lqw0/testing-ssc');
+
 @Component({
     selector: 'app',
     templateUrl: './app.component.html',
