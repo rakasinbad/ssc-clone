@@ -6,12 +6,23 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { WarehousesStoreModule } from './store';
-import { WarehouseFormComponent } from './warehouse-form/warehouse-form.component';
+import {
+    WarehouseDetailGeneralComponent,
+    WarehouseDetailLocationComponent
+} from './warehouse-detail';
+import { WarehouseDetailComponent } from './warehouse-detail/warehouse-detail.component';
+import { WarehouseFormComponent } from './warehouse-form';
 import { WarehousesRoutingModule } from './warehouses-routing.module';
 import { WarehousesComponent } from './warehouses.component';
 
 @NgModule({
-    declarations: [WarehousesComponent, WarehouseFormComponent],
+    declarations: [
+        WarehousesComponent,
+        WarehouseFormComponent,
+        WarehouseDetailComponent,
+        WarehouseDetailGeneralComponent,
+        WarehouseDetailLocationComponent
+    ],
     imports: [
         WarehousesRoutingModule,
 

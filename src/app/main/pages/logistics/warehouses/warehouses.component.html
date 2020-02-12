@@ -154,6 +154,7 @@
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="warehouse"
+                    [routerLink]="[row?.id, 'detail']"
                 ></mat-row>
             </mat-table>
 

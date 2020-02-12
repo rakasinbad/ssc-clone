@@ -21,7 +21,14 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { District, IQueryParams, SupplierStore, Urban } from 'app/shared/models';
+import {
+    District,
+    IBreadcrumbs,
+    IQueryParams,
+    LifecyclePlatform,
+    SupplierStore,
+    Urban
+} from 'app/shared/models';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { fromEvent, Observable, Subject } from 'rxjs';
@@ -29,6 +36,7 @@ import { filter, map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
 import * as fromWarehouses from '../store/reducers';
 import { WarehouseSelectors } from '../store/selectors';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-warehouse-form',
@@ -86,6 +94,21 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     @ViewChild('search', { static: false }) searchElRef: ElementRef;
 
+    private _breadCrumbs: Array<IBreadcrumbs> = [
+        {
+            title: 'Home'
+        },
+        {
+            title: 'Logistics'
+        },
+        {
+            title: 'Warehouse List'
+        },
+        {
+            title: 'Add Warehouse'
+        }
+    ];
+
     private _unSubs$: Subject<void> = new Subject<void>();
     private _selectedDistrict = null;
     private _selectedUrban = null;
@@ -94,10 +117,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     constructor(
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
+        private location: Location,
         private route: ActivatedRoute,
         private router: Router,
         private agmGeocoder: AgmGeocoder,
-        private mapAPILoader: MapsAPILoader,
         private store: Store<fromWarehouses.FeatureState>,
         private _$errorMessage: ErrorMessageService,
         private _$notice: NoticeService
@@ -147,15 +170,9 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        const { id } = this.route.snapshot.params;
+        console.log('Loc', this.location.getState());
 
-        if (id === 'new') {
-            this.pageType = 'new';
-        } else if (Math.sign(id) === 1) {
-            this.pageType = 'edit';
-        } else {
-            this.router.navigateByUrl('/pages/logistics/warehouses');
-        }
+        this._initPage();
 
         this._initForm();
 
@@ -243,20 +260,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(FormActions.resetClickCancelButton());
-
-        this.store.dispatch(FormActions.resetCancelButtonAction());
-
-        this.store.dispatch(UiActions.hideFooterAction());
-
-        // Reset district state
-        this.store.dispatch(DropdownActions.resetDistrictsState());
-
-        // Reset urban state
-        this.store.dispatch(DropdownActions.resetUrbansState());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -562,6 +566,61 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.OnDestroy:
+                this.store.dispatch(FormActions.resetClickCancelButton());
+
+                this.store.dispatch(FormActions.resetCancelButtonAction());
+
+                this.store.dispatch(UiActions.hideFooterAction());
+
+                // Reset district state
+                this.store.dispatch(DropdownActions.resetDistrictsState());
+
+                // Reset urban state
+                this.store.dispatch(DropdownActions.resetUrbansState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                const { id } = this.route.snapshot.params;
+
+                if (id === 'new') {
+                    this.pageType = 'new';
+                } else if (Math.sign(id) === 1) {
+                    this.pageType = 'edit';
+
+                    this._breadCrumbs = [
+                        {
+                            title: 'Home'
+                        },
+                        {
+                            title: 'Logistics'
+                        },
+                        {
+                            title: 'Warehouse List'
+                        },
+                        {
+                            title: 'Edit Warehouse'
+                        }
+                    ];
+                } else {
+                    this.router.navigateByUrl('/pages/logistics/warehouses');
+                }
+
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs
+                    })
+                );
+                break;
+        }
+    }
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
