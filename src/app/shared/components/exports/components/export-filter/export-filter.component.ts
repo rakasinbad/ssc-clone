@@ -58,6 +58,7 @@ export class ExportFilterComponent implements OnInit {
                 this.statusSources = HelperService.getStatusList(this.data.page);
                 break;
             case 'journey-plans':
+                hasDefaultConfig = true;
                 break;
             case 'portfolios':
                 break;
@@ -96,38 +97,42 @@ export class ExportFilterComponent implements OnInit {
             // endDate: this.formBuilder.control('', []),
         });
 
-        if (filterAspect.status.required) {
-            const rules: Array<ValidatorFn> = [];
-
-            this.form.addControl('status', this.formBuilder.control(''));
-
-            rules.push(
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                }),
-                RxwebValidators.oneOf({
-                    matchValues: [...this.statusSources.map(r => r.id)],
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern')
-                })
-            );
-
-            this.form.get('status').setValidators(rules);
+        if (filterAspect.status) {
+            if (filterAspect.status.required) {
+                const rules: Array<ValidatorFn> = [];
+    
+                this.form.addControl('status', this.formBuilder.control(''));
+    
+                rules.push(
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.oneOf({
+                        matchValues: [...this.statusSources.map(r => r.id)],
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern')
+                    })
+                );
+    
+                this.form.get('status').setValidators(rules);
+            }
         }
 
         
-        if (filterAspect.rangeDate.required) {
-            const rangeDateRules: Array<ValidatorFn> = [];
-
-            this.form.addControl('isToday', this.formBuilder.control(false, []));
-            this.form.addControl('startDate', this.formBuilder.control('', []));
-            this.form.addControl('endDate', this.formBuilder.control('', []));
-
-            rangeDateRules.push(RxwebValidators.required({
-                message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-            }));
-
-            this.form.get('startDate').setValidators(rangeDateRules);
-            this.form.get('endDate').setValidators(rangeDateRules);
+        if (filterAspect.rangeDate) {
+            if (filterAspect.rangeDate.required) {
+                const rangeDateRules: Array<ValidatorFn> = [];
+    
+                this.form.addControl('isToday', this.formBuilder.control(false, []));
+                this.form.addControl('startDate', this.formBuilder.control('', []));
+                this.form.addControl('endDate', this.formBuilder.control('', []));
+    
+                rangeDateRules.push(RxwebValidators.required({
+                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                }));
+    
+                this.form.get('startDate').setValidators(rangeDateRules);
+                this.form.get('endDate').setValidators(rangeDateRules);
+            }
         }
 
 
@@ -268,6 +273,10 @@ export class ExportFilterComponent implements OnInit {
     hasError(form: any, args: any = {}): boolean {
         // console.log('check error');
         const { ignoreTouched, ignoreDirty } = args;
+
+        if (!form) {
+            return false;
+        }
 
         if (ignoreTouched && ignoreDirty) {
             return !!form.errors;

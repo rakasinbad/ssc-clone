@@ -30,6 +30,7 @@
                 fxLayout="column"
                 fxLayoutAlign="center end"
                 style="margin-bottom: 1em;"
+                *ngIf="form.get('isToday')"
             >
                 <mat-slide-toggle formControlName="isToday" (change)="onChangeToday($event)">
                     Today

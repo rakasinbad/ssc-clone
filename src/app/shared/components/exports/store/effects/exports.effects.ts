@@ -74,7 +74,9 @@ export class ExportsEffects {
                                     page: queryParams.page,
                                     configuration: queryParams.configuration
                                 },
-                                panelClass: 'event-form-dialog',
+                                maxWidth: '60vw',
+                                maxHeight: '70vh',
+                                panelClass: 'event-form-export-dialog',
                             });
 
                             // Mengembalikan nilai ketika sudah menutup dialog filter export.
@@ -336,6 +338,7 @@ export class ExportsEffects {
                 case 'catalogues':
                 case 'orders':
                 case 'payments':
+                case 'journey-plans':
                 case 'stores': {
                     // Memeriksa konfigurasi OMS.
                     if (configuration[payload.page]) {
