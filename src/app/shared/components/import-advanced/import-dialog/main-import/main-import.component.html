@@ -98,7 +98,7 @@
                     <a
                         href="javascript:;"
                         *ngFor="let source of sources"
-                        (click)="onDownload(source.fileUrl)"
+                        (click)="onDownload(source)"
                     >
                         {{ source.name ? (source.name | translate) : '-' }}
                     </a>

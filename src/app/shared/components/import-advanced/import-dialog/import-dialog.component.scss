@@ -1,6 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
-.event-form-dialog {
+.event-form-import-dialog {
     @include media-breakpoint('xs') {
         width: 100%;
     }
@@ -35,7 +35,9 @@
     }
 
     .mat-tab-label {
-        height: 64px;
+        height: 44px;
+        min-height: 44px;
+        max-height: 44px;
         opacity: 1;
 
         &.mat-tab-label-active {

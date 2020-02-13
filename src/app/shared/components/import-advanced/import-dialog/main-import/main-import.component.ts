@@ -3,7 +3,8 @@ import {
     Component,
     Input,
     OnInit,
-    ViewEncapsulation
+    ViewEncapsulation,
+    OnDestroy
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -17,7 +18,7 @@ import { takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
 import { locale as indonesian } from '../../i18n/id';
-import { IConfigImportAdvanced, IConfigMode, IConfigTemplate } from '../../models';
+import { IConfigImportAdvanced, IConfigMode, IConfigTemplate, PayloadTemplateHistory, IConfigTemplateSource } from '../../models';
 import { fromImportAdvanced } from '../../store/reducers';
 import { ImportAdvancedSelectors } from '../../store/selectors';
 import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actions';
@@ -29,7 +30,7 @@ import { ImportAdvancedActions, TemplateHistoryActions } from '../../store/actio
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MainImportComponent implements OnInit {
+export class MainImportComponent implements OnInit, OnDestroy {
     form: FormGroup;
     importSub$: Subject<{ $event: Event; type: string; }> = new Subject();
 
@@ -97,6 +98,10 @@ export class MainImportComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        this._initPage(LifecyclePlatform.OnDestroy);
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
@@ -141,7 +146,7 @@ export class MainImportComponent implements OnInit {
         return !value ? true : value.length <= minLength;
     }
 
-    onDownload(url: string): void {
+    onDownload({ fileUrl: url, type }: IConfigTemplateSource): void {
         if (!url || !this.pageType) {
             return;
         }
@@ -150,6 +155,7 @@ export class MainImportComponent implements OnInit {
             TemplateHistoryActions.createTemplateHistoryRequest({
                 payload: {
                     url,
+                    action: type,
                     page: this.pageType,
                     type: 'export_template',
                     status: 'done',
@@ -223,9 +229,15 @@ export class MainImportComponent implements OnInit {
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
+                this._unSubs$.next();
+                this._unSubs$.complete();
+
+                this.store.dispatch(ImportAdvancedActions.resetImportConfig());
                 break;
 
             default:
+                this.store.dispatch(ImportAdvancedActions.importConfigRequest({ payload: this.pageType.toLowerCase() }));
+
                 this.modes$ = this.store.select(ImportAdvancedSelectors.getMode);
                 this.templates$ = this.store.select(ImportAdvancedSelectors.getTemplate);
 

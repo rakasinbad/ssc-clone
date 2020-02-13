@@ -133,7 +133,7 @@
         <mat-spinner color="accent" diameter="50"></mat-spinner>
     </div>
 
-    <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+    <div class="no-records h-100" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
         No records found
     </div>
 

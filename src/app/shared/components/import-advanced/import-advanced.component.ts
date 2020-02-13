@@ -83,10 +83,6 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
             return;
         }
 
-        const pageType = this.pageType.toLowerCase();
-
-        this.store.dispatch(ImportAdvancedActions.importConfigRequest({ payload: pageType }));
-
         const dialogRef = this.matDialog.open<ImportDialogComponent, IDialogData>(
             ImportDialogComponent,
             {
@@ -99,7 +95,9 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
                     formConfig: this.formConfig,
                     tabConfig: this._tabs
                 },
-                panelClass: 'event-form-dialog',
+                maxWidth: '80vw',
+                maxHeight: '80vh',
+                panelClass: 'event-form-import-dialog',
                 disableClose: true,
                 autoFocus: false
             }
