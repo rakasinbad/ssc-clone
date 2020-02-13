@@ -14,6 +14,8 @@ import { AuthService } from '../../auth.service';
 import { Auth } from '../../models';
 import { AuthActions } from '../actions';
 
+import * as LogRocket from 'logrocket';
+
 // import { fromAuth } from '../reducers';
 @Injectable()
 export class AuthEffects {
@@ -321,6 +323,14 @@ export class AuthEffects {
                             //     }
                             // })
                             // /pages/dashboard
+                            LogRocket.identify(user.email, {
+                                name: user.fullName,
+                                email: user.email,
+                                phoneNo: user.phoneNo,
+                                mobilePhoneNo: user.mobilePhoneNo,
+                                userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
+                            });
+
                             this.router.navigate(['/pages/account/stores'], {
                                 replaceUrl: true
                             });
