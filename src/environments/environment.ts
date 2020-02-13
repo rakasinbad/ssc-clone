@@ -7,6 +7,10 @@ export const environment = {
     production: false,
     staging: false,
     hmr: false,
+    // Untuk meletakkan versi app.
+    appVersion: '',
+    // Untuk meletakkan short commit hash terakhir.
+    appHash: '',
     freshnessData: 60, // in seconds.
     pageSizeTable: [5, 10, 25, 50, 100],
     host: 'https://kong-dev.sinbad.web.id'

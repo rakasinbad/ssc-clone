@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@ang
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { delay, filter, take, takeUntil } from 'rxjs/operators';
+import { environment } from 'environments/environment';
 
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
@@ -17,6 +18,8 @@ import { FuseSidebarService } from '@fuse/components/sidebar/sidebar.service';
 export class NavbarVerticalStyle2Component implements OnInit, OnDestroy {
     fuseConfig: any;
     navigation: any;
+    appVersion = environment.appVersion;
+    appHash = environment.appHash;
 
     // Private
     private _fusePerfectScrollbar: FusePerfectScrollbarDirective;
