@@ -43,6 +43,7 @@ export interface IConfigMode {
 export interface IConfigTemplateSource {
     name: string;
     fileUrl: string;
+    type: string;
 }
 
 export interface IConfigTemplate {
@@ -187,6 +188,7 @@ export interface PayloadTemplateHistory {
     page: string;
     status: string;
     type: string;
+    action: string;
     url: string;
     userId: string;
 }
