@@ -330,6 +330,8 @@ export class AuthEffects {
                                     name: user.fullName,
                                     email: user.email,
                                     environment: environment.environment,
+                                    version: environment.appVersion,
+                                    commitHash: environment.appHash,
                                     phoneNo: user.phoneNo,
                                     mobilePhoneNo: user.mobilePhoneNo,
                                     userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
