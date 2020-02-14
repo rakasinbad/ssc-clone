@@ -33,5 +33,5 @@
 </div>
 
 <p class="my-4 sinbad-black-40-fg text-center" *ngIf="appVersion">
-    v{{ appVersion }}{{ appHash ? '-' + appHash : '' }}
+    v{{ appVersion }}{{ !isProduction && appHash ? '-' + appHash : '' }}
 </p>

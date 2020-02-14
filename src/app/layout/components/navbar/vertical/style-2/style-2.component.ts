@@ -20,6 +20,7 @@ export class NavbarVerticalStyle2Component implements OnInit, OnDestroy {
     navigation: any;
     appVersion = environment.appVersion;
     appHash = environment.appHash;
+    isProduction = environment.production;
 
     // Private
     private _fusePerfectScrollbar: FusePerfectScrollbarDirective;
