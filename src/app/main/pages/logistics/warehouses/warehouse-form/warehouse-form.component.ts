@@ -186,7 +186,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-    get invoiceGroups(): any {
+    get invoices(): any {
         return this.form.get('invoices').value;
     }
 
@@ -196,6 +196,16 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         }
 
         return `<span class="subtitle">${item.province.name}, ${item.city}, ${item.district}</span>`;
+    }
+
+    displayInvoices(sources: Array<InvoiceGroup>, selectedSources: string): any {
+        const idx = sources.findIndex(s => s.id === selectedSources);
+
+        if (idx !== -1) {
+            return sources[idx].name;
+        }
+
+        return '';
     }
 
     displayUrbanOption(item: Urban, isHtml = false): string {

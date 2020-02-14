@@ -65,20 +65,16 @@
                                     >
                                         <mat-select-trigger>
                                             {{
-                                                invoiceGroups && invoiceGroups?.length > 0
-                                                    ? invoiceGroups[0]?.name
+                                                invoices && invoices?.length > 0
+                                                    ? displayInvoices(invoiceGroups, invoices[0])
                                                     : ''
                                             }}
                                             <span
-                                                *ngIf="invoiceGroups?.length > 1"
+                                                *ngIf="invoices?.length > 1"
                                                 class="example-additional-selection"
                                             >
-                                                (+{{ invoiceGroups.length - 1 }}
-                                                {{
-                                                    invoiceGroups?.length === 2
-                                                        ? 'other'
-                                                        : 'others'
-                                                }})
+                                                (+{{ invoices.length - 1 }}
+                                                {{ invoices?.length === 2 ? 'other' : 'others' }})
                                             </span>
                                         </mat-select-trigger>
                                         <mat-option
