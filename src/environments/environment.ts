@@ -1,7 +1,7 @@
 // This file can be replaced during build by using the `fileReplacements` array.
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
-import { LOGROCKET_ID } from './envGlobal';
+// import { LOGROCKET_ID } from './envGlobal';
 
 export const environment = {
     pageSize: 100,
@@ -10,7 +10,7 @@ export const environment = {
     hmr: false,
     environment: 'local',
     logRocketId: '',
-    // logRocketId: LOGROCKET_ID,
+    // logRocketId: 'fbtbt4/sinbad-seller-center',
     // Untuk meletakkan versi app.
     appVersion: '',
     // Untuk meletakkan short commit hash terakhir.

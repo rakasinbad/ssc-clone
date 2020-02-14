@@ -1,4 +1,4 @@
-import { LOGROCKET_ID } from './envGlobal';
+// import { LOGROCKET_ID } from './envGlobal';
 
 export const environment = {
     pageSize: 50,
@@ -7,7 +7,7 @@ export const environment = {
     hmr: false,
     logRocketId: '',
     environment: 'dev',
-    // logRocketId: LOGROCKET_ID,
+    // logRocketId: 'fbtbt4/sinbad-seller-center',
     appVersion: '',
     appHash: '',
     freshnessData: 60, // in seconds.
