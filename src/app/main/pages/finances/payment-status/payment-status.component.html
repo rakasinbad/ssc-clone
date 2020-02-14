@@ -6,88 +6,21 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
-        <div class="mt-16">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
-
-        <!-- CONTENT HEADER -->
-        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- <button type="button" mat-flat-button color="accent" (click)="onExport()">
-                    EXPORT
-                </button> -->
-
-                <app-export-advanced title="EXPORT" color="accent" action="export" [formConfig]="formConfig"
-                    (clickExport)="onExport($event)"></app-export-advanced>
-
-                <button type="button" mat-stroked-button color="accent" class="sinbad" (click)="filePicker.click()">
-                    IMPORT
-                </button>
-
-                <input type="file" #filePicker class="custom-file" (click)="filePicker.value = null"
-                    (change)="onFileBrowse($event, 'docs')" />
-
-                <button type="button" mat-flat-button color="primary" (click)="onDownload()">
-                    <span>DOWNLOAD TEMPLATE</span>
-                </button>
-            </div>
-
-            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                <!-- SEARCH mx-12 -->
-                <div class="search-wrapper">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Search" />
-                    </div>
-                </div>
-                <!-- / SEARCH -->
-
-                <!-- <button mat-flat-button class="grey-600">
-                    <mat-icon>filter_list</mat-icon>
-                    Filter Lists
-                </button>
-
-                <button mat-flat-button class="grey-600">
-                    Group By
-                </button> -->
-            </div>
-        </div>
-        <!-- / CONTENT HEADER -->
-
-        <!-- <mat-card
-            class="mb-24"
-            *ngIf="search.value || (filterStatus && filterStatus !== 'all-status')"
-        >
-            <div fxLayout="column" fxLayoutGap="10px">
-                <small>
-                    Filter & Group By
-                </small>
-
-                <div>
-                    <mat-chip-list aria-label="Filter">
-                        <mat-chip *ngIf="searchInternalEmployee || search.value">
-                            {{ searchInternalEmployee || search.value }}
-
-                            <mat-icon matChipRemove (click)="onRemoveSearchInternalEmployee()">
-                                cancel
-                            </mat-icon>
-                        </mat-chip>
-
-                        <mat-chip *ngIf="searchPaymentStatus || filterStatus">
-                            Status: {{ searchPaymentStatus | titlecase | replace: '_':' ' }}
-
-                            <mat-icon matChipRemove (click)="onRemoveSearchPaymentStatus()">
-                                cancel
-                            </mat-icon>
-                        </mat-chip>
-                    </mat-chip-list>
-                </div>
-            </div>
-        </mat-card> -->
-
+    <div class="center pt-12">        
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <mat-table class="payments-table" #table [dataSource]="dataSource$ | async" [trackBy]="onTrackBy" matSort
-                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <mat-table
+                class="payments-table grey-300-border mx-12"
+                style="border: 1px solid;"
+                #table
+                [dataSource]="dataSource$ | async"
+                [trackBy]="onTrackBy"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
                 <!-- Order Reference Column -->
                 <ng-container matColumnDef="order-reference">
                     <mat-header-cell *matHeaderCellDef>
@@ -147,7 +80,10 @@
                         Status
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p [attr.data-content]="safeValue(row?.statusPayment)" style="word-break: break-word;">
+                        <p
+                            [attr.data-content]="safeValue(row?.statusPayment)"
+                            style="word-break: break-word;"
+                        >
                             <ng-container [ngSwitch]="row?.statusPayment">
                                 <ng-container *ngSwitchCase="'waiting_for_payment'">
                                     Waiting for Payment
@@ -228,7 +164,11 @@
                         Due Date
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="indicator-green" style="word-break: break-word;" *ngIf="!row?.dueDate">
+                        <p
+                            class="indicator-green"
+                            style="word-break: break-word;"
+                            *ngIf="!row?.dueDate"
+                        >
                             {{
                                 safeValue(row?.estDueDate) !== '-'
                                     ? (row?.estDueDate | date: 'dd MMM yyyy')
@@ -318,16 +258,29 @@
                         Actions
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <div fxFlex="row" fxLayoutAlign="end center" *ngIf="row?.statusPayment !== 'paid'">
-                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
-                                (click)="$event.stopPropagation()">
+                        <div
+                            fxFlex="row"
+                            fxLayoutAlign="end center"
+                            *ngIf="row?.statusPayment !== 'paid'"
+                        >
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['FINANCE.PS.UPDATE']">
-                                    <button mat-menu-item type="button" class="sinbad-mat-menu-item"
-                                        aria-label="Update Status" (click)="onUpdate(row)">
+                                    <button
+                                        mat-menu-item
+                                        type="button"
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Update Status"
+                                        (click)="onUpdate(row)"
+                                    >
                                         <span>Update Status</span>
                                     </button>
                                 </ng-template>
@@ -348,8 +301,11 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="payment"
-                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"></mat-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="payment"
+                    [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                ></mat-row>
 
                 <!-- <mat-row
                     *matRowDef="let row; columns: displayedColumns"
@@ -364,15 +320,23 @@
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
-            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
                 No records found
             </div>
 
-            <mat-paginator [fxHide]="
+            <mat-paginator
+                [fxHide]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
-                showFirstLastButtons>
+                "
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons
+            >
             </mat-paginator>
 
             <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">

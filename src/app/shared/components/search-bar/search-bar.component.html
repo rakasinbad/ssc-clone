@@ -1,8 +1,8 @@
 <!-- SEARCH -->
-<div class="search-wrapper mx-12">
-    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-        <mat-icon>search</mat-icon>
+<div class="search-wrapper" [class.bordered]="useBorder" [class.grey-300-border]="useBorder">
+    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="space-between center">
         <input [formControl]="search" [placeholder]="placeholder || 'Search'"/>
+        <mat-icon class="mt-4">search</mat-icon>
     </div>
 </div>
 <!-- / SEARCH -->

@@ -75,13 +75,18 @@ export class FuseSplashScreenService
                 .build([
                     style({
                         opacity: '0',
+                        visibility: 'hidden',
                         zIndex : '99999'
                     }),
-                    animate('400ms ease', style({opacity: '1'}))
+                    animate('400ms ease', style({opacity: '1', visibility: 'visible'}))
                 ]).create(this.splashScreenEl);
 
         setTimeout(() => {
             this.player.play();
+
+            setTimeout(() => {
+                (this.splashScreenEl as HTMLElement).style.visibility = 'visible';
+            }, 1000);
         }, 0);
     }
 
@@ -93,15 +98,20 @@ export class FuseSplashScreenService
         this.player =
             this._animationBuilder
                 .build([
-                    style({opacity: '1'}),
+                    style({opacity: '1', visibility: 'visible'}),
                     animate('400ms ease', style({
                         opacity: '0',
+                        visibility: 'hidden',
                         zIndex : '-10'
                     }))
                 ]).create(this.splashScreenEl);
 
         setTimeout(() => {
             this.player.play();
+
+            setTimeout(() => {
+                (this.splashScreenEl as HTMLElement).style.visibility = 'hidden';
+            }, 1000);
         }, 0);
     }
 }

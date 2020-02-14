@@ -27,9 +27,9 @@ export interface IUser extends ITimestamp {
     mobilePhoneNo: string;
     phoneNo: TNullable<string>;
     portfolios?: Array<Portfolio>;
-    roles: Array<Role>;
-    saleTeam: Team;
-    saleTeamId: string;
+    roles?: Array<Role>;
+    saleTeam?: Team;
+    saleTeamId?: string;
     selfieImageUrl: TNullable<string>;
     status: UserStatus;
     taxImageUrl: TNullable<string>;

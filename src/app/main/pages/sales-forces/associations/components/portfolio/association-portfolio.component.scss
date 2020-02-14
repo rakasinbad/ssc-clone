@@ -1,6 +1,12 @@
 @import 'src/@fuse/scss/fuse';
 
 app-associations-portfolio {
+    display: flex;
+    flex: 1 1 auto;
+    overflow: auto;
+    flex-direction: column;
+    border: 1px solid;
+
     #associations {
         .top-bg {
             @include media-breakpoint('lt-md') {
