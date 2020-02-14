@@ -7,6 +7,13 @@ const routes: Routes = [
         loadChildren: () => import('./warehouses/warehouses.module').then(m => m.WarehousesModule)
     },
     {
+        path: 'warehouse-coverages',
+        loadChildren: () =>
+            import('./warehouse-coverages/warehouse-coverages.module').then(
+                m => m.WarehouseCoveragesModule
+            )
+    },
+    {
         path: '',
         redirectTo: 'warehouses',
         pathMatch: 'full'
