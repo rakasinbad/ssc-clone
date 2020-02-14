@@ -63,6 +63,8 @@ build_development:
         - apk add git
         - npm install
     script:
+        - sed -i "s@appVersion:\s''@appVersion:'$(git tag | tail -1)'@" src/environments/environment.dev.ts
+        - sed -i "s@appHash:\s''@appHash:'$(git rev-parse --short HEAD)'@" src/environments/environment.dev.ts
         - npm run build-development
     artifacts:
         paths:
@@ -81,6 +83,8 @@ build_staging:
         - apk add git
         - npm install
     script:
+        - sed -i "s@appVersion:\s''@appVersion:'$(git tag | tail -1)'@" src/environments/environment.stg.ts
+        - sed -i "s@appHash:\s''@appHash:'$(git rev-parse --short HEAD)'@" src/environments/environment.stg.ts
         - npm run build-staging
     artifacts:
         paths:
@@ -99,6 +103,8 @@ build_production:
         - apk add git
         - npm install
     script:
+        - sed -i "s@appVersion:\s''@appVersion:'$(git tag | tail -1)'@" src/environments/environment.prod.ts
+        - sed -i "s@appHash:\s''@appHash:'$(git rev-parse --short HEAD)'@" src/environments/environment.prod.ts
         - npm run build-production
     artifacts:
         paths:
