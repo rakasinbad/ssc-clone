@@ -1,10 +1,12 @@
+import { LOGROCKET_ID } from './envGlobal';
+
 export const environment = {
     pageSize: 50,
     production: true,
     staging: false,
     hmr: false,
     environment: 'production',
-    logRocketId: 'y6lqw0/testing-ssc',
+    logRocketId: LOGROCKET_ID,
     appVersion: '',
     appHash: '',
     freshnessData: 60, // in seconds.
