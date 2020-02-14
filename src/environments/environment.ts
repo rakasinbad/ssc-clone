@@ -7,6 +7,7 @@ export const environment = {
     production: false,
     staging: false,
     hmr: false,
+    environment: 'local',
     logRocketId: '',
     // logRocketId: 'y6lqw0/testing-ssc',
     // Untuk meletakkan versi app.

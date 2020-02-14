@@ -4,6 +4,7 @@ export const environment = {
     staging: false,
     hmr: true,
     logRocketId: '',
+    environment: 'local',
     // logRocketId: 'y6lqw0/testing-ssc',
     appVersion: '',
     appHash: '',

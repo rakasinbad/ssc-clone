@@ -3,6 +3,7 @@ export const environment = {
     production: true,
     staging: false,
     hmr: false,
+    environment: 'production',
     logRocketId: 'y6lqw0/testing-ssc',
     appVersion: '',
     appHash: '',
