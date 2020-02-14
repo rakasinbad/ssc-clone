@@ -47,25 +47,31 @@
                                 </mat-error>
                             </mat-form-field>
 
-                            <button
-                                mat-flat-button
-                                class="single-file-btn ml-16"
-                                color="accent"
-                                type="button"
-                                fxFlexAlign="center"
-                                (click)="filePicker.click()"
-                                [disabled]="form.invalid"
-                            >
-                                Upload file
-                            </button>
+                            <div class="ml-16" *ngIf="isLoading$ | async">
+                                <mat-spinner color="accent" diameter="50"></mat-spinner>
+                            </div>
 
-                            <input
-                                type="file"
-                                #filePicker
-                                class="custom-file"
-                                (click)="filePicker.value = null"
-                                (change)="onFileBrowse($event, 'docs')"
-                            />
+                            <ng-container *ngIf="!(isLoading$ | async)">
+                                <button
+                                    mat-flat-button
+                                    class="single-file-btn ml-16"
+                                    color="accent"
+                                    type="button"
+                                    fxFlexAlign="center"
+                                    (click)="filePicker.click()"
+                                    [disabled]="form.invalid"
+                                >
+                                    Upload file
+                                </button>
+
+                                <input
+                                    type="file"
+                                    #filePicker
+                                    class="custom-file"
+                                    (click)="filePicker.value = null"
+                                    (change)="onFileBrowse($event, 'docs')"
+                                />
+                            </ng-container>
                         </div>
                     </div>
                 </div>
@@ -78,40 +84,46 @@
             <div class="section__title">Download Template</div>
         </div>
 
-        <div
-            class="section__bottom--contents"
-            fxLayout="column"
-            fxLayoutGap="12px"
-            *ngIf="templates$ | async as templates; noTemplates"
-        >
-            <div fxLayout="row" fxLayoutAlign="start start" *ngFor="let template of templates">
-                <div class="section__subtitle" fxFlex="15">
-                    Template {{ template.type ? (template.type | translate) : '-' }}
-                </div>
-
-                <div
-                    class="section__sources"
-                    fxLayout="column"
-                    fxLayoutGap="12px"
-                    *ngIf="template.sources as sources; noSources"
-                >
-                    <a
-                        href="javascript:;"
-                        *ngFor="let source of sources"
-                        (click)="onDownload(source)"
-                    >
-                        {{ source.name ? (source.name | translate) : '-' }}
-                    </a>
-                </div>
-
-                <ng-template #noSources>
-                    Sources not found.
-                </ng-template>
-            </div>
+        <div *ngIf="isLoading$ | async">
+            <mat-spinner color="accent" diameter="50"></mat-spinner>
         </div>
 
-        <ng-template #noTemplates>
-            Template not found.
-        </ng-template>
+        <ng-container *ngIf="!(isLoading$ | async)">
+            <div
+                class="section__bottom--contents"
+                fxLayout="column"
+                fxLayoutGap="12px"
+                *ngIf="templates$ | async as templates; noTemplates"
+            >
+                <div fxLayout="row" fxLayoutAlign="start start" *ngFor="let template of templates">
+                    <div class="section__subtitle" fxFlex="15">
+                        Template {{ template.type ? (template.type | translate) : '-' }}
+                    </div>
+
+                    <div
+                        class="section__sources"
+                        fxLayout="column"
+                        fxLayoutGap="12px"
+                        *ngIf="template.sources as sources; noSources"
+                    >
+                        <a
+                            href="javascript:;"
+                            *ngFor="let source of sources"
+                            (click)="onDownload(source)"
+                        >
+                            {{ source.name ? (source.name | translate) : '-' }}
+                        </a>
+                    </div>
+
+                    <ng-template #noSources>
+                        Sources not found.
+                    </ng-template>
+                </div>
+            </div>
+
+            <ng-template #noTemplates>
+                Template not found.
+            </ng-template>
+        </ng-container>
     </div>
 </form>

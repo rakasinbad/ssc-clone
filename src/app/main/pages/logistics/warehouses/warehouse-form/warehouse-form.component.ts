@@ -1,4 +1,5 @@
-import { AgmGeocoder, GeocoderResult, MapsAPILoader, MouseEvent } from '@agm/core';
+import { AgmGeocoder, GeocoderResult, MouseEvent } from '@agm/core';
+import { Location } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
@@ -24,6 +25,7 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 import {
     District,
     IBreadcrumbs,
+    InvoiceGroup,
     IQueryParams,
     LifecyclePlatform,
     SupplierStore,
@@ -36,7 +38,6 @@ import { filter, map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 
 import * as fromWarehouses from '../store/reducers';
 import { WarehouseSelectors } from '../store/selectors';
-import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-warehouse-form',
@@ -79,6 +80,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     lat: number;
     lng: number;
 
+    invoiceGroups$: Observable<Array<InvoiceGroup>>;
     districts$: Observable<Array<District>>;
     store$: Observable<SupplierStore>;
     urbans$: Observable<Array<Urban>>;
@@ -170,90 +172,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        console.log('Loc', this.location.getState());
-
         this._initPage();
-
-        this._initForm();
-
-        this.districts$ = this.store.select(DropdownSelectors.getAllDistrict).pipe(
-            tap(sources => {
-                if (sources && sources.length > 0) {
-                    const districtCtrl = this.form.get('district').value as Urban;
-                    const filterDistrict = sources.filter(
-                        v =>
-                            String(v.district)
-                                .trim()
-                                .toUpperCase() ===
-                                String(districtCtrl.district)
-                                    .trim()
-                                    .toUpperCase() &&
-                            String(v.city)
-                                .trim()
-                                .toUpperCase() ===
-                                String(districtCtrl.city)
-                                    .trim()
-                                    .toUpperCase()
-                    );
-                    const urbanSources =
-                        filterDistrict && filterDistrict.length > 0
-                            ? filterDistrict[0].urbans
-                            : null;
-
-                    if (urbanSources) {
-                        this.store.dispatch(
-                            DropdownActions.setUrbanSource({
-                                payload: urbanSources
-                            })
-                        );
-                    }
-                }
-            })
-        );
-
-        this.urbans$ = this.store.select(DropdownSelectors.getAllUrban);
-
-        this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
-
-        this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
-
-        // Handle search district autocomplete & try request to endpoint
-        this.form
-            .get('district')
-            .valueChanges.pipe(
-                filter(v => {
-                    this.districtHighlight = v;
-                    return v && v.length >= 3;
-                }),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(v => {
-                this._onSearchDistrict(v);
-            });
-
-        // Handle search urban autocomplete & refresh source data with filter
-        this.form
-            .get('urban')
-            .valueChanges.pipe(takeUntil(this._unSubs$))
-            .subscribe(v => {
-                this.urbanHighlight = v;
-
-                this._onSearchUrban(v);
-            });
-
-        // Handle cancel button action (footer)
-        this.store
-            .select(FormSelectors.getIsClickCancelButton)
-            .pipe(
-                filter(isClick => !!isClick),
-                takeUntil(this._unSubs$)
-            )
-            .subscribe(isClick => {
-                this.router.navigate(['/pages/logistics/warehouses'], { replaceUrl: true });
-
-                this.store.dispatch(FormActions.resetClickCancelButton());
-                this.store.dispatch(FormActions.resetCancelButtonAction());
-            });
     }
 
     ngOnDestroy(): void {
@@ -266,6 +185,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    get invoiceGroups(): any {
+        return this.form.get('invoices').value;
+    }
 
     displayDistrictOption(item: District, isHtml = false): string {
         if (!isHtml) {
@@ -587,6 +510,9 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 break;
 
             default:
+                // Fetch request invoice group
+                this.store.dispatch(DropdownActions.fetchDropdownInvoiceGroupRequest());
+
                 const { id } = this.route.snapshot.params;
 
                 if (id === 'new') {
@@ -618,12 +544,106 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         payload: this._breadCrumbs
                     })
                 );
+
+                this._initForm();
+
+                this.invoiceGroups$ = this.store.select(
+                    DropdownSelectors.getInvoiceGroupDropdownState
+                );
+
+                this.districts$ = this.store.select(DropdownSelectors.getAllDistrict).pipe(
+                    tap(sources => {
+                        if (sources && sources.length > 0) {
+                            const districtCtrl = this.form.get('district').value as Urban;
+                            const filterDistrict = sources.filter(
+                                v =>
+                                    String(v.district)
+                                        .trim()
+                                        .toUpperCase() ===
+                                        String(districtCtrl.district)
+                                            .trim()
+                                            .toUpperCase() &&
+                                    String(v.city)
+                                        .trim()
+                                        .toUpperCase() ===
+                                        String(districtCtrl.city)
+                                            .trim()
+                                            .toUpperCase()
+                            );
+                            const urbanSources =
+                                filterDistrict && filterDistrict.length > 0
+                                    ? filterDistrict[0].urbans
+                                    : null;
+
+                            if (urbanSources) {
+                                this.store.dispatch(
+                                    DropdownActions.setUrbanSource({
+                                        payload: urbanSources
+                                    })
+                                );
+                            }
+                        }
+                    })
+                );
+
+                this.urbans$ = this.store.select(DropdownSelectors.getAllUrban);
+
+                this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
+
+                this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
+
+                // Handle search district autocomplete & try request to endpoint
+                this.form
+                    .get('district')
+                    .valueChanges.pipe(
+                        filter(v => {
+                            this.districtHighlight = v;
+                            return v && v.length >= 3;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this._onSearchDistrict(v);
+                    });
+
+                // Handle search urban autocomplete & refresh source data with filter
+                this.form
+                    .get('urban')
+                    .valueChanges.pipe(takeUntil(this._unSubs$))
+                    .subscribe(v => {
+                        this.urbanHighlight = v;
+
+                        this._onSearchUrban(v);
+                    });
+
+                // Handle cancel button action (footer)
+                this.store
+                    .select(FormSelectors.getIsClickCancelButton)
+                    .pipe(
+                        filter(isClick => !!isClick),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(isClick => {
+                        // this.router.navigate(['/pages/logistics/warehouses'], { replaceUrl: true });
+                        this.location.back();
+
+                        this.store.dispatch(FormActions.resetClickCancelButton());
+                        this.store.dispatch(FormActions.resetCancelButtonAction());
+                    });
                 break;
         }
     }
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
+            invoices: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             address: '',
             manually: false,
             district: [

@@ -30,7 +30,7 @@ import { ImportAdvancedSelectors } from '../../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     displayedColumns = ['id', 'date', 'action', 'username', 'status', 'download'];
@@ -203,6 +203,7 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
         this._initTable();
     }
 }

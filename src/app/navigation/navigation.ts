@@ -169,8 +169,8 @@ export const navigation: Array<FuseNavigation> = [
         ]
     },
     {
-        id: 'logistic',
-        title: 'Logistics',
+        id: 'warehouse',
+        title: 'Warehouses',
         type: 'collapsable',
         icon: 'custom-sinbad-logistics',
         children: [
