@@ -39,7 +39,7 @@ import { StoreSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = 10;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     search: FormControl = new FormControl('');
