@@ -1,46 +1,52 @@
+import { Subject, merge, Observable, combineLatest } from 'rxjs';
 import {
-    AfterViewInit,
-    ChangeDetectionStrategy,
     Component,
     ElementRef,
-    OnDestroy,
     OnInit,
-    SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy,
+    OnDestroy,
+    AfterViewInit,
+    SecurityContext
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { select, Store as NgRxStore } from '@ngrx/store';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IQueryParams } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
-import { environment } from 'environments/environment';
 import * as moment from 'moment';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { Store as NgRxStore, select } from '@ngrx/store';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { Store } from './models';
-import { MerchantActions } from './store/actions';
-import { fromMerchant } from './store/reducers';
-import { MerchantSelectors } from './store/selectors';
+
+import { IQueryParams } from 'app/shared/models';
+import { tap, distinctUntilChanged, takeUntil, map, debounceTime, take } from 'rxjs/operators';
+import { Store, Attendance } from './models';
+
+import { environment } from 'environments/environment';
 
 /**
  * ACTIONS
  */
+import { AttendanceActions, MerchantActions } from './store/actions';
+
 /**
  * REDUCERS
  */
+import { fromAttendance, fromMerchant } from './store/reducers';
+
 /**
  * SELECTORS
  */
+import { AttendanceSelectors, MerchantSelectors } from './store/selectors';
+import { UiActions } from 'app/shared/store/actions';
+import { Router } from '@angular/router';
+import { FormControl, Validators } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ValidationError } from '@ngx-pwa/local-storage';
+import { NgxPermissionsService } from 'ngx-permissions';
+
 @Component({
     selector: 'app-attendances',
     templateUrl: './attendances.component.html',
@@ -50,9 +56,6 @@ import { MerchantSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
-    readonly defaultPageOpts = environment.pageSizeTable;
-
     total: number;
     displayedColumns = [
         'idToko',
@@ -67,16 +70,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         'actions'
     ];
 
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Attendances'
-        },
-        search: {
-            active: true,
-            changed: (value: string) => this.onSearch(value)
-        }
-    };
+    defaultPageSize = environment.pageSize;
+    defaultPageSizeTable = environment.pageSizeTable;
 
     dataSource$: Observable<Array<Store>>;
     totalDataSource$: Observable<number>;
@@ -95,14 +90,14 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('filter', { static: true })
     filter: ElementRef;
 
-    private _unSubs$: Subject<void> = new Subject<void>();
+    private _unSubs$: Subject<void>;
 
     constructor(
         private router: Router,
         private sanitizer: DomSanitizer,
         private _fromStore: NgRxStore<fromMerchant.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
-        private ngxPermissionsService: NgxPermissionsService
+        private ngxPermissionsService: NgxPermissionsService,
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
@@ -115,7 +110,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.paginator.pageSize = this.defaultPageSize;
+        this._unSubs$ = new Subject<void>();
 
         this.search = '';
         // this.search = new FormControl('', [
@@ -170,8 +165,8 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
-                        // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home',
+                       // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -217,14 +212,14 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.defaultPageSize * this.paginator.pageIndex
             };
-
+    
             data['paginate'] = true;
-
+    
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
             }
-
+    
             if (this.search) {
                 data['search'] = [
                     {
@@ -233,7 +228,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 ];
             }
-
+    
             this._fromStore.dispatch(
                 MerchantActions.fetchStoresRequest({
                     payload: data
@@ -305,37 +300,35 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private updatePrivileges(): void {
-        this.ngxPermissionsService
-            .hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE'])
-            .then(result => {
-                // Jika ada permission-nya.
-                if (result) {
-                    this.displayedColumns = [
-                        'idToko',
-                        'storeName',
-                        'storeAddress',
-                        'storePhoneNumber',
-                        // 'GS',
-                        // 'SPV',
-                        // 'check-in',
-                        // 'check-out',
-                        // 'inventory',
-                        'actions'
-                    ];
-                } else {
-                    this.displayedColumns = [
-                        'idToko',
-                        'storeName',
-                        'storeAddress',
-                        'storePhoneNumber'
-                        // 'GS',
-                        // 'SPV',
-                        // 'check-in',
-                        // 'check-out',
-                        // 'inventory',
-                        // 'actions'
-                    ];
-                }
-            });
+        this.ngxPermissionsService.hasPermission(['ATTENDANCE.UPDATE', 'ATTENDANCE.DELETE']).then(result => {
+            // Jika ada permission-nya.
+            if (result) {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    'actions'
+                ];
+            } else {
+                this.displayedColumns = [
+                    'idToko',
+                    'storeName',
+                    'storeAddress',
+                    'storePhoneNumber',
+                    // 'GS',
+                    // 'SPV',
+                    // 'check-in',
+                    // 'check-out',
+                    // 'inventory',
+                    // 'actions'
+                ];
+            }
+        });
     }
 }

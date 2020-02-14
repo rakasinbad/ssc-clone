@@ -13,7 +13,6 @@ import { fromSupplierInventory } from './store/reducers';
 import { SupplierInventoriesRoutingModule } from './supplier-inventories-routing.module';
 import { SupplierInventoriesComponent } from './supplier-inventories.component';
 import { SupplierInventoryFormComponent } from './supplier-inventory-form/supplier-inventory-form.component';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 @NgModule({
     declarations: [SupplierInventoriesComponent, SupplierInventoryFormComponent],
@@ -21,7 +20,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         SupplierInventoriesRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         RxReactiveFormsModule,

@@ -16,7 +16,6 @@ import {
 import { SalesRepsRoutingModule } from './sales-reps-routing.module';
 import { SalesRepsStoreModule } from './sales-reps-store.module';
 import { SalesRepsComponent } from './sales-reps.component';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -38,7 +37,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         SalesRepsRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         // Third Party (RxWeb: https://www.rxweb.io)

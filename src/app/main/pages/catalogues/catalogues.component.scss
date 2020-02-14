@@ -46,8 +46,7 @@ app-catalogues {
 
     .catalogues-table {
         flex: 1 1 auto;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
@@ -132,13 +131,13 @@ app-catalogues {
             }
 
             p.catalogue-name {
-                margin-top: 2px !important;
+                margin-top: 8px !important;
                 margin-bottom: 2px !important;
             }
         }
 
         .mat-column-sku, .mat-column-externalId {
-            flex: 0 1 20%;
+            flex: 0 1 15%;
             margin-right: 20px;
         }
 

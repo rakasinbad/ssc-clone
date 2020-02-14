@@ -1,7 +1,6 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "incremental": true,
         "baseUrl": "./src",
         "outDir": "./dist/out-tsc",
         "sourceMap": true,
@@ -13,7 +12,6 @@
         "importHelpers": true,
         "target": "es2015",
         "typeRoots": ["node_modules/@types"],
-        "types": ["googlemaps"],
         "lib": ["es2018", "dom"],
         "paths": {
             "@fuse": ["@fuse"]

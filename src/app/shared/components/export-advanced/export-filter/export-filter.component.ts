@@ -104,7 +104,7 @@ export class ExportFilterComponent implements OnInit {
                     }
 
                     this.minEndDate = startDate.toDate();
-                    const maxEndDate = startDate.add(1, 'month');
+                    const maxEndDate = startDate.add(7, 'days');
                     this.maxEndDate = maxEndDate.toDate();
                 }
                 return;

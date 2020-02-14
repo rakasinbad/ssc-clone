@@ -26,7 +26,6 @@ import { SupplierInventoryActions } from './store/actions';
 import { fromSupplierInventory } from './store/reducers';
 import { SupplierInventorySelectors } from './store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-supplier-inventories',
@@ -39,19 +38,6 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Supplier Inventory'
-        },
-        search: {
-            active: true,
-            changed: (value: string) => {
-                this.search.setValue(value);
-            }
-        },
-    };
 
     search: FormControl = new FormControl('');
     displayedColumns = [

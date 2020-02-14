@@ -6,12 +6,71 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center pt-12">
+    <div class="center">
+        <!-- <div class="mt-16">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div> -->
+
+        <!-- CONTENT HEADER -->
+        <div class="header sinbad" fxLayout="row" fxLayoutAlign="space-between center">
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- <button mat-flat-button color="accent">
+                    EXPORT
+                </button> -->
+
+                <!-- <button mat-stroked-button color="accent" class="sinbad">
+                    IMPORT
+                </button> -->
+
+                Today: {{ today | date: 'dd-MMMM-yyyy' }}
+            </div>
+
+            <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+                <!-- SEARCH mx-12 -->
+                <div class="search-wrapper">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+
+                <!-- <button mat-flat-button class="grey-600">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter Lists
+                </button>
+
+                <button mat-flat-button class="grey-600">
+                    Group By
+                </button> -->
+            </div>
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- <mat-card
+            class="mb-24"
+            *ngIf="search.value || (filterStatus && filterStatus !== 'all-status')"
+        >
+            <div fxLayout="column" fxLayoutGap="10px">
+                <small>
+                    Filter & Group By
+                </small>
+
+                <div>
+                    <mat-chip-list aria-label="Filter">
+                        <mat-chip *ngIf="searchPaymentStatus || filterStatus">
+                            Status: {{ searchPaymentStatus | titlecase | replace: '-':' ' }}
+
+                            <mat-icon matChipRemove (click)="onRemoveSearchPaymentStatus()">
+                                cancel
+                            </mat-icon>
+                        </mat-chip>
+                    </mat-chip-list>
+                </div>
+            </div>
+        </mat-card> -->
+
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
-
-            <mat-table class="supplier-inventories-table grey-300-border mx-12" #table [dataSource]="dataSource$ | async"
+            <mat-table class="supplier-inventories-table" #table [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy" matSort [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- External Product ID Column -->
                 <ng-container matColumnDef="sku-supplier">

@@ -1,8 +1,6 @@
 // Import Fuse core library
 @import '@fuse/scss/core';
 
-@import '@sinbad/scss/core';
-
 @import 'app/app.theme';
 
 // Import app.theme.scss
@@ -73,13 +71,6 @@ quill-editor {
 
 .ql-font-aref {
     font-family: 'Aref Ruqaa';
-}
-
-.table-wrapper {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 auto;
-    overflow: hidden;
 }
 
 // .ql-container {
@@ -183,11 +174,6 @@ quill-editor {
 
 .indicator-warning {
     background-color: #856404 !important;
-    color: #fff !important;
-}
-
-.sinbad-orange {
-    background-color: #fdb000 !important;
     color: #fff !important;
 }
 
