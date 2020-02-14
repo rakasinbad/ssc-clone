@@ -184,7 +184,7 @@ export const navigation: Array<FuseNavigation> = [
                 id: 'wh-coverage',
                 title: 'Warehouse Coverage',
                 type: 'item',
-                url: '/pages/logistics/warehouse-coverage'
+                url: '/pages/logistics/warehouse-coverages'
             }
         ]
     }
