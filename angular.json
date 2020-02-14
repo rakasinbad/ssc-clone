@@ -134,7 +134,7 @@
                     "style": "scss"
                 }
             },
-            "root": "",
+            "root": "src",
             "sourceRoot": "src",
             "prefix": "app",
             "architect": {

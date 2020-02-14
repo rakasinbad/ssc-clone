@@ -1,0 +1,37 @@
+sinbad-export {
+    table {
+        &.simple {
+            border: 1px solid rgba(0, 0, 0, 0.12) !important;
+            border-collapse: collapse;
+
+            p {
+                margin: 0 !important;
+            }
+
+            thead[role='rowgroup'] {
+                background-color: #fafafa;
+            }
+
+            th {
+                &.mat-header-cell {
+                    font-size: 14px;
+                    color: #25282b;
+                }
+            }
+
+            th,
+            td {
+                border: 1px solid #e8e8e8;
+            }
+
+            th:first-child, td:first-child {
+                padding-left: 8px !important;
+            }
+
+            // .mat-typography p {
+            //     margin: 0 !important;
+            // }
+        }
+    }
+
+}

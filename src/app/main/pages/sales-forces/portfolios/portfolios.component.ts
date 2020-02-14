@@ -27,6 +27,9 @@ import { FormControl } from '@angular/forms';
 import { UiActions } from 'app/shared/store/actions';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 
 @Component({
     selector: 'app-portfolios',
@@ -38,18 +41,48 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
 
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Portfolio'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
+        },
+        add: {
+            permissions: ['SRM.PFO.CREATE'],
+            onClick: () => this.addPortfolio()
+        },
+        export: {
+            permissions: ['SRM.PFO.EXPORT'],
+            useAdvanced: true,
+            pageType: 'portfolios'
+        },
+        // import: {
+        //     permissions: ['SRM.PFO.IMPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'portfolios'
+        // },
+    };
+
     // Untuk menangani search bar.
     search: FormControl;
     // Untuk menampung data portfolio.
     portfolios: Array<Portfolio>;
     // Untuk menampung status dari state portfolio.
     isLoading$: Observable<boolean>;
+    // Untuk menampung status dari state request export.
+    isRequestingExport$: Observable<boolean>;
     // Untuk mendapatkan total portfolio.
     totalPortfolios$: Observable<number>;
     // Untuk unsubscribe semua Observable.
     subs$: Subject<void> = new Subject<void>();
-    // Menyimpan jumlah data yang ditampilkan dalam 1 halaman.
-    defaultPageSize: number = environment.pageSize;
     // Menyimpan nama-nama kolom tabel yang ingin dimunculkan.
     displayedColumns: Array<string> = [
         // 'checkbox',
@@ -77,6 +110,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(
         private _cd: ChangeDetectorRef,
         private portfolioStore: NgRxStore<CoreFeatureState>,
+        private exportStore: NgRxStore<fromExport.State>,
         private router: Router,
         private readonly sanitizer: DomSanitizer,
         private ngxPermissionsService: NgxPermissionsService,
@@ -105,6 +139,13 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         // Mendapatkan state loading.
         this.isLoading$ = this.portfolioStore.select(
             PortfolioSelector.getLoadingState
+        ).pipe(
+            takeUntil(this.subs$),
+        );
+
+        // Mendapatkan state loading.
+        this.isRequestingExport$ = this.exportStore.select(
+            ExportSelector.getRequestingState
         ).pipe(
             takeUntil(this.subs$),
         );
