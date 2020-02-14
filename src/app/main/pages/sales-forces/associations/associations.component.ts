@@ -7,7 +7,7 @@ import {
     AfterViewInit
 } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { PageEvent } from '@angular/material';
@@ -25,6 +25,7 @@ import * as fromAssociations from './store/reducers';
 import { AssociationActions } from './store/actions';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-associations',
@@ -47,6 +48,30 @@ import { NgxPermissionsService } from 'ngx-permissions';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'SR Assignment'
+        },
+        viewBy: {
+            list: [{
+                id: 'sales-rep',
+                label: 'Sales Rep'
+            }, {
+                id: 'portfolio',
+                label: 'Portfolio'
+            }, {
+                id: 'store',
+                label: 'Store'
+            }],
+            onChanged: (viewBy: { id: string; label: string; }) => this.store.dispatch(UiActions.setCustomToolbarActive({ payload: viewBy.id }))
+        },
+        add: {
+            permissions: ['SRM.ASC.CREATE'],
+            onClick: () => this.router.navigate(['/pages/sales-force/associations/add'])
+        },
+    };
+
     private _unSubs$: Subject<void>;
 
     buttonViewByActive$: Observable<string>;
@@ -65,7 +90,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
     ];
 
     constructor(
-        private route: ActivatedRoute,
+        private router: Router,
         private readonly sanitizer: DomSanitizer,
         private store: Store<fromAssociations.FeatureState>,
         private ngxPermissionsService: NgxPermissionsService,

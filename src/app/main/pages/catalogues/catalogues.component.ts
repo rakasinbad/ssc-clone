@@ -44,6 +44,12 @@ import { CatalogueSelectors } from './store/selectors';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { ExportsComponent } from '../../../shared/components/exports/exports.component';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportActions } from 'app/shared/components/exports/store/actions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { environment } from 'environments/environment';
 
 type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
 
@@ -56,6 +62,31 @@ type TFindCatalogueMode = 'all' | 'live' | 'empty' | 'blocked' | 'inactive';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Catalogue'
+        },
+        search: {
+            active: true,
+        },
+        add: {
+            permissions: ['CATALOGUE.CREATE'],
+        },
+        export: {
+            permissions: ['CATALOGUE.EXPORT'],
+            useAdvanced: true,
+            pageType: 'catalogues'
+        },
+        import: {
+            permissions: ['CATALOGUE.IMPORT'],
+            useAdvanced: true,
+            pageType: 'catalogues'
+        },
+    };
 
     dataSource: MatTableDataSource<Catalogue>;
     initialDisplayedColumns = [
@@ -75,9 +106,10 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     statusCatalogue: any;
     findCatalogueMode: TFindCatalogueMode = 'all';
 
-    defaultPageSize = 100;
+    // defaultPageSize = 100;
     dataSource$: Observable<Array<Catalogue>>;
     isLoading$: Observable<boolean>;
+    isRequestingExport$: Observable<boolean>;
 
     @ViewChild('table', { read: ElementRef, static: true })
     table: ElementRef<HTMLElement>;
@@ -96,6 +128,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
     constructor(
         private router: Router,
         private store: Store<fromCatalogue.FeatureState>,
+        private exportStore: Store<fromExport.State>,
         private _fuseNavigationService: FuseNavigationService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$catalogue: CataloguesService,
@@ -107,6 +140,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         private _notice: NoticeService,
         private ngxPermissionsService: NgxPermissionsService,
     ) {
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -128,7 +163,6 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         );
         this.statusCatalogue = statusCatalogue;
 
-        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
         this.store.dispatch(CatalogueActions.fetchTotalCatalogueStatusRequest());
     }
 
@@ -178,11 +212,24 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    private applyCardHeaderEvent(): void {
+        // Mengimplementasi event klik tombol "Add" dari card header menuju halaman Add Product.
+        this.cardHeaderConfig.add.onClick = () => {
+            this.router.navigate(['/pages/catalogues/add']);
+        };
+        
+        // Mengimplementasi event "Search" dari card header menuju fungsi onSearch.
+        this.cardHeaderConfig.search.changed = (value: string) => this.onSearch(value);
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        // Mengimplementasi event-event dari konfigurasi card header.
+        this.applyCardHeaderEvent();
+
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
         // this.store.dispatch(UiActions.showCustomToolbar());
@@ -197,6 +244,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading);
+        this.isRequestingExport$ = this.store.select(ExportSelector.getRequestingState);
         
         // this.search.valueChanges
         //     .pipe(
@@ -282,19 +330,62 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         ).pipe(
             takeUntil(this._unSubs$)
         ).subscribe(payload => {
-            const newNavigations = this._$catalogue
-                                        .getCatalogueStatuses({
-                                            allCount: payload.totalAllStatus,
-                                            liveCount: payload.totalActive,
-                                            emptyCount: payload.totalEmptyStock,
-                                            blockedCount: payload.totalBanned
-                                        });
-            
-            if (Array.isArray(Object.keys(newNavigations))) {
-                for (const [idx, navigation] of Object.keys(newNavigations).entries()) {
-                    this._fuseNavigationService.updateNavigationItem(statusCatalogue[idx].id, { title: newNavigations[navigation] }, 'customNavigation');
-                }
-            }
+            const {
+                totalAllStatus: allCount,
+                totalActive: liveCount,
+                totalEmptyStock: emptyStock,
+                totalBanned: blockedCount,
+            } = payload;
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'all-type',
+                        properties: { title: `All (${allCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'live',
+                        properties: { title: `Live (${liveCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'empty',
+                        properties: { title: `Empty (${emptyStock})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'banned',
+                        properties: { title: `Banned (${blockedCount})` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
+
+            this.store.dispatch(
+                UiActions.updateItemNavigation({
+                    payload: {
+                        id: 'inactive',
+                        properties: { title: `Inactive` },
+                        key: 'customNavigation'
+                    }
+                })
+            );
         });
 
         this.store.select(
@@ -470,6 +561,20 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         //         catalogue: item
         //     }
         // });
+    }
+
+    onExportProduct(): void {
+        // this.matDialog.open(ExportsComponent, {
+        //     disableClose: true,
+        //     width: '70vw'
+        // });
+        // this.exportStore.dispatch(ExportActions.startExportRequest({
+        //     payload: {
+        //         paginate: false,
+        //         page: '',
+        //         configuration: {}
+        //     }
+        // }));
     }
 
     onImportProduct(): void {
