@@ -819,7 +819,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                         }
                     }),
                     delay(1000),
-                    take(5)
+                    take(60)
                 );
                 // return error.toPromise()
                 //     .then(err => {
