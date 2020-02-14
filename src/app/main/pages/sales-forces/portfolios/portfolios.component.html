@@ -1,73 +1,11 @@
 <div id="portfolios" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
     <!-- CONTENT -->
-    <div class="center px-32" fxLayout="column" fxLayoutGap="20px">
-        <!-- TOOLBAR -->
-        <div class="portfolio-header mb-0" fxLayout="column">
-            <div fxLayout="row" fxLayoutAlign="space-between stretch">
-                <!-- TITLE -->
-                <p class="h2" fxFlexAlign="center">Portfolio</p>
-                <!-- / TITLE -->
-                <!-- SEARCH -->
-                <div fxFlexAlign="center" fxFlex="30" class="search-wrapper">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input #filter [formControl]="search" placeholder="Search" />
-                    </div>
-                </div>
-                <!-- / SEARCH -->
-            </div>
-            <div fxLayout="row" fxLayoutAlign="space-between stretch">
-                <ng-template [ngxPermissionsOnly]="['SRM.PFO.CREATE']">
-                    <!-- ADD BUTTON -->
-                    <button mat-flat-button color="accent" fxFlexAlign="center" (click)="addPortfolio()">
-                        <!-- <mat-icon>add</mat-icon> -->
-                        ADD
-                    </button>
-                </ng-template>
-                <!-- / ADD BUTTON -->
-                <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
-                <div fxLayout="row" fxLayoutGap="16px">
-                    <ng-template [ngxPermissionsOnly]="['SRM.PFO.EXPORT']">
-                        <!-- EXPORT BUTTON -->
-                        <button mat-flat-button color="accent" fxFlexAlign="center" class="red-border"
-                            (click)="exportPortfolio()">
-                            EXPORT
-                        </button>
-                        <!-- / EXPORT BUTTON -->
-                    </ng-template>
-                    <ng-template [ngxPermissionsOnly]="['SRM.PFO.IMPORT']">
-                        <!-- IMPORT BUTTON -->
-                        <button mat-stroked-button color="accent" class="red-border" fxFlexAlign="center">
-                            IMPORT
-                        </button>
-                        <!-- / IMPORT BUTTON -->
-                    </ng-template>
-                    <!-- FILTER BUTTON -->
-                    <!-- <button
-                        mat-flat-button
-                        color="primary"
-                        fxFlexAlign="center"
-                    >
-                        Filter List
-                    </button> -->
-                    <!-- / FILTER BUTTON -->
-                    <!-- "GROUP BY" BUTTON -->
-                    <!-- <button
-                        mat-flat-button
-                        color="primary"
-                        fxFlexAlign="center"
-                    >
-                        Group By
-                    </button> -->
-                    <!-- / "GROUP BY" BUTTON -->
-                </div>
-                <!-- / IMPORT, EXPORT, FILTER, GROUP BY -->
-            </div>
-        </div>
-        <!-- / TOOLBAR -->
+    <div class="center pt-12" fxLayout="column" fxLayoutGap="20px">
         <!-- TABLES -->
         <div class="content-card">
-            <mat-table class="portfolios-table" #table [dataSource]="portfolios" matSort
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+            <mat-table class="portfolios-table grey-300-border mx-12" #table [dataSource]="portfolios" matSort
                 [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
@@ -161,7 +99,7 @@
                 [pageSizeOptions]="[5, 10, 25, 100]" (page)="onChangePage($event)" showFirstLastButtons>
             </mat-paginator>
 
-            <div class="loader" *ngIf="isLoading$ | async">
+            <div class="loader" *ngIf="(isLoading$ | async) || (isRequestingExport$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
         </div>

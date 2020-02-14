@@ -7,6 +7,8 @@ export const locale = {
         ORDER_DOCUMENT: 'Document Order',
         ORDER_LINES: 'Order Lines',
         ORDER_STATUS: 'Order Status',
+        UPDATE_PRICE_TEMPLATE: 'Update Price',
+        UPDATE_STOCK_TEMPLATE: 'Update Stock',
         STATUS: {
             CATALOGUE: {
                 ALL: {

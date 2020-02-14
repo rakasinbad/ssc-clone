@@ -1,13 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="18.235" height="20.902" viewBox="0 0 18.235 20.902">
-    <defs>
-        <style>
-            .cls-1{fill:#cacccf}
-        </style>
-    </defs>
-    <g id="box" transform="translate(.191 .219)">
-        <path id="Path_1429" d="M53.552 36.655V26.69l-7.668 4.427-.961.555v9.965z" class="cls-1" data-name="Path 1429" transform="translate(-35.508 -20.955)"/>
-        <path id="Path_1430" d="M9.93 0L1.3 4.982l3.467 2L13.4 2z" class="cls-1" data-name="Path 1430" transform="translate(-1.227 -.219)"/>
-        <path id="Path_1431" d="M33.228 13.453L24.6 18.435l.651.375 3.228 1.864 3.21-1.854 5.418-3.129z" class="cls-1" data-name="Path 1431" transform="translate(-19.328 -10.929)"/>
-        <path id="Path_1432" d="M4.677 32.207l-.085-.193-.086.113-.064-.187-.113.1-.054-.188-.117.08-.066-.193-.1.1-.067-.212-.1.129-.047-.2-.108.135-.067-.2-.077.122-.041-.166V28.7L0 26.69v9.965l8.629 4.982v-9.965L4.74 29.427v2.661z" class="cls-1" data-name="Path 1432" transform="translate(-.191 -20.955)"/>
-    </g>
+<svg id="Box" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <rect id="Rectangle_863" data-name="Rectangle 863" width="24" height="24" fill="none"/>
+  <g id="box-2" data-name="box" transform="translate(2.686 1.494)">
+    <path id="Path_1429" data-name="Path 1429" d="M53.552,36.655V26.69l-7.668,4.427-.961.555v9.965Z" transform="translate(-35.508 -20.955)" fill="#cacccf"/>
+    <path id="Path_1430" data-name="Path 1430" d="M9.93,0,1.3,4.982l3.467,2L13.4,2Z" transform="translate(-1.227 -0.219)" fill="#cacccf"/>
+    <path id="Path_1431" data-name="Path 1431" d="M33.228,13.453,24.6,18.435l.651.375,3.228,1.864,3.21-1.854,5.418-3.129Z" transform="translate(-19.328 -10.929)" fill="#cacccf"/>
+    <path id="Path_1432" data-name="Path 1432" d="M4.677,32.207l-.085-.193-.086.113-.064-.187-.113.1-.054-.188-.117.08-.066-.193-.1.1-.067-.212-.1.129-.047-.2-.108.135-.067-.2-.077.122-.041-.166V28.7L0,26.69v9.965l8.629,4.982V31.672L4.74,29.427v2.661Z" transform="translate(-0.191 -20.955)" fill="#cacccf"/>
+  </g>
 </svg>

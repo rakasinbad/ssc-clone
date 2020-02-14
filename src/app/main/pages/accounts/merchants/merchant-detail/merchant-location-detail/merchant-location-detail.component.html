@@ -42,8 +42,8 @@
             *ngIf="(store$ | async)?.store || !(isLoading$ | async)"
         >
             <agm-marker
-                [latitude]="(store$ | async)?.store?.latitude"
-                [longitude]="(store$ | async)?.store?.longitude"
+                [latitude]="lat"
+                [longitude]="lng"
                 [iconUrl]="opts.icon"
                 [agmFitBounds]="true"
                 [markerDraggable]="draggAble"
