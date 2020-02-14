@@ -24,10 +24,6 @@ import { CatalogueEffects } from './store/effects';
 import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { BrandEffects } from './store/effects/brand.effects';
-import { ExportsComponent } from '../../../shared/components/exports/exports.component';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
-import { ExportsEffects } from 'app/shared/components/exports/store/effects';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 // import { style } from '@angular/animations';
 
 @NgModule({
@@ -45,7 +41,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         CataloguesRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         RxReactiveFormsModule,
@@ -64,9 +59,8 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
 
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
-        StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
 
-        EffectsModule.forFeature([ BrandEffects, CatalogueEffects, ExportsEffects ])
+        EffectsModule.forFeature([ BrandEffects, CatalogueEffects ])
     ],
     entryComponents: [
         CataloguesImportComponent,
@@ -74,7 +68,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         CataloguesEditPriceStockComponent,
         CataloguesSelectCategoryComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent,
+        CataloguesActiveInactiveComponent
     ]
 })
 export class CataloguesModule { }

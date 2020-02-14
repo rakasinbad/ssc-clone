@@ -1,41 +1,41 @@
 import { NgModule } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
+import {
+    MatButtonModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSlideToggleModule,
+    MatTabsModule,
+    MatToolbarModule
+} from '@angular/material';
+import { FuseSharedModule } from '@fuse/shared.module';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { MaterialModule } from 'app/shared/material.module';
-import { SharedModule } from 'app/shared/shared.module';
 
 import { ImportAdvancedComponent } from './import-advanced.component';
-import {
-    ImportDialogComponent,
-    ImportHistoryComponent,
-    MainImportComponent,
-    TemplateHistoryComponent
-} from './import-dialog';
-import { ImportAdvancedStoreModule } from './store/import-advanced-store.module';
-import { SearchBarModule } from '../search-bar/search-bar.module';
+import { ImportDialogComponent, MainImportComponent } from './import-dialog';
 
 @NgModule({
-    declarations: [
-        ImportAdvancedComponent,
-        ImportDialogComponent,
-        MainImportComponent,
-        ImportHistoryComponent,
-        TemplateHistoryComponent
-    ],
+    declarations: [ImportAdvancedComponent, ImportDialogComponent, MainImportComponent],
     imports: [
-        SharedModule,
-        SearchBarModule,
+        FuseSharedModule,
 
         // Material
-        MaterialModule,
+        MatButtonModule,
+        MatDatepickerModule,
+        MatFormFieldModule,
+        MatIconModule,
+        MatInputModule,
+        MatSelectModule,
+        MatSlideToggleModule,
+        MatTabsModule,
+        MatToolbarModule,
 
         // Third Party
         RxReactiveFormsModule,
-        RxReactiveDynamicFormsModule,
-        TranslateModule.forChild({}),
-
-        ImportAdvancedStoreModule
+        RxReactiveDynamicFormsModule
     ],
     exports: [ImportAdvancedComponent, ImportDialogComponent],
     entryComponents: [ImportDialogComponent]

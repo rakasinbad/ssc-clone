@@ -1,6 +1,6 @@
 @import 'src/@fuse/scss/fuse';
 
-.event-form-import-dialog {
+.event-form-dialog {
     @include media-breakpoint('xs') {
         width: 100%;
     }
@@ -35,10 +35,7 @@
     }
 
     .mat-tab-label {
-        height: 44px;
-        min-height: 44px;
-        max-height: 44px;
-        opacity: 1;
+        height: 64px;
 
         &.mat-tab-label-active {
             > .mat-tab-label-content {
@@ -51,16 +48,7 @@
         .section {
             .section__top--contents {
                 .section__title {
-                    color: #25282b;
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-            }
-
-            .section__bottom--contents {
-                .section__subtitle {
-                    color: #25282b;
-                    font-size: 14px;
+                    font-size: 18px;
                     font-weight: 600;
                 }
             }

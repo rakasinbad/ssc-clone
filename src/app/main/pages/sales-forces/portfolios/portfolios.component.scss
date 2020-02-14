@@ -46,7 +46,7 @@ app-portfolios {
 
     .portfolios-table {
         flex: 1 1 auto;
-        border: 1px solid;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;

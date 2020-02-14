@@ -24,7 +24,7 @@ import { District, IQueryParams, SupplierStore, Urban } from 'app/shared/models'
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { icon } from 'leaflet';
-import { fromEvent, Observable, Subject, BehaviorSubject } from 'rxjs';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -86,9 +86,6 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
     isDistrictTyping = false;
     isUrbanTyping = false;
 
-    lat: number;
-    lng: number;
-
     districts$: Observable<Array<District>>;
     store$: Observable<SupplierStore>;
     urbans$: Observable<Array<Urban>>;
@@ -138,9 +135,6 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                         this.form.get('urban').setValue(data.store.urban);
                         this.form.get('postcode').setValue(data.store.urban.zipCode);
                     }
-
-                    this.lat = data.store.latitude;
-                    this.lng = data.store.longitude;
 
                     this.form.markAsPristine();
 
@@ -469,18 +463,16 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
         } else {
             this.draggAble = true;
 
-            // this.form.get('district').reset();
-            // this.form.get('urban').reset();
-            // this.form.get('postcode').reset();
-            // this.form.get('lat').reset();
-            // this.form.get('lng').reset();
+            this.form.get('district').reset();
+            this.form.get('urban').reset();
+            this.form.get('postcode').reset();
+            this.form.get('lat').reset();
+            this.form.get('lng').reset();
 
             this.store
                 .select(StoreSelectors.getSelectedStore)
                 .pipe(takeUntil(this._unSubs$))
                 .subscribe(data => {
-                    console.log(data);
-
                     if (data && data.store) {
                         this.form.get('address').setValue(data.store.address);
                         this.form.get('notes').setValue(data.store.noteAddress);
@@ -492,9 +484,6 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                             this.form.get('urban').setValue(data.store.urban);
                             this.form.get('postcode').setValue(data.store.urban.zipCode);
                         }
-
-                        this.lat = data.store.latitude;
-                        this.lng = data.store.longitude;
 
                         this.form.markAsPristine();
 
@@ -813,8 +802,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
     }
 
     private _addressValid(): boolean {
-        // console.log('CHECK', this.form.pristine, this.form.dirty);
-
+        console.log('CHECK', this.form.pristine, this.form.dirty);
         if (this.isManually) {
             return (
                 this.form.get('district').valid &&
@@ -823,11 +811,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                 !this.form.pristine
             );
         } else {
-            if (this.draggAble) {
-                return this.form.pristine;
-            } else {
-                return !this.form.pristine;
-            }
+            return !this.form.pristine;
         }
     }
 
@@ -893,14 +877,7 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
                     this.form.get('postcode').setValue(x.zipCode);
                     this.form.get('lat').setValue(lat);
                     this.form.get('lng').setValue(lng);
-
-                    this.lat = lat;
-                    this.lng = lng;
                 }
-
-                this._setFormStatus(this.form.status);
-
-                this.cdRef.detectChanges();
 
                 this.form.markAsPristine();
             });
@@ -941,8 +918,6 @@ export class MerchantLocationDetailComponent implements OnInit, AfterViewInit, O
     }
 
     private _setFormStatus(status: string): void {
-        // console.log('TEST FORM', this._addressValid());
-
         if (!status) {
             return;
         }

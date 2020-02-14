@@ -54,10 +54,10 @@ import {
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { Store as Merchant, StoreSetting } from '../models';
-import { StoreActions, StoreSettingActions } from '../store/actions';
+import { Store as Merchant } from '../models';
+import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
-import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
+import { StoreSelectors } from '../store/selectors';
 import * as numeral from 'numeral';
 import { NgxPermissionsService } from 'ngx-permissions';
 
@@ -74,8 +74,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     tmpPhoto: FormControl;
     tmpIdentityPhoto: FormControl;
     tmpIdentityPhotoSelfie: FormControl;
-    storeIdType: FormControl = new FormControl('manual');
-    storeIdNextNumber: string;
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
     tempInvoiceGroupName: Array<string>;
@@ -107,7 +105,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
-    storeSetting$: Observable<StoreSetting>;
 
     private _unSubs$: Subject<void>;
     private _selectedDistrict: string;
@@ -405,36 +402,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     this.onSubmit();
                 }
             });
-
-        this.store.select(StoreSettingSelectors.getAllStoreSetting)
-        .pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(storeSettings => {
-            if (storeSettings.length === 0) {
-                return this.store.dispatch(StoreSettingActions.fetchStoreSettingsRequest({
-                    payload: {
-                        paginate: true,
-                        skip: 0,
-                        limit: 1,
-                    }
-                }));
-            }
-
-            const storeSetting = storeSettings[0];
-            this.storeIdNextNumber = storeSetting.supplierPrefix + storeSetting.storeIterationNumber;
-            this.storeIdType.setValue('auto');
-        });
-
-        this.storeIdType.valueChanges
-        .pipe(
-            debounceTime(100),
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        ).subscribe(value => {
-            if (value === 'auto') {
-                this.form.get('storeInfo.storeId.id').setValue(this.storeIdNextNumber);
-            }
-        });
     }
 
     ngAfterViewInit(): void {
@@ -2694,10 +2661,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             },
                             creditLimit: newCreditLimit
                         };
-
-                        if (this.storeIdType.value === 'auto') {
-                            delete payload.externalId;
-                        }
 
                         if (!body.storeInfo.address.geolocation.lng) {
                             delete payload.longitude;

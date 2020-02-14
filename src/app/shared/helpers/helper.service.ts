@@ -8,118 +8,20 @@ import * as jwt_decode from 'jwt-decode';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ErrorHandler, TNullable, User, IErrorHandler } from '../models';
+import { ErrorHandler, TNullable, User } from '../models';
 import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
-import { MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 
-interface TTemplateFiles {
+type TTemplateFiles = {
     catalogueStock: string;
     orderStatus: string;
     paymentStatus: string;
-}
+};
 
 @Injectable({
     providedIn: 'root'
 })
 export class HelperService {
-
-    private static _orderStatuses: Array<{ id: string; label: string }> = [
-        {
-            id: 'all',
-            label: 'All'
-        },
-        {
-            id: 'checkout',
-            label: 'Quotation'
-        },
-        {
-            id: 'confirm',
-            label: 'New Order'
-        },
-        {
-            id: 'packing',
-            label: 'Packed'
-        },
-        {
-            id: 'shipping',
-            label: 'Shipped'
-        },
-        {
-            id: 'delivered',
-            label: 'Delivered'
-        },
-        {
-            id: 'done',
-            label: 'Done'
-        },
-        {
-            id: 'cancel',
-            label: 'Canceled'
-        }
-    ];
-
-    private static _paymentStatuses: Array<{ id: string; label: string }> = [
-        {
-            id: 'waiting_for_payment',
-            label: 'Waiting for Payment'
-        },
-        {
-            id: 'payment_failed',
-            label: 'Payment Failed'
-        },
-        {
-            id: 'paid',
-            label: 'Paid'
-        },
-        {
-            id: 'overdue',
-            label: 'Overdue'
-        }
-    ];
-
-    private static _catalogueStatuses: Array<{ id: string; label: string }> = [
-        {
-            id: 'all',
-            label: 'All'
-        },
-        {
-            id: 'active',
-            label: 'Live (Active)'
-        },
-        {
-            id: 'empty',
-            label: 'Empty'
-        },
-        {
-            id: 'banned',
-            label: 'Banned'
-        },
-        {
-            id: 'inactive',
-            label: 'Inactive'
-        }
-    ];
-
-    private static _storeStatuses: Array<{ id: string; label: string }> = [
-        {
-            id: 'all',
-            label: 'Semua'
-        },
-        {
-            id: 'active',
-            label: 'Active'
-        },
-        {
-            id: 'inactive',
-            label: 'Inactive'
-        },
-        {
-            id: 'banned',
-            label: 'Banned'
-        }
-    ];
-
     private static _host = environment.host;
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -162,16 +64,6 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
-    static getStatusList(page: 'stores' | 'catalogues' | 'payments' | 'orders'): Array<{ id: string; label: string; }> {
-        switch (page) {
-            case 'stores': return HelperService._storeStatuses;
-            case 'catalogues': return HelperService._catalogueStatuses;
-            case 'payments': return HelperService._paymentStatuses;
-            case 'orders': return HelperService._orderStatuses;
-            default: return [];
-        }
-    }
-
     static truncateText(value: string, maxLength: number, type: 'start' | 'end'): string {
         console.log(value.length, maxLength);
 
@@ -197,20 +89,6 @@ export class HelperService {
         }
 
         return value;
-    }
-
-    showErrorNotification = ({ id: errId = '(none)', errors: error = {}, }: any) => {
-        const noticeSetting: MatSnackBarConfig = {
-            horizontalPosition: 'right',
-            verticalPosition: 'bottom',
-            duration: 10000,
-        };
-
-        if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-            this._$notice.open(`An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${typeof error.error === 'string' ? 'Unknown error' : error.error.message},<br/>Request code: ${typeof error.error === 'string' ? '-' : error.error.errors.uuid ? error.error.errors.uuid : '-'}`, 'error', noticeSetting);
-        } else {
-            this._$notice.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`, 'error', noticeSetting);
-        }
     }
 
     handleApiRouter(endpoint: string): string {
@@ -384,19 +262,82 @@ export class HelperService {
     }
 
     orderStatus(): { id: string; label: string }[] {
-        return HelperService._orderStatuses;
+        return [
+            {
+                id: 'all',
+                label: 'All'
+            },
+            {
+                id: 'checkout',
+                label: 'Quotation'
+            },
+            {
+                id: 'confirm',
+                label: 'New Order'
+            },
+            {
+                id: 'packing',
+                label: 'Packed'
+            },
+            {
+                id: 'shipping',
+                label: 'Shipped'
+            },
+            {
+                id: 'delivered',
+                label: 'Delivered'
+            },
+            {
+                id: 'done',
+                label: 'Done'
+            },
+            {
+                id: 'cancel',
+                label: 'Canceled'
+            }
+        ];
     }
 
     paymentStatus(): { id: string; label: string }[] {
-        return HelperService._paymentStatuses;
-    }
-
-    catalogueStatus(): { id: string; label: string }[] {
-        return HelperService._catalogueStatuses;
+        return [
+            {
+                id: 'waiting_for_payment',
+                label: 'Waiting for Payment'
+            },
+            {
+                id: 'payment_failed',
+                label: 'Payment Failed'
+            },
+            {
+                id: 'paid',
+                label: 'Paid'
+            },
+            {
+                id: 'overdue',
+                label: 'Overdue'
+            }
+        ];
     }
 
     storeStatus(): { id: string; label: string }[] {
-        return HelperService._storeStatuses;
+        return [
+            {
+                id: 'all',
+                label: 'Semua'
+            },
+            {
+                id: 'active',
+                label: 'Active'
+            },
+            {
+                id: 'inactive',
+                label: 'Inactive'
+            },
+            {
+                id: 'banned',
+                label: 'Banned'
+            }
+        ];
     }
 
     stockType(): { id: boolean; label: string }[] {
@@ -553,23 +494,4 @@ export class HelperService {
 
         return true;
     }
-
-    // noticeError(
-    //     error: IErrorHandler,
-    //     duration: number = 5000,
-    //     horizontalPosition: MatSnackBarHorizontalPosition = 'right',
-    //     verticalPosition: MatSnackBarVerticalPosition = 'bottom'
-    // ): void {
-    //     const noticeSetting: MatSnackBarConfig = {
-    //         horizontalPosition,
-    //         verticalPosition,
-    //         duration,
-    //     };
-
-    //     if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-    //         this._$notice.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
-    //     } else {
-    //         this._$notice.open(`Something wrong with our web while requesting export logs. Please contact Sinbad Team.`, 'error', noticeSetting);
-    //     }
-    // }
 }

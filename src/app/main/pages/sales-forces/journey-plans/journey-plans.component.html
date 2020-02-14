@@ -4,15 +4,207 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center pt-12">
+    <div class="center">
+        <!-- HEADER -->
+        <div
+            class="header sinbad"
+            fxLayout="column"
+            fxLayoutAlign="center stretch"
+            fxLayoutGap="10px"
+        >
+            <!-- HEADER TOP -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <!-- APP TITLE -->
+                <span
+                    class="mat-title mb-24 mb-md-0"
+                    fxFlexAlign="center"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
+                    Journey Plan
+                </span>
+                <!-- / APP TITLE -->
+
+                <!-- SEARCH -->
+                <div class="search-wrapper mx-32 mx-md-0">
+                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                        <mat-icon>search</mat-icon>
+                        <input [formControl]="search" placeholder="Search for a SR Journey Plan" />
+                    </div>
+                </div>
+                <!-- / SEARCH -->
+            </div>
+            <!-- / HEADER TOP -->
+
+            <!-- HEADER MID -->
+            <div fxLayout="row" fxLayoutAlign="space-between center">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <span class="mr-0 mr-sm-16 font-weight-600">View by:</span>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        [color]="(viewBy$ | async) === 'date' ? 'accent' : null"
+                        class="sinbad mr-16"
+                        [class.sinbad]="(viewBy$ | async) === 'date'"
+                        (click)="onSetViewBy(ViewByRes.DATE)"
+                    >
+                        Date - Sales Rep
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        [color]="(viewBy$ | async) === 'sales_rep' ? 'accent' : null"
+                        class="mr-16"
+                        [class.sinbad]="(viewBy$ | async) === 'sales_rep'"
+                        (click)="onSetViewBy(ViewByRes.SALES_REP)"
+                        *ngIf="false"
+                    >
+                        Sales Rep
+                    </button>
+                    <!--  -->
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        [color]="(viewBy$ | async) === 'store' ? 'accent' : null"
+                        class="mr-16"
+                        [class.sinbad]="(viewBy$ | async) === 'store'"
+                        (click)="onSetViewBy(ViewByRes.STORE)"
+                        *ngIf="false"
+                    >
+                        Store
+                    </button>
+                </div>
+
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="onActions('export')"
+                    >
+                        EXPORT
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="filePicker.click()"
+                    >
+                        IMPORT
+                    </button>
+
+                    <input
+                        type="file"
+                        #filePicker
+                        class="custom-file"
+                        (click)="filePicker.value = null"
+                        (change)="onFileBrowse($event, 'docs')"
+                    />
+
+                    <!-- <app-import-advanced
+                        class="mr-16"
+                        [btnConfig]="importBtnConfig"
+                    ></app-import-advanced> -->
+
+                    <button type="button" mat-flat-button color="primary" (click)="onDownload()">
+                        DOWNLOAD TEMPLATE
+                    </button>
+                </div>
+            </div>
+            <!-- / HEADER MID -->
+
+            <!-- HEADER BOTTOM -->
+            <div fxLayout="row" fxLayoutAlign="space-between center" *ngIf="false">
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <ng-template [ngxPermissionsOnly]="['SRM.JP.CREATE']">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            color="accent"
+                            class="sinbad mr-16"
+                            [routerLink]="['/pages/sales-force/journey-plans/new']"
+                        >
+                            ADD
+                        </button>
+                    </ng-template>
+
+                    <!-- <ng-container *ngIf="selection.hasValue()">
+                        <button
+                            type="button"
+                            mat-flat-button
+                            class="sinbad"
+                            [matMenuTriggerFor]="actionMenu"
+                            aria-label="Action Menu"
+                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                        >
+                            <span>Action</span>
+                            <mat-icon>arrow_drop_down</mat-icon>
+                        </button>
+                        <mat-menu #actionMenu="matMenu">
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Active"
+                            >
+                                <span>Set Active</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Set Inactive"
+                            >
+                                <span>Set Inactive</span>
+                            </button>
+                            <button
+                                type="button"
+                                mat-menu-item
+                                class="sinbad-mat-menu-item"
+                                aria-label="Remove"
+                            >
+                                <span>Remove</span>
+                            </button>
+                        </mat-menu>
+                    </ng-container> -->
+                </div>
+
+                <!-- <div fxLayout="row" fxLayoutAlign="start center">
+                    <button
+                        type="button"
+                        mat-flat-button
+                        color="accent"
+                        class="sinbad mr-16"
+                        (click)="showInfo()"
+                    >
+                        EXPORT
+                    </button>
+
+                    <button
+                        type="button"
+                        mat-stroked-button
+                        color="accent"
+                        class="sinbad"
+                        (click)="showInfo()"
+                    >
+                        IMPORT
+                    </button>
+                </div> -->
+            </div>
+            <!-- / HEADER BOTTOM -->
+        </div>
+        <!-- / HEADER -->
+
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
-
             <mat-table
                 #table
                 multiTemplateDataRows
-                class="journey-plans-table grey-300-border mx-12"
+                class="journey-plans-table"
                 [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"

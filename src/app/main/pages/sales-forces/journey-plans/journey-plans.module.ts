@@ -14,7 +14,6 @@ import {
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
 import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -36,7 +35,6 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         JourneyPlansRoutingModule,
 
         SharedModule,
-        SharedComponentsModule,
         MaterialModule,
 
         ImportAdvancedModule,

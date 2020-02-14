@@ -24,54 +24,25 @@
                                 appearance="outline"
                                 fxFlex="60"
                             >
-                                <ng-container *ngIf="modes$ | async as modes; else noModes">
-                                    <mat-select
-                                        formControlName="mode"
-                                        placeholder="Choose Import Mode"
-                                    >
-                                        <mat-option>None</mat-option>
-                                        <mat-option *ngFor="let row of modes" [value]="row?.id">
-                                            {{ row.label | translate }}
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
-
-                                <ng-template #noModes>
-                                    <mat-select placeholder="Choose Import Mode">
-                                        <mat-option>Import Mode not found</mat-option>
-                                    </mat-select>
-                                </ng-template>
+                                <mat-select formControlName="mode">
+                                    <mat-option>None</mat-option>
+                                    <mat-option value="stock">Stock</mat-option>
+                                </mat-select>
 
                                 <mat-error *ngIf="hasError('mode', true)">
                                     {{ getErrorMessage('mode') }}
                                 </mat-error>
                             </mat-form-field>
 
-                            <div class="ml-16" *ngIf="isLoading$ | async">
-                                <mat-spinner color="accent" diameter="50"></mat-spinner>
-                            </div>
-
-                            <ng-container *ngIf="!(isLoading$ | async)">
-                                <button
-                                    mat-flat-button
-                                    class="single-file-btn ml-16"
-                                    color="accent"
-                                    type="button"
-                                    fxFlexAlign="center"
-                                    (click)="filePicker.click()"
-                                    [disabled]="form.invalid"
-                                >
-                                    Upload file
-                                </button>
-
-                                <input
-                                    type="file"
-                                    #filePicker
-                                    class="custom-file"
-                                    (click)="filePicker.value = null"
-                                    (change)="onFileBrowse($event, 'docs')"
-                                />
-                            </ng-container>
+                            <button
+                                mat-flat-button
+                                class="single-file-btn ml-16"
+                                color="accent"
+                                type="button"
+                                fxFlexAlign="center"
+                            >
+                                Upload file
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -81,49 +52,7 @@
 
     <div class="section pb-44">
         <div class="pb-16 mb-16 section__top--contents" fxLayout="row" fxLayoutAlign="start center">
-            <div class="section__title">Download Template</div>
+            <div class="h2 section__title">Download Template</div>
         </div>
-
-        <div *ngIf="isLoading$ | async">
-            <mat-spinner color="accent" diameter="50"></mat-spinner>
-        </div>
-
-        <ng-container *ngIf="!(isLoading$ | async)">
-            <div
-                class="section__bottom--contents"
-                fxLayout="column"
-                fxLayoutGap="12px"
-                *ngIf="templates$ | async as templates; noTemplates"
-            >
-                <div fxLayout="row" fxLayoutAlign="start start" *ngFor="let template of templates">
-                    <div class="section__subtitle" fxFlex="15">
-                        Template {{ template.type ? (template.type | translate) : '-' }}
-                    </div>
-
-                    <div
-                        class="section__sources"
-                        fxLayout="column"
-                        fxLayoutGap="12px"
-                        *ngIf="template.sources as sources; noSources"
-                    >
-                        <a
-                            href="javascript:;"
-                            *ngFor="let source of sources"
-                            (click)="onDownload(source)"
-                        >
-                            {{ source.name ? (source.name | translate) : '-' }}
-                        </a>
-                    </div>
-
-                    <ng-template #noSources>
-                        Sources not found.
-                    </ng-template>
-                </div>
-            </div>
-
-            <ng-template #noTemplates>
-                Template not found.
-            </ng-template>
-        </ng-container>
     </div>
 </form>

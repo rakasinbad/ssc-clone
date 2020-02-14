@@ -35,8 +35,6 @@ import { JourneyPlanSales } from './models/journey-plan-sales.model';
 import { JourneyPlanActions, JourneyPlanSalesActions } from './store/actions';
 import * as fromJourneyPlans from './store/reducers';
 import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-journey-plans',
@@ -56,40 +54,6 @@ import { Router } from '@angular/router';
 export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Journey Plan'
-        },
-        search: {
-            active: true,
-            changed: (value: string) => {
-                this.search.setValue(value);
-            }
-        },
-        add: {
-            permissions: ['SRM.JP.CREATE'],
-            onClick: () => {
-                this.router.navigate(['/pages/sales-force/journey-plans/new']);
-            }
-        },
-        viewBy: {
-            list: [
-                { id: 'date-sales-rep', label: 'Date - Sales Rep' }
-            ]
-        },
-        export: {
-            permissions: ['SRM.JP.EXPORT'],
-            useAdvanced: true,
-            pageType: 'journey-plans'
-        },
-        import: {
-            permissions: ['SRM.JP.IMPORT'],
-            useAdvanced: true,
-            pageType: 'journey-plans'
-        },
-    };
 
     search: FormControl = new FormControl('');
 
@@ -161,7 +125,6 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         @Inject(WINDOW) private $window: Window,
-        private router: Router,
         private domSanitizer: DomSanitizer,
         private matDialog: MatDialog,
         private store: Store<fromJourneyPlans.FeatureState>,
@@ -400,7 +363,6 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Load translate
                 this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
-                this.paginator.pageSize = this.defaultPageSize;
                 this.sort.sort({
                     id: 'id',
                     start: 'desc',

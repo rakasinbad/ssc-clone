@@ -40,6 +40,11 @@ const routes: Routes = [
             //     redirectTo: 'dashboard',
             //     pathMatch: 'full'
             // },
+            {
+                path: '',
+                redirectTo: 'account',
+                pathMatch: 'full'
+            },
             // {
             //     path: 'dashboard',
             //     loadChildren: () =>
@@ -281,16 +286,6 @@ const routes: Routes = [
                 path: 'errors',
                 loadChildren: () =>
                     import('./main/pages/core/errors/errors.module').then(m => m.ErrorsModule)
-            },
-            {
-                path: 'logistics',
-                loadChildren: () =>
-                    import('./main/pages/logistics/logistics.module').then(m => m.LogisticsModule)
-            },
-            {
-                path: '',
-                redirectTo: 'account',
-                pathMatch: 'full'
             }
         ]
     },

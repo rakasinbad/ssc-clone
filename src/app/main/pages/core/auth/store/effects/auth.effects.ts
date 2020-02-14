@@ -9,13 +9,10 @@ import * as fromRoot from 'app/store/app.reducer';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { asyncScheduler, of, throwError } from 'rxjs';
 import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap } from 'rxjs/operators';
-import { environment } from 'environments/environment';
 
 import { AuthService } from '../../auth.service';
 import { Auth } from '../../models';
 import { AuthActions } from '../actions';
-
-import * as LogRocket from 'logrocket';
 
 // import { fromAuth } from '../reducers';
 @Injectable()
@@ -324,20 +321,6 @@ export class AuthEffects {
                             //     }
                             // })
                             // /pages/dashboard
-
-                            if (environment.logRocketId) {
-                                LogRocket.identify(user.email, {
-                                    name: user.fullName,
-                                    email: user.email,
-                                    environment: environment.environment,
-                                    version: environment.appVersion,
-                                    commitHash: environment.appHash,
-                                    phoneNo: user.phoneNo,
-                                    mobilePhoneNo: user.mobilePhoneNo,
-                                    userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
-                                });
-                            }
-
                             this.router.navigate(['/pages/account/stores'], {
                                 replaceUrl: true
                             });

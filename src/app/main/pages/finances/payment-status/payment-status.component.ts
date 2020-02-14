@@ -15,9 +15,8 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -34,7 +33,6 @@ import { statusPayment } from './status';
 import { PaymentStatusActions } from './store/actions';
 import { fromPaymentStatus } from './store/reducers';
 import { PaymentStatusSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-payment-status',
@@ -47,33 +45,6 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-
-    // Untuk menentukan konfigurasi card header.
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Payment Status'
-        },
-        search: {
-            active: true,
-            changed: (value: string) => {
-                this.search.setValue(value);
-                setTimeout(() => this._onRefreshTable(), 100);
-            }
-        },
-        add: {
-            // permissions: ['INVENTORY.ISI.CREATE'],
-        },
-        export: {
-            permissions: ['FINANCE.PS.EXPORT'],
-            useAdvanced: true,
-            pageType: 'payments'
-        },
-        import: {
-            permissions: ['FINANCE.PS.IMPORT'],
-            useAdvanced: true,
-            pageType: 'payments'
-        },
-    };
 
     search: FormControl = new FormControl('');
     filterStatus = '';
@@ -117,17 +88,6 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
         // 'proof-of-payment-status',
         'actions'
     ];
-    importBtnConfig: IButtonImportConfig = {
-        id: 'import-payment-status',
-        cssClass: 'sinbad',
-        color: 'accent',
-        dialogConf: {
-            title: 'Import',
-            cssToolbar: 'fuse-white-bg'
-        },
-        title: 'IMPORT',
-        type: ButtonDesignType.MAT_STROKED_BUTTON
-    };
     hasSelected = false;
     statusPayment: any;
     today = new Date();

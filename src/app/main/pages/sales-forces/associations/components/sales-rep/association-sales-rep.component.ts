@@ -49,7 +49,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
     templateUrl: './association-sales-rep.component.html',
     styleUrls: ['./association-sales-rep.component.scss'],
     host: {
-        class: 'content-card mx-16 sinbad-black-10-border'
+        class: 'content-card'
     },
     animations: [
         fuseAnimations,
@@ -69,7 +69,6 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
-    readonly defaultPageOpts = environment.pageSizeTable;
 
     activeTab: string = 'all';
 
@@ -296,7 +295,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
     private _initTable(searchText?: string): void {
         if (this.paginator) {
             const data: IQueryParams = {
-                limit: this.paginator.pageSize || this.defaultPageSize,
+                limit: this.paginator.pageSize || 5,
                 skip: this.paginator.pageSize * this.paginator.pageIndex || 0
             };
 

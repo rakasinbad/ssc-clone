@@ -34,7 +34,7 @@ import { NgxPermissionsService } from 'ngx-permissions';
     templateUrl: './association-store.component.html',
     styleUrls: ['./association-store.component.scss'],
     host: {
-        class: 'content-card mx-16 sinbad-black-10-border'
+        class: 'content-card'
     },
     animations: [
         fuseAnimations,
@@ -54,7 +54,6 @@ import { NgxPermissionsService } from 'ngx-permissions';
 })
 export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly defaultPageSize = environment.pageSize;
-    readonly defaultPageOpts = environment.pageSizeTable;
 
     activeTab: string = 'all';
 

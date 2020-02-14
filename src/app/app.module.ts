@@ -103,8 +103,7 @@ registerLocaleData(localId, 'id');
         AppStoreModule,
 
         AgmCoreModule.forRoot({
-            apiKey: 'AIzaSyC-VPAr6zLzdC8NYplwHKPhm4GI0xfTd9g',
-            libraries: ['geometry', 'places']
+            apiKey: 'AIzaSyC-VPAr6zLzdC8NYplwHKPhm4GI0xfTd9g'
         }),
 
         QuillModule.forRoot(),

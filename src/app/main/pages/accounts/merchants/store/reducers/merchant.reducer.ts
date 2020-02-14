@@ -4,8 +4,7 @@ import { IErrorHandler, SupplierStore, TSource, User } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { Store as Merchant, UserStore } from '../../models';
-import { StoreActions, StoreSettingActions } from '../actions';
-import { StoreSetting } from '../../models/store-setting.model';
+import { StoreActions } from '../actions';
 
 export const FEATURE_KEY = 'accountStores';
 
@@ -17,11 +16,6 @@ interface StoreState extends EntityState<SupplierStore> {
 
 interface StoreEmployeeState extends EntityState<UserStore> {
     selectedEmployeeId: string | number;
-    total: number;
-}
-
-interface StoreSettingState extends EntityState<StoreSetting> {
-    selectedId: string | number;
     total: number;
 }
 
@@ -40,7 +34,6 @@ export interface State {
     stores: StoreState;
     store?: Merchant;
     employees: StoreEmployeeState;
-    settings: StoreSettingState;
     employee?: User;
     // brandStore?: BrandStore;
     // brandStores: BrandStoreState;
@@ -53,16 +46,6 @@ export interface State {
 export interface FeatureState extends fromRoot.State {
     [FEATURE_KEY]: State | undefined;
 }
-
-const adapterStoreSetting = createEntityAdapter<StoreSetting>({
-    selectId: row => row.id
-});
-const initialStoreSettingState = adapterStoreSetting.getInitialState<StoreSettingState>({
-    total: 0,
-    selectedId: null,
-    ids: [],
-    entities: {},
-});
 
 const adapterStore = createEntityAdapter<SupplierStore>({
     selectId: row => row.id
@@ -97,7 +80,6 @@ export const initialState: State = {
     source: 'fetch',
     stores: initialStoreState,
     employees: initialStoreEmployeeState,
-    settings: initialStoreSettingState,
     // brandStore: undefined,
     // brandStores: initialBrandStoreState,
     // employee: undefined,
@@ -136,9 +118,6 @@ const brandStoreReducer = createReducer(
         StoreActions.fetchStoresRequest,
         StoreActions.fetchStoreEmployeeEditRequest,
         StoreActions.fetchStoreEmployeesRequest,
-        StoreSettingActions.fetchStoreSettingsRequest,
-        StoreSettingActions.createStoreSettingRequest,
-        StoreSettingActions.updateStoreSettingRequest,
         state => ({
             ...state,
             isLoading: true
@@ -180,9 +159,6 @@ const brandStoreReducer = createReducer(
         StoreActions.fetchStoresFailure,
         StoreActions.fetchStoreEmployeeEditFailure,
         StoreActions.fetchStoreEmployeesFailure,
-        StoreSettingActions.fetchStoreSettingsFailure,
-        StoreSettingActions.createStoreSettingFailure,
-        StoreSettingActions.updateStoreSettingFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -253,42 +229,6 @@ const brandStoreReducer = createReducer(
     //     }),
     //     errors: adapterError.removeOne('deleteStoreEmployeeFailure', state.errors)
     // })),
-    on(StoreSettingActions.resetSelectedStoreSettingId, (state) => ({
-        ...state,
-        settings: {
-            ...state.settings,
-            selectedId: null
-        }
-    })),
-    on(StoreSettingActions.setSelectedStoreSettingId, (state, { payload }) => ({
-        ...state,
-        settings: {
-            ...state.settings,
-            selectedId: payload
-        }
-    })),
-    on(StoreSettingActions.truncateStoreSetting, state => ({
-        ...state,
-        settings: adapterStoreSetting.removeAll(state.settings)
-    })),
-    on(StoreSettingActions.fetchStoreSettingsSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        settings: adapterStoreSetting.upsertMany(payload.data, {
-            ...state.settings,
-            total: payload.total
-        })
-    })),
-    on(StoreSettingActions.updateStoreSettingSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        settings: adapterStoreSetting.upsertOne(payload, state.settings)
-    })),
-    on(StoreSettingActions.createStoreSettingSuccess, (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        settings: adapterStoreSetting.upsertOne(payload, state.settings)
-    })),
     on(StoreActions.fetchStoreEditSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -492,7 +432,6 @@ export function reducer(state: State | undefined, action: Action): State {
 
 const getStoresState = (state: State) => state.stores;
 const getStoreEmployeesState = (state: State) => state.employees;
-const getStoreSettingState = (state: State) => state.settings;
 
 export const {
     selectAll: selectAllStore,
@@ -507,13 +446,6 @@ export const {
     selectIds: selectStoreEmployeeIds,
     selectTotal: selectStoreEmployeeTotal
 } = adapterStoreEmployee.getSelectors(getStoreEmployeesState);
-
-export const {
-    selectAll: selectAllStoreSetting,
-    selectEntities: selectStoreSettingEntities,
-    selectIds: selectStoreSettingIds,
-    selectTotal: selectStoreSettingTotal
-} = adapterStoreSetting.getSelectors(getStoreSettingState);
 
 // const getListBrandStoreState = (state: State) => state.brandStores;
 // const getListStoreEmployeeState = (state: State) => state.employees;
