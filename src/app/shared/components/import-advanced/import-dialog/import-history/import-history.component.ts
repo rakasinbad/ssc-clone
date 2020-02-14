@@ -30,29 +30,17 @@ import { ImportAdvancedSelectors } from '../../store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = 25;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    displayedColumns = ['user', 'created', 'file-name', 'action', 'status', 'progress'];
-    dataSource = [
-        {
-            user: 'Fortnite',
-            createdAt: 'Des 16, 2019 04:25:32 PM',
-            fileName: 'Store1234',
-            action: 'Update Store',
-            processed: '100',
-            status: 'active',
-            progress: 'Success'
-        },
-        {
-            user: 'Fortnite',
-            createdAt: 'Des 17, 2019 04:25:32 PM',
-            fileName: 'Store1234',
-            action: 'Update Store',
-            processed: '62',
-            status: 'inactive',
-            progress: 'Download Error Report'
-        }
+    displayedColumns = [
+        'user',
+        'created',
+        'file-name',
+        'action',
+        'processed',
+        'status',
+        'progress'
     ];
 
     dataSource$: Observable<Array<ImportLog>>;
@@ -136,6 +124,10 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
         window.open(url, '_blank');
     }
 
+    onRefresh(): void {
+        this._onRefreshTable();
+    }
+
     onSearch(searchValue: string): void {
         this._initTable(searchValue);
     }
@@ -216,5 +208,10 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
                 );
             }
         }
+    }
+
+    private _onRefreshTable(): void {
+        this.paginator.pageIndex = 0;
+        this._initTable();
     }
 }

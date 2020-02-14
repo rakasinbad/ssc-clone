@@ -52,9 +52,49 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select placeholder="Choose Faktur">
-                                    <mat-option>None</mat-option>
-                                </mat-select>
+                                <ng-container
+                                    *ngIf="
+                                        invoiceGroups$ | async as invoiceGroups;
+                                        else noInvoiceGroups
+                                    "
+                                >
+                                    <mat-select
+                                        formControlName="invoices"
+                                        placeholder="Choose Faktur"
+                                        multiple
+                                    >
+                                        <mat-select-trigger>
+                                            {{
+                                                invoiceGroups && invoiceGroups?.length > 0
+                                                    ? invoiceGroups[0]?.name
+                                                    : ''
+                                            }}
+                                            <span
+                                                *ngIf="invoiceGroups?.length > 1"
+                                                class="example-additional-selection"
+                                            >
+                                                (+{{ invoiceGroups.length - 1 }}
+                                                {{
+                                                    invoiceGroups?.length === 2
+                                                        ? 'other'
+                                                        : 'others'
+                                                }})
+                                            </span>
+                                        </mat-select-trigger>
+                                        <mat-option
+                                            *ngFor="let row of invoiceGroups"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name || '-' }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noInvoiceGroups>
+                                    <mat-select placeholder="Faktur not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
                             </mat-form-field>
                         </div>
                     </div>
@@ -112,6 +152,7 @@
                                         matInput
                                         name="address"
                                         formControlName="address"
+                                        placeholder="Address"
                                     />
 
                                     <!-- <textarea

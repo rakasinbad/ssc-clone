@@ -7,6 +7,10 @@
     </div> -->
 
     <div class="header-wrapper mb-16" fxLayout="row" fxLayoutAlign="start center">
+        <button type="button" mat-flat-button class="sinbad-orange mr-16" (click)="onRefresh()">
+            Refresh
+        </button>
+
         <sinbad-search-bar
             useBorder="true"
             placeholder="Search"
@@ -43,7 +47,7 @@
         <ng-container matColumnDef="file-name">
             <th mat-header-cell *matHeaderCellDef>Filename</th>
             <td mat-cell *matCellDef="let row">
-                {{ row.fileName }}
+                {{ row?.fileName || '-' }}
             </td>
         </ng-container>
 
@@ -51,7 +55,7 @@
         <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef>Action</th>
             <td mat-cell *matCellDef="let row">
-                {{ row.action }}
+                {{ row?.action || '-' }}
             </td>
         </ng-container>
 
@@ -59,7 +63,7 @@
         <ng-container matColumnDef="processed">
             <th mat-header-cell *matHeaderCellDef>Processed</th>
             <td mat-cell *matCellDef="let row">
-                {{ row.processed }}
+                {{ row?.processedRow + '/' + row?.totalRow }}
             </td>
         </ng-container>
 
