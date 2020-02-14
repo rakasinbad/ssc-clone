@@ -28,6 +28,7 @@ import { LifecyclePlatform } from 'app/shared/models';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
+import { environment } from 'environments/environment';
 
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
@@ -37,7 +38,9 @@ import * as fromRoot from './store/app.reducer';
 
 import * as LogRocket from 'logrocket';
 
-LogRocket.init('y6lqw0/testing-ssc');
+if (environment.logRocketId) {
+    LogRocket.init(environment.logRocketId);
+}
 
 @Component({
     selector: 'app',

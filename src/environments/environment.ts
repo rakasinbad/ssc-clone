@@ -7,6 +7,8 @@ export const environment = {
     production: false,
     staging: false,
     hmr: false,
+    logRocketId: '',
+    // logRocketId: 'y6lqw0/testing-ssc',
     // Untuk meletakkan versi app.
     appVersion: '',
     // Untuk meletakkan short commit hash terakhir.
