@@ -27,6 +27,9 @@ import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filte
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
+import { ExportsModule } from 'app/shared/components/exports/exports.module';
+import { CardHeaderModule } from './components/card-header/card-header.module';
+import { SharedComponentsModule } from './components/shared-components.module';
 
 /**
  *
@@ -51,7 +54,6 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         ScrollTopComponent,
 
         // Component (Dialog, Modal, Snackbar)
-        SearchBarComponent,
 
         ErrorNoticeComponent,
         InfoNoticeComponent,
@@ -62,7 +64,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         DeleteConfirmationComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent
+        ShowImageComponent,
     ],
     imports: [
         // Custom Module
@@ -79,7 +81,10 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         AgmCoreModule,
 
         // Fuse Theme
-        FuseSharedModule
+        FuseSharedModule,
+        // ExportsModule,
+        // CardHeaderModule,
+        // SharedComponentsModule,
     ],
     exports: [
         // Pipe
@@ -97,6 +102,9 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
+        // ExportsModule,
+        // CardHeaderModule,
+        // SharedComponentsModule,
 
         // Third Party
         TranslateModule,
@@ -115,7 +123,6 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
         ShowImageComponent,
-        SearchBarComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -129,7 +136,7 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 
         FilterAdvancedFormComponent,
         ShowImageComponent,
-        SearchBarComponent
+        // SearchBarComponent,
     ]
 })
 export class SharedModule {}

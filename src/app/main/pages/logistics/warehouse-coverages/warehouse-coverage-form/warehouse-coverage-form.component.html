@@ -1,0 +1,75 @@
+<div id="warehouse-coverage" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form id="warehouse-coverage-form" name="warehouseCoverageForm" class="merchant pt-24 w-100-p" fxLayout="column"
+            fxFlex novalidate>
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Warehouse Coverage Detail
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                                Warehouse Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select placeholder="Choose Warehouse">
+                                    <mat-option>None</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Find Location
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                                Province
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="province" placeholder="Search Province" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                                City
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="city" placeholder="Search City" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                                District
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="district" placeholder="Search District" />
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card p-16">
+                    <app-find-location></app-find-location>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+</div>

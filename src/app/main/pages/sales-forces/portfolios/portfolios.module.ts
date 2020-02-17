@@ -13,6 +13,7 @@ import { PortfoliosFilterStoresComponent } from './components/portfolios-filter-
 import { PortfoliosSelectedStoresComponent } from './components/portfolios-selected-stores/portfolios-selected-stores.component';
 import { PortfoliosConflictStoresComponent } from './components/portfolios-conflict-stores/portfolios-conflict-stores.component';
 import { NgxPermissionsModule } from 'ngx-permissions';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 // import { PortfolioCreateComponent } from './pages/portfolio-create/portfolio-create.component';
 
 
@@ -29,6 +30,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
     imports: [
         CommonModule,
         SharedModule,
+        SharedComponentsModule,
         RxReactiveFormsModule,
         PortfoliosRoutingModule,
         PortfoliosStoreModule,

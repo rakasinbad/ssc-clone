@@ -1,0 +1,21 @@
+<div id="warehouse-coverages" class="page-layout carded fullwidth inner-scroll">
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center pt-12">
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig" (onClickAdd)="onClickAdd()"></sinbad-card-header>
+
+            <app-warehouse-coverages-main *ngIf="(buttonViewByActive$ | async) ==='warehouse-coverage-main'">
+            </app-warehouse-coverages-main>
+
+            <app-warehouse-coverages-urban *ngIf="(buttonViewByActive$ | async) ==='warehouse-covearge-urban'">
+            </app-warehouse-coverages-urban>
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+</div>

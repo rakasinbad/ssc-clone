@@ -1,0 +1,155 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="tab-container mx-16">
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
+        <span>All</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='assign-to-warehouse'"
+        (click)="clickTab('assign-to-warehouse')">
+        <span>Assigned to Warehouse</span>
+    </div>
+    <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='not-assign-to-warehouse'"
+        (click)="clickTab('not-assign-to-warehouse')">
+        <span>Not Assigned to Warehouse</span>
+    </div>
+</div>
+
+<mat-table class="warehouse-coverages-urban-table mx-16" #table [dataSource]="dataSource" matSort
+    [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+    <!-- Checkbox Column -->
+    <ng-container matColumnDef="checkbox">
+        <mat-header-cell *matHeaderCellDef>
+            <mat-checkbox></mat-checkbox>
+            <!-- <mat-checkbox
+                (change)="$event ? handleCheckbox() : null"
+                (click)="$event.stopPropagation()"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+            ></mat-checkbox> -->
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <mat-checkbox></mat-checkbox>
+            <!-- <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)"
+            ></mat-checkbox> -->
+        </mat-cell>
+    </ng-container>
+
+    <!-- Province Column -->
+    <ng-container matColumnDef="prov">
+        <mat-header-cell *matHeaderCellDef>
+            Province
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.prov || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- City Column -->
+    <ng-container matColumnDef="city">
+        <mat-header-cell *matHeaderCellDef>
+            City
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.city || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- District Column -->
+    <ng-container matColumnDef="district">
+        <mat-header-cell *matHeaderCellDef>
+            District
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.district || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Urban Column -->
+    <ng-container matColumnDef="urban">
+        <mat-header-cell *matHeaderCellDef>
+            Urban
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.urban || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Warehouse Name Column -->
+    <ng-container matColumnDef="wh-name">
+        <mat-header-cell *matHeaderCellDef>
+            Warehouse Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p style="word-break: break-word;">
+                {{ row?.name || '-' }}
+            </p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>
+            Actions
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div fxFlex="row" fxLayoutAlign="end center">
+                <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                    (click)="$event.stopPropagation()">
+                    <mat-icon class="secondary-text">more_vert</mat-icon>
+                </button>
+
+                <mat-menu #moreMenu="matMenu">
+                    <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
+                        <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
+                            [routerLink]="[row?.id]">
+                            <mat-icon>edit</mat-icon>
+                            <span>Edit</span>
+                        </button>
+
+                        <!--<button
+                            mat-menu-item
+                            type="button"
+                            class="sinbad-mat-menu-item"
+                            [attr.aria-label]="
+                                row?.status === 'active' ? 'Inactive' : 'Active'
+                            "
+                            (click)="onChangeStatus(row)"
+                        >
+                            <mat-icon>
+                                {{
+                                    row?.status === 'active'
+                                        ? 'archive'
+                                        : 'check_circle_outline'
+                                }}
+                            </mat-icon>
+                            <span>
+                                {{
+                                    (row?.status === 'active'
+                                        ? 'ACTION.INACTIVE'
+                                        : 'ACTION.ACTIVE'
+                                    ) | translate
+                                }}
+                            </span>
+                        </button> -->
+                    </ng-template>
+                </mat-menu>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse"></mat-row>
+</mat-table>
+
+<mat-paginator [length]="dataSource.length" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons></mat-paginator>
