@@ -157,6 +157,12 @@ export class TemplateHistoryComponent implements OnInit, AfterViewInit, OnDestro
             default:
                 this.paginator.pageSize = this.defaultPageSize;
 
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
                 this.dataSource$ = this.store.select(ImportAdvancedSelectors.selectAllTemplateLogs);
                 this.totalDataSource$ = this.store.select(
                     ImportAdvancedSelectors.getTotalTemplateLogs

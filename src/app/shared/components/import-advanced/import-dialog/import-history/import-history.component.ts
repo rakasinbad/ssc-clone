@@ -165,6 +165,12 @@ export class ImportHistoryComponent implements OnInit, AfterViewInit, OnDestroy 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
 
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
                 this.dataSource$ = this.store.select(ImportAdvancedSelectors.selectAllImportLogs);
                 this.totalDataSource$ = this.store.select(
                     ImportAdvancedSelectors.getTotalImportLogs
