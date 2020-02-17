@@ -17,7 +17,10 @@ start_runner_development:
         - rm -rf ~/.aws/
         - sleep 30
     only:
-        - development
+        - tags
+    except:
+        - master
+        - staging
     tags:
         - docker
 
@@ -71,7 +74,10 @@ build_development:
         - dist/supplier-center/
         expire_in: 1 week
     only:
-        - development
+        - tags
+    except:
+        - master
+        - staging
     tags:
         - sinbad-aws-docker-runner
 
@@ -132,7 +138,10 @@ deploy_development:
         - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-dev.sinbad.web.id/* /var/www/seller-center-bak/"
         - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id/
     only:
-        - development
+        - tags
+    except:
+        - master
+        - staging
     tags:
         - sinbad-aws-docker-runner
 
@@ -190,7 +199,10 @@ stop_runner_development:
         - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
         - rm -rf ~/.aws/
     only:
-        - development
+        - tags
+    except:
+        - master
+        - staging
     tags:
         - docker
 
