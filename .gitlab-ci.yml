@@ -52,8 +52,9 @@ start_runner_production:
         - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
         - rm -rf ~/.aws/
         - sleep 30
-    only:
-        - master
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+          when: always
     tags:
         - docker
 
@@ -114,8 +115,9 @@ build_production:
         paths:
         - dist/supplier-center/
         expire_in: 1 week
-    only:
-        - master
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+          when: always
     tags:
         - sinbad-aws-docker-runner
 
@@ -179,8 +181,9 @@ deploy_production:
         - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
         - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller-center-bak/"
         - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller.sinbad.web.id/
-    only:
-        - master
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+          when: always
     tags:
         - sinbad-aws-docker-runner
 
@@ -227,7 +230,8 @@ stop_runner_production:
         - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
         - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
         - rm -rf ~/.aws/
-    only:
-        - master
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+          when: always
     tags:
         - docker
