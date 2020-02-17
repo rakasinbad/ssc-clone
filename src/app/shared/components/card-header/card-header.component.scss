@@ -1,0 +1,17 @@
+@import 'src/@fuse/scss/fuse';
+
+sinbad-card-header {
+    .mat-flat-button, .mat-stroked-button {
+        line-height: 4px !important;
+    }
+
+    .custom-chip-list {
+        mat-chip {
+            border: 1px solid;
+        }
+
+        .mat-chip.mat-standard-chip::after {
+            background: rgba(0,0,0,0);
+        }
+    }
+}

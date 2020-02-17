@@ -1,0 +1,56 @@
+<div class="pb-16">
+    <span class="mat-headline">
+        Warehouse Location
+    </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <agm-map
+        fxFlex="50"
+        class="h-400"
+        [zoom]="opts.zoom"
+        [minZoom]="opts.minZoom"
+        [maxZoom]="opts.maxZoom"
+        [streetViewControl]="false"
+        [latitude]="opts.lat"
+        [longitude]="opts.lng"
+        [fitBounds]="true"
+    >
+        <agm-marker
+            [latitude]="opts.lat"
+            [longitude]="opts.lng"
+            [iconUrl]="opts.icon"
+            [agmFitBounds]="true"
+        ></agm-marker>
+    </agm-map>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Address
+        </div>
+
+        <div class="info" fxFlex="100">
+            Jalan mustaman no 5, Jakarta selatan
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Notes Address
+        </div>
+
+        <div class="info" fxFlex="100">
+            Samping pom bensin, dekat jual bakso ojek pangkalan enak sekali
+        </div>
+    </div>
+</div>

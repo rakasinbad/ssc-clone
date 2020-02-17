@@ -4,127 +4,14 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
-        <!-- HEADER -->
-        <div
-            class="header sinbad"
-            fxLayout="column"
-            fxLayoutAlign="center stretch"
-            fxLayoutGap="10px"
-        >
-            <!-- HEADER TOP -->
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <!-- APP TITLE -->
-                <span
-                    class="mat-title mb-24 mb-md-0"
-                    fxFlexAlign="center"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
-                >
-                    Sales Rep
-                </span>
-                <!-- / APP TITLE -->
-
-                <!-- SEARCH -->
-                <div class="search-wrapper mx-32 mx-md-0">
-                    <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                        <mat-icon>search</mat-icon>
-                        <input [formControl]="search" placeholder="Search for a sales rep" />
-                    </div>
-                </div>
-                <!-- / SEARCH -->
-            </div>
-            <!-- / HEADER TOP -->
-
-            <!-- HEADER BOTTOM -->
-            <div fxLayout="row" fxLayoutAlign="space-between center">
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <ng-template [ngxPermissionsOnly]="['SRM.SR.CREATE']">
-                        <button
-                            type="button"
-                            mat-flat-button
-                            color="accent"
-                            class="sinbad mr-16"
-                            [routerLink]="['/pages/sales-force/sales-rep/new']"
-                        >
-                            ADD
-                        </button>
-                    </ng-template>
-
-                    <ng-container *ngIf="selection.hasValue()">
-                        <button
-                            type="button"
-                            mat-flat-button
-                            class="sinbad"
-                            [matMenuTriggerFor]="actionMenu"
-                            aria-label="Action Menu"
-                            [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
-                        >
-                            <span>Action</span>
-                            <mat-icon>arrow_drop_down</mat-icon>
-                        </button>
-                        <mat-menu #actionMenu="matMenu">
-                            <button
-                                type="button"
-                                mat-menu-item
-                                class="sinbad-mat-menu-item"
-                                aria-label="Set Active"
-                                (click)="onSelectedActions('active')"
-                            >
-                                <span>Set Active</span>
-                            </button>
-                            <button
-                                type="button"
-                                mat-menu-item
-                                class="sinbad-mat-menu-item"
-                                aria-label="Set Inactive"
-                                (click)="onSelectedActions('inactive')"
-                            >
-                                <span>Set Inactive</span>
-                            </button>
-                            <button
-                                type="button"
-                                mat-menu-item
-                                class="sinbad-mat-menu-item"
-                                aria-label="Remove"
-                                (click)="onSelectedActions('delete')"
-                            >
-                                <span>Remove</span>
-                            </button>
-                        </mat-menu>
-                    </ng-container>
-                </div>
-
-                <div fxLayout="row" fxLayoutAlign="start center">
-                    <!-- <button
-                        type="button"
-                        mat-flat-button
-                        color="accent"
-                        class="sinbad mr-16"
-                        (click)="showInfo()"
-                    >
-                        EXPORT
-                    </button>
-
-                    <button
-                        type="button"
-                        mat-stroked-button
-                        color="accent"
-                        class="sinbad"
-                        (click)="showInfo()"
-                    >
-                        IMPORT
-                    </button> -->
-                </div>
-            </div>
-            <!-- / HEADER BOTTOM -->
-        </div>
-        <!-- / HEADER -->
-
+    <div class="center pt-12">
         <!-- CONTENT CARD -->
         <div class="content-card">
+            <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
             <mat-table
                 #table
-                class="sales-reps-table"
+                class="sales-reps-table grey-300-border mx-12"
                 [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
