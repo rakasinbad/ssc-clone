@@ -66,6 +66,8 @@ build_development:
         - apk add git
         - npm install
     script:
+        - echo "Commit tag -> $CI_COMMIT_TAG"
+        - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
         - sed -i "s@appVersion:\s''@appVersion:'$CI_COMMIT_TAG'@" src/environments/environment.dev.ts
         - sed -i "s@appHash:\s''@appHash:'$CI_COMMIT_SHORT_SHA'@" src/environments/environment.dev.ts
         - npm run build-development
@@ -87,6 +89,8 @@ build_staging:
         - apk add git
         - npm install
     script:
+        - echo "Commit tag -> $CI_COMMIT_TAG"
+        - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
         - sed -i "s@appVersion:\s''@appVersion:'$CI_COMMIT_TAG'@" src/environments/environment.stg.ts
         - sed -i "s@appHash:\s''@appHash:'$CI_COMMIT_SHORT_SHA'@" src/environments/environment.stg.ts
         - npm run build-staging
@@ -108,6 +112,8 @@ build_production:
         - apk add git
         - npm install
     script:
+        - echo "Commit tag -> $CI_COMMIT_TAG"
+        - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
         - sed -i "s@appVersion:\s''@appVersion:'$CI_COMMIT_TAG'@" src/environments/environment.prod.ts
         - sed -i "s@appHash:\s''@appHash:'$CI_COMMIT_SHORT_SHA'@" src/environments/environment.prod.ts
         - npm run build-production
