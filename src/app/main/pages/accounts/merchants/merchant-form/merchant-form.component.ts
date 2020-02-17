@@ -406,35 +406,35 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
 
-        this.store.select(StoreSettingSelectors.getAllStoreSetting)
-        .pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(storeSettings => {
-            if (storeSettings.length === 0) {
-                return this.store.dispatch(StoreSettingActions.fetchStoreSettingsRequest({
-                    payload: {
-                        paginate: true,
-                        skip: 0,
-                        limit: 1,
-                    }
-                }));
-            }
+        this.store
+            .select(StoreSettingSelectors.getAllStoreSetting)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(storeSettings => {
+                if (storeSettings.length === 0) {
+                    return this.store.dispatch(
+                        StoreSettingActions.fetchStoreSettingsRequest({
+                            payload: {
+                                paginate: true,
+                                skip: 0,
+                                limit: 1
+                            }
+                        })
+                    );
+                }
 
-            const storeSetting = storeSettings[0];
-            this.storeIdNextNumber = storeSetting.supplierPrefix + storeSetting.storeIterationNumber;
-            this.storeIdType.setValue('auto');
-        });
+                const storeSetting = storeSettings[0];
+                this.storeIdNextNumber =
+                    storeSetting.supplierPrefix + storeSetting.storeIterationNumber;
+                this.storeIdType.setValue('auto');
+            });
 
         this.storeIdType.valueChanges
-        .pipe(
-            debounceTime(100),
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        ).subscribe(value => {
-            if (value === 'auto') {
-                this.form.get('storeInfo.storeId.id').setValue(this.storeIdNextNumber);
-            }
-        });
+            .pipe(debounceTime(100), distinctUntilChanged(), takeUntil(this._unSubs$))
+            .subscribe(value => {
+                if (value === 'auto') {
+                    this.form.get('storeInfo.storeId.id').setValue(this.storeIdNextNumber);
+                }
+            });
     }
 
     ngAfterViewInit(): void {
@@ -1778,12 +1778,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         identityId: [
                             '',
                             [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                }),
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
                                 RxwebValidators.digit({
                                     message: this._$errorMessage.getErrorMessageNonState(
                                         'default',
@@ -1841,12 +1841,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         npwpId: [
                             '',
                             [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                }),
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
                                 RxwebValidators.minLength({
                                     value: 15,
                                     message: this._$errorMessage.getErrorMessageNonState(
@@ -2674,9 +2674,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 body.storeInfo.physicalStoreInfo.vehicleAccessibility,
                             urbanId: urban.id,
                             user: {
-                                idNo: body.storeInfo.legalInfo.identityId,
+                                idNo: body.storeInfo.legalInfo.identityId || '',
                                 fullName: body.storeInfo.legalInfo.name,
-                                taxNo: body.storeInfo.legalInfo.npwpId,
+                                taxNo: body.storeInfo.legalInfo.npwpId || '',
                                 idImage: body.storeInfo.legalInfo.identityPhoto,
                                 selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
                                 phone: body.profileInfo.phoneNumber,
