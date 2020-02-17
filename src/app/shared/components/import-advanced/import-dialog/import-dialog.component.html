@@ -8,15 +8,15 @@
         </mat-toolbar-row>
     </mat-toolbar>
 
-    <div mat-dialog-content class="p-16 pb-0 m-0 mat-typography" fusePerfectScrollbar>
-        <mat-tab-group color="accent" fxLayout="column" fxFlex>
+    <div mat-dialog-content class="p-16 pb-0 m-0 mat-typography">
+        <mat-tab-group color="accent" fxLayout="column" [dynamicHeight]="false" fxFlex>
             <mat-tab
                 *ngFor="let tab of tabs; let idx = index"
                 [label]="tab.label"
                 [disabled]="tab.disabled"
             >
                 <ng-template matTabContent>
-                    <div class="tab-content p-16" fusePerfectScrollbar>
+                    <div class="tab-content p-16">
                         <ng-container [ngSwitch]="tab.id">
                             <ng-container *ngSwitchCase="'import'">
                                 <ng-container
@@ -133,8 +133,8 @@
         </form> -->
     </div>
 
-    <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
-        <!-- <button
+    <!-- <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
+        <button
             type="submit"
             mat-flat-button
             color="accent"
@@ -143,8 +143,8 @@
             form="filter-form"
         >
             EXPORT
-        </button> -->
-    </div>
+        </button>
+    </div> -->
 </div>
 
 <ng-template #mainImport let-pageType>
