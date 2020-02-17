@@ -6,14 +6,14 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center pt-12">        
+    <div class="center p-8">        
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
                 class="payments-table grey-300-border mx-12"
-                style="border: 1px solid;"
+                style="border: 1px solid; border-radius: 4px;"
                 #table
                 [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy"
