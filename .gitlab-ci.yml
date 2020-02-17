@@ -64,7 +64,7 @@ build_development:
     before_script:
         - apk update
         - apk add git
-        - npm config set registry http://registry.npmjs.or
+        - npm config set registry http://registry.npmjs.org/
         - npm install
     script:
         - echo "Commit tag -> $CI_COMMIT_TAG"
