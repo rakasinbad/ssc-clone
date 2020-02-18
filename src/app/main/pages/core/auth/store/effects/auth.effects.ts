@@ -149,16 +149,29 @@ export class AuthEffects {
                 tap(resp => {
                     const { user, token } = resp;
 
-                    if (!this._$auth.redirectUrl) {
-                        this.storage.has('user').subscribe(result => {
-                            if (!result) {
-                                this.storage.set('user', new Auth(user, token)).subscribe(() => {
-                                    // /pages/dashboard
+                    this.storage.has('user').subscribe(result => {
+                        if (!result) {
+                            this.storage.set('user', new Auth(user, token)).subscribe(() => {
+                                // /pages/dashboard
+                                if (!this._$auth.redirectUrl) {
                                     this.router.navigate(['/pages/account/stores'], {
                                         replaceUrl: true
                                     });
-                                });
-                            }
+                                }
+                            });
+                        }
+                    });
+
+                    if (environment.logRocketId) {
+                        LogRocket.identify(user.email, {
+                            name: user.fullName,
+                            email: user.email,
+                            environment: environment.environment,
+                            version: environment.appVersion,
+                            commitHash: environment.appHash,
+                            phoneNo: user.phoneNo,
+                            mobilePhoneNo: user.mobilePhoneNo,
+                            userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
                         });
                     }
                 })

@@ -20,6 +20,8 @@ import { MerchantEffects } from './store/effects';
 import { fromMerchant } from './store/reducers';
 import { StoreSettingEffects } from './store/effects/store-setting.effects';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { ExportsEffects } from 'app/shared/components/exports/store/effects';
 
 /**
  *
@@ -54,7 +56,8 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         NgxPermissionsModule.forChild(),
 
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
-        EffectsModule.forFeature([MerchantEffects, StoreSettingEffects])
+        StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
+        EffectsModule.forFeature([ExportsEffects, MerchantEffects, StoreSettingEffects])
     ]
 })
 export class MerchantsModule {}

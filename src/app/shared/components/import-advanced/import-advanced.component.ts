@@ -18,6 +18,7 @@ import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { IButtonImportConfig, IDialogData } from './models';
 import { fromImportAdvanced } from './store/reducers';
 import { ImportAdvancedActions } from './store/actions';
+import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 
 @Component({
     selector: 'sinbad-import-advanced',
@@ -107,6 +108,10 @@ export class ImportAdvancedComponent implements OnInit, AfterViewInit {
             .afterClosed()
             .pipe(take(1))
             .subscribe(resp => {
+                if (this.pageType === 'catalogues') {
+                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
+                }
+
                 if (!resp) {
                     return;
                 }

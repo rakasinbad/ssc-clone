@@ -28,6 +28,10 @@ sinbad-export {
                 padding-left: 8px !important;
             }
 
+            .mat-column-user, .mat-column-date, .mat-column-progress {
+                flex: 0 1 33.3%;
+            }
+
             // .mat-typography p {
             //     margin: 0 !important;
             // }

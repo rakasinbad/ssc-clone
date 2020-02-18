@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore, SupplierStoreOptions, ErrorHandler } from 'app/shared/models';
+import { HelperService } from 'app/shared/helpers';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
-import { Export, ExportConfiguration } from '../models';
-import { StoreSetting } from 'app/main/pages/attendances/models';
+
+import { ExportConfiguration } from '../models';
+
 // import { ExportModuleNames } from '../store/actions/exports.actions';
 
 /**
@@ -41,10 +42,7 @@ export class ExportsApiService {
      * @param {HelperService} _$helper
      * @memberof ExportsApiService
      */
-    constructor(
-        private http: HttpClient,
-        private helperSvc: HelperService
-    ) {}
+    constructor(private http: HttpClient, private helperSvc: HelperService) {}
 
     findExportLogs<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
@@ -69,7 +67,7 @@ export class ExportsApiService {
                 value: params['page']
             });
         }
-        
+
         this._url = this.helperSvc.handleApiRouter(this._exportLogsEndpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
@@ -80,12 +78,24 @@ export class ExportsApiService {
         const newArgs = [];
 
         switch (params['page'] as ExportConfiguration['page']) {
-            case 'stores': params['page'] = 'stores'; break;
-            case 'catalogues': params['page'] = 'catalogues'; break;
-            case 'payments': params['page'] = 'payments'; break;
-            case 'orders': params['page'] = 'orders'; break;
-            case 'portfolios': params['page'] = 'portfolios'; break;
-            case 'journey-plans': params['page'] = 'journey-plans'; break;
+            case 'stores':
+                params['page'] = 'stores';
+                break;
+            case 'catalogues':
+                params['page'] = 'catalogues';
+                break;
+            case 'payments':
+                params['page'] = 'payments';
+                break;
+            case 'orders':
+                params['page'] = 'orders';
+                break;
+            case 'portfolios':
+                params['page'] = 'portfolios';
+                break;
+            case 'journey-plans':
+                params['page'] = 'journey-plans';
+                break;
             default: {
                 const err: ErrorHandler = {
                     id: 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED',
@@ -115,12 +125,22 @@ export class ExportsApiService {
                 key: 'dateGte',
                 value: params['dateGte']
             });
+        } else {
+            newArgs.push({
+                key: 'dateGte',
+                value: ''
+            });
         }
 
         if (params['dateLte']) {
             newArgs.push({
                 key: 'dateLte',
                 value: params['dateLte']
+            });
+        } else {
+            newArgs.push({
+                key: 'dateLte',
+                value: ''
             });
         }
 

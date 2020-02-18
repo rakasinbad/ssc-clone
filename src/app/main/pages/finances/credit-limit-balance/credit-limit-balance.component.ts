@@ -133,13 +133,13 @@ export class CreditLimitBalanceComponent implements OnInit, OnDestroy {
 
         this.isLoading$ = this.store.select(CreditLimitBalanceSelectors.getIsLoading);
 
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                this.store.dispatch(
-                    CreditLimitBalanceActions.searchCreditLimitStore({ payload: v })
-                );
-            });
+        // this.search.valueChanges
+        //     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+        //     .subscribe(v => {
+        //         this.store.dispatch(
+        //             CreditLimitBalanceActions.searchCreditLimitStore({ payload: v })
+        //         );
+        //     });
     }
 
     ngOnDestroy(): void {

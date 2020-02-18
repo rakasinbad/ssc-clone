@@ -1,4 +1,4 @@
-<ng-container *ngIf="!item.hidden">
+<ng-container *ngIf="!hiddenMenu.includes(item.id)">
     <!-- item.url -->
     <a
         class="nav-link"

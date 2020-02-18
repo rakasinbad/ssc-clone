@@ -9,11 +9,11 @@ app-credit-limit-balance {
         }
 
         > .center {
-            > .header.sinbad.with-search {
-                height: 210px !important;
-                max-height: 150px !important;
-                min-height: 140px !important;
-            }
+            // > .header.sinbad.with-search {
+            //     height: 210px !important;
+            //     max-height: 150px !important;
+            //     min-height: 140px !important;
+            // }
 
             > .header {
                 .search-wrapper {
@@ -53,12 +53,12 @@ app-credit-limit-balance {
                     }
                 }
 
-                @include media-breakpoint('lt-md') {
-                    padding: 8px 0;
-                    height: 192px !important;
-                    min-height: 192px !important;
-                    max-height: 192px !important;
-                }
+//                 @include media-breakpoint('lt-md') {
+//                     padding: 8px 0;
+//                     height: 192px !important;
+//                     min-height: 192px !important;
+//                     max-height: 192px !important;
+//                 }
             }
         }
     }
