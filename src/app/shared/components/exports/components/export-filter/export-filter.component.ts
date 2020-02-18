@@ -1,10 +1,10 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Inject,
     OnInit,
-    ViewEncapsulation,
-    ChangeDetectorRef
+    ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material';
@@ -13,8 +13,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Moment } from 'moment';
-import { ExportFilterConfiguration, ExportFormFilterConfiguration, ExportConfiguration, defaultExportFilterConfiguration } from '../../models';
 import * as moment from 'moment';
+
+import {
+    defaultExportFilterConfiguration,
+    ExportConfiguration,
+    ExportFilterConfiguration,
+    ExportFormFilterConfiguration
+} from '../../models';
 
 @Component({
     templateUrl: './export-filter.component.html',
@@ -42,7 +48,7 @@ export class ExportFilterComponent implements OnInit {
         private matDialogRef: MatDialogRef<ExportFilterComponent>,
         private errorMessageSvc: ErrorMessageService,
         private helper$: HelperService,
-        private notice$: NoticeService,
+        private notice$: NoticeService
     ) {}
 
     ngOnInit(): void {
@@ -63,12 +69,16 @@ export class ExportFilterComponent implements OnInit {
             case 'portfolios':
                 break;
             default: {
-                this.notice$.open(`Something wrong with our web while opening export filter dialog.
-                                    Please contact Sinbad Team. Error code: ERR_UNRECOGNIZED_EXPORT_PAGE_TYPE`, 'error', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'bottom',
-                    duration: 5000
-                });
+                this.notice$.open(
+                    `Something wrong with our web while opening export filter dialog.
+                                    Please contact Sinbad Team. Error code: ERR_UNRECOGNIZED_EXPORT_PAGE_TYPE`,
+                    'error',
+                    {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
+                        duration: 5000
+                    }
+                );
 
                 return;
             }
@@ -78,7 +88,7 @@ export class ExportFilterComponent implements OnInit {
             DEFAULT_CONFIG = defaultExportFilterConfiguration[this.data.page];
         }
 
-        const { page, configuration = ({} as ExportFilterConfiguration) } = this.data;
+        const { page, configuration = {} as ExportFilterConfiguration } = this.data;
         const { [page]: pageConfiguration = DEFAULT_CONFIG } = configuration;
 
         // if (!this.data.configuration) {
@@ -90,53 +100,56 @@ export class ExportFilterComponent implements OnInit {
         this.activeConfiguration = pageConfiguration;
         const { filterAspect } = this.activeConfiguration;
 
-        this.form = this.formBuilder.group({
-            // isToday: this.formBuilder.control(false, []),
-            // orderStatus: this.formBuilder.control('', []),
-            // startDate: this.formBuilder.control('', []),
-            // endDate: this.formBuilder.control('', []),
-        });
+        this.form = this.formBuilder.group({});
 
         if (filterAspect.status) {
+            const rules: Array<ValidatorFn> = [];
+
+            this.form.addControl('status', this.formBuilder.control(''));
+
             if (filterAspect.status.required) {
-                const rules: Array<ValidatorFn> = [];
-    
-                this.form.addControl('status', this.formBuilder.control(''));
-    
                 rules.push(
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     }),
                     RxwebValidators.oneOf({
                         matchValues: [...this.statusSources.map(r => r.id)],
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern')
                     })
                 );
-    
+
                 this.form.get('status').setValidators(rules);
             }
         }
 
-        
         if (filterAspect.rangeDate) {
+            const rangeDateRules: Array<ValidatorFn> = [];
+
+            this.form.addControl('isToday', this.formBuilder.control(false));
+            this.form.addControl('startDate', this.formBuilder.control(''));
+            this.form.addControl('endDate', this.formBuilder.control(''));
+
             if (filterAspect.rangeDate.required) {
-                const rangeDateRules: Array<ValidatorFn> = [];
-    
-                this.form.addControl('isToday', this.formBuilder.control(false, []));
-                this.form.addControl('startDate', this.formBuilder.control('', []));
-                this.form.addControl('endDate', this.formBuilder.control('', []));
-    
-                rangeDateRules.push(RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                }));
-    
+                rangeDateRules.push(
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                );
+
                 this.form.get('startDate').setValidators(rangeDateRules);
                 this.form.get('endDate').setValidators(rangeDateRules);
             }
         }
 
-
         this.cd$.markForCheck();
+    }
+
+    isRequired(type: string): boolean {
+        if (!type || !this.activeConfiguration.filterAspect.hasOwnProperty(type)) {
+            return false;
+        }
+
+        return this.activeConfiguration.filterAspect[type].required;
     }
 
     getErrorMessage(field: string): string {
@@ -240,10 +253,14 @@ export class ExportFilterComponent implements OnInit {
 
         if (formData.startDate) {
             formSend['dateGte'] = (formData.startDate as Moment).format('YYYY-MM-DD');
+        } else {
+            formSend['dateGte'] = '';
         }
 
         if (formData.endDate) {
             formSend['dateLte'] = (formData.endDate as Moment).format('YYYY-MM-DD');
+        } else {
+            formSend['dateLte'] = '';
         }
 
         if (formData.status) {
@@ -295,13 +312,26 @@ export class ExportFilterComponent implements OnInit {
 
     getExportFilterDialogTitle(): string {
         switch (this.data.page) {
-            case 'catalogues': return '(Catalogue)';
-            case 'journey-plans': return '(Journey Plan)';
-            case 'orders': return '(OMS)';
-            case 'payments': return '(Payment Status)';
-            case 'portfolios': return '(Portfolio of Store)';
-            case 'stores': return '(Store List)';
-            default: return '';
+            case 'catalogues':
+                return '(Catalogue)';
+
+            case 'journey-plans':
+                return '(Journey Plan)';
+
+            case 'orders':
+                return '(OMS)';
+
+            case 'payments':
+                return '(Payment Status)';
+
+            case 'portfolios':
+                return '(Portfolio of Store)';
+
+            case 'stores':
+                return '(Store List)';
+
+            default:
+                return '';
         }
     }
 }

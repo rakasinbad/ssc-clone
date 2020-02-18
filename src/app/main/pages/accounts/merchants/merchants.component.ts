@@ -78,32 +78,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['ACCOUNT.STORE.IMPORT'],
             useAdvanced: true,
             pageType: 'stores'
-        },
+        }
     };
 
     search: FormControl = new FormControl('');
-    formConfig = {
-        status: {
-            label: 'Store List Status',
-            placeholder: 'Choose Store List Status',
-            sources: this._$helper.storeStatus(),
-            rules: {
-                required: true
-            }
-        },
-        startDate: {
-            label: 'Start Date',
-            rules: {
-                required: true
-            }
-        },
-        endDate: {
-            label: 'End Date',
-            rules: {
-                required: true
-            }
-        }
-    };
     total: number;
     displayedColumns = [
         'store-code',
@@ -409,10 +387,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = combineLatest([
                     this.store.select(StoreSelectors.getIsLoading),
-                    this.store.select(ExportSelector.getRequestingState),
-                ]).pipe(
-                    map(state => state.includes(true))
-                );
+                    this.store.select(ExportSelector.getRequestingState)
+                ]).pipe(map(state => state.includes(true)));
 
                 this._initTable();
 

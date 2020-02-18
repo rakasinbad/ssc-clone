@@ -170,7 +170,7 @@ export const navigation: Array<FuseNavigation> = [
     },
     {
         id: 'warehouse',
-        title: 'Warehouses',
+        title: 'Warehouse',
         type: 'collapsable',
         icon: 'custom-sinbad-logistics',
         children: [

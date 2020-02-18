@@ -41,10 +41,10 @@
                     </mat-cell>
                 </ng-container>
 
-                <!-- Warehouse Code Column -->
-                <ng-container matColumnDef="wh-code">
+                <!-- Warehouse ID Column -->
+                <ng-container matColumnDef="wh-id">
                     <mat-header-cell *matHeaderCellDef>
-                        Warehouse Code
+                        Warehouse ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
@@ -65,6 +65,18 @@
                     </mat-cell>
                 </ng-container>
 
+                <!-- Lead Time Column -->
+                <ng-container matColumnDef="lead-time">
+                    <mat-header-cell *matHeaderCellDef>
+                        Lead Time
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            1 Days
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
                 <!-- Invoice Column -->
                 <ng-container matColumnDef="invoice">
                     <mat-header-cell *matHeaderCellDef>
@@ -73,6 +85,30 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.invoice || '-' }}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Assigned SKU Column -->
+                <ng-container matColumnDef="assigned-sku">
+                    <mat-header-cell *matHeaderCellDef>
+                        Assigned SKU
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            30
+                        </p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Stock Available Column -->
+                <ng-container matColumnDef="stock-available">
+                    <mat-header-cell *matHeaderCellDef>
+                        Stock Available
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p style="word-break: break-word;">
+                            100
                         </p>
                     </mat-cell>
                 </ng-container>

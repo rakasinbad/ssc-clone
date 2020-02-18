@@ -54,9 +54,12 @@ export class WarehousesComponent implements OnInit {
     };
     displayedColumns = [
         'checkbox',
-        'wh-code',
+        'wh-id',
         'wh-name',
+        'lead-time',
         'invoice',
+        'assigned-sku',
+        'stock-available',
         'total-urban',
         // 'status',
         'actions'
@@ -103,7 +106,7 @@ export class WarehousesComponent implements OnInit {
             title: 'Home'
         },
         {
-            title: 'Logistics'
+            title: 'Warehouse'
         },
         {
             title: 'Warehouse List'

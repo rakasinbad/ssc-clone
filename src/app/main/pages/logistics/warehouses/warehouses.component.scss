@@ -106,38 +106,46 @@ app-warehouses {
             flex: 0 1 80px;
         }
 
-        .mat-column-id {
-            flex: 0 1 84px;
+        .mat-column-wh-id {
+            flex: 0 1 120px;
+            min-width: 120px;
         }
 
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .product-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
+        .mat-column-wh-name {
+            flex: 1 2 50em;
+            min-width: 125px;
         }
 
-        .mat-column-category {
-            flex: 0 1 240px;
-        }
-
-        .mat-column-price {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-quantity {
-            flex: 0 1 160px;
-        }
-
-        .mat-column-active {
+        .mat-column-lead-time {
             flex: 0 1 80px;
+            min-width: 80px;
+        }
+
+        .mat-column-invoice {
+            flex: 0 1 50em;
+        }
+
+        .mat-column-assigned-sku {
+            flex: 0 1 20em;
+            min-width: 90px;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-stock-available {
+            flex: 0 1 20em;
+            min-width: 100px;
+            // justify-content: flex-end;
+        }
+
+        .mat-column-total-urban {
+            flex: 0 1 20em;
+            min-width: 80px;
+            // justify-content: flex-end;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
         }
 
