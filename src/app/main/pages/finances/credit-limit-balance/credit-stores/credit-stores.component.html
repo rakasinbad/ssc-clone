@@ -1,5 +1,10 @@
+<!-- CARD HEADER -->
+<sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+<!-- / CARD HEADER -->
+
+<!-- THE CONTENT -->
 <mat-table
-    class="stores-table"
+    class="stores-table grey-300-border mx-12"
     #table
     [dataSource]="dataSource$ | async"
     [trackBy]="onTrackBy"
@@ -261,3 +266,5 @@
     showFirstLastButtons
 >
 </mat-paginator>
+
+<!-- / THE CONTENT -->

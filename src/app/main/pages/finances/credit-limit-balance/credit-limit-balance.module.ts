@@ -15,6 +15,7 @@ import { CreditStoreFormComponent } from './credit-store-form/credit-store-form.
 import { CreditStoresComponent } from './credit-stores/credit-stores.component';
 import { CreditLimitBalanceEffects } from './store/effects';
 import { fromCreditLimitBalance } from './store/reducers';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *
@@ -34,6 +35,7 @@ import { fromCreditLimitBalance } from './store/reducers';
         CreditLimitBalanceRoutingModule,
 
         SharedModule,
+        SharedComponentsModule,
         MaterialModule,
 
         RxReactiveFormsModule,
