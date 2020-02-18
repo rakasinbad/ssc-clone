@@ -185,6 +185,12 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Warehouse Coverage',
                 type: 'item',
                 url: '/pages/logistics/warehouse-coverages'
+            },
+            {
+                id: 'wh-sku-assignment',
+                title: 'SKU Assignment',
+                type: 'item',
+                url: '/pages/logistics/sku-assignments'
             }
         ]
     }
