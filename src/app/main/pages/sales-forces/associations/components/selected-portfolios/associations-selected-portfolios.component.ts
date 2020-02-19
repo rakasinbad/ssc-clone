@@ -3,12 +3,12 @@ import { fuseAnimations } from '@fuse/animations';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
 
-import { Store, Filter, Portfolio } from '../../../portfolios/models';
+import { Filter, Portfolio } from '../../../portfolios/models';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../../portfolios/store/reducers';
 import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../../portfolios/store/selectors';
 import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime, startWith } from 'rxjs/operators';
 import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
-import { IQueryParams, SupplierStore } from 'app/shared/models';
+import { IQueryParams, Store } from 'app/shared/models';
 import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
 import { AssociationsFilterPortfoliosComponent } from '../filter-portfolios/associations-filter-portfolios.component';
 import { FormControl } from '@angular/forms';
@@ -288,13 +288,13 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     //     return true;
     // }
 
-    getStoreWarning(store: Store): string | null {
-        if (!store.portfolio) {
-            return null;
-        }
+    // getStoreWarning(store: Store): string | null {
+    //     if (!store.portfolio) {
+    //         return null;
+    //     }
 
-        return `This store is already added on Portfolio "${store.portfolio.name}". (Code: ${store.portfolio.code})"`;
-    }
+    //     return `This store is already added on Portfolio "${store.portfolio.name}". (Code: ${store.portfolio.code})"`;
+    // }
 
     
 
@@ -346,7 +346,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                                                     return newPortfolio;
                                                 });
 
-                // (newAvailablePortfolios as unknown as Array<Store>).push(...stores);
+                (newAvailablePortfolios as unknown as Array<Store>).push(...stores);
 
                 // Mengembalikan daftar toko dengan state yang baru.
                 return newAvailablePortfolios.sort((a, b) => (+a.id) - (+b.id));
