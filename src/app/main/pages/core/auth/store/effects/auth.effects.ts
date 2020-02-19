@@ -164,7 +164,7 @@ export class AuthEffects {
 
                     if (environment.logRocketId) {
                         LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
-                            name: user.fullName,
+                            name: `${user.fullName} (${environment.environment})`,
                             email: user.email,
                             environment: environment.environment,
                             version: environment.appVersion,
@@ -341,7 +341,7 @@ export class AuthEffects {
 
                             if (environment.logRocketId) {
                                 LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
-                                    name: user.fullName,
+                                    name: `${user.fullName} (${environment.environment})`,
                                     email: user.email,
                                     environment: environment.environment,
                                     version: environment.appVersion,
