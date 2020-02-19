@@ -1,6 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import * as fromAssociatedPortfolio from '../reducers/portfolio.reducer';
 import * as fromAssociationCore from '../reducers';
 
 const getAssociationsCoreState = createFeatureSelector<
@@ -18,7 +17,7 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromAssociatedPortfolio.adapter.getSelectors(getAssociatedPortfolioEntitiesState);
+} = fromAssociationCore.fromAssociatedPortfolio.adapter.getSelectors(getAssociatedPortfolioEntitiesState);
 
 export const getInitialized = createSelector(getAssociatedPortfolioEntitiesState, state => state.initialized);
 

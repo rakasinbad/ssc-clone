@@ -8,7 +8,7 @@ import { CoreFeatureState as PortfolioCoreFeatureState } from '../../../portfoli
 import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../../portfolios/store/selectors';
 import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime, startWith } from 'rxjs/operators';
 import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, SupplierStore } from 'app/shared/models';
 import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
 import { AssociationsFilterPortfoliosComponent } from '../filter-portfolios/associations-filter-portfolios.component';
 import { FormControl } from '@angular/forms';
@@ -22,7 +22,7 @@ import { SalesRep } from '../../../sales-reps/models';
 import { AssociationApiService } from '../../services';
 import { PortfolioStoresComponent } from '../portfolio-stores/portfolio-stores.component';
 import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
-import { AssociatedPortfolioSelectors, AssociationSelectors } from '../../store/selectors';
+import { AssociatedPortfolioSelectors, AssociationSelectors, AssociatedStoreSelectors, StoreSelectors } from '../../store/selectors';
 import { AssociatedPortfolioActions } from '../../store/actions';
 
 @Component({
@@ -46,7 +46,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     search: FormControl = new FormControl('');
 
     // Untuk menyimpan daftar toko yang tersedia untuk dipilih.
-    availablePortfolios$: Observable<Array<Portfolio>>;
+    availablePortfolios$: Observable<Array<Portfolio> | Array<Store>>;
     // Untuk menyimpan daftar toko, baik calon untuk portofolio maupun yang sudah menjadi bagian portofolio.
     selectedPortfolios$: Observable<Array<Portfolio>>;
     // Untuk menyimpan filter pencarian toko yang sedang aktif.
@@ -89,10 +89,13 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             takeUntil((this.subs$))
         );
 
-        this.isPortfolioLoading$ = this.portfolioStore.select(PortfolioSelector.getLoadingState)
-            .pipe(
-                takeUntil(this.subs$)
-            );
+        this.isPortfolioLoading$ = combineLatest([
+            this.associationStore.select(AssociatedStoreSelectors.getLoadingState),
+            this.portfolioStore.select(PortfolioSelector.getLoadingState),
+        ]).pipe(
+            map(isLoadings => isLoadings.includes(true)),
+            takeUntil(this.subs$)
+        );
 
         this.isAssociatedPortfolioLoading$ = this.associationStore.select(AssociatedPortfolioSelectors.getLoadingState)
             .pipe(
@@ -171,29 +174,6 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                         }
                     }
                 }
-                // if (!isSelected) {
-                //     this.portfolioStore.dispatch(
-                //         PortfolioActions.markStoreAsRemovedFromPortfolio({
-                //             payload: store.id
-                //         })
-                //     );
-                // } else {
-                //     this.portfolioStore.dispatch(
-                //         PortfolioActions.abortStoreAsRemovedFromPortfolio({
-                //             payload: store.id
-                //         })
-                //     );
-
-                    // this.shopStore.dispatch(
-                    //     StoreActions.checkStoreAtInvoiceGroupRequest({
-                    //         payload: {
-                    //             storeId: store.id,
-                    //             invoiceGroupId
-                    //         }
-                    //     })
-                    // );
-                // }
-                // }
             }),
             takeUntil(this.subs$)
         ).subscribe();
@@ -249,13 +229,23 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     //     );
     // }
 
-    printPortfolioName(portfolio: Portfolio): string {
+    printPortfolioName(data: Portfolio | Store): string {
+        const portfolio = data as Portfolio;
+        const store = data as Store;
+
         // return `${portfolio.name || '-'} (${portfolio.storeQty} ${portfolio.storeQty === 1 ? 'store' : 'stores'})`;
-        if (portfolio.type === 'group') {
-            return `${portfolio.name || '-'} (${portfolio.storeQty} stores)`;
-        } else if (portfolio.type === 'direct') {
-            return portfolio.stores[0].name;
-            // return `${store..name || '-'} - ${store.name || '-'}`;
+        if (portfolio instanceof Portfolio) {
+            // if (portfolio.type === 'group') {
+            //     return `${portfolio.name || '-'} (${portfolio.storeQty} stores)`;
+            // } else if (portfolio.type === 'direct') {
+            //     return portfolio.stores[0].name;
+            //     // return `${store..name || '-'} - ${store.name || '-'}`;
+            // }
+            return `${portfolio.name || '-'} (${portfolio.storeQty} ${portfolio.storeQty <= 1 ? 'store' : 'stores'})`;
+        }
+
+        if (store instanceof Store) {
+            return store.name;
         }
 
     }
@@ -333,6 +323,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.availablePortfolios$ = combineLatest([
             this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
+            this.associationStore.select(StoreSelectors.getAllStores),
         ]).pipe(
             // Debugging purpose.
             tap(() => this.debug('AVAILABLE PORTFOLIOS CHECK', {})),
@@ -341,12 +332,12 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             // Memeriksa Invoice Group yang dipilih.
             // filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
             // Mengubah bentuk portfolio yang ingin ditampilkan.
-            map(([[availablePortfolios, selectedPortfolios], invoiceGroup]) => {
+            map(([[availablePortfolios, selectedPortfolios, stores], invoiceGroup]) => {
                 // Mengambil ID dari portfolio yang dipilih.
                 const selectedPortfolioIds = selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).map(portfolio => portfolio.id);
 
                 // Mengambil portfolio dari state dengan mencocokkan Invoice Group-nya.
-                const newAvailablePortfolios = availablePortfolios
+                const newAvailablePortfolios: Array<Portfolio> | Array<Store> = availablePortfolios
                                                 .filter(portfolio =>
                                                     portfolio.invoiceGroupId === invoiceGroup.id
                                                 ).map(portfolio => {
@@ -354,6 +345,8 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                                                     newPortfolio.isSelected = selectedPortfolioIds.includes(newPortfolio.id);
                                                     return newPortfolio;
                                                 });
+
+                // (newAvailablePortfolios as unknown as Array<Store>).push(...stores);
 
                 // Mengembalikan daftar toko dengan state yang baru.
                 return newAvailablePortfolios.sort((a, b) => (+a.id) - (+b.id));
