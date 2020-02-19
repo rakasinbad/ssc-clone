@@ -535,7 +535,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                             title: 'Home'
                         },
                         {
-                            title: 'Logistics'
+                            title: 'Warehouse'
                         },
                         {
                             title: 'Warehouse List'
@@ -646,6 +646,23 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
+            whId: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            whName: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            leadTime: [''],
             invoices: [
                 '',
                 [
