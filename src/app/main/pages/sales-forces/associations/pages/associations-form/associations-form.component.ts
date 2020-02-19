@@ -552,7 +552,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
         
-        // this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
+        this.portfolioStore.dispatch(StoreActions.truncateStores());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());

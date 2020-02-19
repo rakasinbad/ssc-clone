@@ -23,7 +23,7 @@ import { AssociationApiService } from '../../services';
 import { PortfolioStoresComponent } from '../portfolio-stores/portfolio-stores.component';
 import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
 import { AssociatedPortfolioSelectors, AssociationSelectors, AssociatedStoreSelectors, StoreSelectors } from '../../store/selectors';
-import { AssociatedPortfolioActions } from '../../store/actions';
+import { AssociatedPortfolioActions, AssociatedStoreActions } from '../../store/actions';
 
 @Component({
     selector: 'app-associations-selected-portfolios',
@@ -48,7 +48,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     // Untuk menyimpan daftar toko yang tersedia untuk dipilih.
     availablePortfolios$: Observable<Array<Portfolio> | Array<Store>>;
     // Untuk menyimpan daftar toko, baik calon untuk portofolio maupun yang sudah menjadi bagian portofolio.
-    selectedPortfolios$: Observable<Array<Portfolio>>;
+    selectedPortfolios$: Observable<Array<Portfolio> | Array<Store>>;
     // Untuk menyimpan filter pencarian toko yang sedang aktif.
     filters$: Observable<Array<Filter>>;
     // Untuk menyimpanan status loading dari state.
@@ -119,58 +119,115 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.selectedPortfolioSub$.pipe(
             withLatestFrom(
                 this.associationStore.select(AssociatedPortfolioSelectors.selectEntities),
+                this.associationStore.select(AssociatedStoreSelectors.selectEntities),
             ),
-            tap(([$event, portfolioEntities]) => {
-                let portfolio = ($event.option.value as Portfolio);
+            tap(([$event, portfolioEntities, storeEntities]) => {
+                let isInSelected = false;
+                let value: Portfolio | Store = $event.option.value;
                 const isSelected = $event.option.selected;
-                const isInSelected = !!(portfolioEntities[portfolio.id]);
 
-                if (portfolioEntities[portfolio.id]) {
-                    portfolio = new Portfolio(portfolioEntities[portfolio.id]);
-                }
+                if (value instanceof Portfolio) {
+                    isInSelected = !!(portfolioEntities[value.id]);
 
-                if (portfolio.source === 'fetch') {
-                    if (isSelected) {
-                        this.associationStore.dispatch(
-                            AssociatedPortfolioActions.addSelectedPortfolios({
-                                payload: [portfolio]
-                            })
-                        );
-                    } else {
-                        this.associationStore.dispatch(
-                            AssociatedPortfolioActions.removeSelectedPortfolios({
-                                payload: [portfolio.id]
-                            })
-                        );
+                    if (isInSelected) {
+                        value = new Portfolio(portfolioEntities[value.id]);
                     }
-                } else if (portfolio.source === 'list') {
-                    if (!isInSelected) {
+
+                    if (value.source === 'fetch') {
                         if (isSelected) {
                             this.associationStore.dispatch(
                                 AssociatedPortfolioActions.addSelectedPortfolios({
-                                    payload: [portfolio]
+                                    payload: [value]
                                 })
                             );
                         } else {
                             this.associationStore.dispatch(
                                 AssociatedPortfolioActions.removeSelectedPortfolios({
-                                    payload: [portfolio.id]
+                                    payload: [value.id]
                                 })
                             );
                         }
-                    } else {
-                        if (!isSelected) {
+                    } else if (value.source === 'list') {
+                        if (!isInSelected) {
+                            if (isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.addSelectedPortfolios({
+                                        payload: [value]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.removeSelectedPortfolios({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        } else {
+                            if (!isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.markPortfolioAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.abortPortfolioAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        }
+                    }
+                } else if (value instanceof Store) {
+                    isInSelected = !!(storeEntities[value.id]);
+
+                    if (isInSelected) {
+                        value = new Store(storeEntities[value.id]);
+                    }
+
+                    if (value.source === 'fetch') {
+                        if (isSelected) {
                             this.associationStore.dispatch(
-                                AssociatedPortfolioActions.markPortfolioAsRemoved({
-                                    payload: [portfolio.id]
+                                AssociatedStoreActions.addSelectedStores({
+                                    payload: [value]
                                 })
                             );
                         } else {
                             this.associationStore.dispatch(
-                                AssociatedPortfolioActions.abortPortfolioAsRemoved({
-                                    payload: [portfolio.id]
+                                AssociatedStoreActions.removeSelectedStores({
+                                    payload: [value.id]
                                 })
                             );
+                        }
+                    } else if (value.source === 'list') {
+                        if (!isInSelected) {
+                            if (isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.addSelectedStores({
+                                        payload: [value]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.removeSelectedStores({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        } else {
+                            if (!isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.markStoreAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.abortStoreAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
                         }
                     }
                 }
@@ -314,16 +371,17 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.selectedPortfolios$ = combineLatest([
             // this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
+            this.associationStore.select(AssociatedStoreSelectors.selectAll),
         ]).pipe(
             tap(() => this.debug('SELECTED PORTFOLIOS CHECK', {})),
-            map(([selectedPortfolios]) => selectedPortfolios.sort((a, b) => (+a.id) - (+b.id))),
+            map(([selectedPortfolios, selectedStores]) => (selectedPortfolios as unknown as Array<Store>).concat(...selectedStores).sort((a, b) => (+a.id) - (+b.id))),
             takeUntil(this.subs$)
         );
 
         this.availablePortfolios$ = combineLatest([
             this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
-            this.associationStore.select(StoreSelectors.getAllStores),
+            this.associationStore.select(AssociatedStoreSelectors.selectAll),
         ]).pipe(
             // Debugging purpose.
             tap(() => this.debug('AVAILABLE PORTFOLIOS CHECK', {})),
@@ -362,7 +420,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                 length: selectedPortfolios.length
             })),
             // Hanya mengambil jumlah isi dari array-nya saja.
-            map(selectedPortfolios => selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).length),
+            map(selectedPortfolios => (selectedPortfolios as unknown as Array<Store>).filter(store => !(!!store.deletedAt)).length),
             takeUntil(this.subs$)
         );
 
