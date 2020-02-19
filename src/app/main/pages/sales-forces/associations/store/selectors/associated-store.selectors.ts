@@ -10,7 +10,7 @@ const getAssociationsCoreState = createFeatureSelector<
 
 export const getAssociatedStoreEntitiesState = createSelector(
     getAssociationsCoreState,
-    state => state.stores
+    state => state[fromAssociatedStore.featureKey]
 );
 
 export const {
