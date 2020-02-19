@@ -8,7 +8,7 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { DownloadApiService, NoticeService, UploadApiService, WINDOW } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
-import { ErrorHandler, PaginateResponse } from 'app/shared/models';
+import { ErrorHandler, IQueryParams, PaginateResponse } from 'app/shared/models';
 import { ProgressActions, UiActions } from 'app/shared/store/actions';
 import * as fromRoot from 'app/store/app.reducer';
 import * as moment from 'moment';
@@ -16,11 +16,11 @@ import { of } from 'rxjs';
 import {
     catchError,
     exhaustMap,
+    finalize,
     map,
     switchMap,
     tap,
-    withLatestFrom,
-    finalize
+    withLatestFrom
 } from 'rxjs/operators';
 
 import { JourneyPlan } from '../../models';
@@ -135,36 +135,81 @@ export class JourneyPlanEffects {
         this.actions$.pipe(
             ofType(JourneyPlanActions.fetchJourneyPlansRequest),
             map(action => action.payload),
-            switchMap(params => {
-                return this._$journeyPlanApi.findAll<PaginateResponse<JourneyPlan>>(params).pipe(
-                    catchOffline(),
-                    map(resp => {
-                        const newResp = {
-                            data: resp.data || [],
-                            total: resp.total
-                        };
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
 
-                        return JourneyPlanActions.fetchJourneyPlansSuccess({
-                            payload: {
-                                ...newResp,
-                                data:
-                                    newResp.data && newResp.data.length > 0
-                                        ? newResp.data.map(r => new JourneyPlan(r))
-                                        : []
-                            }
-                        });
-                    }),
-                    catchError(err =>
-                        of(
-                            JourneyPlanActions.fetchJourneyPlansFailure({
-                                payload: new ErrorHandler({
-                                    id: 'fetchJourneyPlansFailure',
-                                    errors: err
-                                })
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [IQueryParams, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        JourneyPlanActions.fetchJourneyPlansFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchJourneyPlansFailure',
+                                errors: 'Not Found!'
                             })
+                        })
+                    );
+                }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                if (!supplierId) {
+                    return of(
+                        JourneyPlanActions.fetchJourneyPlansFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchJourneyPlansFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
+
+                return this._$journeyPlanApi
+                    .findAll<PaginateResponse<JourneyPlan>>(params, supplierId)
+                    .pipe(
+                        catchOffline(),
+                        map(resp => {
+                            const newResp = {
+                                data: resp.data || [],
+                                total: resp.total
+                            };
+
+                            return JourneyPlanActions.fetchJourneyPlansSuccess({
+                                payload: {
+                                    ...newResp,
+                                    data:
+                                        newResp.data && newResp.data.length > 0
+                                            ? newResp.data.map(r => new JourneyPlan(r))
+                                            : []
+                                }
+                            });
+                        }),
+                        catchError(err =>
+                            of(
+                                JourneyPlanActions.fetchJourneyPlansFailure({
+                                    payload: new ErrorHandler({
+                                        id: 'fetchJourneyPlansFailure',
+                                        errors: err
+                                    })
+                                })
+                            )
                         )
-                    )
-                );
+                    );
             })
         )
     );

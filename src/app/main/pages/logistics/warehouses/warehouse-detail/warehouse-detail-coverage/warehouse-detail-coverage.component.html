@@ -1,0 +1,67 @@
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+    <mat-table
+        class="warehouse-detail-coverage-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+    >
+        <!-- Warehouse Name Column -->
+        <ng-container matColumnDef="wh-name">
+            <mat-header-cell *matHeaderCellDef>
+                Warehouse Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.name }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Province Column -->
+        <ng-container matColumnDef="province">
+            <mat-header-cell *matHeaderCellDef>
+                Province
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.province }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- City Column -->
+        <ng-container matColumnDef="city">
+            <mat-header-cell *matHeaderCellDef>
+                City
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.city }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- District Column -->
+        <ng-container matColumnDef="district">
+            <mat-header-cell *matHeaderCellDef>
+                District
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.district }}
+            </mat-cell>
+        </ng-container>
+
+        <!-- Urban Column -->
+        <ng-container matColumnDef="urban">
+            <mat-header-cell *matHeaderCellDef>
+                Urban
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                {{ row.urban }}
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="warehouse-detail-coverage"
+        ></mat-row>
+    </mat-table>
+</div>
