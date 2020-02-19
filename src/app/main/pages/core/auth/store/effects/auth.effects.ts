@@ -163,7 +163,7 @@ export class AuthEffects {
                     });
 
                     if (environment.logRocketId) {
-                        LogRocket.identify(user.email, {
+                        LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
                             name: user.fullName,
                             email: user.email,
                             environment: environment.environment,
@@ -171,7 +171,8 @@ export class AuthEffects {
                             commitHash: environment.appHash,
                             phoneNo: user.phoneNo,
                             mobilePhoneNo: user.mobilePhoneNo,
-                            userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
+                            userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(','),
+                            userData: JSON.stringify(user),
                         });
                     }
                 })
@@ -339,7 +340,7 @@ export class AuthEffects {
                             // /pages/dashboard
 
                             if (environment.logRocketId) {
-                                LogRocket.identify(user.email, {
+                                LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
                                     name: user.fullName,
                                     email: user.email,
                                     environment: environment.environment,
@@ -347,7 +348,8 @@ export class AuthEffects {
                                     commitHash: environment.appHash,
                                     phoneNo: user.phoneNo,
                                     mobilePhoneNo: user.mobilePhoneNo,
-                                    userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(',')
+                                    userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(','),
+                                    userData: JSON.stringify(user),
                                 });
                             }
 
