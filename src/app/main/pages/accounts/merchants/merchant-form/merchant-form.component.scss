@@ -32,3 +32,12 @@
 .viewport-select {
     height: 250px;
 }
+
+.mat-form-field-appearance-outline {
+    &.mat-sinbad-field-error {
+        .mat-form-field-outline-thick {
+            color: #f44336 !important;
+            opacity: 1 !important;
+        }
+    }
+}

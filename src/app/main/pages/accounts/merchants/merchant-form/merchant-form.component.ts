@@ -76,6 +76,7 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     tmpIdentityPhotoSelfie: FormControl;
     storeIdType: FormControl = new FormControl('manual');
     storeIdNextNumber: string;
+    userId: string;
     pageType: string;
     numberOfEmployees: { id: string; label: string }[];
     tempInvoiceGroupName: Array<string>;
@@ -598,6 +599,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (isMatError) {
             return errors && (dirty || touched);
+        }
+
+        if (field === 'storeInfo.legalInfo.identityPhoto') {
+            return !!errors;
         }
 
         return errors && ((touched && dirty) || touched);
@@ -2207,6 +2212,114 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             ]
                         })
                     }),
+                    legalInfo: this.formBuilder.group({
+                        name: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.alpha({
+                                    allowWhiteSpace: true,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        identityId: [
+                            '',
+                            [
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
+                                RxwebValidators.digit({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.minLength({
+                                    value: 16,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 16,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ],
+                        identityPhoto: [
+                            '',
+                            [
+                                RxwebValidators.required({
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'required'
+                                    )
+                                }),
+                                RxwebValidators.fileSize({
+                                    maxSize: Math.floor(5 * 1048576),
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'file_size_lte',
+                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    )
+                                })
+                            ]
+                        ],
+                        identityPhotoSelfie: [
+                            '',
+                            [
+                                RxwebValidators.fileSize({
+                                    maxSize: Math.floor(5 * 1048576),
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'file_size_lte',
+                                        { size: numeral(5 * 1048576).format('0.0 b', Math.floor) }
+                                    )
+                                })
+                            ]
+                        ],
+                        npwpId: [
+                            '',
+                            [
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
+                                RxwebValidators.minLength({
+                                    value: 15,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                }),
+                                RxwebValidators.maxLength({
+                                    value: 15,
+                                    message: this._$errorMessage.getErrorMessageNonState(
+                                        'default',
+                                        'pattern'
+                                    )
+                                })
+                            ]
+                        ]
+                    }),
                     physicalStoreInfo: this.formBuilder.group({
                         numberOfEmployee: [''],
                         vehicleAccessibility: ['']
@@ -2353,6 +2466,135 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
                         if (this.form.get('storeInfo.storeId.storeName').invalid) {
                             this.form.get('storeInfo.storeId.storeName').markAsTouched();
+                        }
+
+                        if (data.owner) {
+                            const ownerName = data.owner.fullName || '';
+                            const ownerIdNo = data.owner.idNo || '';
+                            const ownerIdImgUrl = data.owner.idImageUrl || '';
+                            const ownerSelfieImgUrl = data.owner.selfieImageUrl || '';
+                            const ownerNpwpNo = data.owner.taxNo || '';
+                            const ownerId = data.owner.id || '';
+
+                            if (ownerId) {
+                                this.userId = ownerId;
+                            }
+
+                            if (ownerName) {
+                                this.form.get('storeInfo.legalInfo.name').setValue(ownerName);
+                            }
+
+                            if (this.form.get('storeInfo.legalInfo.name').invalid) {
+                                this.form.get('storeInfo.legalInfo.name').markAsTouched();
+                            }
+
+                            if (ownerIdNo) {
+                                this.form.get('storeInfo.legalInfo.identityId').setValue(ownerIdNo);
+                            }
+
+                            if (this.form.get('storeInfo.legalInfo.identityId').invalid) {
+                                this.form.get('storeInfo.legalInfo.identityId').markAsTouched();
+                            }
+
+                            if (ownerIdImgUrl) {
+                                // this.form.get('storeInfo.legalInfo.identityPhoto').reset();
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhoto')
+                                    .clearValidators();
+                                this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
+                                    RxwebValidators.fileSize({
+                                        maxSize: Math.floor(5 * 1048576),
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'file_size_lte',
+                                            {
+                                                size: numeral(5 * 1048576).format(
+                                                    '0.0 b',
+                                                    Math.floor
+                                                )
+                                            }
+                                        )
+                                    })
+                                ]);
+
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhoto')
+                                    .updateValueAndValidity();
+                            } else {
+                                // this.form.get('storeInfo.legalInfo.identityPhoto').reset();
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhoto')
+                                    .clearValidators();
+                                this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
+                                    RxwebValidators.required({
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'required'
+                                        )
+                                    }),
+                                    RxwebValidators.fileSize({
+                                        maxSize: Math.floor(5 * 1048576),
+                                        message: this._$errorMessage.getErrorMessageNonState(
+                                            'default',
+                                            'file_size_lte',
+                                            {
+                                                size: numeral(5 * 1048576).format(
+                                                    '0.0 b',
+                                                    Math.floor
+                                                )
+                                            }
+                                        )
+                                    })
+                                ]);
+
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhoto')
+                                    .updateValueAndValidity();
+                            }
+
+                            if (this.form.get('storeInfo.legalInfo.identityPhoto').invalid) {
+                                this.form.get('storeInfo.legalInfo.identityPhoto').markAsTouched();
+                            }
+
+                            if (ownerSelfieImgUrl) {
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhotoSelfie')
+                                    .clearValidators();
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhotoSelfie')
+                                    .setValidators([
+                                        RxwebValidators.fileSize({
+                                            maxSize: Math.floor(5 * 1048576),
+                                            message: this._$errorMessage.getErrorMessageNonState(
+                                                'default',
+                                                'file_size_lte',
+                                                {
+                                                    size: numeral(5 * 1048576).format(
+                                                        '0.0 b',
+                                                        Math.floor
+                                                    )
+                                                }
+                                            )
+                                        })
+                                    ]);
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhotoSelfie')
+                                    .updateValueAndValidity();
+                            }
+
+                            if (this.form.get('storeInfo.legalInfo.identityPhotoSelfie').invalid) {
+                                this.form
+                                    .get('storeInfo.legalInfo.identityPhotoSelfie')
+                                    .markAsTouched();
+                            }
+
+                            if (ownerNpwpNo) {
+                                this.form.get('storeInfo.legalInfo.npwpId').setValue(ownerNpwpNo);
+                            }
+
+                            if (this.form.get('storeInfo.legalInfo.npwpId').invalid) {
+                                this.form.get('storeInfo.legalInfo.npwpId').markAsTouched();
+                            }
                         }
 
                         if (data.urban) {
@@ -2826,6 +3068,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                 vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
                 urbanId: urban.id,
+                user: {
+                    id: this.userId,
+                    idNo: body.storeInfo.legalInfo.identityId || '',
+                    fullName: body.storeInfo.legalInfo.name,
+                    taxNo: body.storeInfo.legalInfo.npwpId || '',
+                    idImage: body.storeInfo.legalInfo.identityPhoto,
+                    selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
+                    phone: body.profileInfo.phoneNumber
+                },
                 cluster: {
                     clusterId: body.storeInfo.storeClassification.storeCluster
                 },

@@ -98,7 +98,7 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
-                                    [class.mat-form-field-invalid]="hasError('profileInfo.photos')"
+                                    [class.mat-sinbad-field-error]="hasError('profileInfo.photos')"
                                 >
                                     <input
                                         #photoPicker
@@ -206,8 +206,11 @@
                                         <mat-radio-button
                                             value="auto"
                                             [disabled]="!storeIdNextNumber"
-                                            >Auto Generate
-                                            <span class="grey-fg">({{ storeIdNextNumber }})</span>
+                                        >
+                                            Auto Generate
+                                            <span class="grey-fg">
+                                                ({{ storeIdNextNumber || '-' }})
+                                            </span>
                                         </mat-radio-button>
                                     </mat-radio-group>
                                     <!-- / RADIO GROUP -->
@@ -897,11 +900,9 @@
                         </div> -->
                     </div>
 
-                    <div
-                        class="form-box mt-16"
-                        formGroupName="legalInfo"
-                        *ngIf="pageType === 'new'"
-                    >
+                    <!--  *ngIf="pageType === 'new'" -->
+
+                    <div class="form-box mt-16" formGroupName="legalInfo">
                         <span class="mat-subheading-2">Legal Information</span>
 
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
@@ -963,7 +964,7 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
-                                    [class.mat-form-field-invalid]="
+                                    [class.mat-sinbad-field-error]="
                                         hasError('storeInfo.legalInfo.identityPhoto')
                                     "
                                 >
@@ -999,6 +1000,19 @@
                                 >
                                     Upload your file
                                 </button>
+
+                                <ng-container
+                                    *ngIf="pageType === 'edit' && (stores$ | async) as stores"
+                                >
+                                    <a
+                                        [href]="stores?.owner?.idImageUrl"
+                                        target="_blank"
+                                        *ngIf="stores?.owner?.idImageUrl"
+                                        style="position: relative;top: -0.78em"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -1022,7 +1036,7 @@
                                     class="sinbad-file-field"
                                     appearance="outline"
                                     fxFlex="40"
-                                    [class.mat-form-field-invalid]="
+                                    [class.mat-sinbad-field-error]="
                                         hasError('storeInfo.legalInfo.identityPhotoSelfie')
                                     "
                                 >
@@ -1067,6 +1081,19 @@
                                 >
                                     Upload your file
                                 </button>
+
+                                <ng-container
+                                    *ngIf="pageType === 'edit' && (stores$ | async) as stores"
+                                >
+                                    <a
+                                        [href]="stores?.owner?.taxImageUrl"
+                                        target="_blank"
+                                        *ngIf="stores?.owner?.taxImageUrl"
+                                        style="position: relative;top: -0.78em"
+                                    >
+                                        <mat-icon>remove_red_eye</mat-icon>
+                                    </a>
+                                </ng-container>
                             </div>
                         </div>
 
