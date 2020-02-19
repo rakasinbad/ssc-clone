@@ -1,6 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
 app-associations {
+    app-associations-sales-rep, app-associations-portfolio, app-associations-store {
+        border-radius: 4px;
+    }
+
     #associations {
         .top-bg {
             @include media-breakpoint('lt-md') {

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, HostBinding, Input, OnDestroy, OnInit } f
 import { NavigationEnd, Router } from '@angular/router';
 import { merge, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { environment } from 'environments/environment';
 
 import { FuseNavigationItem } from '@fuse/types';
 import { fuseAnimations } from '@fuse/animations';
@@ -23,6 +24,8 @@ export class FuseNavVerticalCollapsableComponent implements OnInit, OnDestroy
 
     @HostBinding('class.open')
     public isOpen = false;
+
+    hiddenMenu: Array<string> = environment.hiddenMenu;
 
     // Private
     private _unsubscribeAll: Subject<any>;

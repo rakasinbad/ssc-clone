@@ -32,7 +32,7 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="whId" />
+                                <input matInput name="whId" formControlName="whId" />
                             </mat-form-field>
                         </div>
 
@@ -42,7 +42,17 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="whName" />
+                                <input matInput name="whName" formControlName="whName" />
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Lead Time
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="leadTime" formControlName="leadTime" />
                             </mat-form-field>
                         </div>
 

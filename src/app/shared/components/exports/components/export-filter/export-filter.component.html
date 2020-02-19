@@ -1,7 +1,9 @@
 <div class="dialog-content-wrapper">
     <mat-toolbar class="mat-accent m-0">
         <mat-toolbar-row fxFlex fxLayout="row" fxLayoutAlign="space-between center">
-            <span class="title dialog-title"> Filter Export {{ getExportFilterDialogTitle() }} </span>
+            <span class="title dialog-title">
+                Filter Export {{ getExportFilterDialogTitle() }}
+            </span>
             <button type="button" mat-icon-button aria-label="Close Dialog" (click)="onClose()">
                 <mat-icon>close</mat-icon>
             </button>
@@ -10,7 +12,6 @@
 
     <!-- <ng-container [ngSwitch]="data.page">
         <div *ngSwitchCase="'orders'" mat-dialog-content class="p-16 pb-0 m-0 mat-typography" fusePerfectScrollbar>
-            
         </div>
     </ng-container> -->
     <div class="mat-dialog-content p-16 pb-0 m-0 mat-typography" fusePerfectScrollbar>
@@ -37,14 +38,22 @@
                 </mat-slide-toggle>
             </div>
 
-            <mat-form-field *ngIf="activeConfiguration?.filterAspect?.status" appearance="outline" floatLabel="always" class="w-100-p">
+            <mat-form-field
+                *ngIf="activeConfiguration?.filterAspect?.status"
+                appearance="outline"
+                floatLabel="always"
+                class="w-100-p"
+            >
                 <mat-label>
                     {{ activeConfiguration?.filterAspect?.status?.label || 'Status' }}
                 </mat-label>
                 <ng-container *ngIf="statusSources; else noStatusSources">
                     <mat-select
                         formControlName="status"
-                        [placeholder]="activeConfiguration?.filterAspect?.status?.placeholder || 'Choose Status'"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.status?.placeholder ||
+                            'Choose Status'
+                        "
                         [required]="activeConfiguration?.filterAspect?.status?.required"
                     >
                         <mat-option>(None)</mat-option>
@@ -56,9 +65,15 @@
 
                 <ng-template #noStatusSources>
                     <mat-select
-                        [placeholder]="activeConfiguration?.filterAspect?.status?.placeholder || 'Choose Status'"
+                        [placeholder]="
+                            activeConfiguration?.filterAspect?.status?.placeholder ||
+                            'Choose Status'
+                        "
                     >
-                        <mat-option>{{ activeConfiguration?.filterAspect?.status?.label || 'Status' }} not found</mat-option>
+                        <mat-option
+                            >{{ activeConfiguration?.filterAspect?.status?.label || 'Status' }} not
+                            found</mat-option
+                        >
                     </mat-select>
                 </ng-template>
 
@@ -67,7 +82,12 @@
                 </mat-error>
             </mat-form-field>
 
-            <div fxFlex="1 0 auto" fxLayout="column" fxLayout.gt-xs="row" *ngIf="activeConfiguration?.filterAspect?.rangeDate">
+            <div
+                fxFlex="1 0 auto"
+                fxLayout="column"
+                fxLayout.gt-xs="row"
+                *ngIf="activeConfiguration?.filterAspect?.rangeDate"
+            >
                 <mat-form-field
                     appearance="outline"
                     floatLabel="always"
@@ -80,12 +100,23 @@
                     <input
                         matInput
                         [matDatepicker]="startDatePicker"
+                        formControlName="startDate"
                         [min]="minStartDate"
                         [max]="maxStartDate"
                         name="start"
                         (dateChange)="onChangeDate($event, 'startDate')"
-                        [required]="activeConfiguration?.filterAspect?.rangeDate?.required"
+                        required
+                        *ngIf="isRequired('rangeDate')"
+                    />
+                    <input
+                        matInput
+                        [matDatepicker]="startDatePicker"
                         formControlName="startDate"
+                        [min]="minStartDate"
+                        [max]="maxStartDate"
+                        name="start"
+                        (dateChange)="onChangeDate($event, 'startDate')"
+                        *ngIf="!isRequired('rangeDate')"
                     />
                     <mat-datepicker-toggle
                         matSuffix
@@ -110,11 +141,21 @@
                     <input
                         matInput
                         [matDatepicker]="endDatePicker"
+                        formControlName="endDate"
                         [min]="minEndDate"
                         [max]="maxEndDate"
                         name="end"
-                        [required]="activeConfiguration?.filterAspect?.rangeDate?.required"
+                        required
+                        *ngIf="isRequired('rangeDate')"
+                    />
+                    <input
+                        matInput
+                        [matDatepicker]="endDatePicker"
                         formControlName="endDate"
+                        [min]="minEndDate"
+                        [max]="maxEndDate"
+                        name="end"
+                        *ngIf="!isRequired('rangeDate')"
                     />
                     <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                     <mat-datepicker #endDatePicker touchUi></mat-datepicker>
@@ -126,7 +167,6 @@
             </div>
         </form>
     </div>
-
 
     <div mat-dialog-actions class="m-0 p-16" fxLayout="row" fxLayoutAlign="end center">
         <button

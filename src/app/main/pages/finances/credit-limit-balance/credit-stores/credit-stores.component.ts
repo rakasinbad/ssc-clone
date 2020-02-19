@@ -24,6 +24,7 @@ import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-credit-stores',
@@ -40,6 +41,32 @@ import { CreditLimitBalanceSelectors } from '../store/selectors';
 export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    // Untuk menentukan konfigurasi card header.
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Store List'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => this.store.dispatch(
+                CreditLimitBalanceActions.searchCreditLimitStore({ payload: value })
+            )
+        },
+        // add: {
+        //     permissions: ['CATALOGUE.CREATE'],
+        // },
+        // export: {
+        //     permissions: ['CATALOGUE.EXPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'catalogues'
+        // },
+        // import: {
+        //     permissions: ['CATALOGUE.IMPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'catalogues'
+        // },
+    };
 
     search: any;
     displayedColumns = [

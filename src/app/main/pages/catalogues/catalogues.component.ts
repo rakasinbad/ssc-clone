@@ -245,6 +245,16 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.dataSource$ = this.store.select(CatalogueSelectors.getAllCatalogues);
         this.isLoading$ = this.store.select(CatalogueSelectors.getIsLoading);
         this.isRequestingExport$ = this.store.select(ExportSelector.getRequestingState);
+
+        this.store.select(CatalogueSelectors.getRefreshStatus).pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(needRefresh => {
+            if (needRefresh) {
+                this.onRefreshTable();
+            }
+
+            this.store.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
+        });
         
         // this.search.valueChanges
         //     .pipe(

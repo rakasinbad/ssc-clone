@@ -168,24 +168,24 @@ export const navigation: Array<FuseNavigation> = [
             }
         ]
     },
-    // {
-    //     id: 'warehouse',
-    //     title: 'Warehouses',
-    //     type: 'collapsable',
-    //     icon: 'custom-sinbad-logistics',
-    //     children: [
-    //         {
-    //             id: 'wh-list',
-    //             title: 'Warehouse List',
-    //             type: 'item',
-    //             url: '/pages/logistics/warehouses'
-    //         },
-    //         {
-    //             id: 'wh-coverage',
-    //             title: 'Warehouse Coverage',
-    //             type: 'item',
-    //             url: '/pages/logistics/warehouse-coverages'
-    //         }
-    //     ]
-    // }
+    {
+        id: 'warehouse',
+        title: 'Warehouse',
+        type: 'collapsable',
+        icon: 'custom-sinbad-logistics',
+        children: [
+            {
+                id: 'wh-list',
+                title: 'Warehouse List',
+                type: 'item',
+                url: '/pages/logistics/warehouses'
+            },
+            {
+                id: 'wh-coverage',
+                title: 'Warehouse Coverage',
+                type: 'item',
+                url: '/pages/logistics/warehouse-coverages'
+            }
+        ]
+    }
 ];

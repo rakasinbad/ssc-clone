@@ -60,6 +60,7 @@ app-supplier-inventories {
     .supplier-inventories-table {
         flex: 1 1 auto;
         border: 1px solid;
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;

@@ -27,8 +27,8 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { merge, Observable, Subject, combineLatest } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -37,6 +37,7 @@ import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 
 @Component({
     selector: 'app-merchants',
@@ -90,19 +91,32 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 required: true
             }
         },
-        startDate: {
-            label: 'Start Date',
-            rules: {
-                required: true
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+                setTimeout(() => this._onRefreshTable(), 100);
             }
         },
-        endDate: {
-            label: 'End Date',
-            rules: {
-                required: true
+        add: {
+            permissions: ['ACCOUNT.STORE.CREATE'],
+            onClick: () => {
+                this.router.navigate(['/pages/account/stores/new']);
             }
+        },
+        export: {
+            permissions: ['ACCOUNT.STORE.EXPORT'],
+            useAdvanced: true,
+            pageType: 'stores'
+        },
+        import: {
+            permissions: ['ACCOUNT.STORE.IMPORT'],
+            useAdvanced: true,
+            pageType: 'stores'
         }
     };
+
+    // search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
         'store-code',
@@ -406,7 +420,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.dataSource$ = this.store.select(StoreSelectors.getAllStore);
                 this.totalDataSource$ = this.store.select(StoreSelectors.getTotalStore);
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-                this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
+                this.isLoading$ = combineLatest([
+                    this.store.select(StoreSelectors.getIsLoading),
+                    this.store.select(ExportSelector.getRequestingState)
+                ]).pipe(map(state => state.includes(true)));
 
                 this._initTable();
 

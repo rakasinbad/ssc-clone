@@ -17,39 +17,12 @@
                     </div>
                 </a>
             </nav>
-
-            <!-- <div class="mt-16" *ngIf="urlActive">Today: {{ today | date: 'dd-MMMM-yyyy' }}</div> -->
-
-            <div class="mt-16" fxLayout="row" fxLayoutAlign="space-between center" *ngIf="urlActive">
-                <div>Today: {{ today | date: 'dd-MMMM-yyyy' }}</div>
-
-                <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
-                    <!-- SEARCH -->
-                    <div class="search-wrapper">
-                        <!-- mx-12 -->
-                        <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
-                            <mat-icon>search</mat-icon>
-                            <input [formControl]="search" placeholder="Search" />
-                        </div>
-                    </div>
-                    <!-- / SEARCH -->
-
-                    <!-- <button mat-flat-button class="grey-600">
-                    <mat-icon>filter_list</mat-icon>
-                    Filter Lists
-                </button>
-
-                <button mat-flat-button class="grey-600">
-                    Group By
-                </button> -->
-                </div>
-            </div>
         </div>
         <!-- / CONTENT HEADER -->
 
         <!-- CONTENT CARD -->
         <router-outlet *ngIf="true"></router-outlet>
-
+    
         <div class="loader" *ngIf="
                 ((isLoading$ | async) && !urlActive) ||
                 ((isLoading$ | async) && urlActive && (totalDataSource$ | async))

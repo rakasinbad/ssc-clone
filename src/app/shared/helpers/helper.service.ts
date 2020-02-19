@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
+import { MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { environment } from 'environments/environment';
@@ -11,7 +12,6 @@ import { catchError, map } from 'rxjs/operators';
 import { ErrorHandler, TNullable, User, IErrorHandler } from '../models';
 import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
-import { MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -23,7 +23,6 @@ interface TTemplateFiles {
     providedIn: 'root'
 })
 export class HelperService {
-
     private static _orderStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -60,6 +59,10 @@ export class HelperService {
     ];
 
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
+        {
+            id: 'all',
+            label: 'All'
+        },
         {
             id: 'waiting_for_payment',
             label: 'Waiting for Payment'
@@ -162,13 +165,20 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
-    static getStatusList(page: 'stores' | 'catalogues' | 'payments' | 'orders'): Array<{ id: string; label: string; }> {
+    static getStatusList(
+        page: 'stores' | 'catalogues' | 'payments' | 'orders'
+    ): Array<{ id: string; label: string }> {
         switch (page) {
-            case 'stores': return HelperService._storeStatuses;
-            case 'catalogues': return HelperService._catalogueStatuses;
-            case 'payments': return HelperService._paymentStatuses;
-            case 'orders': return HelperService._orderStatuses;
-            default: return [];
+            case 'stores':
+                return HelperService._storeStatuses;
+            case 'catalogues':
+                return HelperService._catalogueStatuses;
+            case 'payments':
+                return HelperService._paymentStatuses;
+            case 'orders':
+                return HelperService._orderStatuses;
+            default:
+                return [];
         }
     }
 
@@ -199,19 +209,35 @@ export class HelperService {
         return value;
     }
 
-    showErrorNotification = ({ id: errId = '(none)', errors: error = {}, }: any) => {
+    showErrorNotification = ({ id: errId = '(none)', errors: error = {} }: any) => {
         const noticeSetting: MatSnackBarConfig = {
             horizontalPosition: 'right',
             verticalPosition: 'bottom',
-            duration: 10000,
+            duration: 10000
         };
 
         if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-            this._$notice.open(`An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${typeof error.error === 'string' ? 'Unknown error' : error.error.message},<br/>Request code: ${typeof error.error === 'string' ? '-' : error.error.errors.uuid ? error.error.errors.uuid : '-'}`, 'error', noticeSetting);
+            this._$notice.open(
+                `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
+                    typeof error.error === 'string' ? 'Unknown error' : error.error.message
+                },<br/>Request code: ${
+                    typeof error.error === 'string'
+                        ? '-'
+                        : error.error.errors.uuid
+                        ? error.error.errors.uuid
+                        : '-'
+                }`,
+                'error',
+                noticeSetting
+            );
         } else {
-            this._$notice.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`, 'error', noticeSetting);
+            this._$notice.open(
+                `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
+                'error',
+                noticeSetting
+            );
         }
-    }
+    };
 
     handleApiRouter(endpoint: string): string {
         /* if (
@@ -304,6 +330,8 @@ export class HelperService {
             args.forEach(arg => {
                 if (arg.key && arg.value) {
                     newParams = newParams.append(arg.key, arg.value);
+                } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
+                    newParams = newParams.append(arg.key, '');
                 }
             });
         }

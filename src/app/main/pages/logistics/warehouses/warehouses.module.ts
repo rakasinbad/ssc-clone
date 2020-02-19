@@ -7,6 +7,7 @@ import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { WarehousesStoreModule } from './store';
 import {
+    WarehouseDetailCoverageComponent,
     WarehouseDetailGeneralComponent,
     WarehouseDetailLocationComponent
 } from './warehouse-detail';
@@ -21,7 +22,8 @@ import { WarehousesComponent } from './warehouses.component';
         WarehouseFormComponent,
         WarehouseDetailComponent,
         WarehouseDetailGeneralComponent,
-        WarehouseDetailLocationComponent
+        WarehouseDetailLocationComponent,
+        WarehouseDetailCoverageComponent
     ],
     imports: [
         WarehousesRoutingModule,

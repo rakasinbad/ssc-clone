@@ -63,7 +63,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
                 required: true
             },
             rangeDate: {
-                required: true,
+                required: false,
                 maxRange: {
                     number: 1,
                     duration: 'month'
@@ -97,7 +97,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
                 required: true
             },
             rangeDate: {
-                required: true,
+                required: false,
                 maxRange: {
                     number: 1,
                     duration: 'month'

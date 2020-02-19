@@ -6,11 +6,11 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center pt-12">
+    <div class="center p-8">
         <div class="content-card mat-elevation-z1">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
-            <mat-table class="merchants-table mx-16" #table [dataSource]="dataSource$ | async" matSort
+            <mat-table class="merchants-table grey-300-border mx-16" #table [dataSource]="dataSource$ | async" matSort
                 [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
                 <!-- Store ID Column -->
                 <ng-container matColumnDef="storeId">
@@ -20,7 +20,7 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{ row?.store?.externalId || '-' }}
-                        </p>
+                        </p>\
                     </mat-cell>
                 </ng-container>
 

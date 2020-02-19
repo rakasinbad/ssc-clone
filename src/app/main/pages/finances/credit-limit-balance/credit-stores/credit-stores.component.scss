@@ -36,17 +36,18 @@ app-credit-stores {
             }
         }
 
-        @include media-breakpoint('lt-md') {
-            padding: 8px 0;
-            height: 192px !important;
-            min-height: 192px !important;
-            max-height: 192px !important;
-        }
+        // @include media-breakpoint('lt-md') {
+        //     padding: 8px 0;
+        //     height: 192px !important;
+        //     min-height: 192px !important;
+        //     max-height: 192px !important;
+        // }
     }
 
     .stores-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid;
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
