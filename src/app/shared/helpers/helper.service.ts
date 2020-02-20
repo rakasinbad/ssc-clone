@@ -165,6 +165,17 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
+    // Referensi: https://stackoverflow.com/a/1349462
+    static generateRandomString(len: number, charSet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'): string {
+        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomString = '';
+        for (let i = 0; i < len; i++) {
+            const randomPoz = Math.floor(Math.random() * charSet.length);
+            randomString += charSet.substring(randomPoz, randomPoz + 1);
+        }
+        return randomString;
+    }
+
     static getStatusList(
         page: 'stores' | 'catalogues' | 'payments' | 'orders'
     ): Array<{ id: string; label: string }> {

@@ -20,11 +20,12 @@ import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../
 import { takeUntil, filter, withLatestFrom, startWith, tap, take, debounceTime, delay } from 'rxjs/operators';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
-import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
+import { PortfolioActions } from '../../../portfolios/store/actions';
+import { StoreActions, AssociatedStoreActions } from '../../store/actions';
 import { FeatureState as SalesRepsFeatureState } from '../../../sales-reps/store/reducers';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { map } from 'rxjs/operators';
-import { Portfolio } from '../../../portfolios/models';
+import { Portfolio, Store } from '../../../portfolios/models';
 import { AssociationsFilterPortfoliosComponent } from '../../components/filter-portfolios/associations-filter-portfolios.component';
 import { IAssociationForm, SalesRep } from '../../models';
 
@@ -32,7 +33,7 @@ import { FeatureState as AssociationCoreFeatureState } from '../../store/reducer
 import { AssociationActions, SalesRepActions, AssociatedPortfolioActions } from '../../store/actions';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
 import { environment } from 'environments/environment';
-import { SalesRepSelectors, AssociatedPortfolioSelectors, AssociationSelectors } from '../../store/selectors';
+import { SalesRepSelectors, AssociatedPortfolioSelectors, AssociationSelectors, AssociatedStoreSelectors } from '../../store/selectors';
 // 
 @Component({
     selector: 'app-associations-form',
@@ -342,6 +343,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             ],
             portfolios: [[]],
             removedPortfolios: [[]],
+            stores: [[]],
+            removedStores: [[]],
         });
 
         this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
@@ -367,6 +370,15 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         ).pipe(
             tap((selectedPortfolios) => {
                 this.form.get('portfolios').setValue(selectedPortfolios);
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        this.associationStore.select(
+            AssociatedStoreSelectors.selectAll
+        ).pipe(
+            tap((selectedStores) => {
+                this.form.get('stores').setValue(selectedStores);
             }),
             takeUntil(this.subs$)
         ).subscribe();
@@ -436,13 +448,21 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     submitAssociations(): void {
+        const invoiceGroupId = +(this.form.get('invoiceGroup').value as InvoiceGroup).id;
+
         const rawPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !(!!p.deletedAt)).map(p => +p.id);
-        const deletedPOortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
+        const deletedPortfolioIds = (this.form.get('portfolios').value as Array<Portfolio>).filter(p => !!p.deletedAt).map(p => +p.id);
+
+        const rawStoreIds = (this.form.get('stores').value as Array<Store>).filter(s => !(!!s.deletedAt)).map(s => +s.id);
+        const deletedStoreIds = (this.form.get('stores').value as Array<Store>).filter(s => !!s.deletedAt).map(s => +s.id);
 
         const associationsForm: IAssociationForm = {
             userId: +((this.form.get('salesRep').value as SalesRep).userId),
+            invoiceGroupId,
             portfolioId: rawPortfolioIds,
-            delete: deletedPOortfolioIds,
+            deletePortfolio: deletedPortfolioIds,
+            storeId: rawStoreIds,
+            deleteStore: deletedStoreIds,
         };
 
         // Melakukan request ke back-end untuk create / update association.
@@ -551,12 +571,15 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
         
-        this.portfolioStore.dispatch(StoreActions.removeAllStoreFilters());
+        this.portfolioStore.dispatch(StoreActions.truncateStores());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
 
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+        this.portfolioStore.dispatch(PortfolioActions.setPortfolioEntityType({ payload: 'inside' }));
+        this.associationStore.dispatch(AssociatedStoreActions.abortInitialized());
+        this.associationStore.dispatch(AssociatedStoreActions.clearAssociatedStores());
         this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
         this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
     }
@@ -584,7 +607,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             withLatestFrom(this.associationStore.select(AssociatedPortfolioSelectors.getInitialized)),
             // Mengosongkan portfolio-nya terlebih dahulu.
             tap(() => {
+                // this.associationStore.dispatch(AssociatedStoreActions.clearAssociatedStores());
                 this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
+                this.portfolioStore.dispatch(StoreActions.truncateStores());
             }),
             // Memproses pengambilan data portfolio dari server.
             tap(([[salesRep, invoiceGroup, portfolioEntityType, keyword], initialized]) => {
@@ -603,9 +628,17 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                 portfolioQuery['type'] = portfolioEntityType;
                 portfolioQuery['invoiceGroupId'] = invoiceGroup.id;
 
-                this.portfolioStore.dispatch(
-                    PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
-                );
+                if (portfolioEntityType === 'inside') {
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.fetchPortfoliosRequest({ payload: portfolioQuery })
+                    );
+                } else if (portfolioEntityType === 'outside') {
+                    this.associationStore.dispatch(
+                        StoreActions.fetchStoresRequest({ payload: portfolioQuery})
+                    );
+                } else {
+                    return;
+                }
 
                 if (!initialized) {
                     // Mendapatkan portfolio type group.
@@ -615,26 +648,14 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     };
 
                     associatedPortfolioGroupQuery['fromSalesRep'] = true;
-                    associatedPortfolioGroupQuery['type'] = 'group';
+                    // associatedPortfolioGroupQuery['type'] = 'group';
                     associatedPortfolioGroupQuery['userId'] = salesRep.userId;
-                    associatedPortfolioGroupQuery['combined'] = true;
+                    // associatedPortfolioGroupQuery['combined'] = true;
+                    associatedPortfolioGroupQuery['associated'] = true;
                     
                     this.associationStore.dispatch(
                         AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioGroupQuery })
                     );
-
-                    // Mendapatkan portfolio type direct.
-                    // const associatedPortfolioDirectQuery: IQueryParams = {
-                    //     limit: 100,
-                    //     skip: 0
-                    // };
-                    // associatedPortfolioDirectQuery['fromSalesRep'] = true;
-                    // associatedPortfolioDirectQuery['type'] = 'direct';
-                    // associatedPortfolioDirectQuery['userId'] = salesRep.userId;
-
-                    // this.associationStore.dispatch(
-                    //     AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioDirectQuery })
-                    // );
 
                     // Menandakan permintaan sudah dilakukan di awal.
                     this.associationStore.dispatch(

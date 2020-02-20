@@ -33,13 +33,15 @@ import {
     reducers as PortfolioReducers
 } from '../portfolios/store/reducers';
 import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
+import { StoreEffects as PortfolioStoreEffects } from '../portfolios/store/effects/stores.effects';
 import { AssociationsSelectedPortfoliosComponent } from './components/selected-portfolios/associations-selected-portfolios.component';
 import { AssociationsFilterPortfoliosComponent } from './components/filter-portfolios/associations-filter-portfolios.component';
 import { PortfolioStoresComponent } from './components/portfolio-stores/portfolio-stores.component';
-import { StoreEffects } from '../portfolios/store/effects/stores.effects';
+import { AssociatedStoresEffects } from './store/effects';
 import { AssociationEffects, AssociationStoreEffects } from './store/effects';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
+import { StoresEffects } from './store/effects';
 
 @NgModule({
     declarations: [
@@ -71,8 +73,10 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
             AssociationEffects,
             AssociationStoreEffects,
             AssociatedPortfoliosEffects,
+            AssociatedStoresEffects,
             PortfoliosEffects,
-            StoreEffects,
+            PortfolioStoreEffects,
+            StoresEffects,
             SalesRepEffects
         ])
     ],

@@ -76,10 +76,10 @@ export class AssociatedPortfolioApiService {
             newArgs.push({ key: 'keyword', value: params['keyword'] });
         }
 
-        if (params['type']) {
+        if (params['associated']) {
             newArgs.push({
                 key: 'associated',
-                value: String(params['type'] === 'associated')
+                value: params['associated']
             });
         }
 
