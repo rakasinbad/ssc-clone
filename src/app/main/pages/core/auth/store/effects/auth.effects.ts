@@ -4,18 +4,18 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Network } from '@ngx-pwa/offline';
-import { LogService, NavigationService, NoticeService } from 'app/shared/helpers';
+import { NavigationService, NoticeService } from 'app/shared/helpers';
+import { IErrorHandler } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
+import { environment } from 'environments/environment';
+import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { asyncScheduler, of, throwError } from 'rxjs';
 import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap } from 'rxjs/operators';
-import { environment } from 'environments/environment';
 
 import { AuthService } from '../../auth.service';
 import { Auth } from '../../models';
 import { AuthActions } from '../actions';
-
-import * as LogRocket from 'logrocket';
 
 // import { fromAuth } from '../reducers';
 @Injectable()
@@ -163,17 +163,22 @@ export class AuthEffects {
                     });
 
                     if (environment.logRocketId) {
-                        LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
-                            name: `${user.fullName} (${environment.environment})`,
-                            email: user.email,
-                            environment: environment.environment,
-                            version: environment.appVersion,
-                            commitHash: environment.appHash,
-                            phoneNo: user.phoneNo,
-                            mobilePhoneNo: user.mobilePhoneNo,
-                            userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(','),
-                            userData: JSON.stringify(user),
-                        });
+                        LogRocket.identify(
+                            `${user.email}:${environment.appVersion}:${environment.appHash}`,
+                            {
+                                name: `${user.fullName} (${environment.environment})`,
+                                email: user.email,
+                                environment: environment.environment,
+                                version: environment.appVersion,
+                                commitHash: environment.appHash,
+                                phoneNo: user.phoneNo,
+                                mobilePhoneNo: user.mobilePhoneNo,
+                                userSuppliers: user.userSuppliers
+                                    .map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`)
+                                    .join(','),
+                                userData: JSON.stringify(user)
+                            }
+                        );
                     }
                 })
             ),
@@ -304,10 +309,7 @@ export class AuthEffects {
                 ofType(AuthActions.authLoginFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -340,17 +342,25 @@ export class AuthEffects {
                             // /pages/dashboard
 
                             if (environment.logRocketId) {
-                                LogRocket.identify(`${user.email}:${environment.appVersion}:${environment.appHash}`, {
-                                    name: `${user.fullName} (${environment.environment})`,
-                                    email: user.email,
-                                    environment: environment.environment,
-                                    version: environment.appVersion,
-                                    commitHash: environment.appHash,
-                                    phoneNo: user.phoneNo,
-                                    mobilePhoneNo: user.mobilePhoneNo,
-                                    userSuppliers: user.userSuppliers.map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`).join(','),
-                                    userData: JSON.stringify(user),
-                                });
+                                LogRocket.identify(
+                                    `${user.email}:${environment.appVersion}:${environment.appHash}`,
+                                    {
+                                        name: `${user.fullName} (${environment.environment})`,
+                                        email: user.email,
+                                        environment: environment.environment,
+                                        version: environment.appVersion,
+                                        commitHash: environment.appHash,
+                                        phoneNo: user.phoneNo,
+                                        mobilePhoneNo: user.mobilePhoneNo,
+                                        userSuppliers: user.userSuppliers
+                                            .map(
+                                                u =>
+                                                    `[${[u.supplierId, u.supplier.name].join(':')}]`
+                                            )
+                                            .join(','),
+                                        userData: JSON.stringify(user)
+                                    }
+                                );
                             }
 
                             this.router.navigate(['/pages/account/stores'], {
@@ -403,8 +413,17 @@ export class AuthEffects {
         private store: Store<fromRoot.State>,
         private storage: StorageMap,
         private _$auth: AuthService,
-        private _$log: LogService,
         private _$navigation: NavigationService,
         private _$notice: NoticeService
     ) {}
+
+    private _handleErrMessage(resp: IErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 }
