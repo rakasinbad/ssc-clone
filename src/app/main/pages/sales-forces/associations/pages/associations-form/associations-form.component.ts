@@ -10,14 +10,14 @@ import { locale as indonesian } from '../../i18n/id';
 import { InvoiceGroup, IQueryParams } from 'app/shared/models';
 import { CoreFeatureState } from '../../../portfolios/store/reducers';
 import { fromDropdown } from 'app/shared/store/reducers';
-import { MatDialog, MatAutocomplete, MatAutocompleteTrigger } from '@angular/material';
+import { MatDialog, MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { TranslateService } from '@ngx-translate/core';
 import { NoticeService, ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../../portfolios/store/selectors';
-import { takeUntil, filter, withLatestFrom, startWith, tap, take, debounceTime, delay } from 'rxjs/operators';
+import { takeUntil, filter, withLatestFrom, startWith, tap, take, debounceTime, delay, distinctUntilChanged } from 'rxjs/operators';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { PortfolioActions } from '../../../portfolios/store/actions';
@@ -162,9 +162,14 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.salesReps$ = this.associationStore
             .select(SalesRepSelectors.selectAll)
             .pipe(
-                debounceTime(1000),
+                debounceTime(100),
+                withLatestFrom(this.associationStore.select(SalesRepSelectors.getLoadingState)),
                 tap(() => this.debug('this.salesReps$')),
-                filter(salesReps => {
+                filter(([salesReps, isLoading]) => {
+                    if (isLoading) {
+                        return false;
+                    }
+
                     if (salesReps.length === 0) {
                         this.associationStore.dispatch(
                             SalesRepActions.fetchSalesRepsRequest({
@@ -179,15 +184,16 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
                     return true;
                 }),
+                map(([salesReps]) => salesReps),
                 takeUntil(this.subs$)
             );
 
         // Untuk meng-handle Sales Rep. yang terpilih.
-        // this.selectedSalesRep$ = this.salesRepStore
-        //     .select(SalesRepSelectors.getSelectedItem)
-        //     .pipe(
-        //         takeUntil(this.subs$)
-        //     );
+        this.selectedSalesRep$ = this.associationStore
+            .select(AssociationSelectors.getSelectedSalesRep)
+            .pipe(
+                takeUntil(this.subs$)
+            );
 
         // Mengambil jumlah portfolio.
         this.selectedPortfolios$ = this.portfolioStore.select(
@@ -356,15 +362,38 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
         this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
             tap(() => this.debug('this.salesRepForm$')),
+            distinctUntilChanged(),
+            debounceTime(200),
             tap(value => {
-                if (value !== this.prevSalesRep) {
-                    this.prevSalesRep = value;
-                    this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
-                    this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+                if (!(value instanceof SalesRep)) {
+                    const queryParams: IQueryParams = {
+                        paginate: true,
+                        limit: 10,
+                        skip: 0
+                    };
+    
+                    queryParams['keyword'] = value;
+    
+                    this.associationStore.dispatch(
+                        SalesRepActions.clearState()
+                    );
+    
+                    this.associationStore.dispatch(
+                        SalesRepActions.fetchSalesRepsRequest({
+                            payload: queryParams
+                        })
+                    );
                 }
-
-                this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }));
             }),
+            // tap(value => {
+            //     if (value !== this.prevSalesRep) {
+            //         this.prevSalesRep = value;
+            //         this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
+            //         this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+            //     }
+
+            //     this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }));
+            // }),
             takeUntil(this.subs$)
         );
 
@@ -452,6 +481,18 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         ).subscribe();
 
         this.portfolioStore.dispatch(UiActions.showFooterAction());
+    }
+
+    onSelectedSalesRep(event: MatAutocompleteSelectedEvent): void {
+        const salesRep: SalesRep = event.option.value;
+
+        if (salesRep !== this.prevSalesRep) {
+            this.prevSalesRep = salesRep;
+            this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
+            this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+        }
+
+        this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: salesRep }));
     }
 
     displaySalesRep(item: SalesRep): string {
@@ -602,7 +643,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
 
     ngAfterViewInit(): void {
         combineLatest([
-            this.salesRepForm$,
+            this.associationStore.select(AssociationSelectors.getSelectedSalesRep),
             this.invoiceGroupForm$,
             this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),
             this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),
@@ -614,7 +655,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                 const result = !!salesRep && !!invoiceGroup;
 
                 if (!result) {
-                    this._notice.open('Please fill Sales Rep. and Invoice Group to display the portfolios.', 'info', {
+                    this._notice.open('Please select the Sales Rep. and Invoice Group to display the portfolios.', 'info', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -706,8 +747,9 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     withLatestFrom(
                         this.salesReps$,
                         this.totalSalesReps$,
+                        this.salesRepForm$,
                         this.associationStore.select(SalesRepSelectors.getLoadingState),
-                        ($event, salesReps, totalSalesReps, isLoading) => ({ $event, isLoading, salesReps, totalSalesReps }),
+                        ($event, salesReps, totalSalesReps, salesRepForm, isLoading) => ({ $event, isLoading, salesReps, salesRepForm, totalSalesReps }),
                     ),
                     // Debugging.
                     tap(() => this.debug('SALES REP IS SCROLLING...', {})),
@@ -717,20 +759,27 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         (totalSalesReps > salesReps.length) &&
                         this.helperSvc.isElementScrolledToBottom(this.salesRepScroll.panel)
                     ),
+                    take(1),
                     takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
                         tap(() => this.debug('closing'))
                     ))
-                ).subscribe(({ salesReps }) =>
+                ).subscribe(({ salesReps, salesRepForm }) => {
+                    const newQuery: IQueryParams = {
+                        paginate: true,
+                        limit: 10,
+                        skip: salesReps.length
+                    };
+
+                    if (salesRepForm) {
+                        newQuery['keyword'] = salesRepForm;
+                    }
+
                     this.associationStore.dispatch(
                         SalesRepActions.fetchSalesRepsRequest({
-                            payload: {
-                                paginate: true,
-                                limit: 10,
-                                skip: salesReps.length
-                            }
+                            payload: newQuery
                         })
-                    )
-                );
+                    );
+                });
         }
     }
 
