@@ -38,7 +38,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     // Untuk keperluan subscription.
     subs$: Subject<string> = new Subject<string>();
     // Untuk keperluan handle menghapus filter.
-    removeFilter$: Subject<string> = new Subject<string>();
+//     removeFilter$: Subject<string> = new Subject<string>();
     // Untuk menyimpan ID Sales Rep.
     salesRep$: Observable<SalesRep>;
 
@@ -401,7 +401,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             // Mengambil Invoice Group yang terpilih.
             withLatestFrom(this.associationStore.select(AssociationSelectors.getSelectedInvoiceGroup)),
             // Memeriksa Invoice Group yang dipilih.
-            // filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+            filter(([_, invoiceGroup]) => !!invoiceGroup),
             // Mengubah bentuk portfolio yang ingin ditampilkan.
             map(([[availableStores, availablePortfolios, selectedPortfolios, selectedStores], invoiceGroup]) => {
                 // Mengambil ID dari portfolio yang dipilih.
@@ -491,8 +491,8 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.subs$.next();
         this.subs$.complete();
 
-        this.removeFilter$.next();
-        this.removeFilter$.complete();
+//         this.removeFilter$.next();
+//         this.removeFilter$.complete();
 
         this.selectedPortfolioSub$.next();
         this.selectedPortfolioSub$.complete();

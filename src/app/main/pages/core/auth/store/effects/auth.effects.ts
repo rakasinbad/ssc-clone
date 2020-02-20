@@ -187,11 +187,14 @@ export class AuthEffects {
                             }
 
                             // /pages/dashboard
-                            if (!this._$auth.redirectUrl) {
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
-                            }
+                            // if (!this._$auth.redirectUrl) {
+                            //     this.router.navigate(['/pages/account/stores'], {
+                            //         replaceUrl: true
+                            //     });
+                            // }
+                            this.router.navigate(['/pages/account/stores'], {
+                                replaceUrl: true
+                            });
                         },
                     });
 
@@ -414,11 +417,14 @@ export class AuthEffects {
                             }
 
                             // /pages/dashboard
-                            if (!this._$auth.redirectUrl) {
-                                this.router.navigate(['/pages/account/stores'], {
-                                    replaceUrl: true
-                                });
-                            }
+                            // if (!this._$auth.redirectUrl) {
+                            //     this.router.navigate(['/pages/account/stores'], {
+                            //         replaceUrl: true
+                            //     });
+                            // }
+                            this.router.navigate(['/pages/account/stores'], {
+                                replaceUrl: true
+                            });
                         },
                     });
 

@@ -42,6 +42,7 @@
                                 #salesRepScroll="matAutocomplete"
                                 [displayWith]="displaySalesRep"
                                 (opened)="listenSalesRepScroll()"
+                                (optionSelected)="onSelectedSalesRep($event)"
                             >
                                 <!-- SALES REP. OPTIONS -->
                                 <mat-option
@@ -56,7 +57,7 @@
                                 <mat-option
                                     [disabled]="true"
                                     style="text-align: center; font-style: italic; max-height: 30px;"
-                                    *ngIf="(totalSalesReps$ | async) > (salesReps$ | async)?.length"
+                                    *ngIf="!(totalSalesReps$ | async) || (totalSalesReps$ | async) > (salesReps$ | async)?.length"
                                 >
                                     Loading ...
                                 </mat-option>
@@ -137,7 +138,7 @@
                     </div> -->
                     <!-- / PORTFOLIO TYPE -->
                 </form>
-                <div class="img-container mb-32" *ngIf="!hasError(form.get('salesRep'), { ignoreTouched: true, ignoreDirty: true })">
+                <div class="img-container mb-32" *ngIf="(selectedSalesRep$ | async)">
                     <img
                         class="fit-image"
                         [style.border-radius]="'6px'"
