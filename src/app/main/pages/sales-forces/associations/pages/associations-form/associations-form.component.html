@@ -42,6 +42,7 @@
                                 #salesRepScroll="matAutocomplete"
                                 [displayWith]="displaySalesRep"
                                 (opened)="listenSalesRepScroll()"
+                                (optionSelected)="onSelectedSalesRep($event)"
                             >
                                 <!-- SALES REP. OPTIONS -->
                                 <mat-option

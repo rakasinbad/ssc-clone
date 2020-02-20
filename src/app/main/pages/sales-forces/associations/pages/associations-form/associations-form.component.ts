@@ -10,7 +10,7 @@ import { locale as indonesian } from '../../i18n/id';
 import { InvoiceGroup, IQueryParams } from 'app/shared/models';
 import { CoreFeatureState } from '../../../portfolios/store/reducers';
 import { fromDropdown } from 'app/shared/store/reducers';
-import { MatDialog, MatAutocomplete, MatAutocompleteTrigger } from '@angular/material';
+import { MatDialog, MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
@@ -348,15 +348,35 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         });
 
         this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
+            debounceTime(200),
             tap(value => {
-                if (value !== this.prevSalesRep) {
-                    this.prevSalesRep = value;
-                    this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
-                    this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
-                }
+                const queryParams: IQueryParams = {
+                    paginate: true,
+                    limit: 10,
+                    skip: 0
+                };
 
-                this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }));
+                queryParams['keyword'] = value;
+
+                this.associationStore.dispatch(
+                    SalesRepActions.clearState()
+                );
+
+                this.associationStore.dispatch(
+                    SalesRepActions.fetchSalesRepsRequest({
+                        payload: queryParams
+                    })
+                );
             }),
+            // tap(value => {
+            //     if (value !== this.prevSalesRep) {
+            //         this.prevSalesRep = value;
+            //         this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
+            //         this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+            //     }
+
+            //     this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: value }));
+            // }),
             takeUntil(this.subs$)
         );
 
@@ -437,6 +457,18 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         ).subscribe();
 
         this.portfolioStore.dispatch(UiActions.showFooterAction());
+    }
+
+    onSelectedSalesRep(event: MatAutocompleteSelectedEvent): void {
+        const salesRep: SalesRep = event.option.value;
+
+        if (salesRep !== this.prevSalesRep) {
+            this.prevSalesRep = salesRep;
+            this.associationStore.dispatch(AssociatedPortfolioActions.abortInitialized());
+            this.associationStore.dispatch(AssociatedPortfolioActions.clearAssociatedPortfolios());
+        }
+
+        this.associationStore.dispatch(AssociationActions.setSelectedSalesRep({ payload: salesRep }));
     }
 
     displaySalesRep(item: SalesRep): string {
@@ -698,6 +730,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         (totalSalesReps > salesReps.length) &&
                         this.helperSvc.isElementScrolledToBottom(this.salesRepScroll.panel)
                     ),
+                    take(1),
                     takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
                         tap(() => console.log('closing'))
                     ))
