@@ -106,6 +106,42 @@ export class AssociationApiService {
         return this.http.post<{ message: string }>(this._url, body);
     }
 
+    findStore<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+    
+        if (!isNaN(params['supplierId'])) {
+            newArgs.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+
+        if (params['type']) {
+            switch (params['type']) {
+                case 'outside':
+                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+            }
+        }
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (!isNaN(params['invoiceGroupId'])) {
+            newArgs.push({ key: 'invoiceGroupId', value: params['invoiceGroupId'] });
+        }
+
+        if (params['request'] === 'associations') {
+            this._url = this._$helper.handleApiRouter(this._associationsEndpoint);
+        } else {
+            this._url = this._$helper.handleApiRouter(this._endpoint);
+        }
+
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
+    }
+
     findAssociations<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 

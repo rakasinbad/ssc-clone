@@ -151,7 +151,7 @@ deploy_development:
 
 deploy_staging:
     stage: deploy
-    image: instrumentisto/rsync-ssh:latest
+    image: node:12-alpine
     artifacts:
         paths:
             - dist/supplier-center/
@@ -161,7 +161,13 @@ deploy_staging:
         - echo "$deploy_public_key_stg" | tr -d '\r' > ~/.ssh/id_rsa.pub
         - chmod 600 ~/.ssh/id_rsa
         - chmod 600 ~/.ssh/id_rsa.pub
+        - apk update
+        - apk add openssh-client rsync
+        - npm install -g logrocket-cli
     script:
+        - logrocket release $CI_COMMIT_TAG:$CI_COMMIT_SHORT_SHA --apikey=$LOGROCKET_API_KEY
+        - logrocket upload ${CI_PROJECT_DIR}/dist/supplier-center/ --release=$CI_COMMIT_TAG:$CI_COMMIT_SHORT_SHA --apikey=$LOGROCKET_API_KEY
+        - rm ${CI_PROJECT_DIR}/dist/supplier-center/*.map
         - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
         - ssh -i ~/.ssh/id_rsa deploy@10.0.30.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-stg.sinbad.web.id/* /var/www/seller-center-bak/"
         - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.30.30:/var/www/seller-stg.sinbad.web.id/
@@ -173,7 +179,7 @@ deploy_staging:
 
 deploy_production:
     stage: deploy
-    image: instrumentisto/rsync-ssh:latest
+    image: node:12-alpine
     artifacts:
         paths:
             - dist/supplier-center/
@@ -183,7 +189,13 @@ deploy_production:
         - echo "$deploy_public_key_prod" | tr -d '\r' > ~/.ssh/id_rsa.pub
         - chmod 600 ~/.ssh/id_rsa
         - chmod 600 ~/.ssh/id_rsa.pub
+        - apk update
+        - apk add openssh-client rsync
+        - npm install -g logrocket-cli
     script:
+        - logrocket release $CI_COMMIT_TAG:$CI_COMMIT_SHORT_SHA --apikey=$LOGROCKET_API_KEY
+        - logrocket upload ${CI_PROJECT_DIR}/dist/supplier-center/ --release=$CI_COMMIT_TAG:$CI_COMMIT_SHORT_SHA --apikey=$LOGROCKET_API_KEY
+        - rm ${CI_PROJECT_DIR}/dist/supplier-center/*.map
         - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
         - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -v /var/www/seller.sinbad.web.id/* /var/www/seller-center-bak/"
         - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.10.20:/var/www/seller.sinbad.web.id/

@@ -74,7 +74,7 @@ export class AssociationEffects {
         )
     , { dispatch: false });
 
-    fetchAssocitionsRequest$ = createEffect(() =>
+    fetchAssociationsRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AssociationActions.fetchAssociationsRequest),
             map(action => action.payload),

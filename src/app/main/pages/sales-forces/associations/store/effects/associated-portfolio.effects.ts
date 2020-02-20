@@ -43,7 +43,7 @@ export class AssociatedPortfoliosEffects {
         private matDialog: MatDialog,
     ) {}
 
-    confirmRemoveAllSelectedStores$ = createEffect(() => 
+    confirmRemoveAllSelectedPortfolios$ = createEffect(() => 
         this.actions$.pipe(
             ofType(AssociatedPortfolioActions.confirmToClearAssociatedPortfolios),
             exhaustMap(() => {
@@ -119,13 +119,6 @@ export class AssociatedPortfoliosEffects {
     processAssociatedPortfoliosRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
-        // Membentuk parameter query yang baru.
-        // const newQuery: IQueryParams = {
-        //     ...queryParams
-        // };
-    
-        // Memasukkan ID supplier ke dalam parameter.
-        // newQuery['supplierId'] = supplierId;
 
         if (queryParams['combined']) {
             return forkJoin([

@@ -1814,12 +1814,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         identityPhoto: [
                             '',
                             [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                }),
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
                                 RxwebValidators.fileSize({
                                     maxSize: Math.floor(5 * 1048576),
                                     message: this._$errorMessage.getErrorMessageNonState(
@@ -2265,12 +2265,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         identityPhoto: [
                             '',
                             [
-                                RxwebValidators.required({
-                                    message: this._$errorMessage.getErrorMessageNonState(
-                                        'default',
-                                        'required'
-                                    )
-                                }),
+                                // RxwebValidators.required({
+                                //     message: this._$errorMessage.getErrorMessageNonState(
+                                //         'default',
+                                //         'required'
+                                //     )
+                                // }),
                                 RxwebValidators.fileSize({
                                     maxSize: Math.floor(5 * 1048576),
                                     message: this._$errorMessage.getErrorMessageNonState(
@@ -2497,41 +2497,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             }
 
                             if (ownerIdImgUrl) {
-                                // this.form.get('storeInfo.legalInfo.identityPhoto').reset();
                                 this.form
                                     .get('storeInfo.legalInfo.identityPhoto')
                                     .clearValidators();
                                 this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
-                                    RxwebValidators.fileSize({
-                                        maxSize: Math.floor(5 * 1048576),
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'file_size_lte',
-                                            {
-                                                size: numeral(5 * 1048576).format(
-                                                    '0.0 b',
-                                                    Math.floor
-                                                )
-                                            }
-                                        )
-                                    })
-                                ]);
-
-                                this.form
-                                    .get('storeInfo.legalInfo.identityPhoto')
-                                    .updateValueAndValidity();
-                            } else {
-                                // this.form.get('storeInfo.legalInfo.identityPhoto').reset();
-                                this.form
-                                    .get('storeInfo.legalInfo.identityPhoto')
-                                    .clearValidators();
-                                this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
-                                    RxwebValidators.required({
-                                        message: this._$errorMessage.getErrorMessageNonState(
-                                            'default',
-                                            'required'
-                                        )
-                                    }),
                                     RxwebValidators.fileSize({
                                         maxSize: Math.floor(5 * 1048576),
                                         message: this._$errorMessage.getErrorMessageNonState(
@@ -2551,6 +2520,37 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                     .get('storeInfo.legalInfo.identityPhoto')
                                     .updateValueAndValidity();
                             }
+
+                            // else {
+                            //     this.form
+                            //         .get('storeInfo.legalInfo.identityPhoto')
+                            //         .clearValidators();
+                            //     this.form.get('storeInfo.legalInfo.identityPhoto').setValidators([
+                            //         RxwebValidators.required({
+                            //             message: this._$errorMessage.getErrorMessageNonState(
+                            //                 'default',
+                            //                 'required'
+                            //             )
+                            //         }),
+                            //         RxwebValidators.fileSize({
+                            //             maxSize: Math.floor(5 * 1048576),
+                            //             message: this._$errorMessage.getErrorMessageNonState(
+                            //                 'default',
+                            //                 'file_size_lte',
+                            //                 {
+                            //                     size: numeral(5 * 1048576).format(
+                            //                         '0.0 b',
+                            //                         Math.floor
+                            //                     )
+                            //                 }
+                            //             )
+                            //         })
+                            //     ]);
+
+                            //     this.form
+                            //         .get('storeInfo.legalInfo.identityPhoto')
+                            //         .updateValueAndValidity();
+                            // }
 
                             if (this.form.get('storeInfo.legalInfo.identityPhoto').invalid) {
                                 this.form.get('storeInfo.legalInfo.identityPhoto').markAsTouched();

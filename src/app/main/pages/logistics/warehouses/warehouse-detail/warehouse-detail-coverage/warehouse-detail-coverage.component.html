@@ -14,7 +14,9 @@
                 Warehouse Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.name }}
+                <p style="word-break: break-word;">
+                    {{ row.name }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -24,7 +26,9 @@
                 Province
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.province }}
+                <p style="word-break: break-word;">
+                    {{ row.province }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -34,7 +38,9 @@
                 City
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.city }}
+                <p style="word-break: break-word;">
+                    {{ row.city }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -44,7 +50,9 @@
                 District
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.district }}
+                <p style="word-break: break-word;">
+                    {{ row.district }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -54,11 +62,13 @@
                 Urban
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.urban }}
+                <p style="word-break: break-word;">
+                    {{ row.urban }}
+                </p>
             </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row
             *matRowDef="let row; columns: displayedColumns"
             class="warehouse-detail-coverage"
