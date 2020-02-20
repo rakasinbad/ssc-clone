@@ -41,7 +41,7 @@ import { IAuth } from './main/pages/core/auth/models';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
-        release: `${environment.appVersion}:${environment.appHash}`,
+        release: `${environment.appVersion}_${environment.appHash}`,
         network: {
             requestSanitizer: request => {
                 // Menghapus header authorization dari LogRocket.
