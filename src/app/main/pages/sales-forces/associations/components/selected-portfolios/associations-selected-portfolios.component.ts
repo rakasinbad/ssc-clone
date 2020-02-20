@@ -90,7 +90,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         );
 
         this.isPortfolioLoading$ = combineLatest([
-            this.associationStore.select(AssociatedStoreSelectors.getLoadingState),
+            this.associationStore.select(StoreSelectors.getLoadingState),
             this.portfolioStore.select(PortfolioSelector.getLoadingState),
         ]).pipe(
             map(isLoadings => isLoadings.includes(true)),
@@ -286,6 +286,10 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     //     );
     // }
 
+    isAPortfolio(data: Portfolio | Store): boolean {
+        return data instanceof Portfolio;
+    }
+
     printPortfolioName(data: Portfolio | Store): string {
         const portfolio = data as Portfolio;
         const store = data as Store;
@@ -365,7 +369,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         //     filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
         //     tap(({ filters, type, invoiceGroupId }) => this.requestStore(filters, type, invoiceGroupId)),
         //     map(({ filters }) => filters),
-        //     takeUntil(this.subs$)
+        //     takeUntil(this.subs$)\
         // );
 
         this.selectedPortfolios$ = combineLatest([
@@ -374,11 +378,20 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             this.associationStore.select(AssociatedStoreSelectors.selectAll),
         ]).pipe(
             tap(() => this.debug('SELECTED PORTFOLIOS CHECK', {})),
-            map(([selectedPortfolios, selectedStores]) => (selectedPortfolios as unknown as Array<Store>).concat(...selectedStores).sort((a, b) => (+a.id) - (+b.id))),
+            map(([selectedPortfolios, selectedStores]) => {
+                const sortedPortfolios = (selectedPortfolios as unknown as Array<Portfolio>)
+                                        .map(portfolio => new Portfolio(portfolio))
+                                        .sort((a, b) => (+a.id) - (+b.id));
+                const sortedStores = (selectedStores as unknown as Array<Store>)
+                                    .map(store => new Store(store))
+                                    .sort((a, b) => (+a.id) - (+b.id));
+                return sortedPortfolios.concat(...sortedStores as unknown as Array<Portfolio>);
+            }),
             takeUntil(this.subs$)
         );
 
         this.availablePortfolios$ = combineLatest([
+            this.associationStore.select(StoreSelectors.selectAllStores),
             this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
             this.associationStore.select(AssociatedStoreSelectors.selectAll),
@@ -390,9 +403,12 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             // Memeriksa Invoice Group yang dipilih.
             // filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
             // Mengubah bentuk portfolio yang ingin ditampilkan.
-            map(([[availablePortfolios, selectedPortfolios, stores], invoiceGroup]) => {
+            map(([[availableStores, availablePortfolios, selectedPortfolios, selectedStores], invoiceGroup]) => {
                 // Mengambil ID dari portfolio yang dipilih.
                 const selectedPortfolioIds = selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).map(portfolio => portfolio.id);
+
+                // Mengambil ID dari store yang dipilih.
+                const selectedStoreIds = selectedStores.filter(store => !(!!store.deletedAt)).map(store => store.id);
 
                 // Mengambil portfolio dari state dengan mencocokkan Invoice Group-nya.
                 const newAvailablePortfolios: Array<Portfolio> | Array<Store> = availablePortfolios
@@ -404,7 +420,15 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                                                     return newPortfolio;
                                                 });
 
-                (newAvailablePortfolios as unknown as Array<Store>).push(...stores);
+                // Mengambil store dari state dengan mencocokkan Invoice Group-nya.
+                const newAvailableStores: Array<Store> = availableStores
+                                                .map(store => {
+                                                    const newStore = new Store(store);
+                                                    newStore.isSelected = selectedStoreIds.includes(newStore.id);
+                                                    return newStore;
+                                                });
+
+                (newAvailablePortfolios as unknown as Array<Store>).push(...newAvailableStores);
 
                 // Mengembalikan daftar toko dengan state yang baru.
                 return newAvailablePortfolios.sort((a, b) => (+a.id) - (+b.id));

@@ -33,6 +33,7 @@ import {
     reducers as PortfolioReducers
 } from '../portfolios/store/reducers';
 import { PortfoliosEffects } from '../portfolios/store/effects/portfolios.effects';
+import { StoreEffects as PortfolioStoreEffects } from '../portfolios/store/effects/stores.effects';
 import { AssociationsSelectedPortfoliosComponent } from './components/selected-portfolios/associations-selected-portfolios.component';
 import { AssociationsFilterPortfoliosComponent } from './components/filter-portfolios/associations-filter-portfolios.component';
 import { PortfolioStoresComponent } from './components/portfolio-stores/portfolio-stores.component';
@@ -74,6 +75,7 @@ import { StoresEffects } from './store/effects';
             AssociatedPortfoliosEffects,
             AssociatedStoresEffects,
             PortfoliosEffects,
+            PortfolioStoreEffects,
             StoresEffects,
             SalesRepEffects
         ])

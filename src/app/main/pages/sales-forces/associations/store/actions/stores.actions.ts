@@ -69,74 +69,74 @@ export type failureActionNames =
 
 /** STORE */
 export const fetchStoreRequest = createAction(
-    '[Stores API] Fetch Store Request',
+    '[Associations/Stores API] Fetch Store Request',
     props<{ payload: string }>()
 );
 
 export const fetchStoreFailure = createAction(
-    '[Stores API] Fetch Store Failure',
+    '[Associations/Stores API] Fetch Store Failure',
     props<{ payload: IErrorHandler }>()
 );
     
 export const fetchStoreSuccess = createAction(
-    '[Stores API] Fetch Store Success',
+    '[Associations/Stores API] Fetch Store Success',
     props<{ payload: { store?: Store; source: TSource } }>()
 );
 
 /** STORES */
 export const fetchStoresRequest = createAction(
-    '[Stores API] Fetch Stores Request',
+    '[Associations/Stores API] Fetch Stores Request',
     props<{ payload: IQueryParams }>()
 );
 
 export const fetchStoresFailure = createAction(
-    '[Stores API] Fetch Stores Failure',
+    '[Associations/Stores API] Fetch Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
     
 export const fetchStoresSuccess = createAction(
-    '[Stores API] Fetch Stores Success',
+    '[Associations/Stores API] Fetch Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
 );
 
 export const setSelectedStores = createAction(
-    '[Stores] Set Selected Stores',
+    '[Associations/Stores] Set Selected Stores',
     props<{ payload: Array<string> }>()
 );
 
 export const addSelectedStores = createAction(
-    '[Stores] Add Selected Stores',
+    '[Associations/Stores] Add Selected Stores',
     props<{ payload: Array<Store> }>()
 );
 
 export const removeSelectedStores = createAction(
-    '[Stores] Remove Selected Stores',
+    '[Associations/Stores] Remove Selected Stores',
     props<{ payload: Array<string> }>()
 );
 
 export const markStoreAsRemoved = createAction(
-    '[Stores] Mark Store as Removed',
+    '[Associations/Stores] Mark Store as Removed',
     props<{ payload: string }>()
 );
 
 export const markStoresAsRemoved = createAction(
-    '[Stores] Mark Stores as Removed',
+    '[Associations/Stores] Mark Stores as Removed',
     props<{ payload: Array<string> }>()
 );
 
 export const abortStoreAsRemoved = createAction(
-    '[Stores] Abort Store as Removed',
+    '[Associations/Stores] Abort Store as Removed',
     props<{ payload: string }>()
 );
 
 export const abortStoresAsRemoved = createAction(
-    '[Stores] Abort Stores as Removed',
+    '[Associations/Stores] Abort Stores as Removed',
     props<{ payload: Array<string> }>()
 );
 
-export const confirmRemoveAllSelectedStores = createAction('[Stores] Confirm to Remove All Selected Stores');
+export const confirmRemoveAllSelectedStores = createAction('[Associations/Stores] Confirm to Remove All Selected Stores');
 
 /**
  * HELPER
  */
-export const truncateStores = createAction('[Stores] Truncate Stores');
+export const truncateStores = createAction('[Associations/Stores] Truncate Stores');

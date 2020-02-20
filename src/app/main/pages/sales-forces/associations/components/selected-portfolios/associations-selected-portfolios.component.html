@@ -68,8 +68,10 @@
                     [value]="portfolio"
                     [selected]="portfolio?.isSelected"
                 >
-                    <span>{{ portfolio?.name || '-' }} ({{ portfolio?.storeQty }} {{ portfolio?.storeQty <= 1 ? 'store' : 'stores'}})</span>
-                    <a (click)="$event.stopPropagation(); showStore(portfolio)"
+                    <span>{{ printPortfolioName(portfolio) }}</span>
+                    <a
+                        *ngIf="isAPortfolio(portfolio)"
+                        (click)="$event.stopPropagation(); showStore(portfolio)"
                     > See details </a>
                 </mat-list-option>
             </mat-selection-list>
@@ -117,9 +119,11 @@
                         [selected]="true"
                         [value]="portfolio"
                     >
-                        <span>{{ portfolio?.name || '-' }} ({{ portfolio?.storeQty }} {{ portfolio?.storeQty <= 1 ? 'store' : 'stores'}})</span>
-                        <a (click)="$event.stopPropagation(); showStore(portfolio)"
-                        >See details</a>
+                        <span>{{ printPortfolioName(portfolio) }}</span>
+                        <a
+                            *ngIf="isAPortfolio(portfolio)"
+                            (click)="$event.stopPropagation(); showStore(portfolio)"
+                        > See details </a>
                     </mat-list-option>
                 </ng-container>
             </mat-selection-list>
