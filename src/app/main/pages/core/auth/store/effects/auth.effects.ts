@@ -4,14 +4,14 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Network } from '@ngx-pwa/offline';
-import { NavigationService, NoticeService } from 'app/shared/helpers';
+import { NavigationService, NoticeService, HelperService } from 'app/shared/helpers';
 import { IErrorHandler } from 'app/shared/models';
 import * as fromRoot from 'app/store/app.reducer';
 import { environment } from 'environments/environment';
 import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { asyncScheduler, of, throwError } from 'rxjs';
-import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap } from 'rxjs/operators';
+import { asyncScheduler, of, throwError, forkJoin } from 'rxjs';
+import { catchError, debounceTime, exhaustMap, map, retry, switchMap, tap, take } from 'rxjs/operators';
 
 import { AuthService } from '../../auth.service';
 import { Auth } from '../../models';
@@ -148,38 +148,84 @@ export class AuthEffects {
                 map(action => action.payload),
                 tap(resp => {
                     const { user, token } = resp;
+                    let sessionId = HelperService.generateRandomString(32);
 
-                    this.storage.has('user').subscribe(result => {
-                        if (!result) {
-                            this.storage.set('user', new Auth(user, token)).subscribe(() => {
-                                // /pages/dashboard
-                                if (!this._$auth.redirectUrl) {
-                                    this.router.navigate(['/pages/account/stores'], {
-                                        replaceUrl: true
-                                    });
-                                }
-                            });
-                        }
+                    forkJoin({
+                        user: this.storage.has('user'),
+                        session: this.storage.get<string>('session', { type: 'string' }),
+                    }).pipe(
+                        take(1)
+                    ).subscribe({
+                        next: ({ user: storageUser, session: storageSession }) => {
+                            if (!storageUser) {
+                                this.storage.set('user', new Auth(user, token)).subscribe();
+                            }
+
+                            if (!storageSession) {
+                                this.storage.set('session', sessionId).subscribe();
+                            } else {
+                                sessionId = storageSession;
+                            }
+                        },
+                        complete: () => {
+                            if (environment.logRocketId) {
+                                LogRocket.identify(sessionId, 
+                                    {
+                                        name: `${user.fullName} (${environment.environment.toUpperCase()})`,
+                                        email: user.email,
+                                        environment: environment.environment,
+                                        version: environment.appVersion,
+                                        commitHash: environment.appHash,
+                                        phoneNo: user.phoneNo,
+                                        mobilePhoneNo: user.mobilePhoneNo,
+                                        userSuppliers: user.userSuppliers
+                                            .map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`)
+                                            .join(','),
+                                        userData: JSON.stringify(user)
+                                    }
+                                );
+                            }
+
+                            // /pages/dashboard
+                            if (!this._$auth.redirectUrl) {
+                                this.router.navigate(['/pages/account/stores'], {
+                                    replaceUrl: true
+                                });
+                            }
+                        },
                     });
 
-                    if (environment.logRocketId) {
-                        LogRocket.identify(
-                            `${user.email}:${environment.appVersion}:${environment.appHash}`,
-                            {
-                                name: `${user.fullName} (${environment.environment})`,
-                                email: user.email,
-                                environment: environment.environment,
-                                version: environment.appVersion,
-                                commitHash: environment.appHash,
-                                phoneNo: user.phoneNo,
-                                mobilePhoneNo: user.mobilePhoneNo,
-                                userSuppliers: user.userSuppliers
-                                    .map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`)
-                                    .join(','),
-                                userData: JSON.stringify(user)
-                            }
-                        );
-                    }
+                    // this.storage.has('user').subscribe(result => {
+                    //     if (!result) {
+                    //         this.storage.set('user', new Auth(user, token)).subscribe(() => {
+                    //             // /pages/dashboard
+                    //             if (!this._$auth.redirectUrl) {
+                    //                 this.router.navigate(['/pages/account/stores'], {
+                    //                     replaceUrl: true
+                    //                 });
+                    //             }
+                    //         });
+                    //     }
+                    // });
+
+                    // if (environment.logRocketId) {
+                    //     LogRocket.identify(
+                    //         `${user.email}:${environment.appVersion}:${environment.appHash}`,
+                    //         {
+                    //             name: `${user.fullName} (${environment.environment})`,
+                    //             email: user.email,
+                    //             environment: environment.environment,
+                    //             version: environment.appVersion,
+                    //             commitHash: environment.appHash,
+                    //             phoneNo: user.phoneNo,
+                    //             mobilePhoneNo: user.mobilePhoneNo,
+                    //             userSuppliers: user.userSuppliers
+                    //                 .map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`)
+                    //                 .join(','),
+                    //             userData: JSON.stringify(user)
+                    //         }
+                    //     );
+                    // }
                 })
             ),
         { dispatch: false }
@@ -327,25 +373,32 @@ export class AuthEffects {
                 map(action => action.payload),
                 tap(resp => {
                     const { user, token } = resp;
+                    let sessionId = HelperService.generateRandomString(32);
 
                     this._$auth.assignRolePrivileges(new Auth(user, token));
 
-                    // this._$navigation.initNavigation();
+                    forkJoin({
+                        user: this.storage.has('user'),
+                        session: this.storage.get<string>('session', { type: 'string' }),
+                    }).pipe(
+                        take(1)
+                    ).subscribe({
+                        next: ({ user: storageUser, session: storageSession }) => {
+                            if (!storageUser) {
+                                this.storage.set('user', new Auth(user, token)).subscribe();
+                            }
 
-                    this.storage.set('user', new Auth(user, token)).subscribe({
-                        next: () => {
-                            // const roles = user.roles.map(r => {
-                            //     return {
-                            //         [r.role]
-                            //     }
-                            // })
-                            // /pages/dashboard
-
+                            if (!storageSession) {
+                                this.storage.set('session', sessionId).subscribe();
+                            } else {
+                                sessionId = storageSession;
+                            }
+                        },
+                        complete: () => {
                             if (environment.logRocketId) {
-                                LogRocket.identify(
-                                    `${user.email}:${environment.appVersion}:${environment.appHash}`,
+                                LogRocket.identify(sessionId,
                                     {
-                                        name: `${user.fullName} (${environment.environment})`,
+                                        name: `${user.fullName} (${environment.environment.toUpperCase()})`,
                                         email: user.email,
                                         environment: environment.environment,
                                         version: environment.appVersion,
@@ -353,27 +406,66 @@ export class AuthEffects {
                                         phoneNo: user.phoneNo,
                                         mobilePhoneNo: user.mobilePhoneNo,
                                         userSuppliers: user.userSuppliers
-                                            .map(
-                                                u =>
-                                                    `[${[u.supplierId, u.supplier.name].join(':')}]`
-                                            )
+                                            .map(u => `[${[u.supplierId, u.supplier.name].join(':')}]`)
                                             .join(','),
                                         userData: JSON.stringify(user)
                                     }
                                 );
                             }
 
-                            this.router.navigate(['/pages/account/stores'], {
-                                replaceUrl: true
-                            });
+                            // /pages/dashboard
+                            if (!this._$auth.redirectUrl) {
+                                this.router.navigate(['/pages/account/stores'], {
+                                    replaceUrl: true
+                                });
+                            }
                         },
-                        error: err => {
-                            this._$notice.open('Something wrong with sessions', 'error', {
-                                verticalPosition: 'bottom',
-                                horizontalPosition: 'right'
-                            });
-                        }
                     });
+
+                    // this._$navigation.initNavigation();
+
+                    // this.storage.set('user', new Auth(user, token)).subscribe({
+                    //     next: () => {
+                    //         // const roles = user.roles.map(r => {
+                    //         //     return {
+                    //         //         [r.role]
+                    //         //     }
+                    //         // })
+                    //         // /pages/dashboard
+
+                    //         if (environment.logRocketId) {
+                    //             LogRocket.identify(
+                    //                 `${user.email}:${environment.appVersion}:${environment.appHash}`,
+                    //                 {
+                    //                     name: `${user.fullName} (${environment.environment})`,
+                    //                     email: user.email,
+                    //                     environment: environment.environment,
+                    //                     version: environment.appVersion,
+                    //                     commitHash: environment.appHash,
+                    //                     phoneNo: user.phoneNo,
+                    //                     mobilePhoneNo: user.mobilePhoneNo,
+                    //                     userSuppliers: user.userSuppliers
+                    //                         .map(
+                    //                             u =>
+                    //                                 `[${[u.supplierId, u.supplier.name].join(':')}]`
+                    //                         )
+                    //                         .join(','),
+                    //                     userData: JSON.stringify(user)
+                    //                 }
+                    //             );
+                    //         }
+
+                    //         this.router.navigate(['/pages/account/stores'], {
+                    //             replaceUrl: true
+                    //         });
+                    //     },
+                    //     error: err => {
+                    //         this._$notice.open('Something wrong with sessions', 'error', {
+                    //             verticalPosition: 'bottom',
+                    //             horizontalPosition: 'right'
+                    //         });
+                    //     }
+                    // });
                 })
             ),
         { dispatch: false }

@@ -45,6 +45,7 @@ if (environment.logRocketId) {
             requestSanitizer: request => {
                 // Menghapus header authorization dari LogRocket.
                 request.headers['authorization'] = null;
+                request.headers['Authorization'] = null;
                 return request;
             },
             responseSanitizer: response => {
