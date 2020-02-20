@@ -651,7 +651,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                     // associatedPortfolioGroupQuery['type'] = 'group';
                     associatedPortfolioGroupQuery['userId'] = salesRep.userId;
                     // associatedPortfolioGroupQuery['combined'] = true;
-                    associatedPortfolioGroupQuery['associated'] = true;
+                    associatedPortfolioGroupQuery['associated'] = false;
                     
                     this.associationStore.dispatch(
                         AssociatedPortfolioActions.fetchAssociatedPortfoliosRequest({ payload: associatedPortfolioGroupQuery })
