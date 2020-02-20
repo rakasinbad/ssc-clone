@@ -63,11 +63,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     prevSalesRep: SalesRep;
 
     // Untuk menyimpan portfolio-portfolio yang tersedia.
-    availablePortfolios$: Observable<Array<Portfolio>>;
+    // availablePortfolios$: Observable<Array<Portfolio>>;
     // Untuk menyimpan portfolio-portfolio yang terpilih.
     selectedPortfolios$: Observable<Array<Portfolio>>;
     // Untuk menyimpan jumlah portfolio yang sudah terpilih.
-    totalSelectedPortfolios$: Observable<number>;
+    // totalSelectedPortfolios$: Observable<number>;
 
     // Untuk menyimpan Sales Reps.
     salesReps$: Observable<Array<SalesRep>>;
@@ -78,11 +78,11 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
     // Untuk menyimpan Invoice Group.
     invoiceGroups$: Observable<Array<InvoiceGroup>>;
     // Untuk menyimpan Observable status loading dari state portfolio.
-    isPortfolioLoading$: Observable<boolean>;
+    // isPortfolioLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari state store-nya portfolio.
-    isPortfolioStoreLoading$: Observable<boolean>;
+    // isPortfolioStoreLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari state list store (merchant).
-    isListStoreLoading$: Observable<boolean>;
+    // isListStoreLoading$: Observable<boolean>;
     // Untuk menyimpan Observable status loading dari request association.
     isRequesting$: Observable<boolean>;
 
@@ -108,18 +108,20 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         private errorMessageSvc: ErrorMessageService,
         private helperSvc: HelperService,
     ) {
+
         // Mengambil ID association dari param URL.
         this.associationId = this.route.snapshot.params.id;
 
         // Mengambil status loading dari state-nya portfolio.
-        this.isPortfolioLoading$ = this.portfolioStore
-            .select(PortfolioSelector.getLoadingState)
-            .pipe(takeUntil(this.subs$));
+        // this.isPortfolioLoading$ = this.portfolioStore
+        //     .select(PortfolioSelector.getLoadingState)
+        //     .pipe(takeUntil(this.subs$));
 
         // Mengambil jumlah sales rep yang ada di server.
         this.totalSalesReps$ = this.associationStore.select(
             SalesRepSelectors.getTotalItem
         ).pipe(
+            tap(() => this.debug('this.totalSalesReps$')),
             takeUntil(this.subs$)
         );
 
@@ -135,7 +137,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.invoiceGroups$ = this.dropdownStore
             .select(DropdownSelectors.getInvoiceGroupDropdownState)
             .pipe(
-                // debounceTime(3000),
+                debounceTime(1000),
+                tap(() => this.debug('this.invoiceGroups$')),
                 filter(invoiceGroups => {
                     if (invoiceGroups.length === 0) {
                         this.dropdownStore.dispatch(
@@ -151,6 +154,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.isRequesting$ = this.associationStore.select(
             AssociationSelectors.getRequestingState
         ).pipe(
+            tap(() => this.debug('this.isRequesting$')),
             takeUntil(this.subs$)
         );
 
@@ -158,6 +162,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.salesReps$ = this.associationStore
             .select(SalesRepSelectors.selectAll)
             .pipe(
+                debounceTime(1000),
+                tap(() => this.debug('this.salesReps$')),
                 filter(salesReps => {
                     if (salesReps.length === 0) {
                         this.associationStore.dispatch(
@@ -187,6 +193,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.selectedPortfolios$ = this.portfolioStore.select(
                                         PortfolioSelector.getSelectedPortfolioIds
                                     ).pipe(
+                                        tap(() => this.debug('this.selectedPortfolios$')),
                                         withLatestFrom(
                                             this.portfolioStore.select(PortfolioSelector.getAllPortfolios)
                                         ),
@@ -304,7 +311,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         }
     }
 
-    private debug(label: string, data: any): void {
+    private debug(label: string, data: any = {}): void {
         if (!environment.production) {
             console.log(label, data);
         }
@@ -348,6 +355,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         });
 
         this.salesRepForm$ = (this.form.get('salesRep').valueChanges as Observable<SalesRep>).pipe(
+            tap(() => this.debug('this.salesRepForm$')),
             tap(value => {
                 if (value !== this.prevSalesRep) {
                     this.prevSalesRep = value;
@@ -361,6 +369,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         );
 
         this.invoiceGroupForm$ = (this.form.get('invoiceGroup').valueChanges as Observable<InvoiceGroup>).pipe(
+            tap(() => this.debug('this.invoiceGroupForm$')),
             tap(value => this.associationStore.dispatch(AssociationActions.setSelectedInvoiceGroup({ payload: value }))),
             takeUntil(this.subs$)
         );
@@ -368,6 +377,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.associationStore.select(
             AssociatedPortfolioSelectors.selectAll
         ).pipe(
+            tap(() => this.debug('this.associationStore.select(AssociatedPortfolioSelectors.selectAll)')),
             tap((selectedPortfolios) => {
                 this.form.get('portfolios').setValue(selectedPortfolios);
             }),
@@ -377,6 +387,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.associationStore.select(
             AssociatedStoreSelectors.selectAll
         ).pipe(
+            tap(() => this.debug('this.associationStore.select(AssociatedStoreSelectors.selectAll)')),
             tap((selectedStores) => {
                 this.form.get('stores').setValue(selectedStores);
             }),
@@ -408,6 +419,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.portfolioStore
             .select(FormSelectors.getIsClickSaveButton)
             .pipe(
+                tap(() => this.debug('this.portfolioStore.select(FormSelectors.getIsClickSaveButton)')),
                 filter(isClick => !!isClick),
                 takeUntil(this.subs$)
             )
@@ -424,10 +436,13 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         combineLatest([
             this.salesRepForm$,
             this.invoiceGroupForm$,
-            this.associationStore.select(AssociatedPortfolioSelectors.selectTotal)
+            this.associationStore.select(AssociatedPortfolioSelectors.selectTotal),
+            this.associationStore.select(AssociatedStoreSelectors.selectTotal)
         ]).pipe(
-            tap(([salesRep, invoiceGroup, selectedPortfolioIds]) => {
-                if (!salesRep || !invoiceGroup || selectedPortfolioIds === 0) {
+            // tslint:disable-next-line: max-line-length
+            tap(() => this.debug('combineLatest([this.salesRepForm$,this.invoiceGroupForm$,this.associationStore.select(AssociatedPortfolioSelectors.selectTotal),this.associationStore.select(AssociatedStoreSelectors.selectTotal)])')),
+            tap(([salesRep, invoiceGroup, selectedPortfolioIds, selectedStoreIds]) => {
+                if (!salesRep || !invoiceGroup || (selectedPortfolioIds === 0 && selectedStoreIds === 0)) {
                     this.portfolioStore.dispatch(FormActions.setFormStatusInvalid());
                 } else {
                     this.portfolioStore.dispatch(FormActions.setFormStatusValid());
@@ -564,13 +579,14 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         this.subs$.next();
         this.subs$.complete();
 
+        this.dropdownStore.select(DropdownActions.resetInvoiceGroupState);
         this.portfolioStore.dispatch(UiActions.hideFooterAction());
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
         this.portfolioStore.dispatch(FormActions.resetFormStatus());
         this.portfolioStore.dispatch(FormActions.resetClickSaveButton());
         this.portfolioStore.dispatch(FormActions.resetCancelButtonAction());
-        
+
         this.portfolioStore.dispatch(StoreActions.truncateStores());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolios());
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
@@ -592,6 +608,8 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
             this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),
         ]).pipe(
             // Keduanya harus terisi.
+            // tslint:disable-next-line: max-line-length
+            tap(() => this.debug('combineLatest([this.salesRepForm$,this.invoiceGroupForm$,this.portfolioStore.select(PortfolioSelector.getPortfolioEntityType),this.portfolioStore.select(PortfolioSelector.getSearchKeywordPortfolio),])')),
             filter(([salesRep, invoiceGroup]) => {
                 const result = !!salesRep && !!invoiceGroup;
 
@@ -681,6 +699,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
         if (this.autocompleteTrigger && this.salesRepScroll && this.salesRepScroll.panel) {
             fromEvent<Event>(this.salesRepScroll.panel.nativeElement, 'scroll')
                 .pipe(
+                    tap(() => this.debug(`fromEvent<Event>(this.salesRepScroll.panel.nativeElement, 'scroll')`)),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil sales rep yang ada di state, jumlah total sales rep. di back-end dan loading state-nya.
@@ -699,7 +718,7 @@ export class AssociationsFormComponent implements OnInit, OnDestroy, AfterViewIn
                         this.helperSvc.isElementScrolledToBottom(this.salesRepScroll.panel)
                     ),
                     takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
-                        tap(() => console.log('closing'))
+                        tap(() => this.debug('closing'))
                     ))
                 ).subscribe(({ salesReps }) =>
                     this.associationStore.dispatch(
