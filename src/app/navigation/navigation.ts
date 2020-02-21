@@ -191,6 +191,12 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'SKU Assignment',
                 type: 'item',
                 url: '/pages/logistics/sku-assignments'
+            },
+            {
+                id: 'wh-stock-management',
+                title: 'Stock Management',
+                type: 'item',
+                url: '/pages/logistics/stock-managements'
             }
         ]
     }

@@ -19,6 +19,13 @@ const routes: Routes = [
             import('./sku-assignments/sku-assignments.module').then(m => m.SkuAssignmentsModule)
     },
     {
+        path: 'stock-managements',
+        loadChildren: () =>
+            import('./stock-managements/stock-managements.module').then(
+                m => m.StockManagementsModule
+            )
+    },
+    {
         path: '',
         redirectTo: 'warehouses',
         pathMatch: 'full'
