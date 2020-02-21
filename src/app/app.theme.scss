@@ -123,6 +123,7 @@ $typography: mat-typography-config($font-family: 'Muli, Helvetica Neue, Arial, s
 // Logistics
 @import 'src/app/main/pages/logistics/warehouses/warehouses.theme';
 @import 'src/app/main/pages/logistics/warehouse-coverages/warehouse-coverages.theme';
+@import 'src/app/main/pages/logistics/sku-assignments/sku-assignments.theme';
 
 // OMS
 @import 'src/app/main/pages/orders/orders.theme';
@@ -181,6 +182,7 @@ $typography: mat-typography-config($font-family: 'Muli, Helvetica Neue, Arial, s
     // Logistics
     @include warehouses-theme($theme);
     @include warehouse-coverages-theme($theme);
+    @include sku-assigments-theme($theme);
 
     // OMS
     @include orders-theme($theme);
