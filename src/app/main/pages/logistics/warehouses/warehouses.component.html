@@ -23,7 +23,12 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox></mat-checkbox>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
                         <!-- <mat-checkbox
                             (change)="$event ? handleCheckbox() : null"
                             (click)="$event.stopPropagation()"
@@ -32,7 +37,11 @@
                         ></mat-checkbox> -->
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <mat-checkbox></mat-checkbox>
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
                         <!-- <mat-checkbox
                             (click)="$event.stopPropagation()"
                             (change)="$event ? selection.toggle(row) : null"
@@ -195,7 +204,7 @@
             </mat-table>
 
             <mat-paginator
-                [length]="dataSource.length"
+                [length]="dataSource.data.length"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons

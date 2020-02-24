@@ -29,7 +29,16 @@ export interface ExportFormData {
 
 export interface ExportConfiguration {
     // Tipe halaman harus diisi untuk menentukan export yang dibutuhkan.
-    page: '' | 'stores' | 'catalogues' | 'payments' | 'orders' | 'portfolios' | 'journey-plans';
+    page:
+        | ''
+        | 'stores'
+        | 'catalogues'
+        | 'payments'
+        | 'orders'
+        | 'portfolios'
+        | 'journey-plans'
+        | 'sr-assignment'
+        | 'sales-rep';
     // Menentukan konfigurasi setiap export.
     configuration?: ExportFilterConfiguration;
 }
@@ -117,5 +126,39 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
     },
     portfolios: {
         requireFilter: false
+    },
+    'sr-assignment': {
+        requireFilter: true,
+        filterAspect: {
+            status: {
+                label: 'SR Assignment Status',
+                placeholder: 'Choose SR Assignment Status',
+                required: true
+            },
+            rangeDate: {
+                required: false,
+                maxRange: {
+                    number: 1,
+                    duration: 'month'
+                }
+            }
+        }
+    },
+    'sales-rep': {
+        requireFilter: true,
+        filterAspect: {
+            status: {
+                label: 'Sales Rep Status',
+                placeholder: 'Choose Sales Rep Status',
+                required: true
+            },
+            rangeDate: {
+                required: false,
+                maxRange: {
+                    number: 1,
+                    duration: 'month'
+                }
+            }
+        }
     }
 };

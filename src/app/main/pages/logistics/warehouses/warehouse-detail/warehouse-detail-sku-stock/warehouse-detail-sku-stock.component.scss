@@ -1,10 +1,10 @@
 @import 'src/@fuse/scss/fuse';
 
-app-warehouse-detail-coverage {
+app-warehouse-detail-sku-stock {
     min-height: 100%;
     height: 100%;
 
-    .coverage-content {
+    .sku-stock-content {
         height: inherit;
 
         sinbad-card-header {
@@ -18,7 +18,7 @@ app-warehouse-detail-coverage {
         }
     }
 
-    .warehouse-detail-coverage-table {
+    .warehouse-detail-sku-stock-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
@@ -36,7 +36,7 @@ app-warehouse-detail-coverage {
             min-height: unset;
         }
 
-        .warehouse-detail-coverage {
+        .warehouse-detail-sku-stock {
             position: relative;
             cursor: pointer;
         }
@@ -72,6 +72,34 @@ app-warehouse-detail-coverage {
             &.mat-cell__content {
                 word-break: break-word;
             }
+        }
+
+        .mat-column-no {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-sku-id {
+            flex: 0 1 120px;
+            min-width: 120px;
+        }
+
+        .mat-column-sku-name {
+            flex: 1 1 50em;
+            min-width: 125px;
+        }
+
+        .mat-column-stock-type {
+            flex: 0 1 10em;
+            min-width: 80px;
+        }
+
+        .mat-column-sellable {
+            flex: 0 1 10em;
+            min-width: 100px;
+        }
+
+        .active-icon {
+            border-radius: 50%;
         }
     }
 }

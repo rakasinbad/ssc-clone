@@ -1,4 +1,4 @@
-<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+<div class="coverage-content" fxLayout="column" fxLayoutGap="16px">
     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
     <mat-table
@@ -14,7 +14,7 @@
                 Warehouse Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.name }}
                 </p>
             </mat-cell>
@@ -26,7 +26,7 @@
                 Province
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.province }}
                 </p>
             </mat-cell>
@@ -38,7 +38,7 @@
                 City
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.city }}
                 </p>
             </mat-cell>
@@ -50,7 +50,7 @@
                 District
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.district }}
                 </p>
             </mat-cell>
@@ -62,7 +62,7 @@
                 Urban
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.urban }}
                 </p>
             </mat-cell>
@@ -74,4 +74,11 @@
             class="warehouse-detail-coverage"
         ></mat-row>
     </mat-table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
 </div>
