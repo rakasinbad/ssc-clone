@@ -75,12 +75,22 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             onClick: () => {
                 this.router.navigate(['/pages/sales-force/sales-rep/new']);
             }
+        },
+        export: {
+            permissions: ['SRM.SR.EXPORT'],
+            useAdvanced: true,
+            pageType: 'sales-rep'
+        },
+        import: {
+            permissions: ['SRM.SR.IMPORT'],
+            useAdvanced: true,
+            pageType: 'sales-rep'
         }
     };
 
     search: FormControl = new FormControl('');
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'sales-rep-id',
         'sales-rep-name',
         'phone-number',
@@ -148,6 +158,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         // Add 'implements OnInit' to the class.
 
         this.paginator.pageSize = this.defaultPageSize;
+
         this.sort.sort({
             id: 'id',
             start: 'desc',
@@ -344,7 +355,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => {
                         // this.table.nativeElement.scrollIntoView(true);
-                        // this.table.nativeElement.scrollTop = 0;
+                        this.table.nativeElement.scrollTop = 0;
                         this._initTable();
                     });
 
@@ -353,7 +364,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 canUpdate.then(hasAccess => {
                     if (hasAccess) {
                         this.displayedColumns = [
-                            'checkbox',
+                            // 'checkbox',
                             'sales-rep-id',
                             'sales-rep-name',
                             'phone-number',
@@ -367,7 +378,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                         ];
                     } else {
                         this.displayedColumns = [
-                            'checkbox',
+                            // 'checkbox',
                             'sales-rep-id',
                             'sales-rep-name',
                             'phone-number',

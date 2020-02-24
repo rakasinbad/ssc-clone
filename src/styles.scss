@@ -282,6 +282,11 @@ quill-editor {
     min-height: 42px !important;
 }
 
+// Tooltip helper
+.tooltip-br {
+    white-space: pre-line;
+}
+
 body.theme-sinbad-light {
     label[disabled] {
         color: rgba(0, 0, 0, 0.38);
