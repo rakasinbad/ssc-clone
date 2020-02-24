@@ -341,6 +341,19 @@ export class MainImportComponent implements OnInit, OnDestroy {
                 );
                 break;
 
+            case 'portfolios':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-portfolios'
+                        }
+                    })
+                );
+                break;
+
             default:
                 break;
         }
