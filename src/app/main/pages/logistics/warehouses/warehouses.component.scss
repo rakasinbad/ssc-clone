@@ -103,7 +103,8 @@ app-warehouses {
         }
 
         .mat-column-checkbox {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
         .mat-column-wh-id {
