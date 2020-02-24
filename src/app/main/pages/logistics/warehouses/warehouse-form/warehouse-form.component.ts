@@ -15,7 +15,8 @@ import {
     MatAutocomplete,
     MatAutocompleteSelectedEvent,
     MatAutocompleteTrigger,
-    MatCheckboxChange
+    MatCheckboxChange,
+    MatOptionSelectionChange
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -188,6 +189,12 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     get invoices(): any {
         return this.form.get('invoices').value;
+    }
+
+    compareInvoiceFn(c1: string, c2: string): boolean {
+        console.log('Compare 1', c1);
+        console.log('Compare 2', c2);
+        return true;
     }
 
     displayDistrictOption(item: District, isHtml = false): string {
@@ -493,6 +500,14 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
             default:
                 return;
+        }
+    }
+
+    onInvoiceOptionChange(ev: MatOptionSelectionChange): void {
+        if (ev.isUserInput) {
+            if (!ev.source.selected) {
+                console.log(`Show dialog uncheck ${ev.source.value} ${ev.source.viewValue}`);
+            }
         }
     }
 

@@ -81,21 +81,31 @@ export class ExportsApiService {
             case 'stores':
                 params['page'] = 'stores';
                 break;
+
             case 'catalogues':
                 params['page'] = 'catalogues';
                 break;
+
             case 'payments':
                 params['page'] = 'payments';
                 break;
+
             case 'orders':
                 params['page'] = 'orders';
                 break;
+
             case 'portfolios':
                 params['page'] = 'portfolios';
                 break;
+
+            case 'sales-rep':
+                params['page'] = 'sales-rep';
+                break;
+
             case 'journey-plans':
                 params['page'] = 'journey-plans';
                 break;
+
             default: {
                 const err: ErrorHandler = {
                     id: 'ERR_EXPORT_PAGE_TYPE_UNRECOGNIZED',

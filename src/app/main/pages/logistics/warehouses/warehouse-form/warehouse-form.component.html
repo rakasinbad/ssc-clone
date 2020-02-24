@@ -88,6 +88,7 @@
                                             </span>
                                         </mat-select-trigger>
                                         <mat-option
+                                            (onSelectionChange)="onInvoiceOptionChange($event)"
                                             *ngFor="let row of invoiceGroups"
                                             [value]="row?.id"
                                         >

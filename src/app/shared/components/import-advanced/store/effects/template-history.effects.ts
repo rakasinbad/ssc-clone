@@ -7,7 +7,7 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ExportLogApiService, NoticeService } from 'app/shared/helpers';
 import { ErrorHandler, PaginateResponse, User } from 'app/shared/models';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap, withLatestFrom, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { ExportLog, IExportLog, PayloadTemplateHistory } from '../../models';
 import { TemplateHistoryActions } from '../actions';
@@ -130,10 +130,7 @@ export class TemplateHistoryEffects {
                 ofType(TemplateHistoryActions.createTemplateHistoryFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -160,4 +157,14 @@ export class TemplateHistoryEffects {
         private _$notice: NoticeService,
         private _$exportLogApi: ExportLogApiService
     ) {}
+
+    private _handleErrMessage(resp: ErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 }

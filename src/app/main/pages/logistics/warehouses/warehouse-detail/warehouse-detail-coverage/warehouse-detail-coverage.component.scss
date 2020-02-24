@@ -1,6 +1,23 @@
 @import 'src/@fuse/scss/fuse';
 
 app-warehouse-detail-coverage {
+    min-height: 100%;
+    height: 100%;
+
+    .coverage-content {
+        height: inherit;
+
+        sinbad-card-header {
+            div {
+                &:first-child {
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    margin-top: 4px !important;
+                }
+            }
+        }
+    }
+
     .warehouse-detail-coverage-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
