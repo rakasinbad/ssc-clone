@@ -55,30 +55,46 @@ export class ExportServiceApiService {
 
         if (!params.has('type')) {
             switch (type as ExportConfiguration['page']) {
-                case 'stores': {
-                    params = params.set('type', 'stores');
-                    break;
-                }
                 case 'catalogues': {
                     params = params.set('type', 'catalogues');
                     break;
                 }
-                case 'payments': {
-                    params = params.set('type', 'fms');
+
+                case 'journey-plans': {
+                    params = params.set('type', 'journey-plans');
                     break;
                 }
+
                 case 'orders': {
                     params = params.set('type', 'oms');
                     break;
                 }
+
+                case 'payments': {
+                    params = params.set('type', 'fms');
+                    break;
+                }
+
                 case 'portfolios': {
                     params = params.set('type', 'portfolios');
                     break;
                 }
-                case 'journey-plans': {
-                    params = params.set('type', 'journey_plans');
+
+                case 'sales-rep': {
+                    params = params.set('type', 'sales-rep');
                     break;
                 }
+
+                case 'sr-assignment': {
+                    params = params.set('type', 'sr-assignment');
+                    break;
+                }
+
+                case 'stores': {
+                    params = params.set('type', 'stores');
+                    break;
+                }
+
                 default: {
                     params = params.set('type', type);
                 }

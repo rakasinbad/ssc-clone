@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ViewChild
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { environment } from 'environments/environment';
+import { MatPaginator, MatSort } from '@angular/material';
 
 @Component({
     selector: 'app-warehouse-detail-coverage',
@@ -11,6 +19,11 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WarehouseDetailCoverageComponent implements OnInit {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -35,6 +48,7 @@ export class WarehouseDetailCoverageComponent implements OnInit {
             // pageType: 'oms'
         }
     };
+
     dataSource = [
         {
             id: '1',
@@ -77,12 +91,19 @@ export class WarehouseDetailCoverageComponent implements OnInit {
             urban: 'Mampang Prapatan'
         }
     ];
-    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
 
     constructor() {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.paginator.pageSize = this.defaultPageSize;
     }
 }

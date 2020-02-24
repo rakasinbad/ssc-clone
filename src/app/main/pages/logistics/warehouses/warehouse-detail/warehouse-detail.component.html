@@ -59,16 +59,20 @@
 
                     <mat-tab label="Coverage">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
-                                <app-warehouse-detail-coverage></app-warehouse-detail-coverage>
+                            <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar>
+                                <app-warehouse-detail-coverage
+                                    fxLayout="column"
+                                ></app-warehouse-detail-coverage>
                             </div>
                         </ng-template>
                     </mat-tab>
 
                     <mat-tab label="SKU & Stock">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
-                                <!-- <app-warehouse-detail-location></app-warehouse-detail-location> -->
+                            <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar>
+                                <app-warehouse-detail-sku-stock
+                                    fxLayout="column"
+                                ></app-warehouse-detail-sku-stock>
                             </div>
                         </ng-template>
                     </mat-tab>

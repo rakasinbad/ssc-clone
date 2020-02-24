@@ -1,31 +1,29 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-    OnDestroy,
-    AfterViewInit
-} from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
+import { PageEvent } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { PageEvent } from '@angular/material';
-// NgRx's Libraries
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { UiActions } from 'app/shared/store/actions';
-// RxJS' Libraries
-import { Observable, Subject } from 'rxjs';
-// Environment variables.
-// Entity model.
-// State management's stuffs.
-import * as fromAssociations from './store/reducers';
-import { AssociationActions } from './store/actions';
-import { DomSanitizer } from '@angular/platform-browser';
-import { NgxPermissionsService } from 'ngx-permissions';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models';
+import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { Observable, Subject } from 'rxjs';
+
+import { locale as english } from './i18n/en';
+import { locale as indonesian } from './i18n/id';
+import { AssociationActions } from './store/actions';
+import * as fromAssociations from './store/reducers';
 
 @Component({
     selector: 'app-associations',
@@ -53,28 +51,46 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         title: {
             label: 'SR Assignment'
         },
+        // search: {
+        //     active: false
+        // },
         viewBy: {
-            list: [{
-                id: 'sales-rep',
-                label: 'Sales Rep'
-            }, {
-                id: 'portfolio',
-                label: 'Portfolio'
-            }, {
-                id: 'store',
-                label: 'Store'
-            }],
-            onChanged: (viewBy: { id: string; label: string; }) => this.store.dispatch(UiActions.setCustomToolbarActive({ payload: viewBy.id }))
+            list: [
+                {
+                    id: 'sales-rep',
+                    label: 'Sales Rep'
+                },
+                {
+                    id: 'portfolio',
+                    label: 'Portfolio'
+                },
+                {
+                    id: 'store',
+                    label: 'Store'
+                }
+            ],
+            onChanged: (viewBy: { id: string; label: string }) =>
+                this.store.dispatch(UiActions.setCustomToolbarActive({ payload: viewBy.id }))
         },
         add: {
             permissions: ['SRM.ASC.CREATE'],
             onClick: () => this.router.navigate(['/pages/sales-force/associations/add'])
-        },
+        }
+        // export: {
+        //     permissions: ['SRM.ASC.EXPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'sr-assignment'
+        // },
+        // import: {
+        //     permissions: ['SRM.ASC.IMPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'sr-assignment'
+        // }
     };
 
-    private _unSubs$: Subject<void>;
-
     buttonViewByActive$: Observable<string>;
+
+    private _unSubs$: Subject<void>;
 
     private readonly _breadCrumbs: IBreadcrumbs[] = [
         {
@@ -85,7 +101,7 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         {
             title: 'SR Assignment',
-            keepCase: true,
+            keepCase: true
         }
     ];
 
@@ -95,7 +111,10 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         private store: Store<fromAssociations.FeatureState>,
         private ngxPermissionsService: NgxPermissionsService,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService
-    ) {}
+    ) {
+        // Load translate
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
+    }
 
     /**
      * PRIVATE FUNCTIONS

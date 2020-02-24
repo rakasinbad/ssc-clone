@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -7,7 +8,8 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse, EStatus } from 'app/shared/models';
+import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
+import { ErrorHandler, EStatus, IQueryParams, PaginateResponse } from 'app/shared/models';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
@@ -20,14 +22,10 @@ import {
     withLatestFrom
 } from 'rxjs/operators';
 
-import { SalesRep, SalesRepForm, SalesRepFormPatch, SalesRepBatchActions } from '../../models';
+import { SalesRep, SalesRepForm, SalesRepFormPatch } from '../../models';
 import { SalesRepApiService } from '../../services';
 import { SalesRepActions } from '../actions';
 import * as fromSalesReps from '../reducers';
-import { MatDialog } from '@angular/material';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { Update } from '@ngrx/entity';
-import { UpdateStr } from '@ngrx/entity/src/models';
 
 @Injectable()
 export class SalesRepEffects {
@@ -72,6 +70,17 @@ export class SalesRepEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
+                if (!supplierId) {
+                    return of(
+                        SalesRepActions.createSalesRepFailure({
+                            payload: new ErrorHandler({
+                                id: 'createSalesRepFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
+
                 payload = {
                     ...payload,
                     supplierId
@@ -107,7 +116,9 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.createSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$notice.open('Failed to create sales rep', 'error', {
+                    const message = this._handleErrMessage(resp) || 'Failed to create sales rep';
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -169,7 +180,9 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.updateSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$notice.open('Failed to update sales rep', 'error', {
+                    const message = this._handleErrMessage(resp) || 'Failed to update sales rep';
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -243,8 +256,6 @@ export class SalesRepEffects {
                     status: body
                 };
 
-                console.log('SALES REP', body);
-
                 return this._$salesRepApi.patch(change, id).pipe(
                     map(resp => {
                         return SalesRepActions.changeStatusSalesRepSuccess({
@@ -279,7 +290,10 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.changeStatusSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$notice.open('Failed to change status sales rep', 'error', {
+                    const message =
+                        this._handleErrMessage(resp) || 'Failed to change status sales rep';
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -339,7 +353,10 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.changePasswordSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    this._$notice.open('Failed to change password sales rep', 'error', {
+                    const message =
+                        this._handleErrMessage(resp) || 'Failed to change password sales rep';
+
+                    this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -411,6 +428,17 @@ export class SalesRepEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
+                if (!supplierId) {
+                    return of(
+                        SalesRepActions.fetchSalesRepsFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchSalesRepsFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
+
                 return this._$salesRepApi
                     .findAll<PaginateResponse<SalesRep>>(params, supplierId)
                     .pipe(
@@ -452,10 +480,7 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.fetchSalesRepsFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -507,6 +532,17 @@ export class SalesRepEffects {
                     supplierId = (data as Auth).user.userSuppliers[0].supplierId;
                 }
 
+                if (!supplierId) {
+                    return of(
+                        SalesRepActions.fetchSalesRepFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchSalesRepFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
+                    );
+                }
+
                 return this._$salesRepApi.findById(id, supplierId).pipe(
                     catchOffline(),
                     map(resp => {
@@ -535,10 +571,7 @@ export class SalesRepEffects {
                 ofType(SalesRepActions.fetchSalesRepFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    const message = this._handleErrMessage(resp);
 
                     this._$notice.open(message, 'error', {
                         verticalPosition: 'bottom',
@@ -558,4 +591,14 @@ export class SalesRepEffects {
         private _$notice: NoticeService,
         private _$salesRepApi: SalesRepApiService
     ) {}
+
+    private _handleErrMessage(resp: ErrorHandler): string {
+        if (typeof resp.errors === 'string') {
+            return resp.errors;
+        } else if (resp.errors.error && resp.errors.error.message) {
+            return resp.errors.error.message;
+        } else {
+            return resp.errors.message;
+        }
+    }
 }
