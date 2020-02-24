@@ -1,64 +1,73 @@
 <div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
-    <mat-table class="stock-management-detail-history-table" #table [dataSource]="dataSource" matSort
+    <mat-table class="stock-management-detail-general-table" #table [dataSource]="dataSource" matSort
         [@animateStagger]="{ value: '50' }">
-        <!-- Warehouse Name Column -->
-        <ng-container matColumnDef="wh-name">
+        <!-- SKU ID Column -->
+        <ng-container matColumnDef="sku-id">
             <mat-header-cell *matHeaderCellDef>
-                Warehouse Name
+                SKU ID
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.name }}
+                    {{ row.skuId }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- Province Column -->
-        <ng-container matColumnDef="province">
+        <!-- SKU Name Column -->
+        <ng-container matColumnDef="sku-name">
             <mat-header-cell *matHeaderCellDef>
-                Province
+                SKU Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.province }}
+                    {{ row.skuName }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- City Column -->
-        <ng-container matColumnDef="city">
+        <!-- Stock Type Column -->
+        <ng-container matColumnDef="stock-type">
             <mat-header-cell *matHeaderCellDef>
-                City
+                Stock Type
+                <mat-icon class="active-icon s-14 ml-8 cursor-pointer" color="accent" matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center
+                    Unlimited: Admin can not set and manage stock level in Sinbad Seller Center"
+                    matTooltipClass="tooltip-br">
+                    help
+                </mat-icon>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.city }}
+                    {{ row.stockType }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- District Column -->
-        <ng-container matColumnDef="district">
+        <!-- Sellable Column -->
+        <ng-container matColumnDef="sellable">
             <mat-header-cell *matHeaderCellDef>
-                District
+                Sellable
+                <mat-icon class="active-icon s-14 ml-8 cursor-pointer" color="accent"
+                    matTooltip="Sellable Stock on hand in the warehouse that can be sold" matTooltipClass="tooltip-br">
+                    help
+                </mat-icon>
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.district }}
+                    {{ row.sellable }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- Urban Column -->
-        <ng-container matColumnDef="urban">
+        <!-- On Hand Column -->
+        <ng-container matColumnDef="on-hand">
             <mat-header-cell *matHeaderCellDef>
-                Urban
+                On Hand
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.urban }}
+                    {{ row.onHand }}
                 </p>
             </mat-cell>
         </ng-container>

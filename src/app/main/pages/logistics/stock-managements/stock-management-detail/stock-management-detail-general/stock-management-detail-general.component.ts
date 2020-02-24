@@ -36,47 +36,49 @@ export class StockManagementDetailGeneralComponent implements OnInit {
     };
     dataSource = [
         {
-            id: '1',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Kuningan Barat'
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Brown',
+            stockType: 'Limited',
+            sellable: '12',
+            onHand: '16'
         },
         {
-            id: '2',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Pela Mampang'
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Red',
+            stockType: 'Limited',
+            sellable: '15',
+            onHand: '98'
         },
         {
-            id: '3',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Bangka'
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Blue',
+            stockType: 'Limited',
+            sellable: '17',
+            onHand: '78'
         },
         {
-            id: '4',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Tegal Parang'
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Black',
+            stockType: 'Limited',
+            sellable: '32',
+            onHand: '56'
         },
         {
-            id: '5',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Mampang Prapatan'
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Green',
+            stockType: 'Limited',
+            sellable: '21',
+            onHand: '25'
+        },
+        {
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Pink',
+            stockType: 'Limited',
+            sellable: '19',
+            onHand: '24'
         }
     ];
-    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+    displayedColumns = ['sku-id', 'sku-name', 'stock-type', 'sellable', 'on-hand'];
 
     constructor() {}
 

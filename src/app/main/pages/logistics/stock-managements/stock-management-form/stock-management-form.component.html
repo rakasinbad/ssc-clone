@@ -29,7 +29,7 @@
                     </div>
                 </div>
 
-                <sinbad-card-header [config]="cardHeaderConfig" (onClickAdd)="onClickAdd()"></sinbad-card-header>
+                <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
                 <mat-table class="stock-managements-table mx-16" #table [dataSource]="dataSource" matSort
                     [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
