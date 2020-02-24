@@ -6,6 +6,22 @@ interface CardHeaderBaseConfig {
     label?: string;
 }
 
+export interface CardHeaderActionConfig {
+    // ID untuk aksi.
+    id: string;
+    // Label untuk aksi.
+    label: string;
+}
+
+interface CardHeaderBatchActionsConfig {
+    // Berisi daftar action yang tersedia.
+    actions?: Array<CardHeaderActionConfig>;
+    // Berisi penanda apakah salah 1 action sudah terpilih atau tidak.
+    show?: boolean;
+    // Berisi function yang akan dilakukan ketika memilih action.
+    onActionSelected?(action: CardHeaderActionConfig): void;
+}
+
 interface CardHeaderViewByConfig {
     // Berisi daftar view by yang tersedia untuk dipilih.
     list?: Array<{ id: string; label: string }>;
@@ -33,8 +49,10 @@ interface CardHeaderAdvancedButtonConfig extends CardHeaderButtonConfig {
 }
 
 export interface ICardHeaderConfiguration {
+    class?: string | Array<string>;
     title?: CardHeaderBaseConfig;
     search?: CardHeaderSearchConfig;
+    batchAction?: CardHeaderBatchActionsConfig;
     viewBy?: CardHeaderViewByConfig ;
     add?: CardHeaderButtonConfig;
     export?: CardHeaderAdvancedButtonConfig;

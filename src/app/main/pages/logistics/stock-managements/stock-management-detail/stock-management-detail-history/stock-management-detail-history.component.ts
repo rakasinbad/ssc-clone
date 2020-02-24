@@ -37,47 +37,47 @@ export class StockManagementDetailHistoryComponent implements OnInit {
     };
     dataSource = [
         {
-            id: '1',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Kuningan Barat'
+            date: '15/01/2020',
+            skuId: '82716127',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Brown',
+            valueAdd: '1',
+            valueSub: '-',
+            reason: 'Inbound'
         },
         {
-            id: '2',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Pela Mampang'
+            date: '15/01/2020',
+            skuId: '82716121',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Red',
+            valueAdd: '-',
+            valueSub: '1',
+            reason: 'Outbound'
         },
         {
-            id: '3',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Bangka'
+            date: '15/01/2020',
+            skuId: '82716122',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL White',
+            valueAdd: '-',
+            valueSub: '1',
+            reason: 'Broken'
         },
         {
-            id: '4',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Tegal Parang'
+            date: '15/01/2020',
+            skuId: '82716121',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Blue',
+            valueAdd: '1',
+            valueSub: '-',
+            reason: 'Inbound'
         },
         {
-            id: '5',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Mampang Prapatan'
+            date: '15/01/2020',
+            skuId: '82716121',
+            skuName: 'LAKME CLASSIC EYEBROW PENCIL Blue',
+            valueAdd: '1',
+            valueSub: '-',
+            reason: 'Inbound'
         }
     ];
-    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+    displayedColumns = ['date', 'sku-id', 'sku-name', 'value-add', 'value-substraction', 'reason'];
 
     constructor() {}
 

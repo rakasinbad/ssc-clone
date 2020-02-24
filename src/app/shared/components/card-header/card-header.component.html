@@ -1,8 +1,11 @@
-<div class="m-16" fxLayout="column" fxLayoutGap="16px">
+<div [class]="config?.class || cardClass" fxLayout="column" fxLayoutGap="16px">
     <!-- TITLE & SEARCH SECTION -->
     <div style="margin-top: 19px;" fxLayout="row" fxLayoutAlign="space-between stretch"
         [class.mb-0]="!addPermissions && !exportPermissions && !importPermissions && !filterListPermissions && !groupByPermissions"
     >
+        <!-- "FIRST TOP LEFT" CONTENT -->
+        <ng-content select="[first-top-left]"></ng-content>
+        <!-- / "FIRST TOP LEFT" CONTENT -->
         <!-- TITLE -->
         <p
             class="font-weight-600 m-0"
@@ -23,10 +26,16 @@
             ></sinbad-search-bar>
         </ng-container>
         <!-- / SEARCH -->
+        <!-- "LAST TOP LEFT" CONTENT -->
+        <ng-content select="[last-top-left]"></ng-content>
+        <!-- / "LAST TOP LEFT" CONTENT -->
     </div>
     <!-- / TITLE & SEARCH SECTION -->
     <!-- "VIEW BY" SECTION -->
     <div *ngIf="viewByList.length > 0" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
+        <!-- "FIRST MIDDLE LEFT" CONTENT -->
+        <ng-content select="[first-middle-left]"></ng-content>
+        <!-- / "FIRST MIDDLE LEFT" CONTENT -->
         <!-- "VIEW BY" LABEL -->
         <p>View by :</p>
         <!-- / "VIEW BY" LABEL -->
@@ -43,11 +52,18 @@
             </mat-chip>
         </mat-chip-list>
         <!-- / "VIEW BY" LIST -->
+        <!-- "LAST MIDDLE LEFT" CONTENT -->
+        <ng-content select="[last-middle-left]"></ng-content>
+        <!-- / "LAST MIDDLE LEFT" CONTENT -->
     </div>
     <!-- / "VIEW BY" SECTION -->
     <!-- BUTTONS SECTION -->
-    <div fxLayout="row" fxLayoutGap="8px" [fxLayoutAlign]="addPermissions ? 'space-between stretch' : 'end stretch'">
-        <ng-template [ngxPermissionsOnly]="addPermissions">
+    <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="space-between stretch">
+        <!-- ADD & BATCH ACTIONS BUTTON -->
+        <div fxLayout="row" fxLayoutGap="16px">
+            <!-- "FIRST BOTTOM LEFT" CONTENT -->
+            <ng-content select="[first-bottom-left]"></ng-content>
+            <!-- / "FIRST BOTTOM LEFT" CONTENT -->
             <!-- ADD BUTTON -->
             <button
                 mat-flat-button
@@ -60,24 +76,46 @@
                 <!-- <mat-icon>add</mat-icon> -->
                 {{ addTitle }}
             </button>
-        </ng-template>
-        <!-- / ADD BUTTON -->
+            <!-- / ADD BUTTON -->
+            <!-- BATCH BUTTON -->
+            <button
+                mat-stroked-button
+                *ngIf="(config?.batchAction?.show || showBatchActions)"
+                color="primary"
+                [ngClass]="buttonClasses"
+                class="grey-300-border"
+                fxFlexAlign="center"
+                [matMenuTriggerFor]="actionMenu"
+                aria-label="Action Menu"
+                [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+            >
+                <span>Action</span>
+                <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-menu #actionMenu="matMenu">
+                <button
+                    type="button"
+                    mat-menu-item
+                    class="sinbad-mat-menu-item"
+                    *ngFor="let action of batchActions"
+                    [attr.aria-label]="action.label"
+                    (click)="onActionSelected(action)"
+                >
+                    <span>{{ action.label }}</span>
+                </button>
+            </mat-menu>
+            <!-- / BATCH ACTIONS BUTTON -->
+            <!-- "LAST BOTTOM RIGHT" CONTENT -->
+            <ng-content select="[last-bottom-left]"></ng-content>
+            <!-- / "LAST BOTTOM LEFT" CONTENT -->
+        </div>
+        <!-- / ADD & BATCH ACTIONS BUTTON -->
         <!-- IMPORT, EXPORT, FILTER, GROUP BY -->
         <div fxLayout="row" fxLayoutGap="16px">
+            <!-- "FIRST BOTTOM RIGHT" CONTENT -->
+            <ng-content select="[first-bottom-right]"></ng-content>
+            <!-- / "FIRST BOTTOM LEFT" CONTENT -->
             <ng-template [ngxPermissionsOnly]="exportPermissions">
-                <!-- EXPORT BUTTON -->
-                <!-- <button
-                    mat-stroked-button
-                    *ngIf="exportPermissions"
-                    [ngClass]="buttonClasses"
-                    color="primary"
-                    fxFlexAlign="center"
-                    class="grey-300-border"
-                    (click)="onExportClicked()"
-                >
-                    {{ exportTitle }}
-                </button> -->
-                <!-- / EXPORT BUTTON -->
                 <!-- EXPORT BUTTON -->
                 <button
                     mat-stroked-button
@@ -97,6 +135,7 @@
                 <ng-container *ngIf="config?.import?.useAdvanced; else useSimple;">
                     <sinbad-import-advanced
                         *ngIf="importPermissions"
+                        fxFlexAlign="center"
                         [pageType]="config?.import?.pageType || ''"
                         [btnConfig]="importBtnConfig"
                     ></sinbad-import-advanced>
@@ -146,6 +185,9 @@
                 </button>
                 <!-- / "GROUP BY" BUTTON -->
             </ng-template>
+            <!-- "LAST BOTTOM RIGHT" CONTENT -->
+            <ng-content select="[last-bottom-right]"></ng-content>
+            <!-- / "LAST BOTTOM LEFT" CONTENT -->
         </div>
         <!-- / EXPORT, IMPORT, FILTER LIST, GROUP BY -->
     </div>

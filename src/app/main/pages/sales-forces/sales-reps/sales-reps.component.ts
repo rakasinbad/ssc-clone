@@ -9,7 +9,8 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTable, MatTableDataSource } from '@angular/material';
@@ -63,6 +64,15 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'Sales Rep'
+        },
+        batchAction: {
+            actions: [
+                { id: 'active', label: 'Set Active' },
+                { id: 'inactive', label: 'Set Inactive' },
+                { id: 'delete', label: 'Remove' },
+            ],
+            onActionSelected: $event => this.onSelectedActions(($event.id as SalesRepBatchActions)),
+            show: false,
         },
         search: {
             active: true,
@@ -143,7 +153,8 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         private store: Store<fromSalesReps.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
-        private _$notice: NoticeService
+        private _$notice: NoticeService,
+        private cd$: ChangeDetectorRef,
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -175,6 +186,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.selection.clear();
             })
         );
+
         this.totalDataSource$ = this.store.select(SalesRepSelectors.getTotalItem);
         this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
         this.isLoading$ = this.store.select(SalesRepSelectors.getIsLoading);
@@ -200,6 +212,17 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
+        this.selection.changed.pipe(
+            takeUntil(this._unSubs$)
+        ).subscribe(() => {
+            this.cardHeaderConfig = {
+                ...this.cardHeaderConfig,
+                batchAction: {
+                    ...this.cardHeaderConfig.batchAction,
+                    show: this.selection.hasValue(),
+                }
+            };
+        });
 
         this._initPage(LifecyclePlatform.AfterViewInit);
     }

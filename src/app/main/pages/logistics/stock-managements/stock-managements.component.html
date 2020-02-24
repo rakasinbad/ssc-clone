@@ -7,10 +7,19 @@
     <div class="center pt-12">
         <!-- CONTENT CARD -->
         <div class="content-card">
-            <sinbad-card-header [config]="cardHeaderConfig" (onClickAdd)="onClickAdd()"></sinbad-card-header>
+            <sinbad-card-header
+                [config]="cardHeaderConfig"
+                (onClickAdd)="onClickAdd()"
+            ></sinbad-card-header>
 
-            <mat-table class="stock-managements-table mx-16" #table [dataSource]="dataSource" matSort
-                [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
+            <mat-table
+                class="stock-managements-table sinbad-table mx-16"
+                #table
+                [dataSource]="dataSource"
+                matSort
+                [@animateStagger]="{ value: '50' }"
+                fusePerfectScrollbar
+            >
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
@@ -38,7 +47,7 @@
                         Warehouse ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.code || '-' }}
                         </p>
                     </mat-cell>
@@ -50,7 +59,7 @@
                         Warehouse Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.name || '-' }}
                         </p>
                     </mat-cell>
@@ -62,7 +71,7 @@
                         Total SKU
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             100
                         </p>
                     </mat-cell>
@@ -74,7 +83,7 @@
                         Stock Sellable
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             100
                         </p>
                     </mat-cell>
@@ -86,7 +95,7 @@
                         Stock On Hand
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             30
                         </p>
                     </mat-cell>
@@ -96,14 +105,17 @@
                 <ng-container matColumnDef="last-action-date">
                     <mat-header-cell *matHeaderCellDef>
                         Last Action Date
-                        <mat-icon class="active-icon s-14 ml-8 cursor-pointer" color="accent"
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
                             matTooltip="It includes only manual action from the Admin ( Inbound, Inventory Reconciliation, WH transfer, OB other than sales ) and DO NOT include sales operation"
-                            matTooltipClass="tooltip-br">
+                            matTooltipClass="tooltip-br"
+                        >
                             help
                         </mat-icon>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             15/01/2020
                         </p>
                     </mat-cell>
@@ -116,15 +128,24 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <div fxFlex="row" fxLayoutAlign="end center">
-                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
-                                (click)="$event.stopPropagation()">
+                            <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="moreMenu"
+                                aria-label="More"
+                                (click)="$event.stopPropagation()"
+                            >
                                 <mat-icon class="secondary-text">more_vert</mat-icon>
                             </button>
 
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
-                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
-                                        [routerLink]="[row?.id]">
+                                    <button
+                                        type="button"
+                                        mat-menu-item
+                                        class="sinbad-mat-menu-item"
+                                        aria-label="Edit"
+                                        [routerLink]="[row?.id]"
+                                    >
                                         <mat-icon>edit</mat-icon>
                                         <span>Edit</span>
                                     </button>
@@ -162,12 +183,19 @@
 
                 <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-                <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse"
-                    [routerLink]="[row?.id, 'detail']"></mat-row>
+                <mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                    class="warehouse"
+                    [routerLink]="[row?.id, 'detail']"
+                ></mat-row>
             </mat-table>
 
-            <mat-paginator [length]="dataSource.length" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
-                showFirstLastButtons></mat-paginator>
+            <mat-paginator
+                [length]="dataSource.length"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons
+            ></mat-paginator>
         </div>
         <!-- / CONTENT CARD -->
     </div>

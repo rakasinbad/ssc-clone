@@ -13,7 +13,7 @@
             ></sinbad-card-header>
 
             <mat-table
-                class="warehouses-table mx-16"
+                class="warehouses-table sinbad-table mx-16"
                 #table
                 [dataSource]="dataSource"
                 matSort
@@ -56,7 +56,7 @@
                         Warehouse ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.code || '-' }}
                         </p>
                     </mat-cell>
@@ -68,7 +68,7 @@
                         Warehouse Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.name || '-' }}
                         </p>
                     </mat-cell>
@@ -80,7 +80,7 @@
                         Lead Time
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             1 Days
                         </p>
                     </mat-cell>
@@ -92,7 +92,7 @@
                         Faktur
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.invoice || '-' }}
                         </p>
                     </mat-cell>
@@ -104,7 +104,7 @@
                         Assigned SKU
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             30
                         </p>
                     </mat-cell>
@@ -116,7 +116,7 @@
                         Stock Available
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             100
                         </p>
                     </mat-cell>
@@ -128,7 +128,7 @@
                         Total Urban
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.total || '-' }}
                         </p>
                     </mat-cell>

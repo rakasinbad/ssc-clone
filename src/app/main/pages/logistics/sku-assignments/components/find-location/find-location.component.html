@@ -1,11 +1,4 @@
 <div fxLayout="column" fxLayoutGap="25px" fxLayoutAlign="start start">
-    <!-- "FILTER LIST" BUTTON -->
-    <!-- <button fxFlex="none" mat-flat-button color="primary" (click)="openFilter()"> -->
-    <button fxFlex="none" mat-flat-button color="primary">
-        Filter List
-    </button>
-    <!-- / "FILTER LIST" BUTTON -->
-
     <!-- FILTER LISTS -->
     <!-- <div class="grey-300-border p-16 w-100-p" style="border: 1px solid #fafafa;" fxLayout="column" fxLayoutGap="10px"
         *ngIf="(filters$ | async)?.length > 0"> -->
@@ -30,14 +23,14 @@
     <div class="w-100-p" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="space-between stretch">
         <!-- AVAILABLE STORES -->
         <div class="content" fxLayout="column" fxFlex>
+            <div fxLayout="column" class="mb-12">
+                <span class="font-available-sku">
+                    Available SKU
+                </span>
+            </div>
             <!-- HEADER -->
-            <div
-                class="grey-300-border p-24"
-                [style.border]="'1px solid'"
-                fxLayout="row"
-                fxLayoutGap="24px"
-                fxLayoutAlign="space-between stretch"
-            >
+            <div class="grey-300-border p-24 boxComponent" [style.border]="'1px solid'" fxLayout="row"
+                fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
                 <p fxFlexAlign="center">Find:</p>
                 <!-- / LABEL -->
@@ -72,16 +65,31 @@
         <!-- / AVAILABLE STORES -->
         <!-- SELECTED STORES -->
         <div class="content" fxLayout="column" fxFlex>
+            <div fxLayout="column" class="mb-12">
+                <span class="font-available-sku">
+                    Choose SKU
+                </span>
+            </div>
+            <div class="form-box">
+                <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                    <label fxFlexAlign="center" fxFlex="20" class="label-form">
+                        Template
+                    </label>
+
+                    <mat-form-field appearance="outline" fxFlex="80">
+                        <mat-select placeholder="">
+                            <mat-option>None</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <a fxFlexAlign="left" [style.cursor]="'pointer'" class="saveSelection mb-4">Save selection as template</a>
             <!-- HEADER -->
-            <div
-                class="grey-300-border p-24"
-                [style.border]="'1px solid'"
-                fxLayout="row"
-                fxLayoutAlign="space-between stretch"
-            >
+            <div class="grey-300-border p-24 boxComponent" [style.border]="'1px solid'" fxLayout="row"
+                fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
                 <!-- <p fxFlexAlign="center">Your Selections ({{ totalPortfolioStore$ | async }})</p> -->
-                <p fxFlexAlign="center">Your Selections (0)</p>
+                <p fxFlexAlign="center">Your boxComponent Selections (0)</p>
                 <!-- / LABEL -->
                 <!-- CLEAR ALL -->
                 <!-- <a fxFlexAlign="center" [style.cursor]="'pointer'" class="red-500-fg" (click)="clearAllSelectedStores()"

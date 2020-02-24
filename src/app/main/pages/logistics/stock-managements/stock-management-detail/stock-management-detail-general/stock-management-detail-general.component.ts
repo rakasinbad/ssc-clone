@@ -1,6 +1,14 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-stock-management-detail-general',
@@ -11,6 +19,50 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StockManagementDetailGeneralComponent implements OnInit {
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    displayedColumns = ['no', 'sku-id', 'sku-name', 'stock-type', 'sellable', 'on-hand'];
+
+    dataSource = [
+        {
+            id: '82716127',
+            name: 'LAKME CLASSIC EYEBROW PENCIL BROWN',
+            type: 'limited',
+            sellable: '12',
+            onHand: '16'
+        },
+        {
+            id: '82716121',
+            name: 'LAKME CLASSIC EYEBROW PENCIL RED',
+            type: 'limited',
+            sellable: '57',
+            onHand: '58'
+        },
+        {
+            id: '82716122',
+            name: 'LAKME CLASSIC EYEBROW PENCIL WHITE',
+            type: 'limited',
+            sellable: '40',
+            onHand: '42'
+        },
+        {
+            id: '82716123',
+            name: 'LAKME CLASSIC EYEBROW PENCIL BLACK',
+            type: 'unlimited',
+            sellable: '',
+            onHand: ''
+        },
+        {
+            id: '82716124',
+            name: 'LAKME CLASSIC EYEBROW PENCIL PINK',
+            type: 'unlimited',
+            sellable: '',
+            onHand: ''
+        }
+    ];
+
+    // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'List SKU and Stock'
@@ -34,54 +86,23 @@ export class StockManagementDetailGeneralComponent implements OnInit {
             pageType: ''
         }
     };
-    dataSource = [
-        {
-            id: '1',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Kuningan Barat'
-        },
-        {
-            id: '2',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Pela Mampang'
-        },
-        {
-            id: '3',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Bangka'
-        },
-        {
-            id: '4',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Tegal Parang'
-        },
-        {
-            id: '5',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Mampang Prapatan'
-        }
-    ];
-    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
 
     constructor() {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.paginator.pageSize = this.defaultPageSize;
+    }
+
+    generateNumber(idx: number): number {
+        return this.paginator.pageIndex * this.paginator.pageSize + (idx + 1);
     }
 }

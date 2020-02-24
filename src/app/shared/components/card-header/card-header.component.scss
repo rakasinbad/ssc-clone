@@ -1,4 +1,5 @@
 @import 'src/@fuse/scss/fuse';
+@import 'src/@sinbad/scss/helper';
 
 sinbad-card-header {
     .mat-flat-button, .mat-stroked-button {
@@ -11,7 +12,7 @@ sinbad-card-header {
         }
 
         .mat-chip.mat-standard-chip::after {
-            background: rgba(0,0,0,0);
+            background: sinbad-color('black', '80');
         }
     }
 }

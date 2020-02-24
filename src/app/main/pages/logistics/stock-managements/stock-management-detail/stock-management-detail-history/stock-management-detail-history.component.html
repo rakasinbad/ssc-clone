@@ -3,62 +3,74 @@
 
     <mat-table class="stock-management-detail-history-table" #table [dataSource]="dataSource" matSort
         [@animateStagger]="{ value: '50' }">
-        <!-- Warehouse Name Column -->
-        <ng-container matColumnDef="wh-name">
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
             <mat-header-cell *matHeaderCellDef>
-                Warehouse Name
+                Date
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.name }}
+                    {{ row.date }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- Province Column -->
-        <ng-container matColumnDef="province">
+        <!-- SKU ID Column -->
+        <ng-container matColumnDef="sku-id">
             <mat-header-cell *matHeaderCellDef>
-                Province
+                SKU ID
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.province }}
+                    {{ row.skuId }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- City Column -->
-        <ng-container matColumnDef="city">
+        <!-- SKU Name Column -->
+        <ng-container matColumnDef="sku-name">
             <mat-header-cell *matHeaderCellDef>
-                City
+                SKU Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.city }}
+                    {{ row.skuName }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- District Column -->
-        <ng-container matColumnDef="district">
+        <!-- Value Add Column -->
+        <ng-container matColumnDef="value-add">
             <mat-header-cell *matHeaderCellDef>
-                District
+                Value Add
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.district }}
+                    {{ row.valueAdd }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- Urban Column -->
-        <ng-container matColumnDef="urban">
+        <!-- Value Substraction Column -->
+        <ng-container matColumnDef="value-substraction">
             <mat-header-cell *matHeaderCellDef>
-                Urban
+                Value Substraction
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p style="word-break: break-word;">
-                    {{ row.urban }}
+                    {{ row.valueSub }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Reason Column -->
+        <ng-container matColumnDef="reason">
+            <mat-header-cell *matHeaderCellDef>
+                Reason
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p style="word-break: break-word;">
+                    {{ row.reason }}
                 </p>
             </mat-cell>
         </ng-container>

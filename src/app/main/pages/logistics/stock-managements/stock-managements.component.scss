@@ -8,8 +8,8 @@ app-stock-managements {
             }
         }
 
-        >.center {
-            >.header {
+        > .center {
+            > .header {
                 .search-wrapper {
                     width: 100%;
                     max-width: 480px;
@@ -75,7 +75,8 @@ app-stock-managements {
 
         .mat-header-cell {
             text-align: left;
-            font-weight: 700;
+            font-weight: 600;
+            color: #52575c;
 
             &:not(:last-of-type) {
                 padding-right: 8px;
@@ -103,7 +104,8 @@ app-stock-managements {
         }
 
         .mat-column-checkbox {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
         .mat-column-wh-id {
@@ -112,30 +114,28 @@ app-stock-managements {
         }
 
         .mat-column-wh-name {
-            flex: 1 2 40em;
-            min-width: 120px;
+            flex: 1 2 50em;
+            min-width: 125px;
         }
 
         .mat-column-total-sku {
-            flex: 0 1 80px;
-            min-width: 80px;
+            flex: 0 1 20em;
+            min-width: 90px;
         }
 
         .mat-column-stock-sellable {
-            flex: 0 1 120px;
-            min-width: 120px;
+            flex: 0 1 20em;
+            min-width: 100px;
         }
 
         .mat-column-stock-on-hand {
             flex: 0 1 20em;
             min-width: 80px;
-            // justify-content: flex-end;
         }
 
         .mat-column-last-action-date {
             flex: 0 1 20em;
             min-width: 100px;
-            // justify-content: flex-end;
         }
 
         .mat-column-actions {
@@ -152,7 +152,7 @@ app-stock-managements {
             border-radius: 4px;
             margin-right: 8px;
 
-            &+span {
+            & + span {
                 display: inline-block;
                 vertical-align: middle;
             }
