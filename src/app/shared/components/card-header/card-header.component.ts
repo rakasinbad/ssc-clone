@@ -1,21 +1,22 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { ICardHeaderConfiguration } from './models/card-header.model';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
+import { ICardHeaderConfiguration, CardHeaderActionConfig } from './models/card-header.model';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { TNullable, ButtonDesignType } from 'app/shared/models';
 import { IButtonImportConfig } from '../import-advanced/models';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fromExport } from '../exports/store/reducers';
 import { ExportActions } from '../exports/store/actions';
-import { MatChip } from '@angular/material';
+import { fuseAnimations } from '@fuse/animations';
 
 @Component({
     selector: 'sinbad-card-header',
     templateUrl: './card-header.component.html',
     styleUrls: ['./card-header.component.scss'],
+    animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CardHeaderComponent implements OnInit {
+export class CardHeaderComponent implements OnInit, OnChanges {
 
     importBtnConfig: IButtonImportConfig;
 
@@ -37,7 +38,9 @@ export class CardHeaderComponent implements OnInit {
 
     // Untuk meletakkan konfigurasi card header.
     @Input() config: ICardHeaderConfiguration = {
+        class: 'm-16',
         add: {},
+        batchAction: {},
         export: {},
         filter: {},
         groupBy: {},
@@ -49,6 +52,10 @@ export class CardHeaderComponent implements OnInit {
     // Input untuk konfigurasi judul header.
     // tslint:disable-next-line:no-input-rename
     @Input('cardTitle') cardTitle = 'Card Title';
+
+    // Input untuk konfigurasi class Sinbad Card Header.
+    // tslint:disable-next-line:no-input-rename
+    @Input('cardClass') cardClass: string | Array<string> = 'm-16';
 
 
     /**
@@ -69,6 +76,21 @@ export class CardHeaderComponent implements OnInit {
     // Untuk menentukan placeholder pada "search".
     // tslint:disable-next-line:no-output-rename
     @Output('onSearchChanged') searchChanged: EventEmitter<string> = new EventEmitter<string>();
+
+
+    /**
+     * Konfigurasi tombol "Batch Actions".
+     */
+
+    // Untuk menentukan judul untuk tombol "Add".
+    // tslint:disable-next-line:no-input-rename
+    @Input('batchActions') batchActions: Array<CardHeaderActionConfig> = [];
+    // Untuk menentukan batch actions ingin dimunculkan atau tidak.
+    // tslint:disable-next-line:no-input-rename
+    @Input('showBatchActions') showBatchActions = false;
+    // Untuk mendengarkan "event" ketika memilih salah 1 action.
+    // tslint:disable-next-line:no-output-rename
+    @Output('onActionSelected') actionSelected: EventEmitter<CardHeaderActionConfig> = new EventEmitter<CardHeaderActionConfig>();
 
 
     /**
@@ -171,6 +193,17 @@ export class CardHeaderComponent implements OnInit {
     ngOnInit(): void {
         // Memeriksa konfigurasi.
         if (this.config) {
+            // Memeriksa konfirugasi "Batch Actions".
+            if (this.config.batchAction) {
+                if (this.config.batchAction.actions) {
+                    this.batchActions = this.config.batchAction.actions;
+                }
+
+                if (this.config.batchAction.show) {
+                    this.showBatchActions = this.config.batchAction.show;
+                }
+            }
+
             // Memeriksa konfigurasi "title".
             if (this.config.title) {
                 // Memeriksa konfigurasi label untuk judul card.
@@ -380,6 +413,26 @@ export class CardHeaderComponent implements OnInit {
         } else {
             this.clickGroupBy.emit();
         }
+    }
+
+    /**
+     * Fungsi untuk meneruskan "event" ketika memilih salah 1 action.
+     */
+    onActionSelected($event: CardHeaderActionConfig): void {
+        if (this.config.batchAction.onActionSelected) {
+            this.config.batchAction.onActionSelected($event);
+        } else {
+            this.actionSelected.emit($event);
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        console.log(changes);
+        // if (this.config.batchAction) {
+        //     if (this.config.batchAction.show) {
+        //         this.showBatchActions = this.config.batchAction.show;
+        //     }
+        // }
     }
 
 }
