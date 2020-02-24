@@ -57,16 +57,16 @@ export class AssociationsComponent implements OnInit, OnDestroy, AfterViewInit {
         viewBy: {
             list: [
                 {
+                    id: 'store',
+                    label: 'Store'
+                },
+                {
                     id: 'sales-rep',
                     label: 'Sales Rep'
                 },
                 {
                     id: 'portfolio',
                     label: 'Portfolio'
-                },
-                {
-                    id: 'store',
-                    label: 'Store'
                 }
             ],
             onChanged: (viewBy: { id: string; label: string }) =>
