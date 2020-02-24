@@ -4,10 +4,12 @@ export const locale = {
     lang: 'en',
     data: {
         ...globalEnLang,
-        IMPORT_PRICE: 'Import Price',
-        UPDATE_PRICE_TEMPLATE: 'Update Price',
-        IMPORT_STOCK: 'Import Stock',
-        UPDATE_STOCK_TEMPLATE: 'Update Stock',
+        CREATE_PORTFOLIOS_TEMPLATE: 'Create Portfolios',
+        UPDATE_PORTFOLIOS_TEMPLATE: 'Update Portfolios',
+        DELETE_PORTFOLIOS_TEMPLATE: 'Delete Portfolios',
+        IMPORT_CREATE_PORTFOLIOS: 'Import Create Portfolios',
+        IMPORT_UPDATE_PORTFOLIOS: 'Import Update Portfolios',
+        IMPORT_DELETE_PORTFOLIOS: 'Import Delete Portfolios',
         BREADCRUMBS: {
             ...globalEnLang.BREADCRUMBS,
             PORTFOLIO: 'Portfolio',

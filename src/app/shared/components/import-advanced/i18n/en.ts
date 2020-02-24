@@ -14,6 +14,7 @@ export const locale = {
         UPDATE_PAYMENT_STATUS: 'Update Payment Status',
         UPDATE_SALES_TEMPLATE: 'Update Sales',
         UPDATE_STATUS_OMS: 'Update Status OMS',
-        UPDATE: 'Update'
+        UPDATE: 'Update',
+        DELETE: 'Delete',
     }
 };
