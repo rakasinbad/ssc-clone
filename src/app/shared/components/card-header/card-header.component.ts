@@ -427,7 +427,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log(changes);
+        // console.log(changes);
         // if (this.config.batchAction) {
         //     if (this.config.batchAction.show) {
         //         this.showBatchActions = this.config.batchAction.show;
