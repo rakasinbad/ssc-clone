@@ -355,7 +355,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => {
                         // this.table.nativeElement.scrollIntoView(true);
-                        // this.table.nativeElement.scrollTop = 0;
+                        this.table.nativeElement.scrollTop = 0;
                         this._initTable();
                     });
 
