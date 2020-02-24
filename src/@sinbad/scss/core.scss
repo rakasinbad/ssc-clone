@@ -1,1 +1,67 @@
 @import "partials/colors";
+
+@mixin generate-sinbad-color-classes($colorName, $level, $color) {
+    $_color: unquote($color);
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level} {
+        background-color: $_color !important;
+
+        @if ($colorName != 'white') {
+            color: white !important;
+        } @else {
+            $black: map-get($sinbadPalettes, 'black');
+            $black50: map-get($black, '50');
+
+            color: $black50 !important;
+        }
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-bg {
+        background-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-fg {
+        color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border {
+        border-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-top {
+        border-top-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-right {
+        border-right-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-bottom {
+        border-bottom-color: $_color !important;
+    }
+
+    .#{$sinbadPrefix}-#{$colorName}#{$level}-border-left {
+        border-left-color: $_color !important;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Prepare Sinbad color classes
+// -----------------------------------------------------------------------------------------------------
+@mixin prepare-sinbad-color-classes($palettes) {
+    @each $colorName, $colorLevels in $sinbadPalettes {
+        $color50: map-get($colorLevels, '50');
+        @include generate-sinbad-color-classes($colorName, '', $color50);
+
+        @each $level, $color in $colorLevels {
+            @include generate-sinbad-color-classes($colorName, '-#{$level}', $color);
+        }
+    }
+    
+    @include generate-sinbad-color-classes('white', '', '#FFFFFF');
+}
+
+// -----------------------------------------------------------------------------------------------------
+// @ Generate Sinbad color classes for default Material palettes
+// -----------------------------------------------------------------------------------------------------
+@include prepare-sinbad-color-classes($matPalettes);
