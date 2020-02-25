@@ -7,15 +7,15 @@ app-stock-management-detail-general {
     .general-content {
         height: inherit;
 
-        sinbad-card-header {
-            div {
-                &:first-child {
-                    margin-left: 0 !important;
-                    margin-right: 0 !important;
-                    margin-top: 4px !important;
-                }
-            }
-        }
+        // sinbad-card-header {
+        //     div {
+        //         &:first-child {
+        //             margin-left: 0 !important;
+        //             margin-right: 0 !important;
+        //             margin-top: 4px !important;
+        //         }
+        //     }
+        // }
     }
 
     .stock-management-detail-general-table {
@@ -38,7 +38,7 @@ app-stock-management-detail-general {
 
         .stock-management-detail-general {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
         }
 
         .mat-header-cell {
@@ -101,7 +101,6 @@ app-stock-management-detail-general {
         .mat-column-on-hand {
             flex: 0 1 10em;
             min-width: 100px;
-            justify-content: flex-end;
         }
 
         .active-icon {

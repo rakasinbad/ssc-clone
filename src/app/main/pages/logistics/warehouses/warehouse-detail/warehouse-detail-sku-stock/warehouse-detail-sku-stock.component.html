@@ -1,8 +1,10 @@
-<div class="sku-stock-content" fxLayout="column" fxLayoutGap="16px">
-    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+<div class="sku-stock-content" fxLayout="column">
+    <sinbad-card-header [config]="cardHeaderConfig">
+        <span first-bottom-left>Total 5 SKU</span>
+    </sinbad-card-header>
 
     <mat-table
-        class="warehouse-detail-sku-stock-table"
+        class="warehouse-detail-sku-stock-table sinbad-table"
         #table
         [dataSource]="dataSource"
         matSort
