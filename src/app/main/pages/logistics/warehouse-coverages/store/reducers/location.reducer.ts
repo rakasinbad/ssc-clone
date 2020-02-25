@@ -5,7 +5,7 @@ import { Province } from 'app/shared/models';
 
 // Keyname for reducer
 export const featureKey = 'locations';
-
+// 
 interface ProvinceState extends EntityState<Province> {
     isLoading: boolean;
     needRefresh: boolean;
