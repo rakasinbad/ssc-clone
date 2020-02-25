@@ -124,7 +124,7 @@ export const getDistrictTotal = createSelector(
     getDistrictEntitiesState,
     state => state.total
 );
-
+// 
 // Urban
 export const getUrbanEntitiesState = createSelector(
     getLocationState,
