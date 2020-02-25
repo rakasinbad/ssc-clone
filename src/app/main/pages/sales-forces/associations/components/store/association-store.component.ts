@@ -62,10 +62,12 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
         'checkbox',
         'store-code',
         'store-name',
+        'owner-name',
+        'owner-phone-number',
         'portfolio-code',
         'portfolio-name',
         'sales-rep',
-        'date-associate',
+        'date-associate'
         // 'actions'
     ];
 
@@ -100,7 +102,7 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
 
     constructor(
         private ngxPermissionsService: NgxPermissionsService,
-        private store: Store<fromAssociationStores.FeatureState>,
+        private store: Store<fromAssociationStores.FeatureState>
     ) {}
 
     /**
@@ -332,31 +334,37 @@ export class AssociationStoreComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     private updatePrivileges(): void {
-        this.ngxPermissionsService.hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE']).then(result => {
-            // Jika ada permission-nya.
-            if (result) {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'store-code',
-                    'store-name',
-                    'portfolio-code',
-                    'portfolio-name',
-                    'sales-rep',
-                    'date-associate',
-                    // 'actions'
-                ];
-            } else {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'store-code',
-                    'store-name',
-                    'portfolio-code',
-                    'portfolio-name',
-                    'sales-rep',
-                    'date-associate',
-                    // 'actions'
-                ];
-            }
-        });
+        this.ngxPermissionsService
+            .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'store-code',
+                        'store-name',
+                        'owner-name',
+                        'owner-phone-number',
+                        'portfolio-code',
+                        'portfolio-name',
+                        'sales-rep',
+                        'date-associate'
+                        // 'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'store-code',
+                        'store-name',
+                        'owner-name',
+                        'owner-phone-number',
+                        'portfolio-code',
+                        'portfolio-name',
+                        'sales-rep',
+                        'date-associate'
+                        // 'actions'
+                    ];
+                }
+            });
     }
 }

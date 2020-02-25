@@ -1,14 +1,14 @@
 import { FuseNavigation } from '@fuse/types';
 
 export const navigation: Array<FuseNavigation> = [
-    // {
-    //     id: 'dashboard',
-    //     title: 'Dashboard',
-    //     translate: 'NAV.DASHBOARD.TITLE',
-    //     type: 'item',
-    //     icon: 'dashboard',
-    //     url: '/pages/dashboard'
-    // },
+    {
+        id: 'dashboard',
+        title: 'Dashboard',
+        translate: 'NAV.DASHBOARD.TITLE',
+        type: 'item',
+        icon: 'dashboard',
+        url: '/pages/dashboard'
+    },
     {
         id: 'account',
         title: 'Store',

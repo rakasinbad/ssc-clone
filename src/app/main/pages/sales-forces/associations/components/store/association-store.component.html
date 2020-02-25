@@ -55,6 +55,22 @@
         </mat-cell>
     </ng-container>
 
+    <!-- "Owner Name" Column -->
+    <ng-container matColumnDef="owner-name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Owner Name</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.store ? row?.store?.owner?.fullName: '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
+    <!-- "Owner Phone Number" Column -->
+    <ng-container matColumnDef="owner-phone-number">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Owner Phone No</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <p>{{ row?.store ? row?.store?.owner?.mobilePhoneNo: '-' }}</p>
+        </mat-cell>
+    </ng-container>
+
     <!-- "Portfolio Code" Column -->
     <ng-container matColumnDef="portfolio-code">
         <mat-header-cell *matHeaderCellDef>Portfolio Code</mat-header-cell>
@@ -130,8 +146,8 @@
 <mat-paginator [fxHide]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
-                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize"
-    [pageSizeOptions]="defaultPageOpts" showFirstLastButtons></mat-paginator>
+                " [length]="totalDataSource$ | async" [pageSize]="defaultPageSize" [pageSizeOptions]="defaultPageOpts"
+    showFirstLastButtons></mat-paginator>
 
 <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
     <mat-spinner color="accent"></mat-spinner>
