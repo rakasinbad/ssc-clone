@@ -13,6 +13,8 @@ import { WarehouseCoveragesComponent } from './warehouse-coverages.component';
 import { FindLocationComponent } from './components/find-location/find-location.component';
 import { WarehouseCoverageMainComponent } from './components/main/warehouse-coverage-main.component';
 import { WarehouseCoverageUrbanComponent } from './components/urban/warehouse-coverage-urban.component';
+import { WarehouseCoveragesFormComponent } from './pages/warehouse-coverages-form/warehouse-coverages-form.component';
+import { WarehouseCoveragesSelectedLocationsComponent } from './components/warehouse-coverages-selected-locations/warehouse-coverages-selected-locations.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +23,9 @@ import { WarehouseCoverageUrbanComponent } from './components/urban/warehouse-co
 
         FindLocationComponent,
         WarehouseCoverageMainComponent,
-        WarehouseCoverageUrbanComponent
+        WarehouseCoverageUrbanComponent,
+        WarehouseCoveragesFormComponent,
+        WarehouseCoveragesSelectedLocationsComponent,
     ],
     imports: [
         WarehouseCoveragesRoutingModule,
