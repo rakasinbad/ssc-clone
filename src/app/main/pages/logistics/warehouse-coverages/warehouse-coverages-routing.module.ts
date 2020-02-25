@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { WarehouseCoverageFormComponent } from './warehouse-coverage-form';
+import { WarehouseCoveragesFormComponent } from './pages/warehouse-coverages-form/warehouse-coverages-form.component';
 import { WarehouseCoveragesComponent } from './warehouse-coverages.component';
 
 const routes: Routes = [
     { path: '', component: WarehouseCoveragesComponent },
-    { path: ':id', component: WarehouseCoverageFormComponent }
+    { path: 'new', component: WarehouseCoveragesFormComponent },
+    { path: ':id/detail', component: WarehouseCoveragesFormComponent },
+    { path: ':id/edit', component: WarehouseCoveragesFormComponent },
 ];
 
 @NgModule({
