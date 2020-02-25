@@ -13,6 +13,7 @@ export const environment = {
     pageSizeTable: [5, 10, 25, 50],
     host: 'https://kong.sinbad.web.id',
     hiddenMenu: [
-        'warehouse' // Warehouse
+        'dashboard',
+        'warehouse', // Warehouse
     ],
 };

@@ -4,6 +4,12 @@ export const locale = {
     lang: 'id',
     data: {
         ...globalIdLang,
+        CREATE_PORTFOLIOS_TEMPLATE: 'Create Portfolios',
+        UPDATE_PORTFOLIOS_TEMPLATE: 'Update Portfolios',
+        DELETE_PORTFOLIOS_TEMPLATE: 'Delete Portfolios',
+        IMPORT_CREATE_PORTFOLIOS: 'Import Create Portfolios',
+        IMPORT_UPDATE_PORTFOLIOS: 'Import Update Portfolios',
+        IMPORT_DELETE_PORTFOLIOS: 'Import Delete Portfolios',
         BREADCRUMBS: {
             ...globalIdLang.BREADCRUMBS,
             PORTFOLIO: 'Portfolio',

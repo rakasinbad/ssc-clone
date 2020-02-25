@@ -40,12 +40,12 @@ const routes: Routes = [
             //     redirectTo: 'dashboard',
             //     pathMatch: 'full'
             // },
-            // {
-            //     path: 'dashboard',
-            //     loadChildren: () =>
-            //         import('./main/pages/dashboard/dashboard.module').then(m => m.DashboardModule),
-            //     canLoad: [AuthGuard]
-            // },
+            {
+                path: 'dashboard',
+                loadChildren: () =>
+                    import('./main/pages/dashboard/dashboard.module').then(m => m.DashboardModule),
+                canLoad: [AuthGuard]
+            },
             {
                 path: 'account',
                 loadChildren: () =>
