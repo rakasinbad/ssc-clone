@@ -59,6 +59,7 @@ export class WarehouseDetailSkuStockComponent implements OnInit {
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
+        class: 'm-0 mt-4 mb-16',
         title: {
             label: 'List SKU and Stock'
         },

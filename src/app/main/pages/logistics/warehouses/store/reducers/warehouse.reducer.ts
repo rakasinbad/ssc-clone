@@ -1,11 +1,13 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { createReducer, on } from '@ngrx/store';
+
+import { Warehouse } from '../../models';
 import { WarehouseActions } from './../actions';
-import { Action, createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
 
 // Keyname for reducer
 export const featureKey = 'warehouses';
 
-export interface State extends EntityState<any> {
+export interface State extends EntityState<Warehouse> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -13,7 +15,7 @@ export interface State extends EntityState<any> {
 }
 
 // Adapter for warehouses state
-export const adapter = createEntityAdapter<any>({ selectId: row => row.id });
+export const adapter = createEntityAdapter<Warehouse>({ selectId: row => row.id });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
