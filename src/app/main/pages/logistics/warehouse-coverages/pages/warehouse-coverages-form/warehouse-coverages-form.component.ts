@@ -14,7 +14,7 @@ import { LocationActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions } from 'app/shared/store/actions';
-
+// 
 @Component({
     selector: 'app-warehouse-coverages-form',
     templateUrl: './warehouse-coverages-form.component.html',
