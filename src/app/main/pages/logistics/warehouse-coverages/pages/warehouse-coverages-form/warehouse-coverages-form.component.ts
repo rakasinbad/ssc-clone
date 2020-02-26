@@ -63,15 +63,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableCities$: Observable<Array<string>>;
     // Untuk menyimpan district yang tersedia.
     availableDistricts$: Observable<Array<string>>;
-    // Untuk menyimpan urban yang tersedia.
     availableUrbans$: Observable<Array<string>>;
 
     availableOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
     isAvailableOptionsLoading: boolean = true;
 
-    // AutoComplete for Province
-    @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
     // AutoComplete for City
     @ViewChild('cityAutoComplete', { static: true }) cityAutoComplete: MatAutocomplete;
     // AutoComplete for District
