@@ -71,26 +71,14 @@
         </mat-cell>
     </ng-container>
 
-    <!-- Warehouse Code Column -->
-    <ng-container matColumnDef="wh-code">
+    <!-- Total Warehouse Column -->
+    <ng-container matColumnDef="total-warehouse">
         <mat-header-cell *matHeaderCellDef>
-            Warehouse Code
+            Total Warehouse
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p style="word-break: break-word;">
-                {{ row?.whCode || '-' }}
-            </p>
-        </mat-cell>
-    </ng-container>
-
-    <!-- Warehouse Name Column -->
-    <ng-container matColumnDef="wh-name">
-        <mat-header-cell *matHeaderCellDef>
-            Warehouse Name
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word;">
-                {{ row?.whName || '-' }}
+                {{ row?.totalWarehouse || '-' }}
             </p>
         </mat-cell>
     </ng-container>

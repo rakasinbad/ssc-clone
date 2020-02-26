@@ -27,47 +27,42 @@ export class SkuAssignmentSkuComponent implements OnInit {
 
     activeTab: string = 'all';
 
-    displayedColumns = ['checkbox', 'sku-id', 'sku-name', 'brand', 'wh-code', 'wh-name', 'actions'];
+    displayedColumns = ['checkbox', 'sku-id', 'sku-name', 'brand', 'total-warehouse', 'actions'];
     dataSource = [
         {
             id: '1',
             skuId: '67128891',
             skuName: 'LAKME ABSOLUTE LIQUID CONCEALER ROSE FAIR',
             brand: 'Lakme',
-            whCode: 'WH001',
-            whName: 'DC CIBINONG'
+            totalWarehouse: '10'
         },
         {
             id: '2',
             skuId: '67128891',
             skuName: 'LAKME ABSOLUTE LIQUID CONCEALER ROSE FAIR',
             brand: 'Lakme',
-            whCode: 'WH001',
-            whName: 'DC CIBINONG'
+            totalWarehouse: '10'
         },
         {
             id: '3',
             skuId: '67128891',
             skuName: 'LAKME ABSOLUTE LIQUID CONCEALER ROSE FAIR',
             brand: 'Lakme',
-            whCode: 'WH001',
-            whName: 'DC CIBINONG'
+            totalWarehouse: '10'
         },
         {
             id: '4',
             skuId: '67128891',
             skuName: 'LAKME ABSOLUTE LIQUID CONCEALER ROSE FAIR',
             brand: 'Lakme',
-            whCode: 'WH001',
-            whName: 'DC CIBINONG'
+            totalWarehouse: '10'
         },
         {
             id: '5',
             skuId: '67128891',
             skuName: 'LAKME ABSOLUTE LIQUID CONCEALER ROSE FAIR',
             brand: 'Lakme',
-            whCode: 'WH001',
-            whName: 'DC CIBINONG'
+            totalWarehouse: '10'
         }
     ];
 
