@@ -5,11 +5,14 @@ import { EffectsModule } from '@ngrx/effects';
 
 import { fromSkuAssignments } from './store/reducers';
 import { SkuAssignmentsEffects } from './store/effects';
+import { fromCatalogue } from '../../catalogues/store/reducers';
+import { CatalogueEffects } from '../../catalogues/store/effects';
 
 @NgModule({
     imports: [
         StoreModule.forFeature(fromSkuAssignments.FEATURE_KEY, fromSkuAssignments.reducer),
-        EffectsModule.forFeature([SkuAssignmentsEffects])
+        StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
+        EffectsModule.forFeature([SkuAssignmentsEffects, CatalogueEffects])
     ]
 })
 export class SkuAssignmentsNgRxStoreModule {}

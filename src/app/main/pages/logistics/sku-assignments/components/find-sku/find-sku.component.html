@@ -9,13 +9,8 @@
                 </span>
             </div>
             <!-- HEADER -->
-            <div
-                class="grey-300-border p-24 boxComponent"
-                [style.border]="'1px solid'"
-                fxLayout="row"
-                fxLayoutGap="24px"
-                fxLayoutAlign="space-between stretch"
-            >
+            <div class="grey-300-border p-24 boxComponent" [style.border]="'1px solid'" fxLayout="row"
+                fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
                 <p fxFlexAlign="center">Find:</p>
                 <!-- / LABEL -->
@@ -25,21 +20,21 @@
             </div>
             <!-- / HEADER -->
             <!-- LIST -->
-            <!-- <mat-selection-list fxFlex cdkScrollable #availableStoreScroll id="available-store-scroll"
+            <mat-selection-list fxFlex cdkScrollable #availableStoreScroll id="available-store-scroll"
                 [style.overflow]="'auto'" [style.border]="'1px solid'" class="grey-300-border h-400"
-                [disableRipple]="true" (selectionChange)="selectedStoreSub$.next($event)">
-                <mat-list-option *ngFor="let store of (availableStores$ | async)" [checkboxPosition]="'before'"
-                    [value]="store" [selected]="store?.isSelected">
-                    {{ printStoreName(store) }}
-                </mat-list-option> -->
+                [disableRipple]="true">
+                <mat-list-option *ngFor="let catalogue of (availableCatalogues$ | async)" [checkboxPosition]="'before'"
+                    [value]="catalogue">
+                    {{ catalogue.name }}
+                </mat-list-option>
 
-            <!-- LOADING OPTION -->
-            <!-- <mat-option [disabled]="true" style="text-align: center; font-style: italic; max-height: 30px;"
+                <!-- LOADING OPTION -->
+                <!-- <mat-option [disabled]="true" style="text-align: center; font-style: italic; max-height: 30px;"
                     *ngIf="(totalAvailableStore$ | async) > (availableStores$ | async)?.length">
                     Loading ...
                 </mat-option> -->
-            <!-- / LOADING OPTION -->
-            <!-- </mat-selection-list> -->
+                <!-- / LOADING OPTION -->
+            </mat-selection-list>
             <!-- / LIST -->
             <!-- LOADER -->
             <!-- <div class="loader" *ngIf="isListStoreLoading$ | async">
@@ -72,12 +67,8 @@
                 Save selection as template
             </a>
             <!-- HEADER -->
-            <div
-                class="grey-300-border p-24 boxComponent"
-                [style.border]="'1px solid'"
-                fxLayout="row"
-                fxLayoutAlign="space-between stretch"
-            >
+            <div class="grey-300-border p-24 boxComponent" [style.border]="'1px solid'" fxLayout="row"
+                fxLayoutAlign="space-between stretch">
                 <!-- LABEL -->
                 <!-- <p fxFlexAlign="center">Your Selections ({{ totalPortfolioStore$ | async }})</p> -->
                 <p fxFlexAlign="center">Your Selections (0)</p>
