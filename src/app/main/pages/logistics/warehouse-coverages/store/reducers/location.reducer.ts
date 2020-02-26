@@ -75,29 +75,72 @@ export const reducer = createReducer<LocationState>(
     initialState,
     on(
         LocationActions.fetchProvincesRequest,
-        LocationActions.fetchCitiesRequest,
-        LocationActions.fetchDistrictsRequest,
         state => ({
             ...state,
-            isLoading: true
+            province: {
+                ...state.province,
+                isLoading: true
+            }
         })
     ),
     on(
         LocationActions.fetchProvincesFailure,
+        state => ({
+            ...state,
+            province: {
+                ...state.province,
+                isLoading: false
+            }
+        })
+    ),
+    on(
+        LocationActions.fetchCitiesRequest,
+        state => ({
+            ...state,
+            city: {
+                ...state.city,
+                isLoading: true
+            }
+        })
+    ),
+    on(
         LocationActions.fetchCitiesFailure,
+        state => ({
+            ...state,
+            city: {
+                ...state.city,
+                isLoading: false
+            }
+        })
+    ),
+    on(
+        LocationActions.fetchDistrictsRequest,
+        state => ({
+            ...state,
+            district: {
+                ...state.district,
+                isLoading: true
+            }
+        })
+    ),
+    on(
         LocationActions.fetchDistrictsFailure,
         state => ({
             ...state,
-            isLoading: false
+            district: {
+                ...state.district,
+                isLoading: false
+            }
         })
     ),
     on(
         LocationActions.fetchProvincesSuccess,
         (state, { payload }) => ({
             ...state,
-            isLoading: false,
             province: adapterProvince.upsertMany(payload.data, {
-                ...state.province
+                ...state.province,
+                isLoading: false,
+                total: payload.total,
             })
         })
     ),
@@ -105,9 +148,10 @@ export const reducer = createReducer<LocationState>(
         LocationActions.fetchCitiesSuccess,
         (state, { payload }) => ({
             ...state,
-            isLoading: false,
             city: adapterCity.upsertMany(payload.cities, {
-                ...state.city
+                ...state.city,
+                isLoading: false,
+                total: payload.total,
             })
         })
     ),
@@ -115,9 +159,10 @@ export const reducer = createReducer<LocationState>(
         LocationActions.fetchDistrictsSuccess,
         (state, { payload }) => ({
             ...state,
-            isLoading: false,
             district: adapterDistrict.upsertMany(payload.districts, {
-                ...state.district
+                ...state.district,
+                isLoading: false,
+                total: payload.total,
             })
         })
     ),
