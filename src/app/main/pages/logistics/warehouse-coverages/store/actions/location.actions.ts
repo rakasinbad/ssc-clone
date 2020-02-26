@@ -1,6 +1,12 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams, ErrorHandler, Province } from 'app/shared/models';
 
+export type failureActionNames =
+    'fetchProvincesFailure' |
+    'fetchCitiesFailure' |
+    'fetchDistrictsFailure'
+;
+
 // Province
 export const fetchProvincesRequest = createAction(
     '[WH/WH Coverage/Locations API] Fetch Provinces Request',
