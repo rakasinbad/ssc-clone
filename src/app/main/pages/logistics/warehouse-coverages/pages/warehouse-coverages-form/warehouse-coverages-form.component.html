@@ -80,14 +80,41 @@
                             </label>
                     
                             <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
-                                <mat-select
-                                    #province
-                                    name="province"
-                                    formControlName="province"
+                                <input
+                                    matInput
                                     placeholder="Search Province"
+                                    formControlName="province"
+                                    [matAutocomplete]="provinceAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #provinceAutoComplete="matAutocomplete"
+                                    [displayWith]="displayProvince"
+                                    (opened)="listenProvinceAutoComplete()"
+                                    (optionSelected)="onSelectedProvince($event)"
                                 >
-                                    <mat-option>(None)</mat-option>
-                                </mat-select>
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="(isProvinceLoading$ | async) === false">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let province of (availableProvinces$ | async)"
+                                        [value]="province"
+                                    >
+                                        {{ province?.name }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalProvinces$ | async) || ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
                                 <mat-error *ngIf="hasError(form.get('province'))">
                                     {{ getFormError(form.get('province')) }}
                                 </mat-error>
@@ -112,16 +139,43 @@
                             </label>
                     
                             <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
-                                <mat-select
-                                    #city
-                                    name="city"
+                                <input
+                                    matInput
+                                    placeholder="Search City"
                                     formControlName="city"
-                                    placeholder="Search Province"
+                                    [matAutocomplete]="cityAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #cityAutoComplete="matAutocomplete"
+                                    [displayWith]="displayCity"
+                                    (opened)="listenCityAutoComplete()"
+                                    (optionSelected)="onSelectedCity($event)"
                                 >
-                                    <mat-option>(None)</mat-option>
-                                </mat-select>
-                                <mat-error *ngIf="hasError(form.get('city'))">
-                                    {{ getFormError(form.get('city')) }}
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="(isCityLoading$ | async) === false">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let city of (availableCities$ | async)"
+                                        [value]="city"
+                                    >
+                                        {{ city }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalProvinces$ | async) || ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
+                                <mat-error *ngIf="hasError(form.get('province'))">
+                                    {{ getFormError(form.get('province')) }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -138,20 +192,45 @@
                                 class="pr-0"
                                 [class.mat-error]="hasError(form.get('district'))"
                             >
-                                <span
-                                    class="sinbad-red-fg"
-                                >* </span> District
+                                District
                             </label>
                     
                             <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
-                                <mat-select
-                                    #district
-                                    name="district"
-                                    formControlName="district"
+                                <input
+                                    matInput
                                     placeholder="Search District"
+                                    formControlName="district"
+                                    [matAutocomplete]="districtAutoComplete"
+                                />
+                                <mat-autocomplete
+                                    #districtAutoComplete="matAutocomplete"
+                                    [displayWith]="displayDistrict"
+                                    (opened)="listenDistrictAutoComplete()"
+                                    (optionSelected)="onSelectedDistrict($event)"
                                 >
-                                    <mat-option>(None)</mat-option>
-                                </mat-select>
+                                    <!-- NONE OPTION -->
+                                    <mat-option *ngIf="(isDistrictLoading$ | async) === false">(None)</mat-option>
+                                    <!-- / NONE OPTION -->
+
+                                    <!-- PROVINCE OPTIONS -->
+                                    <mat-option
+                                        *ngFor="let district of (availableDistricts$ | async)"
+                                        [value]="district"
+                                    >
+                                        {{ district }}
+                                    </mat-option>
+                                    <!-- / PROVINCE OPTIONS -->
+
+                                    <!-- LOADING OPTION -->
+                                    <mat-option
+                                        [disabled]="true"
+                                        style="text-align: center; font-style: italic; max-height: 30px;"
+                                        *ngIf="!(totalDistricts$ | async) || ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
+                                    >
+                                        Loading ...
+                                    </mat-option>
+                                    <!-- / LOADING OPTION -->
+                                </mat-autocomplete>
                                 <mat-error *ngIf="hasError(form.get('district'))">
                                     {{ getFormError(form.get('district')) }}
                                 </mat-error>
