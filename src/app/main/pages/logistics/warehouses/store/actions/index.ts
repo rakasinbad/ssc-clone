@@ -1,3 +1,5 @@
 import * as WarehouseActions from './warehouse.actions';
 
-export { WarehouseActions };
+type WarehouseFailureActions = WarehouseActions.FailureActions;
+
+export { WarehouseActions, WarehouseFailureActions };

@@ -15,6 +15,7 @@ import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 
 import * as fromStockManagements from '../store/reducers';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
     selector: 'app-stock-management-form',
@@ -27,6 +28,8 @@ import * as fromStockManagements from '../store/reducers';
 export class StockManagementFormComponent implements OnInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+
+    form: FormGroup;
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -114,7 +117,11 @@ export class StockManagementFormComponent implements OnInit {
         }
     ];
 
-    constructor(private router: Router, private store: Store<fromStockManagements.FeatureState>) {}
+    constructor(
+        private formBuilder: FormBuilder,
+        private router: Router,
+        private store: Store<fromStockManagements.FeatureState>
+    ) {}
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -128,5 +135,14 @@ export class StockManagementFormComponent implements OnInit {
                 payload: this._breadCrumbs
             })
         );
+
+        this._initForm();
+    }
+
+    private _initForm(): void {
+        this.form = this.formBuilder.group({
+            whName: [''],
+            skus: ['']
+        });
     }
 }

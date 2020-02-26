@@ -43,7 +43,11 @@
                 <mat-tab-group color="accent" fxLayout="column" fxFlex>
                     <mat-tab label="General">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar>
+                            <div
+                                class="tab-content p-16 pb-0"
+                                fxLayout="column"
+                                fusePerfectScrollbar
+                            >
                                 <app-stock-management-detail-general
                                     fxLayout="column"
                                 ></app-stock-management-detail-general>
@@ -53,8 +57,14 @@
 
                     <mat-tab label="History">
                         <ng-template matTabContent>
-                            <div class="tab-content p-16" fusePerfectScrollbar>
-                                <app-stock-management-detail-history></app-stock-management-detail-history>
+                            <div
+                                class="tab-content p-16 pb-0"
+                                fxLayout="column"
+                                fusePerfectScrollbar
+                            >
+                                <app-stock-management-detail-history
+                                    fxLayout="column"
+                                ></app-stock-management-detail-history>
                             </div>
                         </ng-template>
                     </mat-tab>

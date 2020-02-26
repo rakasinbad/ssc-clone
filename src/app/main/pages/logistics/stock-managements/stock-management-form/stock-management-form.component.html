@@ -6,23 +6,23 @@
     <!-- CENTER -->
     <div class="center pt-12">
         <!-- CONTENT CARD -->
-        <div class="content-card p-16">
+        <div class="content-card">
             <form
                 id="stock-management-form"
                 name="stockManagementForm"
-                class="merchant pt-24 w-100-p"
+                class="stock-management w-100-p"
                 fxLayout="column"
                 fxFlex
                 novalidate
             >
-                <div fxLayout="column">
+                <div class="p-16 pb-0" fxLayout="column">
                     <span class="mat-headline font-weight-600">
                         Choose Warehouse
                     </span>
 
                     <div class="form-box">
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                            <label fxFlexAlign="center" fxFlex="8" class="label-form">
                                 Warehouse Name
                             </label>
 
@@ -38,7 +38,7 @@
                 <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
                 <mat-table
-                    class="stock-managements-table mx-16"
+                    class="stock-managements-table sinbad-table mx-16"
                     #table
                     [dataSource]="dataSource"
                     matSort

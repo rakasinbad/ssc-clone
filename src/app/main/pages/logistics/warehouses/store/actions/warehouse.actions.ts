@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams, ErrorHandler } from 'app/shared/models';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
+
+import { Warehouse } from '../../models';
 
 export const fetchWarehousesRequest = createAction(
     '[Warehouses] Fetch Warehouses Request',
@@ -13,5 +15,7 @@ export const fetchWarehousesFailure = createAction(
 
 export const fetchWarehousesSuccess = createAction(
     '[Warehouses] Fetch Warehouses Success',
-    props<{ payload: { data: any; total: number } }>()
+    props<{ payload: { data: Array<Warehouse>; total: number } }>()
 );
+
+export type FailureActions = 'fetchWarehousesFailure';

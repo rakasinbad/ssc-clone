@@ -1,6 +1,23 @@
 @import 'src/@fuse/scss/fuse';
 
 app-stock-management-detail-history {
+    min-height: 100%;
+    height: 100%;
+
+    .history-content {
+        height: inherit;
+
+        // sinbad-card-header {
+        //     div {
+        //         &:first-child {
+        //             margin-left: 0 !important;
+        //             margin-right: 0 !important;
+        //             margin-top: 4px !important;
+        //         }
+        //     }
+        // }
+    }
+
     .stock-management-detail-history-table {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
@@ -21,7 +38,7 @@ app-stock-management-detail-history {
 
         .stock-management-detail-history {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
         }
 
         .mat-header-cell {
@@ -55,6 +72,39 @@ app-stock-management-detail-history {
             &.mat-cell__content {
                 word-break: break-word;
             }
+        }
+
+        .mat-column-no {
+            flex: 0 1 80px;
+        }
+
+        .mat-column-sku-id {
+            flex: 0 1 120px;
+            min-width: 120px;
+        }
+
+        .mat-column-sku-name {
+            flex: 1 1 50em;
+            min-width: 125px;
+        }
+
+        .mat-column-value-add {
+            flex: 0 1 10em;
+            min-width: 80px;
+        }
+
+        .mat-column-value-subtraction {
+            flex: 0 1 10em;
+            min-width: 100px;
+        }
+
+        .mat-column-reason {
+            flex: 0 1 10em;
+            min-width: 100px;
+        }
+
+        .active-icon {
+            border-radius: 50%;
         }
     }
 }
