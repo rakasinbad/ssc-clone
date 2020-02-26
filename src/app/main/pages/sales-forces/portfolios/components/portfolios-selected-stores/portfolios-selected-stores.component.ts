@@ -292,6 +292,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             this.shopStore.select(StoreSelector.getStoreEntityType),
             this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
         ]).pipe(
+            tap(() => this.shopStore.dispatch(StoreActions.truncateAllStores())),
             map(([filters, type, invoiceGroupId]) => ({ filters, type: type === 'all' ? 'in-portfolio' : type, invoiceGroupId })),
             filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
             tap(({ filters, type, invoiceGroupId }) => this.requestStore(filters, type, invoiceGroupId)),

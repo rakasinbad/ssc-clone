@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ViewChild
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { environment } from 'environments/environment';
+import { MatPaginator, MatSort } from '@angular/material';
 
 @Component({
     selector: 'app-stock-management-detail-history',
@@ -11,30 +19,11 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StockManagementDetailHistoryComponent implements OnInit {
-    // CardHeader config
-    cardHeaderConfig: ICardHeaderConfiguration = {
-        title: {
-            label: 'Stock Management History'
-        },
-        search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
-        },
-        add: {
-            // permissions: []
-        },
-        export: {
-            // permissions: ['OMS.EXPORT']
-        },
-        import: {
-            // permissions: ['OMS.IMPORT'],
-            // useAdvanced: true,
-            // pageType: 'oms'
-        }
-    };
+    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageOpts = environment.pageSizeTable;
+
+    displayedColumns = ['date', 'sku-id', 'sku-name', 'value-add', 'value-subtraction', 'reason'];
+
     dataSource = [
         {
             date: '15/01/2020',
@@ -77,7 +66,38 @@ export class StockManagementDetailHistoryComponent implements OnInit {
             reason: 'Inbound'
         }
     ];
-    displayedColumns = ['date', 'sku-id', 'sku-name', 'value-add', 'value-substraction', 'reason'];
+
+    // CardHeader config
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        class: 'm-0 mt-4 mb-16',
+        title: {
+            label: 'History'
+        },
+        search: {
+            active: true
+            // changed: (value: string) => {
+            //     this.search.setValue(value);
+            //     setTimeout(() => this._onRefreshTable(), 100);
+            // }
+        },
+        add: {
+            // permissions: []
+        },
+        export: {
+            permissions: ['OMS.EXPORT']
+        },
+        import: {
+            permissions: ['OMS.IMPORT'],
+            useAdvanced: true,
+            pageType: ''
+        }
+    };
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
 
     constructor() {}
 

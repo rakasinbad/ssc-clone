@@ -1,15 +1,20 @@
-<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+<div class="history-content" fxLayout="column">
     <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
-    <mat-table class="stock-management-detail-history-table" #table [dataSource]="dataSource" matSort
-        [@animateStagger]="{ value: '50' }">
+    <mat-table
+        class="stock-management-detail-history-table sinbad-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+    >
         <!-- Date Column -->
         <ng-container matColumnDef="date">
             <mat-header-cell *matHeaderCellDef>
                 Date
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.date }}
                 </p>
             </mat-cell>
@@ -21,7 +26,7 @@
                 SKU ID
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.skuId }}
                 </p>
             </mat-cell>
@@ -33,7 +38,7 @@
                 SKU Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.skuName }}
                 </p>
             </mat-cell>
@@ -45,19 +50,19 @@
                 Value Add
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.valueAdd }}
                 </p>
             </mat-cell>
         </ng-container>
 
-        <!-- Value Substraction Column -->
-        <ng-container matColumnDef="value-substraction">
+        <!-- Value Subtraction Column -->
+        <ng-container matColumnDef="value-subtraction">
             <mat-header-cell *matHeaderCellDef>
-                Value Substraction
+                Value Subtraction
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.valueSub }}
                 </p>
             </mat-cell>
@@ -69,13 +74,23 @@
                 Reason
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                <p style="word-break: break-word;">
+                <p class="text-word-break-break-word">
                     {{ row.reason }}
                 </p>
             </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse-detail-coverage"></mat-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="stock-management-detail-history"
+        ></mat-row>
     </mat-table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
 </div>

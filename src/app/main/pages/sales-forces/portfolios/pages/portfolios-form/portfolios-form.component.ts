@@ -941,6 +941,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                         this.form.patchValue({
                             name: portfolio.name,
                             invoiceGroup: portfolio.invoiceGroupId,
+                            type: portfolio.type,
                         });
 
                         this.portfolioStore.dispatch(

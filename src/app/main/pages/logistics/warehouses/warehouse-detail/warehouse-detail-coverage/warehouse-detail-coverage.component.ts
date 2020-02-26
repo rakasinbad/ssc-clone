@@ -22,10 +22,11 @@ export class WarehouseDetailCoverageComponent implements OnInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    displayedColumns = ['wh-name', 'province', 'city', 'district', 'urban'];
+    displayedColumns = ['province', 'city', 'district', 'urban'];
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
+        class: 'm-0 mt-4 mb-16',
         title: {
             label: 'Warehouse Coverage Information'
         },
