@@ -11,7 +11,7 @@ import { Province, IQueryParams } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
 import { LocationSelectors } from '../../store/selectors';
 import { LocationActions } from '../../store/actions';
-
+// 
 @Component({
     selector: 'app-warehouse-coverages-form',
     templateUrl: './warehouse-coverages-form.component.html',
