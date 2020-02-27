@@ -22,7 +22,7 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2">DC Cibinong</div>
+                    <div class="h2">{{ (warehouse$ | async)?.name }}</div>
                     <div class="subtitle secondary-text">
                         <span>Warehouse Detail</span>
                     </div>

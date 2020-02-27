@@ -29,10 +29,20 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer(
     initialState,
-    on(WarehouseActions.fetchWarehousesFailure, (state, { payload }) => {
-        return adapter.upsertOne(payload, state);
-    }),
+    on(
+        WarehouseActions.fetchWarehousesFailure,
+        WarehouseActions.fetchWarehouseFailure,
+        (state, { payload }) => {
+            return adapter.upsertOne(payload, state);
+        }
+    ),
     on(WarehouseActions.fetchWarehousesSuccess, state => {
         return adapter.removeOne('fetchWarehousesFailure', state);
+    }),
+    on(WarehouseActions.fetchWarehouseSuccess, state => {
+        return adapter.removeOne('fetchWarehouseFailure', state);
+    }),
+    on(WarehouseActions.clearState, state => {
+        return adapter.removeAll({ ...state });
     })
 );

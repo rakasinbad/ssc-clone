@@ -38,7 +38,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this.fetchWareousesRequest$
+                            this.handleFetchWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehousesFailure'))
                     );
@@ -48,7 +48,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this.fetchWareousesRequest$
+                            this.handleFetchWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehousesFailure'))
                     );
@@ -57,10 +57,58 @@ export class WarehouseEffects {
         )
     );
 
-    fetchSalesRepFailure$ = createEffect(
+    fetchWarehousesFailure$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(WarehouseActions.fetchWarehousesFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [WAREHOUSE]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchWarehouseRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WarehouseActions.fetchWarehouseRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([id, authState]: [string, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(() => of(id)),
+                        switchMap<string, Observable<AnyAction>>(this.handleFetchWarehouseRequest$),
+                        catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(() => of(id)),
+                        switchMap<string, Observable<AnyAction>>(this.handleFetchWarehouseRequest$),
+                        catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    fetchWarehouseFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(WarehouseActions.fetchWarehouseFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -99,7 +147,9 @@ export class WarehouseEffects {
         return userData;
     };
 
-    fetchWareousesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<AnyAction> => {
+    handleFetchWarehousesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         const { supplierId } = userData.userSupplier;
 
         return this._$warehouseApi.findAll<PaginateResponse<Warehouse>>(params, supplierId).pipe(
@@ -121,6 +171,18 @@ export class WarehouseEffects {
         );
     };
 
+    handleFetchWarehouseRequest$ = (warehouseId: string): Observable<AnyAction> => {
+        return this._$warehouseApi.findById(warehouseId).pipe(
+            catchOffline(),
+            map(resp =>
+                WarehouseActions.fetchWarehouseSuccess({
+                    payload: new Warehouse(resp)
+                })
+            ),
+            catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
+        );
+    };
+
     sendErrorToState$ = (
         err: ErrorHandler | HttpErrorResponse | object,
         dispatchTo: WarehouseFailureActions
@@ -128,7 +190,7 @@ export class WarehouseEffects {
         if (err instanceof ErrorHandler) {
             return of(
                 WarehouseActions[dispatchTo]({
-                    payload: err
+                    payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                 })
             );
         }
@@ -138,7 +200,7 @@ export class WarehouseEffects {
                 WarehouseActions[dispatchTo]({
                     payload: {
                         id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                        errors: err
+                        errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                     }
                 })
             );
@@ -148,7 +210,7 @@ export class WarehouseEffects {
             WarehouseActions[dispatchTo]({
                 payload: {
                     id: `ERR_UNRECOGNIZED`,
-                    errors: err
+                    errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                 }
             })
         );

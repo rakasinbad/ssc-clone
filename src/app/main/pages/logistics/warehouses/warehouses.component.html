@@ -219,7 +219,7 @@
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
-                [length]="dataSource.data.length"
+                [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons

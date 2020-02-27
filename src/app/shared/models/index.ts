@@ -34,4 +34,5 @@ export * from './third-party.model';
 export * from './urban.model';
 export * from './user.model';
 export * from './vehicle-accessibility.model';
+export * from './warehouse-coverage.model';
 export * from './warehouse-invoice-group.model';
