@@ -782,6 +782,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.availableDistricts$ = this.locationStore.select(
             LocationSelectors.selectAllDistricts
         ).pipe(
+            tap(districts => {
+                if (districts) {
+                    this.availableOptions = districts.map<Selection>(d => ({ id: d, group: 'district', label: d }));
+                }
+            }),
             takeUntil(this.subs$)
         );
 
