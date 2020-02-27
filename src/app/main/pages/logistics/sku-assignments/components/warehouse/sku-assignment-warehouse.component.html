@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="start center" class="tab-container mx-16">
+<div fxLayout="row" fxLayoutAlign="start center" class="tab-container">
     <div class="button-tab-custom" [class.button-tab-custom-active]="activeTab==='all'" (click)="clickTab('all')">
         <span>All</span>
     </div>
@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<mat-table class="sku-assignments-warehouse-table mx-16" #table [dataSource]="dataSource$ | async" matSort
+<mat-table class="sku-assignments-warehouse-table" #table [dataSource]="dataSource$ | async" matSort
     [@animateStagger]="{ value: '50' }" fusePerfectScrollbar>
     <!-- Checkbox Column -->
     <ng-container matColumnDef="checkbox">

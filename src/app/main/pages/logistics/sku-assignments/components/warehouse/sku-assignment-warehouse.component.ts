@@ -28,6 +28,9 @@ import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
     selector: 'app-sku-assignments-warehouse',
     templateUrl: './sku-assignment-warehouse.component.html',
     styleUrls: ['./sku-assignment-warehouse.component.scss'],
+    host: {
+        class: 'content-card mx-16 sinbad-black-10-border'
+    },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -4,8 +4,11 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
 import * as fromSkuAssignmentsCore from './store/reducers';
-import { SkuAssignmentsEffects } from './store/effects';
-import { SkuAssignmentsWarehouseEffects } from './store/effects';
+import {
+    SkuAssignmentsEffects,
+    SkuAssignmentsWarehouseEffects,
+    SkuAssignmentsSkuEffects
+} from './store/effects';
 import { fromCatalogue } from '../../catalogues/store/reducers';
 import { CatalogueEffects } from '../../catalogues/store/effects';
 import * as fromWarehouses from 'app/shared/store/reducers/sources/warehouse';
@@ -19,6 +22,7 @@ import { WarehouseEffects } from 'app/shared/store/effects';
         EffectsModule.forFeature([
             SkuAssignmentsEffects,
             SkuAssignmentsWarehouseEffects,
+            SkuAssignmentsSkuEffects,
             CatalogueEffects,
             WarehouseEffects
         ])
