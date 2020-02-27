@@ -5,7 +5,10 @@ import {
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ElementRef,
+    AfterViewInit,
+    OnDestroy
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -22,8 +25,8 @@ import {
 } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, Subject, merge } from 'rxjs';
+import { tap, takeUntil } from 'rxjs/operators';
 
 import { Warehouse } from './models';
 import { WarehouseActions } from './store/actions';
@@ -38,7 +41,7 @@ import { WarehouseSelectors } from './store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WarehousesComponent implements OnInit {
+export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -87,11 +90,16 @@ export class WarehousesComponent implements OnInit {
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
+
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
 
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
+
+    private _unSubs$: Subject<void> = new Subject();
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
@@ -119,38 +127,21 @@ export class WarehousesComponent implements OnInit {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        // this.dataSource = new MatTableDataSource([
-        //     {
-        //         id: '1',
-        //         code: 'WH001',
-        //         name: 'DC Cibinong',
-        //         invoice: 'Danone, Combine, Mars',
-        //         total: 58
-        //     },
-        //     {
-        //         id: '2',
-        //         code: 'WH002',
-        //         name: 'DC Pulogebang 1',
-        //         invoice: 'Danone, Combine, Mars',
-        //         total: 51
-        //     },
-        //     {
-        //         id: '3',
-        //         code: 'WH003',
-        //         name: 'DC Pulogebang 2',
-        //         invoice: 'Danone, Combine, Mars',
-        //         total: 34
-        //     },
-        //     {
-        //         id: '4',
-        //         code: 'WH004',
-        //         name: 'DC Cikampek',
-        //         invoice: 'Danone, Combine, Mars',
-        //         total: 100
-        //     }
-        // ]);
-
         this._initPage();
+    }
+
+    ngAfterViewInit(): void {
+        // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+        // Add 'implements AfterViewInit' to the class.
+
+        this._initPage(LifecyclePlatform.AfterViewInit);
+    }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -197,6 +188,28 @@ export class WarehousesComponent implements OnInit {
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        // this.table.nativeElement.scrollIntoView(true);
+                        this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state warehouses
+                this.store.dispatch(WarehouseActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
             default:
                 this.paginator.pageSize = this.defaultPageSize;
 

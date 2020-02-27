@@ -16,7 +16,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            WH001
+            {{ (warehouse$ | async)?.code || '-' }}
         </div>
     </div>
 
@@ -31,7 +31,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            DC Cibinong
+            {{ (warehouse$ | async)?.name || '-' }}
         </div>
     </div>
 
@@ -46,7 +46,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            2 Days
+            {{ getLeadTime((warehouse$ | async)?.leadTime) || '-' }}
         </div>
     </div>
 
@@ -61,7 +61,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            Danone, Combine
+            {{ getInvoices((warehouse$ | async)?.warehouseInvoiceGroups) || '-' }}
         </div>
     </div>
 
@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <div
+    <!-- <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -91,9 +91,9 @@
         </div>
 
         <div class="info" fxFlex="100">16 M<sup>2</sup></div>
-    </div>
+    </div> -->
 
-    <div
+    <!-- <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -106,9 +106,9 @@
         <div class="info" fxFlex="100">
             Dry
         </div>
-    </div>
+    </div> -->
 
-    <div
+    <!-- <div
         class="custom-field info-field"
         fxLayout="row"
         fxLayoutAlign="start center"
@@ -121,7 +121,7 @@
         <div class="info" fxFlex="100">
             High Value
         </div>
-    </div>
+    </div> -->
 
     <!-- <div
         class="custom-field info-field"
@@ -149,7 +149,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            18/01/2020 23:20:11
+            {{ ((warehouse$ | async)?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
         </div>
     </div>
 </div>
