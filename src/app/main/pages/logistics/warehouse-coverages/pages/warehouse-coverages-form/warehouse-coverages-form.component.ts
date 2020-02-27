@@ -11,7 +11,8 @@ import { Province, IQueryParams } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
 import { LocationSelectors } from '../../store/selectors';
 import { LocationActions } from '../../store/actions';
-// 
+import { Selection } from 'app/shared/components/multiple-selection/models';
+
 @Component({
     selector: 'app-warehouse-coverages-form',
     templateUrl: './warehouse-coverages-form.component.html',
@@ -56,6 +57,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableCities$: Observable<Array<string>>;
     // Untuk menyimpan district yang tersedia.
     availableDistricts$: Observable<Array<string>>;
+    availableOptions: Array<Selection> = [];
 
     // AutoComplete for Province
     @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
@@ -104,6 +106,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.isProvinceLoading$ = this.locationStore.select(
             LocationSelectors.getProvinceLoadingState
         ).pipe(
+            tap(val => this.debug('IS PROVINCE LOADING?', val)),
             takeUntil(this.subs$)
         );
 
@@ -111,6 +114,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.isCityLoading$ = this.locationStore.select(
             LocationSelectors.getCityLoadingState
         ).pipe(
+            tap(val => this.debug('IS CITY LOADING?', val)),
             takeUntil(this.subs$)
         );
 
@@ -118,6 +122,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.isDistrictLoading$ = this.locationStore.select(
             LocationSelectors.getDistrictLoadingState
         ).pipe(
+            tap(val => this.debug('IS DISTRICT LOADING?', val)),
             takeUntil(this.subs$)
         );
 
@@ -125,6 +130,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.selectedProvince$ = this.locationStore.select(
             LocationSelectors.getSelectedProvince
         ).pipe(
+            tap(val => this.debug('SELECTED PROVINCE:', val)),
             takeUntil(this.subs$)
         );
 
@@ -132,6 +138,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.selectedCity$ = this.locationStore.select(
             LocationSelectors.getSelectedCity
         ).pipe(
+            tap(val => this.debug('SELECTED CITY:', val)),
             takeUntil(this.subs$)
         );
 
@@ -139,6 +146,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.selectedDistrict$ = this.locationStore.select(
             LocationSelectors.getSelectedDistrict
         ).pipe(
+            tap(val => this.debug('SELECTED DISTRICT:', val)),
             takeUntil(this.subs$)
         );
     }
@@ -160,6 +168,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.form.get('province').enable();
         this.form.get('province').reset();
 
+        // Mengirim state untuk melepas province yang telah dipilih sebelumnya.
+        this.locationStore.dispatch(
+            LocationActions.deselectProvince()
+        );
+
+        // Mengosongkan province pada state.
+        this.locationStore.dispatch(
+            LocationActions.truncateProvinces()
+        );
+
         // Mengirim state untuk melakukan request province.
         this.locationStore.dispatch(
             LocationActions.fetchProvincesRequest({
@@ -179,6 +197,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.form.get('city').enable();
         this.form.get('city').reset();
 
+        // Mengirim state untuk melepas city yang telah dipilih sebelumnya.
+        this.locationStore.dispatch(
+            LocationActions.deselectCity()
+        );
+
+        // Mengosongkan city pada state.
         this.locationStore.dispatch(
             LocationActions.truncateCities()
         );
@@ -202,6 +226,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.form.get('district').enable();
         this.form.get('district').reset();
 
+        // Mengirim state untuk melepas city yang telah dipilih sebelumnya.
+        this.locationStore.dispatch(
+            LocationActions.deselectDistrict()
+        );
+
+        // Mengosongkan district pada state.
         this.locationStore.dispatch(
             LocationActions.truncateDistricts()
         );
@@ -230,6 +260,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
         this.locationStore.dispatch(LocationActions.selectProvince({ payload: province.id }));
 
+        this.autocompleteTrigger.closePanel();
+
         this.initCity();
     }
 
@@ -250,6 +282,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
         this.locationStore.dispatch(LocationActions.selectCity({ payload: city }));
 
+        this.autocompleteTrigger.closePanel();
+
         this.initDistrict();
     }
 
@@ -269,6 +303,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         }
 
         this.locationStore.dispatch(LocationActions.selectDistrict({ payload: district }));
+
+        this.autocompleteTrigger.closePanel();
     }
 
     displayDistrict(item: string): string {
@@ -476,8 +512,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             debounceTime(200),
             distinctUntilChanged(),
             withLatestFrom(this.selectedProvince$),
-            filter(([provinceForm, _]: [Province | string, string]) => {
-                if (!(provinceForm instanceof Province)) {
+            filter(([provinceForm, selectedProvince]: [Province | string, Province | string]) => {
+                if (!(provinceForm instanceof Province) && (selectedProvince instanceof Province)) {
                     this.clearLocationForm('city');
                 }
                 
@@ -510,14 +546,18 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             startWith(''),
             debounceTime(200),
             distinctUntilChanged(),
-            withLatestFrom(this.selectedCity$),
-            filter(([cityForm, selectedCity]: [string, string]) => {
-                if (cityForm !== selectedCity) {
+            withLatestFrom(this.selectedProvince$),
+            filter(([cityForm, selectedProvince]) => {
+                if (!selectedProvince) {
+                    return false;
+                }
+
+                if (!cityForm) {
                     this.clearLocationForm('district');
                 }
-                
-                return !!(cityForm) && cityForm !== selectedCity;
-            }), 
+
+                return true;
+            }),
             tap(([value, _]: [string, string]) => {
                 const queryParams: IQueryParams = {
                     paginate: true,
@@ -545,11 +585,19 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             startWith(''),
             debounceTime(200),
             distinctUntilChanged(),
-            withLatestFrom(this.selectedDistrict$),
-            filter(([districtForm, selectedDistrict]: [string, string]) => {
-                return !!(districtForm) && districtForm !== selectedDistrict;
-            }), 
-            tap(([value, _]: [string, string]) => {
+            withLatestFrom(
+                this.selectedCity$,
+                this.selectedDistrict$,
+                (districtForm, selectedCity, selectedDistrict) => ([districtForm, selectedCity, selectedDistrict] as [string, string, string])
+            ),
+            filter(([_, selectedCity, selectedDistrict]) => {
+                if (!selectedCity || selectedDistrict) {
+                    return false;
+                }
+
+                return true;
+            }),
+            tap(([value]: [string, string, string]) => {
                 const queryParams: IQueryParams = {
                     paginate: true,
                     limit: 10,
@@ -581,7 +629,10 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.availableProvinces$ = this.locationStore.select(
             LocationSelectors.selectAllProvices
         ).pipe(
-            map(provinces => {
+            debounceTime(100),
+            withLatestFrom(this.isProvinceLoading$),
+            filter(([_, isLoading]: [Array<Province>, boolean]) => (!(!!isLoading))),
+            map(([provinces]: [Array<Province>, boolean]) => {
                 if (provinces.length === 0) {
                     this.initProvince();
                 }
@@ -600,6 +651,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.availableDistricts$ = this.locationStore.select(
             LocationSelectors.selectAllDistricts
         ).pipe(
+            tap(districts => {
+                if (districts) {
+                    this.availableOptions = districts.map<Selection>(d => ({ id: d, group: 'district', label: d }));
+                }
+            }),
             takeUntil(this.subs$)
         );
         // this.warehouseSub.pipe(
