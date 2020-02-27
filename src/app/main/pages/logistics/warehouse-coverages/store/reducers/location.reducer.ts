@@ -61,7 +61,7 @@ const cityInitialState: CityState = adapterCity.getInitialState<Omit<CityState, 
     selected: null,
     total: 0
 });
-
+// 
 // Adapter for district state
 export const adapterDistrict = createEntityAdapter<string>({ selectId: row => row });
 // Initialize district state
