@@ -3,8 +3,8 @@ import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAut
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, fromEvent } from 'rxjs';
-import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { Subject, Observable, fromEvent, Subscription } from 'rxjs';
+import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { Province, IQueryParams } from 'app/shared/models';
@@ -125,10 +125,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.selectedProvince$ = this.locationStore.select(
             LocationSelectors.getSelectedProvince
         ).pipe(
-            tap(() => {
-                this.form.get('city').reset();
-                this.form.get('district').reset();
-            }),
             takeUntil(this.subs$)
         );
 
@@ -136,9 +132,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.selectedCity$ = this.locationStore.select(
             LocationSelectors.getSelectedCity
         ).pipe(
-            tap(() => {
-                this.form.get('district').reset();
-            }),
             takeUntil(this.subs$)
         );
 
@@ -164,9 +157,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             skip: 0
         };
 
-        // Reset form city dan district.
-        this.form.get('city').reset();
-        this.form.get('district').reset();
+        this.form.get('province').enable();
+        this.form.get('province').reset();
 
         // Mengirim state untuk melakukan request province.
         this.locationStore.dispatch(
@@ -176,40 +168,58 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         );
     }
 
-    // private initCity(): void {
-    //     // Menyiapkan query untuk pencarian city.
-    //     const newQuery: IQueryParams = {
-    //         paginate: true,
-    //         limit: 10,
-    //         skip: 0
-    //     };
+    private initCity(): void {
+        // Menyiapkan query untuk pencarian city.
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 10,
+            skip: 0
+        };
 
-    //     // Reset form district.
-    //     this.form.get('district').reset();
+        this.form.get('city').enable();
+        this.form.get('city').reset();
 
-    //     // Mengirim state untuk melakukan request city.
-    //     this.locationStore.dispatch(
-    //         LocationActions.fetchCitiesRequest({
-    //             payload: newQuery
-    //         })
-    //     );
-    // }
+        this.locationStore.dispatch(
+            LocationActions.truncateCities()
+        );
 
-    // private initDistrict(): void {
-    //     // Menyiapkan query untuk pencarian district.
-    //     const newQuery: IQueryParams = {
-    //         paginate: true,
-    //         limit: 10,
-    //         skip: 0
-    //     };
+        // Mengirim state untuk melakukan request city.
+        this.locationStore.dispatch(
+            LocationActions.fetchCitiesRequest({
+                payload: newQuery
+            })
+        );
+    }
 
-    //     // Mengirim state untuk melakukan request district.
-    //     this.locationStore.dispatch(
-    //         LocationActions.fetchDistrictsRequest({
-    //             payload: newQuery
-    //         })
-    //     );
-    // }
+    private initDistrict(): void {
+        // Menyiapkan query untuk pencarian district.
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 10,
+            skip: 0
+        };
+
+        this.form.get('district').enable();
+        this.form.get('district').reset();
+
+        this.locationStore.dispatch(
+            LocationActions.truncateDistricts()
+        );
+
+        // Mengirim state untuk melakukan request district.
+        this.locationStore.dispatch(
+            LocationActions.fetchDistrictsRequest({
+                payload: newQuery
+            })
+        );
+    }
+
+    clearLocationForm(location: 'city' | 'district'): void {
+        if (location === 'city' || location === 'district') {
+            this.form.get(location).disable();
+            this.form.get(location).reset();
+        }
+    }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
         const province: Province = event.option.value;
@@ -219,6 +229,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         }
 
         this.locationStore.dispatch(LocationActions.selectProvince({ payload: province.id }));
+
+        this.initCity();
     }
 
     displayProvince(item: Province): string {
@@ -237,6 +249,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         }
 
         this.locationStore.dispatch(LocationActions.selectCity({ payload: city }));
+
+        this.initDistrict();
     }
 
     displayCity(item: string): string {
@@ -349,9 +363,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     processDistrictAutoComplete(): void {
         if (this.autocompleteTrigger && this.districtAutoComplete && this.districtAutoComplete.panel) {
-            fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')
+            fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
-                    tap(() => this.debug(`fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() => this.debug(`fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')`)),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil province yang ada di state, jumlah total city di back-end dan loading state-nya.
@@ -393,11 +407,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     }
 
     listenCityAutoComplete(): void {
-        setTimeout(() => this.processProvinceAutoComplete());
+        setTimeout(() => this.processCityAutoComplete());
     }
 
     listenDistrictAutoComplete(): void {
-        setTimeout(() => this.processProvinceAutoComplete());
+        setTimeout(() => this.processDistrictAutoComplete());
     }
 
     getFormError(form: any): string {
@@ -444,21 +458,32 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 ]
             ],
             city: [
-                { value: '', disabled: false },
+                { value: '', disabled: true },
                 [
                     RxwebValidators.required({
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     })
                 ]
             ],
-            district: [[]],
+            district: [
+                { value: '', disabled: true },
+            ],
         });
 
+        // Handle Province's Form Control
         (this.form.get('province').valueChanges as Observable<string>).pipe(
             startWith(''),
-            distinctUntilChanged(),
             debounceTime(200),
-            tap((value: string) => {
+            distinctUntilChanged(),
+            withLatestFrom(this.selectedProvince$),
+            filter(([provinceForm, _]: [Province | string, string]) => {
+                if (!(provinceForm instanceof Province)) {
+                    this.clearLocationForm('city');
+                }
+                
+                return !(provinceForm instanceof Province);
+            }), 
+            tap(([value, _]: [string, string]) => {
                 const queryParams: IQueryParams = {
                     paginate: true,
                     limit: 10,
@@ -473,6 +498,72 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
                 this.locationStore.dispatch(
                     LocationActions.fetchProvincesRequest({
+                        payload: queryParams
+                    })
+                );
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        // Handle City's Form Control
+        (this.form.get('city').valueChanges as Observable<string>).pipe(
+            startWith(''),
+            debounceTime(200),
+            distinctUntilChanged(),
+            withLatestFrom(this.selectedCity$),
+            filter(([cityForm, selectedCity]: [string, string]) => {
+                if (cityForm !== selectedCity) {
+                    this.clearLocationForm('district');
+                }
+                
+                return !!(cityForm) && cityForm !== selectedCity;
+            }), 
+            tap(([value, _]: [string, string]) => {
+                const queryParams: IQueryParams = {
+                    paginate: true,
+                    limit: 10,
+                    skip: 0
+                };
+
+                queryParams['keyword'] = value;
+
+                this.locationStore.dispatch(
+                    LocationActions.truncateCities()
+                );
+
+                this.locationStore.dispatch(
+                    LocationActions.fetchCitiesRequest({
+                        payload: queryParams
+                    })
+                );
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        // Handle District's Form Control
+        (this.form.get('district').valueChanges as Observable<string>).pipe(
+            startWith(''),
+            debounceTime(200),
+            distinctUntilChanged(),
+            withLatestFrom(this.selectedDistrict$),
+            filter(([districtForm, selectedDistrict]: [string, string]) => {
+                return !!(districtForm) && districtForm !== selectedDistrict;
+            }), 
+            tap(([value, _]: [string, string]) => {
+                const queryParams: IQueryParams = {
+                    paginate: true,
+                    limit: 10,
+                    skip: 0
+                };
+
+                queryParams['keyword'] = value;
+
+                this.locationStore.dispatch(
+                    LocationActions.truncateDistricts()
+                );
+
+                this.locationStore.dispatch(
+                    LocationActions.fetchDistrictsRequest({
                         payload: queryParams
                     })
                 );
@@ -497,6 +588,18 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
                 return provinces;
             }),
+            takeUntil(this.subs$)
+        );
+
+        this.availableCities$ = this.locationStore.select(
+            LocationSelectors.selectAllCities
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.availableDistricts$ = this.locationStore.select(
+            LocationSelectors.selectAllDistricts
+        ).pipe(
             takeUntil(this.subs$)
         );
         // this.warehouseSub.pipe(
