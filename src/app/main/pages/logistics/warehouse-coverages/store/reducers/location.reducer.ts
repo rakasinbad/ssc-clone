@@ -44,7 +44,7 @@ const provinceInitialState: ProvinceState = adapterProvince.getInitialState<Omit
 });
 
 // Adapter for city state
-export const adapterCity = createEntityAdapter<string>();
+export const adapterCity = createEntityAdapter<string>({ selectId: row => row });
 // Initialize city state
 const cityInitialState: CityState = adapterCity.getInitialState<Omit<CityState, 'ids' | 'entities'>>({
     isLoading: false,
@@ -54,7 +54,7 @@ const cityInitialState: CityState = adapterCity.getInitialState<Omit<CityState, 
 });
 
 // Adapter for district state
-export const adapterDistrict = createEntityAdapter<string>();
+export const adapterDistrict = createEntityAdapter<string>({ selectId: row => row });
 // Initialize city state
 const districtInitialState: DistrictState = adapterDistrict.getInitialState<Omit<DistrictState, 'ids' | 'entities'>>({
     isLoading: false,

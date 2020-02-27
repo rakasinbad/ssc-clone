@@ -17,7 +17,7 @@ import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
 import { Store } from 'app/main/pages/attendances/models';
-import { State as WarehouseCoverageCoreState } from '../reducers';
+import { FeatureState as WarehouseCoverageCoreState } from '../reducers';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
@@ -61,10 +61,12 @@ export class LocationEffects {
             ofType(LocationActions.fetchCitiesRequest),
             // Hanya mengambil payload-nya saja dari action.
             map(action => action.payload),
+            // Mengambil province yang terpilih dari state.
+            withLatestFrom(this.locationStore.select(LocationSelectors.getSelectedProvince)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap((queryParams: IQueryParams) => {
-                return of(queryParams).pipe(
-                    switchMap<IQueryParams, Observable<AnyAction>>(this.processCitiesRequest),
+            switchMap(([queryParams, selectedProvince]: [IQueryParams, string]) => {
+                return of([queryParams, selectedProvince] as [IQueryParams, string]).pipe(
+                    switchMap<[IQueryParams, string], Observable<AnyAction>>(this.processCitiesRequest),
                     catchError(err => this.sendErrorToState(err, 'fetchCitiesFailure'))
                 );
             })
@@ -77,10 +79,12 @@ export class LocationEffects {
             ofType(LocationActions.fetchDistrictsRequest),
             // Hanya mengambil payload-nya saja dari action.
             map(action => action.payload),
+            // Mengambil city yang terpilih dari state.
+            withLatestFrom(this.locationStore.select(LocationSelectors.getSelectedCity)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap((queryParams: IQueryParams) => {
-                return of(queryParams).pipe(
-                    switchMap<IQueryParams, Observable<AnyAction>>(this.processDistrictsRequest),
+            switchMap(([queryParams, selectedCity]: [IQueryParams, string]) => {
+                return of([queryParams, selectedCity] as [IQueryParams, string]).pipe(
+                    switchMap<[IQueryParams, string], Observable<AnyAction>>(this.processDistrictsRequest),
                     catchError(err => this.sendErrorToState(err, 'fetchDistrictsFailure'))
                 );
             })
@@ -134,11 +138,16 @@ export class LocationEffects {
             );
     }
 
-    processCitiesRequest = (queryParams: IQueryParams): Observable<AnyAction> => {
+    processCitiesRequest = ([queryParams, selectedProvince]: [IQueryParams, string]): Observable<AnyAction> => {
+        if (!selectedProvince) {
+            throw new ErrorHandler({ id: 'ERR_PROVINCE_NOT_SELECTED', errors: 'Province not selected to find cities.' });
+        }
+
         const newQuery: IQueryParams = {
             ...queryParams
         };
         newQuery['locationType'] = 'city';
+        newQuery['provinceId'] = selectedProvince;
 
         return this.locationApi$.findLocation<Array<{ city: string }>>(newQuery)
             .pipe(
@@ -168,11 +177,16 @@ export class LocationEffects {
             );
     }
 
-    processDistrictsRequest = (queryParams: IQueryParams): Observable<AnyAction> => {
+    processDistrictsRequest = ([queryParams, selectedCity]: [IQueryParams, string]): Observable<AnyAction> => {
+        if (!selectedCity) {
+            throw new ErrorHandler({ id: 'ERR_CITY_NOT_SELECTED', errors: 'City not selected to find districts.' });
+        }
+        
         const newQuery: IQueryParams = {
             ...queryParams
         };
         newQuery['locationType'] = 'district';
+        newQuery['city'] = selectedCity;
 
         return this.locationApi$.findLocation<Array<{ district: string }>>(newQuery)
             .pipe(
