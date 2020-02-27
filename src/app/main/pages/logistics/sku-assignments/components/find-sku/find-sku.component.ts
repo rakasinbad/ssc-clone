@@ -43,28 +43,8 @@ export class FindSkuComponent implements OnInit, OnDestroy {
         private catalogueStore: NgRxStore<fromCatalogue.FeatureState>,
         private skuAssignmentStore: NgRxStore<fromSkuAssignments.SkuAssignmentsState>
     ) {
-        // This is for load sku for the first time
-        this.availableCatalogues$ = this.catalogueStore
-            .select(CatalogueSelectors.getAllCatalogues)
-            .pipe(
-                map(catalogues => {
-                    if (catalogues.length === 0) {
-                        this.catalogueStore.dispatch(
-                            CatalogueActions.fetchCataloguesRequest({
-                                payload: {
-                                    paginate: true
-                                }
-                            })
-                        );
-                    }
-
-                    return catalogues;
-                }),
-                takeUntil(this.subs$)
-            );
-
         // ini untuk menampilkan sku yang sudah ke select
-        // TODO: Menampilkan toko yang sudah terasosiasi atau akan terasosiasi.
+        // TODO: Menampilkan catalogue yang sudah terasosiasi atau akan terasosiasi.
         this.selectedSku$ = combineLatest([
             this.skuAssignmentStore.select(SkuAssignmentsSelectors.getAllSkuAssignments),
             this.skuAssignmentStore.select(SkuAssignmentsSelectors.getCatalogueNewStores)
@@ -131,9 +111,58 @@ export class FindSkuComponent implements OnInit, OnDestroy {
                 })
             )
             .subscribe();
+
+        // Get List Catalogue
+        this.availableCatalogues$ = combineLatest([
+            this.catalogueStore.select(CatalogueSelectors.getAllCatalogues),
+            this.selectedSku$
+        ]).pipe(
+            map(([availableCatalogues, selectedCatalogues]) => {
+                // Mengambil ID dari store yang sudah terasosiasi dengan portfolio.
+                const selectedCatalogueIds = selectedCatalogues.map(
+                    getCatalogue => getCatalogue.id
+                );
+
+                // Mengubah state toko tersebut tidak terpilih.
+                const newListCatalogue = availableCatalogues.map(catalogue => {
+                    let newCatalogue = new Catalogue(catalogue);
+
+                    // Hanya menandai toko yang ada di portfolio, namun tidak ditandai akan dihapus nantinya.
+                    if (selectedCatalogueIds.includes(newCatalogue.id)) {
+                        const selectedCatalogue = selectedCatalogues.find(
+                            selectCat => selectCat.id === newCatalogue.id
+                        );
+
+                        if (selectedCatalogue && newCatalogue.source === 'list') {
+                            newCatalogue = new Catalogue(selectedCatalogue);
+                            newCatalogue.source = 'list';
+                            newCatalogue.isSelected = !!!selectedCatalogue.deletedAt;
+                        } else if (selectedCatalogue) {
+                            newCatalogue = new Catalogue(selectedCatalogue);
+                            newCatalogue.isSelected = !!!selectedCatalogue.deletedAt;
+                        }
+                    } else {
+                        newCatalogue.isSelected = false;
+                    }
+
+                    return newCatalogue;
+                });
+
+                return newListCatalogue;
+            }),
+            takeUntil(this.subs$)
+        );
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.catalogueStore.dispatch(
+            CatalogueActions.fetchCataloguesRequest({
+                payload: {
+                    paginate: true
+                }
+            })
+        );
+    }
 
     ngOnDestroy(): void {
         this.subs$.next();

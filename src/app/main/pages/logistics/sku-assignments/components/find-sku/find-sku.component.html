@@ -23,8 +23,8 @@
             <mat-selection-list fxFlex cdkScrollable #availableSkuScroll id="available-sku-scroll"
                 [style.overflow]="'auto'" [style.border]="'1px solid'" class="grey-300-border h-400"
                 [disableRipple]="true" (selectionChange)="selectedSkuSub$.next($event)">
-                <mat-list-option *ngFor="let catalogue of (availableCatalogues$ | async)" [checkboxPosition]="'before'"
-                    [value]="catalogue">
+                <mat-list-option *ngFor="let catalogue of (availableCatalogues$ | async)"
+                    [selected]="catalogue?.isSelected" [checkboxPosition]="'before'" [value]="catalogue">
                     {{ catalogue.name }}
                 </mat-list-option>
 
