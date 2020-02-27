@@ -93,7 +93,7 @@
                                     (optionSelected)="onSelectedProvince($event)"
                                 >
                                     <!-- NONE OPTION -->
-                                    <mat-option *ngIf="(isProvinceLoading$ | async) === false">(None)</mat-option>
+                                    <mat-option *ngIf="!(isProvinceLoading$ | async)">(None)</mat-option>
                                     <!-- / NONE OPTION -->
 
                                     <!-- PROVINCE OPTIONS -->
@@ -168,14 +168,14 @@
                                     <mat-option
                                         [disabled]="true"
                                         style="text-align: center; font-style: italic; max-height: 30px;"
-                                        *ngIf="!(totalProvinces$ | async) || ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                                        *ngIf="!(totalCities$ | async) || ((totalCities$ | async) > (availableCities$ | async)?.length)"
                                     >
                                         Loading ...
                                     </mat-option>
                                     <!-- / LOADING OPTION -->
                                 </mat-autocomplete>
-                                <mat-error *ngIf="hasError(form.get('province'))">
-                                    {{ getFormError(form.get('province')) }}
+                                <mat-error *ngIf="hasError(form.get('city'))">
+                                    {{ getFormError(form.get('city')) }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
