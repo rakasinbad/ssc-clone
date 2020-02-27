@@ -17,7 +17,7 @@ import { SkuAssignmentsActions } from '../../store/actions';
 import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 import { MatSelectionListChange } from '@angular/material';
 import { SkuAssignmentsSelectors } from '../../store/selectors';
-import { fromSkuAssignments } from '../../store/reducers';
+import { FeatureState as SkuAssignmentsCoreState } from '../../store/reducers';
 
 @Component({
     selector: 'app-find-sku',
@@ -41,7 +41,7 @@ export class FindSkuComponent implements OnInit, OnDestroy {
 
     constructor(
         private catalogueStore: NgRxStore<fromCatalogue.FeatureState>,
-        private skuAssignmentStore: NgRxStore<fromSkuAssignments.SkuAssignmentsState>
+        private skuAssignmentStore: NgRxStore<SkuAssignmentsCoreState>
     ) {
         // ini untuk menampilkan sku yang sudah ke select
         // TODO: Menampilkan catalogue yang sudah terasosiasi atau akan terasosiasi.

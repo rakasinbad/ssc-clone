@@ -1,22 +1,21 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import * as fromSkuAssignmentsCore from '../reducers';
 import { fromSkuAssignments } from '../reducers';
 import { Catalogue, TNullable } from 'app/shared/models';
 
 // Get state from the feature key.
-export const getSkuAssignmentsCoreState = createFeatureSelector<
-    fromSkuAssignments.SkuAssignmentsState
->(fromSkuAssignments.FEATURE_KEY);
+export const getSkuAssignmentsCoreState = createFeatureSelector<fromSkuAssignmentsCore.FeatureState, fromSkuAssignmentsCore.State>(fromSkuAssignmentsCore.featureKey);
 
 export const {
     selectAll: selectAllSkuAssignments,
     selectEntities: selectSkuAssignmentsEntities,
     selectIds: selectSkuAssignmentsIds,
     selectTotal: selectSkuAssignmentsTotal
-} = fromSkuAssignments.adapterSkuAssignments.getSelectors();
+} = fromSkuAssignmentsCore.fromSkuAssignments.adapterSkuAssignments.getSelectors();
 
 const getSkuAssignmentsState = createSelector(
     getSkuAssignmentsCoreState,
-    state => state.skuAssignment
+    state => state[fromSkuAssignments.FEATURE_KEY].skuAssignment
 );
 
 export const getSkuAssignmentsEntity = createSelector(
@@ -42,11 +41,11 @@ export const {
     selectEntities: selectNewCatalogueAssignmentsEntities,
     selectIds: selectNewCatalogueAssignmentsIds,
     selectTotal: selectNewCatalogueAssignmentsTotal
-} = fromSkuAssignments.adapterNewCatalogue.getSelectors();
+} = fromSkuAssignmentsCore.fromSkuAssignments.adapterNewCatalogue.getSelectors();
 
 const getCatalogueNewStoreEntity = createSelector(
     getSkuAssignmentsCoreState,
-    state => state.newSku
+    state => state[fromSkuAssignments.FEATURE_KEY].newSku
 );
 
 export const getCatalogueNewStoreIds = createSelector(
