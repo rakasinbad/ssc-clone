@@ -91,6 +91,24 @@ export class LocationEffects {
         )
     );
 
+    fetchUrbansRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action request urban.
+            ofType(LocationActions.fetchUrbansRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil district yang terpilih dari state.
+            withLatestFrom(this.locationStore.select(LocationSelectors.getSelectedDistrict)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, selectedDistrict]: [IQueryParams, string]) => {
+                return of([queryParams, selectedDistrict] as [IQueryParams, string]).pipe(
+                    switchMap<[IQueryParams, string], Observable<AnyAction>>(this.processUrbansRequest),
+                    catchError(err => this.sendErrorToState(err, 'fetchUrbansFailure'))
+                );
+            })
+        )
+    );
+
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
@@ -213,6 +231,45 @@ export class LocationEffects {
                     }
                 }),
                 catchError(err => this.sendErrorToState(err, 'fetchDistrictsFailure'))
+            );
+    }
+
+    processUrbansRequest = ([queryParams, selectedDistrict]: [IQueryParams, string]): Observable<AnyAction> => {
+        if (!selectedDistrict) {
+            throw new ErrorHandler({ id: 'ERR_DISTRICT_NOT_SELECTED', errors: 'District not selected to find urbans.' });
+        }
+        
+        const newQuery: IQueryParams = {
+            ...queryParams
+        };
+        newQuery['locationType'] = 'urban';
+        newQuery['district'] = selectedDistrict;
+
+        return this.locationApi$.findLocation<Array<{ urban: string }>>(newQuery)
+            .pipe(
+                catchOffline(),
+                switchMap((response: IPaginatedResponse<{ urban: string }> | Array<{ urban: string }>) => {
+                    if (queryParams.paginate) {
+                        const newResponse = response as IPaginatedResponse<{ urban: string }>;
+
+                        return of(LocationActions.fetchUrbansSuccess({
+                            payload: {
+                                urbans: newResponse.data.map(urban => urban.urban),
+                                total: newResponse.total
+                            }
+                        }));
+                    } else {
+                        const newResponse = response as Array<{ urban: string }>;
+
+                        return of(LocationActions.fetchUrbansSuccess({
+                            payload: {
+                                urbans: newResponse.map(urban => urban.urban),
+                                total: newResponse.length
+                            }
+                        }));
+                    }
+                }),
+                catchError(err => this.sendErrorToState(err, 'fetchUrbansFailure'))
             );
     }
 

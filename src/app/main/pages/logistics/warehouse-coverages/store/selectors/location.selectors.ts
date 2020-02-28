@@ -124,3 +124,36 @@ export const getDistrictTotal = createSelector(
     getDistrictEntitiesState,
     state => state.total
 );
+
+// Urban
+export const getUrbanEntitiesState = createSelector(
+    getLocationState,
+    state => state.urban
+);
+
+export const {
+    selectAll: selectAllUrbans,
+    selectEntities: selectUrbanEntities,
+    selectIds: selectUrbanIds,
+    selectTotal: selectUrbanTotal
+} = fromLocation.adapterUrban.getSelectors(getUrbanEntitiesState);
+
+export const getUrbanLoadingState = createSelector(
+    getUrbanEntitiesState,
+    state => state.isLoading
+);
+
+export const getUrbanRefreshState = createSelector(
+    getUrbanEntitiesState,
+    state => state.needRefresh
+);
+
+export const getSelectedUrban = createSelector(
+    getUrbanEntitiesState,
+    state => state.selected
+);
+
+export const getUrbanTotal = createSelector(
+    getUrbanEntitiesState,
+    state => state.total
+);
