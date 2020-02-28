@@ -30,15 +30,33 @@ import {
     IQueryParams,
     LifecyclePlatform,
     SupplierStore,
-    Urban
+    Temperature,
+    Urban,
+    WarehouseValue
 } from 'app/shared/models';
-import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
+import {
+    DropdownActions,
+    FormActions,
+    TemperatureActions,
+    UiActions,
+    WarehouseValueActions
+} from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
+import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { filter, map, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import {
+    filter,
+    map,
+    takeUntil,
+    tap,
+    withLatestFrom,
+    distinctUntilChanged,
+    debounceTime
+} from 'rxjs/operators';
 
 import * as fromWarehouses from '../store/reducers';
 import { WarehouseSelectors } from '../store/selectors';
+import { WarehouseActions } from '../store/actions';
 
 @Component({
     selector: 'app-warehouse-form',
@@ -82,6 +100,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     lng: number;
 
     invoiceGroups$: Observable<Array<InvoiceGroup>>;
+    temperatures$: Observable<Array<Temperature>>;
+    warehouseValues$: Observable<Array<WarehouseValue>>;
     districts$: Observable<Array<District>>;
     store$: Observable<SupplierStore>;
     urbans$: Observable<Array<Urban>>;
@@ -217,6 +237,11 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     displayUrbanOption(item: Urban, isHtml = false): string {
         return `${item.urban}`;
+    }
+
+    getLeadTime(day: number): string {
+        console.log('LEAD', day);
+        return day > 1 ? ' Days' : ' Day';
     }
 
     getErrorMessage(field: string): string {
@@ -522,6 +547,13 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                 this.store.dispatch(FormActions.resetCancelButtonAction());
 
+                // Reset form status state
+                this.store.dispatch(FormActions.resetFormStatus());
+
+                // Reset click save button state
+                this.store.dispatch(FormActions.resetClickSaveButton());
+
+                // Hide footer action
                 this.store.dispatch(UiActions.hideFooterAction());
 
                 // Reset district state
@@ -537,6 +569,18 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             default:
                 // Fetch request invoice group
                 this.store.dispatch(DropdownActions.fetchDropdownInvoiceGroupRequest());
+
+                // Fetch request temperature
+                this.store.dispatch(
+                    TemperatureActions.fetchTemperatureRequest({ payload: { paginate: false } })
+                );
+
+                // Fetch request warehouse value
+                this.store.dispatch(
+                    WarehouseValueActions.fetchWarehouseValueRequest({
+                        payload: { paginate: false }
+                    })
+                );
 
                 const { id } = this.route.snapshot.params;
 
@@ -575,6 +619,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 this.invoiceGroups$ = this.store.select(
                     DropdownSelectors.getInvoiceGroupDropdownState
                 );
+
+                this.temperatures$ = this.store.select(TemperatureSelectors.selectAll);
+
+                this.warehouseValues$ = this.store.select(WarehouseValueSelectors.selectAll);
 
                 this.districts$ = this.store.select(DropdownSelectors.getAllDistrict).pipe(
                     tap(sources => {
@@ -641,6 +689,13 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         this._onSearchUrban(v);
                     });
 
+                // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
+                this.form.statusChanges
+                    .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
+                    .subscribe(status => {
+                        this._setFormStatus(status);
+                    });
+
                 // Handle cancel button action (footer)
                 this.store
                     .select(FormSelectors.getIsClickCancelButton)
@@ -654,6 +709,17 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                         this.store.dispatch(FormActions.resetClickCancelButton());
                         this.store.dispatch(FormActions.resetCancelButtonAction());
+                    });
+
+                // Handle save button action (footer)
+                this.store
+                    .select(FormSelectors.getIsClickSaveButton)
+                    .pipe(
+                        filter(isClick => !!isClick),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(isClick => {
+                        this._onSubmit();
                     });
                 break;
         }
@@ -677,7 +743,14 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            leadTime: [''],
+            leadTime: [
+                '',
+                [
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
+                    })
+                ]
+            ],
             invoices: [
                 '',
                 [
@@ -686,7 +759,16 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            address: '',
+            temperature: [''],
+            whValue: [''],
+            address: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             manually: false,
             district: [
                 '',
@@ -748,6 +830,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
         if (this.isManually) {
             return (
+                this.form.get('address').valid &&
                 this.form.get('district').valid &&
                 this.form.get('urban').valid &&
                 this.form.get('postcode').value &&
@@ -829,11 +912,16 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     this.lng = lng;
                 }
 
+                this.form.markAsPristine();
+
+                if (this.form.status === 'PENDING') {
+                    this.cdRef.markForCheck();
+                    return;
+                }
+
                 this._setFormStatus(this.form.status);
 
                 this.cdRef.detectChanges();
-
-                this.form.markAsPristine();
             });
     }
 
@@ -1005,37 +1093,60 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const { id } = this.route.parent.snapshot.params;
         const body = this.form.getRawValue();
         const urban = body.urban as Urban;
-        const payload = {
-            urbanId: urban.id,
-            longitude: body.lng,
-            latitude: body.lat,
-            noteAddress: body.notes,
-            address: body.address
-        };
 
-        if (!body.longitude) {
-            delete payload.longitude;
+        if (this.pageType === 'new') {
+            const payload = {
+                urbanId: urban.id,
+                warehouseValueId: body.whValue,
+                warehouseTemperatureId: body.temperature,
+                code: body.whId,
+                name: body.whName,
+                leadTime: body.leadTime,
+                longitude: body.lng,
+                latitude: body.lat,
+                noteAddress: body.notes,
+                address: body.address,
+                invoiceGroup: body.invoices,
+                status: 'active'
+            };
+
+            this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
+        } else if (this.pageType === 'edit') {
+            const { id } = this.route.parent.snapshot.params;
+
+            const payload = {
+                urbanId: urban.id,
+                longitude: body.lng,
+                latitude: body.lat,
+                noteAddress: body.notes,
+                address: body.address
+            };
+
+            if (!body.longitude) {
+                delete payload.longitude;
+            }
+
+            if (!body.latitude) {
+                delete payload.latitude;
+            }
+
+            if (!body.address) {
+                delete payload.address;
+            }
+
+            if (!body.notes) {
+                delete payload.noteAddress;
+            }
+
+            if (id && Object.keys(payload).length > 0) {
+                // this.store.dispatch(
+                //     StoreActions.updateStoreRequest({ payload: { id, body: payload } })
+                // );
+            }
         }
 
-        if (!body.latitude) {
-            delete payload.latitude;
-        }
-
-        if (!body.address) {
-            delete payload.address;
-        }
-
-        if (!body.notes) {
-            delete payload.noteAddress;
-        }
-
-        if (id && Object.keys(payload).length > 0) {
-            // this.store.dispatch(
-            //     StoreActions.updateStoreRequest({ payload: { id, body: payload } })
-            // );
-        }
+        this.store.dispatch(FormActions.resetClickSaveButton());
     }
 }

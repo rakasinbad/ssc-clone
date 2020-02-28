@@ -28,11 +28,20 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(WarehouseActions.fetchWarehousesRequest, state => ({
+    on(WarehouseActions.createWarehouseRequest, WarehouseActions.fetchWarehousesRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(WarehouseActions.fetchWarehousesFailure, WarehouseActions.fetchWarehouseFailure, state => ({
+    on(
+        WarehouseActions.createWarehouseFailure,
+        WarehouseActions.fetchWarehousesFailure,
+        WarehouseActions.fetchWarehouseFailure,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(WarehouseActions.createWarehouseSuccess, state => ({
         ...state,
         isLoading: false
     })),

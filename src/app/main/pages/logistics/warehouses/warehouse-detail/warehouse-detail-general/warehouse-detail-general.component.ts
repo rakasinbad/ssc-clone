@@ -18,6 +18,7 @@ import { WarehouseSelectors } from '../../store/selectors';
 })
 export class WarehouseDetailGeneralComponent implements OnInit {
     warehouse$: Observable<Warehouse>;
+    isLoading$: Observable<boolean>;
 
     constructor(private store: Store<fromWarehouses.FeatureState>) {}
 
@@ -30,6 +31,7 @@ export class WarehouseDetailGeneralComponent implements OnInit {
         // Add 'implements OnInit' to the class.
 
         this.warehouse$ = this.store.select(WarehouseSelectors.getSelectedItem);
+        this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
     }
 
     // -----------------------------------------------------------------------------------------------------

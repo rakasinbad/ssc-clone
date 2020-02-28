@@ -1,13 +1,11 @@
 import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
-import * as fromPortfolios from './sources/portfolio';
-import * as fromTeams from './sources/team';
-import * as fromTemperatures from './sources/temperature';
-import * as fromWarehouseValues from './sources/warehouse-value';
+import * as fromTemperatureErrs from './error.reducer';
+import * as fromTemperatures from './temperature.reducer';
 
 // Keyname for core reducer
-const featureKey = 'sources';
+const featureKey = 'temperatures';
 
 /**
  *
@@ -15,10 +13,8 @@ const featureKey = 'sources';
  * @interface State
  */
 interface State {
-    [fromPortfolios.featureKey]: fromPortfolios.State;
-    [fromTeams.featureKey]: fromTeams.State;
+    [fromTemperatureErrs.featureKey]: fromTemperatureErrs.State;
     [fromTemperatures.featureKey]: fromTemperatures.State;
-    [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
 }
 
 /**
@@ -40,10 +36,8 @@ interface FeatureState extends fromRoot.State {
  */
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
-        [fromPortfolios.featureKey]: fromPortfolios.reducers,
-        [fromTeams.featureKey]: fromTeams.reducers,
-        [fromTemperatures.featureKey]: fromTemperatures.reducers,
-        [fromWarehouseValues.featureKey]: fromWarehouseValues.reducers
+        [fromTemperatureErrs.featureKey]: fromTemperatureErrs.reducer,
+        [fromTemperatures.featureKey]: fromTemperatures.reducer
     })(state, action);
 }
 

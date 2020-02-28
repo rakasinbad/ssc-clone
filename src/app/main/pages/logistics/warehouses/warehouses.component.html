@@ -14,6 +14,9 @@
 
             <mat-table
                 class="warehouses-table sinbad-table mx-16"
+                [class.sinbad-table-no-record]="
+                    !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                "
                 #table
                 [dataSource]="dataSource$ | async"
                 matSort
@@ -203,12 +206,12 @@
                 ></mat-row>
             </mat-table>
 
-            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+            <div class="loader-content" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
             <div
-                class="no-records"
+                class="loader-content"
                 *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
             >
                 No records found

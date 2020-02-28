@@ -132,7 +132,7 @@ quill-editor {
 
 .loader-content {
     position: absolute;
-    top: 0;
+    top: 20%;
     left: 0;
     bottom: 0;
     right: 0;
@@ -280,6 +280,12 @@ quill-editor {
 // Table helper
 .sinbad-table {
     min-height: 42px !important;
+}
+
+.mat-table {
+    &.sinbad-table-no-record {
+        background: #ffffff !important;
+    }
 }
 
 // Tooltip helper

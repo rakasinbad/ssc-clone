@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models';
 
-import { WarehouseActions } from '../actions';
+import { WarehouseActions, WarehouseCoverageActions, WarehouseSkuStockActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'errors';
@@ -30,18 +30,34 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
-        WarehouseActions.fetchWarehousesFailure,
         WarehouseActions.fetchWarehouseFailure,
+        WarehouseActions.fetchWarehousesFailure,
+        WarehouseCoverageActions.fetchWarehouseCoveragesFailure,
+        WarehouseSkuStockActions.fetchWarehouseSkuStocksFailure,
         (state, { payload }) => {
             return adapter.upsertOne(payload, state);
         }
     ),
-    on(WarehouseActions.fetchWarehousesSuccess, state => {
-        return adapter.removeOne('fetchWarehousesFailure', state);
-    }),
     on(WarehouseActions.fetchWarehouseSuccess, state => {
         return adapter.removeOne('fetchWarehouseFailure', state);
     }),
+    on(WarehouseActions.fetchWarehousesSuccess, state => {
+        return adapter.removeOne('fetchWarehousesFailure', state);
+    }),
+    on(
+        WarehouseCoverageActions.clearState,
+        WarehouseCoverageActions.fetchWarehouseCoveragesSuccess,
+        state => {
+            return adapter.removeOne('fetchWarehouseCoveragesFailure', state);
+        }
+    ),
+    on(
+        WarehouseSkuStockActions.clearState,
+        WarehouseSkuStockActions.fetchWarehouseSkuStocksSuccess,
+        state => {
+            return adapter.removeOne('fetchWarehouseSkuStocksFailure', state);
+        }
+    ),
     on(WarehouseActions.clearState, state => {
         return adapter.removeAll({ ...state });
     })

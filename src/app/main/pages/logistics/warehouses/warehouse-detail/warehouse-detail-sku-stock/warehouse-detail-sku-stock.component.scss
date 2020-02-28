@@ -6,16 +6,6 @@ app-warehouse-detail-sku-stock {
 
     .sku-stock-content {
         height: inherit;
-
-        sinbad-card-header {
-            div {
-                &:first-child {
-                    margin-left: 0 !important;
-                    margin-right: 0 !important;
-                    margin-top: 4px !important;
-                }
-            }
-        }
     }
 
     .warehouse-detail-sku-stock-table {
@@ -38,7 +28,7 @@ app-warehouse-detail-sku-stock {
 
         .warehouse-detail-sku-stock {
             position: relative;
-            cursor: pointer;
+            // cursor: pointer;
         }
 
         .mat-header-cell {

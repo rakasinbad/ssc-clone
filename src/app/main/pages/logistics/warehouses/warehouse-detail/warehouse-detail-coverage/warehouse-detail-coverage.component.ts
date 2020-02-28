@@ -19,7 +19,7 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 import { IQueryParams, LifecyclePlatform, WarehouseCoverage } from 'app/shared/models';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { WarehouseCoverageActions } from '../../store/actions';
 import * as fromWarehouses from '../../store/reducers';
@@ -46,11 +46,10 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
             label: 'Warehouse Coverage Information'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
         },
         add: {
             // permissions: []
@@ -64,49 +63,6 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
             // pageType: 'oms'
         }
     };
-
-    dataSource = [
-        {
-            id: '1',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Kuningan Barat'
-        },
-        {
-            id: '2',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Pela Mampang'
-        },
-        {
-            id: '3',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Bangka'
-        },
-        {
-            id: '4',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Tegal Parang'
-        },
-        {
-            id: '5',
-            name: 'Warehouse 1',
-            province: 'DKI Jakarta',
-            city: 'Jakarta Selatan',
-            district: 'Mampang',
-            urban: 'Mampang Prapatan'
-        }
-    ];
 
     search: FormControl = new FormControl('');
     dataSource$: Observable<Array<WarehouseCoverage>>;
@@ -177,7 +133,7 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Reset core state sales reps
+                // Reset core state warehouse coverages
                 this.store.dispatch(WarehouseCoverageActions.clearState());
 
                 this._unSubs$.next();
@@ -190,6 +146,23 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
                 this.dataSource$ = this.store.select(WarehouseCoverageSelectors.selectAll);
                 this.totalDataSource$ = this.store.select(WarehouseCoverageSelectors.getTotalItem);
                 this.isLoading$ = this.store.select(WarehouseCoverageSelectors.getIsLoading);
+
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                            }
+
+                            return true;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this._onRefreshTable();
+                    });
 
                 this._initTable();
                 break;

@@ -22,7 +22,16 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2">{{ (warehouse$ | async)?.name }}</div>
+                    <div class="h2">
+                        <ng-container *ngIf="!(isLoading$ | async)">
+                            {{ (warehouse$ | async)?.name }}
+                        </ng-container>
+
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', height: '25px', 'margin-bottom': '-5px' }"
+                            *ngIf="isLoading$ | async"
+                        ></ngx-skeleton-loader>
+                    </div>
                     <div class="subtitle secondary-text">
                         <span>Warehouse Detail</span>
                     </div>
@@ -30,9 +39,20 @@
             </div>
             <!-- / APP TITLE -->
 
-            <button mat-raised-button type="button" class="accent-fg" [routerLink]="['../']">
+            <button
+                mat-raised-button
+                type="button"
+                class="accent-fg"
+                [routerLink]="['../']"
+                *ngIf="!(isLoading$ | async)"
+            >
                 <span>Edit</span>
             </button>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
         <!-- / HEADER -->
 
