@@ -289,7 +289,7 @@ export class StoreSettingEffects {
         const newQuery = { ...queryParams };
 
         return this.storeSettingApi
-            .findAll<IPaginatedResponse<StoreSetting>>(({ ...queryParams, supplierId }) as IQueryParams)
+            .findAll<IPaginatedResponse<StoreSetting>>(({ ...queryParams }) as IQueryParams, supplierId)
             .pipe(
                 catchOffline(),
                 switchMap(response => {

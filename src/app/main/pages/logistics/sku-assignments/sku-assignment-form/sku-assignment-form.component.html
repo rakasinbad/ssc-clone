@@ -5,8 +5,8 @@
 
     <!-- CENTER -->
     <div class="center">
-        <form id="sku-assignment-form" name="skuAssignmentForm" class="merchant pt-24 w-100-p" fxLayout="column" fxFlex
-            novalidate>
+        <form id="sku-assignment-form" [formGroup]="form" name="skuAssignmentForm" class="merchant pt-24 w-100-p"
+            fxLayout="column" fxFlex novalidate>
             <mat-card class="mb-24">
                 <div fxLayout="column">
                     <span class="mat-headline font-weight-600">
@@ -20,8 +20,10 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select placeholder="Choose Warehouse">
-                                    <mat-option>None</mat-option>
+                                <mat-select name="warehouse" formControlName="warehouse">
+                                    <mat-option *ngFor="let rowList of warehouseList$ | async" [value]="rowList.id">
+                                        {{ rowList.name }}
+                                    </mat-option>
                                 </mat-select>
                             </mat-form-field>
                         </div>
@@ -33,7 +35,7 @@
                 </div>
 
                 <div class="content-card pt-8">
-                    <app-find-location></app-find-location>
+                    <app-find-sku></app-find-sku>
                 </div>
             </mat-card>
         </form>

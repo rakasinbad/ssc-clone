@@ -39,3 +39,4 @@ export * from './warehouse-catalogue.model';
 export * from './warehouse-coverage.model';
 export * from './warehouse-invoice-group.model';
 export * from './warehouse-value.model';
+export * from 'app/main/pages/catalogues/models/catalogue.model';

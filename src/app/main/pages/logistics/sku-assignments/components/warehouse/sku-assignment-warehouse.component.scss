@@ -1,10 +1,16 @@
 @import 'src/@fuse/scss/fuse';
 
 app-sku-assignments-warehouse {
+    display: flex;
+    flex: 1 1 auto;
+    overflow: auto;
+    flex-direction: column;
+    border: 1px solid;
+    border-radius: 4px !important;
+
     .sku-assignments-warehouse-table {
         flex: 1 1 auto;
-        border: 1px solid rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
+        border-top: 1px solid rgba(0, 0, 0, 0.12);
         min-height: 40px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;

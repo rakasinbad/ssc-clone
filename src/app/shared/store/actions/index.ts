@@ -2,6 +2,7 @@ import * as DropdownActions from './dropdown.actions';
 import * as FormActions from './form.actions';
 import * as NetworkActions from './network.actions';
 import * as PortfolioActions from './portfolio.actions';
+import * as WarehouseActions from './warehouse.actions';
 import * as ProgressActions from './progress.actions';
 import * as TeamActions from './team.actions';
 import * as TemperatureActions from './temperature.actions';
@@ -16,6 +17,7 @@ export {
     FormActions,
     NetworkActions,
     PortfolioActions,
+    WarehouseActions,
     ProgressActions,
     TeamActions,
     TemperatureActions,
