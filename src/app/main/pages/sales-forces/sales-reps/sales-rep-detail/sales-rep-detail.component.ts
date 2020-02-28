@@ -73,6 +73,10 @@ export class SalesRepDetailComponent implements OnInit, OnDestroy {
         this._initPage(LifecyclePlatform.OnDestroy);
     }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
+
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         const { id } = this.route.snapshot.params;
 

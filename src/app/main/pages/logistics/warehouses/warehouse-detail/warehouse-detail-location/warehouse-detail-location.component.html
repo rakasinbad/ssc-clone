@@ -12,13 +12,13 @@
         [minZoom]="opts.minZoom"
         [maxZoom]="opts.maxZoom"
         [streetViewControl]="false"
-        [latitude]="opts.lat"
-        [longitude]="opts.lng"
+        [latitude]="(warehouse$ | async)?.latitude"
+        [longitude]="(warehouse$ | async)?.longitude"
         [fitBounds]="true"
     >
         <agm-marker
-            [latitude]="opts.lat"
-            [longitude]="opts.lng"
+            [latitude]="(warehouse$ | async)?.latitude"
+            [longitude]="(warehouse$ | async)?.longitude"
             [iconUrl]="opts.icon"
             [agmFitBounds]="true"
         ></agm-marker>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            Jalan mustaman no 5, Jakarta selatan
+            {{ (warehouse$ | async)?.address || '-' }}
         </div>
     </div>
 
@@ -50,7 +50,7 @@
         </div>
 
         <div class="info" fxFlex="100">
-            Samping pom bensin, dekat jual bakso ojek pangkalan enak sekali
+            {{ (warehouse$ | async)?.noteAddress || '-' }}
         </div>
     </div>
 </div>
