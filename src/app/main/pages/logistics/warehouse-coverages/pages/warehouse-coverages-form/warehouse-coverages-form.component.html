@@ -240,7 +240,10 @@
                     </div>
                     <!-- / FIND LOCATION FORM -->
                     <!-- MULTIPLE SELECTION -->
-                    <sinbad-multiple-selection [availableOptions]="availableOptions"></sinbad-multiple-selection>
+                    <sinbad-multiple-selection
+                        [availableOptions]="availableOptions"
+                        [isAvailableOptionsLoading]="isAvailableOptionsLoading"
+                    ></sinbad-multiple-selection>
                     <!-- / MULTIPLE SELECTION -->
                 </form>
             </div>
