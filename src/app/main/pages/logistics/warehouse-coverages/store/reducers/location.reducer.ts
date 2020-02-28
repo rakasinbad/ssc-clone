@@ -27,10 +27,18 @@ interface DistrictState extends EntityState<string> {
     total: number;
 }
 
+interface UrbanState extends EntityState<string> {
+    isLoading: boolean;
+    needRefresh: boolean;
+    selected: string;
+    total: number;
+}
+
 export interface LocationState {
     province: ProvinceState;
     city: CityState;
     district: DistrictState;
+    urban: UrbanState;
 }
 
 // Adapter for province state
@@ -55,8 +63,18 @@ const cityInitialState: CityState = adapterCity.getInitialState<Omit<CityState, 
 
 // Adapter for district state
 export const adapterDistrict = createEntityAdapter<string>({ selectId: row => row });
-// Initialize city state
+// Initialize district state
 const districtInitialState: DistrictState = adapterDistrict.getInitialState<Omit<DistrictState, 'ids' | 'entities'>>({
+    isLoading: false,
+    needRefresh: false,
+    selected: null,
+    total: 0
+});
+
+// Adapter for urban state
+export const adapterUrban = createEntityAdapter<string>({ selectId: row => row });
+// Initialize urban state
+const urbanInitialState: DistrictState = adapterUrban.getInitialState<Omit<DistrictState, 'ids' | 'entities'>>({
     isLoading: false,
     needRefresh: false,
     selected: null,
@@ -68,6 +86,7 @@ export const initialState: LocationState = {
     city: cityInitialState,
     district: districtInitialState,
     province: provinceInitialState,
+    urban: urbanInitialState,
 };
 
 // Reducer manage the action
@@ -89,6 +108,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             province: {
                 ...state.province,
+                total: 0,
                 isLoading: false
             }
         })
@@ -109,6 +129,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             city: {
                 ...state.city,
+                total: 0,
                 isLoading: false
             }
         })
@@ -129,6 +150,28 @@ export const reducer = createReducer<LocationState>(
             ...state,
             district: {
                 ...state.district,
+                total: 0,
+                isLoading: false
+            }
+        })
+    ),
+    on(
+        LocationActions.fetchUrbansRequest,
+        state => ({
+            ...state,
+            district: {
+                ...state.district,
+                isLoading: true
+            }
+        })
+    ),
+    on(
+        LocationActions.fetchUrbansFailure,
+        state => ({
+            ...state,
+            urban: {
+                ...state.urban,
+                total: 0,
                 isLoading: false
             }
         })
@@ -161,6 +204,17 @@ export const reducer = createReducer<LocationState>(
             ...state,
             district: adapterDistrict.upsertMany(payload.districts, {
                 ...state.district,
+                isLoading: false,
+                total: payload.total,
+            })
+        })
+    ),
+    on(
+        LocationActions.fetchUrbansSuccess,
+        (state, { payload }) => ({
+            ...state,
+            urban: adapterUrban.upsertMany(payload.urbans, {
+                ...state.urban,
                 isLoading: false,
                 total: payload.total,
             })
@@ -227,6 +281,26 @@ export const reducer = createReducer<LocationState>(
         })
     ),
     on(
+        LocationActions.selectUrban,
+        (state, { payload }) => ({
+            ...state,
+            urban: {
+                ...state.urban,
+                selected: payload
+            }
+        })
+    ),
+    on(
+        LocationActions.deselectUrban,
+        state => ({
+            ...state,
+            urban: {
+                ...state.urban,
+                selected: null
+            }
+        })
+    ),
+    on(
         LocationActions.truncateProvinces,
         state => ({
             ...state,
@@ -250,6 +324,15 @@ export const reducer = createReducer<LocationState>(
             ...state,
             district: adapterDistrict.removeAll({
                 ...state.district,
+            })
+        })
+    ),
+    on(
+        LocationActions.truncateUrbans,
+        state => ({
+            ...state,
+            urban: adapterUrban.removeAll({
+                ...state.urban,
             })
         })
     ),
