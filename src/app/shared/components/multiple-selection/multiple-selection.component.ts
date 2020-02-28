@@ -11,7 +11,7 @@ import { Selection } from './models';
     templateUrl: './multiple-selection.component.html',
     styleUrls: ['./multiple-selection.component.scss'],
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class MultipleSelectionComponent implements OnInit, OnDestroy, AfterViewInit {
 
