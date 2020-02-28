@@ -8,32 +8,32 @@ import { TypedAction } from '@ngrx/store/src/models';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { HelperService, NoticeService, WarehouseCoverageApiService } from 'app/shared/helpers';
+import { HelperService, NoticeService, WarehouseCatalogueApiService } from 'app/shared/helpers';
 import {
     ErrorHandler,
     IQueryParams,
     PaginateResponse,
     TNullable,
     User,
-    WarehouseCoverage
+    WarehouseCatalogue
 } from 'app/shared/models';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { WarehouseCoverageActions, WarehouseFailureActions } from '../actions';
-import * as fromWarehouseCoverages from '../reducers';
+import { WarehouseFailureActions, WarehouseSkuStockActions } from '../actions';
+import * as fromWarehouses from '../reducers';
 
 type AnyAction = { payload: any } & TypedAction<any>;
 
 @Injectable()
-export class WarehouseCoverageEffects {
+export class WarehouseSkuStockEffects {
     // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [WAREHOUSE COVERAGES]
+    // @ FETCH methods [WAREHOUSE SKU STOCKS]
     // -----------------------------------------------------------------------------------------------------
 
-    fetchWarehouseCoveragesRequest$ = createEffect(() =>
+    fetchWarehouseSkuStocksRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(WarehouseCoverageActions.fetchWarehouseCoveragesRequest),
+            ofType(WarehouseSkuStockActions.fetchWarehouseSkuStocksRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(
@@ -47,10 +47,10 @@ export class WarehouseCoverageEffects {
                             retry(3),
                             switchMap(() => of([warehouseId, params])),
                             switchMap<[string, IQueryParams], Observable<AnyAction>>(
-                                this.fetchWareouseCoveragesRequest$
+                                this.fetchWareouseSkuStocksRequest$
                             ),
                             catchError(err =>
-                                this.sendErrorToState$(err, 'fetchWarehouseCoveragesFailure')
+                                this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure')
                             )
                         );
                     } else {
@@ -59,10 +59,10 @@ export class WarehouseCoverageEffects {
                             retry(3),
                             switchMap(() => of([warehouseId, params])),
                             switchMap<[string, IQueryParams], Observable<AnyAction>>(
-                                this.fetchWareouseCoveragesRequest$
+                                this.fetchWareouseSkuStocksRequest$
                             ),
                             catchError(err =>
-                                this.sendErrorToState$(err, 'fetchWarehouseCoveragesFailure')
+                                this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure')
                             )
                         );
                     }
@@ -71,10 +71,10 @@ export class WarehouseCoverageEffects {
         )
     );
 
-    fetchWarehouseCoveragesFailure$ = createEffect(
+    fetchWarehouseSkuStocksFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(WarehouseCoverageActions.fetchWarehouseCoveragesFailure),
+                ofType(WarehouseSkuStockActions.fetchWarehouseSkuStocksFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -92,10 +92,10 @@ export class WarehouseCoverageEffects {
         private actions$: Actions,
         private matDialog: MatDialog,
         private router: Router,
-        private store: Store<fromWarehouseCoverages.FeatureState>,
+        private store: Store<fromWarehouses.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private _$warehouseCoverageApi: WarehouseCoverageApiService
+        private _$warehouseCatalogueApi: WarehouseCatalogueApiService
     ) {}
 
     checkUserSupplier = (userData: User): User => {
@@ -113,27 +113,33 @@ export class WarehouseCoverageEffects {
         return userData;
     };
 
-    fetchWareouseCoveragesRequest$ = ([warehosueId, params]: [string, IQueryParams]): Observable<
+    fetchWareouseSkuStocksRequest$ = ([warehouseId, params]: [string, IQueryParams]): Observable<
         AnyAction
     > => {
-        return this._$warehouseCoverageApi
-            .findByWarehouseId<PaginateResponse<WarehouseCoverage>>(params, warehosueId)
+        const newParams = { ...params };
+
+        if (warehouseId) {
+            newParams['warehouseId'] = warehouseId;
+        }
+
+        return this._$warehouseCatalogueApi
+            .findAll<PaginateResponse<WarehouseCatalogue>>(newParams)
             .pipe(
                 catchOffline(),
                 map(resp => {
                     const newResp = {
                         data:
                             (resp.data && resp.data.length > 0
-                                ? resp.data.map(v => new WarehouseCoverage(v))
+                                ? resp.data.map(v => new WarehouseCatalogue(v))
                                 : []) || [],
                         total: resp.total
                     };
 
-                    return WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
+                    return WarehouseSkuStockActions.fetchWarehouseSkuStocksSuccess({
                         payload: newResp
                     });
                 }),
-                catchError(err => this.sendErrorToState$(err, 'fetchWarehouseCoveragesFailure'))
+                catchError(err => this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure'))
             );
     };
 
@@ -143,7 +149,7 @@ export class WarehouseCoverageEffects {
     ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             return of(
-                WarehouseCoverageActions[dispatchTo]({
+                WarehouseSkuStockActions[dispatchTo]({
                     payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                 })
             );
@@ -151,7 +157,7 @@ export class WarehouseCoverageEffects {
 
         if (err instanceof HttpErrorResponse) {
             return of(
-                WarehouseCoverageActions[dispatchTo]({
+                WarehouseSkuStockActions[dispatchTo]({
                     payload: {
                         id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
                         errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
@@ -161,7 +167,7 @@ export class WarehouseCoverageEffects {
         }
 
         return of(
-            WarehouseCoverageActions[dispatchTo]({
+            WarehouseSkuStockActions[dispatchTo]({
                 payload: {
                     id: `ERR_UNRECOGNIZED`,
                     errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))

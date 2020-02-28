@@ -3,6 +3,7 @@ import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromWarehousesErrs from './error.reducer';
 import * as fromWarehouseCoverages from './warehouse-coverage.reducer';
+import * as fromWarehouseSkuStocks from './warehouse-sku-stock.reducer';
 import * as fromWarehouses from './warehouse.reducer';
 
 // Keyname for core reducer
@@ -17,6 +18,7 @@ export interface State {
     [fromWarehouseCoverages.featureKey]: fromWarehouseCoverages.State;
     [fromWarehouses.featureKey]: fromWarehouses.State;
     [fromWarehousesErrs.featureKey]: fromWarehousesErrs.State;
+    [fromWarehouseSkuStocks.featureKey]: fromWarehouseSkuStocks.State;
 }
 
 /**
@@ -41,6 +43,7 @@ export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
         [fromWarehouseCoverages.featureKey]: fromWarehouseCoverages.reducer,
         [fromWarehouses.featureKey]: fromWarehouses.reducer,
-        [fromWarehousesErrs.featureKey]: fromWarehousesErrs.reducer
+        [fromWarehousesErrs.featureKey]: fromWarehousesErrs.reducer,
+        [fromWarehouseSkuStocks.featureKey]: fromWarehouseSkuStocks.reducer
     })(state, action);
 }
