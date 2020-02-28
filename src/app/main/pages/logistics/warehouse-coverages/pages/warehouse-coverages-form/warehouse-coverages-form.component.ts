@@ -58,6 +58,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan district yang tersedia.
     availableDistricts$: Observable<Array<string>>;
     availableOptions: Array<Selection> = [];
+    // tslint:disable-next-line: no-inferrable-types
+    isAvailableOptionsLoading: boolean = true;
 
     // AutoComplete for Province
     @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
@@ -123,6 +125,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             LocationSelectors.getDistrictLoadingState
         ).pipe(
             tap(val => this.debug('IS DISTRICT LOADING?', val)),
+            tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
         );
 
