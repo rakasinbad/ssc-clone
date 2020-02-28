@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams, ErrorHandler, Province } from 'app/shared/models';
+import { Urban } from '../../models';
 
 export type failureActionNames =
     'fetchProvincesFailure' |
@@ -98,7 +99,7 @@ export const fetchUrbansFailure = createAction(
 
 export const fetchUrbansSuccess = createAction(
     '[WH/WH Coverage/Locations API] Fetch Urbans Success',
-    props<{ payload: { urbans: Array<string>; total: number } }>()
+    props<{ payload: { urbans: Array<Urban>; total: number } }>()
 );
 
 export const selectUrban = createAction(

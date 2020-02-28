@@ -2,6 +2,7 @@ import { WarehouseCoverageActions, LocationActions } from '../actions';
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter } from '@ngrx/entity';
 import { Province } from 'app/shared/models';
+import { Urban } from '../../models';
 
 // Keyname for reducer
 export const featureKey = 'locations';
@@ -27,7 +28,7 @@ interface DistrictState extends EntityState<string> {
     total: number;
 }
 
-interface UrbanState extends EntityState<string> {
+interface UrbanState extends EntityState<Urban> {
     isLoading: boolean;
     needRefresh: boolean;
     selected: string;
@@ -72,9 +73,9 @@ const districtInitialState: DistrictState = adapterDistrict.getInitialState<Omit
 });
 
 // Adapter for urban state
-export const adapterUrban = createEntityAdapter<string>({ selectId: row => row });
+export const adapterUrban = createEntityAdapter<Urban>({ selectId: row => row.id });
 // Initialize urban state
-const urbanInitialState: DistrictState = adapterUrban.getInitialState<Omit<DistrictState, 'ids' | 'entities'>>({
+const urbanInitialState: UrbanState = adapterUrban.getInitialState<Omit<UrbanState, 'ids' | 'entities'>>({
     isLoading: false,
     needRefresh: false,
     selected: null,
