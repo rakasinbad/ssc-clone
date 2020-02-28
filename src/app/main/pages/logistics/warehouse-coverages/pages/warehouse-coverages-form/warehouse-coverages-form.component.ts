@@ -7,11 +7,13 @@ import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxj
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { Province, IQueryParams } from 'app/shared/models';
+import { Province, IQueryParams, IBreadcrumbs } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
 import { LocationSelectors } from '../../store/selectors';
 import { LocationActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
+import { ActivatedRoute } from '@angular/router';
+import { UiActions, FormActions } from 'app/shared/store/actions';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -85,12 +87,92 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     warehouseSub: Subject<string> = new Subject<string>();
 
     constructor(
-        private cd$: ChangeDetectorRef,
         private fb: FormBuilder,
+        private route: ActivatedRoute,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
         private helper$: HelperService,
         private errorMessageSvc: ErrorMessageService,
     ) {
+        const breadcrumbs: Array<IBreadcrumbs> = [
+            {
+                title: 'Home',
+                // translate: 'BREADCRUMBS.HOME',
+                active: false
+            },
+            {
+                title: 'Logistics',
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                // url: '/pages/logistics/warehouse-coverages'
+            },
+            {
+                title: 'Warehouse Coverage',
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                url: '/pages/logistics/warehouse-coverages'
+            },
+        ];
+
+        if (this.route.snapshot.url.filter(url => url.path === 'edit').length > 0) {
+            breadcrumbs.push({
+                title: 'Edit Warehouse Coverage',
+                // translate: 'BREADCRUMBS.EDIT_PRODUCT',
+                active: true
+            });
+        } else {
+            breadcrumbs.push({
+                title: 'Add Warehouse Coverage',
+                // translate: 'BREADCRUMBS.ADD_PRODUCT',
+                active: true
+            });
+        }
+
+        this.locationStore.dispatch(
+            UiActions.createBreadcrumb({
+                payload: breadcrumbs
+            })
+        );
+
+        this.locationStore.dispatch(
+            UiActions.setFooterActionConfig({
+                payload: {
+                    progress: {
+                        title: {
+                            label: 'Skor Konten Produk',
+                            active: true
+                        },
+                        value: {
+                            active: false
+                        },
+                        active: false
+                    },
+                    action: {
+                        save: {
+                            label: 'Save',
+                            active: true
+                        },
+                        draft: {
+                            label: 'Save Draft',
+                            active: false
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            active: false
+                        },
+                        goBack: {
+                            label: 'Back',
+                            active: true,
+                            url: '/pages/logistics/warehouse-coverages'
+                        }
+                    }
+                }
+            })
+        );
+
+        this.locationStore.dispatch(FormActions.resetFormStatus());
+
+        this.locationStore.dispatch(FormActions.resetClickSaveButton());
+
+        this.locationStore.dispatch(UiActions.showFooterAction());
+
         // Mengambil total province di database.
         this.totalProvinces$ = this.locationStore.select(
             LocationSelectors.getProvinceTotal
@@ -670,6 +752,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        this.locationStore.dispatch(UiActions.hideFooterAction());
+        this.locationStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.locationStore.dispatch(UiActions.hideCustomToolbar());
+        this.locationStore.dispatch(FormActions.resetFormStatus());
     }
 
     ngAfterViewInit(): void {
