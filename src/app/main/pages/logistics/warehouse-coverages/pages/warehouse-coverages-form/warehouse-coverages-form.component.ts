@@ -85,6 +85,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     warehouseSub: Subject<string> = new Subject<string>();
 
     constructor(
+        private cd$: ChangeDetectorRef,
         private fb: FormBuilder,
         private route: ActivatedRoute,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
@@ -213,7 +214,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             LocationSelectors.getDistrictLoadingState
         ).pipe(
             tap(val => this.debug('IS DISTRICT LOADING?', val)),
-            tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
         );
 
@@ -784,11 +784,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.availableDistricts$ = this.locationStore.select(
             LocationSelectors.selectAllDistricts
         ).pipe(
-            tap(districts => {
-                if (districts) {
-                    this.availableOptions = districts.map<Selection>(d => ({ id: d, group: 'district', label: d }));
-                }
-            }),
             takeUntil(this.subs$)
         );
 
