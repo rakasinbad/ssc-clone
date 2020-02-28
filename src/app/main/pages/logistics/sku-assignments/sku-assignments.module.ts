@@ -8,7 +8,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
-import { FindLocationComponent } from './components/find-location/find-location.component';
+import { FindSkuComponent } from './components/find-sku/find-sku.component';
 import { SkuAssignmentWarehouseComponent } from './components/warehouse/sku-assignment-warehouse.component';
 import { SkuAssignmentSkuComponent } from './components/sku/sku-assignment-sku.component';
 import { SkuAssignmentFormComponent } from './sku-assignment-form/sku-assignment-form.component';
@@ -20,7 +20,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
     declarations: [
         SkuAssignmentsComponent,
 
-        FindLocationComponent,
+        FindSkuComponent,
         SkuAssignmentFormComponent,
         SkuAssignmentWarehouseComponent,
         SkuAssignmentSkuComponent

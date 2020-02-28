@@ -32,4 +32,5 @@ export * from './upload-api.service';
 export * from './urban-api.service';
 export * from './user-api.service';
 export * from './vehicle-accessibility-api.service';
+export * from './warehouse-api.service';
 export * from './warehouse-coverage-api.service';

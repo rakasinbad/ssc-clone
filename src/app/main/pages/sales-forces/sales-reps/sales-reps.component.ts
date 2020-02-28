@@ -100,7 +100,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     search: FormControl = new FormControl('');
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'sales-rep-id',
         'sales-rep-name',
         'phone-number',
@@ -387,7 +387,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                 canUpdate.then(hasAccess => {
                     if (hasAccess) {
                         this.displayedColumns = [
-                            'checkbox',
+                            // 'checkbox',
                             'sales-rep-id',
                             'sales-rep-name',
                             'phone-number',
@@ -401,7 +401,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
                         ];
                     } else {
                         this.displayedColumns = [
-                            'checkbox',
+                            // 'checkbox',
                             'sales-rep-id',
                             'sales-rep-name',
                             'phone-number',

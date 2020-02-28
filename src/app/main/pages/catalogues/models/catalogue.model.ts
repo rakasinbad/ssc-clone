@@ -182,6 +182,8 @@ export interface ICatalogue extends ITimestamp {
     catalogueKeywords?: Array<CatalogueKeyword>;
     deletedImages?: Array<number>;
     uploadedImages?: Array<{ base64: string }>;
+    source?: 'fetch' | 'list';
+    isSelected?: boolean;
 }
 
 export interface ICatalogueUnitResponse extends IResponsePaginate {
@@ -234,7 +236,7 @@ export class ViolationType implements IViolationType {
         type: string,
         createdAt: Date,
         updatedAt: Date,
-        deletedAt: TNullable<Date>,
+        deletedAt: TNullable<Date>
     ) {
         this.id = id;
         this.type = type;
@@ -285,25 +287,28 @@ export class CatalogueCategory extends Timestamp {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
-        this.children = !Array.isArray(children) ? [] : children.length === 0 ? []
-        : [
-            ...children.map(child => ({
-                ...new CatalogueCategory(
-                    child.id,
-                    child.parentId,
-                    child.category,
-                    child.iconHome,
-                    child.iconTree,
-                    child.sequence,
-                    child.hasChild,
-                    child.status,
-                    child.createdAt,
-                    child.updatedAt,
-                    child.deletedAt,
-                    child.children
-                )
-            }))
-        ];
+        this.children = !Array.isArray(children)
+            ? []
+            : children.length === 0
+            ? []
+            : [
+                  ...children.map(child => ({
+                      ...new CatalogueCategory(
+                          child.id,
+                          child.parentId,
+                          child.category,
+                          child.iconHome,
+                          child.iconTree,
+                          child.sequence,
+                          child.hasChild,
+                          child.status,
+                          child.createdAt,
+                          child.updatedAt,
+                          child.deletedAt,
+                          child.children
+                      )
+                  }))
+              ];
     }
 }
 
@@ -357,7 +362,9 @@ export class CatalogueKeywordCatalogue extends Timestamp {
         super(createdAt, updatedAt, deletedAt);
 
         this.id = id;
-        this.catalogueKeywordId = catalogueKeywordId ? catalogueKeywordId.trim() : catalogueKeywordId;
+        this.catalogueKeywordId = catalogueKeywordId
+            ? catalogueKeywordId.trim()
+            : catalogueKeywordId;
         this.catalogueId = catalogueId ? catalogueId.trim() : catalogueId;
         this.status = !status ? 'inactive' : status;
         this.createdAt = createdAt;
@@ -365,15 +372,16 @@ export class CatalogueKeywordCatalogue extends Timestamp {
         this.deletedAt = deletedAt;
         this.catalogueKeyword = catalogueKeyword
             ? {
-                ...new CatalogueKeyword(
-                    catalogueKeyword.id,
-                    catalogueKeyword.tag,
-                    catalogueKeyword.status,
-                    catalogueKeyword.createdAt,
-                    catalogueKeyword.updatedAt,
-                    catalogueKeyword.deletedAt
-                )
-            } : null;
+                  ...new CatalogueKeyword(
+                      catalogueKeyword.id,
+                      catalogueKeyword.tag,
+                      catalogueKeyword.status,
+                      catalogueKeyword.createdAt,
+                      catalogueKeyword.updatedAt,
+                      catalogueKeyword.deletedAt
+                  )
+              }
+            : null;
     }
 }
 
@@ -579,6 +587,8 @@ export class Catalogue implements ICatalogue {
     deletedImages: Array<number>;
     uploadedImages: Array<{ base64: string }>;
     stockEnRoute: number;
+    source?: 'fetch' | 'list';
+    isSelected?: boolean;
 
     constructor(data: ICatalogue) {
         const {
@@ -628,7 +638,9 @@ export class Catalogue implements ICatalogue {
             catalogueUnit,
             violationType,
             brand,
-            stockEnRoute
+            stockEnRoute,
+            source = 'fetch',
+            isSelected
         } = data;
 
         this.id = id;
@@ -673,111 +685,126 @@ export class Catalogue implements ICatalogue {
         this.violationType = violationType ? violationType : null;
         this.brand = brand;
         this.stockEnRoute = stockEnRoute;
-        
+        this.source = source;
+        this.isSelected = isSelected;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88 88b  d88   dPYb   dP   `" 88__   `Ybo." 
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88 88YbdP88  dP__Yb  Yb  "88 88""   o.`Y8b 
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88 88 YY 88 dP""""Yb  YboodP 888888 8bodP' 
         */
-        this.catalogueImages = Array.isArray(catalogueImages) ? 
-            catalogueImages.map(catalogueImage => new CatalogueImage(
-                    catalogueImage.id,
-                    catalogueImage.catalogueId,
-                    catalogueImage.imageUrl,
-                    catalogueImage.status,
-                    catalogueImage.createdAt,
-                    catalogueImage.updatedAt,
-                    catalogueImage.deletedAt
-                )
-            ).sort((catA, catB) => +catA.id - +catB.id) : [];
+        this.catalogueImages = Array.isArray(catalogueImages)
+            ? catalogueImages
+                  .map(
+                      catalogueImage =>
+                          new CatalogueImage(
+                              catalogueImage.id,
+                              catalogueImage.catalogueId,
+                              catalogueImage.imageUrl,
+                              catalogueImage.status,
+                              catalogueImage.createdAt,
+                              catalogueImage.updatedAt,
+                              catalogueImage.deletedAt
+                          )
+                  )
+                  .sort((catA, catB) => +catA.id - +catB.id)
+            : [];
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888    db    Yb  dP 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88     dPYb    YbdP  
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88    dP__Yb   dPYb  
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88   dP""""Yb dP  Yb 
         */
-        this.catalogueTax = catalogueTax ? {
-            ...new CatalogueTax(
-                catalogueTax.id,
-                catalogueTax.name,
-                catalogueTax.typeAmount,
-                catalogueTax.amount,
-                catalogueTax.calculate,
-                catalogueTax.status,
-                catalogueTax.createdAt,
-                catalogueTax.updatedAt,
-                catalogueTax.deletedAt
-            )
-        } : null;
+        this.catalogueTax = catalogueTax
+            ? {
+                  ...new CatalogueTax(
+                      catalogueTax.id,
+                      catalogueTax.name,
+                      catalogueTax.typeAmount,
+                      catalogueTax.amount,
+                      catalogueTax.calculate,
+                      catalogueTax.status,
+                      catalogueTax.createdAt,
+                      catalogueTax.updatedAt,
+                      catalogueTax.deletedAt
+                  )
+              }
+            : null;
         /*
          dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 888888 88 88""Yb .dP"Y8 888888 Yb  
         dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88__   88 88__dP `Ybo."   88    Yb 
         Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88""   88 88"Yb  o.`Y8b   88    dP 
          YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88     88 88  Yb 8bodP'   88   dP  
         */
-        this.firstCatalogueCategory = firstCatalogueCategory ? new CatalogueCategory(
-            firstCatalogueCategory.id,
-            firstCatalogueCategory.parentId,
-            firstCatalogueCategory.category,
-            firstCatalogueCategory.iconHome,
-            firstCatalogueCategory.iconTree,
-            firstCatalogueCategory.sequence,
-            firstCatalogueCategory.hasChild,
-            firstCatalogueCategory.status,
-            firstCatalogueCategory.createdAt,
-            firstCatalogueCategory.updatedAt,
-            firstCatalogueCategory.deletedAt
-        ) : null;
+        this.firstCatalogueCategory = firstCatalogueCategory
+            ? new CatalogueCategory(
+                  firstCatalogueCategory.id,
+                  firstCatalogueCategory.parentId,
+                  firstCatalogueCategory.category,
+                  firstCatalogueCategory.iconHome,
+                  firstCatalogueCategory.iconTree,
+                  firstCatalogueCategory.sequence,
+                  firstCatalogueCategory.hasChild,
+                  firstCatalogueCategory.status,
+                  firstCatalogueCategory.createdAt,
+                  firstCatalogueCategory.updatedAt,
+                  firstCatalogueCategory.deletedAt
+              )
+            : null;
         /*
          dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 88        db    .dP"Y8 888888 Yb  
         dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88       dPYb   `Ybo."   88    Yb 
         Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88  .o  dP__Yb  o.`Y8b   88    dP 
          YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88ood8 dP""""Yb 8bodP'   88   dP  
         */
-        this.lastCatalogueCategory = lastCatalogueCategory ? new CatalogueCategory(
-            lastCatalogueCategory.id,
-            lastCatalogueCategory.parentId,
-            lastCatalogueCategory.category,
-            lastCatalogueCategory.iconHome,
-            lastCatalogueCategory.iconTree,
-            lastCatalogueCategory.sequence,
-            lastCatalogueCategory.hasChild,
-            lastCatalogueCategory.status,
-            lastCatalogueCategory.createdAt,
-            lastCatalogueCategory.updatedAt,
-            lastCatalogueCategory.deletedAt
-        ) : null;
+        this.lastCatalogueCategory = lastCatalogueCategory
+            ? new CatalogueCategory(
+                  lastCatalogueCategory.id,
+                  lastCatalogueCategory.parentId,
+                  lastCatalogueCategory.category,
+                  lastCatalogueCategory.iconHome,
+                  lastCatalogueCategory.iconTree,
+                  lastCatalogueCategory.sequence,
+                  lastCatalogueCategory.hasChild,
+                  lastCatalogueCategory.status,
+                  lastCatalogueCategory.createdAt,
+                  lastCatalogueCategory.updatedAt,
+                  lastCatalogueCategory.deletedAt
+              )
+            : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88  dP 888888 Yb  dP Yb        dP  dP"Yb  88""Yb 8888b.  .dP"Y8 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88odP  88__    YbdP   Yb  db  dP  dP   Yb 88__dP  8I  Yb `Ybo." 
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88"Yb  88""     8P     YbdPYbdP   Yb   dP 88"Yb   8I  dY o.`Y8b 
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88  Yb 888888  dP       YP  YP     YbodP  88  Yb 8888Y"  8bodP' 
         */
-        this.catalogueKeywordCatalogues = Array.isArray(catalogueKeywordCatalogues) ?
-        [
-            ...catalogueKeywordCatalogues.map(catalogueKeywordCatalogue => ({
-                ...new CatalogueKeywordCatalogue(
-                    catalogueKeywordCatalogue.id,
-                    catalogueKeywordCatalogue.catalogueKeywordId,
-                    catalogueKeywordCatalogue.catalogueId,
-                    catalogueKeywordCatalogue.status,
-                    catalogueKeywordCatalogue.createdAt,
-                    catalogueKeywordCatalogue.updatedAt,
-                    catalogueKeywordCatalogue.deletedAt,
-                    catalogueKeywordCatalogue.catalogueKeyword ? {
-                        ...new CatalogueKeyword(
-                            catalogueKeywordCatalogue.catalogueKeyword.id,
-                            catalogueKeywordCatalogue.catalogueKeyword.tag,
-                            catalogueKeywordCatalogue.catalogueKeyword.status,
-                            catalogueKeywordCatalogue.catalogueKeyword.createdAt,
-                            catalogueKeywordCatalogue.catalogueKeyword.updatedAt,
-                            catalogueKeywordCatalogue.catalogueKeyword.deletedAt
-                        )
-                    } : null
-                )
-            }))
-        ] : [];
+        this.catalogueKeywordCatalogues = Array.isArray(catalogueKeywordCatalogues)
+            ? [
+                  ...catalogueKeywordCatalogues.map(catalogueKeywordCatalogue => ({
+                      ...new CatalogueKeywordCatalogue(
+                          catalogueKeywordCatalogue.id,
+                          catalogueKeywordCatalogue.catalogueKeywordId,
+                          catalogueKeywordCatalogue.catalogueId,
+                          catalogueKeywordCatalogue.status,
+                          catalogueKeywordCatalogue.createdAt,
+                          catalogueKeywordCatalogue.updatedAt,
+                          catalogueKeywordCatalogue.deletedAt,
+                          catalogueKeywordCatalogue.catalogueKeyword
+                              ? {
+                                    ...new CatalogueKeyword(
+                                        catalogueKeywordCatalogue.catalogueKeyword.id,
+                                        catalogueKeywordCatalogue.catalogueKeyword.tag,
+                                        catalogueKeywordCatalogue.catalogueKeyword.status,
+                                        catalogueKeywordCatalogue.catalogueKeyword.createdAt,
+                                        catalogueKeywordCatalogue.catalogueKeyword.updatedAt,
+                                        catalogueKeywordCatalogue.catalogueKeyword.deletedAt
+                                    )
+                                }
+                              : null
+                      )
+                  }))
+              ]
+            : [];
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888 Yb  dP 88""Yb 888888 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88    YbdP  88__dP 88__   
@@ -791,7 +818,7 @@ export class Catalogue implements ICatalogue {
         //         catalogueType.createdAt,
         //         catalogueType.updatedAt,
         //         catalogueType.deletedAt
-        //     ) 
+        //     )
         // } : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88   88 88b 88 88 888888 
@@ -799,14 +826,16 @@ export class Catalogue implements ICatalogue {
         Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       Y8   8P 88 Y88 88   88   
          YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     `YbodP' 88  Y8 88   88   
         */
-        this.catalogueUnit = catalogueUnit ? new  CatalogueUnit(
-            catalogueUnit.id,
-            catalogueUnit.unit,
-            catalogueUnit.status,
-            catalogueUnit.createdAt,
-            catalogueUnit.updatedAt,
-            catalogueUnit.deletedAt
-        ) : null;
+        this.catalogueUnit = catalogueUnit
+            ? new CatalogueUnit(
+                  catalogueUnit.id,
+                  catalogueUnit.unit,
+                  catalogueUnit.status,
+                  catalogueUnit.createdAt,
+                  catalogueUnit.updatedAt,
+                  catalogueUnit.deletedAt
+              )
+            : null;
         /*
          dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     Yb    dP    db    88""Yb 88    db    88b 88 888888 
         dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__        Yb  dP    dPYb   88__dP 88   dPYb   88Yb88   88   
@@ -829,10 +858,14 @@ export class Catalogue implements ICatalogue {
     }
 
     static hasDiscountPrice(catalogue: Catalogue): boolean {
-        return (!!(catalogue.discountedRetailBuyingPrice) || catalogue.discountedRetailBuyingPrice === 0);
+        return (
+            !!catalogue.discountedRetailBuyingPrice || catalogue.discountedRetailBuyingPrice === 0
+        );
     }
 
     static getCataloguePrice(catalogue: Catalogue): number {
-        return Catalogue.hasDiscountPrice(catalogue) ? catalogue.discountedRetailBuyingPrice : catalogue.retailBuyingPrice;
+        return Catalogue.hasDiscountPrice(catalogue)
+            ? catalogue.discountedRetailBuyingPrice
+            : catalogue.retailBuyingPrice;
     }
 }

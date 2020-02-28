@@ -1,12 +1,11 @@
 import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
-import * as fromPortfolios from './sources/portfolio';
-import * as fromWarehouses from './sources/warehouse';
-import * as fromTeams from './sources/team';
+import * as fromWarehouseErrs from './error.reducer';
+import * as fromWarehouses from './warehouse.reducer';
 
 // Keyname for core reducer
-const featureKey = 'sources';
+const featureKey = 'warehouses';
 
 /**
  *
@@ -14,9 +13,8 @@ const featureKey = 'sources';
  * @interface State
  */
 interface State {
-    [fromPortfolios.featureKey]: fromPortfolios.State;
-    [fromTeams.featureKey]: fromTeams.State;
     [fromWarehouses.featureKey]: fromWarehouses.State;
+    [fromWarehouseErrs.featureKey]: fromWarehouseErrs.State;
 }
 
 /**
@@ -38,9 +36,8 @@ interface FeatureState extends fromRoot.State {
  */
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
-        [fromPortfolios.featureKey]: fromPortfolios.reducers,
-        [fromWarehouses.featureKey]: fromWarehouses.reducers,
-        [fromTeams.featureKey]: fromTeams.reducers
+        [fromWarehouses.featureKey]: fromWarehouses.reducer,
+        [fromWarehouseErrs.featureKey]: fromWarehouseErrs.reducer
     })(state, action);
 }
 
