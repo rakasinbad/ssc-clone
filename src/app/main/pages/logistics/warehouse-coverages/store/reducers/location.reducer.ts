@@ -6,7 +6,7 @@ import { Urban } from '../../models';
 
 // Keyname for reducer
 export const featureKey = 'locations';
-// 
+
 interface ProvinceState extends EntityState<Province> {
     isLoading: boolean;
     needRefresh: boolean;
@@ -61,7 +61,7 @@ const cityInitialState: CityState = adapterCity.getInitialState<Omit<CityState, 
     selected: null,
     total: 0
 });
-// 
+
 // Adapter for district state
 export const adapterDistrict = createEntityAdapter<string>({ selectId: row => row });
 // Initialize district state
