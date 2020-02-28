@@ -14,7 +14,7 @@ import { LocationActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions } from 'app/shared/store/actions';
-// 
+
 @Component({
     selector: 'app-warehouse-coverages-form',
     templateUrl: './warehouse-coverages-form.component.html',
@@ -85,7 +85,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     warehouseSub: Subject<string> = new Subject<string>();
 
     constructor(
-        private cd$: ChangeDetectorRef,
         private fb: FormBuilder,
         private route: ActivatedRoute,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
