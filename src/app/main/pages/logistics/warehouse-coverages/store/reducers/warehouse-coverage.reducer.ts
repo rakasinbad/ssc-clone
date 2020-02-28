@@ -30,11 +30,29 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: true
     })),
+    on(WarehouseCoverageActions.fetchWarehouseCoveragesFailure, (state) => ({
+        ...state,
+        isLoading: false,
+        total: 0
+    })),
     on(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess, (state, { payload }) => {
         return adapter.upsertMany(payload.data, {
             ...state,
             isLoading: false,
             total: payload.total
         });
-    })
+    }),
+    // CREATE
+    on(WarehouseCoverageActions.createWarehouseCoverageRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(WarehouseCoverageActions.createWarehouseCoverageFailure, (state) => ({
+        ...state,
+        isLoading: false
+    })),
+    on(WarehouseCoverageActions.createWarehouseCoverageSuccess, (state) => ({
+        ...state,
+        isLoading: false,
+    }))
 );
