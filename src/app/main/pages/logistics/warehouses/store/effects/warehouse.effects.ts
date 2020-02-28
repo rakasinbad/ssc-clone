@@ -11,17 +11,69 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ErrorHandler, IQueryParams, PaginateResponse, TNullable, User } from 'app/shared/models';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, map, retry, switchMap, tap, withLatestFrom, finalize } from 'rxjs/operators';
 
 import { Warehouse } from '../../models';
 import { WarehouseApiService } from '../../services';
 import { WarehouseActions, WarehouseFailureActions } from '../actions';
 import * as fromWarehouses from '../reducers';
+import { FormActions } from 'app/shared/store/actions';
 
-type AnyAction = { payload: any } & TypedAction<any>;
+type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
 @Injectable()
 export class WarehouseEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CREATE - WAREHOUSE]
+    // -----------------------------------------------------------------------------------------------------
+
+    createWarehouseRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WarehouseActions.createWarehouseRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [any, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload])),
+                        switchMap<[User, any], Observable<AnyAction>>(
+                            this.handleCreateWarehousesRequest$
+                        ),
+                        catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload])),
+                        switchMap<[User, any], Observable<AnyAction>>(
+                            this.handleCreateWarehousesRequest$
+                        ),
+                        catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    createWarehouseSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(WarehouseActions.createWarehouseSuccess),
+                tap(() => {
+                    this.router.navigate(['/pages/logistics/warehouses']).finally(() => {
+                        this._$notice.open('Successfully created warehouse', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [WAREHOUSES]
     // -----------------------------------------------------------------------------------------------------
@@ -145,6 +197,28 @@ export class WarehouseEffects {
 
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
+    };
+
+    handleCreateWarehousesRequest$ = ([userData, payload]: [User, any]): Observable<AnyAction> => {
+        const newPayload = {
+            ...payload
+        };
+
+        const { supplierId } = userData.userSupplier;
+
+        if (supplierId) {
+            newPayload['supplierId'] = supplierId;
+        }
+
+        return this._$warehouseApi.create<any>(newPayload).pipe(
+            map(resp => {
+                return WarehouseActions.createWarehouseSuccess();
+            }),
+            catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure')),
+            finalize(() => {
+                this.store.dispatch(FormActions.resetClickSaveButton());
+            })
+        );
     };
 
     handleFetchWarehousesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<

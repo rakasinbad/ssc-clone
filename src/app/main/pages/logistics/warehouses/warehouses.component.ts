@@ -26,7 +26,7 @@ import {
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import { Observable, Subject, merge } from 'rxjs';
-import { tap, takeUntil } from 'rxjs/operators';
+import { tap, takeUntil, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
 
 import { Warehouse } from './models';
 import { WarehouseActions } from './store/actions';
@@ -51,11 +51,10 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
             label: 'Warehouse List'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
         },
         add: {
             permissions: []
@@ -70,7 +69,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     };
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'wh-id',
         'wh-name',
         'lead-time',
@@ -228,6 +227,23 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                 );
                 this.totalDataSource$ = this.store.select(WarehouseSelectors.getTotalItem);
                 this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
+
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                            }
+
+                            return true;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this._onRefreshTable();
+                    });
 
                 this._initTable();
                 break;

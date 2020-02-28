@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { StoreModule, MetaReducer, USER_PROVIDED_META_REDUCERS  } from '@ngrx/store';
+import { MetaReducer, StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'environments/environment';
+import * as LogRocket from 'logrocket';
+import createNgrxMiddleware from 'logrocket-ngrx';
 
 import { AuthEffects } from './main/pages/core/auth/store/effects/auth.effects';
 import {
@@ -11,13 +13,12 @@ import {
     NetworkEffects,
     PortfolioEffects,
     TeamEffects,
-    UiEffects
+    TemperatureEffects,
+    UiEffects,
+    WarehouseValueEffects
 } from './shared/store/effects';
 import * as fromRoot from './store/app.reducer';
 import { CustomSerializer } from './store/custom-serializer';
-
-import * as LogRocket from 'logrocket';
-import createNgrxMiddleware from 'logrocket-ngrx';
 
 const logrocketMiddleware = createNgrxMiddleware(LogRocket);
 
@@ -42,7 +43,9 @@ export function getMetaReducers(): MetaReducer<fromRoot.State>[] {
             NetworkEffects,
             PortfolioEffects,
             TeamEffects,
-            UiEffects
+            TemperatureEffects,
+            UiEffects,
+            WarehouseValueEffects
         ]),
         environment.production || environment.staging
             ? []
@@ -64,8 +67,8 @@ export function getMetaReducers(): MetaReducer<fromRoot.State>[] {
     providers: [
         {
             provide: USER_PROVIDED_META_REDUCERS,
-            useFactory: getMetaReducers,
-        },
+            useFactory: getMetaReducers
+        }
     ]
 })
 export class AppStoreModule {}

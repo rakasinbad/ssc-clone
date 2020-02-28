@@ -24,5 +24,35 @@ export class WarehouseCatalogue implements IWarehouseCatalogue {
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: IWarehouseCatalogue) {}
+    constructor(data: IWarehouseCatalogue) {
+        const {
+            id,
+            warehouseId,
+            catalogueId,
+            stock,
+            unlimitedStock,
+            status,
+            catalogoue,
+            createdAt,
+            updatedAt,
+            deletedAt
+        } = data;
+
+        this.id = id;
+        this.warehouseId = warehouseId;
+        this.catalogueId = catalogueId;
+        this.stock = stock;
+        this.unlimitedStock = unlimitedStock;
+        this.status = status;
+        this.catalogoue = catalogoue;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+
+        this.setCatalogue = catalogoue;
+    }
+
+    set setCatalogue(value: Catalogue) {
+        this.catalogoue = value ? new Catalogue(value) : null;
+    }
 }

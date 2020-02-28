@@ -16,7 +16,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{ (warehouse$ | async)?.code || '-' }}
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (warehouse$ | async)?.code || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -31,7 +38,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{ (warehouse$ | async)?.name || '-' }}
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (warehouse$ | async)?.name || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -46,7 +60,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{ getLeadTime((warehouse$ | async)?.leadTime) || '-' }}
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ getLeadTime((warehouse$ | async)?.leadTime) || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -61,7 +82,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{ getInvoices((warehouse$ | async)?.warehouseInvoiceGroups) || '-' }}
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ getInvoices((warehouse$ | async)?.warehouseInvoiceGroups) || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -76,7 +104,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            30
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (warehouse$ | async)?.totalCatalogue }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 
@@ -149,7 +184,14 @@
         </div>
 
         <div class="info" fxFlex="100">
-            {{ ((warehouse$ | async)?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+            <ng-container *ngIf="!(isLoading$ | async)">
+                {{ ((warehouse$ | async)?.createdAt | date: 'dd/MM/yyyy HH:mm:ss') || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader>
         </div>
     </div>
 </div>
