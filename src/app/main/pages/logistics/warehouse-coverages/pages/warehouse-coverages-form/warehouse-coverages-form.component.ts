@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, fromEvent, Subscription } from 'rxjs';
+import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxjs';
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
@@ -85,6 +85,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     warehouseSub: Subject<string> = new Subject<string>();
 
     constructor(
+        private cd$: ChangeDetectorRef,
         private fb: FormBuilder,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
         private helper$: HelperService,
@@ -132,19 +133,17 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             LocationSelectors.getDistrictLoadingState
         ).pipe(
             tap(val => this.debug('IS DISTRICT LOADING?', val)),
-            tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
         );
 
         // Mengambil state loading-nya urban.
-        this.isDistrictLoading$ = this.locationStore.select(
+        this.locationStore.select(
             LocationSelectors.getUrbanLoadingState
         ).pipe(
             tap(val => this.debug('IS URBAN LOADING?', val)),
             tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
-        );
-
+        ).subscribe();
 
         // Mengambil state province yang terpilih.
         this.selectedProvince$ = this.locationStore.select(
@@ -173,7 +172,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     private debug(label: string, data: any = {}): void {
         if (!environment.production) {
-            console.log(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
         }
     }
 
@@ -694,11 +698,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.availableDistricts$ = this.locationStore.select(
             LocationSelectors.selectAllDistricts
         ).pipe(
-            tap(districts => {
-                if (districts) {
-                    this.availableOptions = districts.map<Selection>(d => ({ id: d, group: 'district', label: d }));
-                }
-            }),
             takeUntil(this.subs$)
         );
 
@@ -707,7 +706,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         ).pipe(
             tap(urbans => {
                 if (urbans) {
-                    this.availableOptions = urbans.map<Selection>(d => ({ id: d, group: 'urban', label: d }));
+                    this.availableOptions = urbans.map<Selection>(d => ({ id: d.id, group: 'urban', label: d.urban }));
                 }
             }),
             takeUntil(this.subs$)
