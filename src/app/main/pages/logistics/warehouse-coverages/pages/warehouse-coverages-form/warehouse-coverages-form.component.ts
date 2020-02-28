@@ -38,6 +38,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     isCityLoading$: Observable<boolean>;
     // Mengambil state loading-nya district.
     isDistrictLoading$: Observable<boolean>;
+    // Mengambil state loading-nya urban.
+    isUrbanLoading$: Observable<boolean>;
 
     // Untuk menyimpan nilai input form province, baik sedang mengetik ataupun sudah memilihnya dari Autocomplete.
     // provinceForm$: Observable<string>;
@@ -50,6 +52,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     totalCities$: Observable<number>;
     // Untuk menyimpan jumlah semua district.
     totalDistricts$: Observable<number>;
+    // Untuk menyimpan jumlah semua urban.
+    totalUrbans$: Observable<number>;
     
     // Untuk menyimpan province yang tersedia.
     availableProvinces$: Observable<Array<Province>>;
@@ -57,6 +61,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableCities$: Observable<Array<string>>;
     // Untuk menyimpan district yang tersedia.
     availableDistricts$: Observable<Array<string>>;
+    // Untuk menyimpan urban yang tersedia.
+    availableUrbans$: Observable<Array<string>>;
+
     availableOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
     isAvailableOptionsLoading: boolean = true;
@@ -128,6 +135,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
         );
+
+        // Mengambil state loading-nya urban.
+        this.isDistrictLoading$ = this.locationStore.select(
+            LocationSelectors.getUrbanLoadingState
+        ).pipe(
+            tap(val => this.debug('IS URBAN LOADING?', val)),
+            tap(val => this.isAvailableOptionsLoading = val),
+            takeUntil(this.subs$)
+        );
+
 
         // Mengambil state province yang terpilih.
         this.selectedProvince$ = this.locationStore.select(
@@ -247,6 +264,27 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         );
     }
 
+    private initUrban(): void {
+        // Menyiapkan query untuk pencarian district.
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 10,
+            skip: 0
+        };
+
+        // Mengosongkan urban pada state.
+        this.locationStore.dispatch(
+            LocationActions.truncateUrbans()
+        );
+
+        // Mengirim state untuk melakukan request urban.
+        this.locationStore.dispatch(
+            LocationActions.fetchUrbansRequest({
+                payload: newQuery
+            })
+        );
+    }
+
     clearLocationForm(location: 'city' | 'district'): void {
         if (location === 'city' || location === 'district') {
             this.form.get(location).disable();
@@ -308,6 +346,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.locationStore.dispatch(LocationActions.selectDistrict({ payload: district }));
 
         this.autocompleteTrigger.closePanel();
+
+        this.initUrban();
     }
 
     displayDistrict(item: string): string {
@@ -661,6 +701,17 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             }),
             takeUntil(this.subs$)
         );
+
+        this.locationStore.select(
+            LocationSelectors.selectAllUrbans
+        ).pipe(
+            tap(urbans => {
+                if (urbans) {
+                    this.availableOptions = urbans.map<Selection>(d => ({ id: d, group: 'urban', label: d }));
+                }
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
         // this.warehouseSub.pipe(
         //     withLatestFrom(
         //         this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
