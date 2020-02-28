@@ -11,7 +11,7 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable, throwError, forkJoin } from 'rxjs';
 // import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse, Province } from 'app/shared/models';
+import { IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse, Province, Urban } from 'app/shared/models';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -245,25 +245,25 @@ export class LocationEffects {
         newQuery['locationType'] = 'urban';
         newQuery['district'] = selectedDistrict;
 
-        return this.locationApi$.findLocation<Array<{ urban: string }>>(newQuery)
+        return this.locationApi$.findLocation<Array<Urban>>(newQuery)
             .pipe(
                 catchOffline(),
-                switchMap((response: IPaginatedResponse<{ urban: string }> | Array<{ urban: string }>) => {
+                switchMap((response: IPaginatedResponse<Urban> | Array<Urban>) => {
                     if (queryParams.paginate) {
-                        const newResponse = response as IPaginatedResponse<{ urban: string }>;
+                        const newResponse = response as IPaginatedResponse<Urban>;
 
                         return of(LocationActions.fetchUrbansSuccess({
                             payload: {
-                                urbans: newResponse.data.map(urban => urban.urban),
+                                urbans: newResponse.data.map(urban => new Urban(urban)),
                                 total: newResponse.total
                             }
                         }));
                     } else {
-                        const newResponse = response as Array<{ urban: string }>;
+                        const newResponse = response as Array<Urban>;
 
                         return of(LocationActions.fetchUrbansSuccess({
                             payload: {
-                                urbans: newResponse.map(urban => urban.urban),
+                                urbans: newResponse.map(urban => new Urban(urban)),
                                 total: newResponse.length
                             }
                         }));
