@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, Input, EventEmitter, Output, ViewChildren, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, Input, EventEmitter, Output, ViewChildren, ElementRef, ViewChild, OnChanges, SimpleChanges } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MatSelectionListChange } from '@angular/material';
 import { tap, takeUntil, filter, map } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { Selection } from './models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default
 })
-export class MultipleSelectionComponent implements OnInit, OnDestroy, AfterViewInit {
+export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
     // Untuk kepel
     subs$: Subject<void> = new Subject<void>();
@@ -76,10 +76,17 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, AfterViewI
                 if (isSelected) {
                     this.selectedOptions.push(value);
                 } else if (!isSelected) {
-                    this.selectedOptions = this.selectedOptions.filter(option => option !== value);
+                    this.selectedOptions = this.selectedOptions.filter(option => option.id !== value.id);
                 }
 
                 this.selectedOptions = [...new Set(this.selectedOptions)];
+                this.totalSelectedOptions = this.selectedOptions.length;
+
+                this.selectionChanged.emit(value);
+                this.selectionListChanged.emit({
+                    selected: this.selectedOptions,
+                    unselected: []
+                });
             }),
             takeUntil(this.subs$)
         ).subscribe();
@@ -89,7 +96,21 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, AfterViewI
         return this.selectedOptions.findIndex(selected => selected.id === value.id) >= 0;
     }
 
+    onClearAll(): void {
+        this.clearAll.emit();
+    }
+
+    onSearch($event: string): void {
+        this.search.emit($event);
+    }
+
     ngOnInit(): void {
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['selectedOptions']) {
+            this.totalSelectedOptions = changes['selectedOptions'].currentValue.length;
+        }
     }
 
     ngAfterViewInit(): void {

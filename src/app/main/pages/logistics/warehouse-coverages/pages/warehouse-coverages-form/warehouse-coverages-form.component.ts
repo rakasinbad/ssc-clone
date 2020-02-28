@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material';
+import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocomplete, MatSelectChange } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store as NgRxStore } from '@ngrx/store';
@@ -10,10 +10,13 @@ import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { Province, IQueryParams, IBreadcrumbs } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
 import { LocationSelectors } from '../../store/selectors';
-import { LocationActions } from '../../store/actions';
+import { LocationActions, WarehouseCoverageActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
-import { UiActions, FormActions } from 'app/shared/store/actions';
+import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actions';
+import { Warehouse } from '../../../warehouses/models';
+import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
+import { FormSelectors } from 'app/shared/store/selectors';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -26,6 +29,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     // Form
     form: FormGroup;
+
+    // Untuk menyimpan daftar warehouse yang tersedia.
+    availableWarehouses$: Observable<Array<Warehouse>>;
 
     // Untuk menyimpan province yang terpilih.
     selectedProvince$: Observable<string>;
@@ -67,6 +73,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableUrbans$: Observable<Array<string>>;
 
     availableOptions: Array<Selection> = [];
+    selectedOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
     isAvailableOptionsLoading: boolean = true;
 
@@ -250,6 +257,21 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             tap(val => this.debug('SELECTED DISTRICT:', val)),
             takeUntil(this.subs$)
         );
+
+        // Mengambil daftar warehouse dari state.
+        this.locationStore.dispatch(WarehouseActions.fetchWarehousesRequest({
+            payload: {
+                paginate: true,
+                limit: 100,
+                skip: 0,
+            }
+        }));
+        this.availableWarehouses$ = this.locationStore.select(
+            WarehouseSelectors.selectAll
+        ).pipe(
+            tap(values => this.debug('SELECT WAREHOUSE', values)),
+            takeUntil(this.subs$)
+        );
     }
 
     private debug(label: string, data: any = {}): void {
@@ -376,6 +398,10 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             this.form.get(location).disable();
             this.form.get(location).reset();
         }
+    }
+
+    onClearAll(): void {
+        this.selectedOptions = [];
     }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
@@ -579,6 +605,20 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         setTimeout(() => this.processDistrictAutoComplete());
     }
 
+    submitWarehouseCoverage(): void {
+        // Mendapatkan urban yang telah dipilih.
+        const urbans: Array<Selection> = this.selectedOptions;
+        // Mendapatkan nilai dari form.
+        const formValue = this.form.getRawValue();
+
+        this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
+            payload: {
+                urbanId: urbans.map(u => +u.id),
+                warehouseId: formValue.warehouse
+            }
+        }));
+    }
+
     getFormError(form: any): string {
         // console.log('get error');
         return this.errorMessageSvc.getFormError(form);
@@ -753,6 +793,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.subs$.next();
         this.subs$.complete();
 
+        this.locationStore.dispatch(LocationActions.truncateProvinces());
+        this.locationStore.dispatch(LocationActions.truncateCities());
+        this.locationStore.dispatch(LocationActions.truncateDistricts());
+        this.locationStore.dispatch(LocationActions.truncateUrbans());
+
         this.locationStore.dispatch(UiActions.hideFooterAction());
         this.locationStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.locationStore.dispatch(UiActions.hideCustomToolbar());
@@ -798,6 +843,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             }),
             takeUntil(this.subs$)
         ).subscribe();
+
+        this.locationStore.select(
+            FormSelectors.getIsClickSaveButton
+        ).pipe(
+            filter(isClick => !!isClick),
+            tap(() => this.submitWarehouseCoverage()),
+            takeUntil(this.subs$)
+        )
+
+
         // this.warehouseSub.pipe(
         //     withLatestFrom(
         //         this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),

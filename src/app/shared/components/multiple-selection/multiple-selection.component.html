@@ -41,7 +41,7 @@
                 <p fxFlexAlign="center" fxFlex="10">Find:</p>
                 <!-- / LABEL -->
                 <!-- SEARCH -->
-                <sinbad-search-bar fxFlex fxFlexAlign="center" [useBorder]="true"></sinbad-search-bar>
+                <sinbad-search-bar fxFlex fxFlexAlign="center" [useBorder]="true" (changed)="onSearch($event)"></sinbad-search-bar>
                 <!-- / SEARCH -->
             </div>
             <!-- / HEADER -->
@@ -97,6 +97,7 @@
                     [style.cursor]="'pointer'"
                     class="red-500-fg"
                     *ngIf="totalSelectedOptions > 0"
+                    (click)="onClearAll()"
                 >Clear All</a>
                 <!-- / CLEAR ALL -->
             </div>
