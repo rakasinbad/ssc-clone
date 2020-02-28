@@ -4,7 +4,8 @@ import { IQueryParams, ErrorHandler, Province } from 'app/shared/models';
 export type failureActionNames =
     'fetchProvincesFailure' |
     'fetchCitiesFailure' |
-    'fetchDistrictsFailure'
+    'fetchDistrictsFailure' |
+    'fetchUrbansFailure'
 ;
 
 // Province
@@ -83,3 +84,28 @@ export const selectDistrict = createAction(
 export const deselectDistrict = createAction('[WH/WH Coverage/Locations] Deselect District');
 
 export const truncateDistricts = createAction('[WH/WH Coverage/Locations] Truncate Districts');
+
+// Urban
+export const fetchUrbansRequest = createAction(
+    '[WH/WH Coverage/Locations API] Fetch Urbans Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchUrbansFailure = createAction(
+    '[WH/WH Coverage/Locations API] Fetch Districts Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchUrbansSuccess = createAction(
+    '[WH/WH Coverage/Locations API] Fetch Urbans Success',
+    props<{ payload: { urbans: Array<string>; total: number } }>()
+);
+
+export const selectUrban = createAction(
+    '[WH/WH Coverage/Locations] Select Urban',
+    props<{ payload: string }>()
+);
+
+export const deselectUrban = createAction('[WH/WH Coverage/Locations] Deselect Urban');
+
+export const truncateUrbans = createAction('[WH/WH Coverage/Locations] Truncate Urbans');
