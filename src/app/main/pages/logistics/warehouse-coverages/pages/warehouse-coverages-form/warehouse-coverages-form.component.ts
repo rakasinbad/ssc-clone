@@ -212,6 +212,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             LocationSelectors.getDistrictLoadingState
         ).pipe(
             tap(val => this.debug('IS DISTRICT LOADING?', val)),
+            tap(val => this.isAvailableOptionsLoading = val),
             takeUntil(this.subs$)
         );
 
