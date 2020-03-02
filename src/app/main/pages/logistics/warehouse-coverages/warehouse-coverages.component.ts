@@ -3,9 +3,10 @@ import {
     Component,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectorRef
 } from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort, MatRadioChange } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
@@ -18,6 +19,7 @@ import { environment } from 'environments/environment';
 
 import * as fromWarehouseCoverages from './store/reducers';
 import { tap } from 'rxjs/operators';
+import { Warehouse } from '../warehouses/models';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -31,7 +33,13 @@ export class WarehouseCoveragesComponent implements OnInit {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    buttonViewByActive$: Observable<string>;
+    warehouses$: Observable<Array<Warehouse>>;
+    selectedWarehouse: Warehouse;
+// 
+    // tslint:disable-next-line: no-inferrable-types
+    selectedViewBy: string = 'warehouse';
+
+    // buttonViewByActive$: Observable<string>;
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -39,21 +47,10 @@ export class WarehouseCoveragesComponent implements OnInit {
             label: 'Warehouse Coverage'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: false
         },
         add: {
             permissions: []
-        },
-        viewBy: {
-            list: [
-                { id: 'warehouse-coverage-main', label: 'Warehouse' },
-                { id: 'warehouse-covearge-urban', label: 'Urban' }
-            ],
-            onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
         },
         export: {
             permissions: ['SRM.JP.EXPORT'],
@@ -80,6 +77,7 @@ export class WarehouseCoveragesComponent implements OnInit {
     ];
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private router: Router,
         private store: Store<fromWarehouseCoverages.FeatureState>
     ) {}
@@ -91,7 +89,15 @@ export class WarehouseCoveragesComponent implements OnInit {
                 payload: this._breadCrumbs
             })
         );
-        this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
+    }
+
+    onSelectedWarehouse(warehouse: Warehouse): void {
+        this.selectedWarehouse = warehouse;
+        this.cdRef.markForCheck();
+    }
+// 
+    onChangedViewBy($event: MatRadioChange): void {
+        this.selectedViewBy = $event.value;
     }
 
     onClickAdd(): void {
