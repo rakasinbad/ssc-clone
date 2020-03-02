@@ -73,7 +73,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     ) {}
 
     isAvailableAtSelection(value: Selection): boolean {
-        return this.mergedSelectedOptions.findIndex(selected => String(selected.id + selected.group) === String(value.id + value.group)) > 0;
+        return !!(this.mergedSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group)));
     }
 
     onClearAll(): void {
@@ -82,6 +82,10 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
     onSearch($event: string): void {
         this.search.emit($event);
+    }
+
+    onToggleSelectAll($event: MatSelectionListChange): void {
+        // const isSelected = $event.option.selected;
     }
 
     ngOnInit(): void {
@@ -194,13 +198,13 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 this.selectionListChanged.emit({ added, removed });
 
                 // Untuk menyimpan initial selected options dengan selected options.
-                this.mergedSelectedOptions = this.selectedOptions.concat(
-                                                this.initialSelectedOptions.filter(initial =>
-                                                        removed.length === 0
-                                                        ? true
-                                                        : !removed.map(remove => String(remove.id + remove.group)).includes(String(initial.id + initial.group))
-                                                    )
-                                                );
+                this.mergedSelectedOptions = this.initialSelectedOptions.concat(
+                                                this.selectedOptions
+                                            ).filter(merged =>
+                                                removed.length === 0
+                                                ? true
+                                                : !removed.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+                                            );
 
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);

@@ -55,8 +55,17 @@
                 [style.border]="'1px solid'"
                 class="grey-300-border h-400"
                 [disableRipple]="true"
-                (selectionChange)="selectedOptionSub$.next($event)"
+                (selectionChange)="$event.option.value === '__select-all__' ? onToggleSelectAll($event) : selectedOptionSub$.next($event)"
             >
+                <!-- SELECT ALL OPTION -->
+                <!-- <mat-list-option
+                    value="__select-all__"
+                    [checkboxPosition]="'before'"
+                    *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0"
+                >
+                    (Select All)
+                </mat-list-option> -->
+                <!-- / SELECT ALL -->
                 <mat-list-option
                     *ngFor="let option of (availableOptions)"
                     [checkboxPosition]="'before'"
