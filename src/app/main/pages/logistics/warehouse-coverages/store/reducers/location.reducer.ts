@@ -160,8 +160,8 @@ export const reducer = createReducer<LocationState>(
         LocationActions.fetchUrbansRequest,
         state => ({
             ...state,
-            district: {
-                ...state.district,
+            urban: {
+                ...state.urban,
                 isLoading: true
             }
         })

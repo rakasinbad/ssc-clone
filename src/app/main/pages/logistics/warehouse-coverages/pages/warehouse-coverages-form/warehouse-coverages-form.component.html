@@ -249,9 +249,9 @@
                     <!-- / FIND LOCATION FORM -->
                     <!-- MULTIPLE SELECTION -->
                     <sinbad-multiple-selection
+                        [initialSelectedOptions]="initialSelectedOptions"
                         [availableOptions]="availableOptions"
                         [isAvailableOptionsLoading]="isAvailableOptionsLoading"
-                        [selectedOptions]="selectedOptions"
                         (clearAll)="onClearAll()"
                     ></sinbad-multiple-selection>
                     <!-- / MULTIPLE SELECTION -->

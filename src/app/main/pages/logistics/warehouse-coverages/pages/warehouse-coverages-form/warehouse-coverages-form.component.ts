@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, AfterViewInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocomplete, MatSelectChange } from '@angular/material';
+import { MatSelect, MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocomplete, MatSelectChange, MatDialog } from '@angular/material';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxjs';
-import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take } from 'rxjs/operators';
+import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take, exhaustMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { Province, IQueryParams, IBreadcrumbs } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
 import { LocationSelectors } from '../../store/selectors';
@@ -17,6 +17,9 @@ import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actio
 import { Warehouse } from '../../../warehouses/models';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { FormSelectors } from 'app/shared/store/selectors';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
+import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -72,6 +75,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan urban yang tersedia.
     availableUrbans$: Observable<Array<string>>;
 
+    initialSelectedOptions: Array<Selection> = [
+        { id: '1', group: 'urban', label: 'A' },
+        { id: '2', group: 'urban', label: 'B' },
+        { id: '3', group: 'urban', label: 'C' },
+        { id: '4', group: 'urban', label: 'D' },
+    ];
     availableOptions: Array<Selection> = [];
     selectedOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
@@ -85,20 +94,27 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     @ViewChild('districtAutoComplete', { static: true }) districtAutoComplete: MatAutocomplete;
 
     @ViewChild(MatAutocompleteTrigger, { static: true }) autocompleteTrigger: MatAutocompleteTrigger;
+    @ViewChild(MultipleSelectionComponent, { static: true }) multipleSelection;
 
     // Subject for subscription
     subs$: Subject<void> = new Subject<void>();
+    // Untuk keperluan mat dialog ref.
+    dialogRef$: Subject<string> = new Subject<string>();
 
     // Warehouse Dropdown
     @ViewChild('warehouse', { static: false }) invoiceGroup: MatSelect;
     warehouseSub: Subject<string> = new Subject<string>();
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
         private route: ActivatedRoute,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
         private helper$: HelperService,
+        private notice$: NoticeService,
+        private multiple$: MultipleSelectionService,
         private errorMessageSvc: ErrorMessageService,
+        private matDialog: MatDialog,
     ) {
         const breadcrumbs: Array<IBreadcrumbs> = [
             {
@@ -230,7 +246,10 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             LocationSelectors.getUrbanLoadingState
         ).pipe(
             tap(val => this.debug('IS URBAN LOADING?', val)),
-            tap(val => this.isAvailableOptionsLoading = val),
+            tap(val => {
+                this.isAvailableOptionsLoading = val;
+                this.cdRef.markForCheck();
+            }),
             takeUntil(this.subs$)
         ).subscribe();
 
@@ -272,6 +291,46 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             tap(values => this.debug('SELECT WAREHOUSE', values)),
             takeUntil(this.subs$)
         );
+
+        // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
+        this.dialogRef$.pipe(
+            exhaustMap(subjectValue => {
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogTitle: string = '';
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogMessage: string = '';
+
+                if (subjectValue === 'clear-all') {
+                    dialogTitle = 'Clear Selected Options';
+                    dialogMessage = 'It will clear all your selected options. Are you sure?';
+                }
+
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: dialogTitle,
+                        message: dialogMessage,
+                        id: subjectValue
+                    }, disableClose: true
+                });
+        
+                return dialogRef.afterClosed().pipe(
+                    tap(value => {
+                        if (value === 'clear-all') {
+                            this.multiple$.clearAllSelectedOptions();
+
+                            this.notice$.open('Your selected options has been cleared.', 'success', {
+                                horizontalPosition: 'right',
+                                verticalPosition: 'bottom',
+                                duration: 5000
+                            });
+
+                            this.cdRef.markForCheck();
+                        }
+                    })
+                );
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
     }
 
     private debug(label: string, data: any = {}): void {
@@ -283,6 +342,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             // tslint:disable-next-line:no-console
             console.groupEnd();
         }
+    }
+
+    private clearAvailableOptions(): void {
+        this.availableOptions = [];
+        this.cdRef.markForCheck();
     }
 
     private initProvince(): void {
@@ -401,7 +465,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     }
 
     onClearAll(): void {
-        this.selectedOptions = [];
+        this.dialogRef$.next('clear-all');
     }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
@@ -684,10 +748,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             filter(([provinceForm, selectedProvince]: [Province | string, Province | string]) => {
                 if (!(provinceForm instanceof Province) && (selectedProvince instanceof Province)) {
                     this.clearLocationForm('city');
+                    this.clearAvailableOptions();
                 }
                 
                 return !(provinceForm instanceof Province);
-            }), 
+            }),
             tap(([value, _]: [string, string]) => {
                 const queryParams: IQueryParams = {
                     paginate: true,
@@ -722,6 +787,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 }
 
                 if (!cityForm) {
+                    this.clearAvailableOptions();
                     this.clearLocationForm('district');
                 }
 
@@ -764,6 +830,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                     return false;
                 }
 
+                this.clearAvailableOptions();
                 return true;
             }),
             tap(([value]: [string, string, string]) => {
@@ -850,7 +917,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             filter(isClick => !!isClick),
             tap(() => this.submitWarehouseCoverage()),
             takeUntil(this.subs$)
-        )
+        );
 
 
         // this.warehouseSub.pipe(
