@@ -10,7 +10,7 @@
                         Warehouse Coverage Detail
                     </div>
                     <!-- / WAREHOUSE COVERAGE DETAIL -->
-                    <!-- WAREHOUSE -->
+                    <!-- WAREHOUSE NAME -->
                     <div
                         class="custom-field"
                         fxLayout="row"
@@ -22,33 +22,23 @@
                             class="pr-0"
                             [class.mat-error]="hasError(form.get('warehouse'))"
                         >
-                            Warehouse<br/> Name
+                            <span
+                                class="sinbad-red-fg"
+                            >* </span> Warehouse<br/> Name
                         </label>
                 
                         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
-                            <!-- <mat-select
-                                #warehouse
-                                name="warehouse"
-                                formControlName="warehouse"
-                                (selectionChange)="invoiceGroupSub.next($event.value)"
-                            >
-                                <mat-option
-                                    *ngFor="let invoiceGroup of invoiceGroups"
-                                    [value]="invoiceGroup.id"
-                                >
-                                    {{ invoiceGroup.name }}
-                                </mat-option>
-                            </mat-select> -->
                             <mat-select
                                 #warehouse
                                 name="warehouse"
                                 formControlName="warehouse"
                                 placeholder="Choose Warehouse"
                             >
-                                <mat-option>(None)</mat-option>
+                                <mat-option (click)="onSelectedWarehouse(null)">(None)</mat-option>
                                 <mat-option
                                     *ngFor="let warehouse of (availableWarehouses$ | async)"
                                     [value]="warehouse?.id"
+                                    (click)="onSelectedWarehouse(warehouse)"
                                 >
                                     {{ warehouse?.code || '-' }} - {{ warehouse?.name }}
                                 </mat-option>
@@ -58,7 +48,43 @@
                             </mat-error>
                         </mat-form-field>
                     </div>
-                    <!-- / WAREHOUSE -->
+                    <!-- / WAREHOUSE NAME -->
+                    <!-- WAREHOUSE ADDRESS -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        *ngIf="selectedWarehouse"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="15"
+                            class="pr-0"
+                        >
+                            Warehouse<br/> Address
+                        </label>
+                
+                        <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.address || '-' }}</p>
+                    </div>
+                    <!-- / WAREHOUSE ADDRESS -->
+                    <!-- WAREHOUSE NOTES ADDRESS -->
+                    <div
+                        class="custom-field"
+                        fxLayout="row"
+                        fxLayoutAlign="start stretch"
+                        *ngIf="selectedWarehouse"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="15"
+                            class="pr-0"
+                        >
+                            Warehouse<br/> Notes Address
+                        </label>
+                
+                        <p class="sinbad-black-60-fg" fxFlexAlign="center" fxFlex="50">{{ selectedWarehouse?.noteAddress || '-' }}</p>
+                    </div>
+                    <!-- / WAREHOUSE NOTES ADDRESS -->
                     <!-- FIND LOCATION -->
                     <div class="font-weight-600 font-size-24 line-height-20">
                         Find Location
@@ -249,10 +275,14 @@
                     <!-- / FIND LOCATION FORM -->
                     <!-- MULTIPLE SELECTION -->
                     <sinbad-multiple-selection
-                        [initialSelectedOptions]="initialSelectedOptions"
                         [availableOptions]="availableOptions"
-                        [isAvailableOptionsLoading]="isAvailableOptionsLoading"
+                        [totalAvailableOptions]="(totalUrbans$ | async)"
+                        [isAvailableOptionsLoading]="(isUrbanLoading$ | async)"
+                        (availableReachedBottom)="onAvailableOptionLoadMore()"
+                        (selectedReachedBottom)="onSelectedOptionLoadMore()"
+                        (selectionListChanged)="onSelectionChanged($event)"
                         (clearAll)="onClearAll()"
+                        (search)="onSearch($event)"
                     ></sinbad-multiple-selection>
                     <!-- / MULTIPLE SELECTION -->
                 </form>

@@ -6,13 +6,15 @@ import * as fromWarehouseCoverages from './reducers';
 import {
     LocationEffects
 } from './effects';
+import { WarehouseCoverageEffects } from './effects';
 
 @NgModule({
     imports: [
         // Third Party (Ngrx: https://ngrx.io)
         StoreModule.forFeature(fromWarehouseCoverages.featureKey, fromWarehouseCoverages.reducers),
         EffectsModule.forFeature([
-            LocationEffects
+            LocationEffects,
+            WarehouseCoverageEffects,
         ])
     ]
 })

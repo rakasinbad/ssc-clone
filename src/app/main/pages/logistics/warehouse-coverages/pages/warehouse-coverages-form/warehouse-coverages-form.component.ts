@@ -36,6 +36,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan daftar warehouse yang tersedia.
     availableWarehouses$: Observable<Array<Warehouse>>;
 
+    // Untuk menyimpan warehouse yang terpilih.
+    selectedWarehouse: Warehouse;
     // Untuk menyimpan province yang terpilih.
     selectedProvince$: Observable<string>;
     // Untuk menyimpan city yang terpilih.
@@ -75,14 +77,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     // Untuk menyimpan urban yang tersedia.
     availableUrbans$: Observable<Array<string>>;
 
-    initialSelectedOptions: Array<Selection> = [
-        { id: '1', group: 'urban', label: 'A' },
-        { id: '2', group: 'urban', label: 'B' },
-        { id: '3', group: 'urban', label: 'C' },
-        { id: '4', group: 'urban', label: 'D' },
-    ];
+    initialSelectedOptions: Array<Selection> = [];
     availableOptions: Array<Selection> = [];
-    selectedOptions: Array<Selection> = [];
+    // selectedOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
     isAvailableOptionsLoading: boolean = true;
 
@@ -98,6 +95,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     // Subject for subscription
     subs$: Subject<void> = new Subject<void>();
+    // Untuk keperluan menangani
+    loadMore$: Subject<string> = new Subject<string>();
     // Untuk keperluan mat dialog ref.
     dialogRef$: Subject<string> = new Subject<string>();
 
@@ -217,6 +216,13 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             takeUntil(this.subs$)
         );
 
+        // Mengambil total urban di database.
+        this.totalUrbans$ = this.locationStore.select(
+            LocationSelectors.getUrbanTotal
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
         // Mengambil state loading-nya province.
         this.isProvinceLoading$ = this.locationStore.select(
             LocationSelectors.getProvinceLoadingState
@@ -242,16 +248,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         );
 
         // Mengambil state loading-nya urban.
-        this.locationStore.select(
+        this.isUrbanLoading$ = this.locationStore.select(
             LocationSelectors.getUrbanLoadingState
         ).pipe(
             tap(val => this.debug('IS URBAN LOADING?', val)),
-            tap(val => {
-                this.isAvailableOptionsLoading = val;
-                this.cdRef.markForCheck();
-            }),
             takeUntil(this.subs$)
-        ).subscribe();
+        );
 
         // Mengambil state province yang terpilih.
         this.selectedProvince$ = this.locationStore.select(
@@ -292,6 +294,36 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             takeUntil(this.subs$)
         );
 
+        this.loadMore$.pipe(
+            withLatestFrom(this.totalUrbans$),
+            filter(([message, totalUrbans]) => {
+                if (message === 'load-more-available') {
+                    return !!message && totalUrbans > this.availableOptions.length;
+                }
+
+                return true;
+            }),
+            takeUntil(this.subs$)
+        ).subscribe(([message]) => {
+            if (message === 'load-more-available') {
+                // Menyiapkan query untuk pencarian district.
+                const newQuery: IQueryParams = {
+                    paginate: true,
+                    limit: 30,
+                    skip: this.availableOptions.length
+                };
+
+                // Mengirim state untuk melakukan request urban.
+                this.locationStore.dispatch(
+                    LocationActions.fetchUrbansRequest({
+                        payload: newQuery
+                    })
+                );
+
+                this.cdRef.markForCheck();
+            }
+        });
+
         // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
         this.dialogRef$.pipe(
             exhaustMap(subjectValue => {
@@ -316,6 +348,11 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 return dialogRef.afterClosed().pipe(
                     tap(value => {
                         if (value === 'clear-all') {
+                            this.form.patchValue({
+                                selectedUrbans: [],
+                                removedUrbans: []
+                            });
+
                             this.multiple$.clearAllSelectedOptions();
 
                             this.notice$.open('Your selected options has been cleared.', 'success', {
@@ -440,7 +477,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         // Menyiapkan query untuk pencarian district.
         const newQuery: IQueryParams = {
             paginate: true,
-            limit: 10,
+            limit: 30,
             skip: 0
         };
 
@@ -468,6 +505,38 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.dialogRef$.next('clear-all');
     }
 
+    onSearch($event: string): void {
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 30,
+            skip: 0
+        };
+
+        newQuery['keyword'] = $event;
+        
+        this.locationStore.dispatch(
+            LocationActions.truncateUrbans()
+        );
+
+        this.locationStore.dispatch(
+            LocationActions.fetchUrbansRequest({
+                payload: newQuery
+            })
+        );
+    }
+
+    onAvailableOptionLoadMore(): void {
+        this.loadMore$.next('load-more-available');
+    }
+
+    onSelectedOptionLoadMore(): void {
+        this.loadMore$.next('load-more-selected');
+    }
+
+    onSelectedWarehouse(warehouse: Warehouse): void {
+        this.selectedWarehouse = warehouse;
+    }
+
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
         const province: Province = event.option.value;
 
@@ -488,6 +557,15 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         }
 
         return item.name;
+    }
+
+    onSelectionChanged($event: { added: Array<Selection>; removed: Array<Selection> }): void {
+        this.debug('onSelectionChanged', $event);
+
+        this.form.patchValue({
+            selectedUrbans: $event.added,
+            removedUrbans: $event.removed,
+        });
     }
 
     onSelectedCity(event: MatAutocompleteSelectedEvent): void {
@@ -668,12 +746,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     listenDistrictAutoComplete(): void {
         setTimeout(() => this.processDistrictAutoComplete());
     }
-
+// 
     submitWarehouseCoverage(): void {
-        // Mendapatkan urban yang telah dipilih.
-        const urbans: Array<Selection> = this.selectedOptions;
         // Mendapatkan nilai dari form.
         const formValue = this.form.getRawValue();
+        // Mendapatkan urban yang terpilih.
+        const urbans = (formValue.selectedUrbans as Array<Selection>);
 
         this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
             payload: {
@@ -736,6 +814,18 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             ],
             district: [
                 { value: '', disabled: true },
+            ],
+            selectedUrbans: [
+                { value: [], disabled: false },
+                [
+                    RxwebValidators.choice({
+                        minLength: 1,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            removedUrbans: [
+                { value: '', disabled: false }, []
             ],
         });
 
@@ -854,12 +944,28 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             }),
             takeUntil(this.subs$)
         ).subscribe();
+
+        this.form.valueChanges
+        .pipe(
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(() => {
+            if (this.form.valid) {
+                this.locationStore.dispatch(FormActions.setFormStatusValid());
+            } else {
+                this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+            }
+        });
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
 
+        this.locationStore.dispatch(LocationActions.deselectProvince());
+        this.locationStore.dispatch(LocationActions.deselectCity());
+        this.locationStore.dispatch(LocationActions.deselectDistrict());
+        this.locationStore.dispatch(LocationActions.deselectUrban());
         this.locationStore.dispatch(LocationActions.truncateProvinces());
         this.locationStore.dispatch(LocationActions.truncateCities());
         this.locationStore.dispatch(LocationActions.truncateDistricts());
@@ -915,9 +1021,10 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             FormSelectors.getIsClickSaveButton
         ).pipe(
             filter(isClick => !!isClick),
-            tap(() => this.submitWarehouseCoverage()),
             takeUntil(this.subs$)
-        );
+        ).subscribe(() => {
+            this.submitWarehouseCoverage();
+        });
 
 
         // this.warehouseSub.pipe(
