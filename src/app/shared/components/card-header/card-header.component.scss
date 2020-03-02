@@ -13,6 +13,7 @@ sinbad-card-header {
 
         .mat-chip.mat-standard-chip::after {
             background: sinbad-color('black', '80');
+            opacity: 0;
         }
     }
 }
