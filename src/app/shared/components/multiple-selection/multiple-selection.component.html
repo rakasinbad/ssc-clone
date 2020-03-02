@@ -65,7 +65,6 @@
                 >
                     {{ option?.label }}
                 </mat-list-option>
-
                 <!-- LOADING OPTION -->
                 <mat-option
                     [disabled]="true"
@@ -114,25 +113,24 @@
                 [disableRipple]="true"
                 (selectionChange)="selectedOptionSub$.next($event)"
             >
-                <ng-container *ngFor="let option of (selectedOptions)" class="relative">
-                    <mat-list-option
-                        [checkboxPosition]="'before'"
-                        [selected]="true"
-                        [value]="option"
-                    >
-                        {{ option?.label }}
-                    </mat-list-option>
-                    
-                    <!-- LOADING OPTION -->
-                    <mat-option
-                        [disabled]="true"
-                        style="text-align: center; font-style: italic; max-height: 30px;"
-                        *ngIf="totalSelectedOptions > selectedOptions.length"
-                    >
-                        Loading ...
-                    </mat-option>
-                    <!-- / LOADING OPTION -->
-                </ng-container>
+                <mat-list-option
+                    *ngFor="let option of (mergedSelectedOptions)"
+                    class="relative"
+                    [checkboxPosition]="'before'"
+                    [selected]="true"
+                    [value]="option"
+                >
+                    {{ option?.label }}
+                </mat-list-option>
+                <!-- LOADING OPTION -->
+                <mat-option
+                    [disabled]="true"
+                    style="text-align: center; font-style: italic; max-height: 30px;"
+                    *ngIf="totalSelectedOptions > mergedSelectedOptions.length"
+                >
+                    Loading ...
+                </mat-option>
+                <!-- / LOADING OPTION -->
             </mat-selection-list>
             <!-- / LIST -->
             <!-- LOADER -->
