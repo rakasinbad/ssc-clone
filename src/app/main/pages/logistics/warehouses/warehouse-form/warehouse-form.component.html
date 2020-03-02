@@ -130,10 +130,6 @@
                                             {{ row?.name || '-' }}
                                         </mat-option>
                                     </mat-select>
-
-                                    <mat-error *ngIf="hasError('invoices', true)">
-                                        {{ getErrorMessage('invoices') }}
-                                    </mat-error>
                                 </ng-container>
 
                                 <ng-template #noInvoiceGroups>
@@ -141,6 +137,10 @@
                                         <mat-option>None</mat-option>
                                     </mat-select>
                                 </ng-template>
+
+                                <mat-error *ngIf="hasError('invoices', true)">
+                                    {{ getErrorMessage('invoices') }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -601,4 +601,8 @@
         </form>
     </div>
     <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
 </div>

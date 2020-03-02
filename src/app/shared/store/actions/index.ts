@@ -6,9 +6,13 @@ import * as ProgressActions from './progress.actions';
 import * as TeamActions from './team.actions';
 import * as TemperatureActions from './temperature.actions';
 import * as UiActions from './ui.actions';
+import * as WarehouseActions from './warehouse.actions';
 import * as WarehouseValueActions from './warehouse-value.actions';
 
-type FailureActions = TemperatureActions.FailureActions | WarehouseValueActions.FailureActions;
+type FailureActions =
+    | TemperatureActions.FailureActions
+    | WarehouseActions.FailureActions
+    | WarehouseValueActions.FailureActions;
 
 export {
     DropdownActions,
@@ -20,5 +24,6 @@ export {
     TeamActions,
     TemperatureActions,
     UiActions,
+    WarehouseActions,
     WarehouseValueActions
 };

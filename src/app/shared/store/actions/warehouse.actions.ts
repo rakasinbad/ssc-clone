@@ -1,0 +1,32 @@
+import { createAction, props } from '@ngrx/store';
+import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+import { ErrorHandler, IQueryParams } from 'app/shared/models';
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch [Warehouse]
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchWarehouseRequest = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchWarehouseFailure = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchWarehouseSuccess = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Success',
+    props<{ payload: Array<Warehouse> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Helper Actions
+// -----------------------------------------------------------------------------------------------------
+
+export const clearWarehouseState = createAction(
+    '[Helper Sources - Warehouse] Clear Warehouse State'
+);
+
+export type FailureActions = 'fetchWarehouseFailure';

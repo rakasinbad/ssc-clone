@@ -240,7 +240,6 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     getLeadTime(day: number): string {
-        console.log('LEAD', day);
         return day > 1 ? ' Days' : ' Day';
     }
 
@@ -562,6 +561,11 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                 // Reset urban state
                 this.store.dispatch(DropdownActions.resetUrbansState());
 
+                if (this.pageType === 'edit') {
+                    // Reset core state warehouses
+                    this.store.dispatch(WarehouseActions.clearState());
+                }
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
@@ -603,6 +607,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                             title: 'Edit Warehouse'
                         }
                     ];
+
+                    this.store.dispatch(WarehouseActions.fetchWarehouseRequest({ payload: id }));
                 } else {
                     this.router.navigateByUrl('/pages/logistics/warehouses');
                 }
@@ -663,7 +669,17 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                 this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
 
-                this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
+                this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading).pipe(
+                    tap(isLoading => {
+                        if (!isLoading) {
+                            // Display footer action
+                            this.store.dispatch(UiActions.showFooterAction());
+                        } else {
+                            // Hide footer action
+                            this.store.dispatch(UiActions.hideFooterAction());
+                        }
+                    })
+                );
 
                 // Handle search district autocomplete & try request to endpoint
                 this.form
@@ -823,6 +839,112 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             ],
             notes: ''
         });
+
+        if (this.pageType === 'edit') {
+            this._initEditForm();
+        }
+    }
+
+    private _initEditForm(): void {
+        this.store
+            .select(WarehouseSelectors.getSelectedItem)
+            .pipe(
+                filter(v => !!v),
+                withLatestFrom(
+                    this.store.select(DropdownSelectors.getInvoiceGroupDropdownState),
+                    this.store.select(TemperatureSelectors.selectAll),
+                    this.store.select(WarehouseValueSelectors.selectAll)
+                ),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(([row, invoices, temperatures, whValues]) => {
+                console.log('EDIT ROW', row);
+
+                const whIdField = this.form.get('whId');
+                const whNameField = this.form.get('whName');
+                const leadTimeField = this.form.get('leadTime');
+                const invoiceField = this.form.get('invoices');
+                const temperatureField = this.form.get('temperature');
+                const whValueField = this.form.get('whValue');
+                const addressField = this.form.get('address');
+                const notesField = this.form.get('notes');
+
+                if (row) {
+                    if (row.code) {
+                        whIdField.setValue(row.code);
+                    }
+
+                    if (whIdField.invalid) {
+                        whIdField.markAsTouched();
+                    }
+
+                    if (row.name) {
+                        whNameField.setValue(row.name);
+                    }
+
+                    if (whNameField.invalid) {
+                        whNameField.markAsTouched();
+                    }
+
+                    if (row.leadTime) {
+                        leadTimeField.setValue(row.leadTime);
+                    }
+
+                    if (leadTimeField.invalid) {
+                        leadTimeField.markAsTouched();
+                    }
+
+                    if (row.warehouseInvoiceGroups && row.warehouseInvoiceGroups.length > 0) {
+                        const currInvoices = row.warehouseInvoiceGroups
+                            .map((v, i) => {
+                                return v && v.invoiceGroup.id
+                                    ? invoices.findIndex(r => r.id === v.invoiceGroup.id) === -1
+                                        ? null
+                                        : v.invoiceGroup.id
+                                    : null;
+                            })
+                            .filter(v => v !== null);
+
+                        invoiceField.setValue(currInvoices);
+
+                        if (invoiceField.invalid) {
+                            invoiceField.markAsTouched();
+                        }
+                    }
+
+                    if (row.warehouseTemperatureId) {
+                        temperatureField.setValue(row.warehouseTemperatureId);
+                    }
+
+                    if (temperatureField.invalid) {
+                        temperatureField.markAsTouched();
+                    }
+
+                    if (row.warehouseValueId) {
+                        whValueField.setValue(row.warehouseValueId);
+                    }
+
+                    if (whValueField.invalid) {
+                        whValueField.markAsTouched();
+                    }
+
+                    if (row.address) {
+                        addressField.setValue(row.address);
+                    }
+
+                    if (addressField.invalid) {
+                        addressField.markAsTouched();
+                    }
+
+                    if (row.noteAddress) {
+                        notesField.setValue(row.noteAddress);
+                    }
+
+                    if (notesField.invalid) {
+                        notesField.markAsTouched();
+                    }
+                }
+            });
     }
 
     private _addressValid(): boolean {

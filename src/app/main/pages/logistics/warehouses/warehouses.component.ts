@@ -212,6 +212,12 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
             default:
                 this.paginator.pageSize = this.defaultPageSize;
 
+                this.sort.sort({
+                    id: 'id',
+                    start: 'desc',
+                    disableClear: true
+                });
+
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
