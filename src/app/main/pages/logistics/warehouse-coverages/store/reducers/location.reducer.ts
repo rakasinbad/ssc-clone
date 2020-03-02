@@ -307,6 +307,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             province: adapterProvince.removeAll({
                 ...state.province,
+                total: 0,
             })
         })
     ),
@@ -316,6 +317,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             city: adapterCity.removeAll({
                 ...state.city,
+                total: 0,
             })
         })
     ),
@@ -325,6 +327,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             district: adapterDistrict.removeAll({
                 ...state.district,
+                total: 0,
             })
         })
     ),
@@ -334,6 +337,7 @@ export const reducer = createReducer<LocationState>(
             ...state,
             urban: adapterUrban.removeAll({
                 ...state.urban,
+                total: 0,
             })
         })
     ),
