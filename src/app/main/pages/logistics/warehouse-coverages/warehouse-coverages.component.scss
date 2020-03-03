@@ -1,6 +1,14 @@
 @import 'src/@fuse/scss/fuse';
 
 app-warehouse-coverages {
+    sinbad-card-header {
+        [first-middle-left] {
+            .mat-form-field-appearance-outline .mat-form-field-infix {
+                padding: 0 0 0.75em 0;
+            }
+        }
+    }
+
     #warehouse-coverages {
         .top-bg {
             @include media-breakpoint('lt-md') {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter, finalize } from 'rxjs/operators';
 
 import {
     LocationActions, LocationFailureActionNames, WarehouseFailureActionNames
@@ -71,6 +71,12 @@ export class WarehouseCoverageEffects {
                     switchMap(this.createWarehouseCoverageRequest),
                     catchError(err => this.sendErrorToState(err, 'createWarehouseCoverageFailure'))
                 );
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
             })
         )
     );
@@ -88,6 +94,12 @@ export class WarehouseCoverageEffects {
                 });
 
                 this.locationStore.dispatch(FormActions.resetClickSaveButton());
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
             })
         )
     , { dispatch: false });
@@ -105,6 +117,12 @@ export class WarehouseCoverageEffects {
                 });
 
                 this.router.navigate(['/pages/logistics/warehouse-coverages']);
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
             })
         )
     , { dispatch: false });

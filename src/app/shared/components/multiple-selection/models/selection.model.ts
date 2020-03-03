@@ -1,5 +1,5 @@
 export interface Selection {
     id: string;
-    group?: string;
+    group: string;
     label: string;
 }
