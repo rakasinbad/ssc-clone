@@ -15,7 +15,8 @@ import {
     TeamEffects,
     TemperatureEffects,
     UiEffects,
-    WarehouseValueEffects
+    WarehouseValueEffects,
+    WarehouseEffects
 } from './shared/store/effects';
 import * as fromRoot from './store/app.reducer';
 import { CustomSerializer } from './store/custom-serializer';
@@ -45,6 +46,7 @@ export function getMetaReducers(): MetaReducer<fromRoot.State>[] {
             TeamEffects,
             TemperatureEffects,
             UiEffects,
+            WarehouseEffects,
             WarehouseValueEffects
         ]),
         environment.production || environment.staging
