@@ -53,6 +53,13 @@ export class SalesRepApiService {
               ]
             : [];
 
+        if (params['keyword']) {
+            newArg.push({
+                key: 'keyword',
+                value: params['keyword'],
+            });
+        }
+
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });

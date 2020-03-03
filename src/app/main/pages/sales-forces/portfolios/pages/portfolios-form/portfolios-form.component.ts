@@ -504,16 +504,22 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                 // Menambah store yang ingin dihapus dari toko yang konflik dengan portfolio lain dan fakturnya sama.
                 removedStores.push(...conflictStores.map(store => ({ storeId: store.id, portfolioId: store.portfolio.id })));
                 // Mengambil ID store-nya aja dari toko yang ingin dihapus.
-                const removedStoreIds = removedStores.map(removedStore => removedStore.storeId);
+                // const removedStoreIds = removedStores.map(removedStore => removedStore.storeId);
                 // Meng-update form data toko yang ingin dihapus.
                 form.removedStore = removedStores;
                 // Menyaring toko dari toko yang akan dihapus.
 //                 form.stores = form.stores.filter(store => !removedStoreIds.includes(String(store.storeId)));
 
-                // Melakukan request ke back-end untuk update portfolio.
-                this.portfolioStore.dispatch(
-                    PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: form } })
-                );
+                if (this.portfolioId) {
+                    // Melakukan request ke back-end untuk update portfolio.
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.patchPortfolioRequest({ payload: { id: this.portfolioId, portfolio: form } })
+                    );
+                } else {
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.createPortfolioRequest({ payload: form })
+                    );
+                }
             }),
             take(1)
         ).subscribe();
@@ -935,6 +941,7 @@ export class PortfoliosFormComponent implements OnInit, OnDestroy, AfterViewInit
                         this.form.patchValue({
                             name: portfolio.name,
                             invoiceGroup: portfolio.invoiceGroupId,
+                            type: portfolio.type,
                         });
 
                         this.portfolioStore.dispatch(

@@ -1,14 +1,14 @@
 import { FuseNavigation } from '@fuse/types';
 
 export const navigation: Array<FuseNavigation> = [
-    // {
-    //     id: 'dashboard',
-    //     title: 'Dashboard',
-    //     translate: 'NAV.DASHBOARD.TITLE',
-    //     type: 'item',
-    //     icon: 'dashboard',
-    //     url: '/pages/dashboard'
-    // },
+    {
+        id: 'dashboard',
+        title: 'Dashboard',
+        translate: 'NAV.DASHBOARD.TITLE',
+        type: 'item',
+        icon: 'dashboard',
+        url: '/pages/dashboard'
+    },
     {
         id: 'account',
         title: 'Store',
@@ -185,6 +185,18 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Warehouse Coverage',
                 type: 'item',
                 url: '/pages/logistics/warehouse-coverages'
+            },
+            {
+                id: 'wh-sku-assignment',
+                title: 'SKU Assignment',
+                type: 'item',
+                url: '/pages/logistics/sku-assignments'
+            },
+            {
+                id: 'wh-stock-management',
+                title: 'Stock Management',
+                type: 'item',
+                url: '/pages/logistics/stock-managements'
             }
         ]
     }

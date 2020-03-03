@@ -1,0 +1,132 @@
+<div class="general-content" fxLayout="column">
+    <sinbad-card-header [config]="cardHeaderConfig">
+        <span first-bottom-left>Total 5 SKU</span>
+    </sinbad-card-header>
+
+    <mat-table
+        class="stock-management-detail-general-table sinbad-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+    >
+        <!-- No Column -->
+        <ng-container matColumnDef="no">
+            <mat-header-cell *matHeaderCellDef>
+                No
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row; index as i">
+                <p class="text-word-break-break-word">
+                    {{ generateNumber(i) }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU ID Column -->
+        <ng-container matColumnDef="sku-id">
+            <mat-header-cell *matHeaderCellDef>
+                SKU ID
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.id }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU Name Column -->
+        <ng-container matColumnDef="sku-name">
+            <mat-header-cell *matHeaderCellDef>
+                SKU Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.name }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Stock Type Column -->
+        <ng-container matColumnDef="stock-type">
+            <mat-header-cell *matHeaderCellDef>
+                Stock Type
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center &#10; Unlimited: Admin can not set and manage stock level in Sinbad Seller Center"
+                    matTooltipClass="tooltip-br"
+                >
+                    help
+                </mat-icon>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.type | titlecase }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Sellable Column -->
+        <ng-container matColumnDef="sellable">
+            <mat-header-cell *matHeaderCellDef>
+                Sellable
+
+                <mat-icon
+                    class="active-icon s-14 ml-8 cursor-pointer"
+                    color="accent"
+                    matTooltip="Sellable Stock on hand in the warehouse that can be sold"
+                    matTooltipClass="tooltip-br"
+                >
+                    help
+                </mat-icon>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row.type === 'limited'">
+                    <p class="text-word-break-break-word">
+                        {{ row.sellable }}
+                    </p>
+                </ng-container>
+
+                <ng-container *ngIf="row.type === 'unlimited'">
+                    <mat-icon class="active-icon s-14">
+                        all_inclusive
+                    </mat-icon>
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <!-- On Hand Column -->
+        <ng-container matColumnDef="on-hand">
+            <mat-header-cell *matHeaderCellDef>
+                On Hand
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row.type === 'limited'">
+                    <p class="text-word-break-break-word">
+                        {{ row.onHand }}
+                    </p>
+                </ng-container>
+
+                <ng-container *ngIf="row.type === 'unlimited'">
+                    <mat-icon class="active-icon s-14">
+                        all_inclusive
+                    </mat-icon>
+                </ng-container>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="stock-management-detail-general"
+        ></mat-row>
+    </mat-table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>

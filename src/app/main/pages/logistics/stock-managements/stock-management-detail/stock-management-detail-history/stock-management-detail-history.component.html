@@ -1,0 +1,96 @@
+<div class="history-content" fxLayout="column">
+    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+
+    <mat-table
+        class="stock-management-detail-history-table sinbad-table"
+        #table
+        [dataSource]="dataSource"
+        matSort
+        [@animateStagger]="{ value: '50' }"
+    >
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+            <mat-header-cell *matHeaderCellDef>
+                Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.date }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU ID Column -->
+        <ng-container matColumnDef="sku-id">
+            <mat-header-cell *matHeaderCellDef>
+                SKU ID
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.skuId }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- SKU Name Column -->
+        <ng-container matColumnDef="sku-name">
+            <mat-header-cell *matHeaderCellDef>
+                SKU Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.skuName }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Value Add Column -->
+        <ng-container matColumnDef="value-add">
+            <mat-header-cell *matHeaderCellDef>
+                Value Add
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.valueAdd }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Value Subtraction Column -->
+        <ng-container matColumnDef="value-subtraction">
+            <mat-header-cell *matHeaderCellDef>
+                Value Subtraction
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.valueSub }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Reason Column -->
+        <ng-container matColumnDef="reason">
+            <mat-header-cell *matHeaderCellDef>
+                Reason
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <p class="text-word-break-break-word">
+                    {{ row.reason }}
+                </p>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="stock-management-detail-history"
+        ></mat-row>
+    </mat-table>
+
+    <mat-paginator
+        [length]="dataSource.length"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
+</div>

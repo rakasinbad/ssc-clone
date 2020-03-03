@@ -1,11 +1,13 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { createReducer, on } from '@ngrx/store';
+
+import { Warehouse } from '../../models';
 import { WarehouseActions } from './../actions';
-import { Action, createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
 
 // Keyname for reducer
 export const featureKey = 'warehouses';
 
-export interface State extends EntityState<any> {
+export interface State extends EntityState<Warehouse> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -13,7 +15,7 @@ export interface State extends EntityState<any> {
 }
 
 // Adapter for warehouses state
-export const adapter = createEntityAdapter<any>({ selectId: row => row.id });
+export const adapter = createEntityAdapter<Warehouse>({ selectId: row => row.id });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -30,11 +32,26 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: true
     })),
+    on(WarehouseActions.fetchWarehousesFailure, WarehouseActions.fetchWarehouseFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
+    on(WarehouseActions.fetchWarehouseRequest, (state, { payload }) => ({
+        ...state,
+        isLoading: true,
+        selectedId: payload
+    })),
+    on(WarehouseActions.fetchWarehouseSuccess, (state, { payload }) => {
+        return adapter.addOne(payload, { ...state, isLoading: false });
+    }),
     on(WarehouseActions.fetchWarehousesSuccess, (state, { payload }) => {
-        return adapter.upsertMany(payload.data, {
+        return adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             total: payload.total
         });
+    }),
+    on(WarehouseActions.clearState, state => {
+        return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
     })
 );

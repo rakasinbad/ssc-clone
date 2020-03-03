@@ -60,14 +60,18 @@ export class ExportFilterComponent implements OnInit {
             case 'catalogues':
             case 'payments':
             case 'orders':
+            case 'sales-rep':
                 hasDefaultConfig = true;
                 this.statusSources = HelperService.getStatusList(this.data.page);
                 break;
+
             case 'journey-plans':
                 hasDefaultConfig = true;
                 break;
+
             case 'portfolios':
                 break;
+
             default: {
                 this.notice$.open(
                     `Something wrong with our web while opening export filter dialog.
@@ -325,6 +329,9 @@ export class ExportFilterComponent implements OnInit {
 
             case 'portfolios':
                 return '(Portfolio of Store)';
+
+            case 'sales-rep':
+                return '(Sales Rep)';
 
             case 'stores':
                 return '(Store List)';

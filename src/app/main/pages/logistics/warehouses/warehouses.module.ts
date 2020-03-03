@@ -9,7 +9,8 @@ import { WarehousesStoreModule } from './store';
 import {
     WarehouseDetailCoverageComponent,
     WarehouseDetailGeneralComponent,
-    WarehouseDetailLocationComponent
+    WarehouseDetailLocationComponent,
+    WarehouseDetailSkuStockComponent
 } from './warehouse-detail';
 import { WarehouseDetailComponent } from './warehouse-detail/warehouse-detail.component';
 import { WarehouseFormComponent } from './warehouse-form';
@@ -18,12 +19,13 @@ import { WarehousesComponent } from './warehouses.component';
 
 @NgModule({
     declarations: [
-        WarehousesComponent,
-        WarehouseFormComponent,
         WarehouseDetailComponent,
+        WarehouseDetailCoverageComponent,
         WarehouseDetailGeneralComponent,
         WarehouseDetailLocationComponent,
-        WarehouseDetailCoverageComponent
+        WarehouseDetailSkuStockComponent,
+        WarehouseFormComponent,
+        WarehousesComponent
     ],
     imports: [
         WarehousesRoutingModule,

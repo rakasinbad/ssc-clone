@@ -3,16 +3,18 @@ import { ITimestamp } from './timestamp.model';
 
 export interface IInvoiceGroup extends ITimestamp {
     readonly id: NonNullable<string>;
-    name: string;
+    code?: string;
     minimumOrder: string;
+    name: string;
     status: EStatus;
     supplierId: string;
 }
 
 export class InvoiceGroup implements IInvoiceGroup {
     readonly id: NonNullable<string>;
-    name: string;
+    code?: string;
     minimumOrder: string;
+    name: string;
     status: EStatus;
     supplierId: string;
     createdAt: string;
@@ -22,8 +24,9 @@ export class InvoiceGroup implements IInvoiceGroup {
     constructor(data: InvoiceGroup) {
         const {
             id,
-            name,
+            code = null,
             minimumOrder,
+            name,
             status,
             supplierId,
             createdAt,
@@ -32,8 +35,9 @@ export class InvoiceGroup implements IInvoiceGroup {
         } = data;
 
         this.id = id;
-        this.name = name ? String(name).trim() : null;
+        this.code = code;
         this.minimumOrder = minimumOrder;
+        this.name = name ? String(name).trim() : null;
         this.status = status;
         this.supplierId = supplierId;
         this.createdAt = createdAt;

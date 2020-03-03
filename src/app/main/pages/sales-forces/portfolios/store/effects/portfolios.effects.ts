@@ -359,19 +359,23 @@ export class PortfoliosEffects {
                 catchOffline(),
                 switchMap(response => {
                     if (newQuery.paginate) {
-                        return of(PortfolioActions.fetchPortfoliosSuccess({
-                            payload: {
-                                portfolios: response.data.map(portfolio => new Portfolio({
-                                    ... portfolio,
-                                    storeQty: portfolio.storeQty || portfolio['storeAmount'],
-                                    stores: Array.isArray(portfolio['storePortfolios'])
-                                            ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
-                                            : portfolio['storePortfolios']
-                                })),
-                                total: response.total,
-                                source: 'fetch',
-                            }
-                        }));
+                        try {
+                            return of(PortfolioActions.fetchPortfoliosSuccess({
+                                payload: {
+                                    portfolios: response.data.map(portfolio => new Portfolio({
+                                        ... portfolio,
+                                        storeQty: portfolio.storeQty || portfolio['storeAmount'],
+                                        stores: Array.isArray(portfolio['storePortfolios'])
+                                                ? portfolio['storePortfolios'].map(storePortfolio => new Store(storePortfolio.store))
+                                                : portfolio['storePortfolios']
+                                    })),
+                                    total: response.total,
+                                    source: 'fetch',
+                                }
+                            }));
+                        } catch (e) {
+                            console.error(e);
+                        }
                     } else {
                         const newResponse = (response as unknown as Array<Portfolio>);
 

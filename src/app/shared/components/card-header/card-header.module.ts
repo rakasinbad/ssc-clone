@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CardHeaderComponent } from './card-header.component';
 import { FuseSharedModule } from '@fuse/shared.module';
-import { MatButtonModule, MatDatepickerModule, MatFormFieldModule, MatIconModule, MatDialogModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatToolbarModule, MatTableModule, MatPaginatorModule, MatProgressSpinnerModule, MatChipsModule } from '@angular/material';
+import { MatButtonModule, MatDatepickerModule, MatFormFieldModule, MatIconModule, MatDialogModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatToolbarModule, MatTableModule, MatPaginatorModule, MatProgressSpinnerModule, MatChipsModule, MatMenuModule } from '@angular/material';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -13,6 +13,7 @@ import { StoreModule } from '@ngrx/store';
 import { fromExport } from '../exports/store/reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { ExportsEffects } from '../exports/store/effects';
+import { CommonModule } from '@angular/common';
 
 
 
@@ -21,6 +22,8 @@ import { ExportsEffects } from '../exports/store/effects';
         CardHeaderComponent,
     ],
     imports: [
+        CommonModule,
+
         // Fuse
         FuseSharedModule,
 
@@ -37,6 +40,7 @@ import { ExportsEffects } from '../exports/store/effects';
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
+        MatMenuModule,
         MatSelectModule,
         MatSlideToggleModule,
         MatToolbarModule,

@@ -1,5 +1,18 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewEncapsulation,
+    ChangeDetectorRef
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { Warehouse } from '../../models';
+import * as fromWarehouses from '../../store/reducers';
+import { WarehouseSelectors } from '../../store/selectors';
+import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-warehouse-detail-location',
@@ -25,10 +38,21 @@ export class WarehouseDetailLocationComponent implements OnInit {
         }
     };
 
-    constructor() {}
+    warehouse$: Observable<Warehouse>;
+
+    constructor(
+        private cdRef: ChangeDetectorRef,
+        private store: Store<fromWarehouses.FeatureState>
+    ) {}
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
+
+        this.warehouse$ = this.store.select(WarehouseSelectors.getSelectedItem);
     }
 }

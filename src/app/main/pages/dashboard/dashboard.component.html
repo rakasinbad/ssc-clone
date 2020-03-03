@@ -1,45 +1,10 @@
 <div id="dashboard-analytics" class="page-layout blank">
 
-    <div class="main-widget">
-
-        <div class="position-relative p-24 sinbad-accent-500"
-             fxLayout="row" fxLayoutAlign="space-between center">
-            <div fxLayout="column" fxLayoutAlign="start start">
-                <span class="h2">Visitors</span>
-                <span class="h5 secondary-text">Unique visitors by month</span>
-            </div>
-            <div fxLayout="row" fxLayoutAlign="start center">
-                <div class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
-                     (click)="widget1SelectedYear = '2016'"
-                     [ngClass]="{'sinbad-accent-700': widget1SelectedYear === '2016'}">
-                    2016
-                </div>
-                <div class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
-                     (click)="widget1SelectedYear = '2017'"
-                     [ngClass]="{'sinbad-accent-700': widget1SelectedYear === '2017'}">
-                    2017
-                </div>
-                <div class="py-8 px-12 border-radius-2 line-height-1 cursor-pointer"
-                     (click)="widget1SelectedYear = '2018'"
-                     [ngClass]="{'sinbad-accent-700': widget1SelectedYear === '2018'}">
-                    2018
-                </div>
-            </div>
-        </div>
-
-        <div class="position-relative h-256 pb-16 sinbad-accent-500">
-            <canvas baseChart
-                    [datasets]="widgets.widget1.datasets[widget1SelectedYear]"
-                    [labels]="widgets.widget1.labels"
-                    [colors]="widgets.widget1.colors"
-                    [options]="widgets.widget1.options"
-                    [chartType]="widgets.widget1.chartType">
-            </canvas>
-        </div>
-
+    <div class="p-24 pb-0">
+        <iframe class="w-100-p h-600" src="https://datastudio.google.com/embed/reporting/1a6e3TkneatLXGZ2RYkBuFnxv6z_wTQC0/page/aciDB" frameborder="0" style="border:0" allowfullscreen></iframe>
     </div>
 
-    <div class="content">
+    <div class="content p-24">
 
         <div class="left mr-lg-32">
 

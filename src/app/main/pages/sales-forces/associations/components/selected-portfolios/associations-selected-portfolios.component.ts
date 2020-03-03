@@ -3,12 +3,12 @@ import { fuseAnimations } from '@fuse/animations';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
 
-import { Store, Filter, Portfolio } from '../../../portfolios/models';
+import { Filter, Portfolio } from '../../../portfolios/models';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../../portfolios/store/reducers';
 import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../../portfolios/store/selectors';
 import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime, startWith } from 'rxjs/operators';
 import { StoreActions, PortfolioActions } from '../../../portfolios/store/actions';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams, Store } from 'app/shared/models';
 import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
 import { AssociationsFilterPortfoliosComponent } from '../filter-portfolios/associations-filter-portfolios.component';
 import { FormControl } from '@angular/forms';
@@ -22,8 +22,8 @@ import { SalesRep } from '../../../sales-reps/models';
 import { AssociationApiService } from '../../services';
 import { PortfolioStoresComponent } from '../portfolio-stores/portfolio-stores.component';
 import { FeatureState as AssociationCoreFeatureState } from '../../store/reducers';
-import { AssociatedPortfolioSelectors, AssociationSelectors } from '../../store/selectors';
-import { AssociatedPortfolioActions } from '../../store/actions';
+import { AssociatedPortfolioSelectors, AssociationSelectors, AssociatedStoreSelectors, StoreSelectors } from '../../store/selectors';
+import { AssociatedPortfolioActions, AssociatedStoreActions } from '../../store/actions';
 
 @Component({
     selector: 'app-associations-selected-portfolios',
@@ -38,7 +38,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     // Untuk keperluan subscription.
     subs$: Subject<string> = new Subject<string>();
     // Untuk keperluan handle menghapus filter.
-    removeFilter$: Subject<string> = new Subject<string>();
+//     removeFilter$: Subject<string> = new Subject<string>();
     // Untuk menyimpan ID Sales Rep.
     salesRep$: Observable<SalesRep>;
 
@@ -46,9 +46,9 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     search: FormControl = new FormControl('');
 
     // Untuk menyimpan daftar toko yang tersedia untuk dipilih.
-    availablePortfolios$: Observable<Array<Portfolio>>;
+    availablePortfolios$: Observable<Array<Portfolio> | Array<Store>>;
     // Untuk menyimpan daftar toko, baik calon untuk portofolio maupun yang sudah menjadi bagian portofolio.
-    selectedPortfolios$: Observable<Array<Portfolio>>;
+    selectedPortfolios$: Observable<Array<Portfolio> | Array<Store>>;
     // Untuk menyimpan filter pencarian toko yang sedang aktif.
     filters$: Observable<Array<Filter>>;
     // Untuk menyimpanan status loading dari state.
@@ -89,10 +89,13 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
             takeUntil((this.subs$))
         );
 
-        this.isPortfolioLoading$ = this.portfolioStore.select(PortfolioSelector.getLoadingState)
-            .pipe(
-                takeUntil(this.subs$)
-            );
+        this.isPortfolioLoading$ = combineLatest([
+            this.associationStore.select(StoreSelectors.getLoadingState),
+            this.portfolioStore.select(PortfolioSelector.getLoadingState),
+        ]).pipe(
+            map(isLoadings => isLoadings.includes(true)),
+            takeUntil(this.subs$)
+        );
 
         this.isAssociatedPortfolioLoading$ = this.associationStore.select(AssociatedPortfolioSelectors.getLoadingState)
             .pipe(
@@ -116,84 +119,118 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.selectedPortfolioSub$.pipe(
             withLatestFrom(
                 this.associationStore.select(AssociatedPortfolioSelectors.selectEntities),
+                this.associationStore.select(AssociatedStoreSelectors.selectEntities),
             ),
-            tap(([$event, portfolioEntities]) => {
-                let portfolio = ($event.option.value as Portfolio);
+            tap(([$event, portfolioEntities, storeEntities]) => {
+                let isInSelected = false;
+                let value: Portfolio | Store = $event.option.value;
                 const isSelected = $event.option.selected;
-                const isInSelected = !!(portfolioEntities[portfolio.id]);
 
-                if (portfolioEntities[portfolio.id]) {
-                    portfolio = new Portfolio(portfolioEntities[portfolio.id]);
-                }
+                if (value instanceof Portfolio) {
+                    isInSelected = !!(portfolioEntities[value.id]);
 
-                if (portfolio.source === 'fetch') {
-                    if (isSelected) {
-                        this.associationStore.dispatch(
-                            AssociatedPortfolioActions.addSelectedPortfolios({
-                                payload: [portfolio]
-                            })
-                        );
-                    } else {
-                        this.associationStore.dispatch(
-                            AssociatedPortfolioActions.removeSelectedPortfolios({
-                                payload: [portfolio.id]
-                            })
-                        );
+                    if (isInSelected) {
+                        value = new Portfolio(portfolioEntities[value.id]);
                     }
-                } else if (portfolio.source === 'list') {
-                    if (!isInSelected) {
+
+                    if (value.source === 'fetch') {
                         if (isSelected) {
                             this.associationStore.dispatch(
                                 AssociatedPortfolioActions.addSelectedPortfolios({
-                                    payload: [portfolio]
+                                    payload: [value]
                                 })
                             );
                         } else {
                             this.associationStore.dispatch(
                                 AssociatedPortfolioActions.removeSelectedPortfolios({
-                                    payload: [portfolio.id]
+                                    payload: [value.id]
                                 })
                             );
                         }
-                    } else {
-                        if (!isSelected) {
+                    } else if (value.source === 'list') {
+                        if (!isInSelected) {
+                            if (isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.addSelectedPortfolios({
+                                        payload: [value]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.removeSelectedPortfolios({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        } else {
+                            if (!isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.markPortfolioAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedPortfolioActions.abortPortfolioAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        }
+                    }
+                } else if (value instanceof Store) {
+                    isInSelected = !!(storeEntities[value.id]);
+
+                    if (isInSelected) {
+                        value = new Store(storeEntities[value.id]);
+                    }
+
+                    if (value.source === 'fetch') {
+                        if (isSelected) {
                             this.associationStore.dispatch(
-                                AssociatedPortfolioActions.markPortfolioAsRemoved({
-                                    payload: [portfolio.id]
+                                AssociatedStoreActions.addSelectedStores({
+                                    payload: [value]
                                 })
                             );
                         } else {
                             this.associationStore.dispatch(
-                                AssociatedPortfolioActions.abortPortfolioAsRemoved({
-                                    payload: [portfolio.id]
+                                AssociatedStoreActions.removeSelectedStores({
+                                    payload: [value.id]
                                 })
                             );
                         }
+                    } else if (value.source === 'list') {
+                        if (!isInSelected) {
+                            if (isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.addSelectedStores({
+                                        payload: [value]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.removeSelectedStores({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        } else {
+                            if (!isSelected) {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.markStoreAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            } else {
+                                this.associationStore.dispatch(
+                                    AssociatedStoreActions.abortStoreAsRemoved({
+                                        payload: [value.id]
+                                    })
+                                );
+                            }
+                        }
                     }
                 }
-                // if (!isSelected) {
-                //     this.portfolioStore.dispatch(
-                //         PortfolioActions.markStoreAsRemovedFromPortfolio({
-                //             payload: store.id
-                //         })
-                //     );
-                // } else {
-                //     this.portfolioStore.dispatch(
-                //         PortfolioActions.abortStoreAsRemovedFromPortfolio({
-                //             payload: store.id
-                //         })
-                //     );
-
-                    // this.shopStore.dispatch(
-                    //     StoreActions.checkStoreAtInvoiceGroupRequest({
-                    //         payload: {
-                    //             storeId: store.id,
-                    //             invoiceGroupId
-                    //         }
-                    //     })
-                    // );
-                // }
-                // }
             }),
             takeUntil(this.subs$)
         ).subscribe();
@@ -249,13 +286,27 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     //     );
     // }
 
-    printPortfolioName(portfolio: Portfolio): string {
+    isAPortfolio(data: Portfolio | Store): boolean {
+        return data instanceof Portfolio;
+    }
+
+    printPortfolioName(data: Portfolio | Store): string {
+        const portfolio = data as Portfolio;
+        const store = data as Store;
+
         // return `${portfolio.name || '-'} (${portfolio.storeQty} ${portfolio.storeQty === 1 ? 'store' : 'stores'})`;
-        if (portfolio.type === 'group') {
-            return `${portfolio.name || '-'} (${portfolio.storeQty} stores)`;
-        } else if (portfolio.type === 'direct') {
-            return portfolio.stores[0].name;
-            // return `${store..name || '-'} - ${store.name || '-'}`;
+        if (portfolio instanceof Portfolio) {
+            // if (portfolio.type === 'group') {
+            //     return `${portfolio.name || '-'} (${portfolio.storeQty} stores)`;
+            // } else if (portfolio.type === 'direct') {
+            //     return portfolio.stores[0].name;
+            //     // return `${store..name || '-'} - ${store.name || '-'}`;
+            // }
+            return `${portfolio.name || '-'} (${portfolio.storeQty} ${portfolio.storeQty <= 1 ? 'store' : 'stores'})`;
+        }
+
+        if (store instanceof Store) {
+            return store.name;
         }
 
     }
@@ -298,13 +349,13 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     //     return true;
     // }
 
-    getStoreWarning(store: Store): string | null {
-        if (!store.portfolio) {
-            return null;
-        }
+    // getStoreWarning(store: Store): string | null {
+    //     if (!store.portfolio) {
+    //         return null;
+    //     }
 
-        return `This store is already added on Portfolio "${store.portfolio.name}". (Code: ${store.portfolio.code})"`;
-    }
+    //     return `This store is already added on Portfolio "${store.portfolio.name}". (Code: ${store.portfolio.code})"`;
+    // }
 
     
 
@@ -318,35 +369,49 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         //     filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
         //     tap(({ filters, type, invoiceGroupId }) => this.requestStore(filters, type, invoiceGroupId)),
         //     map(({ filters }) => filters),
-        //     takeUntil(this.subs$)
+        //     takeUntil(this.subs$)\
         // );
 
         this.selectedPortfolios$ = combineLatest([
             // this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
+            this.associationStore.select(AssociatedStoreSelectors.selectAll),
         ]).pipe(
             tap(() => this.debug('SELECTED PORTFOLIOS CHECK', {})),
-            map(([selectedPortfolios]) => selectedPortfolios.sort((a, b) => (+a.id) - (+b.id))),
+            map(([selectedPortfolios, selectedStores]) => {
+                const sortedPortfolios = (selectedPortfolios as unknown as Array<Portfolio>)
+                                        .map(portfolio => new Portfolio(portfolio))
+                                        .sort((a, b) => (+a.id) - (+b.id));
+                const sortedStores = (selectedStores as unknown as Array<Store>)
+                                    .map(store => new Store(store))
+                                    .sort((a, b) => (+a.id) - (+b.id));
+                return sortedPortfolios.concat(...sortedStores as unknown as Array<Portfolio>);
+            }),
             takeUntil(this.subs$)
         );
 
         this.availablePortfolios$ = combineLatest([
+            this.associationStore.select(StoreSelectors.selectAllStores),
             this.portfolioStore.select(PortfolioSelector.getAllPortfolios),
             this.associationStore.select(AssociatedPortfolioSelectors.selectAll),
+            this.associationStore.select(AssociatedStoreSelectors.selectAll),
         ]).pipe(
             // Debugging purpose.
             tap(() => this.debug('AVAILABLE PORTFOLIOS CHECK', {})),
             // Mengambil Invoice Group yang terpilih.
             withLatestFrom(this.associationStore.select(AssociationSelectors.getSelectedInvoiceGroup)),
             // Memeriksa Invoice Group yang dipilih.
-            // filter(([_, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+            filter(([_, invoiceGroup]) => !!invoiceGroup),
             // Mengubah bentuk portfolio yang ingin ditampilkan.
-            map(([[availablePortfolios, selectedPortfolios], invoiceGroup]) => {
+            map(([[availableStores, availablePortfolios, selectedPortfolios, selectedStores], invoiceGroup]) => {
                 // Mengambil ID dari portfolio yang dipilih.
                 const selectedPortfolioIds = selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).map(portfolio => portfolio.id);
 
+                // Mengambil ID dari store yang dipilih.
+                const selectedStoreIds = selectedStores.filter(store => !(!!store.deletedAt)).map(store => store.id);
+
                 // Mengambil portfolio dari state dengan mencocokkan Invoice Group-nya.
-                const newAvailablePortfolios = availablePortfolios
+                const newAvailablePortfolios: Array<Portfolio> | Array<Store> = availablePortfolios
                                                 .filter(portfolio =>
                                                     portfolio.invoiceGroupId === invoiceGroup.id
                                                 ).map(portfolio => {
@@ -354,6 +419,16 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                                                     newPortfolio.isSelected = selectedPortfolioIds.includes(newPortfolio.id);
                                                     return newPortfolio;
                                                 });
+
+                // Mengambil store dari state dengan mencocokkan Invoice Group-nya.
+                const newAvailableStores: Array<Store> = availableStores
+                                                .map(store => {
+                                                    const newStore = new Store(store);
+                                                    newStore.isSelected = selectedStoreIds.includes(newStore.id);
+                                                    return newStore;
+                                                });
+
+                (newAvailablePortfolios as unknown as Array<Store>).push(...newAvailableStores);
 
                 // Mengembalikan daftar toko dengan state yang baru.
                 return newAvailablePortfolios.sort((a, b) => (+a.id) - (+b.id));
@@ -369,7 +444,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
                 length: selectedPortfolios.length
             })),
             // Hanya mengambil jumlah isi dari array-nya saja.
-            map(selectedPortfolios => selectedPortfolios.filter(portfolio => !(!!portfolio.deletedAt)).length),
+            map(selectedPortfolios => (selectedPortfolios as unknown as Array<Store>).filter(store => !(!!store.deletedAt)).length),
             takeUntil(this.subs$)
         );
 
@@ -416,8 +491,8 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
         this.subs$.next();
         this.subs$.complete();
 
-        this.removeFilter$.next();
-        this.removeFilter$.complete();
+//         this.removeFilter$.next();
+//         this.removeFilter$.complete();
 
         this.selectedPortfolioSub$.next();
         this.selectedPortfolioSub$.complete();

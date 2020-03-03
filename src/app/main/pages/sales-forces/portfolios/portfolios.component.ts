@@ -64,11 +64,11 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
             useAdvanced: true,
             pageType: 'portfolios'
         },
-        // import: {
-        //     permissions: ['SRM.PFO.IMPORT'],
-        //     useAdvanced: true,
-        //     pageType: 'portfolios'
-        // },
+        import: {
+            permissions: ['SRM.PFO.IMPORT'],
+            useAdvanced: true,
+            pageType: 'portfolios'
+        },
     };
 
     // Untuk menangani search bar.

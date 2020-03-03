@@ -272,6 +272,21 @@ quill-editor {
     background-color: white;
 }
 
+// Text format helper
+.text-word-break-break-word {
+    word-break: break-word;
+}
+
+// Table helper
+.sinbad-table {
+    min-height: 42px !important;
+}
+
+// Tooltip helper
+.tooltip-br {
+    white-space: pre-line;
+}
+
 body.theme-sinbad-light {
     label[disabled] {
         color: rgba(0, 0, 0, 0.38);

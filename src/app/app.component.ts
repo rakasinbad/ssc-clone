@@ -37,9 +37,30 @@ import { NavigationService, NoticeService } from './shared/helpers';
 import * as fromRoot from './store/app.reducer';
 
 import * as LogRocket from 'logrocket';
+import { IAuth } from './main/pages/core/auth/models';
 
 if (environment.logRocketId) {
-    LogRocket.init(environment.logRocketId);
+    LogRocket.init(environment.logRocketId, {
+        release: `${environment.appVersion}_${environment.appHash}`,
+        network: {
+            requestSanitizer: request => {
+                // Menghapus header authorization dari LogRocket.
+                request.headers['authorization'] = null;
+                request.headers['Authorization'] = null;
+                return request;
+            },
+            responseSanitizer: response => {
+                if (response.body) {
+                    if ((response.body as unknown as IAuth).token) {
+                        // Menghapus token dari body response.
+                        (response.body as unknown as IAuth).token = null;
+                    }
+                }
+
+                return response;
+            },
+        },
+    });
 }
 
 @Component({

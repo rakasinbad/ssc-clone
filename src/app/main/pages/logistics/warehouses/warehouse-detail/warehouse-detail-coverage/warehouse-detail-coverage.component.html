@@ -1,10 +1,20 @@
-<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+<div class="coverage-content" fxLayout="column">
+    <sinbad-card-header [config]="cardHeaderConfig">
+        <span first-bottom-left *ngIf="!(isLoading$ | async)">
+            Total {{ totalDataSource$ | async }} Urban
+        </span>
+
+        <span first-bottom-left *ngIf="isLoading$ | async">
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+            ></ngx-skeleton-loader>
+        </span>
+    </sinbad-card-header>
 
     <mat-table
-        class="warehouse-detail-coverage-table"
+        class="warehouse-detail-coverage-table sinbad-table"
         #table
-        [dataSource]="dataSource"
+        [dataSource]="dataSource$ | async"
         matSort
         [@animateStagger]="{ value: '50' }"
     >
@@ -14,7 +24,9 @@
                 Warehouse Name
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.name }}
+                <p class="text-word-break-break-word">
+                    {{ row?.warehouse?.name || '-' }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -24,7 +36,9 @@
                 Province
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.province }}
+                <p class="text-word-break-break-word">
+                    {{ row?.urban?.province?.name || '-' }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -34,7 +48,9 @@
                 City
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.city }}
+                <p class="text-word-break-break-word">
+                    {{ row?.urban?.city || '-' }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -44,7 +60,9 @@
                 District
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.district }}
+                <p class="text-word-break-break-word">
+                    {{ row?.urban?.district || '-' }}
+                </p>
             </mat-cell>
         </ng-container>
 
@@ -54,14 +72,38 @@
                 Urban
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
-                {{ row.urban }}
+                <p class="text-word-break-break-word">
+                    {{ row?.urban?.urban || '-' }}
+                </p>
             </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row
             *matRowDef="let row; columns: displayedColumns"
             class="warehouse-detail-coverage"
         ></mat-row>
     </mat-table>
+
+    <div
+        class="no-records"
+        *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+    >
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+
+    <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+        No records found
+    </div>
+
+    <mat-paginator
+        [fxHide]="
+            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+        "
+        [length]="totalDataSource$ | async"
+        [pageSize]="defaultPageSize"
+        [pageSizeOptions]="defaultPageOpts"
+        showFirstLastButtons
+    ></mat-paginator>
 </div>

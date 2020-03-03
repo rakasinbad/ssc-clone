@@ -27,8 +27,11 @@ export interface IAssociation extends ITimestamp {
 
 export interface IAssociationForm {
     userId: number;
+    invoiceGroupId: number;
     portfolioId: Array<number>;
-    delete?: Array<number>;
+    deletePortfolio?: Array<number>;
+    storeId?: Array<number>;
+    deleteStore?: Array<number>;
 }
 
 export class Association implements IAssociation {

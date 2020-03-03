@@ -315,6 +315,19 @@ export class MainImportComponent implements OnInit, OnDestroy {
                 );
                 break;
 
+            case 'sales-rep':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-sales'
+                        }
+                    })
+                );
+                break;
+
             case 'stores':
                 this.store.dispatch(
                     ImportAdvancedActions.importConfirmRequest({
@@ -323,6 +336,19 @@ export class MainImportComponent implements OnInit, OnDestroy {
                             page: this.pageType,
                             type: mode,
                             endpoint: 'import-stores'
+                        }
+                    })
+                );
+                break;
+
+            case 'portfolios':
+                this.store.dispatch(
+                    ImportAdvancedActions.importConfirmRequest({
+                        payload: {
+                            file,
+                            page: this.pageType,
+                            type: mode,
+                            endpoint: 'import-portfolios'
                         }
                     })
                 );

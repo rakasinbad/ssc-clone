@@ -181,10 +181,10 @@
                                     </div>
                                     <div fxFlex>
                                         {{
-                                            portfolio?.actualTargetSales !== 0
-                                                ? (portfolio?.actualTargetSales
+                                            portfolio?.totalActualSales !== 0
+                                                ? (portfolio?.totalActualSales
                                                       | price: 'full':'IDR':'narrow':'1.2-2') || '-'
-                                                : portfolio?.actualTargetSales
+                                                : portfolio?.totalActualSales
                                         }}
                                     </div>
                                 </div>

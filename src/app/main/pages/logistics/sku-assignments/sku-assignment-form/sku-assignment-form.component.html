@@ -1,0 +1,42 @@
+<div id="sku-assignment" class="page-layout carded fullwidth inner-scroll" cdkScrollable fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form id="sku-assignment-form" name="skuAssignmentForm" class="merchant pt-24 w-100-p" fxLayout="column" fxFlex
+            novalidate>
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline font-weight-600">
+                        Choose Warehouse
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
+                                Warehouse Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <mat-select placeholder="Choose Warehouse">
+                                    <mat-option>None</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+
+                    <span class="choose-sku">
+                        Choose SKU
+                    </span>
+                </div>
+
+                <div class="content-card pt-8">
+                    <app-find-location></app-find-location>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+</div>

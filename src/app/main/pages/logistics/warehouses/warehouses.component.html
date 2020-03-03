@@ -13,9 +13,9 @@
             ></sinbad-card-header>
 
             <mat-table
-                class="warehouses-table mx-16"
+                class="warehouses-table sinbad-table mx-16"
                 #table
-                [dataSource]="dataSource"
+                [dataSource]="dataSource$ | async"
                 matSort
                 [@animateStagger]="{ value: '50' }"
                 fusePerfectScrollbar
@@ -23,7 +23,12 @@
                 <!-- Checkbox Column -->
                 <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox></mat-checkbox>
+                        <mat-checkbox
+                            (change)="$event ? handleCheckbox() : null"
+                            (click)="$event.stopPropagation()"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        ></mat-checkbox>
                         <!-- <mat-checkbox
                             (change)="$event ? handleCheckbox() : null"
                             (click)="$event.stopPropagation()"
@@ -32,7 +37,11 @@
                         ></mat-checkbox> -->
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <mat-checkbox></mat-checkbox>
+                        <mat-checkbox
+                            (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null"
+                            [checked]="selection.isSelected(row)"
+                        ></mat-checkbox>
                         <!-- <mat-checkbox
                             (click)="$event.stopPropagation()"
                             (change)="$event ? selection.toggle(row) : null"
@@ -47,7 +56,7 @@
                         Warehouse ID
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.code || '-' }}
                         </p>
                     </mat-cell>
@@ -59,7 +68,7 @@
                         Warehouse Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ row?.name || '-' }}
                         </p>
                     </mat-cell>
@@ -71,8 +80,8 @@
                         Lead Time
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            1 Days
+                        <p class="text-word-break-break-word">
+                            {{ getLeadTime(row?.leadTime) || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -83,8 +92,8 @@
                         Faktur
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ row?.invoice || '-' }}
+                        <p class="text-word-break-break-word">
+                            {{ getInvoices(row?.warehouseInvoiceGroups) || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -95,8 +104,8 @@
                         Assigned SKU
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            30
+                        <p class="text-word-break-break-word">
+                            {{ row?.totalCatalogue }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -107,8 +116,8 @@
                         Stock Available
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            100
+                        <p class="text-word-break-break-word">
+                            {{ row?.totalCatalogueStock }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -119,8 +128,8 @@
                         Total Urban
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ row?.total || '-' }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.totalUrban }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -194,12 +203,31 @@
                 ></mat-row>
             </mat-table>
 
+            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <div
+                class="no-records"
+                *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+            >
+                No records found
+            </div>
+
             <mat-paginator
-                [length]="dataSource.length"
+                [fxHide]="
+                    ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                    (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                "
+                [length]="totalDataSource$ | async"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
             ></mat-paginator>
+
+            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
         </div>
         <!-- / CONTENT CARD -->
     </div>

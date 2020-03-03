@@ -123,6 +123,21 @@ export class HelperService {
         }
     ];
 
+    private static _globalStatuses: Array<{ id: string; label: string }> = [
+        {
+            id: 'all',
+            label: 'All'
+        },
+        {
+            id: 'active',
+            label: 'Active'
+        },
+        {
+            id: 'inactive',
+            label: 'Inactive'
+        }
+    ];
+
     private static _host = environment.host;
     // tslint:disable-next-line: max-line-length
     private static readonly _regexIp = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -165,18 +180,39 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
+    // Referensi: https://stackoverflow.com/a/1349462
+    static generateRandomString(
+        len: number,
+        charSet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    ): string {
+        charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomString = '';
+        for (let i = 0; i < len; i++) {
+            const randomPoz = Math.floor(Math.random() * charSet.length);
+            randomString += charSet.substring(randomPoz, randomPoz + 1);
+        }
+        return randomString;
+    }
+
     static getStatusList(
-        page: 'stores' | 'catalogues' | 'payments' | 'orders'
+        page: 'stores' | 'catalogues' | 'payments' | 'orders' | 'sales-rep'
     ): Array<{ id: string; label: string }> {
         switch (page) {
             case 'stores':
                 return HelperService._storeStatuses;
+
             case 'catalogues':
                 return HelperService._catalogueStatuses;
+
             case 'payments':
                 return HelperService._paymentStatuses;
+
             case 'orders':
                 return HelperService._orderStatuses;
+
+            case 'sales-rep':
+                return HelperService._globalStatuses;
+
             default:
                 return [];
         }
