@@ -108,7 +108,8 @@ export class FindSkuComponent implements OnInit, OnDestroy {
                             );
                         }
                     }
-                })
+                }),
+                takeUntil(this.subs$)
             )
             .subscribe();
 
