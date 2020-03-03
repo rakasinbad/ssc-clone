@@ -11,12 +11,9 @@ import {
 } from './store/effects';
 import { fromCatalogue } from '../../catalogues/store/reducers';
 import { CatalogueEffects } from '../../catalogues/store/effects';
-import * as fromWarehouses from 'app/shared/store/reducers/sources/warehouse';
-import { WarehouseEffects } from 'app/shared/store/effects';
 
 @NgModule({
     imports: [
-        StoreModule.forFeature(fromWarehouses.featureKey, fromWarehouses.reducers),
         StoreModule.forFeature(fromSkuAssignmentsCore.featureKey, fromSkuAssignmentsCore.reducers),
         StoreModule.forFeature(fromCatalogue.FEATURE_KEY, fromCatalogue.reducer),
         EffectsModule.forFeature([
@@ -24,7 +21,6 @@ import { WarehouseEffects } from 'app/shared/store/effects';
             SkuAssignmentsWarehouseEffects,
             SkuAssignmentsSkuEffects,
             CatalogueEffects,
-            WarehouseEffects
         ])
     ]
 })
