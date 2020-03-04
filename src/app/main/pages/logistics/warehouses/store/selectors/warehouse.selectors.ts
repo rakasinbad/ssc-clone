@@ -3,13 +3,13 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromWarehousesCore from '../reducers';
 import * as fromWarehouses from '../reducers/warehouse.reducer';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getWarehousesCoreState = createFeatureSelector<
     fromWarehousesCore.FeatureState,
     fromWarehousesCore.State
 >(fromWarehousesCore.featureKey);
 
 export const getWarehouseEntitiesState = createSelector(
-    getSalesRepsCoreState,
+    getWarehousesCoreState,
     state => state.warehouses
 );
 

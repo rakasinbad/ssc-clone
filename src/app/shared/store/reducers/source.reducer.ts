@@ -4,6 +4,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import * as fromPortfolios from './sources/portfolio';
 import * as fromTeams from './sources/team';
 import * as fromTemperatures from './sources/temperature';
+import * as fromWarehouses from './sources/warehouse';
 import * as fromWarehouseValues from './sources/warehouse-value';
 
 // Keyname for core reducer
@@ -18,6 +19,7 @@ interface State {
     [fromPortfolios.featureKey]: fromPortfolios.State;
     [fromTeams.featureKey]: fromTeams.State;
     [fromTemperatures.featureKey]: fromTemperatures.State;
+    [fromWarehouses.featureKey]: fromWarehouses.State;
     [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
 }
 
@@ -43,6 +45,7 @@ function reducers(state: State | undefined, action: Action): State {
         [fromPortfolios.featureKey]: fromPortfolios.reducers,
         [fromTeams.featureKey]: fromTeams.reducers,
         [fromTemperatures.featureKey]: fromTemperatures.reducers,
+        [fromWarehouses.featureKey]: fromWarehouses.reducers,
         [fromWarehouseValues.featureKey]: fromWarehouseValues.reducers
     })(state, action);
 }

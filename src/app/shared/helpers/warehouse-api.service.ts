@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
-import { IWarehouse } from '../models';
+
+import { IQueryParams } from '../models';
+import { HelperService } from './helper.service';
 
 /**
  *
@@ -42,15 +42,23 @@ export class WarehouseApiService {
         this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 
-    findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+    /**
+     *
+     *
+     * @template T
+     * @param {IQueryParams} params
+     * @returns {Observable<T>}
+     * @memberof WarehouseApiService
+     */
+    findAll<T>(params: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
 
         if (params['keyword']) {
             newArg.push({
@@ -62,28 +70,5 @@ export class WarehouseApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 
         return this.http.get<T>(this._url, { params: newParams });
-    }
-
-    findById(id: string, supplierId?: string): Observable<IWarehouse> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
-
-        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
-
-        return this.http.get<IWarehouse>(`${this._url}/${id}`, { params: newParams });
-    }
-
-    create<T>(body: T): Observable<any> {
-        return this.http.post<any>(this._url, body);
-    }
-
-    patch<T>(body: T, id: string): Observable<any> {
-        return this.http.patch<any>(`${this._url}/${id}`, body);
     }
 }

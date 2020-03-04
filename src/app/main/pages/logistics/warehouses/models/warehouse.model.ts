@@ -1,4 +1,4 @@
-import { EStatus, ITimestamp, TNullable, WarehouseInvoiceGroup } from 'app/shared/models';
+import { EStatus, ITimestamp, TNullable, Urban, WarehouseInvoiceGroup } from 'app/shared/models';
 
 export interface IWarehouse extends ITimestamp {
     readonly id: NonNullable<string>;
@@ -14,6 +14,7 @@ export interface IWarehouse extends ITimestamp {
     totalCatalogue: number;
     totalCatalogueStock: number;
     totalUrban: number;
+    urban: Urban;
     urbanId: string;
     warehouseInvoiceGroups: Array<WarehouseInvoiceGroup>;
     warehouseTemperatureId: string;
@@ -34,6 +35,7 @@ export class Warehouse implements IWarehouse {
     totalCatalogue: number;
     totalCatalogueStock: number;
     totalUrban: number;
+    urban: Urban;
     urbanId: string;
     warehouseInvoiceGroups: Array<WarehouseInvoiceGroup>;
     warehouseTemperatureId: string;
@@ -57,6 +59,7 @@ export class Warehouse implements IWarehouse {
             totalCatalogue,
             totalCatalogueStock,
             totalUrban,
+            urban,
             urbanId,
             warehouseInvoiceGroups,
             warehouseTemperatureId,
@@ -86,7 +89,12 @@ export class Warehouse implements IWarehouse {
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
 
+        this.setUrban = urban;
         this.setWarehouseInvoiceGroups = warehouseInvoiceGroups;
+    }
+
+    set setUrban(value: Urban) {
+        this.urban = value ? new Urban(value) : null;
     }
 
     set setWarehouseInvoiceGroups(value: Array<WarehouseInvoiceGroup>) {

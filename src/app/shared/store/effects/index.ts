@@ -5,3 +5,4 @@ export * from './team.effects';
 export * from './temperature.effects';
 export * from './ui.effects';
 export * from './warehouse-value.effects';
+export * from './warehouse.effects';
