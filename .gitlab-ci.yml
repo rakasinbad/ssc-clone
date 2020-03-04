@@ -142,7 +142,7 @@ deploy_development:
     script:
         - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
         - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "rsync -arv /var/www/seller-dev.sinbad.web.id/* /var/www/seller-center-bak/"
-        - rsync -rv -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id/
+        - rsync -avz --delete --force -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/* deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id/
     rules:
         - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-alpha-\d+$/'
           when: always
