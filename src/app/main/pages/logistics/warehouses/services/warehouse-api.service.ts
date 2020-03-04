@@ -82,4 +82,8 @@ export class WarehouseApiService {
     create<T>(body: T): Observable<any> {
         return this.http.post<any>(this._url, body);
     }
+
+    patch<T>(body: T, id: string): Observable<any> {
+        return this.http.patch<any>(`${this._url}/${id}`, body);
+    }
 }

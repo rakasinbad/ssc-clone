@@ -10,14 +10,14 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ErrorHandler, IQueryParams, PaginateResponse, TNullable, User } from 'app/shared/models';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom, finalize } from 'rxjs/operators';
+import { FormActions } from 'app/shared/store/actions';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { Warehouse } from '../../models';
 import { WarehouseApiService } from '../../services';
 import { WarehouseActions, WarehouseFailureActions } from '../actions';
 import * as fromWarehouses from '../reducers';
-import { FormActions } from 'app/shared/store/actions';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
@@ -58,10 +58,95 @@ export class WarehouseEffects {
         )
     );
 
+    createWarehouseFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(WarehouseActions.createWarehouseFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     createWarehouseSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(WarehouseActions.createWarehouseSuccess),
+                tap(() => {
+                    this.router.navigate(['/pages/logistics/warehouses']).finally(() => {
+                        this._$notice.open('Successfully created warehouse', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - WAREHOUSE]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateWarehouseRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(WarehouseActions.updateWarehouseRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([payload, authState]: [{ body: any; id: string }, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload.body, payload.id])),
+                        switchMap<[User, any, string], Observable<AnyAction>>(
+                            this.handleUpdateWarehousesRequest$
+                        ),
+                        catchError(err => this.sendErrorToState$(err, 'updateWarehouseFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, payload.body, payload.id])),
+                        switchMap<[User, any, string], Observable<AnyAction>>(
+                            this.handleUpdateWarehousesRequest$
+                        ),
+                        catchError(err => this.sendErrorToState$(err, 'updateWarehouseFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    updateWarehouseFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(WarehouseActions.updateWarehouseFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateWarehouseSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(WarehouseActions.updateWarehouseSuccess),
                 tap(() => {
                     this.router.navigate(['/pages/logistics/warehouses']).finally(() => {
                         this._$notice.open('Successfully created warehouse', 'success', {
@@ -187,12 +272,16 @@ export class WarehouseEffects {
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(
-                new ErrorHandler({
-                    id: 'ERR_USER_SUPPLIER_NOT_FOUND',
-                    errors: `User Data: ${userData}`
-                })
-            );
+            // throwError(
+            //     new ErrorHandler({
+            //         id: 'ERR_USER_SUPPLIER_NOT_FOUND',
+            //         errors: `User Data: ${userData}`
+            //     })
+            // );
+            throw new ErrorHandler({
+                id: 'ERR_USER_SUPPLIER_NOT_FOUND',
+                errors: `User Data: ${userData}`
+            });
         }
 
         // Mengembalikan data user jika tidak ada masalah.
@@ -215,6 +304,37 @@ export class WarehouseEffects {
                 return WarehouseActions.createWarehouseSuccess();
             }),
             catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure')),
+            finalize(() => {
+                this.store.dispatch(FormActions.resetClickSaveButton());
+            })
+        );
+    };
+
+    handleUpdateWarehousesRequest$ = ([userData, body, id]: [User, any, string]): Observable<
+        AnyAction
+    > => {
+        const newPayload = {
+            ...body
+        };
+
+        const { supplierId } = userData.userSupplier;
+
+        if (supplierId) {
+            newPayload['supplierId'] = supplierId;
+        }
+
+        if (!id) {
+            throw new ErrorHandler({
+                id: 'ERR_NOT_SELECTED_ID',
+                errors: 'Please selected warehouse id'
+            });
+        }
+
+        return this._$warehouseApi.patch<any>(newPayload, id).pipe(
+            map(resp => {
+                return WarehouseActions.updateWarehouseSuccess();
+            }),
+            catchError(err => this.sendErrorToState$(err, 'updateWarehouseFailure')),
             finalize(() => {
                 this.store.dispatch(FormActions.resetClickSaveButton());
             })

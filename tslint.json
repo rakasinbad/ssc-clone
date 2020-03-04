@@ -68,7 +68,8 @@
             "check-format",
             "allow-pascal-case",
             "allow-leading-underscore"
-        ]
+        ],
+        "semicolon": [true, "always", "ignore-bound-class-methods"]
     },
     "rulesDirectory": ["codelyzer"]
 }

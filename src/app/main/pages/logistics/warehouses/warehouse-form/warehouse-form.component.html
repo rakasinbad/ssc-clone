@@ -240,6 +240,10 @@
                             </label>
 
                             <agm-map
+                                [disableDefaultUI]="draggAble"
+                                [disableDoubleClickZoom]="draggAble"
+                                [scrollwheel]="draggAble"
+                                [gestureHandling]="draggAble ? 'auto' : 'none'"
                                 fxFlex="50"
                                 class="h-400"
                                 [zoom]="opts.zoom"

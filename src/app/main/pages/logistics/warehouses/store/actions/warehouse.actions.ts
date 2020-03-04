@@ -57,9 +57,26 @@ export const createWarehouseFailure = createAction(
 
 export const createWarehouseSuccess = createAction('[Warehouses] Create Warehouse Success');
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Warehouse
+// -----------------------------------------------------------------------------------------------------
+
+export const updateWarehouseRequest = createAction(
+    '[Warehouses] Update Warehouse Request',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateWarehouseFailure = createAction(
+    '[Warehouses] Update Warehouse Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateWarehouseSuccess = createAction('[Warehouses] Update Warehouse Success');
+
 export const clearState = createAction('[Warehouses] Reset Core State');
 
 export type FailureActions =
     | 'fetchWarehousesFailure'
     | 'fetchWarehouseFailure'
-    | 'createWarehouseFailure';
+    | 'createWarehouseFailure'
+    | 'updateWarehouseFailure';
