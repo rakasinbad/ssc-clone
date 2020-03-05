@@ -37,8 +37,12 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
+    // tslint:disable-next-line: no-inferrable-types
+    isFilterApplied: boolean = false;
+
     warehouses$: Observable<Array<Warehouse>>;
     selectedWarehouse: Warehouse;
+    selectedLocation: SelectedLocation;
 // 
     // tslint:disable-next-line: no-inferrable-types
     selectedViewBy: string = 'warehouse';
@@ -117,6 +121,18 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         }
     }
 
+    onApplyFilter(): void {
+        if (this.selectedViewBy === 'warehouse') {
+            this.isFilterApplied = true;
+        } else if (this.selectedViewBy === 'area') {
+            this.isFilterApplied = true;
+        }
+    }
+
+    onOpenWarehouseDetail(id: string): void {
+        this.router.navigate(['/pages/logistics/warehouses/' + id + '/detail']);
+    }
+
     ngOnInit(): void {
         // Set breadcrumbs
         this.store.dispatch(
@@ -133,15 +149,29 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
 
     onSelectedLocation($event: SelectedLocation): void {
         this.debug('onSelectedLocation', $event);
+
+        if ($event.province && $event.city && $event.district && $event.urban) {
+            this.isFilterApplied = false;
+            this.selectedLocation = $event;
+        } else {
+            this.isFilterApplied = true;
+            this.selectedLocation = null;
+        }
+
+        this.cdRef.markForCheck();
     }
 
     onSelectedWarehouse(warehouse: Warehouse): void {
         this.selectedWarehouse = warehouse;
+        this.isFilterApplied = false;
         this.cdRef.markForCheck();
     }
 // 
     onChangedViewBy($event: MatRadioChange): void {
         this.selectedViewBy = $event.value;
+        this.isFilterApplied = true;
+
+        this.cdRef.markForCheck();
     }
 
     onClickAdd(): void {
