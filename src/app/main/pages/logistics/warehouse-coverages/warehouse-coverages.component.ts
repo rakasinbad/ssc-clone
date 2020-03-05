@@ -1,23 +1,15 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    OnInit,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { UiSelectors } from 'app/shared/store/selectors';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
+import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
+import { Observable } from 'rxjs';
 
 import * as fromWarehouseCoverages from './store/reducers';
-import { tap } from 'rxjs/operators';
 
 @Component({
     selector: 'app-warehouse-coverages',

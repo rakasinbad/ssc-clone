@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { NgxPermissionsGuard } from 'ngx-permissions';
 
 import { AuthGuard } from './main/pages/core/auth/auth.guard';
-import { NgxPermissionsGuard } from 'ngx-permissions';
 
 const routes: Routes = [
     {

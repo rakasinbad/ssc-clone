@@ -5,16 +5,16 @@ import {
     OnInit,
     ViewEncapsulation
 } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 
+import { BankFormComponent } from './bank-form/bank-form.component';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { fromBank } from './store/reducers';
-import { MatDialog } from '@angular/material';
-import { BankFormComponent } from './bank-form/bank-form.component';
 
 @Component({
     selector: 'app-banks',
@@ -35,8 +35,8 @@ export class BanksComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Finance',

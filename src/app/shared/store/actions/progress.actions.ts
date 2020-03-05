@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, Progress } from 'app/shared/models';
+import { Progress } from 'app/shared/models/progress.model';
 
 export const downloadRequest = createAction(
     '[File Download] Download Request',

@@ -1,6 +1,6 @@
 import { FuseNavigation } from '@fuse/types';
 import { createAction, props } from '@ngrx/store';
-import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models';
+import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Custom Toolbar

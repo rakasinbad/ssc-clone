@@ -1,16 +1,15 @@
-import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
+import { createAction, props } from '@ngrx/store';
+import { IErrorHandler, TNullable, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 import {
     Catalogue,
+    CatalogueCategory,
     CatalogueUnit,
-    // ICatalogue,
     ICatalogueDemo,
-    ICatalogueStockResponse,
-    CatalogueCategory
+    ICatalogueStockResponse
 } from '../../models';
-
-import { TNullable } from 'app/shared/models';
 
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
@@ -28,7 +27,9 @@ export const filterAllCatalogues = createAction('[Catalogues Page] Filter All Ca
 export const filterLiveCatalogues = createAction('[Catalogues Page] Filter Live Catalogues');
 export const filterEmptyCatalogues = createAction('[Catalogues Page] Filter Empty Catalogues');
 export const filterBlockedCatalogues = createAction('[Catalogues Page] Filter Blocked Catalogues');
-export const filterInactiveCatalogues = createAction('[Catalogues Page] Filter Inactive Catalogues');
+export const filterInactiveCatalogues = createAction(
+    '[Catalogues Page] Filter Inactive Catalogues'
+);
 
 /**
  * CATALOGUE - SELECTION
@@ -86,12 +87,12 @@ export const patchCatalogueFailure = createAction(
 
 export const patchCatalogueSuccess = createAction(
     '[Catalogues API] Patch Catalogue Success',
-    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit; } }>()
+    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit } }>()
 );
 
 export const patchCataloguesRequest = createAction(
     '[Catalogues API] Patch Catalogues Request',
-    props<{ payload: { file: File; type: string; } }>()
+    props<{ payload: { file: File; type: string } }>()
 );
 
 export const patchCataloguesFailure = createAction(
@@ -101,7 +102,7 @@ export const patchCataloguesFailure = createAction(
 
 export const patchCataloguesSuccess = createAction(
     '[Catalogues API] Patch Catalogues Success',
-    props<{ payload: { status: string; } }>()
+    props<{ payload: { status: string } }>()
 );
 /**
  * CATALOGUE - FETCH
@@ -120,7 +121,7 @@ export const fetchCatalogueFailure = createAction(
     '[Catalogues API] Fetch Catalogue Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchCatalogueSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Success',
     props<{ payload: { catalogue?: Catalogue; source: TSource } }>()
@@ -138,7 +139,7 @@ export const fetchCatalogueStockFailure = createAction(
 
 export const fetchCatalogueStockSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Stock Success',
-    props<{ payload: { catalogueId: string; stock: ICatalogueStockResponse; } }>()
+    props<{ payload: { catalogueId: string; stock: ICatalogueStockResponse } }>()
 );
 
 /**
@@ -147,7 +148,7 @@ export const fetchCatalogueStockSuccess = createAction(
 
 export const importCataloguesRequest = createAction(
     '[Catalogues API] Import Catalogues Request',
-    props<{ payload: { file: File; type: string; } }>()
+    props<{ payload: { file: File; type: string } }>()
 );
 
 export const importCataloguesFailure = createAction(
@@ -157,9 +158,8 @@ export const importCataloguesFailure = createAction(
 
 export const importCataloguesSuccess = createAction(
     '[Catalogues API] Import Catalogues Success',
-    props<{ payload: { status: string; } }>()
+    props<{ payload: { status: string } }>()
 );
-
 
 /**
  * UPDATE CATALOGUE
@@ -279,7 +279,15 @@ export const fetchTotalCatalogueStatusFailure = createAction(
 
 export const fetchTotalCatalogueStatusSuccess = createAction(
     '[Catalogues API] Fetch Total Catalogue Status Success',
-    props<{ payload: { totalAllStatus: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; } }>()
+    props<{
+        payload: {
+            totalAllStatus: string;
+            totalEmptyStock: string;
+            totalActive: string;
+            totalInactive: string;
+            totalBanned: string;
+        };
+    }>()
 );
 
 /**
@@ -403,7 +411,8 @@ export const startLoading = createAction('[Catalogues Page] Start Loading');
 
 export const endLoading = createAction('[Catalogues Page] End Loading');
 
-export const setRefreshStatus = createAction('[Catalogues Page] Set Refresh Status',
+export const setRefreshStatus = createAction(
+    '[Catalogues Page] Set Refresh Status',
     props<{ status: boolean }>()
 );
 
@@ -414,13 +423,22 @@ export const setProductName = createAction(
 
 export const addSelectedCategory = createAction(
     '[Catalogues Page] Add Selected Category',
-    props<{ payload: { id: string, name: string, parent: TNullable<string>, hasChildren?: boolean } }>()
-    );
+    props<{
+        payload: { id: string; name: string; parent: TNullable<string>; hasChildren?: boolean };
+    }>()
+);
 
 export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
-    props<{ payload: Array<{ id: string, name: string, parent: TNullable<string>, hasChildren?: boolean }> }>()
-    );
+    props<{
+        payload: Array<{
+            id: string;
+            name: string;
+            parent: TNullable<string>;
+            hasChildren?: boolean;
+        }>;
+    }>()
+);
 
 export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
 

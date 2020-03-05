@@ -1,6 +1,7 @@
 import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams } from 'app/shared/models';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 import { IStatusOMS } from '../../models';
 

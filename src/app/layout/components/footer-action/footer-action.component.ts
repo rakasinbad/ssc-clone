@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { IFooterActionConfig } from 'app/shared/models';
+import { IFooterActionConfig } from 'app/shared/models/global.model';
 import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors, UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';

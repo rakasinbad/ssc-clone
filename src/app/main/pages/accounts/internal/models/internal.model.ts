@@ -1,12 +1,7 @@
-import {
-    IResponsePaginate,
-    ITimestamp,
-    Role,
-    TNullable,
-    TStatus,
-    User,
-    UserStatus
-} from 'app/shared/models';
+import { IResponsePaginate, TNullable, TStatus } from 'app/shared/models/global.model';
+import { Role } from 'app/shared/models/role.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User, UserStatus } from 'app/shared/models/user.model';
 import { sortBy } from 'lodash';
 
 export interface IInternalEmployee extends ITimestamp {

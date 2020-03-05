@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { Attendance } from '../../models';
@@ -57,10 +57,11 @@ const attendanceReducer = createReducer(
         AttendanceActions.createAttendanceFailure,
         AttendanceActions.patchAttendanceFailure,
         (state, { payload }) => ({
-        ...state,
-        isLoading: false,
-        errors: adapterError.upsertOne(payload, state.errors)
-    })),
+            ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
     on(AttendanceActions.createAttendanceSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -96,54 +97,42 @@ const attendanceReducer = createReducer(
         isLoading: false,
         errors: adapterError.upsertOne(payload, state.errors)
     })),
-    on(
-        AttendanceActions.fetchAttendanceSuccess,
-        (state, { payload }) => {
-            let newState = {
-                ...state,
-                source: payload.source
+    on(AttendanceActions.fetchAttendanceSuccess, (state, { payload }) => {
+        let newState = {
+            ...state,
+            source: payload.source
+        };
+
+        if (newState.source === 'fetch') {
+            newState = {
+                ...newState,
+                isLoading: false,
+                attendance: payload.attendance,
+                errors: adapterError.removeOne('fetchAttendanceFailure', state.errors)
             };
-
-            if (newState.source === 'fetch') {
-                newState = {
-                    ...newState,
-                    isLoading: false,
-                    attendance: payload.attendance,
-                    errors: adapterError.removeOne('fetchAttendanceFailure', state.errors)
-                };
-            } else {
-                newState = {
-                    ...newState,
-                    isLoading: false,
-                    attendance: undefined,
-                    errors: adapterError.removeOne('fetchAttendanceFailure', state.errors)
-                };
-            }
-
-            return newState;
+        } else {
+            newState = {
+                ...newState,
+                isLoading: false,
+                attendance: undefined,
+                errors: adapterError.removeOne('fetchAttendanceFailure', state.errors)
+            };
         }
-    ),
-    on(
-        AttendanceActions.patchAttendanceSuccess,
-        (state, { payload }) => ({
-            ...state,
-            attendance: payload
-        })
-    ),
-    on(
-        AttendanceActions.setSelectedAttendance,
-        (state, { payload }) => ({
-            ...state,
-            attendance: payload
-        })
-    ),
-    on(
-        AttendanceActions.resetSelectedAttendance,
-        (state) => ({
-            ...state,
-            attendance: null
-        })
-    )
+
+        return newState;
+    }),
+    on(AttendanceActions.patchAttendanceSuccess, (state, { payload }) => ({
+        ...state,
+        attendance: payload
+    })),
+    on(AttendanceActions.setSelectedAttendance, (state, { payload }) => ({
+        ...state,
+        attendance: payload
+    })),
+    on(AttendanceActions.resetSelectedAttendance, state => ({
+        ...state,
+        attendance: null
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

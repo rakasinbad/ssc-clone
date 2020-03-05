@@ -1,6 +1,8 @@
-import { IResponsePaginate, ITimestamp, Role, Timestamp, TNullable, User } from 'app/shared/models';
-
-import { Store } from '.';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
+import { Role } from 'app/shared/models/role.model';
+import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 // import { AccountAssocAttendance } from '../../accounts/models/account.model';
 type ELocationType = 'inside' | 'outside' | 'others';

@@ -1,22 +1,20 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams } from 'app/shared/models';
-import {
-    SkuAssignments
-} from '../../models';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
+import { SkuAssignments } from '../../models';
 
 export type requestActionNames =
-    'fetchSkuAssignmentsRequest' |
-    'addSkuAssignmentsRequest' |
-    'updateSkuAssignmentsRequest' |
-    'removeSkuAssignmentsRequest'
-;
+    | 'fetchSkuAssignmentsRequest'
+    | 'addSkuAssignmentsRequest'
+    | 'updateSkuAssignmentsRequest'
+    | 'removeSkuAssignmentsRequest';
 
 export type failureActionNames =
-    'fetchSkuAssignmentsFailure' |
-    'addSkuAssignmentsFailure' |
-    'updateSkuAssignmentsFailure' |
-    'removeSkuAssignmentsFailure'
-;
+    | 'fetchSkuAssignmentsFailure'
+    | 'addSkuAssignmentsFailure'
+    | 'updateSkuAssignmentsFailure'
+    | 'removeSkuAssignmentsFailure';
 
 /**
  * FETCH DATA
@@ -79,12 +77,12 @@ export const addSkuAssignmentsFailure = createAction(
  */
 export const updateSkuAssignmentsRequest = createAction(
     '[SkuAssignments API] Update SkuAssignments Request',
-    props<{ payload: { id: string; data: SkuAssignments; } }>()
+    props<{ payload: { id: string; data: SkuAssignments } }>()
 );
 
 export const updateSkuAssignmentsSuccess = createAction(
     '[SkuAssignments API] Update SkuAssignments Success',
-    props<{ payload: { id: string; data: SkuAssignments; } }>()
+    props<{ payload: { id: string; data: SkuAssignments } }>()
 );
 
 export const updateSkuAssignmentsFailure = createAction(
@@ -102,7 +100,7 @@ export const removeSkuAssignmentsRequest = createAction(
 
 export const removeSkuAssignmentsSuccess = createAction(
     '[SkuAssignments API] Remove SkuAssignments Success',
-    props<{ payload: { id: string; data: SkuAssignments; } }>()
+    props<{ payload: { id: string; data: SkuAssignments } }>()
 );
 
 export const removeSkuAssignmentsFailure = createAction(

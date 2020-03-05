@@ -1,20 +1,8 @@
-import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import {
-    IErrorHandler,
-    // IQueryParams,
-    // TNullable,
-    TSource
-} from 'app/shared/models';
-import {
-    IUserResponseUpdatePassword,
-    UpdateUser,
-    User
-} from '../../models';
+import { createAction, props } from '@ngrx/store';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 
-/**
- *  ========================= USER
- */
+import { IUserResponseUpdatePassword, UpdateUser, User } from '../../models';
 
 /**
  * FETCH REQUEST
@@ -45,7 +33,9 @@ export const fetchUserSuccess = createAction(
  */
 export const patchUserRequest = createAction(
     '[Users API] Patch User Request',
-    props<{ payload: { id: string; data: Partial<UpdateUser>; update: 'information' | 'password' } }>()
+    props<{
+        payload: { id: string; data: Partial<UpdateUser>; update: 'information' | 'password' };
+    }>()
 );
 
 /**
@@ -61,7 +51,7 @@ export const patchUserFailure = createAction(
  */
 export const patchUserSuccess = createAction(
     '[Users API] Patch User Success',
-    props<{ payload: { user?: User; response?: IUserResponseUpdatePassword; } }>()
+    props<{ payload: { user?: User; response?: IUserResponseUpdatePassword } }>()
 );
 
 /**

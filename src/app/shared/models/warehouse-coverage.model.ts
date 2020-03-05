@@ -1,8 +1,8 @@
 import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 
-import { ITimestamp } from './timestamp.model';
-import { Urban } from './urban.model';
 import { TNullable } from './global.model';
+import { Urban } from './location.model';
+import { ITimestamp } from './timestamp.model';
 
 export interface IWarehouseCoverage extends ITimestamp {
     readonly id: NonNullable<string>;

@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState, Update } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { Progress, ProgressStatus } from 'app/shared/models';
+import { Progress, ProgressStatus } from 'app/shared/models/progress.model';
 
 import { ProgressActions } from '../actions';
 

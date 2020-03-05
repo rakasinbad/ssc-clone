@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import {
     ChangeDetectionStrategy,
     Component,
@@ -13,11 +12,12 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { LogService } from 'app/shared/helpers';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil, tap, filter } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';

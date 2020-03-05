@@ -1,24 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
-import { LogService, NoticeService } from 'app/shared/helpers';
-import { NetworkActions } from 'app/shared/store/actions';
-import { getParams } from 'app/store/app.reducer';
-import { NetworkSelectors } from 'app/shared/store/selectors';
-import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-
+import { CataloguesService } from 'app/main/pages/catalogues/services';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-// import { StoreCatalogue } from '../../models';
+import { LogService, NoticeService } from 'app/shared/helpers';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { of } from 'rxjs';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
+
 import { StoreCatalogueApiService } from '../../services';
 import { StoreCatalogueActions } from '../actions';
 import { fromStoreCatalogue } from '../reducers';
-import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
-import { CataloguesService } from 'app/main/pages/catalogues/services';
-import { StoreCatalogue } from '../../models/store-catalogue.model';
 
+// import { StoreCatalogue } from '../../models';
 @Injectable()
 export class StoreCatalogueEffects {
     // -----------------------------------------------------------------------------------------------------
@@ -88,47 +84,51 @@ export class StoreCatalogueEffects {
             switchMap(([queryParams, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
                 if (!supplierId) {
-                    return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-                        payload: {
-                            id: 'fetchStoreCataloguesFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
+                    return of(
+                        StoreCatalogueActions.fetchStoreCataloguesFailure({
+                            payload: {
+                                id: 'fetchStoreCataloguesFailure',
+                                errors: 'Not authenticated'
+                            }
+                        })
+                    );
                 }
 
                 /** WITH PAGINATION */
                 if (queryParams.paginate) {
-                    return this.storeCatalogueApiSvc.findCatalogueHistory<IPaginatedResponse<any>>(queryParams).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
+                    return this.storeCatalogueApiSvc
+                        .findCatalogueHistory<IPaginatedResponse<any>>(queryParams)
+                        .pipe(
+                            catchOffline(),
+                            map(resp => {
+                                let newResp = {
+                                    total: 0,
+                                    data: []
+                                };
 
-                            newResp = {
-                                total: resp.total,
-                                data: resp.data
-                            };
-    
-                            return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
-                                payload: {
-                                    catalogueHistories: newResp.data,
-                                    total: newResp.total
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+                                newResp = {
+                                    total: resp.total,
+                                    data: resp.data
+                                };
+
+                                return StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess({
                                     payload: {
-                                        id: 'fetchStoreCatalogueHistoriesFailure',
-                                        errors: err
+                                        catalogueHistories: newResp.data,
+                                        total: newResp.total
                                     }
-                                })
+                                });
+                            }),
+                            catchError(err =>
+                                of(
+                                    StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+                                        payload: {
+                                            id: 'fetchStoreCatalogueHistoriesFailure',
+                                            errors: err
+                                        }
+                                    })
+                                )
                             )
-                        )
-                    );
+                        );
                 }
 
                 /** WITHOUT PAGINATION */
@@ -175,12 +175,14 @@ export class StoreCatalogueEffects {
             switchMap(([storeCatalogueId, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
                 if (isNaN(+supplierId)) {
-                    return of(StoreCatalogueActions.fetchStoreCatalogueFailure({
-                        payload: {
-                            id: 'fetchStoreCatalogueFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
+                    return of(
+                        StoreCatalogueActions.fetchStoreCatalogueFailure({
+                            payload: {
+                                id: 'fetchStoreCatalogueFailure',
+                                errors: 'Not authenticated'
+                            }
+                        })
+                    );
                 }
 
                 return this.storeCatalogueApiSvc.findStoreCatalogue(storeCatalogueId).pipe(
@@ -216,12 +218,14 @@ export class StoreCatalogueEffects {
             switchMap(([queryParams, { supplierId }]) => {
                 /** NO SUPPLIER ID! */
                 if (isNaN(+supplierId)) {
-                    return of(StoreCatalogueActions.fetchStoreCataloguesFailure({
-                        payload: {
-                            id: 'fetchStoreCataloguesFailure',
-                            errors: 'Not authenticated'
-                        }
-                    }));
+                    return of(
+                        StoreCatalogueActions.fetchStoreCataloguesFailure({
+                            payload: {
+                                id: 'fetchStoreCataloguesFailure',
+                                errors: 'Not authenticated'
+                            }
+                        })
+                    );
                 }
 
                 /** WITH PAGINATION */
@@ -243,7 +247,7 @@ export class StoreCatalogueEffects {
                                 total: resp.total,
                                 data: resp.data
                             };
-    
+
                             return StoreCatalogueActions.fetchStoreCataloguesSuccess({
                                 payload: {
                                     storeCatalogues: newResp.data,
@@ -278,15 +282,12 @@ export class StoreCatalogueEffects {
                             data: resp
                         };
 
-                        this.logSvc.generateGroup(
-                            '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: resp
-                                }
+                        this.logSvc.generateGroup('[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE', {
+                            payload: {
+                                type: 'log',
+                                value: resp
                             }
-                        );
+                        });
 
                         return StoreCatalogueActions.fetchStoreCataloguesSuccess({
                             payload: {

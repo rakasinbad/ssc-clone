@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore, SupplierStoreOptions } from 'app/shared/models';
+import { HelperService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { SupplierStore, SupplierStoreOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
+
 import { StoreSetting } from '../models';
 
 /**
@@ -38,19 +40,17 @@ export class StoreSettingApiService {
      * @param {HelperService} _$helper
      * @memberof MerchantApiService
      */
-    constructor(
-        private http: HttpClient,
-        private _$helper: HelperService
-    ) {}
+    constructor(private http: HttpClient, private _$helper: HelperService) {}
 
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         const newArg = supplierId
             ? [
-                {
-                    key: 'supplierId',
-                    value: supplierId
-                }
-            ] : [];
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
 
         this._url = this._$helper.handleApiRouter(this._endpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);

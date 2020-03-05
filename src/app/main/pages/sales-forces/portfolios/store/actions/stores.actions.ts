@@ -1,15 +1,13 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
-import { Store } from 'app/main/pages/attendances/models';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 import { Filter } from '../../models';
 
-export type requestActionNames =
-    'fetchStoresRequest'
-;
+export type requestActionNames = 'fetchStoresRequest';
 
-export type failureActionNames =
-    'fetchStoresFailure' |
-    'checkStoreAtInvoiceGroupFailure';
+export type failureActionNames = 'fetchStoresFailure' | 'checkStoreAtInvoiceGroupFailure';
 
 /** REQUESTS */
 export const applyStoreFilter = createAction(
@@ -52,7 +50,15 @@ export const checkStoreAtInvoiceGroupFailure = createAction(
 
 export const checkStoreAtInvoiceGroupSuccess = createAction(
     '[Store Portfolio Lists API] Check Store is at Invoice Group Success',
-    props<{ payload: { message: string; portfolioId?: string; storeId?: string; name?: string; code?: string } }>()
+    props<{
+        payload: {
+            message: string;
+            portfolioId?: string;
+            storeId?: string;
+            name?: string;
+            code?: string;
+        };
+    }>()
 );
 
 export const setStoreEntityType = createAction(

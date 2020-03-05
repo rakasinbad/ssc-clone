@@ -1,6 +1,7 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { createReducer, on } from '@ngrx/store';
+
 import { WarehouseCoverageActions } from '../actions';
-import { Action, createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
 
 // Keyname for reducer
 export const featureKey = 'warehouseCoverages';

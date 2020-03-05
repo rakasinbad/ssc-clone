@@ -1,4 +1,7 @@
-import { ITimestamp, TNullable, Portfolio, Store } from 'app/shared/models';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { Portfolio } from 'app/shared/models/portfolio.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 type TStatusType = 'active' | 'inactive';
 

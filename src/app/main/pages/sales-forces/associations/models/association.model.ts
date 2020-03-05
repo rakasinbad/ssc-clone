@@ -1,5 +1,9 @@
-import { ITimestamp, TNullable, User, InvoiceGroup, Supplier } from 'app/shared/models';
-import { StorePortfolio } from 'app/main/pages/attendances/models';
+import { StorePortfolio } from 'app/main/pages/accounts/merchants/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
+
 import { Portfolio } from '../../portfolios/models';
 
 type TStatusType = 'active' | 'inactive';
@@ -87,7 +91,10 @@ export class Association implements IAssociation {
         this.totalTargetSales = totalTargetSales;
         this.storeQty = storeQty;
         this.actualTargetSales = actualTargetSales;
-        this.portfolios = Array.isArray(portfolios) && portfolios.length > 0 ? portfolios.map(portfolio => new Portfolio(portfolio)) : portfolios;
+        this.portfolios =
+            Array.isArray(portfolios) && portfolios.length > 0
+                ? portfolios.map(portfolio => new Portfolio(portfolio))
+                : portfolios;
         this.storePortfolios = storePortfolios
             ? new StorePortfolio(storePortfolios)
             : storePortfolios;

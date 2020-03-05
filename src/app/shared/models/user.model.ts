@@ -1,12 +1,12 @@
 import { UserStore } from 'app/main/pages/accounts/merchants/models';
 
 import { TNullable } from './global.model';
+import { Urban } from './location.model';
 import { Portfolio } from './portfolio.model';
 import { Role } from './role.model';
 import { UserSupplier } from './supplier.model';
-import { ITimestamp } from './timestamp.model';
-import { Urban } from './urban.model';
 import { Team } from './team.model';
+import { ITimestamp } from './timestamp.model';
 
 export enum UserStatus {
     ACTIVE = 'active',
@@ -123,7 +123,10 @@ export class User implements IUser {
         this.saleTeamId = saleTeamId;
         this.selfieImageUrl = selfieImageUrl ? String(selfieImageUrl).trim() : null;
         this.setPortfolios = portfolios;
-        this.lastAssociated = Array.isArray(portfolios) && portfolios.length > 0 ? portfolios.sort((a, b) => (+a.id) - (+b.id)).pop().createdAt : null;
+        this.lastAssociated =
+            Array.isArray(portfolios) && portfolios.length > 0
+                ? portfolios.sort((a, b) => +a.id - +b.id).pop().createdAt
+                : null;
         this.storeQty = +storeQty;
         this.setRoles = roles;
         this.setSaleTeam = saleTeam;

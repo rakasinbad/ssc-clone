@@ -9,15 +9,11 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService, WarehouseCoverageApiService } from 'app/shared/helpers';
-import {
-    ErrorHandler,
-    IQueryParams,
-    PaginateResponse,
-    TNullable,
-    User,
-    WarehouseCoverage
-} from 'app/shared/models';
-import { Observable, of, throwError } from 'rxjs';
+import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { WarehouseCoverage } from 'app/shared/models/warehouse-coverage.model';
+import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { WarehouseCoverageActions, WarehouseFailureActions } from '../actions';
@@ -101,12 +97,10 @@ export class WarehouseCoverageEffects {
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(
-                new ErrorHandler({
-                    id: 'ERR_USER_SUPPLIER_NOT_FOUND',
-                    errors: `User Data: ${userData}`
-                })
-            );
+            throw new ErrorHandler({
+                id: 'ERR_USER_SUPPLIER_NOT_FOUND',
+                errors: `User Data: ${userData}`
+            });
         }
 
         // Mengembalikan data user jika tidak ada masalah.

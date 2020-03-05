@@ -6,9 +6,10 @@ import { Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { LogService, NoticeService, UserApiService } from 'app/shared/helpers';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { PaginateResponse, TStatus, User, UserSupplier } from 'app/shared/models';
+import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
+import { PaginateResponse, TStatus } from 'app/shared/models/global.model';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {

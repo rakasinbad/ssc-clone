@@ -1,43 +1,33 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
-    ElementRef,
-    AfterViewInit
+    ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import { select, Store as NgRxStore } from '@ngrx/store';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, User, Role } from 'app/shared/models';
-import { DropdownActions, UiActions } from 'app/shared/store/actions';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { Store as NgRxStore } from '@ngrx/store';
+import { HelperService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Role } from 'app/shared/models/role.model';
+import { User } from 'app/shared/models/user.model';
+import { UiActions } from 'app/shared/store/actions';
+import { environment } from 'environments/environment';
 import * as moment from 'moment';
-import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators';
-
-import { Attendance } from '../models';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-
+import { Attendance } from '../models';
+import { AttendanceActions, UserActions } from '../store/actions';
 import { fromAttendance, fromUser } from '../store/reducers';
 import { AttendanceSelectors, UserSelectors } from '../store/selectors';
-import { AttendanceActions, UserActions } from '../store/actions';
-import { environment } from 'environments/environment';
-
-// import * as localization from 'moment/locale/id';
-// import { LocaleConfig } from 'ngx-daterangepicker-material';
-// moment.locale('id', localization);
 
 @Component({
     selector: 'app-attendance-employee-detail',
@@ -127,26 +117,24 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
         this.paginator.pageSize = 5;
 
         /** Mendapatkan status loading dari store-nya Attendance. */
-        this.isAttendanceLoading$ = this._fromAttendance.select(AttendanceSelectors.getIsLoading)
-        .pipe(
-            distinctUntilChanged(),
-            takeUntil(this._unSubs$)
-        );
+        this.isAttendanceLoading$ = this._fromAttendance
+            .select(AttendanceSelectors.getIsLoading)
+            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$));
 
         /** Mendapatkan aktivitas karyawan dari store yang telah dipilih. */
-        this.employeeActivities$ = this._fromAttendance.select(AttendanceSelectors.getAllAttendance)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
+        this.employeeActivities$ = this._fromAttendance
+            .select(AttendanceSelectors.getAllAttendance)
+            .pipe(takeUntil(this._unSubs$));
 
         /** Mendapatkan jumlah aktivitas karyawan dari store yang telah dipilih. */
-        this.totalEmployeeActivities$ = this._fromAttendance.select(AttendanceSelectors.getTotalAttendance)
-        .pipe(
-            takeUntil(this._unSubs$)
-        );
+        this.totalEmployeeActivities$ = this._fromAttendance
+            .select(AttendanceSelectors.getTotalAttendance)
+            .pipe(takeUntil(this._unSubs$));
 
         /** Mengambil data user sesuai dengan ID pegawainya. */
-        this.selectedUser$ = this._fromUser.select(UserSelectors.getUser).pipe(takeUntil(this._unSubs$));
+        this.selectedUser$ = this._fromUser
+            .select(UserSelectors.getUser)
+            .pipe(takeUntil(this._unSubs$));
 
         /** Melakukan inisialisasi pertama kali untuk operasi tabel. */
         this.onChangePage();
@@ -172,8 +160,8 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -196,19 +184,19 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.defaultPageSize * this.paginator.pageIndex
             };
-    
+
             /** Menyalakan opsi pagination ke back-end. */
             data['paginate'] = true;
-    
+
             /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
             data['userId'] = this._employeeId;
-    
+
             /** Mengambil arah sortir dan data yang ingin disotir. */
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
             }
-    
+
             /** Melakukan request dengan membawa query string yang telah disiapkan. */
             this._fromAttendance.dispatch(
                 AttendanceActions.fetchAttendancesRequest({
@@ -231,12 +219,17 @@ export class AttendanceEmployeeDetailComponent implements OnInit, OnDestroy, Aft
     }
 
     public editEmployeeAttendanceDetail(data: Attendance): void {
-        this._fromAttendance.dispatch(
-            AttendanceActions.setSelectedAttendance({ payload: data })
-        );
+        this._fromAttendance.dispatch(AttendanceActions.setSelectedAttendance({ payload: data }));
 
         this.router.navigate([
-            '/pages', '/attendances/', this._storeId, '/employee/', this._employeeId, '/activity/' , this._activityId, '/detail'
+            '/pages',
+            '/attendances/',
+            this._storeId,
+            '/employee/',
+            this._employeeId,
+            '/activity/',
+            this._activityId,
+            '/detail'
         ]);
     }
 

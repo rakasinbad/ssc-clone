@@ -26,10 +26,6 @@ import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
-import { SearchBarComponent } from './components/search-bar/search-bar.component';
-import { ExportsModule } from 'app/shared/components/exports/exports.module';
-import { CardHeaderModule } from './components/card-header/card-header.module';
-import { SharedComponentsModule } from './components/shared-components.module';
 
 /**
  *
@@ -64,7 +60,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         DeleteConfirmationComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent,
+        ShowImageComponent
     ],
     imports: [
         // Custom Module
@@ -81,7 +77,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         AgmCoreModule,
 
         // Fuse Theme
-        FuseSharedModule,
+        FuseSharedModule
         // ExportsModule,
         // CardHeaderModule,
         // SharedComponentsModule,
@@ -122,7 +118,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         // Component (Dialog, Modal, Snackbar)
         DeleteConfirmationComponent,
         ChangeConfirmationComponent,
-        ShowImageComponent,
+        ShowImageComponent
     ],
     providers: [TitleCasePipe],
     entryComponents: [
@@ -135,7 +131,7 @@ import { SharedComponentsModule } from './components/shared-components.module';
         DeleteConfirmationComponent,
 
         FilterAdvancedFormComponent,
-        ShowImageComponent,
+        ShowImageComponent
         // SearchBarComponent,
     ]
 })

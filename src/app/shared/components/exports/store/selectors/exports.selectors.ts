@@ -1,10 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { TNullable } from 'app/shared/models/global.model';
 
-import {
-    fromExport
-} from '../reducers';
 import { Export } from '../../models';
-import { TNullable } from 'app/shared/models';
+import { fromExport } from '../reducers';
 
 // Get state from the feature key.
 export const getExportState = createFeatureSelector<fromExport.State>(fromExport.featureKey);
@@ -16,58 +14,28 @@ export const {
     selectTotal: selectExportTotal
 } = fromExport.adapterExport.getSelectors();
 
-export const getExportEntity = createSelector(
-    getExportState,
-    state => state.entities
-);
+export const getExportEntity = createSelector(getExportState, state => state.entities);
 
-export const getExportEntityIds = createSelector(
-    getExportState,
-    selectExportIds
-);
+export const getExportEntityIds = createSelector(getExportState, selectExportIds);
 
-export const getTotalExportEntity = createSelector(
-    getExportState,
-    selectExportTotal
-);
+export const getTotalExportEntity = createSelector(getExportState, selectExportTotal);
 
-export const getTotalExports = createSelector(
-    getExportState,
-    state => state.total
-);
+export const getTotalExports = createSelector(getExportState, state => state.total);
 
-export const getAllExports = createSelector(
-    getExportState,
-    selectAllExports
-);
+export const getAllExports = createSelector(getExportState, selectAllExports);
 
-export const getLoadingState = createSelector(
-    getExportState,
-    state => state.isLoading
-);
+export const getLoadingState = createSelector(getExportState, state => state.isLoading);
 
-export const getRequestingState = createSelector(
-    getExportState,
-    state => state.isRequesting
-);
+export const getRequestingState = createSelector(getExportState, state => state.isRequesting);
 
-export const getNeedRefreshState = createSelector(
-    getExportState,
-    state => state.needRefresh
-);
+export const getNeedRefreshState = createSelector(getExportState, state => state.needRefresh);
 
 export const getExport = createSelector(
     getExportEntity,
     getExportEntityIds,
-    (Exports, ids) => (Exports[ids[0]] as TNullable<Export>)
+    (Exports, ids) => Exports[ids[0]] as TNullable<Export>
 );
 
-export const getExportFilter = createSelector(
-    getExportState,
-    state => state.filter
-);
+export const getExportFilter = createSelector(getExportState, state => state.filter);
 
-export const getExportPage = createSelector(
-    getExportState,
-    state => state.exportPage
-);
+export const getExportPage = createSelector(getExportState, state => state.exportPage);

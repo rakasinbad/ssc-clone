@@ -1,6 +1,8 @@
-import { TNullable, User } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { User } from 'app/shared/models/user.model';
 
-import { Catalogue, Store } from '.';
+import { Store } from './../../accounts/merchants/models/merchant.model';
+import { Catalogue } from './../../catalogues/models/catalogue.model';
 
 interface ICondition {
     id: string;

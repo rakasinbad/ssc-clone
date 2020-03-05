@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import * as fromAssociationStore from '../reducers/association-store.reducer';
 import * as fromAssociationCore from '../reducers';
+import * as fromAssociationStore from '../reducers/association-store.reducer';
 
 const getAssociationsCoreState = createFeatureSelector<
     fromAssociationCore.FeatureState,

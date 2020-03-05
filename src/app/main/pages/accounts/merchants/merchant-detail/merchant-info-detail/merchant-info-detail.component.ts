@@ -10,7 +10,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { ShowImageComponent } from 'app/shared/modals/show-image/show-image.component';
-import { SupplierStore, User } from 'app/shared/models';
+import { SupplierStore } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { Observable, Subject } from 'rxjs';
 
 import { StoreActions } from '../../store/actions';

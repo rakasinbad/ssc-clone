@@ -14,15 +14,14 @@ import { Store } from '@ngrx/store';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
 
-/** State Management */
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { SettingsActions } from './store/actions';
 import { fromSettings } from './store/reducers';
 import { SettingsSelectors } from './store/selectors';
 
+/** State Management */
 @Component({
     selector: 'app-accounts-settings',
     templateUrl: './accounts-settings.component.html',
@@ -66,8 +65,8 @@ export class AccountsSettingsComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Accounts Settings',

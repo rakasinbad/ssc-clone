@@ -1,8 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-
-import { Brand } from '../../models';
-
+import { Brand } from 'app/shared/models/brand.model';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 /**
  * BRANDS

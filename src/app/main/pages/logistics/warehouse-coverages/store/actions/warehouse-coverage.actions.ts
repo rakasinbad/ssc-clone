@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams, ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 export const fetchWarehouseCoveragesRequest = createAction(
     '[Warehouse Coverages] Fetch Warehouse Coverages Request',

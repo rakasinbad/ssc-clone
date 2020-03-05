@@ -1,11 +1,9 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, TSource, IQueryParams, Store } from 'app/shared/models';
-import { Update } from '@ngrx/entity';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Store } from 'app/shared/models/store.model';
 
-export type failureActionNames =
-    'fetchStoreFailure' |
-    'fetchStoresFailure'
-;
+export type failureActionNames = 'fetchStoreFailure' | 'fetchStoresFailure';
 
 // export const addSelectedPortfolios = createAction(
 //     '[Portfolios] Add Selected Portfolios',
@@ -44,7 +42,7 @@ export type failureActionNames =
 //     '[Portfolios API] Patch Portfolio Failure',
 //     props<{ payload: IErrorHandler }>()
 // );
-    
+
 // export const patchPortfolioSuccess = createAction(
 //     '[Portfolios API] Patch Portfolio Success',
 //     props<{ payload: Portfolio }>()
@@ -61,7 +59,7 @@ export type failureActionNames =
 //     '[Portfolios API] Create Portfolio Failure',
 //     props<{ payload: IErrorHandler }>()
 // );
-    
+
 // export const createPortfolioSuccess = createAction(
 //     '[Portfolios API] Create Portfolio Success',
 //     props<{ payload: Portfolio }>()
@@ -77,7 +75,7 @@ export const fetchStoreFailure = createAction(
     '[Associations/Stores API] Fetch Store Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchStoreSuccess = createAction(
     '[Associations/Stores API] Fetch Store Success',
     props<{ payload: { store?: Store; source: TSource } }>()
@@ -93,7 +91,7 @@ export const fetchStoresFailure = createAction(
     '[Associations/Stores API] Fetch Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchStoresSuccess = createAction(
     '[Associations/Stores API] Fetch Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
@@ -134,7 +132,9 @@ export const abortStoresAsRemoved = createAction(
     props<{ payload: Array<string> }>()
 );
 
-export const confirmRemoveAllSelectedStores = createAction('[Associations/Stores] Confirm to Remove All Selected Stores');
+export const confirmRemoveAllSelectedStores = createAction(
+    '[Associations/Stores] Confirm to Remove All Selected Stores'
+);
 
 /**
  * HELPER

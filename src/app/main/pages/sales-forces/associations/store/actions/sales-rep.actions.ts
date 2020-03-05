@@ -1,10 +1,8 @@
-import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, EStatus, IQueryParams } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
-import {
-    SalesRep,
-} from '../../models';
+import { SalesRep } from '../../../sales-reps/models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Sales Reps

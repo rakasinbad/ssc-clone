@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { MaterialModule, SharedModule, ImportAdvancedModule } from 'app/shared';
+import { ImportAdvancedModule, MaterialModule, SharedModule } from 'app/shared';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { ExportFilterComponent, JourneyPlanSelectedStoresComponent } from './components';
@@ -14,7 +15,6 @@ import {
 import { JourneyPlansRoutingModule } from './journey-plans-routing.module';
 import { JourneyPlansStoreModule } from './journey-plans-store.module';
 import { JourneyPlansComponent } from './journey-plans.component';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *

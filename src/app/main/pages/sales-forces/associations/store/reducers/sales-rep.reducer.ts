@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { SalesRep } from '../../models';
+import { SalesRep } from '../../../sales-reps/models';
 import { SalesRepActions } from '../actions';
 
 // Keyname for reducer
@@ -33,20 +33,14 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(
-        SalesRepActions.fetchSalesRepsRequest,
-        state => ({
-            ...state,
-            isLoading: true
-        })
-    ),
-    on(
-        SalesRepActions.fetchSalesRepsFailure,
-        state => ({
-            ...state,
-            isLoading: false
-        })
-    ),
+    on(SalesRepActions.fetchSalesRepsRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(SalesRepActions.fetchSalesRepsFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
     on(SalesRepActions.fetchSalesRepsSuccess, (state, { payload }) => {
         return adapter.upsertMany(payload.data, {
             ...state,

@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 import { StoreCatalogue, StoreHistoryInventory } from '../../models/store-catalogue.model';
 
 // import { StoreCatalogue } from '../../models';

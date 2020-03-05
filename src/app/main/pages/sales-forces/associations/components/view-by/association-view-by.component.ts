@@ -1,23 +1,19 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-    OnDestroy
-} from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-// NgRx's Libraries
 import { Store } from '@ngrx/store';
-// RxJS' Libraries
-import { Observable, Subject } from 'rxjs';
-// Environment variables.
-import { UiSelectors } from 'app/shared/store/selectors';
 import { UiActions } from 'app/shared/store/actions';
-// Entity model.
-// State management's stuffs.
-import * as fromAssociations from '../../store/reducers';
+import { UiSelectors } from 'app/shared/store/selectors';
+import { Observable, Subject } from 'rxjs';
+
 import { AssociationActions } from '../../store/actions';
+import * as fromAssociations from '../../store/reducers';
 
 @Component({
     selector: 'app-associations-view-by',

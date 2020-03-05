@@ -4,10 +4,7 @@ import { fromBrand } from '../reducers';
 
 export const getBrandState = createFeatureSelector<fromBrand.State>(fromBrand.FEATURE_KEY);
 
-export const getAllBrands = createSelector(
-    getBrandState,
-    fromBrand.selectAllBrands
-);
+export const getAllBrands = createSelector(getBrandState, fromBrand.selectAllBrands);
 
 // export const getTotalCatalogue = createSelector(
 //     getCatalogueState,

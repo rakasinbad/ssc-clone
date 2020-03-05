@@ -17,20 +17,29 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromAssociationCore.fromAssociatedPortfolio.adapter.getSelectors(getAssociatedPortfolioEntitiesState);
+} = fromAssociationCore.fromAssociatedPortfolio.adapter.getSelectors(
+    getAssociatedPortfolioEntitiesState
+);
 
-export const getInitialized = createSelector(getAssociatedPortfolioEntitiesState, state => state.initialized);
+export const getInitialized = createSelector(
+    getAssociatedPortfolioEntitiesState,
+    state => state.initialized
+);
 
 const getTotalItem = createSelector(getAssociatedPortfolioEntitiesState, state => state.total);
 
-const getSelectedIds = createSelector(getAssociatedPortfolioEntitiesState, state => state.selectedIds);
-
-const getSelectedItem = createSelector(
-    selectEntities,
-    getSelectedIds,
-    (entities, ids) => ids.map(id => entities[id])
+const getSelectedIds = createSelector(
+    getAssociatedPortfolioEntitiesState,
+    state => state.selectedIds
 );
 
-const getLoadingState = createSelector(getAssociatedPortfolioEntitiesState, state => state.isLoading);
+const getSelectedItem = createSelector(selectEntities, getSelectedIds, (entities, ids) =>
+    ids.map(id => entities[id])
+);
+
+const getLoadingState = createSelector(
+    getAssociatedPortfolioEntitiesState,
+    state => state.isLoading
+);
 
 export { getLoadingState, getSelectedIds, getSelectedItem, getTotalItem };

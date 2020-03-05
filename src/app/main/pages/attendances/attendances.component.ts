@@ -16,8 +16,9 @@ import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { select, Store as NgRxStore } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
@@ -27,20 +28,10 @@ import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-import { Store } from './models';
 import { MerchantActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { MerchantSelectors } from './store/selectors';
 
-/**
- * ACTIONS
- */
-/**
- * REDUCERS
- */
-/**
- * SELECTORS
- */
 @Component({
     selector: 'app-attendances',
     templateUrl: './attendances.component.html',

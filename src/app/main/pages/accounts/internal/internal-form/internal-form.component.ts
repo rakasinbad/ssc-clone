@@ -9,12 +9,13 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
-import { Role, User } from 'app/shared/models';
+import { Role } from 'app/shared/models/role.model';
+import { User } from 'app/shared/models/user.model';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -28,7 +29,6 @@ import { InternalActions } from '../store/actions';
 import { fromInternal } from '../store/reducers';
 import { InternalSelectors } from '../store/selectors';
 
-// import { Role } from 'app/main/pages/roles/role.model';
 @Component({
     selector: 'app-internal-form',
     templateUrl: './internal-form.component.html',

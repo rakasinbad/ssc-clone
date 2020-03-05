@@ -1,33 +1,26 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-    OnDestroy,
-    ViewChild,
-    SecurityContext
-} from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    SecurityContext,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatPaginator, MatSort } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-// NgRx's Libraries
 import { Store } from '@ngrx/store';
-// RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import { takeUntil, catchError, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
-// Environment variables.
 import { environment } from 'environments/environment';
-// Entity model.
-// State management's stuffs.
-import * as fromAssociations from '../../store/reducers';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+
 import { AssociationActions } from '../../store/actions';
-import { AssociationSelectors } from '../../store/selectors';
-import { Router } from '@angular/router';
-import { IQueryParams } from 'app/shared/models';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
+import * as fromAssociations from '../../store/reducers';
 
 @Component({
     selector: 'app-associations-header-search',

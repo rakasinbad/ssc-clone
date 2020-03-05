@@ -1,11 +1,9 @@
-import {
-    ButtonDesignType,
-    IDialogConfig,
-    ITab,
-    ITimestamp,
-    TNullable,
-    User
-} from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { IDialogConfig } from 'app/shared/models/dialog.model';
+import { TNullable } from 'app/shared/models/global.model';
+import { ITab } from 'app/shared/models/tab.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 export interface IButtonImportConfig {
     readonly id: NonNullable<string>;

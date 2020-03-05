@@ -1,15 +1,16 @@
-import { FieldConfig } from './../../models/field.model';
 import {
     Component,
+    ComponentFactoryResolver,
     Input,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
-    ComponentFactoryResolver
+    ViewEncapsulation
 } from '@angular/core';
-import { ContentDirective } from './../../directives/content.directive';
 import { MatDialog } from '@angular/material/dialog';
 import { FilterAdvancedFormComponent } from 'app/shared/modals/filter-advanced-form/filter-advanced-form.component';
+
+import { ContentDirective } from './../../directives/content.directive';
+import { FieldConfig } from './../../models/field.model';
 
 @Component({
     selector: 'app-filter-advanced',

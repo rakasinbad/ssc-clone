@@ -13,7 +13,7 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthActions } from 'app/main/pages/core/auth/store/actions';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { navigation } from 'app/navigation/navigation';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';
 import * as _ from 'lodash';

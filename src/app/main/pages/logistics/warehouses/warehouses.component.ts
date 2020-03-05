@@ -1,14 +1,14 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
+    OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    ElementRef,
-    AfterViewInit,
-    OnDestroy
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -17,16 +17,13 @@ import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import {
-    IBreadcrumbs,
-    IQueryParams,
-    LifecyclePlatform,
-    WarehouseInvoiceGroup
-} from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { WarehouseInvoiceGroup } from 'app/shared/models/warehouse-invoice-group.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
-import { Observable, Subject, merge } from 'rxjs';
-import { tap, takeUntil, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
+import { merge, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { Warehouse } from './models';
 import { WarehouseActions } from './store/actions';

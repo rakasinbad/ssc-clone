@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch [Warehouse]

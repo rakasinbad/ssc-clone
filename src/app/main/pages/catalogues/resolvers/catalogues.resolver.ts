@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { GeneratorService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 import { filter, first, tap } from 'rxjs/operators';
 
@@ -22,7 +22,7 @@ export class CatalogueResolver implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot): Observable<any> | Promise<any> | any {
         return this.store.select(CatalogueSelectors.getAllCatalogues).pipe(
             tap(total => {
-                console.log('RESOLVE TOTAL', total);
+                // console.log('RESOLVE TOTAL', total);
                 if (!total) {
                     const data: IQueryParams = {
                         limit: 10,
@@ -31,19 +31,17 @@ export class CatalogueResolver implements Resolve<any> {
 
                     data['paginate'] = true;
 
-                    this.store.dispatch(
-                        CatalogueActions.fetchCataloguesRequest({ payload: data })
-                    );
+                    this.store.dispatch(CatalogueActions.fetchCataloguesRequest({ payload: data }));
                     /*
-                     _______                                    
-                    /       \                                   
-                    $$$$$$$  |  ______   _____  ____    ______  
-                    $$ |  $$ | /      \ /     \/    \  /      \ 
+                     _______
+                    /       \
+                    $$$$$$$  |  ______   _____  ____    ______
+                    $$ |  $$ | /      \ /     \/    \  /      \
                     $$ |  $$ |/$$$$$$  |$$$$$$ $$$$  |/$$$$$$  |
                     $$ |  $$ |$$    $$ |$$ | $$ | $$ |$$ |  $$ |
                     $$ |__$$ |$$$$$$$$/ $$ | $$ | $$ |$$ \__$$ |
-                    $$    $$/ $$       |$$ | $$ | $$ |$$    $$/ 
-                    $$$$$$$/   $$$$$$$/ $$/  $$/  $$/  $$$$$$/                                                                  
+                    $$    $$/ $$       |$$ | $$ | $$ |$$    $$/
+                    $$$$$$$/   $$$$$$$/ $$/  $$/  $$/  $$$$$$/
                     */
                     // const generator = this._$generator.generator(
                     //     GeneratorService.cataloguesSchema,

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
-import { Store as Merchant } from '../models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
+
 import { StoreCatalogue } from '../models/store-catalogue.model';
 
 // import { StoreCatalogue } from '../models';
@@ -19,7 +19,7 @@ export class StoreCatalogueApiService {
     constructor(private http: HttpClient, private helperSvc: HelperService) {
         this._url = helperSvc.handleApiRouter(this._endpoint);
     }
-    
+
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
@@ -29,7 +29,7 @@ export class StoreCatalogueApiService {
                 value: params['supplierId']
             });
         }
-        
+
         this._url = this.helperSvc.handleApiRouter(this._endpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 

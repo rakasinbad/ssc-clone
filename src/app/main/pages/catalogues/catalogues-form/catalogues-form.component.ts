@@ -1,52 +1,60 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
-    ElementRef,
     OnDestroy,
     OnInit,
-    ViewChild,
-    ViewEncapsulation,
-    ChangeDetectorRef
+    ViewEncapsulation
 } from '@angular/core';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
-import { fuseAnimations } from '@fuse/animations';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store } from '@ngrx/store';
-import { TranslateService } from '@ngx-translate/core';
-import { HelperService, ErrorMessageService, NoticeService } from 'app/shared/helpers';
-import { UiActions, FormActions } from 'app/shared/store/actions';
-import { FormSelectors } from 'app/shared/store/selectors';
-import { combineLatest, merge, of, Observable, Subject, Subscription } from 'rxjs';
-import { map, filter, switchMap, withLatestFrom, takeUntil, debounceTime, distinctUntilChanged, take, tap } from 'rxjs/operators';
 import {
+    AbstractControl,
+    AsyncValidatorFn,
     FormArray,
     FormBuilder,
     FormGroup,
-    AbstractControl,
-    AsyncValidatorFn,
     ValidationErrors
 } from '@angular/forms';
-import Quill from 'quill';
-
-import { locale as english } from '../i18n/en';
-import { locale as indonesian } from '../i18n/id';
-import { statusCatalogue } from '../status';
-import { fromCatalogue, fromBrand } from '../store/reducers';
-import { CatalogueActions, BrandActions } from '../store/actions';
-import { CatalogueSelectors, BrandSelectors } from '../store/selectors';
+import { MatDialog, MatTableDataSource } from '@angular/material';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { fuseAnimations } from '@fuse/animations';
+import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
+import { Store } from '@ngrx/store';
+import { TranslateService } from '@ngx-translate/core';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { MatTableDataSource, MatDialog } from '@angular/material';
-import { Catalogue, CatalogueUnit, CatalogueCategory } from '../models';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { Brand } from 'app/shared/models/brand.model';
+import { IBreadcrumbs, TNullable } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { FormActions, UiActions } from 'app/shared/store/actions';
+import { FormSelectors } from 'app/shared/store/selectors';
+import Quill from 'quill';
+import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    switchMap,
+    take,
+    takeUntil,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
 import { CataloguesSelectCategoryComponent } from '../catalogues-select-category/catalogues-select-category.component';
-import { IQueryParams, Brand, UserSupplier, TNullable, IBreadcrumbs } from 'app/shared/models';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { locale as english } from '../i18n/en';
+import { locale as indonesian } from '../i18n/id';
+import { Catalogue, CatalogueCategory, CatalogueUnit } from '../models';
 import { CataloguesService } from '../services';
+import { BrandActions, CatalogueActions } from '../store/actions';
+import { fromBrand, fromCatalogue } from '../store/reducers';
+import { BrandSelectors, CatalogueSelectors } from '../store/selectors';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -82,7 +90,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     productOldPhotos: FormArray;
 
     brands$: Observable<Array<Brand>>;
-    brandUser$: { id: string; name: string; } = { id: '0', name: '' };
+    brandUser$: { id: string; name: string } = { id: '0', name: '' };
     productCategory$: SafeHtml;
 
     catalogueUnits: Array<CatalogueUnit>;
@@ -95,9 +103,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     productVariantSelectionData: Array<MatTableDataSource<object>> = [];
 
-    readonly variantListColumns: Array<string> = [
-        'name', 'price', 'stock', 'sku'
-    ];
+    readonly variantListColumns: Array<string> = ['name', 'price', 'stock', 'sku'];
 
     readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
@@ -131,7 +137,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 title: 'Catalogue',
                 translate: 'BREADCRUMBS.CATALOGUE',
                 url: '/pages/catalogues'
-            },
+            }
         ];
 
         if (this.route.snapshot.url.filter(url => url.path === 'edit').length > 0) {
@@ -154,10 +160,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             })
         );
 
-        this._fuseTranslationLoaderService.loadTranslations(
-            indonesian,
-            english
-        );
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
         this.store.dispatch(
             UiActions.setFooterActionConfig({
@@ -206,7 +209,11 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Mengambil foto-foto produk yang diperoleh dari back-end. */
         const oldPhotos = formValues.productMedia.oldPhotos;
 
-        const newStock = formValues.productInfo.unlimitedStock ? 0 : !formValues.productInfo.stock ? 0 : formValues.productInfo.stock;
+        const newStock = formValues.productInfo.unlimitedStock
+            ? 0
+            : !formValues.productInfo.stock
+            ? 0
+            : formValues.productInfo.stock;
 
         /** Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing. */
         const catalogueData: Partial<Catalogue> = {
@@ -214,38 +221,53 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
              * INFORMASI PRODUK
              */
             externalId: formValues.productInfo.externalId,
-            name: String(formValues.productInfo.name).charAt(0).toUpperCase() + String(formValues.productInfo.name).slice(1),
+            name:
+                String(formValues.productInfo.name)
+                    .charAt(0)
+                    .toUpperCase() + String(formValues.productInfo.name).slice(1),
             description: formValues.productInfo.description,
             information: formValues.productInfo.information,
             detail: formValues.productInfo.information,
             brandId: formValues.productInfo.brandId,
             firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-            lastCatalogueCategoryId: formValues.productInfo.category.length === 1 ?
-                                        formValues.productInfo.category[0].id
-                                        : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
+            lastCatalogueCategoryId:
+                formValues.productInfo.category.length === 1
+                    ? formValues.productInfo.category[0].id
+                    : formValues.productInfo.category[formValues.productInfo.category.length - 1]
+                          .id,
             stock: newStock,
-            unitOfMeasureId:  formValues.productInfo.uom,
+            unitOfMeasureId: formValues.productInfo.uom,
             /**
              * INFORMASI PENJUALAN
              */
-            discountedRetailBuyingPrice: formValues.productSale.retailPrice ? formValues.productSale.retailPrice : null,
+            discountedRetailBuyingPrice: formValues.productSale.retailPrice
+                ? formValues.productSale.retailPrice
+                : null,
             retailBuyingPrice: formValues.productSale.productPrice,
             catalogueKeywords: formValues.productSale.tags,
             /**
              * PENGATURAN MEDIA
              */
             catalogueImages: formValues.productMedia.photos
-                            .filter(photo => photo)
-                            .map(photo => ({ base64: photo })),
+                .filter(photo => photo)
+                .map(photo => ({ base64: photo })),
             /**
              * PENGIRIMAN
              */
-            catalogueDimension: isNaN(Number(formValues.productShipment.catalogueDimension)) ? null : Number(formValues.productShipment.catalogueDimension),
-            catalogueWeight: isNaN(Number(formValues.productShipment.catalogueWeight)) ? null : Number(formValues.productShipment.catalogueWeight),
-            packagedDimension: isNaN(Number(formValues.productShipment.packagedDimension)) ? null : Number(formValues.productShipment.packagedDimension),
-            packagedWeight: isNaN(Number(formValues.productShipment.packagedWeight)) ? null : Number(formValues.productShipment.packagedWeight),
+            catalogueDimension: isNaN(Number(formValues.productShipment.catalogueDimension))
+                ? null
+                : Number(formValues.productShipment.catalogueDimension),
+            catalogueWeight: isNaN(Number(formValues.productShipment.catalogueWeight))
+                ? null
+                : Number(formValues.productShipment.catalogueWeight),
+            packagedDimension: isNaN(Number(formValues.productShipment.packagedDimension))
+                ? null
+                : Number(formValues.productShipment.packagedDimension),
+            packagedWeight: isNaN(Number(formValues.productShipment.packagedWeight))
+                ? null
+                : Number(formValues.productShipment.packagedWeight),
             dangerItem: false,
-            /** 
+            /**
              * PENGATURAN JUMLAH
              */
             packagedQty: formValues.productCount.qtyPerMasterBox,
@@ -258,7 +280,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
              */
             displayStock: newStock === 0 ? false : true,
             catalogueTaxId: 1,
-            unlimitedStock: formValues.productInfo.unlimitedStock,
+            unlimitedStock: formValues.productInfo.unlimitedStock
         };
 
         if (this.formMode === 'edit') {
@@ -274,7 +296,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     if (!catalogueData.uploadedImages) {
                         catalogueData.uploadedImages = [];
                     }
-                    
+
                     if (oldPhotos[idx].id) {
                         catalogueData.deletedImages.push(oldPhotos[idx].id);
                     }
@@ -282,16 +304,22 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     catalogueData.uploadedImages.push({ base64: photo });
                 }
 
-                return check; 
+                return check;
             };
 
             catalogueData.catalogueImages = formValues.productMedia.photos.filter(filterPhoto);
         }
 
         if (this.formMode !== 'edit') {
-            this.store.dispatch(CatalogueActions.addNewCatalogueRequest({ payload: catalogueData }));
+            this.store.dispatch(
+                CatalogueActions.addNewCatalogueRequest({ payload: catalogueData })
+            );
         } else {
-            this.store.dispatch(CatalogueActions.patchCatalogueRequest({ payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' } }));
+            this.store.dispatch(
+                CatalogueActions.patchCatalogueRequest({
+                    payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
+                })
+            );
         }
 
         this.store.dispatch(FormActions.resetClickSaveButton());
@@ -299,50 +327,48 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     checkExternalId(): AsyncValidatorFn {
         return (control: AbstractControl): Observable<ValidationErrors | null> => {
-            return control.valueChanges
-                .pipe(
-                    distinctUntilChanged(),
-                    debounceTime(500),
-                    withLatestFrom(
-                        this.store.select(AuthSelectors.getUserSupplier),
-                        this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-                    ),
-                    take(1),
-                    switchMap(([value, userSupplier, catalogue]) => {
-                        if (!value) {
-                            return of({
-                                required: true
-                            });
-                        }
+            return control.valueChanges.pipe(
+                distinctUntilChanged(),
+                debounceTime(500),
+                withLatestFrom(
+                    this.store.select(AuthSelectors.getUserSupplier),
+                    this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
+                ),
+                take(1),
+                switchMap(([value, userSupplier, catalogue]) => {
+                    if (!value) {
+                        return of({
+                            required: true
+                        });
+                    }
 
-                        const params: IQueryParams = {
-                            limit: 1, paginate: true
-                        };
+                    const params: IQueryParams = {
+                        limit: 1,
+                        paginate: true
+                    };
 
-                        params['externalId'] = value;
-                        params['supplierId'] = userSupplier.supplierId;
+                    params['externalId'] = value;
+                    params['supplierId'] = userSupplier.supplierId;
 
-                        return this.catalogueSvc
-                            .findAll(params)
-                            .pipe(
-                                map(response => {
-                                    if (response.total > 0) {
-                                        if (!this.isAddMode()) {
-                                            if (response.data[0].id === catalogue.id) {
-                                                return null;
-                                            }
-                                        }
-
-                                        return {
-                                            skuSupplierExist: true
-                                        };
+                    return this.catalogueSvc.findAll(params).pipe(
+                        map(response => {
+                            if (response.total > 0) {
+                                if (!this.isAddMode()) {
+                                    if (response.data[0].id === catalogue.id) {
+                                        return null;
                                     }
+                                }
 
-                                    return null;
-                                })
-                            );
-                    })
-                );
+                                return {
+                                    skuSupplierExist: true
+                                };
+                            }
+
+                            return null;
+                        })
+                    );
+                })
+            );
         };
     }
 
@@ -352,7 +378,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
         this.isLoading$ = combineLatest([
             this.store.select(CatalogueSelectors.getIsLoading),
-            this.brandStore.select(BrandSelectors.getBrandState),
+            this.brandStore.select(BrandSelectors.getBrandState)
         ]).pipe(
             map(([storeLoading, brand]) => {
                 if (storeLoading && !brand.isLoading) {
@@ -365,106 +391,160 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         );
 
         /** Mulai mengambil data kategori katalog. */
-        this.store.select(
-            CatalogueSelectors.getCatalogueCategories
-        ).pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(categories => {
-            /** Minta kategori katalog ke back-end jika belum ada. */
-            if (categories.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({
-                    payload: {
-                        paginate: false
-                    }
-                }));
-            }
-        });
+        this.store
+            .select(CatalogueSelectors.getCatalogueCategories)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(categories => {
+                /** Minta kategori katalog ke back-end jika belum ada. */
+                if (categories.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueCategoriesRequest({
+                            payload: {
+                                paginate: false
+                            }
+                        })
+                    );
+                }
+            });
 
         /** Menyiapkan form. */
         this.form = this.fb.group({
             productInfo: this.fb.group({
                 id: [''],
-                externalId: ['', {
-                    validators: [
+                externalId: [
+                    '',
+                    {
+                        validators: [
+                            RxwebValidators.required({
+                                message: this.errorMessageSvc.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            })
+                        ],
+                        asyncValidators: [this.checkExternalId()]
+                    }
+                ],
+                name: [
+                    '',
+                    [
                         RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
-                        }),
-                    ],
-                    asyncValidators: [
-                        this.checkExternalId()
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
                     ]
-                }],
-                name: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
+                ],
                 description: [''],
-                information: ['', [
-                    // RxwebValidators.required({
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    // })
-                ]],
+                information: [
+                    '',
+                    [
+                        // RxwebValidators.required({
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        // })
+                    ]
+                ],
                 // variant: ['', Validators.required],
-                brandId: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
-                brandName: [{ value: '', disabled: true }, [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
-                category: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
+                brandId: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
+                brandName: [
+                    { value: '', disabled: true },
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
+                category: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
                 stock: [''],
                 unlimitedStock: [{ value: false, disabled: true }],
-                uom: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
-                uomName : [''],
+                uom: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
+                uomName: ['']
                 // minQty: ['', [Validators.required, Validators.min(1)]],
                 // packagedQty: ['', [Validators.required, Validators.min(1)]],
                 // multipleQty: ['', [Validators.required, Validators.min(1)]]
             }),
             productSale: this.fb.group({
                 retailPrice: [''],
-                productPrice: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]],
-                tags: this.fb.array([], [
-                    // RxwebValidators.required({
-                    //     conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
-                    // })
-                    RxwebValidators.choice({
-                        minLength: 1,
-                        conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
-                        message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
-                    })
-                ]),
+                productPrice: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        })
+                    ]
+                ],
+                tags: this.fb.array(
+                    [],
+                    [
+                        // RxwebValidators.required({
+                        //     conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
+                        // })
+                        RxwebValidators.choice({
+                            minLength: 1,
+                            conditionalExpression: controls =>
+                                (controls.tags as Array<string>).length > 0 ? true : null,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_tag',
+                                'min_1_tag'
+                            )
+                        })
+                    ]
+                ),
                 variants: this.fb.array([])
             }),
             productMedia: this.fb.group({
                 photos: this.fb.array([
                     this.fb.control(null, [
                         RxwebValidators.required({
-                            message: this.errorMessageSvc.getErrorMessageNonState('product_photo', 'min_1_photo')
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'product_photo',
+                                'min_1_photo'
+                            )
                         })
                     ]),
                     this.fb.control(null),
                     this.fb.control(null),
                     this.fb.control(null),
                     this.fb.control(null),
-                    this.fb.control(null),
+                    this.fb.control(null)
                 ]),
                 oldPhotos: this.fb.array([
                     this.fb.group({ id: [null], value: [null] }),
@@ -472,46 +552,72 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     this.fb.group({ id: [null], value: [null] }),
                     this.fb.group({ id: [null], value: [null] }),
                     this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] })
                 ])
             }),
             productShipment: this.fb.group({
-                catalogueWeight: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
-                ]],
-                packagedWeight: ['', [
-                    // RxwebValidators.required({
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    // }),
-                    // RxwebValidators.minNumber({
-                    //     value: 1,
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    // })
-                ]],
-                catalogueDimension: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
-                ]],
-                packagedDimension: ['', [
-                    // RxwebValidators.required({
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    // }),
-                    // RxwebValidators.minNumber({
-                    //     value: 1,
-                    //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    // })
-                ]],
+                catalogueWeight: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            )
+                        })
+                    ]
+                ],
+                packagedWeight: [
+                    '',
+                    [
+                        // RxwebValidators.required({
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        // }),
+                        // RxwebValidators.minNumber({
+                        //     value: 1,
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                        // })
+                    ]
+                ],
+                catalogueDimension: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            )
+                        })
+                    ]
+                ],
+                packagedDimension: [
+                    '',
+                    [
+                        // RxwebValidators.required({
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                        // }),
+                        // RxwebValidators.minNumber({
+                        //     value: 1,
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
+                        // })
+                    ]
+                ],
                 isDangerous: [''],
                 couriers: this.fb.array([
                     this.fb.control({
@@ -529,35 +635,65 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 ])
             }),
             productCount: this.fb.group({
-                qtyPerMasterBox: ['', [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
-                ]],
+                qtyPerMasterBox: [
+                    '',
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            )
+                        })
+                    ]
+                ],
                 minQtyOption: ['pcs'],
-                minQtyValue: [{ value: '1', disabled: true }, [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
-                ]],
+                minQtyValue: [
+                    { value: '1', disabled: true },
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            )
+                        })
+                    ]
+                ],
                 additionalQtyOption: ['pcs'],
-                additionalQtyValue: [{ value: '1', disabled: true }, [
-                    RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    }),
-                    RxwebValidators.minNumber({
-                        value: 1,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 1 })
-                    })
-                ]],
+                additionalQtyValue: [
+                    { value: '1', disabled: true },
+                    [
+                        RxwebValidators.required({
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessageSvc.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            )
+                        })
+                    ]
+                ]
             })
         });
 
@@ -569,20 +705,14 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Menyiapkan beberapa variabel untuk mengambil beberapa control dari induk form. */
         this.productPhotos = this.form.get('productMedia.photos') as FormArray;
         this.productOldPhotos = this.form.get('productMedia.oldPhotos') as FormArray;
-        this.productTagsControls = (this.form.get('productSale.tags') as FormArray);
+        this.productTagsControls = this.form.get('productSale.tags') as FormArray;
         this.productCourierControls = (this.form.get(
             'productShipment.couriers'
         ) as FormArray).controls;
-        this.productVariantControls = (this.form.get(
-            'productSale.variants'
-        ) as FormArray).controls;
-        this.productVariantFormControls = (this.variantForm.get(
-            'variants'
-        ) as FormArray).controls;
+        this.productVariantControls = (this.form.get('productSale.variants') as FormArray).controls;
+        this.productVariantFormControls = (this.variantForm.get('variants') as FormArray).controls;
 
-        this.route.url.pipe(
-            take(1)
-        ).subscribe(urls => {
+        this.route.url.pipe(take(1)).subscribe(urls => {
             if (urls.filter(url => url.path === 'edit').length > 0) {
                 this.formMode = 'edit';
                 this._prepareEditCatalogue();
@@ -599,81 +729,97 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Melakukan subscribe ke pengambilan data brand dari state. */
         combineLatest([
             this.store.select(BrandSelectors.getAllBrands),
-            this.store.select(CatalogueSelectors.getSelectedCategories),
-        ]).pipe(
-            /** Sambil mengambil dari beberapa Subscription. */
-            withLatestFrom(
-                this.store.select(AuthSelectors.getUserSupplier),
-                this.store.select(CatalogueSelectors.getProductName),
-                ([brands, categories], userSupplier, productName) => [brands, categories, userSupplier, productName]
-            ),
-            switchMap(([
-                brands,
-                categories,
-                userSupplier,
-                productName,
-            ]: [
-                Array<Brand>,
-                Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>,
-                UserSupplier,
-                string,
-            ]) => {
-                if (!userSupplier) {
-                    return of(
-                        BrandActions.fetchBrandsFailure({
-                            payload: { id: 'fetchBrandsFailure', errors: 'Not Authenticated' }
-                        })
-                    );
-                }
+            this.store.select(CatalogueSelectors.getSelectedCategories)
+        ])
+            .pipe(
+                /** Sambil mengambil dari beberapa Subscription. */
+                withLatestFrom(
+                    this.store.select(AuthSelectors.getUserSupplier),
+                    this.store.select(CatalogueSelectors.getProductName),
+                    ([brands, categories], userSupplier, productName) => [
+                        brands,
+                        categories,
+                        userSupplier,
+                        productName
+                    ]
+                ),
+                switchMap(
+                    ([brands, categories, userSupplier, productName]: [
+                        Array<Brand>,
+                        Array<{
+                            id: string;
+                            name: string;
+                            parent: TNullable<string>;
+                            hasChildren?: boolean;
+                        }>,
+                        UserSupplier,
+                        string
+                    ]) => {
+                        if (!userSupplier) {
+                            return of(
+                                BrandActions.fetchBrandsFailure({
+                                    payload: {
+                                        id: 'fetchBrandsFailure',
+                                        errors: 'Not Authenticated'
+                                    }
+                                })
+                            );
+                        }
 
-                return of([brands, categories, userSupplier, productName]);
-            }),
-            takeUntil(this._unSubs$)
-        ).subscribe(([
-            brands,
-            categories,
-            userSupplier,
-            productName,
-        ]: [
-            Array<Brand>,
-            Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>,
-            UserSupplier,
-            string,
-        ]) => {
-            /** Mengambil data brand jika belum ada di state. */
-            if (!brands || brands.length === 0) {
-                const params: IQueryParams = {
-                    paginate: false,
-                };
+                        return of([brands, categories, userSupplier, productName]);
+                    }
+                ),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(
+                ([brands, categories, userSupplier, productName]: [
+                    Array<Brand>,
+                    Array<{
+                        id: string;
+                        name: string;
+                        parent: TNullable<string>;
+                        hasChildren?: boolean;
+                    }>,
+                    UserSupplier,
+                    string
+                ]) => {
+                    /** Mengambil data brand jika belum ada di state. */
+                    if (!brands || brands.length === 0) {
+                        const params: IQueryParams = {
+                            paginate: false
+                        };
 
-                /** Mengambil brand berdasarkan ID supplier-nya dari state. */
-                params['supplierId'] = userSupplier.supplierId;
-                return this.store.dispatch(BrandActions.fetchBrandsRequest({
-                    payload: params
-                }));
-            }
+                        /** Mengambil brand berdasarkan ID supplier-nya dari state. */
+                        params['supplierId'] = userSupplier.supplierId;
+                        return this.store.dispatch(
+                            BrandActions.fetchBrandsRequest({
+                                payload: params
+                            })
+                        );
+                    }
 
-            /** Memasukkan nama produk ke dalam form jika bukan edit mode (nama form yang berasal dari halaman Add Product) */
-            // if (!this.isEditMode) {
-            //     this.form.get('productInfo.name').patchValue(productName);
-            // }
+                    /** Memasukkan nama produk ke dalam form jika bukan edit mode (nama form yang berasal dari halaman Add Product) */
+                    // if (!this.isEditMode) {
+                    //     this.form.get('productInfo.name').patchValue(productName);
+                    // }
 
-            if (this.isAddMode()) {
-                this.form.get('productInfo.name').setValue(productName);
-            }
-            
-            /** Kategori produk yang ingin ditampilkan di front-end. */
-            this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
-                categories.map(category => category['name']).join(`
+                    if (this.isAddMode()) {
+                        this.form.get('productInfo.name').setValue(productName);
+                    }
+
+                    /** Kategori produk yang ingin ditampilkan di front-end. */
+                    this.productCategory$ = this.sanitizer.bypassSecurityTrustHtml(
+                        categories.map(category => category['name']).join(`
                     <span class="mx-12">
                         >
                     </span>
                 `)
-            );
+                    );
 
-            this.updateSelectedCategories(categories);
-            this._cd.markForCheck();
-        });
+                    this.updateSelectedCategories(categories);
+                    this._cd.markForCheck();
+                }
+            );
 
         /** Melakukan merge Subscription untuk mendeteksi valid atau tidaknya form katalog. */
         merge(
@@ -681,30 +827,24 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productSale').valueChanges,
             this.form.get('productMedia').valueChanges,
             this.form.get('productShipment').valueChanges,
-            this.form.statusChanges,
-        ).pipe(
-            distinctUntilChanged(),
-            debounceTime(500),
-            takeUntil(this._unSubs$),
-        ).subscribe(() => {
-            if (this.form.status === 'VALID') {
-                this.store.dispatch(FormActions.setFormStatusValid());
-            } else {
-                this.store.dispatch(FormActions.setFormStatusInvalid());
-            }
+            this.form.statusChanges
+        )
+            .pipe(distinctUntilChanged(), debounceTime(500), takeUntil(this._unSubs$))
+            .subscribe(() => {
+                if (this.form.status === 'VALID') {
+                    this.store.dispatch(FormActions.setFormStatusValid());
+                } else {
+                    this.store.dispatch(FormActions.setFormStatusInvalid());
+                }
 
-            /** Melakukan update render pada front-end. */
-            this._cd.markForCheck();
-        });
+                /** Melakukan update render pada front-end. */
+                this._cd.markForCheck();
+            });
 
         /** Melakukan subscribe ke perubahan nilai opsi Minimum Quantity Order. */
-        this.form.get('productCount.minQtyOption')
-            .valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                takeUntil(this._unSubs$),
-            )
+        this.form
+            .get('productCount.minQtyOption')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
             .subscribe(value => {
                 /** Mengambil nilai pada input Minimum Order Quantity. */
                 const minQtyValueController = this.form.get('productCount.minQtyValue');
@@ -730,16 +870,14 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             });
 
         /** Melakukan subscribe ke perubahan nilai opsi Additional Quantity. */
-        this.form.get('productCount.additionalQtyOption')
-            .valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                takeUntil(this._unSubs$),
-            )
+        this.form
+            .get('productCount.additionalQtyOption')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
             .subscribe(value => {
                 /** Mengambil nilai pada input Additional Quantity. */
-                const additionalQtyValueController = this.form.get('productCount.additionalQtyValue');
+                const additionalQtyValueController = this.form.get(
+                    'productCount.additionalQtyValue'
+                );
                 /** Mengambil nilai Quantity per Master Box. */
                 const qtyPerMasterBox = this.form.get('productCount.qtyPerMasterBox').value;
 
@@ -747,7 +885,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 switch (value) {
                     case 'master_box':
                         additionalQtyValueController.disable();
-                        additionalQtyValueController.patchValue(qtyPerMasterBox ? qtyPerMasterBox : 1);
+                        additionalQtyValueController.patchValue(
+                            qtyPerMasterBox ? qtyPerMasterBox : 1
+                        );
                         break;
                     case 'custom':
                         additionalQtyValueController.enable();
@@ -761,14 +901,10 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 }
             });
 
-            /** Melakukan subscribe ke perubahan nilai input Quantity per Master Box. */
-        this.form.get('productCount.qtyPerMasterBox')
-            .valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(100),
-                takeUntil(this._unSubs$),
-            )
+        /** Melakukan subscribe ke perubahan nilai input Quantity per Master Box. */
+        this.form
+            .get('productCount.qtyPerMasterBox')
+            .valueChanges.pipe(distinctUntilChanged(), debounceTime(100), takeUntil(this._unSubs$))
             .subscribe(value => {
                 /** Mengambil Form Control-nya option dan input Minimum Quantity Order. */
                 const minQtyOption = this.form.get('productCount.minQtyOption');
@@ -805,9 +941,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         /** Melakukan subscribe ketika ada perubahan data daftar brand. */
         this.brands$ = this.store
             .select(BrandSelectors.getAllBrands)
-            .pipe(
-                takeUntil(this._unSubs$)
-            );
+            .pipe(takeUntil(this._unSubs$));
 
         this.form.get('productInfo.information').setValue('---');
         setTimeout(() => this.form.get('productInfo.information').setValue(''), 100);
@@ -818,41 +952,43 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.form.get('productInfo.unlimitedStock').disable();
         }
 
-        this.store.select(
-            CatalogueSelectors.getCatalogueUnits
-        ).pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(units => {
-            if (units.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
-                    payload: {
-                        paginate: false,
-                        sort: 'asc',
-                        sortBy: 'id'
-                    }
-                }));
-            }
+        this.store
+            .select(CatalogueSelectors.getCatalogueUnits)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(units => {
+                if (units.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueUnitRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id'
+                            }
+                        })
+                    );
+                }
 
-            const uom = this.form.get('productInfo.uom').value;
-            const selectedUnit = units.filter(unit => unit.id === uom);
-            if (selectedUnit.length > 0) {
-                this.form.patchValue({
-                    productInfo: {
-                        uomName: selectedUnit[0].unit
-                    }
-                });
-            }
+                const uom = this.form.get('productInfo.uom').value;
+                const selectedUnit = units.filter(unit => unit.id === uom);
+                if (selectedUnit.length > 0) {
+                    this.form.patchValue({
+                        productInfo: {
+                            uomName: selectedUnit[0].unit
+                        }
+                    });
+                }
 
-            this.catalogueUnits = units;
-            this._cd.markForCheck();
-        });
+                this.catalogueUnits = units;
+                this._cd.markForCheck();
+            });
 
         if (!this.isViewMode()) {
             this.store.dispatch(UiActions.showFooterAction());
         }
 
-        this.form.get('productInfo.unlimitedStock').valueChanges
-            .pipe(
+        this.form
+            .get('productInfo.unlimitedStock')
+            .valueChanges.pipe(
                 tap((value: boolean) => {
                     this.form.get('productInfo.stock').setValue(0);
 
@@ -863,7 +999,8 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                     }
                 }),
                 takeUntil(this._unSubs$)
-            ).subscribe();
+            )
+            .subscribe();
 
         /** Mendaftarkan toolbox pada Quill Editor yang diperlukan saja */
         this.registerQuillFormatting();
@@ -908,10 +1045,17 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         Quill.register(ItalicBlot);
     }
 
-    private updateSelectedCategories(categories: Array<{ id: string; name: string; parent: TNullable<string>; hasChildren?: boolean; }>): void {
+    private updateSelectedCategories(
+        categories: Array<{
+            id: string;
+            name: string;
+            parent: TNullable<string>;
+            hasChildren?: boolean;
+        }>
+    ): void {
         /** Mengambil kategori terakhir yang terpilih. */
         const lastCategory = categories.length > 0 ? categories[categories.length - 1] : undefined;
-                        
+
         /** Kategori paling terakhir tidak boleh memiliki sub-kategori. Harus memilih kategori hingga terdalam. */
         if (!lastCategory || lastCategory.hasChildren) {
             this.form.get('productInfo.category').setValue('');
@@ -927,222 +1071,261 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
             this.store.select(CatalogueSelectors.getCatalogueCategories),
             this.store.select(CatalogueSelectors.getCatalogueUnits),
-            this.store.select(AuthSelectors.getUserSupplier),
-        ]).pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(([catalogue, categories, units, userSupplier]) => {
-            /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
-            const { id } = this.route.snapshot.params;
-            
-            /** Butuh fetch kategori katalog jika belum ada di state. */
-            if (categories.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCatalogueCategoriesRequest({ payload: { paginate: false } }));
-            }
+            this.store.select(AuthSelectors.getUserSupplier)
+        ])
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(([catalogue, categories, units, userSupplier]) => {
+                /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
+                const { id } = this.route.snapshot.params;
 
-            /** Butuh fetch unit kategori jika belum ada di state. */
-            if (units.length === 0) {
-                return this.store.dispatch(CatalogueActions.fetchCatalogueUnitRequest({
-                    payload: {
-                        paginate: false,
-                        sort: 'asc',
-                        sortBy: 'id'
-                    }
-                }));
-            }
-
-            /** Butuh mengambil data katalog jika belum ada di state. */
-            if (!catalogue) {
-                this.store.dispatch(CatalogueActions.fetchCatalogueRequest({
-                    payload: id
-                }));
-
-                this.store.dispatch(CatalogueActions.setSelectedCatalogue({
-                    payload: id
-                }));
-
-                return;
-            }
-
-            /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
-            if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                this.store.dispatch(CatalogueActions.spliceCatalogue({
-                    payload: id
-                }));
-
-                this._$notice.open('Produk tidak ditemukan.', 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
-
-                return setTimeout(() => this.router.navigate([
-                    'pages', 'catalogues', 'list'
-                ]), 1000);
-            }
-
-            /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
-            const searchCategory = (catalogueId, selectedCategories: Array<CatalogueCategory> ) => {
-                const selectedCategory = selectedCategories.filter(category => category.id === catalogueId);
-
-                return {
-                    id: selectedCategory[0].id,
-                    name: selectedCategory[0].category,
-                    parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
-                    children: selectedCategory[0].children
-                };
-            };
-
-            /** Mengambil data keyword katalog. */
-            const keywords = catalogue.catalogueKeywordCatalogues.map(keyword => keyword.catalogueKeyword.tag);
-            (this.form.get('productSale.tags') as FormArray).clear();
-            for (const keyword of keywords) {
-                (this.form.get('productSale.tags') as FormArray).push(this.fb.control(keyword));
-            }
-
-            /** Memberi nilai sementara sebelum dimasukkan nilai aslinya ke Quill Editor. */
-            this.form.patchValue({
-                productInfo: {
-                    information: '...'
+                /** Butuh fetch kategori katalog jika belum ada di state. */
+                if (categories.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueCategoriesRequest({
+                            payload: { paginate: false }
+                        })
+                    );
                 }
-            });
 
-            /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
-            setTimeout(() => {
+                /** Butuh fetch unit kategori jika belum ada di state. */
+                if (units.length === 0) {
+                    return this.store.dispatch(
+                        CatalogueActions.fetchCatalogueUnitRequest({
+                            payload: {
+                                paginate: false,
+                                sort: 'asc',
+                                sortBy: 'id'
+                            }
+                        })
+                    );
+                }
+
+                /** Butuh mengambil data katalog jika belum ada di state. */
+                if (!catalogue) {
+                    this.store.dispatch(
+                        CatalogueActions.fetchCatalogueRequest({
+                            payload: id
+                        })
+                    );
+
+                    this.store.dispatch(
+                        CatalogueActions.setSelectedCatalogue({
+                            payload: id
+                        })
+                    );
+
+                    return;
+                }
+
+                /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
+                if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
+                    this.store.dispatch(
+                        CatalogueActions.spliceCatalogue({
+                            payload: id
+                        })
+                    );
+
+                    this._$notice.open('Produk tidak ditemukan.', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+
+                    return setTimeout(
+                        () => this.router.navigate(['pages', 'catalogues', 'list']),
+                        1000
+                    );
+                }
+
+                /** Proses pencarian kategori katalog dari daftar katalog yang ada di server. */
+                const searchCategory = (
+                    catalogueId,
+                    selectedCategories: Array<CatalogueCategory>
+                ) => {
+                    const selectedCategory = selectedCategories.filter(
+                        category => category.id === catalogueId
+                    );
+
+                    return {
+                        id: selectedCategory[0].id,
+                        name: selectedCategory[0].category,
+                        parent: selectedCategory[0].parentId ? selectedCategory[0].parentId : null,
+                        children: selectedCategory[0].children
+                    };
+                };
+
+                /** Mengambil data keyword katalog. */
+                const keywords = catalogue.catalogueKeywordCatalogues.map(
+                    keyword => keyword.catalogueKeyword.tag
+                );
+                (this.form.get('productSale.tags') as FormArray).clear();
+                for (const keyword of keywords) {
+                    (this.form.get('productSale.tags') as FormArray).push(this.fb.control(keyword));
+                }
+
+                /** Memberi nilai sementara sebelum dimasukkan nilai aslinya ke Quill Editor. */
                 this.form.patchValue({
                     productInfo: {
-                        id: catalogue.id,
-                        externalId: catalogue.externalId,
-                        name: catalogue.name,
-                        description: catalogue.description || '-',
-                        // information: catalogue.detail || '-',
-                        // variant: ['', Validators.required],
-                        brandId: catalogue.brandId,
-                        brandName: catalogue.brand.name,
-                        // category: ['', Validators.required],
-                        stock: catalogue.stock,
-                        uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
-                        minQty: catalogue.minQty,
-                        packagedQty: catalogue.packagedQty,
-                        multipleQty: catalogue.multipleQty,
-                        unlimitedStock: catalogue.unlimitedStock,
-                    }, productSale: {
-                        retailPrice: this.isViewMode() ? catalogue.discountedRetailBuyingPrice : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
-                        productPrice: this.isViewMode() ? catalogue.retailBuyingPrice : String(catalogue.retailBuyingPrice).replace('.', ','),
-                        // variants: this.fb.array([])
-                    }, productMedia: {
-                        photos: [
-                            ...catalogue.catalogueImages.map(image => image.imageUrl)
-                        ],
-                        oldPhotos: [
-                            ...catalogue.catalogueImages.map(image => image.imageUrl)
-                        ]
-                    },
-                    productShipment: {
-                        catalogueWeight: catalogue.catalogueWeight,
-                        packagedWeight: catalogue.packagedWeight,
-                        catalogueDimension: catalogue.catalogueDimension,
-                        packagedDimension: catalogue.packagedDimension,
-                        // isDangerous: [''],
-                        // couriers: this.fb.array([
-                        //     this.fb.control({
-                        //         name: 'SiCepat REG (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     }),
-                        //     this.fb.control({
-                        //         name: 'JNE REG (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     }),
-                        //     this.fb.control({
-                        //         name: 'SiCepat Cargo (maks 5000g)',
-                        //         disabled: this.fb.control(false)
-                        //     })
-                        // ])
-                    },
-                    productCount: {
-                        qtyPerMasterBox: catalogue.packagedQty,
-                        minQtyOption: catalogue.minQtyType,
-                        minQtyValue: catalogue.minQty,
-                        additionalQtyOption: catalogue.multipleQtyType,
-                        additionalQtyValue: catalogue.multipleQty,
+                        information: '...'
                     }
                 });
 
-                const uom = this.form.get('productInfo.uom').value;
-                const selectedUnit = units.filter(unit => unit.id === uom);
-                if (selectedUnit.length > 0) {
+                /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
+                setTimeout(() => {
                     this.form.patchValue({
                         productInfo: {
-                            uomName: selectedUnit[0].unit
+                            id: catalogue.id,
+                            externalId: catalogue.externalId,
+                            name: catalogue.name,
+                            description: catalogue.description || '-',
+                            // information: catalogue.detail || '-',
+                            // variant: ['', Validators.required],
+                            brandId: catalogue.brandId,
+                            brandName: catalogue.brand.name,
+                            // category: ['', Validators.required],
+                            stock: catalogue.stock,
+                            uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                            minQty: catalogue.minQty,
+                            packagedQty: catalogue.packagedQty,
+                            multipleQty: catalogue.multipleQty,
+                            unlimitedStock: catalogue.unlimitedStock
+                        },
+                        productSale: {
+                            retailPrice: this.isViewMode()
+                                ? catalogue.discountedRetailBuyingPrice
+                                : String(catalogue.discountedRetailBuyingPrice).replace('.', ','),
+                            productPrice: this.isViewMode()
+                                ? catalogue.retailBuyingPrice
+                                : String(catalogue.retailBuyingPrice).replace('.', ',')
+                            // variants: this.fb.array([])
+                        },
+                        productMedia: {
+                            photos: [...catalogue.catalogueImages.map(image => image.imageUrl)],
+                            oldPhotos: [...catalogue.catalogueImages.map(image => image.imageUrl)]
+                        },
+                        productShipment: {
+                            catalogueWeight: catalogue.catalogueWeight,
+                            packagedWeight: catalogue.packagedWeight,
+                            catalogueDimension: catalogue.catalogueDimension,
+                            packagedDimension: catalogue.packagedDimension
+                            // isDangerous: [''],
+                            // couriers: this.fb.array([
+                            //     this.fb.control({
+                            //         name: 'SiCepat REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'JNE REG (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     }),
+                            //     this.fb.control({
+                            //         name: 'SiCepat Cargo (maks 5000g)',
+                            //         disabled: this.fb.control(false)
+                            //     })
+                            // ])
+                        },
+                        productCount: {
+                            qtyPerMasterBox: catalogue.packagedQty,
+                            minQtyOption: catalogue.minQtyType,
+                            minQtyValue: catalogue.minQty,
+                            additionalQtyOption: catalogue.multipleQtyType,
+                            additionalQtyValue: catalogue.multipleQty
                         }
                     });
-                }
-            });
 
-            if (this.isViewMode()) {
-                this.form.get('productInfo.unlimitedStock').disable();
-            } else {
-                this.form.get('productInfo.unlimitedStock').enable();
-            }
-
-            if (catalogue.unlimitedStock) {
-                this.form.get('productInfo.stock').disable();
-            } else {
-                this.form.get('productInfo.stock').enable();
-            }
-
-            setTimeout(() => { this.form.get('productInfo.information').setValue(''); this._cd.markForCheck(); }, 100);
-            setTimeout(() => { this.form.get('productInfo.information').setValue(catalogue.detail); this._cd.markForCheck(); }, 150);
-
-            /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Minimum Quantity Order. */
-            if (catalogue.minQtyType !== 'custom') {
-                this.form.get('productCount.minQtyValue').disable();
-            } else {
-                this.form.get('productCount.minQtyValue').enable();
-            }
-
-            /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Additional Quantity. */
-            if (catalogue.multipleQtyType !== 'custom') {
-                this.form.get('productCount.additionalQtyValue').disable();
-            } else {
-                this.form.get('productCount.additionalQtyValue').enable();
-            }
-
-            /** Menampilkan foto produk pada form beserta menyimpannya di form invisible untuk sewaktu-waktu ingin undo penghapusan foto. */
-            for (const [idx, image] of catalogue.catalogueImages.entries()) {
-                this.productPhotos.controls[idx].setValue(image.imageUrl);
-                this.productOldPhotos.controls[idx].get('id').setValue(image.id);
-                this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
-            }
-
-            if (isNaN(catalogue.lastCatalogueCategoryId) || !catalogue.lastCatalogueCategoryId) {
-                /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
-                this.store.dispatch(CatalogueActions.resetSelectedCategories());
-            } else {
-                /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
-                const newCategories = [];
-                let isFirst = true;
-                do {
-                    if (isFirst) {
-                        newCategories.push(searchCategory(catalogue.lastCatalogueCategoryId, categories));
-                        isFirst = false;
-                    } else {
-                        const lastCategory = newCategories[newCategories.length - 1];
-                        newCategories.push(searchCategory(lastCategory.parent, categories));
+                    const uom = this.form.get('productInfo.uom').value;
+                    const selectedUnit = units.filter(unit => unit.id === uom);
+                    if (selectedUnit.length > 0) {
+                        this.form.patchValue({
+                            productInfo: {
+                                uomName: selectedUnit[0].unit
+                            }
+                        });
                     }
-                } while (newCategories[newCategories.length - 1].parent);
+                });
 
+                if (this.isViewMode()) {
+                    this.form.get('productInfo.unlimitedStock').disable();
+                } else {
+                    this.form.get('productInfo.unlimitedStock').enable();
+                }
 
-                this.store.dispatch(CatalogueActions.setSelectedCategories({
-                    payload: [
-                        ...newCategories.reverse().map(newCat => ({ id: newCat.id, name: newCat.name, parent: newCat.parent, hasChildren: (newCat.children.length > 0) }))
-                    ]
-                }));
-            }
+                if (catalogue.unlimitedStock) {
+                    this.form.get('productInfo.stock').disable();
+                } else {
+                    this.form.get('productInfo.stock').enable();
+                }
 
-            /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
-            this.form.markAsDirty({ onlySelf: false });
-            this.form.markAllAsTouched();
-            this.form.markAsPristine();
-        });
+                setTimeout(() => {
+                    this.form.get('productInfo.information').setValue('');
+                    this._cd.markForCheck();
+                }, 100);
+                setTimeout(() => {
+                    this.form.get('productInfo.information').setValue(catalogue.detail);
+                    this._cd.markForCheck();
+                }, 150);
+
+                /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Minimum Quantity Order. */
+                if (catalogue.minQtyType !== 'custom') {
+                    this.form.get('productCount.minQtyValue').disable();
+                } else {
+                    this.form.get('productCount.minQtyValue').enable();
+                }
+
+                /** Hanya opsi 'custom' yang diperbolehkan mengisi input pada Additional Quantity. */
+                if (catalogue.multipleQtyType !== 'custom') {
+                    this.form.get('productCount.additionalQtyValue').disable();
+                } else {
+                    this.form.get('productCount.additionalQtyValue').enable();
+                }
+
+                /** Menampilkan foto produk pada form beserta menyimpannya di form invisible untuk sewaktu-waktu ingin undo penghapusan foto. */
+                for (const [idx, image] of catalogue.catalogueImages.entries()) {
+                    this.productPhotos.controls[idx].setValue(image.imageUrl);
+                    this.productOldPhotos.controls[idx].get('id').setValue(image.id);
+                    this.productOldPhotos.controls[idx].get('value').setValue(image.imageUrl);
+                }
+
+                if (
+                    isNaN(catalogue.lastCatalogueCategoryId) ||
+                    !catalogue.lastCatalogueCategoryId
+                ) {
+                    /** Kategori yang terpilih akan di-reset ulang jika katalog belum ditentukan kategorinya. */
+                    this.store.dispatch(CatalogueActions.resetSelectedCategories());
+                } else {
+                    /** Proses pengecekan urutan katalog dari paling dalam hingga terluar. */
+                    const newCategories = [];
+                    let isFirst = true;
+                    do {
+                        if (isFirst) {
+                            newCategories.push(
+                                searchCategory(catalogue.lastCatalogueCategoryId, categories)
+                            );
+                            isFirst = false;
+                        } else {
+                            const lastCategory = newCategories[newCategories.length - 1];
+                            newCategories.push(searchCategory(lastCategory.parent, categories));
+                        }
+                    } while (newCategories[newCategories.length - 1].parent);
+
+                    this.store.dispatch(
+                        CatalogueActions.setSelectedCategories({
+                            payload: [
+                                ...newCategories.reverse().map(newCat => ({
+                                    id: newCat.id,
+                                    name: newCat.name,
+                                    parent: newCat.parent,
+                                    hasChildren: newCat.children.length > 0
+                                }))
+                            ]
+                        })
+                    );
+                }
+
+                /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
+                this.form.markAsDirty({ onlySelf: false });
+                this.form.markAllAsTouched();
+                this.form.markAsPristine();
+            });
     }
 
     onAddVariant(): void {
@@ -1157,9 +1340,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         );
 
         this.productVariantSelectionData.push(
-            new MatTableDataSource(
-                (this.productVariantControls[$index - 1] as FormArray).controls
-            )
+            new MatTableDataSource((this.productVariantControls[$index - 1] as FormArray).controls)
         );
         // console.log(this.productVariants);
         // console.log(this.form.get('productSale.variants'));
@@ -1179,7 +1360,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
                 photo.patchValue(fileReader.result);
                 this.form.markAsTouched();
                 this._cd.markForCheck();
-
             };
 
             fileReader.readAsDataURL(file);
@@ -1197,7 +1377,9 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     onResetImage(index: number): void {
         const originalImage = this.productOldPhotos.controls[index].get('value').value;
-        (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(originalImage);
+        (this.form.get('productMedia.photos') as FormArray).controls[index].patchValue(
+            originalImage
+        );
 
         this._cd.markForCheck();
     }
@@ -1214,9 +1396,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     onRemoveVariantSelection(_: Event, $variant: number, $index: number): void {
         (this.productVariantControls[$variant] as FormArray).removeAt($index);
-        if (
-            (this.productVariantControls[$variant] as FormArray).controls.length === 0
-        ) {
+        if ((this.productVariantControls[$variant] as FormArray).controls.length === 0) {
             this.productVariantFormControls.splice($variant, 1);
             this.productVariantControls.splice($variant, 1);
         }
@@ -1264,10 +1444,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
 
     hasError(form: any, args: any = {}): boolean {
         // console.log('check error');
-        const {
-            ignoreTouched,
-            ignoreDirty
-        } = args;
+        const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
             return !!form.errors;
@@ -1280,7 +1457,6 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
         if (ignoreTouched) {
             return form.errors && form.dirty;
         }
-
 
         return form.errors && (form.dirty || form.touched);
     }
@@ -1314,7 +1490,7 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
-            'fuse-white': this.isAddMode() || this.isEditMode(),
+            'fuse-white': this.isAddMode() || this.isEditMode()
         };
     }
 }

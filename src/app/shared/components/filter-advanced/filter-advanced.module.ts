@@ -1,9 +1,10 @@
-import { TitleCasePipe, CommonModule } from '@angular/common';
+import { CommonModule, TitleCasePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { FuseSharedModule } from '@fuse/shared.module';
+
 import { FilterAdvancedComponent } from './filter-advanced.component';
 
 @NgModule({

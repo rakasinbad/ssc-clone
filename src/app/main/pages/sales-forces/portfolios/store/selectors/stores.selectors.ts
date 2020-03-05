@@ -1,12 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 
-import {
-    fromStore,
-    mainFeatureKey,
-    CoreFeatureState,
-    CoreState,
-} from '../reducers';
-import { Store } from 'app/main/pages/attendances/models';
+import { CoreFeatureState, CoreState, fromStore, mainFeatureKey } from '../reducers';
 
 // Get state from the feature key.
 export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
@@ -30,59 +25,32 @@ export const getStoreEntity = createSelector(
     state => state[fromStore.featureKey]
 );
 
-export const getFilterEntity = createSelector(
-    getStoreEntity,
-    state => state.filter
-);
+export const getFilterEntity = createSelector(getStoreEntity, state => state.filter);
 
-export const getAllFilters = createSelector(
-    getFilterEntity,
-    selectAllFilters
-);
+export const getAllFilters = createSelector(getFilterEntity, selectAllFilters);
 
-export const getStoreTotalEntity = createSelector(
-    getStoreEntity,
-    selectStoreTotal
-);
+export const getStoreTotalEntity = createSelector(getStoreEntity, selectStoreTotal);
 
-export const getStoreEntityType = createSelector(
-    getStoreEntity,
-    state => state.type
-);
+export const getStoreEntityType = createSelector(getStoreEntity, state => state.type);
 
-export const getSelectedStoreIds = createSelector(
-    getStoreEntity,
-    state => state.selectedIds
-);
+export const getSelectedStoreIds = createSelector(getStoreEntity, state => state.selectedIds);
 
-export const getTotalStores = createSelector(
-    getStoreEntity,
-    state => state.total
-);
+export const getTotalStores = createSelector(getStoreEntity, state => state.total);
 
-export const getAllStores = createSelector(
-    getStoreEntity,
-    selectAllStores
-);
+export const getAllStores = createSelector(getStoreEntity, selectAllStores);
 
 export const getSelectedStore = createSelector(
     getStoreEntity,
     getSelectedStoreIds,
-    (stores, ids) => (stores[ids[0]] as Store)
+    (stores, ids) => stores[ids[0]] as Store
 );
 
 export const getSelectedStores = createSelector(
     getStoreEntity,
     getSelectedStoreIds,
-    (stores, ids) => ids ? ids.map(id => stores[id]) : ids
+    (stores, ids) => (ids ? ids.map(id => stores[id]) : ids)
 );
 
-export const getLoadingState = createSelector(
-    getStoreEntity,
-    state => state.isLoading
-);
+export const getLoadingState = createSelector(getStoreEntity, state => state.isLoading);
 
-export const getNeedRefreshState = createSelector(
-    getStoreEntity,
-    state => state.needRefresh
-);
+export const getNeedRefreshState = createSelector(getStoreEntity, state => state.needRefresh);

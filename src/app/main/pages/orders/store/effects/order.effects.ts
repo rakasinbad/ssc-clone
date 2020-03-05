@@ -1,4 +1,3 @@
-import { fetchCalculateOrdersFailure } from './../actions/order.actions';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
@@ -16,8 +15,8 @@ import {
     OrderBrandCatalogueApiService,
     UploadApiService
 } from 'app/shared/helpers';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { ErrorHandler } from 'app/shared/models';
+import { ChangeConfirmationComponent } from 'app/shared/modals';
+import { ErrorHandler } from 'app/shared/models/global.model';
 import { ProgressActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {

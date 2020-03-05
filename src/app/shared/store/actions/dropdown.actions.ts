@@ -1,21 +1,16 @@
 import { createAction, props } from '@ngrx/store';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
-import {
-    Cluster,
-    District,
-    GeoParameter,
-    Hierarchy,
-    IErrorHandler,
-    InvoiceGroup,
-    IQueryParams,
-    Province,
-    Role,
-    StoreGroup,
-    StoreSegment,
-    StoreType,
-    Urban,
-    VehicleAccessibility
-} from 'app/shared/models';
+import { Cluster } from 'app/shared/models/cluster.model';
+import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+import { GeoParameter, IErrorHandler } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { District, Province, Urban } from 'app/shared/models/location.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Role } from 'app/shared/models/role.model';
+import { StoreGroup } from 'app/shared/models/store-group.model';
+import { StoreSegment } from 'app/shared/models/store-segment.model';
+import { StoreType } from 'app/shared/models/store-type.model';
+import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
 // import { Account } from 'app/main/pages/accounts/models';
 // import { Role } from 'app/main/pages/roles/role.model';

@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -7,9 +8,12 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse, AnyAction, User } from 'app/shared/models';
+import { AnyAction } from 'app/shared/models/actions.model';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
 import { FormActions } from 'app/shared/store/actions';
-import { of, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
     catchError,
     exhaustMap,
@@ -20,12 +24,10 @@ import {
     withLatestFrom
 } from 'rxjs/operators';
 
-import { Association } from '../../models';
+import { Portfolio } from '../../../portfolios/models';
 import { AssociationApiService } from '../../services';
 import { AssociationActions, associationFailureActionNames } from '../actions';
 import * as fromAssociation from '../reducers';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Portfolio } from '../../../portfolios/models';
 
 @Injectable()
 export class AssociationEffects {
@@ -47,10 +49,11 @@ export class AssociationEffects {
             ofType(AssociationActions.createAssociationRequest),
             map(action => action.payload),
             switchMap(payload =>
-                this._$associationApi.createAssociation(payload)
-                .pipe(
+                this._$associationApi.createAssociation(payload).pipe(
                     catchOffline(),
-                    map(({ message }) => AssociationActions.createAssociationSuccess({ payload: { message } })),
+                    map(({ message }) =>
+                        AssociationActions.createAssociationSuccess({ payload: { message } })
+                    ),
                     catchError(err => this.sendErrorToState(err, 'createAssociationFailure')),
                     finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
                 )
@@ -58,41 +61,44 @@ export class AssociationEffects {
         )
     );
 
-    createAssociationSuccess$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(AssociationActions.createAssociationSuccess),
-            tap(() => {
-                // Memunculkan notifikasi
-                this._$notice.open('Berhasil menambah portfolio ke Sales Rep.', 'success', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
+    createAssociationSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AssociationActions.createAssociationSuccess),
+                tap(() => {
+                    // Memunculkan notifikasi
+                    this._$notice.open('Berhasil menambah portfolio ke Sales Rep.', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                // Kembali ke halaman association.
-                this.router.navigate(['/pages/sales-force/associations']);
-            })
-        )
-    , { dispatch: false });
+                    // Kembali ke halaman association.
+                    this.router.navigate(['/pages/sales-force/associations']);
+                })
+            ),
+        { dispatch: false }
+    );
 
     fetchAssociationsRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(AssociationActions.fetchAssociationsRequest),
             map(action => action.payload),
             switchMap(payload =>
-                this._$associationApi
-                    .findAssociations<PaginateResponse<Portfolio>>(payload)
-                    .pipe(
-                        catchOffline(),
-                        map(response =>
-                            AssociationActions.fetchAssociationsSuccess({
-                                payload: {
-                                    data: response.data.map(resp => new Portfolio({... resp, storeQty: resp['storeAmount'] })),
-                                    total: response.total
-                                },
-                            })
-                        ),
-                        catchError(err => this.sendErrorToState(err, 'fetchAssociationsFailure'))
-                    )
+                this._$associationApi.findAssociations<PaginateResponse<Portfolio>>(payload).pipe(
+                    catchOffline(),
+                    map(response =>
+                        AssociationActions.fetchAssociationsSuccess({
+                            payload: {
+                                data: response.data.map(
+                                    resp =>
+                                        new Portfolio({ ...resp, storeQty: resp['storeAmount'] })
+                                ),
+                                total: response.total
+                            }
+                        })
+                    ),
+                    catchError(err => this.sendErrorToState(err, 'fetchAssociationsFailure'))
+                )
             )
         )
     );
@@ -194,27 +200,36 @@ export class AssociationEffects {
         { dispatch: false }
     );
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: associationFailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: associationFailureActionNames
+    ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
-            return of(AssociationActions[dispatchTo]({
-                payload: err
-            }));
-        }
-        
-        if (err instanceof HttpErrorResponse) {
-            return of(AssociationActions[dispatchTo]({
-                payload: {
-                    id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                    errors: err.toString()
-                }
-            }));
+            return of(
+                AssociationActions[dispatchTo]({
+                    payload: err
+                })
+            );
         }
 
-        return of(AssociationActions[dispatchTo]({
-            payload: {
-                id: `ERR_UNRECOGNIZED`,
-                errors: err.toString()
-            }
-        }));
-    }
+        if (err instanceof HttpErrorResponse) {
+            return of(
+                AssociationActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                        errors: err.toString()
+                    }
+                })
+            );
+        }
+
+        return of(
+            AssociationActions[dispatchTo]({
+                payload: {
+                    id: `ERR_UNRECOGNIZED`,
+                    errors: err.toString()
+                }
+            })
+        );
+    };
 }

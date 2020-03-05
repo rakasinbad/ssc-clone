@@ -1,15 +1,14 @@
 import {
+    AfterViewInit,
     Component,
     Input,
     OnChanges,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
-    AfterViewInit,
-    AfterViewChecked
+    ViewEncapsulation
 } from '@angular/core';
-import { MatMenuTrigger, MatMenu } from '@angular/material/menu';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
     selector: 'app-filters',

@@ -1,39 +1,33 @@
 import {
-    ChangeDetectionStrategy,
-    Component,
-    OnInit,
-    ViewEncapsulation,
-    ChangeDetectorRef,
-    ViewChild,
-    ElementRef,
     AfterViewInit,
-    OnDestroy
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { MatInput } from '@angular/material';
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { GeneratorService, ErrorMessageService } from 'app/shared/helpers';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService } from 'app/shared/helpers';
 import { UiActions } from 'app/shared/store/actions';
-import { merge, Observable, Subject, Subscription, combineLatest } from 'rxjs';
-import { map, takeUntil, distinctUntilChanged, debounceTime, tap } from 'rxjs/operators';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-import { statusCatalogue } from '../status';
+import { CatalogueCategory } from '../models';
 import { CatalogueActions } from '../store/actions';
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
-import { CatalogueCategory } from '../models';
-import { MatTableDataSource } from '@angular/material';
-
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 interface CatalogueCategoryFlatNode {
     expandable: boolean;

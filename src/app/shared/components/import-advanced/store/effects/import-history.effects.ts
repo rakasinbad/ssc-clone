@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchOffline } from '@ngx-pwa/offline';
 import { ImportLogApiService } from 'app/shared/helpers';
-import { ErrorHandler, PaginateResponse } from 'app/shared/models';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
 import { IImportLog, ImportLog } from '../../models';
 import { ImportHistroyActions } from '../actions';
-import { catchOffline } from '@ngx-pwa/offline';
 
 @Injectable()
 export class ImportHistoryEffects {

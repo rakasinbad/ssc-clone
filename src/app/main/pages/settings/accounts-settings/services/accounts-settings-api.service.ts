@@ -1,13 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
-import {
-    UpdateUser,
-    User as PureUser
-} from '../models';
+import { UpdateUser, User as PureUser } from '../models';
 
 interface IUserResponseUpdatePassword {
     success: boolean;
@@ -22,7 +18,6 @@ class User extends PureUser {
     providedIn: 'root'
 })
 export class AccountsSettingsApiService {
-    
     /**
      *
      *
@@ -46,10 +41,7 @@ export class AccountsSettingsApiService {
      * @param {HttpClient} http
      * @memberof CreditLimitBalanceApiService
      */
-    constructor(
-        private http: HttpClient,
-        private _$helper: HelperService,
-    ) {}
+    constructor(private http: HttpClient, private _$helper: HelperService) {}
 
     getUser(userId: string): Observable<PureUser> {
         this._url = this._$helper.handleApiRouter(this._userEndpoint);
@@ -61,7 +53,10 @@ export class AccountsSettingsApiService {
         return this.http.patch<PureUser>(String(this._url).concat(userId), data);
     }
 
-    updatePassword(userId: string, data: Partial<UpdateUser>): Observable<IUserResponseUpdatePassword> {
+    updatePassword(
+        userId: string,
+        data: Partial<UpdateUser>
+    ): Observable<IUserResponseUpdatePassword> {
         this._url = this._$helper.handleApiRouter(this._changePasswordEndpoint);
         return this.http.patch<IUserResponseUpdatePassword>(String(this._url).concat(userId), data);
     }

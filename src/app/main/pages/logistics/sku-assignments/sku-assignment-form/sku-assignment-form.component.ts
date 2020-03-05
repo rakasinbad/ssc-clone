@@ -1,15 +1,15 @@
 import {
+    ChangeDetectionStrategy,
     Component,
-    OnInit,
     OnDestroy,
-    ViewEncapsulation,
-    ChangeDetectionStrategy
+    OnInit,
+    ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
-import { IBreadcrumbs } from 'app/shared/models';
-import { UiActions, FormActions } from 'app/shared/store/actions';
+import { Store as NgRxStore } from '@ngrx/store';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 
 import { fromSkuAssignments } from '../store/reducers';
 

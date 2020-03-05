@@ -4,11 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseConfigService } from '@fuse/services/config.service';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
-import { LifecyclePlatform, Role, User } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { Role } from 'app/shared/models/role.model';
+import { User } from 'app/shared/models/user.model';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import * as _ from 'lodash';
@@ -22,7 +24,6 @@ import { StoreActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors } from '../store/selectors';
 
-// import { Role } from 'app/main/pages/roles/role.model';
 @Component({
     selector: 'app-merchant-employee',
     templateUrl: './merchant-employee.component.html',

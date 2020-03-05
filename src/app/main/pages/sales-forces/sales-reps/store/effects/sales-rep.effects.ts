@@ -9,7 +9,8 @@ import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { ErrorHandler, EStatus, IQueryParams, PaginateResponse } from 'app/shared/models';
+import { ErrorHandler, EStatus, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {

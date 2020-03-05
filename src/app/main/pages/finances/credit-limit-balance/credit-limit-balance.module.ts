@@ -3,6 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
@@ -15,7 +16,6 @@ import { CreditStoreFormComponent } from './credit-store-form/credit-store-form.
 import { CreditStoresComponent } from './credit-stores/credit-stores.component';
 import { CreditLimitBalanceEffects } from './store/effects';
 import { fromCreditLimitBalance } from './store/reducers';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 
 /**
  *

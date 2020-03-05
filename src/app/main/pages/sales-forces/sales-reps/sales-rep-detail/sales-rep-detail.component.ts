@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { Observable } from 'rxjs';
 

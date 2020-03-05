@@ -1,11 +1,12 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
 import {
-    fromStore,
     featureKey as mainFeatureKey,
     FeatureState as CoreFeatureState,
-    State as CoreState,
+    fromStore,
+    State as CoreState
 } from '../reducers';
+
 // import { Store } from 'app/shared/models';
 
 // Get state from the feature key.
@@ -28,22 +29,13 @@ export const {
 //     selectStoreTotal
 // );
 
-export const getTotalStores = createSelector(
-    getStoreEntity,
-    state => state.total
-);
+export const getTotalStores = createSelector(getStoreEntity, state => state.total);
 
 // export const getAllStores = createSelector(
 //     getStoreEntity,
 //     selectAllStores
 // );
 
-export const getLoadingState = createSelector(
-    getStoreEntity,
-    state => state.isLoading
-);
+export const getLoadingState = createSelector(getStoreEntity, state => state.isLoading);
 
-export const getNeedRefreshState = createSelector(
-    getStoreEntity,
-    state => state.needRefresh
-);
+export const getNeedRefreshState = createSelector(getStoreEntity, state => state.needRefresh);

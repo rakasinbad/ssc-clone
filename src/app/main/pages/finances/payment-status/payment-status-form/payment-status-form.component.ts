@@ -10,7 +10,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
+import { ChangeConfirmationComponent } from 'app/shared/modals';
 import * as moment from 'moment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { Subject } from 'rxjs';

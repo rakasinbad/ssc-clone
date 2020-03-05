@@ -1,8 +1,15 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Inject } from '@angular/core';
-import { fuseAnimations } from '@fuse/animations';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Inject,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material';
+import { fuseAnimations } from '@fuse/animations';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+
 import { IPortfolioAddForm } from '../../models/portfolios.model';
-import { Store } from '../../models';
 
 @Component({
     selector: 'app-portfolios-conflict-stores',
@@ -13,18 +20,12 @@ import { Store } from '../../models';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortfoliosConflictStoresComponent implements OnInit {
-
-    displayedColumns: Array<string> = [
-        'storeCode',
-        'storeName',
-        'portfolioCode',
-        'portfolioName'
-    ];
+    displayedColumns: Array<string> = ['storeCode', 'storeName', 'portfolioCode', 'portfolioName'];
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: { formData: IPortfolioAddForm; conflictStores: Array<Store> }
-    ) { }
+        @Inject(MAT_DIALOG_DATA)
+        public data: { formData: IPortfolioAddForm; conflictStores: Array<Store> }
+    ) {}
 
     ngOnInit(): void {}
-
 }

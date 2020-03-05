@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { WarehouseValue } from 'app/shared/models';
+import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
 import { WarehouseValueActions } from 'app/shared/store/actions';
 
 // Keyname for reducer

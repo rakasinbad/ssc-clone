@@ -1,4 +1,6 @@
-import { ITimestamp, TNullable, User } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 import { JourneyPlanSales } from './journey-plan-sales.model';
 

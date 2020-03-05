@@ -1,6 +1,6 @@
 import { TNullable, TStatus } from './global.model';
+import { Urban } from './location.model';
 import { ITimestamp, Timestamp } from './timestamp.model';
-import { Urban } from './urban.model';
 
 interface IBrand extends ITimestamp {
     id: string;

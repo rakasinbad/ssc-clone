@@ -1,28 +1,11 @@
 import {
-    Component,
-    OnInit,
-    ViewEncapsulation,
     ChangeDetectionStrategy,
+    Component,
     OnDestroy,
-    AfterViewInit,
-    SecurityContext,
-    ViewChild,
-    ViewChildren,
-    ElementRef,
-    HostListener
+    OnInit,
+    ViewEncapsulation
 } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-import { Observable, Subject, combineLatest, of } from 'rxjs';
-import { Store as NgRxStore } from '@ngrx/store';
-
-import { IQueryParams } from 'app/shared/models';
-import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
-import { FormControl } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { environment } from 'environments/environment';
-import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
-import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-find-location',

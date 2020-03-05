@@ -1,59 +1,34 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
-    AfterViewInit
+    ViewEncapsulation
 } from '@angular/core';
-import { environment } from '../../../../../environments/environment';
 import { MatPaginator, MatSort } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store as NgRxStore } from '@ngrx/store';
-import { IQueryParams, Role } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
-import * as moment from 'moment';
-import { Observable, Subject, merge, combineLatest } from 'rxjs';
-import { distinctUntilChanged, map, takeUntil, tap, withLatestFrom, filter } from 'rxjs/operators';
-
-// import { StoreCatalogue } from '../models';
-
-import { locale as english } from '../i18n/en';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 import { locale as indonesian } from 'app/navigation/i18n/id';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UiActions } from 'app/shared/store/actions';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 
-/**
- * ACTIONS
- */
-import {
-    StoreCatalogueActions,
-} from '../store/actions';
-
-/**
- * REDUCERS
- */
-import {
-    fromStoreCatalogue,
-} from '../store/reducers';
-
-/**
- * SELECTORS
- */
-import {
-    StoreCatalogueSelectors,
-} from '../store/selectors';
-// import { StoreSelectors } from '../../accounts/merchants/store/selectors';
-import { MerchantSelectors } from '../../attendances/store/selectors';
-import { MerchantActions } from '../../attendances/store/actions';
+import { environment } from '../../../../../environments/environment';
 import { fromMerchant } from '../../accounts/merchants/store/reducers';
-import { Store, Catalogue } from '../models';
-import { StoreHistoryInventory } from '../models/store-catalogue.model';
+import { Catalogue } from '../../catalogues/models';
 import { fromCatalogue } from '../../catalogues/store/reducers';
-import { CatalogueActions } from '../../catalogues/store/actions';
-import { CatalogueSelectors } from '../../catalogues/store/selectors';
 import { AuthSelectors } from '../../core/auth/store/selectors';
+import { locale as english } from '../i18n/en';
+import { StoreHistoryInventory } from '../models/store-catalogue.model';
+import { StoreCatalogueActions } from '../store/actions';
+import { fromStoreCatalogue } from '../store/reducers';
+import { StoreCatalogueSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-catalogue-detail',
@@ -92,7 +67,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         'condition',
         'employeeName',
         'role',
-        'date',
+        'date'
         // 'actions',
     ];
 
@@ -117,7 +92,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         private _fromCatalogue: NgRxStore<fromCatalogue.FeatureState>,
         private _fromMerchant: NgRxStore<fromMerchant.FeatureState>,
         private _fromStoreCatalogue: NgRxStore<fromStoreCatalogue.FeatureState>,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         /** Ambil dari URL. */
         this.storeCatalogueId = this.route.snapshot.params.id;
@@ -126,8 +101,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',
@@ -158,15 +133,14 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.paginator.pageSize = environment.pageSize;
 
         /** Mendapatkan status loading dari Store Catalogue Histories. */
-        this.isHistoryLoading$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getIsLoading)
-            .pipe(
-                takeUntil(this._unSubs$)
-            );
+        this.isHistoryLoading$ = this._fromStoreCatalogue
+            .select(StoreCatalogueSelectors.getIsLoading)
+            .pipe(takeUntil(this._unSubs$));
 
-        this._fromStoreCatalogue.select(StoreCatalogueSelectors.getAllCatalogueHistory)
-            .pipe(
-                takeUntil(this._unSubs$)
-            ).subscribe(histories => {
+        this._fromStoreCatalogue
+            .select(StoreCatalogueSelectors.getAllCatalogueHistory)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(histories => {
                 if (histories.length > 0) {
                     this.catalogueHistories = histories;
                 }
@@ -175,12 +149,12 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         combineLatest([
             this._fromStoreCatalogue.select(StoreCatalogueSelectors.getAllStoreCatalogue),
             this._fromStoreCatalogue.select(StoreCatalogueSelectors.getSelectedStoreCatalogue)
-        ]).pipe(
-                withLatestFrom(
-                    this._fromStoreCatalogue.select(AuthSelectors.getUserSupplier)
-                ),
+        ])
+            .pipe(
+                withLatestFrom(this._fromStoreCatalogue.select(AuthSelectors.getUserSupplier)),
                 takeUntil(this._unSubs$)
-            ).subscribe(([[storeCatalogues, selectedStoreCatalogue], userSupplier]) => {
+            )
+            .subscribe(([[storeCatalogues, selectedStoreCatalogue], userSupplier]) => {
                 /** Jika tidak ada data user supplier di state. */
                 if (!userSupplier) {
                     return this._fromStoreCatalogue.dispatch(
@@ -198,34 +172,41 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     /** Ambil dari URL. */
                     this.storeCatalogueId = this.route.snapshot.params.id;
                     /** Mengambil data Store Catalogue dari state. */
-                    const cachedStoreCatalogue = storeCatalogues.filter(sc => sc.id === this.storeCatalogueId)[0];
+                    const cachedStoreCatalogue = storeCatalogues.filter(
+                        sc => sc.id === this.storeCatalogueId
+                    )[0];
 
                     /** Jika belum ada, maka lakukan request dan masukkan ke dalam state. */
                     if (!cachedStoreCatalogue) {
                         return this._fromStoreCatalogue.dispatch(
-                            StoreCatalogueActions.fetchStoreCatalogueRequest({ payload: this.storeCatalogueId })
+                            StoreCatalogueActions.fetchStoreCatalogueRequest({
+                                payload: this.storeCatalogueId
+                            })
                         );
                     } else {
                         /** Set seleectedStoreCatalogue berdasarkan ID dari URL. */
                         return this._fromStoreCatalogue.dispatch(
-                            StoreCatalogueActions.setSelectedStoreCatalogue({ payload: this.storeCatalogueId })
+                            StoreCatalogueActions.setSelectedStoreCatalogue({
+                                payload: this.storeCatalogueId
+                            })
                         );
                     }
                 } else {
                     /** Mengambil ID Supplier dari Store Catalogue yang terpilih. */
-                    const selectedSupplierStore = selectedStoreCatalogue.store.supplierStores
-                                                .filter(supplierStore => supplierStore.supplierId === userSupplier.supplierId);
+                    const selectedSupplierStore = selectedStoreCatalogue.store.supplierStores.filter(
+                        supplierStore => supplierStore.supplierId === userSupplier.supplierId
+                    );
 
                     /** Jika Store Catalogue yang terpilih tidak sesuai dengan ID Supplier user-nya, maka tidak diperbolehkan untuk melihatnya. */
                     if (selectedSupplierStore.length === 0) {
                         return this._fromStoreCatalogue.dispatch(
-                                StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
+                            StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure({
                                 payload: {
                                     id: 'fetchStoreCatalogueHistoriesFailure',
                                     errors: 'Not found'
                                 }
-                            }
-                        ));
+                            })
+                        );
                     }
 
                     this.selectedStore = selectedStoreCatalogue.store;
@@ -235,10 +216,9 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             });
 
         /** Mendapatkan jumlah aktivitas karyawan dari store yang telah dipilih. */
-        this.totalCatalogueHistories$ = this._fromStoreCatalogue.select(StoreCatalogueSelectors.getTotalCatalogueHistory)
-            .pipe(
-                takeUntil(this._unSubs$)
-            );
+        this.totalCatalogueHistories$ = this._fromStoreCatalogue
+            .select(StoreCatalogueSelectors.getTotalCatalogueHistory)
+            .pipe(takeUntil(this._unSubs$));
     }
 
     ngAfterViewInit(): void {

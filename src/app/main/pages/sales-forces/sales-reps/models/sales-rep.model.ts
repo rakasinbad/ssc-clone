@@ -1,4 +1,7 @@
-import { EStatus, ITimestamp, Supplier, TNullable, User } from 'app/shared/models';
+import { EStatus, TNullable } from 'app/shared/models/global.model';
+import { Supplier } from 'app/shared/models/supplier.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 export interface ISalesRep extends ITimestamp {
     readonly id: NonNullable<string>;

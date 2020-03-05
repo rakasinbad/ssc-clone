@@ -1,9 +1,9 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { Store as Merchant } from '../../models';
 import { MerchantActions } from '../actions';
 
 export const FEATURE_KEY = 'merchants';

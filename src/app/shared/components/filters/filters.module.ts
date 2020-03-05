@@ -5,6 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSelectModule } from '@angular/material/select';
 import { FuseSharedModule } from '@fuse/shared.module';
+
 import { FiltersComponent } from './filters.component';
 
 @NgModule({

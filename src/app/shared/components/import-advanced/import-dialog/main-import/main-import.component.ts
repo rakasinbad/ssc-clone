@@ -12,7 +12,7 @@ import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { LifecyclePlatform } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, withLatestFrom } from 'rxjs/operators';
 

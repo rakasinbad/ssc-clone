@@ -1,6 +1,5 @@
-import { DeleteConfirmationComponent } from './../../../../../../shared/modals/delete-confirmation/delete-confirmation.component';
-import { sortBy } from 'lodash';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
@@ -8,15 +7,17 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import * as fromRoot from 'app/store/app.reducer';
+import { sortBy } from 'lodash';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { StorePortfolio } from '../../models';
 import { JourneyPlanStoreApiService } from '../../services';
 import { JourneyPlanStoreActions, JourneyPlanStoreSelectedActions } from '../actions';
-import { MatDialog } from '@angular/material';
+import { DeleteConfirmationComponent } from './../../../../../../shared/modals/delete-confirmation/delete-confirmation.component';
+import { ErrorHandler, PaginateResponse } from './../../../../../../shared/models/global.model';
 
 @Injectable()
 export class JourneyPlanStoreEffects {

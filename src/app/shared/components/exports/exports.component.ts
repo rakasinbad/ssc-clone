@@ -1,16 +1,26 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, ViewChild, SecurityContext } from '@angular/core';
-import { fuseAnimations } from '@fuse/animations';
-import { environment } from 'environments/environment';
-import { Export } from './models/exports.model';
-import { User, UserStatus, IQueryParams } from 'app/shared/models';
-import { Subject, Observable } from 'rxjs';
-import { Store as NgRxStore } from '@ngrx/store';
-import { fromExport } from './store/reducers';
-import { ExportActions } from './store/actions';
-import { ExportSelector } from './store/selectors';
-import { takeUntil } from 'rxjs/operators';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    SecurityContext,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import { MatPaginator } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { fuseAnimations } from '@fuse/animations';
+import { Store as NgRxStore } from '@ngrx/store';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { environment } from 'environments/environment';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { Export } from './models/exports.model';
+import { ExportActions } from './store/actions';
+import { fromExport } from './store/reducers';
+import { ExportSelector } from './store/selectors';
 
 @Component({
     selector: 'sinbad-export',
@@ -21,7 +31,6 @@ import { DomSanitizer } from '@angular/platform-browser';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExportsComponent implements OnInit, OnDestroy {
-
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -77,7 +86,7 @@ export class ExportsComponent implements OnInit, OnDestroy {
     constructor(
         private readonly sanitizer: DomSanitizer,
         private exportStore: NgRxStore<fromExport.State>,
-        private _cd: ChangeDetectorRef,
+        private _cd: ChangeDetectorRef
     ) {
         this.isLoading$ = this.exportStore.select(ExportSelector.getLoadingState);
         this.totalDataSource$ = this.exportStore.select(ExportSelector.getTotalExports);
@@ -101,10 +110,12 @@ export class ExportsComponent implements OnInit, OnDestroy {
             if (this.search) {
                 data['keyword'] = this.search;
             }
-    
-            this.exportStore.dispatch(ExportActions.fetchExportLogsRequest({
-                payload: data
-            }));
+
+            this.exportStore.dispatch(
+                ExportActions.fetchExportLogsRequest({
+                    payload: data
+                })
+            );
         }
     }
 
@@ -122,18 +133,15 @@ export class ExportsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.exportStore.select(ExportSelector.getAllExports)
-            .pipe(
-                takeUntil(this.subs$)
-            ).subscribe(logs => {
+        this.exportStore
+            .select(ExportSelector.getAllExports)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(logs => {
                 this.dataSource = logs;
                 this._cd.markForCheck();
             });
 
-        this.paginator.page
-        .pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
+        this.paginator.page.pipe(takeUntil(this.subs$)).subscribe(() => {
             this.exportStore.dispatch(ExportActions.truncateExportLogs());
             // this.refreshTable();
             setTimeout(() => this.refreshTable(), 100);
@@ -150,5 +158,4 @@ export class ExportsComponent implements OnInit, OnDestroy {
         this.exportStore.dispatch(ExportActions.setExportPage({ payload: '' }));
         this.exportStore.dispatch(ExportActions.truncateExportLogs());
     }
-
 }

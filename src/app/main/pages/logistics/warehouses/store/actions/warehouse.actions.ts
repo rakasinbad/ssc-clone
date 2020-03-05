@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { PayloadWarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
 
 import { Warehouse } from '../../models';
 
@@ -73,10 +75,29 @@ export const updateWarehouseFailure = createAction(
 
 export const updateWarehouseSuccess = createAction('[Warehouses] Update Warehouse Success');
 
+// -----------------------------------------------------------------------------------------------------
+// [HELPER] Warehouse Confirmation Change Invoice
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmationChangeInvoiceRequest = createAction(
+    '[Warehouses Update] Confirmation Change Invoice Request',
+    props<{ payload: PayloadWarehouseConfirmation }>()
+);
+
+export const confirmationChangeInvoiceFailure = createAction(
+    '[Warehouses Update] Confirmation Change Invoice Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const confirmationChangeInvoiceSuccess = createAction(
+    '[Warehouses Update] Confirmation Change Invoice Success'
+);
+
 export const clearState = createAction('[Warehouses] Reset Core State');
 
 export type FailureActions =
     | 'fetchWarehousesFailure'
     | 'fetchWarehouseFailure'
     | 'createWarehouseFailure'
-    | 'updateWarehouseFailure';
+    | 'updateWarehouseFailure'
+    | 'confirmationChangeInvoiceFailure';

@@ -9,9 +9,10 @@ import * as jwt_decode from 'jwt-decode';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { ErrorHandler, TNullable, User } from '../models';
 import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
+import { TNullable, ErrorHandler } from '../models/global.model';
+import { User } from '../models/user.model';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -547,12 +548,10 @@ export class HelperService {
         return this.storage.get<Auth>('user').pipe(
             map((userAuth: Auth) => {
                 if (!userAuth) {
-                    throwError(
-                        new ErrorHandler({
-                            id: 'ERR_NO_TOKEN',
-                            errors: `Token found: ${userAuth.token}`
-                        })
-                    );
+                    throw new ErrorHandler({
+                        id: 'ERR_NO_TOKEN',
+                        errors: `Token found: ${userAuth.token}`
+                    });
                 } else {
                     try {
                         let userData: User;

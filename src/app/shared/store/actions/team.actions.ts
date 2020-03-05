@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams, Team } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Team } from 'app/shared/models/team.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Autocomplete [Teams]

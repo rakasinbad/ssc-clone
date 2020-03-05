@@ -1,24 +1,24 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
+    ElementRef,
     Inject,
     OnInit,
-    ViewEncapsulation,
     ViewChild,
-    ElementRef,
-    ChangeDetectorRef
+    ViewEncapsulation
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { fromCatalogue } from '../store/reducers';
-import { CataloguesService } from '../services';
-import { CatalogueActions } from '../store/actions';
-import { Subject, Observable } from 'rxjs';
-import { CatalogueSelectors } from '../store/selectors';
-import { takeUntil } from 'rxjs/operators';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { CatalogueActions } from '../store/actions';
+import { fromCatalogue } from '../store/reducers';
+import { CatalogueSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-catalogues-import',
@@ -28,7 +28,6 @@ import { ErrorMessageService } from 'app/shared/helpers';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesImportComponent implements OnInit {
-
     subs: Subject<void>;
     form: FormGroup;
     isBlocking = false;
@@ -47,29 +46,35 @@ export class CataloguesImportComponent implements OnInit {
     ngOnInit(): void {
         this.subs = new Subject<void>();
         this.form = this.formBuilder.group({
-        //   limit: [''],
-        //   balance: [''],
-        //   top: ['']
-            file: ['', [
+            //   limit: [''],
+            //   balance: [''],
+            //   top: ['']
+            file: [
+                '',
+                [
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required'),
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     }),
                     RxwebValidators.extension({
                         extensions: ['csv'],
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'mismatch_extension', { extensions: ['csv'] }),
-                    }),
-                ]],
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'mismatch_extension',
+                            { extensions: ['csv'] }
+                        )
+                    })
+                ]
+            ],
             fileName: [{ value: '', disabled: true }]
         });
 
-        this.store.select(
-            CatalogueSelectors.getIsLoading
-        ).pipe(
-            takeUntil(this.subs)
-        ).subscribe(status => {
-            this.isBlocking = !!status;
-            this._cd.markForCheck();
-        });
+        this.store
+            .select(CatalogueSelectors.getIsLoading)
+            .pipe(takeUntil(this.subs))
+            .subscribe(status => {
+                this.isBlocking = !!status;
+                this._cd.markForCheck();
+            });
     }
 
     onFileBrowse($event: Event): void {
@@ -82,7 +87,8 @@ export class CataloguesImportComponent implements OnInit {
 
             fileReader.onload = () => {
                 this.form.patchValue({
-                    file, fileName: file.name
+                    file,
+                    fileName: file.name
                 });
                 this.form.markAsTouched();
                 this._cd.markForCheck();
@@ -101,10 +107,7 @@ export class CataloguesImportComponent implements OnInit {
 
     hasError(form: any, args: any = {}): boolean {
         // console.log('check error');
-        const {
-            ignoreTouched,
-            ignoreDirty
-        } = args;
+        const { ignoreTouched, ignoreDirty } = args;
 
         if (ignoreTouched && ignoreDirty) {
             return !!form.errors;
@@ -118,7 +121,6 @@ export class CataloguesImportComponent implements OnInit {
             return form.errors && form.dirty;
         }
 
-
         return form.errors && (form.dirty || form.touched);
     }
 
@@ -127,11 +129,13 @@ export class CataloguesImportComponent implements OnInit {
     }
 
     submit(): void {
-        this.store.dispatch(CatalogueActions.importCataloguesRequest({
-            payload: {
-                file: this.form.get('file').value,
-                type: 'update_current_stock'
-            }
-        }));
+        this.store.dispatch(
+            CatalogueActions.importCataloguesRequest({
+                payload: {
+                    file: this.form.get('file').value,
+                    type: 'update_current_stock'
+                }
+            })
+        );
     }
 }

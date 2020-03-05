@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
 import { ExportConfiguration } from '../models';
@@ -34,6 +35,13 @@ export class ExportsApiService {
      * @memberof ExportsApiService
      */
     private readonly _exportEndpoint = '/download/export-';
+
+    /**
+     *
+     *
+     * @private
+     * @memberof ExportsApiService
+     */
     private readonly _exportLogsEndpoint = '/export-logs';
 
     /**

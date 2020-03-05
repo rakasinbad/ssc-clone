@@ -1,21 +1,17 @@
 import { CreditLimitStore } from 'app/main/pages/finances/credit-limit-balance/models';
-import {
-    CustomerHierarchy,
-    Hierarchy,
-    Portfolio,
-    StoreCluster,
-    StoreConfig,
-    StoreGroup,
-    StoreSegment,
-    StoreType,
-    SupplierStore,
-    TNullable,
-    TStatus,
-    Urban,
-    User,
-    VehicleAccessibility
-} from 'app/shared/models';
+import { CustomerHierarchy, Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+import { TNullable, TStatus } from 'app/shared/models/global.model';
+import { Urban } from 'app/shared/models/location.model';
+import { Portfolio } from 'app/shared/models/portfolio.model';
+import { StoreCluster } from 'app/shared/models/store-cluster.model';
+import { StoreConfig } from 'app/shared/models/store-config.model';
+import { StoreGroup } from 'app/shared/models/store-group.model';
+import { StoreSegment } from 'app/shared/models/store-segment.model';
+import { StoreType } from 'app/shared/models/store-type.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
+import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 
 export interface IStorePortfolio extends ITimestamp {
     readonly id: NonNullable<string>;

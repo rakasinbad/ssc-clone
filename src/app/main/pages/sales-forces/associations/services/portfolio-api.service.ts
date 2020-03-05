@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { Store as NgRxStore } from '@ngrx/store';
-import { IAssociation, IAssociationForm } from '../models';
 import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/store/reducers';
-import { PortfolioActions } from '../../portfolios/store/actions';
 
 /**
  *
@@ -56,7 +54,9 @@ export class AssociatedPortfolioApiService {
         if (params['type']) {
             switch (params['type']) {
                 case 'group':
-                case 'direct': newArgs.push({ key: 'type', value: params['type']} ); break;
+                case 'direct':
+                    newArgs.push({ key: 'type', value: params['type'] });
+                    break;
             }
         }
 
@@ -88,5 +88,4 @@ export class AssociatedPortfolioApiService {
 
         return this.http.get<T>(this._url, { params: newParams });
     }
-
 }

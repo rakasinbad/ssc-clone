@@ -1,53 +1,41 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-    OnDestroy,
-    AfterViewInit,
-    ViewChild,
-    ElementRef,
-    ChangeDetectorRef,
-    SecurityContext
-} from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
+import { SelectionModel } from '@angular/cdk/collections';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { PageEvent, MatPaginator, MatSort } from '@angular/material';
-import { SelectionModel } from '@angular/cdk/collections';
-// NgRx's Libraries
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio, User } from 'app/shared/models';
-import { UiSelectors } from 'app/shared/store/selectors';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { Portfolio } from 'app/shared/models/portfolio.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
-// RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    flatMap,
-    takeUntil,
-    tap
-} from 'rxjs/operators';
-// Environment variables.
 import { environment } from 'environments/environment';
-// Entity model.
-import { Association } from '../../models/association.model';
-// State management's stuffs.
-import * as fromAssociations from '../../store/reducers';
-import { AssociationActions } from '../../store/actions';
-import { AssociationSelectors } from '../../store/selectors';
-import { Router } from '@angular/router';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FormControl } from '@angular/forms';
 import { NgxPermissionsService } from 'ngx-permissions';
-// 
+import { merge, Observable, Subject } from 'rxjs';
+import { flatMap, takeUntil } from 'rxjs/operators';
+
+import { AssociationActions } from '../../store/actions';
+import * as fromAssociations from '../../store/reducers';
+import { AssociationSelectors } from '../../store/selectors';
+
 @Component({
     selector: 'app-associations-sales-rep',
     templateUrl: './association-sales-rep.component.html',
     styleUrls: ['./association-sales-rep.component.scss'],
+    // tslint:disable-next-line: no-host-metadata-property
     host: {
         class: 'content-card mx-16 sinbad-black-10-border'
     },
@@ -84,7 +72,7 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
         // 'store-code',
         'store-qty',
         'sales-target',
-        'date-associate',
+        'date-associate'
         // 'actions'
     ];
 
@@ -331,35 +319,37 @@ export class AssociationSalesRepComponent implements OnInit, OnDestroy, AfterVie
     }
 
     private updatePrivileges(): void {
-        this.ngxPermissionsService.hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE']).then(result => {
-            // Jika ada permission-nya.
-            if (result) {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'sales-rep-code',
-                    'sales-rep-name',
-                    'portfolio-code',
-                    'portfolio-name',
-                    // 'store-code',
-                    'store-qty',
-                    'sales-target',
-                    'date-associate',
-                    // 'actions'
-                ];
-            } else {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'sales-rep-code',
-                    'sales-rep-name',
-                    'portfolio-code',
-                    'portfolio-name',
-                    // 'store-code',
-                    'store-qty',
-                    'sales-target',
-                    'date-associate',
-                    // 'actions'
-                ];
-            }
-        });
+        this.ngxPermissionsService
+            .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'sales-rep-code',
+                        'sales-rep-name',
+                        'portfolio-code',
+                        'portfolio-name',
+                        // 'store-code',
+                        'store-qty',
+                        'sales-target',
+                        'date-associate'
+                        // 'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'sales-rep-code',
+                        'sales-rep-name',
+                        'portfolio-code',
+                        'portfolio-name',
+                        // 'store-code',
+                        'store-qty',
+                        'sales-target',
+                        'date-associate'
+                        // 'actions'
+                    ];
+                }
+            });
     }
 }

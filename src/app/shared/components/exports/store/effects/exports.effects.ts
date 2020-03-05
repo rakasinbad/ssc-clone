@@ -1,51 +1,46 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog, MatSnackBarConfig } from '@angular/material';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import {
-    map,
-    switchMap,
-    withLatestFrom,
-    catchError,
-    retry,
-    tap,
-    exhaustMap,
-    filter,
-    exhaust
-} from 'rxjs/operators';
-
-import { exportFailureActionNames, ExportActions } from '../actions';
+import { TypedAction } from '@ngrx/store/src/models';
+import { catchOffline } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError, forkJoin, iif } from 'rxjs';
-// import { PortfoliosApiService } from '../../services/portfolios-api.service';
-import { catchOffline } from '@ngx-pwa/offline';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import {
+    ErrorHandler,
+    IErrorHandler,
+    IPaginatedResponse,
+    TNullable
+} from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { Observable, of } from 'rxjs';
+import {
+    catchError,
+    exhaustMap,
+    filter,
+    map,
+    retry,
+    switchMap,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
+
+import { ExportFilterComponent } from '../../components/export-filter/export-filter.component';
+import { ExportsComponent } from '../../exports.component';
+import {
+    defaultExportFilterConfiguration,
     Export,
     ExportConfiguration,
     ExportFilterConfiguration,
-    ExportFormData,
-    defaultExportFilterConfiguration
+    ExportFormData
 } from '../../models';
-import {
-    IQueryParams,
-    TNullable,
-    ErrorHandler,
-    IPaginatedResponse,
-    User,
-    IErrorHandler
-} from 'app/shared/models';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { HelperService, NoticeService } from 'app/shared/helpers';
-import { HttpErrorResponse } from '@angular/common/http';
-import { TypedAction } from '@ngrx/store/src/models';
-import { Store } from 'app/main/pages/attendances/models';
-import { fromExport } from '../reducers';
-// import { Router } from '@angular/router';
-import { MatDialog, MatSnackBarConfig } from '@angular/material';
-import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { ExportsComponent } from '../../exports.component';
 import { ExportsApiService } from '../../services';
-import { ExportFilterComponent } from '../../components/export-filter/export-filter.component';
+import { ExportActions, exportFailureActionNames } from '../actions';
+import { fromExport } from '../reducers';
 import { ExportSelector } from '../selectors';
 
 type AnyAction = { payload: any } & TypedAction<any>;

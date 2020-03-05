@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { WarehouseCatalogue } from 'app/shared/models';
+import { WarehouseCatalogue } from 'app/shared/models/warehouse-catalogue.model';
 
 import { WarehouseSkuStockActions } from '../actions';
 

@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { Store as NgRxStore } from '@ngrx/store';
-import { fromSkuAssignments } from '../store/reducers';
 import { SkuAssignments } from '../models';
+import { fromSkuAssignments } from '../store/reducers';
 
 /**
  *
@@ -61,5 +61,4 @@ export class SkuAssignmentsApiService {
 
         return this.http.get<SkuAssignments>(this._url, { params: newParams });
     }
-
 }

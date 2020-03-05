@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IBreadcrumbs } from '../models';
+
+import { IBreadcrumbs } from '../models/global.model';
 
 @Injectable({
     providedIn: 'root'

@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { NoticeService, SupplierApiService } from 'app/shared/helpers';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
 import { of } from 'rxjs';
-import { catchError, map, switchMap, tap, withLatestFrom, exhaustMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { Auth } from '../../../auth/models';
 import { AuthSelectors } from '../../../auth/store/selectors';
 import { ProfileActions } from '../actions';
 import { fromProfile } from '../reducers';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { Auth } from '../../../auth/models';
 
 @Injectable()
 export class ProfileEffects {

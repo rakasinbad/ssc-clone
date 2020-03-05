@@ -1,4 +1,7 @@
-import { EStatus, ITimestamp, TNullable, Urban, WarehouseInvoiceGroup } from 'app/shared/models';
+import { EStatus, TNullable } from 'app/shared/models/global.model';
+import { Urban } from 'app/shared/models/location.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { WarehouseInvoiceGroup } from 'app/shared/models/warehouse-invoice-group.model';
 
 export interface IWarehouse extends ITimestamp {
     readonly id: NonNullable<string>;

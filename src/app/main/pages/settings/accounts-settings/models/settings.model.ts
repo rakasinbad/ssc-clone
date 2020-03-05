@@ -1,4 +1,6 @@
-import { ITimestamp, TNullable, UserStatus } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { UserStatus } from 'app/shared/models/user.model';
 
 interface IUser extends ITimestamp {
     id: string;

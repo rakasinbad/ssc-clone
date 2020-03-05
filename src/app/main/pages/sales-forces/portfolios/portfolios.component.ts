@@ -1,35 +1,40 @@
 // Angular's Libraries
-import { Component, OnInit, ChangeDetectionStrategy, ViewEncapsulation, OnDestroy, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef, SecurityContext } from '@angular/core';
-import { fuseAnimations } from '@fuse/animations';
-import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-// NgRx's Libraries
-import { Store as NgRxStore } from '@ngrx/store';
-// RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import { takeUntil, catchError, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
-
-// Environment variables.
-import { environment } from '../../../../../environments/environment';
-// Languages.
-import { locale as english } from './i18n/en';
-import { locale as indonesian } from './i18n/id';
-// Entity model.
-import { Portfolio } from './models/portfolios.model';
-// State management's stuffs.
-import { CoreFeatureState } from './store/reducers';
-import { PortfolioActions } from './store/actions';
-import { PortfolioSelector } from './store/selectors';
-import { Router } from '@angular/router';
-import { IQueryParams } from 'app/shared/models';
-import { DomSanitizer } from '@angular/platform-browser';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    SecurityContext,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { UiActions } from 'app/shared/store/actions';
+import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { NgxPermissionsService } from 'ngx-permissions';
+import { Store as NgRxStore } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UiActions } from 'app/shared/store/actions';
+import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { merge, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+
+import { locale as english } from './i18n/en';
+import { locale as indonesian } from './i18n/id';
+import { Portfolio } from './models/portfolios.model';
+import { PortfolioActions } from './store/actions';
+import { CoreFeatureState } from './store/reducers';
+import { PortfolioSelector } from './store/selectors';
 
 @Component({
     selector: 'app-portfolios',
@@ -40,7 +45,6 @@ import { ExportSelector } from 'app/shared/components/exports/store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
-
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -68,7 +72,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
             permissions: ['SRM.PFO.IMPORT'],
             useAdvanced: true,
             pageType: 'portfolios'
-        },
+        }
     };
 
     // Untuk menangani search bar.
@@ -90,7 +94,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         'name',
         'salesForce',
         'timestamp',
-        'actions',
+        'actions'
     ];
     // Menyimpan data baris tabel yang tercentang oleh checkbox.
     selection: SelectionModel<Portfolio> = new SelectionModel<Portfolio>(true, []);
@@ -114,14 +118,14 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         private router: Router,
         private readonly sanitizer: DomSanitizer,
         private ngxPermissionsService: NgxPermissionsService,
-        private _fuseTranslationLoaderService: FuseTranslationLoaderService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
     ) {
         this.portfolioStore.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Sales Management',
@@ -137,43 +141,33 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
         );
 
         // Mendapatkan state loading.
-        this.isLoading$ = this.portfolioStore.select(
-            PortfolioSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$),
-        );
+        this.isLoading$ = this.portfolioStore
+            .select(PortfolioSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
         // Mendapatkan state loading.
-        this.isRequestingExport$ = this.exportStore.select(
-            ExportSelector.getRequestingState
-        ).pipe(
-            takeUntil(this.subs$),
-        );
+        this.isRequestingExport$ = this.exportStore
+            .select(ExportSelector.getRequestingState)
+            .pipe(takeUntil(this.subs$));
 
         // Mendapatkan total portfolio dari state.
-        this.totalPortfolios$ = this.portfolioStore.select(
-            PortfolioSelector.getTotalPortfolios
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalPortfolios$ = this.portfolioStore
+            .select(PortfolioSelector.getTotalPortfolios)
+            .pipe(takeUntil(this.subs$));
 
         // Mendapatkan data portfolio dari state.
-        this.portfolioStore.select(
-            PortfolioSelector.getAllPortfolios
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(portfolios => {
-            // Mengambil data dari state.
-            this.portfolios = portfolios;
-            // Meng-update UI sesuai data yang didapat.
-            this._cd.markForCheck();
-        });
+        this.portfolioStore
+            .select(PortfolioSelector.getAllPortfolios)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(portfolios => {
+                // Mengambil data dari state.
+                this.portfolios = portfolios;
+                // Meng-update UI sesuai data yang didapat.
+                this._cd.markForCheck();
+            });
 
         // Memuat terjemahan bahasa.
-        this._fuseTranslationLoaderService.loadTranslations(
-            indonesian,
-            english
-        );
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     /**
@@ -194,7 +188,7 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
             if (this.sort.direction) {
                 // Menentukan sort direction tabel.
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-                
+
                 // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
                 if (this.sort.active === 'code') {
                     data['sortBy'] = 'store_code';
@@ -229,37 +223,37 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     private updatePrivileges(): void {
-        this.ngxPermissionsService.hasPermission(['SRM.PFO.UPDATE', 'SRM.PFO.DELETE']).then(result => {
-            // Jika ada permission-nya.
-            if (result) {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'code',
-                    'name',
-                    'salesForce',
-                    'timestamp',
-                    'actions',
-                ];
-            } else {
-                this.displayedColumns = [
-                    // 'checkbox',
-                    'code',
-                    'name',
-                    'salesForce',
-                    'timestamp',
-                    // 'actions',
-                ];
-            }
-        });
+        this.ngxPermissionsService
+            .hasPermission(['SRM.PFO.UPDATE', 'SRM.PFO.DELETE'])
+            .then(result => {
+                // Jika ada permission-nya.
+                if (result) {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'code',
+                        'name',
+                        'salesForce',
+                        'timestamp',
+                        'actions'
+                    ];
+                } else {
+                    this.displayedColumns = [
+                        // 'checkbox',
+                        'code',
+                        'name',
+                        'salesForce',
+                        'timestamp'
+                        // 'actions',
+                    ];
+                }
+            });
     }
 
     /**
      * PUBLIC FUNCTIONS
      */
     exportPortfolio(): void {
-        this.portfolioStore.dispatch(
-            PortfolioActions.exportPortfoliosRequest()
-        );
+        this.portfolioStore.dispatch(PortfolioActions.exportPortfoliosRequest());
     }
 
     addPortfolio(): void {
@@ -273,16 +267,12 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     viewPortfolio(id: string): void {
-        this.portfolioStore.dispatch(
-            PortfolioActions.setSelectedPortfolios({ payload: [id] })
-        );
+        this.portfolioStore.dispatch(PortfolioActions.setSelectedPortfolios({ payload: [id] }));
 
         this.router.navigate([`/pages/sales-force/portfolio/${id}/detail`]);
     }
 
-    onChangePage($event: PageEvent): void {
-
-    }
+    onChangePage($event: PageEvent): void {}
 
     isAllSelected(): boolean {
         const numSelected = this.selection.selected.length;
@@ -291,9 +281,9 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     masterToggle(): void {
-        this.isAllSelected() ?
-            this.selection.clear() :
-            this.portfolios.forEach(row => this.selection.select(row));
+        this.isAllSelected()
+            ? this.selection.clear()
+            : this.portfolios.forEach(row => this.selection.select(row));
     }
 
     /**
@@ -321,7 +311,8 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
                     }
                 }),
                 takeUntil(this.subs$)
-            ).subscribe(() => {
+            )
+            .subscribe(() => {
                 this.onRefreshTable();
             });
 
@@ -340,13 +331,10 @@ export class PortfoliosComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ngAfterViewInit(): void {
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
-        merge(
-            this.sort.sortChange,
-            this.paginator.page
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
-            this.onRefreshTable();
-        });
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this.onRefreshTable();
+            });
     }
 }

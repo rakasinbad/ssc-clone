@@ -1,14 +1,17 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams, InvoiceGroup, User } from 'app/shared/models';
-import { Association, IAssociationForm } from '../../models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+
 import { Portfolio } from '../../../portfolios/models';
 import { SalesRep } from '../../../sales-reps/models';
+import { IAssociationForm } from '../../models';
 
 export type failureActionNames =
-    'createAssociationFailure' |
-    'fetchAssociationFailure' |
-    'fetchAssociationsFailure'
-;
+    | 'createAssociationFailure'
+    | 'fetchAssociationFailure'
+    | 'fetchAssociationsFailure';
 
 /**
  * ASSOCIATIONS

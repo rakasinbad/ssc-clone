@@ -10,8 +10,10 @@ import {
 import { MatDialog, MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { NoticeService } from 'app/shared/helpers';
-import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -24,7 +26,6 @@ import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-credit-stores',
@@ -49,10 +50,11 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         search: {
             active: true,
-            changed: (value: string) => this.store.dispatch(
-                CreditLimitBalanceActions.searchCreditLimitStore({ payload: value })
-            )
-        },
+            changed: (value: string) =>
+                this.store.dispatch(
+                    CreditLimitBalanceActions.searchCreditLimitStore({ payload: value })
+                )
+        }
         // add: {
         //     permissions: ['CATALOGUE.CREATE'],
         // },
