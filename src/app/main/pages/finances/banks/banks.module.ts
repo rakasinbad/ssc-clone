@@ -7,10 +7,10 @@ import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
+import { BankFormComponent } from './bank-form/bank-form.component';
 import { BanksRoutingModule } from './banks-routing.module';
 import { BanksComponent } from './banks.component';
 import { fromBank } from './store/reducers';
-import { BankFormComponent } from './bank-form/bank-form.component';
 
 /**
  *

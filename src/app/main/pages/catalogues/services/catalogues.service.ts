@@ -1,12 +1,18 @@
-import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
-import { IQueryParams } from 'app/shared/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Observable } from 'rxjs';
 
-import { Catalogue, CatalogueCategory, ICatalogueUnitResponse, ICatalogue, ICataloguesResponse, ICatalogueStockResponse } from '../models';
+import {
+    Catalogue,
+    CatalogueCategory,
+    ICatalogue,
+    ICataloguesResponse,
+    ICatalogueStockResponse,
+    ICatalogueUnitResponse
+} from '../models';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -67,16 +73,17 @@ export class CataloguesService {
         this._url = this._$helper.handleApiRouter('/calculate-catalogue');
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
-        return this.http.get<{ total: string; totalEmptyStock: string; totalActive: string; totalInactive: string; totalBanned: string; }>(this._url, { params: newParams });
+        return this.http.get<{
+            total: string;
+            totalEmptyStock: string;
+            totalActive: string;
+            totalInactive: string;
+            totalBanned: string;
+        }>(this._url, { params: newParams });
     }
 
     getCatalogueStatuses(data: ICatalogueTitleParameter) {
-        const {
-            allCount,
-            liveCount,
-            emptyCount,
-            blockedCount
-        } = data;
+        const { allCount, liveCount, emptyCount, blockedCount } = data;
 
         const STATUS_CATALOGUES_KEYS = [
             'STATUS.CATALOGUE.ALL_PARAM.TITLE',
@@ -86,7 +93,12 @@ export class CataloguesService {
             'STATUS.CATALOGUE.INACTIVE.TITLE'
         ];
 
-        return this.translate.instant(STATUS_CATALOGUES_KEYS, { allCount, liveCount, emptyCount, blockedCount });
+        return this.translate.instant(STATUS_CATALOGUES_KEYS, {
+            allCount,
+            liveCount,
+            emptyCount,
+            blockedCount
+        });
     }
 
     /**
@@ -98,7 +110,7 @@ export class CataloguesService {
      */
     findAll(params: IQueryParams): Observable<ICataloguesResponse> {
         const newArgs = [];
-        
+
         if (params['emptyStock']) {
             newArgs.push({
                 key: 'emptyStock',
@@ -135,7 +147,7 @@ export class CataloguesService {
 
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
-        
+
         if (params['emptyStock']) {
             newArgs.push({
                 key: 'emptyStock',
@@ -223,7 +235,9 @@ export class CataloguesService {
 
     getCategoryTree(): Observable<Array<CatalogueCategory>> {
         this._url = this._$helper.handleApiRouter(this._categoryTreeEndpoint);
-        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, { params: { source: 'sc' } });
+        return this.http.get<Array<CatalogueCategory>>(`${this._url}`, {
+            params: { source: 'sc' }
+        });
     }
 
     getCatalogueUnitOfMeasurement(params: IQueryParams): Observable<Array<ICatalogueUnitResponse>> {
@@ -237,9 +251,9 @@ export class CataloguesService {
         return this.http.post<Catalogue>(this._url, data);
     }
 
-    updateCataloguePrices(data: FormData): Observable<{ status: string; }> {
+    updateCataloguePrices(data: FormData): Observable<{ status: string }> {
         this._url = this._$helper.handleApiRouter(this._catalogueImportEndpoint);
-        return this.http.post<{ status: string; }>(this._url, data, {
+        return this.http.post<{ status: string }>(this._url, data, {
             reportProgress: true
         });
     }

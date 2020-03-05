@@ -11,7 +11,8 @@ import {
 import { MatPaginator, MatSort } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

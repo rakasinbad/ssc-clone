@@ -1,4 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
+
 import * as NetworkActions from '../actions/network.actions';
 
 export const FEATURE_KEY = 'networks';

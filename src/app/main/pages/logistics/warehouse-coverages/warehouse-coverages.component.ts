@@ -4,22 +4,26 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    OnDestroy
 } from '@angular/core';
 import { MatPaginator, MatSort, MatRadioChange } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IBreadcrumbs } from 'app/shared/models';
-import { UiActions } from 'app/shared/store/actions';
+import { UiActions, WarehouseActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 
 import * as fromWarehouseCoverages from './store/reducers';
-import { tap } from 'rxjs/operators';
+import { tap, takeUntil } from 'rxjs/operators';
 import { Warehouse } from '../warehouses/models';
+import { SelectedLocation } from 'app/shared/components/geolocation/models/selected-location.model';
+import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -29,7 +33,7 @@ import { Warehouse } from '../warehouses/models';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WarehouseCoveragesComponent implements OnInit {
+export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -40,6 +44,7 @@ export class WarehouseCoveragesComponent implements OnInit {
     selectedViewBy: string = 'warehouse';
 
     // buttonViewByActive$: Observable<string>;
+    subs$: Subject<void> = new Subject<void>();
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -80,7 +85,37 @@ export class WarehouseCoveragesComponent implements OnInit {
         private cdRef: ChangeDetectorRef,
         private router: Router,
         private store: Store<fromWarehouseCoverages.FeatureState>
-    ) {}
+    ) {
+        this.warehouses$ = this.store.select(
+            WarehouseSelectors.selectAll
+        ).pipe(
+            tap(warehouses => {
+                const newQuery: IQueryParams = {
+                    paginate: false,
+                };
+                
+                if (warehouses.length === 0) {
+                    this.store.dispatch(
+                        WarehouseActions.fetchWarehouseRequest({
+                            payload: newQuery
+                        })
+                    );
+                }
+            }),
+            takeUntil(this.subs$)
+        );
+    }
+
+    private debug(label: string, data: any = {}): void {
+        if (!environment.production) {
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
+        }
+    }
 
     ngOnInit(): void {
         // Set breadcrumbs
@@ -89,6 +124,15 @@ export class WarehouseCoveragesComponent implements OnInit {
                 payload: this._breadCrumbs
             })
         );
+    }
+
+    ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+    }
+
+    onSelectedLocation($event: SelectedLocation): void {
+        this.debug('onSelectedLocation', $event);
     }
 
     onSelectedWarehouse(warehouse: Warehouse): void {

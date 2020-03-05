@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HelperService } from '../../../../../shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Injectable({
     providedIn: 'root'

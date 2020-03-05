@@ -1,4 +1,3 @@
-import { environment } from 'environments/environment';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -14,19 +13,20 @@ import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
-import { IQueryParams } from 'app/shared/models';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { SupplierInventoryActions } from './store/actions';
 import { fromSupplierInventory } from './store/reducers';
 import { SupplierInventorySelectors } from './store/selectors';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-supplier-inventories',
@@ -50,7 +50,7 @@ export class SupplierInventoriesComponent implements OnInit, AfterViewInit, OnDe
             changed: (value: string) => {
                 this.search.setValue(value);
             }
-        },
+        }
     };
 
     search: FormControl = new FormControl('');

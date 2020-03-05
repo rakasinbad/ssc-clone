@@ -5,6 +5,7 @@ import { ExportsModule } from './exports/exports.module';
 import { SearchBarModule } from './search-bar/search-bar.module';
 import { ImportAdvancedModule } from './import-advanced/import-advanced.module';
 import { MultipleSelectionModule } from './multiple-selection/multiple-selection.module';
+import { GeolocationModule } from './geolocation/geolocation.module';
 
 
 
@@ -13,6 +14,7 @@ import { MultipleSelectionModule } from './multiple-selection/multiple-selection
         FuseSharedModule,
         CardHeaderModule,
         ExportsModule,
+        GeolocationModule,
         ImportAdvancedModule,
         SearchBarModule,
         MultipleSelectionModule,
@@ -20,6 +22,7 @@ import { MultipleSelectionModule } from './multiple-selection/multiple-selection
     exports: [
         CardHeaderModule,
         ExportsModule,
+        GeolocationModule,
         ImportAdvancedModule,
         SearchBarModule,
         MultipleSelectionModule,

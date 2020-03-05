@@ -1,33 +1,37 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { TranslateService } from '@ngx-translate/core';
-// NgRx's Libraries
 import { Store as NgRxStore } from '@ngrx/store';
-// RxJS' Libraries
-import { Observable, Subject, merge, combineLatest, of } from 'rxjs';
-import { takeUntil, withLatestFrom, tap } from 'rxjs/operators';
-
-// Environment variables.
-import { environment } from '../../../../../../../environments/environment';
-// Languages' stuffs.
-import { locale as english } from '../../i18n/en';
-import { locale as indonesian } from '../../i18n/id';
-// Entity model.
-import { Portfolio } from '../../models/portfolios.model';
-// State management's stuffs.
-import { fromPortfolios, CoreFeatureState } from '../../store/reducers';
-import { PortfolioActions, StoreActions } from '../../store/actions';
-import { PortfolioSelector, StoreSelector, PortfolioStoreSelector } from '../../store/selectors';
-import { UiActions } from 'app/shared/store/actions';
-import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Store } from 'app/main/pages/attendances/models';
-import { SelectionModel } from '@angular/cdk/collections';
-import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
-import { IQueryParams } from 'app/shared/models';
+import { TranslateService } from '@ngx-translate/core';
+import { Store } from 'app/main/pages/accounts/merchants/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UiActions } from 'app/shared/store/actions';
+import { environment } from 'environments/environment';
+import { merge, Observable, Subject } from 'rxjs';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
+
+import { locale as english } from '../../i18n/en';
+import { locale as indonesian } from '../../i18n/id';
+import { Portfolio } from '../../models/portfolios.model';
+import { PortfolioActions } from '../../store/actions';
+import { CoreFeatureState } from '../../store/reducers';
+import { PortfolioSelector, PortfolioStoreSelector } from '../../store/selectors';
 
 @Component({
     selector: 'app-portfolio-details',
@@ -35,10 +39,9 @@ import { NoticeService } from 'app/shared/helpers';
     styleUrls: ['./portfolio-details.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
-
     // Untuk menandakan halaman detail dalam keadaan mode edit atau tidak.
     isEditMode: boolean;
     // Untuk keperluan unsubscribe.
@@ -105,7 +108,7 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
         const breadcrumbs = [
             {
                 title: 'Home',
-               // translate: 'BREADCRUMBS.HOME',
+                // translate: 'BREADCRUMBS.HOME',
                 active: false
             },
             {
@@ -117,28 +120,22 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
                 title: 'Detail Portfolio',
                 translate: 'BREADCRUMBS.PORTFOLIO_DETAIL',
                 active: true
-            },
+            }
         ];
 
         // Mengambil status loading dari state-nya portfolio.
-        this.isPortfolioLoading$ = this.portfolioStore.select(
-            PortfolioSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isPortfolioLoading$ = this.portfolioStore
+            .select(PortfolioSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil status loading dari state-nya store (merchant).
-        this.isPortfolioStoreLoading$ = this.portfolioStore.select(
-            PortfolioStoreSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isPortfolioStoreLoading$ = this.portfolioStore
+            .select(PortfolioStoreSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
-        this.totalPortfolioStores$ = this.portfolioStore.select(
-            PortfolioStoreSelector.getTotalPortfolioStores
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalPortfolioStores$ = this.portfolioStore
+            .select(PortfolioStoreSelector.getTotalPortfolioStores)
+            .pipe(takeUntil(this.subs$));
 
         // Menetapkan breadcrumb yang ingin ditampilkan.
         this.portfolioStore.dispatch(
@@ -148,10 +145,7 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
         );
 
         // Memuat terjemahan bahasa.
-        this._fuseTranslationLoaderService.loadTranslations(
-            indonesian,
-            english
-        );
+        this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
     }
 
     private onRefreshTable(): void {
@@ -169,7 +163,7 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
             if (this.sort.direction) {
                 // Menentukan sort direction tabel.
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-                
+
                 // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
                 if (this.sort.active === 'code') {
                     data['sortBy'] = 'store_code';
@@ -197,9 +191,9 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     masterToggle(): void {
-        this.isAllSelected() ?
-            this.selection.clear() :
-            this.listStore.data.forEach(row => this.selection.select(row));
+        this.isAllSelected()
+            ? this.selection.clear()
+            : this.listStore.data.forEach(row => this.selection.select(row));
     }
 
     editPortfolio(): void {
@@ -211,64 +205,61 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
     }
 
     ngOnInit(): void {
-
         // Inisialisasi form.
         this.form = this.fb.group({
             code: [{ value: '', disabled: true }],
             name: [{ value: '', disabled: true }],
-            salesForce: [{ value: '', disabled: true }],
+            salesForce: [{ value: '', disabled: true }]
         });
 
         // Mengambil data portfolio yang terpilih dari state.
-        this.portfolioStore.select(
-            PortfolioSelector.getAllPortfolios
-        ).pipe(
-            withLatestFrom(
-                this.portfolioStore.select(PortfolioSelector.getSelectedPortfolio),
-                this.portfolioStore.select(AuthSelectors.getUserSupplier),
-                (_, portfolio, userSupplier) => ({ portfolio, userSupplier })
-            ),
-            takeUntil(this.subs$)
-        ).subscribe(({ portfolio, userSupplier }) => {
-            // Jika portfolio yang terpilih tidak ada, maka ambil dari server berdasarkan ID URL nya. 
-            if (!portfolio) {
-                // Tetapkan portfolio yang terpilih.
-                this.portfolioStore.dispatch(
-                    PortfolioActions.setSelectedPortfolios({ payload: [this.portfolioId] })
-                );
+        this.portfolioStore
+            .select(PortfolioSelector.getAllPortfolios)
+            .pipe(
+                withLatestFrom(
+                    this.portfolioStore.select(PortfolioSelector.getSelectedPortfolio),
+                    this.portfolioStore.select(AuthSelectors.getUserSupplier),
+                    (_, portfolio, userSupplier) => ({ portfolio, userSupplier })
+                ),
+                takeUntil(this.subs$)
+            )
+            .subscribe(({ portfolio, userSupplier }) => {
+                // Jika portfolio yang terpilih tidak ada, maka ambil dari server berdasarkan ID URL nya.
+                if (!portfolio) {
+                    // Tetapkan portfolio yang terpilih.
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.setSelectedPortfolios({ payload: [this.portfolioId] })
+                    );
 
-                // Melakukan request data portfolio.
-                return this.portfolioStore.dispatch(
-                    PortfolioActions.fetchPortfolioRequest({ payload: this.portfolioId })
-                );
-            }
+                    // Melakukan request data portfolio.
+                    return this.portfolioStore.dispatch(
+                        PortfolioActions.fetchPortfolioRequest({ payload: this.portfolioId })
+                    );
+                }
 
-            // Jika portfolio-nya bukan milik user (ID supplier tidak sama)
-            if (portfolio.invoiceGroup.supplierId !== userSupplier.supplierId) {
-                // Munculkan error bahwa portfolio tidak ditemukan.
-                this._notice.open('Portfolio not found.', 'error', {
-                    horizontalPosition: 'right',
-                    verticalPosition: 'bottom'
-                });
+                // Jika portfolio-nya bukan milik user (ID supplier tidak sama)
+                if (portfolio.invoiceGroup.supplierId !== userSupplier.supplierId) {
+                    // Munculkan error bahwa portfolio tidak ditemukan.
+                    this._notice.open('Portfolio not found.', 'error', {
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom'
+                    });
 
-                // Arahkan ke halaman depan portfolio.
-                return this.router.navigate([
-                    '/pages/sales-force/portfolio'
-                ]);
-            }
+                    // Arahkan ke halaman depan portfolio.
+                    return this.router.navigate(['/pages/sales-force/portfolio']);
+                }
 
-            this.portfolio = portfolio;
-            this._cd.markForCheck();
-        });
+                this.portfolio = portfolio;
+                this._cd.markForCheck();
+            });
 
         // Mengambil data store dari state.
-        this.portfolioStore.select(
-            PortfolioStoreSelector.getAllPortfolioStores
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(stores => {
-            this.listStore = new MatTableDataSource(stores);
-        });
+        this.portfolioStore
+            .select(PortfolioStoreSelector.getAllPortfolioStores)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(stores => {
+                this.listStore = new MatTableDataSource(stores);
+            });
     }
 
     ngAfterViewInit(): void {
@@ -276,20 +267,17 @@ export class PortfolioDetailsComponent implements OnInit, OnDestroy, AfterViewIn
         this.onRefreshTable();
 
         // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
-        merge(
-            this.sort.sortChange,
-            this.paginator.page
-        ).pipe(
-            takeUntil(this.subs$)
-        ).subscribe(() => {
-            this.onRefreshTable();
-        });
+        merge(this.sort.sortChange, this.paginator.page)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(() => {
+                this.onRefreshTable();
+            });
     }
 
     ngOnDestroy(): void {
         this.portfolioStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.portfolioStore.dispatch(UiActions.hideCustomToolbar());
-        
+
         this.portfolioStore.dispatch(PortfolioActions.truncatePortfolioStores());
         this.portfolioStore.dispatch(PortfolioActions.truncateSelectedPortfolios());
 

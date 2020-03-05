@@ -9,7 +9,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { Store as NgRxStore } from '@ngrx/store';
 
-import { IQueryParams, Catalogue } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { fromCatalogue } from 'app/main/pages/catalogues/store/reducers';
 import { CatalogueSelectors } from 'app/main/pages/catalogues/store/selectors';
 import { map, takeUntil, tap } from 'rxjs/operators';
@@ -18,6 +18,7 @@ import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 import { MatSelectionListChange } from '@angular/material';
 import { SkuAssignmentsSelectors } from '../../store/selectors';
 import { FeatureState as SkuAssignmentsCoreState } from '../../store/reducers';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 
 @Component({
     selector: 'app-find-sku',

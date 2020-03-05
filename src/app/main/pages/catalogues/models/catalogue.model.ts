@@ -1,11 +1,7 @@
-import {
-    Brand,
-    IResponsePaginate,
-    ITimestamp,
-    Timestamp,
-    TNullable,
-    TStatus
-} from 'app/shared/models';
+import { TNullable, IResponsePaginate } from 'app/shared/models/global.model';
+import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { Brand } from 'app/shared/models/brand.model';
+
 
 /*
  ______              __                           ______                                        

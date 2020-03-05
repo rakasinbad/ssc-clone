@@ -1,9 +1,9 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { Brand } from 'app/shared/models/brand.model';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { Brand } from '../../models';
 import { BrandActions } from '../actions';
 
 export const FEATURE_KEY = 'brands';
@@ -47,59 +47,54 @@ const initialState: State = {
 };
 
 const brandReducer = createReducer(
-    /** 
+    /**
      *  ===================================================================
      *  INITIAL STATE
      *  ===================================================================
-     */ 
+     */
+
     initialState,
-    /** 
+    /**
      *  ===================================================================
      *  REQUESTS
      *  ===================================================================
-     */ 
-    on(
-        BrandActions.fetchBrandsFailure,
-        (state) => ({
-            ...state,
-            isLoading: true
-        })
-    ),
-    /** 
+     */
+
+    on(BrandActions.fetchBrandsFailure, state => ({
+        ...state,
+        isLoading: true
+    })),
+    /**
      *  ===================================================================
      *  FAILURES
      *  ===================================================================
-     */ 
-    on(
-        BrandActions.fetchBrandsFailure,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            errors: adapterError.upsertOne(payload, state.errors)
-        })
-    ),
-    /** 
+     */
+
+    on(BrandActions.fetchBrandsFailure, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        errors: adapterError.upsertOne(payload, state.errors)
+    })),
+    /**
      *  ===================================================================
      *  SUCCESSES
      *  ===================================================================
-     */ 
-    on(
-        BrandActions.fetchBrandsSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            brands: adapterBrand.addAll(payload.brands, {
-                ...state.brands,
-                total: payload.brands.length
-            }),
-            errors: adapterError.removeOne('fetchBrandsFailure', state.errors)
-        })
-    ),
-    /** 
+     */
+
+    on(BrandActions.fetchBrandsSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        brands: adapterBrand.addAll(payload.brands, {
+            ...state.brands,
+            total: payload.brands.length
+        }),
+        errors: adapterError.removeOne('fetchBrandsFailure', state.errors)
+    }))
+    /**
      *  ===================================================================
      *  ERRORS
      *  ===================================================================
-     */ 
+     */
 );
 
 export function reducer(state: State | undefined, action: Action): State {

@@ -3,23 +3,27 @@ import { SelectionModel } from '@angular/cdk/collections';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    ChangeDetectorRef
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTable, MatTableDataSource } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { Portfolio } from 'app/shared/models/portfolio.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -33,8 +37,6 @@ import { SalesRep, SalesRepBatchActions } from './models';
 import { SalesRepActions } from './store/actions';
 import * as fromSalesReps from './store/reducers';
 import { SalesRepSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-sales-reps',
@@ -69,10 +71,10 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
             actions: [
                 { id: 'active', label: 'Set Active' },
                 { id: 'inactive', label: 'Set Inactive' },
-                { id: 'delete', label: 'Remove' },
+                { id: 'delete', label: 'Remove' }
             ],
-            onActionSelected: $event => this.onSelectedActions(($event.id as SalesRepBatchActions)),
-            show: false,
+            onActionSelected: $event => this.onSelectedActions($event.id as SalesRepBatchActions),
+            show: false
         },
         search: {
             active: true,
@@ -154,7 +156,7 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private cd$: ChangeDetectorRef,
+        private cd$: ChangeDetectorRef
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
@@ -212,14 +214,12 @@ export class SalesRepsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
-        this.selection.changed.pipe(
-            takeUntil(this._unSubs$)
-        ).subscribe(() => {
+        this.selection.changed.pipe(takeUntil(this._unSubs$)).subscribe(() => {
             this.cardHeaderConfig = {
                 ...this.cardHeaderConfig,
                 batchAction: {
                     ...this.cardHeaderConfig.batchAction,
-                    show: this.selection.hasValue(),
+                    show: this.selection.hasValue()
                 }
             };
         });

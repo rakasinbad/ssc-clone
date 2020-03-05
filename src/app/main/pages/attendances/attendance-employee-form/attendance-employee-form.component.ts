@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewEncapsulation, AfterViewInit } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation
+} from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
@@ -9,16 +16,13 @@ import { select, Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
-import { DropdownActions, UiActions } from 'app/shared/store/actions';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { UiActions } from 'app/shared/store/actions';
 import * as moment from 'moment';
 import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-
 import { Attendance } from '../models/attendance.model';
 import { AttendanceActions } from '../store/actions';
 import { fromAttendance } from '../store/reducers';
@@ -280,8 +284,8 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -412,7 +416,6 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
             return;
         }
 
-
         switch (action) {
             case 'new':
                 if (formValue.searchAccount) {
@@ -426,7 +429,9 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
 
             case 'edit':
                 this.store.dispatch(
-                    AttendanceActions.patchAttendanceRequest({ payload: { id: formValue.id, data: attendanceData } })
+                    AttendanceActions.patchAttendanceRequest({
+                        payload: { id: formValue.id, data: attendanceData }
+                    })
                 );
                 break;
 
@@ -487,7 +492,10 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
                 { value: '', disabled: true },
                 [
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('checkDate', 'required')
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'checkDate',
+                            'required'
+                        )
                     })
                 ]
             ],
@@ -517,7 +525,10 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
                 '',
                 [
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('locationType', 'required')
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'locationType',
+                            'required'
+                        )
                     })
                 ]
             ],
@@ -525,7 +536,10 @@ export class AttendanceEmployeeFormComponent implements OnInit, OnDestroy, After
                 '',
                 [
                     RxwebValidators.required({
-                        message: this.errorMessageSvc.getErrorMessageNonState('attendanceType', 'required')
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'attendanceType',
+                            'required'
+                        )
                     })
                 ]
             ]

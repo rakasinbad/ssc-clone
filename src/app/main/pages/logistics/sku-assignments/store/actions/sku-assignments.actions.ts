@@ -1,6 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, Catalogue } from 'app/shared/models';
 import { SkuAssignments } from '../../models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 
 export type requestActionNames =
     | 'fetchSkuAssignmentsRequest'

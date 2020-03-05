@@ -6,11 +6,11 @@ import { EffectsModule } from '@ngrx/effects';
 import * as fromSkuAssignmentsCore from './store/reducers';
 import {
     SkuAssignmentsEffects,
-    SkuAssignmentsWarehouseEffects,
-    SkuAssignmentsSkuEffects
 } from './store/effects';
 import { fromCatalogue } from '../../catalogues/store/reducers';
 import { CatalogueEffects } from '../../catalogues/store/effects';
+import { SkuAssignmentsWarehouseEffects } from './store/effects/sku-assignments-warehouse.effects';
+import { SkuAssignmentsSkuEffects } from './store/effects/sku-assignments-sku.effects';
 
 @NgModule({
     imports: [

@@ -1,7 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromSkuAssignmentsCore from '../reducers';
 import { fromSkuAssignments } from '../reducers';
-import { Catalogue, TNullable } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 
 // Get state from the feature key.
 export const getSkuAssignmentsCoreState = createFeatureSelector<fromSkuAssignmentsCore.FeatureState, fromSkuAssignmentsCore.State>(fromSkuAssignmentsCore.featureKey);

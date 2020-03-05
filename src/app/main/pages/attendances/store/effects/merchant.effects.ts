@@ -1,23 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
-import { catchOffline } from '@ngx-pwa/offline';
-import { LogService } from 'app/shared/helpers';
-import { NetworkActions } from 'app/shared/store/actions';
-import { NetworkSelectors } from 'app/shared/store/selectors';
-import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
-
 import { Store as NgRxStore } from '@ngrx/store';
-import { Store as Merchant } from '../../models';
+import { catchOffline } from '@ngx-pwa/offline';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
+import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { LogService } from 'app/shared/helpers';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { of } from 'rxjs';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
+
 import { MerchantApiService } from '../../services';
 import { MerchantActions } from '../actions';
-import { fromMerchant } from '../reducers';
-import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 
 @Injectable()
 export class MerchantEffects {
@@ -72,7 +67,7 @@ export class MerchantEffects {
         this.actions$.pipe(
             ofType(MerchantActions.fetchStoresRequest),
             withLatestFrom(this.authStore.select(AuthSelectors.getUserSupplier)),
-            map(([{ payload }, { supplierId }]) => ({ ...payload, supplierId }) as IQueryParams),
+            map(([{ payload }, { supplierId }]) => ({ ...payload, supplierId } as IQueryParams)),
             switchMap(queryParams => {
                 return this.merchantApiSvc.find(queryParams).pipe(
                     catchOffline(),

@@ -1,31 +1,28 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter, finalize } from 'rxjs/operators';
-
-import {
-    StoreActions,
-    associationFailureActionNames,
-} from '../actions';
+import { TypedAction } from '@ngrx/store/src/models';
+import { catchOffline } from '@ngx-pwa/offline';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError } from 'rxjs';
-import { AssociationApiService } from '../../services';
-import { catchOffline } from '@ngx-pwa/offline';
-import { Store, IPaginatedResponse } from 'app/shared/models';
-import { IQueryParams, TNullable, User, ErrorHandler } from 'app/shared/models';
-import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { HttpErrorResponse } from '@angular/common/http';
-import { TypedAction } from '@ngrx/store/src/models';
-import { FeatureState as CoreFeatureState } from '../reducers';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
-import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-// import { PortfolioStoreSelector } from '../selectors';
-import { FormActions } from 'app/shared/store/actions';
+import { ErrorHandler, IPaginatedResponse, TNullable } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Store } from 'app/shared/models/store.model';
+import { User } from 'app/shared/models/user.model';
+import { Observable, of } from 'rxjs';
+import { catchError, map, retry, switchMap, withLatestFrom } from 'rxjs/operators';
 
-type AnyAction = { payload: any; } & TypedAction<any>;
+import { AssociationApiService } from '../../services';
+import { associationFailureActionNames, StoreActions } from '../actions';
+import { FeatureState as CoreFeatureState } from '../reducers';
+
+// import { PortfolioStoreSelector } from '../selectors';
+type AnyAction = { payload: any } & TypedAction<any>;
 
 @Injectable()
 export class StoresEffects {
@@ -37,7 +34,7 @@ export class StoresEffects {
         private notice: NoticeService,
         private router: Router,
         private helper$: HelperService,
-        private matDialog: MatDialog,
+        private matDialog: MatDialog
     ) {}
 
     // addSelectedStores$ = createEffect(() =>
@@ -52,7 +49,7 @@ export class StoresEffects {
     //     )
     // , { dispatch: false });
 
-    // confirmRemoveAllSelectedStores$ = createEffect(() => 
+    // confirmRemoveAllSelectedStores$ = createEffect(() =>
     //     this.actions$.pipe(
     //         ofType(StoreActions.confirmRemoveAllSelectedStores),
     //         exhaustMap(() => {
@@ -124,7 +121,7 @@ export class StoresEffects {
     //     this.actions$.pipe(
     //         ofType(PortfolioActions.createPortfolioRequest),
     //         map(action => action.payload),
-    //         switchMap(payload => 
+    //         switchMap(payload =>
     //             this.portfoliosService.createPortfolio(payload).pipe(
     //                 catchOffline(),
     //                 switchMap(portfolio => of(PortfolioActions.createPortfolioSuccess({ payload: portfolio }))),
@@ -180,7 +177,7 @@ export class StoresEffects {
     //     )
     // , { dispatch: false });
 
-    // exportPortfoliosRequest$ = createEffect(() => 
+    // exportPortfoliosRequest$ = createEffect(() =>
     //     this.actions$.pipe(
     //         ofType(PortfolioActions.exportPortfoliosRequest),
     //         withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
@@ -266,7 +263,9 @@ export class StoresEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStoresRequest),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processStoresRequest
+                        ),
                         catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
                     );
                 } else {
@@ -274,7 +273,9 @@ export class StoresEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStoresRequest),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processStoresRequest
+                        ),
                         catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
                     );
                 }
@@ -285,15 +286,15 @@ export class StoresEffects {
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(new ErrorHandler({
+            throw new ErrorHandler({
                 id: 'ERR_USER_SUPPLIER_NOT_FOUND',
                 errors: `User Data: ${userData}`
-            }));
+            });
         }
-    
+
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
-    }
+    };
 
     // processStoreRequest = (storeId: string): Observable<AnyAction> => {
     //     return this.associationApi$
@@ -312,67 +313,80 @@ export class StoresEffects {
     //         );
     // }
 
-    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
         const newQuery: IQueryParams = {
             ...queryParams
         };
-    
+
         // Memasukkan ID supplier ke dalam parameter.
         newQuery['supplierId'] = supplierId;
 
-        return this.associationApi$
-            .findStore<IPaginatedResponse<Store>>(newQuery)
-            .pipe(
-                catchOffline(),
-                switchMap(response => {
-                    if (newQuery.paginate) {
-                        return of(StoreActions.fetchStoresSuccess({
+        return this.associationApi$.findStore<IPaginatedResponse<Store>>(newQuery).pipe(
+            catchOffline(),
+            switchMap(response => {
+                if (newQuery.paginate) {
+                    return of(
+                        StoreActions.fetchStoresSuccess({
                             payload: {
                                 stores: response.data.map(store => new Store(store)),
                                 total: response.total,
-                                source: 'fetch',
+                                source: 'fetch'
                             }
-                        }));
-                    } else {
-                        const newResponse = (response as unknown as Array<Store>);
+                        })
+                    );
+                } else {
+                    const newResponse = (response as unknown) as Array<Store>;
 
-                        return of(StoreActions.fetchStoresSuccess({
+                    return of(
+                        StoreActions.fetchStoresSuccess({
                             payload: {
                                 stores: newResponse.map(store => new Store(store)),
                                 total: newResponse.length,
-                                source: 'fetch',
+                                source: 'fetch'
                             }
-                        }));
-                    }
-                }),
-                catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
-            );
-    }
+                        })
+                    );
+                }
+            }),
+            catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
+        );
+    };
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: associationFailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: associationFailureActionNames
+    ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
-            return of(StoreActions[dispatchTo]({
-                payload: err
-            }));
+            return of(
+                StoreActions[dispatchTo]({
+                    payload: err
+                })
+            );
         }
-        
+
         if (err instanceof HttpErrorResponse) {
-            return of(StoreActions[dispatchTo]({
+            return of(
+                StoreActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                        errors: err
+                    }
+                })
+            );
+        }
+
+        return of(
+            StoreActions[dispatchTo]({
                 payload: {
-                    id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                    id: `ERR_UNRECOGNIZED`,
                     errors: err
                 }
-            }));
-        }
-
-        return of(StoreActions[dispatchTo]({
-            payload: {
-                id: `ERR_UNRECOGNIZED`,
-                errors: err
-            }
-        }));
-    }
+            })
+        );
+    };
 }

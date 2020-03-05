@@ -1,23 +1,23 @@
-import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, TSource, IQueryParams } from 'app/shared/models';
-import { Portfolio, IPortfolioAddForm } from '../../models/portfolios.model';
-import { Store } from 'app/main/pages/attendances/models';
 import { Update } from '@ngrx/entity';
+import { createAction, props } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
+import { IPortfolioAddForm, Portfolio } from '../../models/portfolios.model';
 
 export type requestActionNames =
-    'exportPortfoliosRequest' |
-    'fetchPortfolioRequest' |
-    'fetchPortfoliosRequest'
-;
+    | 'exportPortfoliosRequest'
+    | 'fetchPortfolioRequest'
+    | 'fetchPortfoliosRequest';
 
 export type failureActionNames =
-    'createPortfolioFailure' |
-    'patchPortfolioFailure' |
-    'exportPortfoliosFailure' |
-    'fetchPortfolioFailure' |
-    'fetchPortfoliosFailure' |
-    'fetchPortfolioStoresFailure'
-;
+    | 'createPortfolioFailure'
+    | 'patchPortfolioFailure'
+    | 'exportPortfoliosFailure'
+    | 'fetchPortfolioFailure'
+    | 'fetchPortfoliosFailure'
+    | 'fetchPortfolioStoresFailure';
 
 /** PORTFOLIO */
 export const fetchPortfolioRequest = createAction(
@@ -29,7 +29,7 @@ export const fetchPortfolioFailure = createAction(
     '[Portfolios API] Fetch Portfolio Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchPortfolioSuccess = createAction(
     '[Portfolios API] Fetch Portfolio Success',
     props<{ payload: { portfolio?: Portfolio; source: TSource } }>()
@@ -55,11 +55,17 @@ export const setSelectedPortfolios = createAction(
     props<{ payload: Array<string> }>()
 );
 
-export const resetSearchKeywordPortfolio = createAction('[Portfolios] Reset Search Keyword Portfolio');
+export const resetSearchKeywordPortfolio = createAction(
+    '[Portfolios] Reset Search Keyword Portfolio'
+);
 
-export const truncateSelectedPortfolios = createAction('[Portfolios Page] Truncate Selected Portfolios');
+export const truncateSelectedPortfolios = createAction(
+    '[Portfolios Page] Truncate Selected Portfolios'
+);
 
-export const truncatePortfolioStores = createAction('[Portfolios Page] Truncate All of Portfolio Stores');
+export const truncatePortfolioStores = createAction(
+    '[Portfolios Page] Truncate All of Portfolio Stores'
+);
 
 /** PATCH PORTFOLIO */
 
@@ -72,7 +78,7 @@ export const patchPortfolioFailure = createAction(
     '[Portfolios API] Patch Portfolio Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const patchPortfolioSuccess = createAction(
     '[Portfolios API] Patch Portfolio Success',
     props<{ payload: Portfolio }>()
@@ -89,7 +95,7 @@ export const createPortfolioFailure = createAction(
     '[Portfolios API] Create Portfolio Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const createPortfolioSuccess = createAction(
     '[Portfolios API] Create Portfolio Success',
     props<{ payload: Portfolio }>()
@@ -105,7 +111,7 @@ export const fetchPortfolioStoresFailure = createAction(
     '[Portfolios API] Fetch Portfolio Stores Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchPortfolioStoresSuccess = createAction(
     '[Portfolios API] Fetch Portfolio Stores Success',
     props<{ payload: { stores?: Array<Store>; source: TSource; total?: number } }>()
@@ -121,7 +127,7 @@ export const fetchPortfoliosFailure = createAction(
     '[Portfolios API] Fetch Portfolios Failure',
     props<{ payload: IErrorHandler }>()
 );
-    
+
 export const fetchPortfoliosSuccess = createAction(
     '[Portfolios API] Fetch Portfolios Success',
     props<{ payload: { portfolios?: Array<Portfolio>; source: TSource; total?: number } }>()
@@ -167,9 +173,13 @@ export const setSelectedInvoiceGroupId = createAction(
     props<{ payload: string }>()
 );
 
-export const resetSelectedInvoiceGroupId = createAction('[Portfolios Page] Reset Selected Invoice Group ID');
+export const resetSelectedInvoiceGroupId = createAction(
+    '[Portfolios Page] Reset Selected Invoice Group ID'
+);
 
-export const confirmRemoveAllSelectedStores = createAction('[Portfolios Page] Confirm to Remove All Selected Stores');
+export const confirmRemoveAllSelectedStores = createAction(
+    '[Portfolios Page] Confirm to Remove All Selected Stores'
+);
 
 export const exportPortfoliosRequest = createAction('[Portfolios API] Export Portfolios Request');
 

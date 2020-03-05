@@ -24,7 +24,9 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { EStatus, IQueryParams, LifecyclePlatform, Team } from 'app/shared/models';
+import { EStatus, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Team } from 'app/shared/models/team.model';
 import { FormActions, TeamActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { TeamSelectors } from 'app/shared/store/selectors/sources';

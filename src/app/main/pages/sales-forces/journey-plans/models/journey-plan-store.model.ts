@@ -1,4 +1,5 @@
-import { ITimestamp, SupplierStore, TNullable, EStatus } from 'app/shared/models';
+import { EStatus, TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 export interface IStorePortfolio extends ITimestamp {
     readonly id: NonNullable<string>;

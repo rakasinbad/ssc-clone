@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { User } from '../models';
+import { User } from '../models/user.model';
 import { HelperService } from './helper.service';
 
 /**

@@ -7,9 +7,12 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService, WarehouseValueApiService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, TNullable, User, WarehouseValue } from 'app/shared/models';
+import { ErrorHandler, TNullable } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
 import * as fromRoot from 'app/store/app.reducer';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { FailureActions, WarehouseValueActions } from '../actions';
@@ -81,12 +84,10 @@ export class WarehouseValueEffects {
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(
-                new ErrorHandler({
-                    id: 'ERR_USER_SUPPLIER_NOT_FOUND',
-                    errors: `User Data: ${userData}`
-                })
-            );
+            throw new ErrorHandler({
+                id: 'ERR_USER_SUPPLIER_NOT_FOUND',
+                errors: `User Data: ${userData}`
+            });
         }
 
         // Mengembalikan data user jika tidak ada masalah.

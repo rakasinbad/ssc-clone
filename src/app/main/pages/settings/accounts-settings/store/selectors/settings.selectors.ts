@@ -1,23 +1,12 @@
-import {
-    createFeatureSelector,
-    createSelector
-} from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import {
-    fromSettings
-} from '../reducers';
+import { fromSettings } from '../reducers';
 
 export const getUserState = createFeatureSelector<fromSettings.State>(fromSettings.FEATURE_KEY);
 
-export const getUser = createSelector(
-    getUserState,
-    state => state.user
-);
+export const getUser = createSelector(getUserState, state => state.user);
 
-export const getRequestStatus = createSelector(
-    getUserState,
-    state => state.isRequesting
-);
+export const getRequestStatus = createSelector(getUserState, state => state.isRequesting);
 // export const getAllTotalCatalogue = createSelector(
 //     getCatalogueState,
 //     state => ({

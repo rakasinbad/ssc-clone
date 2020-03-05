@@ -20,7 +20,9 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { Portfolio } from 'app/shared/models/portfolio.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, PortfolioActions } from 'app/shared/store/actions';
 import { PortfolioSelectors } from 'app/shared/store/selectors/sources';
 import { fromEvent, Observable, Subject } from 'rxjs';

@@ -1,4 +1,6 @@
-import { ITimestamp, User, TNullable } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 type TExportType = 'export' | 'export_template';
 
@@ -25,17 +27,7 @@ export class Export implements IExport {
     deletedAt: TNullable<string>;
 
     constructor(data: IExport) {
-        const {
-            id,
-            userId,
-            type,
-            status,
-            url,
-            user,
-            createdAt,
-            updatedAt,
-            deletedAt
-        } = data;
+        const { id, userId, type, status, url, user, createdAt, updatedAt, deletedAt } = data;
 
         this.id = id;
         this.userId = userId;

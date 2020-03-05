@@ -1,4 +1,5 @@
-import { ITimestamp, TNullable } from 'app/shared/models';
+import { TNullable } from './global.model';
+import { ITimestamp } from './timestamp.model';
 
 export interface IAssociated extends ITimestamp {
     readonly id: NonNullable<string>;

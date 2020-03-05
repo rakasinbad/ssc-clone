@@ -1,5 +1,6 @@
-import { createReducer, on, Action } from '@ngrx/store';
-import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
+import { Action, createReducer, on } from '@ngrx/store';
+
 import { Export, ExportConfiguration } from '../../models';
 import { ExportActions } from '../actions';
 
@@ -8,7 +9,7 @@ export const featureKey = 'exports';
 
 // Store's Export
 export const adapterExport: EntityAdapter<Export> = createEntityAdapter<Export>({
-    selectId: item => (item.id as string)
+    selectId: item => item.id as string
 });
 
 // Export
@@ -31,74 +32,49 @@ export const initialState = adapterExport.getInitialState<Omit<State, 'ids' | 'e
     isLoading: false,
     isRequesting: false,
     needRefresh: false,
-    total: 0,
+    total: 0
 });
 
 // Create the reducer.
 const exportReducer = createReducer(
     initialState,
-    on(
-        ExportActions.prepareExportCheck,
-        state => ({
-            ...state,
-            filter: initialState.filter
-        })
-    ),
-    on(
-        ExportActions.truncateExportFilter,
-        state => ({
-            ...state,
-            filter: initialState.filter
-        })
-    ),
-    on(
-        ExportActions.startExportRequest,
-        (state, { payload }) => ({
-            ...state,
-            isRequesting: true,
-            exportPage: payload.page,
-        })
-    ),
-    on(
-        ExportActions.startExportFailure,
-        state => ({
-            ...state,
-            isRequesting: false
-        })
-    ),
-    on(
-        ExportActions.startExportSuccess,
-        (state) => ({
-            ...state,
-            isRequesting: false
-        })
-    ),
-    on(
-        ExportActions.fetchExportLogsRequest,
-        state => ({
-            ...state,
-            isLoading: true
-        })
-    ),
-    on(
-        ExportActions.fetchExportLogsFailure,
-        state => ({
-            ...state,
-            isLoading: false
-        })
-    ),
-    on(
-        ExportActions.fetchExportLogsSuccess,
-        (state, { payload }) => adapterExport.upsertMany(payload.data, {
+    on(ExportActions.prepareExportCheck, state => ({
+        ...state,
+        filter: initialState.filter
+    })),
+    on(ExportActions.truncateExportFilter, state => ({
+        ...state,
+        filter: initialState.filter
+    })),
+    on(ExportActions.startExportRequest, (state, { payload }) => ({
+        ...state,
+        isRequesting: true,
+        exportPage: payload.page
+    })),
+    on(ExportActions.startExportFailure, state => ({
+        ...state,
+        isRequesting: false
+    })),
+    on(ExportActions.startExportSuccess, state => ({
+        ...state,
+        isRequesting: false
+    })),
+    on(ExportActions.fetchExportLogsRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(ExportActions.fetchExportLogsFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
+    on(ExportActions.fetchExportLogsSuccess, (state, { payload }) =>
+        adapterExport.upsertMany(payload.data, {
             ...state,
             isLoading: false,
-            total: payload.total,
+            total: payload.total
         })
     ),
-    on(
-        ExportActions.truncateExportLogs,
-        (state) => adapterExport.removeAll(state)
-    ),
+    on(ExportActions.truncateExportLogs, state => adapterExport.removeAll(state))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

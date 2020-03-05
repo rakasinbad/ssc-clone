@@ -1,11 +1,17 @@
+import {
+    defaultExportFilterConfiguration,
+    ExportConfiguration,
+    ExportFilterConfiguration,
+    ExportFormData,
+    ExportFormFilterConfiguration
+} from './export-filter.model';
 import { Export } from './exports.model';
-import { ExportConfiguration, ExportFormData, ExportFilterConfiguration, ExportFormFilterConfiguration, defaultExportFilterConfiguration } from './export-filter.model';
 
 export {
+    defaultExportFilterConfiguration,
     Export,
     ExportConfiguration,
-    ExportFormData,
     ExportFilterConfiguration,
-    ExportFormFilterConfiguration,
-    defaultExportFilterConfiguration
+    ExportFormData,
+    ExportFormFilterConfiguration
 };

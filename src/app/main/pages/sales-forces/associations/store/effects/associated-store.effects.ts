@@ -1,30 +1,26 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter } from 'rxjs/operators';
-
-import {
-    AssociatedStoreActions,
-    associationFailureActionNames,
-} from '../actions';
-import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError, forkJoin } from 'rxjs';
-import { catchOffline } from '@ngx-pwa/offline';
-import { Portfolio } from '../../../portfolios/models';
-import { IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse } from 'app/shared/models';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { HelperService, NoticeService } from 'app/shared/helpers';
-import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
-import { Store } from 'app/main/pages/attendances/models';
-import { FeatureState as AssociationCoreFeatureState } from '../reducers';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
+import { catchOffline } from '@ngx-pwa/offline';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { AssociatedPortfolioApiService } from '../../services/portfolio-api.service';
+import { ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { Observable, of } from 'rxjs';
+import { catchError, exhaustMap, filter, switchMap, tap } from 'rxjs/operators';
 
-type AnyAction = { payload: any; } & TypedAction<any>;
+import { AssociatedPortfolioApiService } from '../../services/portfolio-api.service';
+import { AssociatedStoreActions, associationFailureActionNames } from '../actions';
+import { FeatureState as AssociationCoreFeatureState } from '../reducers';
+
+type AnyAction = { payload: any } & TypedAction<any>;
 
 @Injectable()
 export class AssociatedStoresEffects {
@@ -36,35 +32,44 @@ export class AssociatedStoresEffects {
         private notice: NoticeService,
         private router: Router,
         private helper$: HelperService,
-        private matDialog: MatDialog,
+        private matDialog: MatDialog
     ) {}
 
-    confirmRemoveAllSelectedStores$ = createEffect(() => 
-        this.actions$.pipe(
-            ofType(AssociatedStoreActions.confirmToClearAssociatedStores),
-            exhaustMap(() => {
-                const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(DeleteConfirmationComponent, {
-                    data: {
-                        id: 'clear-all-confirmed',
-                        title: 'Clear',
-                        message: `It will clear all selected stores from the list.
+    confirmRemoveAllSelectedStores$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AssociatedStoreActions.confirmToClearAssociatedStores),
+                exhaustMap(() => {
+                    const dialogRef = this.matDialog.open<DeleteConfirmationComponent, any, string>(
+                        DeleteConfirmationComponent,
+                        {
+                            data: {
+                                id: 'clear-all-confirmed',
+                                title: 'Clear',
+                                message: `It will clear all selected stores from the list.
                                     It won't affected this store unless you click the save button.
-                                    Are you sure want to proceed?`,
-                    }, disableClose: true
-                });
+                                    Are you sure want to proceed?`
+                            },
+                            disableClose: true
+                        }
+                    );
 
-                return dialogRef.afterClosed();
-            }),
-            // Hanya diteruskan ketika menekan tombol Yes pada confirm dialog.
-            filter(data => !!data),
-            tap(() => {
-                // Menghapus seluruh portfolio.
-                this.associationStore.dispatch(AssociatedStoreActions.clearAssociatedStores());
-                
-                // Hanya memunculkan notifikasi jika memang ada store yang terhapus.
-                this.notice.open('All selected stores have been cleared.', 'info', { verticalPosition: 'bottom', horizontalPosition: 'right' });
-            })
-        ), { dispatch: false }
+                    return dialogRef.afterClosed();
+                }),
+                // Hanya diteruskan ketika menekan tombol Yes pada confirm dialog.
+                filter(data => !!data),
+                tap(() => {
+                    // Menghapus seluruh portfolio.
+                    this.associationStore.dispatch(AssociatedStoreActions.clearAssociatedStores());
+
+                    // Hanya memunculkan notifikasi jika memang ada store yang terhapus.
+                    this.notice.open('All selected stores have been cleared.', 'info', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
     );
 
     // fetchAssociatedStoresRequest$ = createEffect(() =>
@@ -102,81 +107,102 @@ export class AssociatedStoresEffects {
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(new ErrorHandler({
+            throw new ErrorHandler({
                 id: 'ERR_USER_SUPPLIER_NOT_FOUND',
                 errors: `User Data: ${userData}`
-            }));
+            });
         }
-    
+
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
-    }
+    };
 
-    processAssociatedStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processAssociatedStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
 
         const newQuery = { ...queryParams };
 
         return this.associatedPortfolioService
-            .findPortfolio<IPaginatedResponse<Store>>(({ ...queryParams, supplierId }) as IQueryParams)
+            .findPortfolio<IPaginatedResponse<Store>>({
+                ...queryParams,
+                supplierId
+            } as IQueryParams)
             .pipe(
                 catchOffline(),
                 switchMap(response => {
                     if (newQuery.paginate) {
+                        return of(
+                            AssociatedStoreActions.fetchAssociatedStoresSuccess({
+                                payload: {
+                                    data: response.data.map(store => {
+                                        const newStore = store;
+                                        newStore.source = newQuery['fromSalesRep']
+                                            ? 'list'
+                                            : 'fetch';
 
-                        return of(AssociatedStoreActions.fetchAssociatedStoresSuccess({
-                            payload: {
-                                data: response.data.map(store => {
-                                    const newStore = store;
-                                    newStore.source = newQuery['fromSalesRep'] ? 'list' : 'fetch';
-
-                                    return new Store(newStore);
-                                }),
-                                total: response.total,
-                            }
-                        }));
+                                        return new Store(newStore);
+                                    }),
+                                    total: response.total
+                                }
+                            })
+                        );
                     } else {
-                        const newResponse = (response as unknown as Array<Store>);
+                        const newResponse = (response as unknown) as Array<Store>;
 
-                        return of(AssociatedStoreActions.fetchAssociatedStoresSuccess({
-                            payload: {
-                                data: newResponse.map(store => {
-                                    const newStore = store;
-                                    newStore.source = newQuery['fromSalesRep'] ? 'list' : 'fetch';
+                        return of(
+                            AssociatedStoreActions.fetchAssociatedStoresSuccess({
+                                payload: {
+                                    data: newResponse.map(store => {
+                                        const newStore = store;
+                                        newStore.source = newQuery['fromSalesRep']
+                                            ? 'list'
+                                            : 'fetch';
 
-                                    return new Store(newStore);
-                                }),
-                                total: newResponse.length,
-                            }
-                        }));
+                                        return new Store(newStore);
+                                    }),
+                                    total: newResponse.length
+                                }
+                            })
+                        );
                     }
                 }),
                 catchError(err => this.sendErrorToState(err, 'fetchAssociatedStoresFailure'))
             );
-    }
+    };
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: associationFailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: associationFailureActionNames
+    ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
-            return of(AssociatedStoreActions[dispatchTo]({
-                payload: err
-            }));
+            return of(
+                AssociatedStoreActions[dispatchTo]({
+                    payload: err
+                })
+            );
         }
-        
+
         if (err instanceof HttpErrorResponse) {
-            return of(AssociatedStoreActions[dispatchTo]({
+            return of(
+                AssociatedStoreActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                        errors: err.toString()
+                    }
+                })
+            );
+        }
+
+        return of(
+            AssociatedStoreActions[dispatchTo]({
                 payload: {
-                    id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                    id: `ERR_UNRECOGNIZED`,
                     errors: err.toString()
                 }
-            }));
-        }
-
-        return of(AssociatedStoreActions[dispatchTo]({
-            payload: {
-                id: `ERR_UNRECOGNIZED`,
-                errors: err.toString()
-            }
-        }));
-    }
+            })
+        );
+    };
 }

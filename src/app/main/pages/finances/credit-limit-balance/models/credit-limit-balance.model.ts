@@ -1,11 +1,8 @@
 import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
-import {
-    InvoiceGroup,
-    IResponsePaginate,
-    ITimestamp,
-    StoreSegment,
-    TNullable
-} from 'app/shared/models';
+import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { StoreSegment } from 'app/shared/models/store-segment.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 export interface ICreditLimitStore extends ITimestamp {
     readonly id: NonNullable<string>;

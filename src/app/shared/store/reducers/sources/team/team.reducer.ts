@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Team } from 'app/shared/models';
+import { Team } from 'app/shared/models/team.model';
 import { TeamActions } from 'app/shared/store/actions';
 
 // Keyname for reducer

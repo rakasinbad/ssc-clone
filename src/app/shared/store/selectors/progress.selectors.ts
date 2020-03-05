@@ -1,7 +1,7 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { fromProgress } from 'app/shared/store/reducers';
 import { Dictionary } from '@ngrx/entity';
-import { Progress } from 'app/shared/models';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Progress } from 'app/shared/models/progress.model';
+import { fromProgress } from 'app/shared/store/reducers';
 
 export const getProgressState = createFeatureSelector<fromProgress.State>(fromProgress.FEATURE_KEY);
 

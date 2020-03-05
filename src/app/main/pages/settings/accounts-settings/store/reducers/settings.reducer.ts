@@ -1,43 +1,9 @@
-/** 
- * ENTITY LIBRARIES
- */
-import {
-    createEntityAdapter,
-//     EntityAdapter,
-    EntityState
-} from '@ngrx/entity';
-
-/** 
- * STORE
- */
-import {
-    Action,
-    createReducer,
-    on
-} from '@ngrx/store';
-
-/**
- * SHARED MODELS
- */
-import { 
-    IErrorHandler,
-    TNullable,
-    TSource
-} from 'app/shared/models';
-
-/**
- * ROOT REDUCER
- */
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { Action, createReducer, on } from '@ngrx/store';
+import { IErrorHandler, TNullable, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-/**
- * MODULE MODELS
- */
 import { User } from '../../models';
-
-/**
- * MODULE ACTIONS
- */
 import { SettingsActions } from '../actions';
 
 /** FEATURE KEY */
@@ -84,19 +50,20 @@ const initialState: State = {
     user: {
         data: null,
         source: 'cache',
-        lastFetch: new Date(),
+        lastFetch: new Date()
     },
     errors: initialErrorState
 };
 
 const settingsReducer = createReducer(
-    /** 
+    /**
      *  ===================================================================
      *  INITIAL STATE
      *  ===================================================================
-     */ 
+     */
+
     initialState,
-    /** 
+    /**
      *  ===================================================================
      *  GETTERS & SETTERS
      *  ===================================================================
@@ -124,20 +91,17 @@ const settingsReducer = createReducer(
     //         productName: payload
     //     })
     // ),
-    /** 
+    /**
      *  ===================================================================
      *  REQUESTS
      *  ===================================================================
-     */ 
-    on(
-        SettingsActions.fetchUserRequest,
-        SettingsActions.patchUserRequest,
-        (state) => ({
-            ...state,
-            isRequesting: true
-        })
-    ),
-    /** 
+     */
+
+    on(SettingsActions.fetchUserRequest, SettingsActions.patchUserRequest, state => ({
+        ...state,
+        isRequesting: true
+    })),
+    /**
      *  ===================================================================
      *  FAILURES
      *  ===================================================================
@@ -151,43 +115,39 @@ const settingsReducer = createReducer(
             errors: adapterError.upsertOne(payload, state.errors)
         })
     ),
-    /** 
+    /**
      *  ===================================================================
      *  SUCCESSES
      *  ===================================================================
-     */ 
-    on(
-        SettingsActions.fetchUserSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isRequesting: false,
-            user: {
-                data: payload.user,
-                source: (payload.source as TSource),
-                lastFetch: new Date()
-            },
-            errors: adapterError.removeOne('fetchUserFailure', state.errors)
-        })
-    ),
-    on(
-        SettingsActions.patchUserSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isRequesting: false,
-            user: {
-                // ...state.user,
-                data: payload.user,
-                source: ('fetch' as TSource),
-                lastFetch: new Date()
-            },
-            errors: adapterError.removeOne('fetchUserFailure', state.errors)
-        })
-    ),
-    /** 
+     */
+
+    on(SettingsActions.fetchUserSuccess, (state, { payload }) => ({
+        ...state,
+        isRequesting: false,
+        user: {
+            data: payload.user,
+            source: payload.source as TSource,
+            lastFetch: new Date()
+        },
+        errors: adapterError.removeOne('fetchUserFailure', state.errors)
+    })),
+    on(SettingsActions.patchUserSuccess, (state, { payload }) => ({
+        ...state,
+        isRequesting: false,
+        user: {
+            // ...state.user,
+            data: payload.user,
+            source: 'fetch' as TSource,
+            lastFetch: new Date()
+        },
+        errors: adapterError.removeOne('fetchUserFailure', state.errors)
+    })),
+    /**
      *  ===================================================================
      *  UPDATE
      *  ===================================================================
-     */ 
+     */
+
     // on(
     //     SettingsActions.updateUser,
     //     (state, { user }) => ({
@@ -195,22 +155,20 @@ const settingsReducer = createReducer(
     //         user: adapterCatalogue.updateOne(catalogue, state.catalogues)
     //     })
     // ),
-    /** 
+    /**
      *  ===================================================================
      *  RESETS
      *  ===================================================================
-     */ 
-    on(
-        SettingsActions.resetUser,
-        state => ({
-            ...state,
-            user: {
-                data: null,
-                source: ('fetch' as TSource),
-                lastFetch: state.user.lastFetch
-            }
-        })
-    )
+     */
+
+    on(SettingsActions.resetUser, state => ({
+        ...state,
+        user: {
+            data: null,
+            source: 'fetch' as TSource,
+            lastFetch: state.user.lastFetch
+        }
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

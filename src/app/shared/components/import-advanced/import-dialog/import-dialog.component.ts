@@ -6,7 +6,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { ITab } from 'app/shared/models';
+import { ITab } from 'app/shared/models/tab.model';
 
 import { IDialogData } from '../models';
 

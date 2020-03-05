@@ -7,6 +7,7 @@
     <div class="center pt-12">
         <!-- CONTENT CARD -->
         <div class="content-card">
+            <!-- CARD HEADER -->
             <sinbad-card-header [config]="cardHeaderConfig" (onClickAdd)="onClickAdd()">
                 <!-- FILTER -->
                 <div
@@ -28,9 +29,10 @@
                     <div
                         *ngIf="selectedViewBy === 'warehouse'"
                         fxLayout="row"
+                        fxLayoutGap="8px"
                     >
                         <!-- "WAREHOUSE NAME" LABEL -->
-                        <label class="font-size-16 mb-4" fxFlex="17" fxFlexAlign="center"> Warehouse Name </label>
+                        <label class="font-size-16 mb-4" fxFlexAlign="center"> Warehouse Name </label>
                         <!-- / "WAREHOUSE NAME" LABEL -->
                         <!-- WAREHOUSE LIST -->
                         <mat-form-field class="font-size-16 mt-16" fxFlex="30" fxFlexAlign="center" appearance="outline">
@@ -42,7 +44,7 @@
                                     *ngFor="let warehouse of (warehouses$ | async)"
                                     [value]="warehouse"
                                     (click)="onSelectedWarehouse(warehouse)"
-                                ></mat-option>
+                                > {{ warehouse?.name || '-' }} </mat-option>
                             </mat-select>
                             <mat-hint class="sinbad-red-fg" *ngIf="!selectedWarehouse">
                                 Please select a warehouse.
@@ -51,6 +53,7 @@
                         <!-- / WAREHOUSE LIST -->
                         <!-- "APPLY FILTER" BUTTON -->
                         <button
+                            *ngIf="!!selectedWarehouse"
                             mat-flat-button
                             fxFlexAlign="center"
                             class="mb-8 ml-16 w-84 h-44 sinbad-yellow"
@@ -60,6 +63,7 @@
                         <!-- / "APPLY FILTER" BUTTON -->
                         <!-- "DETAIL WAREHOUSE" BUTTON -->
                         <button
+                            *ngIf="!!selectedWarehouse"
                             mat-stroked-button
                             fxFlexAlign="center"
                             class="mb-8 ml-16 w-84 h-44 h-44 sinbad-yellow-fg sinbad-yellow-border"
@@ -69,9 +73,40 @@
                     <!-- / "DETAIL WAREHOUSE" BUTTON -->
                     </div>
                     <!-- / WAREHOUSE NAME SELECTION -->
+                    <!-- GEOLOCATION SELECTION -->
+                    <sinbad-geolocation
+                        class="mt-16"
+                        (selectedLocation)="onSelectedLocation($event)"
+                        *ngIf="selectedViewBy === 'area'"
+                    ></sinbad-geolocation>
+                    <!-- / GEOLOCATION SELECTION -->
+                    <ng-template
+                        *ngIf="!!selectedWarehouse && selectedViewBy === 'warehouse'"
+                        last-bottom-left
+                    >
+                        <!-- "APPLY FILTER" BUTTON -->
+                        <button
+                            *ngIf="!!selectedWarehouse"
+                            mat-flat-button
+                            fxFlexAlign="center"
+                            class="mb-8 ml-16 w-84 h-44 sinbad-yellow"
+                        >
+                            Apply
+                        </button>
+                        <!-- / "APPLY FILTER" BUTTON -->
+                    </ng-template>
                 </div>
                 <!-- / FILTER -->
             </sinbad-card-header>
+            <!-- / CARD HEADER -->
+
+            <!-- WAREHOUSE COVERAGES -->
+            
+            <!-- / WAREHOUSE COVERAGES -->
+
+            <!-- WAREHOUSE COVERAGES BY AREA -->
+
+            <!-- / WAREHOUSE COVERAGES BY AREA -->
 
             <!-- <app-warehouse-coverages-main *ngIf="(buttonViewByActive$ | async) ==='warehouse-coverage-main'">
             </app-warehouse-coverages-main>

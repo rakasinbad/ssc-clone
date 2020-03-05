@@ -1,31 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap, exhaustMap, filter, finalize } from 'rxjs/operators';
+import { map, switchMap, catchError, tap, finalize } from 'rxjs/operators';
 
 import {
-    LocationActions, LocationFailureActionNames, WarehouseFailureActionNames
+    WarehouseFailureActionNames
 } from '../actions';
-import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable, throwError, forkJoin } from 'rxjs';
 // import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse, Province, Urban } from 'app/shared/models';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { HelperService, NoticeService } from 'app/shared/helpers';
+import { NoticeService } from 'app/shared/helpers';
 import { WarehouseCoverageApiService } from '../../services/warehouse-coverage-api.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
-import { Store } from 'app/main/pages/attendances/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../reducers';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
-import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { LocationSelectors } from '../selectors';
-import { LocationApiService } from '../../services';
 import { WarehouseCoverageActions } from '../actions';
 import { FormActions } from 'app/shared/store/actions';
+import { User } from 'app/shared/models/user.model';
+import { ErrorHandler } from 'app/shared/models/global.model';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 
@@ -37,7 +30,6 @@ export class WarehouseCoverageEffects {
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
         private whApi$: WarehouseCoverageApiService,
         private notice$: NoticeService,
-        private locationApi$: LocationApiService,
         private router: Router,
         // private helper$: HelperService,
         // private matDialog: MatDialog,

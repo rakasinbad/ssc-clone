@@ -7,18 +7,10 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse } from 'app/shared/models';
-import { FormActions } from 'app/shared/store/actions';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { of } from 'rxjs';
-import {
-    catchError,
-    exhaustMap,
-    finalize,
-    map,
-    switchMap,
-    tap,
-    withLatestFrom
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { AssociationStore } from '../../models';
 import { AssociationStoreApiService } from '../../services';

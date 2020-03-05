@@ -6,7 +6,6 @@ import { Observable, of } from 'rxjs';
 
 import { HelperService } from './helper.service';
 import { ProgressActions } from '../store/actions';
-import { Progress } from '../models';
 
 @Injectable({
     providedIn: 'root'

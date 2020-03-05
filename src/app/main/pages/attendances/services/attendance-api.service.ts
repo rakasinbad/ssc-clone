@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
-import { Store as Merchant } from '../models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { IAttendance, Attendance } from '../models';
+import { Attendance, IAttendance } from '../models';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,7 @@ export class AttendanceApiService {
     constructor(private http: HttpClient, private helperSvc: HelperService) {
         this._url = helperSvc.handleApiRouter(this._endpoint);
     }
-    
+
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
@@ -41,7 +41,7 @@ export class AttendanceApiService {
                 value: params['userId']
             });
         }
-        
+
         this._url = this.helperSvc.handleApiRouter(this._endpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 
@@ -59,7 +59,9 @@ export class AttendanceApiService {
     getStore(supplierId: string): Observable<Merchant> {
         this._url = this.helperSvc.handleApiRouter(this._endpoint);
 
-        return this.http.get<Merchant>(`${this._url}/${supplierId}`, { params: { type: 'attendance' } });
+        return this.http.get<Merchant>(`${this._url}/${supplierId}`, {
+            params: { type: 'attendance' }
+        });
     }
 
     create(body: IAttendance): Observable<any> {

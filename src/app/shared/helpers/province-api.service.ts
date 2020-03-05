@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IProvince, IQueryParams, PaginateResponse } from '../models';
+import { PaginateResponse } from '../models/global.model';
+import { IProvince } from '../models/location.model';
+import { IQueryParams } from '../models/query.model';
 import { HelperService } from './helper.service';
 
 @Injectable({

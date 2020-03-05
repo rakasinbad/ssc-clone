@@ -1,7 +1,16 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewEncapsulation
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'sinbad-search-bar',
@@ -11,7 +20,6 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
-
     // Untuk menandakan penggunaan border atau tidak
     // tslint:disable-next-line:no-input-rename
     @Input('useBorder') useBorder = false;
@@ -41,15 +49,13 @@ export class SearchBarComponent implements OnInit, OnDestroy {
             this.threshold = 500;
         }
 
-        this.search.valueChanges.pipe(
-            debounceTime(this.threshold),
-            takeUntil(this.subs$)
-        ).subscribe(value => this.changed.emit(value));
+        this.search.valueChanges
+            .pipe(debounceTime(this.threshold), takeUntil(this.subs$))
+            .subscribe(value => this.changed.emit(value));
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
     }
-
 }

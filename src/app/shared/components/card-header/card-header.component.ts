@@ -1,12 +1,25 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, Output, EventEmitter, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
-import { ICardHeaderConfiguration, CardHeaderActionConfig } from './models/card-header.model';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { TNullable, ButtonDesignType } from 'app/shared/models';
-import { IButtonImportConfig } from '../import-advanced/models';
-import { Store as NgRxStore } from '@ngrx/store';
-import { fromExport } from '../exports/store/reducers';
-import { ExportActions } from '../exports/store/actions';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+    ViewEncapsulation
+} from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
+import { Store as NgRxStore } from '@ngrx/store';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { TNullable } from 'app/shared/models/global.model';
+import { NgxPermissionsService } from 'ngx-permissions';
+
+import { ExportActions } from '../exports/store/actions';
+import { fromExport } from '../exports/store/reducers';
+import { IButtonImportConfig } from '../import-advanced/models';
+import { CardHeaderActionConfig, ICardHeaderConfiguration } from './models/card-header.model';
 
 @Component({
     selector: 'sinbad-card-header',
@@ -17,23 +30,22 @@ import { fuseAnimations } from '@fuse/animations';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CardHeaderComponent implements OnInit, OnChanges {
-
     importBtnConfig: IButtonImportConfig;
 
     selectedViewByClasses = {
         'red-fg': true,
-        'red-border': true,
+        'red-border': true
     };
 
     notSelectedViewByClasses = {
         'black-fg': true,
-        'grey-300-border': true,
+        'grey-300-border': true
     };
 
     // Class-class untuk mengatur ukuran tombol.
     buttonClasses = {
         'w-92': true,
-        'h-32': true,
+        'h-32': true
     };
 
     // Untuk meletakkan konfigurasi card header.
@@ -57,7 +69,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // tslint:disable-next-line:no-input-rename
     @Input('cardClass') cardClass: string | Array<string> = 'm-16';
 
-
     /**
      * Konfigurasi komponen search.
      */
@@ -77,7 +88,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // tslint:disable-next-line:no-output-rename
     @Output('onSearchChanged') searchChanged: EventEmitter<string> = new EventEmitter<string>();
 
-
     /**
      * Konfigurasi tombol "Batch Actions".
      */
@@ -90,8 +100,9 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     @Input('showBatchActions') showBatchActions = false;
     // Untuk mendengarkan "event" ketika memilih salah 1 action.
     // tslint:disable-next-line:no-output-rename
-    @Output('onActionSelected') actionSelected: EventEmitter<CardHeaderActionConfig> = new EventEmitter<CardHeaderActionConfig>();
-
+    @Output('onActionSelected') actionSelected: EventEmitter<
+        CardHeaderActionConfig
+    > = new EventEmitter<CardHeaderActionConfig>();
 
     /**
      * Konfigurasi tombol "Add".
@@ -107,7 +118,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // tslint:disable-next-line:no-output-rename
     @Output('onClickAdd') clickAdd: EventEmitter<void> = new EventEmitter<void>();
 
-
     /**
      * Konfigurasi tombol "Export".
      */
@@ -121,7 +131,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // Untuk mendengarkan "event" ketika menekan tombol "Export".
     // tslint:disable-next-line:no-output-rename
     @Output('onClickExport') clickExport: EventEmitter<void> = new EventEmitter<void>();
-
 
     /**
      * Konfigurasi tombol "Import".
@@ -137,7 +146,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // tslint:disable-next-line:no-output-rename
     @Output('onClickImport') clickImport: EventEmitter<void> = new EventEmitter<void>();
 
-
     /**
      * Konfigurasi tombol "Filter List".
      */
@@ -151,7 +159,6 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // Untuk mendengarkan "event" ketika menekan tombol "Filter List".
     // tslint:disable-next-line:no-output-rename
     @Output('onClickFilterList') clickFilterList: EventEmitter<void> = new EventEmitter<void>();
-
 
     /**
      * Konfigurasi tombol "Group By".
@@ -173,10 +180,12 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     // Menyimpan ID view by yang terpilih.
     selectedViewById = '';
     // tslint:disable-next-line:no-input-rename
-    @Input('viewByList') viewByList: Array<{ id: string; label: string; }> = [];
+    @Input('viewByList') viewByList: Array<{ id: string; label: string }> = [];
     // tslint:disable-next-line:no-output-rename
-    @Output('onViewByChanged') viewByChanged: EventEmitter<{ id: string; label: string; }> = new EventEmitter<{ id: string; label: string; }>();
-
+    @Output('onViewByChanged') viewByChanged: EventEmitter<{
+        id: string;
+        label: string;
+    }> = new EventEmitter<{ id: string; label: string }>();
 
     /**
      * Constructor.
@@ -184,7 +193,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
     constructor(
         private cd$: ChangeDetectorRef,
         private ngxPermissionsService: NgxPermissionsService,
-        private exportStore: NgRxStore<fromExport.State>,
+        private exportStore: NgRxStore<fromExport.State>
     ) {}
 
     /**
@@ -253,7 +262,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.add.label) {
                     this.addTitle = this.config.add.label;
                 }
-    
+
                 // Memeriksa konfigurasi label untuk permission tombol "Add".
                 if (this.config.add.permissions) {
                     this.addPermissions = this.config.add.permissions;
@@ -266,7 +275,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.export.label) {
                     this.exportTitle = this.config.export.label;
                 }
-    
+
                 // Memeriksa konfigurasi label untuk permission tombol "Export".
                 if (this.config.export.permissions) {
                     this.exportPermissions = this.config.export.permissions;
@@ -279,7 +288,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.import.label) {
                     this.importTitle = this.config.import.label;
                 }
-    
+
                 // Memeriksa konfigurasi label untuk permission tombol "Import".
                 if (this.config.import.permissions) {
                     this.importPermissions = this.config.import.permissions;
@@ -305,7 +314,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.filter.label) {
                     this.filterListTitle = this.config.filter.label;
                 }
-    
+
                 // Memeriksa konfigurasi label untuk permission tombol "Filter List".
                 if (this.config.filter.permissions) {
                     this.filterListPermissions = this.config.filter.permissions;
@@ -318,7 +327,7 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 if (this.config.groupBy.label) {
                     this.groupByTitle = this.config.groupBy.label;
                 }
-    
+
                 // Memeriksa konfigurasi label untuk permission tombol "Group By".
                 if (this.config.groupBy.permissions) {
                     this.groupByPermissions = this.config.groupBy.permissions;
@@ -374,11 +383,13 @@ export class CardHeaderComponent implements OnInit, OnChanges {
                 this.clickExport.emit();
             }
         } else {
-            this.exportStore.dispatch(ExportActions.prepareExportCheck({
-                payload: {
-                    page: this.config.export.pageType,
-                }
-            }));
+            this.exportStore.dispatch(
+                ExportActions.prepareExportCheck({
+                    payload: {
+                        page: this.config.export.pageType
+                    }
+                })
+            );
         }
     }
 
@@ -434,5 +445,4 @@ export class CardHeaderComponent implements OnInit, OnChanges {
         //     }
         // }
     }
-
 }

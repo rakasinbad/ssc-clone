@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Portfolio } from 'app/shared/models';
+import { Portfolio } from 'app/shared/models/portfolio.model';
 import { PortfolioActions } from 'app/shared/store/actions';
 
 // Keyname for reducer

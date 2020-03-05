@@ -5,7 +5,7 @@ import { ErrorNoticeComponent } from '../components/notices/error-notice/error-n
 import { InfoNoticeComponent } from '../components/notices/info-notice/info-notice.component';
 import { SuccessNoticeComponent } from '../components/notices/success-notice/success-notice.component';
 import { WarningNoticeComponent } from '../components/notices/warning-notice/warning-notice.component';
-import { TStatusError } from '../models';
+import { TStatusError } from '../models/global.model';
 
 @Injectable({
     providedIn: 'root'

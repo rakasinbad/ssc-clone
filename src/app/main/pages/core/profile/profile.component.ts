@@ -14,7 +14,7 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { Province, Urban } from 'app/shared/models';
+import { Province, Urban } from 'app/shared/models/location.model';
 import { DropdownActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors } from 'app/shared/store/selectors';
 import { Observable, Subject } from 'rxjs';
@@ -39,10 +39,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
     isEdit: boolean;
 
     profile$: Observable<any>;
-    provinces$: Observable<Province[]>;
-    cities$: Observable<Urban[]>;
-    districts$: Observable<Urban[]>;
-    urbans$: Observable<Urban[]>;
+    provinces$: Observable<Array<Province>>;
+    cities$: Observable<Array<Urban>>;
+    districts$: Observable<Array<Urban>>;
+    urbans$: Observable<Array<Urban>>;
     postcode$: Observable<string>;
     isLoading$: Observable<boolean>;
 
@@ -68,8 +68,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'My Account'

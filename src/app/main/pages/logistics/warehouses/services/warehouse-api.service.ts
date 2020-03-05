@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
+
 import { IWarehouse } from '../models';
 
 /**
@@ -81,5 +82,9 @@ export class WarehouseApiService {
 
     create<T>(body: T): Observable<any> {
         return this.http.post<any>(this._url, body);
+    }
+
+    patch<T>(body: T, id: string): Observable<any> {
+        return this.http.patch<any>(`${this._url}/${id}`, body);
     }
 }

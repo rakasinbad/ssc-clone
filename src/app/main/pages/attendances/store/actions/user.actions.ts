@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-
-import { User } from '../../models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
 
 /**
  * USER

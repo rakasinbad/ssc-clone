@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { WarehouseCoverage } from 'app/shared/models';
+import { WarehouseCoverage } from 'app/shared/models/warehouse-coverage.model';
 
 import { WarehouseCoverageActions } from '../actions';
 

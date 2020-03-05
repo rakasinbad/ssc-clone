@@ -1,5 +1,5 @@
-import { ISearchBarConfiguration } from '../../search-bar/models';
 import { ExportConfiguration } from '../../exports/models';
+import { ISearchBarConfiguration } from '../../search-bar/models';
 
 interface CardHeaderBaseConfig {
     // Label yang ingin ditampilkan di view.
@@ -53,7 +53,7 @@ export interface ICardHeaderConfiguration {
     title?: CardHeaderBaseConfig;
     search?: CardHeaderSearchConfig;
     batchAction?: CardHeaderBatchActionsConfig;
-    viewBy?: CardHeaderViewByConfig ;
+    viewBy?: CardHeaderViewByConfig;
     add?: CardHeaderButtonConfig;
     export?: CardHeaderAdvancedButtonConfig;
     import?: CardHeaderAdvancedButtonConfig;

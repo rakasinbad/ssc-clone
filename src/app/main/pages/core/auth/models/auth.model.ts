@@ -1,4 +1,4 @@
-import { User } from 'app/shared/models';
+import { User } from 'app/shared/models/user.model';
 
 export interface IAuth {
     user: User;

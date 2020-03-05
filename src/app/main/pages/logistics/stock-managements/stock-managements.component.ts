@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 

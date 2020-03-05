@@ -1,6 +1,6 @@
-import { createReducer, Action } from '@ngrx/store';
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { Action, createReducer } from '@ngrx/store';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 export const FEATURE_KEY = 'banks';

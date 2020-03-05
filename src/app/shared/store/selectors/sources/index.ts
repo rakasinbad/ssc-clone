@@ -4,10 +4,4 @@ import * as TemperatureSelectors from './temperature/temperature.selectors';
 import * as WarehouseValueSelectors from './warehouse-value/warehouse-value.selectors';
 import * as WarehouseSelectors from './warehouse/warehouse.selectors';
 
-export {
-    PortfolioSelectors,
-    TeamSelectors,
-    TemperatureSelectors,
-    WarehouseSelectors,
-    WarehouseValueSelectors
-};
+export { PortfolioSelectors, TeamSelectors, TemperatureSelectors, WarehouseSelectors, WarehouseValueSelectors };

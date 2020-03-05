@@ -1,11 +1,13 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, SupplierStore, TSource, User } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { Store as Merchant, UserStore } from '../../models';
-import { StoreActions, StoreSettingActions } from '../actions';
 import { StoreSetting } from '../../models/store-setting.model';
+import { StoreActions, StoreSettingActions } from '../actions';
 
 export const FEATURE_KEY = 'accountStores';
 
@@ -61,7 +63,7 @@ const initialStoreSettingState = adapterStoreSetting.getInitialState<StoreSettin
     total: 0,
     selectedId: null,
     ids: [],
-    entities: {},
+    entities: {}
 });
 
 const adapterStore = createEntityAdapter<SupplierStore>({
@@ -253,7 +255,7 @@ const brandStoreReducer = createReducer(
     //     }),
     //     errors: adapterError.removeOne('deleteStoreEmployeeFailure', state.errors)
     // })),
-    on(StoreSettingActions.resetSelectedStoreSettingId, (state) => ({
+    on(StoreSettingActions.resetSelectedStoreSettingId, state => ({
         ...state,
         settings: {
             ...state.settings,

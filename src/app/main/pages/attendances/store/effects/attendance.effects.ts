@@ -1,21 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { catchOffline } from '@ngx-pwa/offline';
 import { LogService, NoticeService } from 'app/shared/helpers';
-import { NetworkActions, FormActions } from 'app/shared/store/actions';
-import { getParams } from 'app/store/app.reducer';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { FormActions, NetworkActions } from 'app/shared/store/actions';
 import { NetworkSelectors } from 'app/shared/store/selectors';
+import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';
-import { catchError, concatMap, map, switchMap, tap, withLatestFrom, finalize } from 'rxjs/operators';
+import {
+    catchError,
+    concatMap,
+    finalize,
+    map,
+    switchMap,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
 
-import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { Attendance } from '../../models';
 import { AttendanceApiService } from '../../services';
 import { AttendanceActions } from '../actions';
 import { fromAttendance } from '../reducers';
-import { IPaginatedResponse, IQueryParams } from 'app/shared/models';
 
 @Injectable()
 export class AttendanceEffects {
@@ -153,7 +160,7 @@ export class AttendanceEffects {
                                 }
                             })
                         )
-                    ),
+                    )
                 );
             })
         )
@@ -166,69 +173,72 @@ export class AttendanceEffects {
             switchMap(queryParams => {
                 /** WITH PAGINATION */
                 if (queryParams.paginate) {
-                    return this.attendanceApiSvc.find<IPaginatedResponse<Attendance>>(queryParams).pipe(
-                        catchOffline(),
-                        map(resp => {
-                            let newResp = {
-                                total: 0,
-                                data: []
-                            };
+                    return this.attendanceApiSvc
+                        .find<IPaginatedResponse<Attendance>>(queryParams)
+                        .pipe(
+                            catchOffline(),
+                            map(resp => {
+                                let newResp = {
+                                    total: 0,
+                                    data: []
+                                };
 
-                            newResp = {
-                                total: resp.total,
-                                data: resp.data.map(attendance => {
-                                    const newAttendance = new Attendance(
-                                        attendance.id,
-                                        attendance.date,
-                                        attendance.longitudeCheckIn,
-                                        attendance.latitudeCheckIn,
-                                        attendance.longitudeCheckOut,
-                                        attendance.latitudeCheckOut,
-                                        attendance.checkIn,
-                                        attendance.checkOut,
-                                        attendance.locationType,
-                                        attendance.attendanceType,
-                                        attendance.userId,
-                                        attendance.user,
-                                        attendance.createdAt,
-                                        attendance.updatedAt,
-                                        attendance.deletedAt
-                                    );
-    
-                                    newAttendance.user.setUserStores = attendance.user.userStores;
-    
-                                    return newAttendance;
-                                })
-                            };
-    
-                            this.logSvc.generateGroup(
-                                '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-                                {
-                                    payload: {
-                                        type: 'log',
-                                        value: resp
+                                newResp = {
+                                    total: resp.total,
+                                    data: resp.data.map(attendance => {
+                                        const newAttendance = new Attendance(
+                                            attendance.id,
+                                            attendance.date,
+                                            attendance.longitudeCheckIn,
+                                            attendance.latitudeCheckIn,
+                                            attendance.longitudeCheckOut,
+                                            attendance.latitudeCheckOut,
+                                            attendance.checkIn,
+                                            attendance.checkOut,
+                                            attendance.locationType,
+                                            attendance.attendanceType,
+                                            attendance.userId,
+                                            attendance.user,
+                                            attendance.createdAt,
+                                            attendance.updatedAt,
+                                            attendance.deletedAt
+                                        );
+
+                                        newAttendance.user.setUserStores =
+                                            attendance.user.userStores;
+
+                                        return newAttendance;
+                                    })
+                                };
+
+                                this.logSvc.generateGroup(
+                                    '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
+                                    {
+                                        payload: {
+                                            type: 'log',
+                                            value: resp
+                                        }
                                     }
-                                }
-                            );
-    
-                            return AttendanceActions.fetchAttendancesSuccess({
-                                payload: {
-                                    attendances: newResp.data,
-                                    total: newResp.total
-                                }
-                            });
-                        }),
-                        catchError(err =>
-                            of(
-                                AttendanceActions.fetchAttendancesFailure({
+                                );
+
+                                return AttendanceActions.fetchAttendancesSuccess({
                                     payload: {
-                                        id: 'fetchAttendancesFailure',
-                                        errors: err
+                                        attendances: newResp.data,
+                                        total: newResp.total
                                     }
-                                })
+                                });
+                            }),
+                            catchError(err =>
+                                of(
+                                    AttendanceActions.fetchAttendancesFailure({
+                                        payload: {
+                                            id: 'fetchAttendancesFailure',
+                                            errors: err
+                                        }
+                                    })
+                                )
                             )
-                        )
-                    );
+                        );
                 }
 
                 /** WITHOUT PAGINATION */
@@ -267,15 +277,12 @@ export class AttendanceEffects {
                             })
                         };
 
-                        this.logSvc.generateGroup(
-                            '[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE',
-                            {
-                                payload: {
-                                    type: 'log',
-                                    value: resp
-                                }
+                        this.logSvc.generateGroup('[FETCH RESPONSE ATTENDANCES REQUEST] ONLINE', {
+                            payload: {
+                                type: 'log',
+                                value: resp
                             }
-                        );
+                        });
 
                         return AttendanceActions.fetchAttendancesSuccess({
                             payload: {
@@ -299,21 +306,25 @@ export class AttendanceEffects {
         )
     );
 
-    patchAttendanceSuccess$ = createEffect(() => 
-        this.actions$.pipe(
-            ofType(AttendanceActions.patchAttendanceSuccess),
-            withLatestFrom(this.store.select(getParams)),
-            tap(([_, params]) => {
-                const { storeId, employeeId } = params;
+    patchAttendanceSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(AttendanceActions.patchAttendanceSuccess),
+                withLatestFrom(this.store.select(getParams)),
+                tap(([_, params]) => {
+                    const { storeId, employeeId } = params;
 
-                this._$notice.open('Sukses merubah data attendance', 'success', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right'
-                });
+                    this._$notice.open('Sukses merubah data attendance', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                this.router.navigate([`/pages/attendances/${storeId}/employee/${employeeId}/detail`]);
-            })
-        ), { dispatch: false }
+                    this.router.navigate([
+                        `/pages/attendances/${storeId}/employee/${employeeId}/detail`
+                    ]);
+                })
+            ),
+        { dispatch: false }
     );
 
     patchAttendanceRequest$ = createEffect(() =>

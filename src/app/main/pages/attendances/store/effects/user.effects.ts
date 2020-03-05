@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchOffline } from '@ngx-pwa/offline';
-import { LogService } from 'app/shared/helpers';
+import { LogService, UserApiService } from 'app/shared/helpers';
+import { User } from 'app/shared/models/user.model';
 import { of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 
-import { User } from '../../models';
-import { UserApiService } from '../../services';
 import { UserActions } from '../actions';
 
 @Injectable()

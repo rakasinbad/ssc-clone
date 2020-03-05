@@ -5,17 +5,17 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator, MatSort } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 
 import * as fromStockManagements from '../store/reducers';
-import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
     selector: 'app-stock-management-form',

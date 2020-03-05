@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { WarehouseInvoiceGroup } from 'app/shared/models';
+import { WarehouseInvoiceGroup } from 'app/shared/models/warehouse-invoice-group.model';
 import { Observable } from 'rxjs';
 
 import { Warehouse } from '../../models';

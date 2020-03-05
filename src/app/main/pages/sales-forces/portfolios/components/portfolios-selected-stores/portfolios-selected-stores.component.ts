@@ -1,22 +1,42 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, SecurityContext, ViewChild, ViewChildren, ElementRef, HostListener } from '@angular/core';
-import { fuseAnimations } from '@fuse/animations';
-import { Observable, Subject, combineLatest, of } from 'rxjs';
-import { Store as NgRxStore } from '@ngrx/store';
-
-import { Store, Filter } from '../../models';
-import { CoreFeatureState } from '../../store/reducers';
-import { StoreSelector, PortfolioSelector, PortfolioStoreSelector } from '../../store/selectors';
-import { takeUntil, filter, map, withLatestFrom, tap, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
-import { StoreActions, PortfolioActions } from '../../store/actions';
-import { IQueryParams } from 'app/shared/models';
-import { MatDialog, MatSelectionListChange, MatSelectionList } from '@angular/material';
-import { PortfoliosFilterStoresComponent } from '../portfolios-filter-stores/portfolios-filter-stores.component';
-import { FormControl } from '@angular/forms';
-import { DomSanitizer } from '@angular/platform-browser';
-import { environment } from 'environments/environment';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
-import { HelperService, NoticeService } from 'app/shared/helpers';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    SecurityContext,
+    ViewChild,
+    ViewChildren,
+    ViewEncapsulation
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog, MatSelectionListChange } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import { fuseAnimations } from '@fuse/animations';
+import { Store as NgRxStore } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { HelperService, NoticeService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { environment } from 'environments/environment';
+import { combineLatest, Observable, Subject } from 'rxjs';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    filter,
+    map,
+    takeUntil,
+    tap,
+    withLatestFrom
+} from 'rxjs/operators';
+
+import { Filter } from '../../models';
+import { PortfolioActions, StoreActions } from '../../store/actions';
+import { CoreFeatureState } from '../../store/reducers';
+import { PortfolioSelector, PortfolioStoreSelector, StoreSelector } from '../../store/selectors';
+import { PortfoliosFilterStoresComponent } from '../portfolios-filter-stores/portfolios-filter-stores.component';
 
 @Component({
     selector: 'app-portfolios-selected-stores',
@@ -27,7 +47,6 @@ import { ActivatedRoute } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, AfterViewInit {
-
     // Untuk keperluan subscription.
     subs$: Subject<string> = new Subject<string>();
     // Untuk keperluan handle menghapus filter.
@@ -62,8 +81,10 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     screenWidth: number;
 
     @ViewChildren(CdkScrollable, { read: ElementRef }) scrollable: CdkScrollable;
-    @ViewChild('availableStoreScroll', { static: false, read: ElementRef }) availableStoreScroll: ElementRef;
-    @ViewChild('portfolioStoreScroll', { static: false, read: ElementRef }) portfolioStoreScroll: ElementRef;
+    @ViewChild('availableStoreScroll', { static: false, read: ElementRef })
+    availableStoreScroll: ElementRef;
+    @ViewChild('portfolioStoreScroll', { static: false, read: ElementRef })
+    portfolioStoreScroll: ElementRef;
 
     // @HostListener('window:resize')
     // getScreenWidth(): void {
@@ -78,85 +99,83 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         private helperSvc: HelperService,
         private scroll: ScrollDispatcher,
         private noticeSvc: NoticeService,
-        private route: ActivatedRoute,
+        private route: ActivatedRoute
     ) {
         // this.getScreenWidth();
 
-        this.isListStoreLoading$ = this.shopStore.select(
-            StoreSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isListStoreLoading$ = this.shopStore
+            .select(StoreSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
-        this.isPortfolioStoreLoading$ = this.portfolioStore.select(
-            PortfolioSelector.getLoadingState
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.isPortfolioStoreLoading$ = this.portfolioStore
+            .select(PortfolioSelector.getLoadingState)
+            .pipe(takeUntil(this.subs$));
 
-        this.invoiceGroupId$ = this.portfolioStore.select(
-            PortfolioSelector.getSelectedInvoiceGroupId
-        ).pipe(
-            filter(invoiceGroupId => !!invoiceGroupId),
-            takeUntil(this.subs$)
-        );
+        this.invoiceGroupId$ = this.portfolioStore
+            .select(PortfolioSelector.getSelectedInvoiceGroupId)
+            .pipe(
+                filter(invoiceGroupId => !!invoiceGroupId),
+                takeUntil(this.subs$)
+            );
 
-        this.selectedStoreSub$.pipe(
-            withLatestFrom(this.invoiceGroupId$),
-            tap(([$event, invoiceGroupId]) => {
-                const store = ($event.option.value as Store);
-                const isSelected = $event.option.selected;
+        this.selectedStoreSub$
+            .pipe(
+                withLatestFrom(this.invoiceGroupId$),
+                tap(([$event, invoiceGroupId]) => {
+                    const store = $event.option.value as Store;
+                    const isSelected = $event.option.selected;
 
-                if (store.source === 'fetch') {
-                    if (isSelected) {
-                        this.portfolioStore.dispatch(
-                            PortfolioActions.addSelectedStores({
-                                payload: [store]
-                            })
-                        );
+                    if (store.source === 'fetch') {
+                        if (isSelected) {
+                            this.portfolioStore.dispatch(
+                                PortfolioActions.addSelectedStores({
+                                    payload: [store]
+                                })
+                            );
 
-                        this.shopStore.dispatch(
-                            StoreActions.checkStoreAtInvoiceGroupRequest({
-                                payload: {
-                                    storeId: store.id,
-                                    invoiceGroupId
-                                }
-                            })
-                        );
-                    } else {
-                        this.portfolioStore.dispatch(
-                            PortfolioActions.removeSelectedStores({
-                                payload: [store.id]
-                            })
-                        );
+                            this.shopStore.dispatch(
+                                StoreActions.checkStoreAtInvoiceGroupRequest({
+                                    payload: {
+                                        storeId: store.id,
+                                        invoiceGroupId
+                                    }
+                                })
+                            );
+                        } else {
+                            this.portfolioStore.dispatch(
+                                PortfolioActions.removeSelectedStores({
+                                    payload: [store.id]
+                                })
+                            );
+                        }
+                    } else if (store.source === 'list') {
+                        if (!isSelected) {
+                            this.portfolioStore.dispatch(
+                                PortfolioActions.markStoreAsRemovedFromPortfolio({
+                                    payload: store.id
+                                })
+                            );
+                        } else {
+                            this.portfolioStore.dispatch(
+                                PortfolioActions.abortStoreAsRemovedFromPortfolio({
+                                    payload: store.id
+                                })
+                            );
+
+                            this.shopStore.dispatch(
+                                StoreActions.checkStoreAtInvoiceGroupRequest({
+                                    payload: {
+                                        storeId: store.id,
+                                        invoiceGroupId
+                                    }
+                                })
+                            );
+                        }
                     }
-                } else if (store.source === 'list') {
-                    if (!isSelected) {
-                        this.portfolioStore.dispatch(
-                            PortfolioActions.markStoreAsRemovedFromPortfolio({
-                                payload: store.id
-                            })
-                        );
-                    } else {
-                        this.portfolioStore.dispatch(
-                            PortfolioActions.abortStoreAsRemovedFromPortfolio({
-                                payload: store.id
-                            })
-                        );
-
-                        this.shopStore.dispatch(
-                            StoreActions.checkStoreAtInvoiceGroupRequest({
-                                payload: {
-                                    storeId: store.id,
-                                    invoiceGroupId
-                                }
-                            })
-                        );
-                    }
-                }
-            }),
-            takeUntil(this.subs$)
-        ).subscribe();
+                }),
+                takeUntil(this.subs$)
+            )
+            .subscribe();
     }
 
     private debug(label: string, data: any): void {
@@ -177,9 +196,14 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         );
     }
 
-    private requestStore(filters: Array<Filter>, storeType?: string, invoiceGroupId?: string, skip?: number): void {
+    private requestStore(
+        filters: Array<Filter>,
+        storeType?: string,
+        invoiceGroupId?: string,
+        skip?: number
+    ): void {
         const data: IQueryParams = { paginate: true, limit: 20, skip: !skip ? 0 : skip };
-        
+
         for (const fil of filters) {
             data[fil.id] = fil.value.value;
         }
@@ -192,7 +216,7 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                 {
                     fieldName: 'keyword',
                     keyword: searchValue
-                },
+                }
                 // {
                 //     fieldName: 'name',
                 //     keyword: searchValue
@@ -259,18 +283,20 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
     }
 
     clearAllSelectedStores(): void {
-        this.portfolioStore.dispatch(
-            PortfolioActions.confirmRemoveAllSelectedStores()
-        );
+        this.portfolioStore.dispatch(PortfolioActions.confirmRemoveAllSelectedStores());
     }
 
     checkSelectedInvoiceGroupId(invoiceGroupId: string): boolean {
         // Hanya meneruskan observable ini jika sudah memilih Invoice Group.
         if (!invoiceGroupId) {
-            this.noticeSvc.open('Please select one of Invoice Group to view available stores.', 'info', {
-                horizontalPosition: 'right',
-                verticalPosition: 'bottom'
-            });
+            this.noticeSvc.open(
+                'Please select one of Invoice Group to view available stores.',
+                'info',
+                {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom'
+                }
+            );
 
             return false;
         }
@@ -293,9 +319,15 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
             this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
         ]).pipe(
             tap(() => this.shopStore.dispatch(StoreActions.truncateAllStores())),
-            map(([filters, type, invoiceGroupId]) => ({ filters, type: type === 'all' ? 'in-portfolio' : type, invoiceGroupId })),
+            map(([filters, type, invoiceGroupId]) => ({
+                filters,
+                type: type === 'all' ? 'in-portfolio' : type,
+                invoiceGroupId
+            })),
             filter(({ invoiceGroupId }) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
-            tap(({ filters, type, invoiceGroupId }) => this.requestStore(filters, type, invoiceGroupId)),
+            tap(({ filters, type, invoiceGroupId }) =>
+                this.requestStore(filters, type, invoiceGroupId)
+            ),
             map(({ filters }) => filters),
             takeUntil(this.subs$)
         );
@@ -392,15 +424,17 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
 
                     // Hanya menandai toko yang ada di portfolio, namun tidak ditandai akan dihapus nantinya.
                     if (portfolioStoreIds.includes(newStore.id)) {
-                        const selectedStore = portfolioStores.find(pStore => pStore.id === newStore.id);
+                        const selectedStore = portfolioStores.find(
+                            pStore => pStore.id === newStore.id
+                        );
 
                         if (selectedStore && newStore.source === 'list') {
                             newStore = new Store(selectedStore);
                             newStore.setSource = 'list';
-                            newStore.setSelectedStore = !(!!selectedStore.deletedAt);
+                            newStore.setSelectedStore = !!!selectedStore.deletedAt;
                         } else if (selectedStore) {
                             newStore = new Store(selectedStore);
-                            newStore.setSelectedStore = !(!!selectedStore.deletedAt);
+                            newStore.setSelectedStore = !!!selectedStore.deletedAt;
                         }
                     } else {
                         newStore.setSelectedStore = false;
@@ -421,36 +455,31 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         );
 
         // Mengambil jumlah store yang tersedia.
-        this.totalAvailableStore$ = this.shopStore.select(
-            StoreSelector.getTotalStores
-        ).pipe(
-            takeUntil(this.subs$)
-        );
+        this.totalAvailableStore$ = this.shopStore
+            .select(StoreSelector.getTotalStores)
+            .pipe(takeUntil(this.subs$));
 
         // Mengambil jumlah store-nya portfolio dari state.
         this.totalPortfolioStore$ = combineLatest([
             this.portfolioStore.select(PortfolioStoreSelector.getTotalPortfolioStoreEntity),
             this.portfolioStore.select(PortfolioStoreSelector.getTotalPortfolioNewStoreEntity),
-            this.portfolioStore.select(PortfolioStoreSelector.getTotalRemovedPortfolioStoresEntity),
-        ])
-        .pipe(
+            this.portfolioStore.select(PortfolioStoreSelector.getTotalRemovedPortfolioStoresEntity)
+        ]).pipe(
             tap(() => this.debug('TOTAL PORTFOLIO STORES CHECK', {})),
-            map(([portfolioStoreTotal, selectedStoreTotal, deletedPortfolioStores]) => (portfolioStoreTotal + selectedStoreTotal - deletedPortfolioStores)),
+            map(
+                ([portfolioStoreTotal, selectedStoreTotal, deletedPortfolioStores]) =>
+                    portfolioStoreTotal + selectedStoreTotal - deletedPortfolioStores
+            ),
             takeUntil(this.subs$)
         );
 
-        this.removeFilter$.pipe(
-            takeUntil(this.subs$)
-        ).subscribe(id => {
+        this.removeFilter$.pipe(takeUntil(this.subs$)).subscribe(id => {
             if (id) {
-                this.shopStore.dispatch(
-                    StoreActions.removeStoreFilter({ payload: id })
-                );
+                this.shopStore.dispatch(StoreActions.removeStoreFilter({ payload: id }));
             }
         });
 
-        this.search
-            .valueChanges
+        this.search.valueChanges
             .pipe(
                 tap(() => this.debug('SEARCH VALUE CHANGES CHECK', {})),
                 distinctUntilChanged(),
@@ -460,17 +489,22 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                     this.shopStore.select(StoreSelector.getStoreEntityType),
                     this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId)
                 ),
-                filter(([_, __, ___, invoiceGroupId]) => this.checkSelectedInvoiceGroupId(invoiceGroupId)),
+                filter(([_, __, ___, invoiceGroupId]) =>
+                    this.checkSelectedInvoiceGroupId(invoiceGroupId)
+                ),
                 tap(() => this.shopStore.dispatch(StoreActions.truncateAllStores())),
                 takeUntil(this.subs$)
-            ).subscribe(([_, filters, type, invoiceGroupId]) => this.requestStore(filters, type, invoiceGroupId));
+            )
+            .subscribe(([_, filters, type, invoiceGroupId]) =>
+                this.requestStore(filters, type, invoiceGroupId)
+            );
 
         this.subs$.pipe(
             withLatestFrom(
                 this.shopStore.select(StoreSelector.getAllFilters),
                 this.shopStore.select(StoreSelector.getStoreEntityType),
                 this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
-                this.totalAvailableStore$,
+                this.totalAvailableStore$
             ),
             tap(([text, filters, type, invoiceGroupId, totalAvailableStores]) => {
                 if (text === 'LOAD_MORE_AVAILABLE_STORES') {
@@ -483,59 +517,136 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
 
     ngAfterViewInit(): void {
         // 'Mendengarkan' event scrolling dari CDK Scrollable.
-        this.scroll.scrolled(500)
+        this.scroll
+            .scrolled(500)
             .pipe(
                 // Hanya mengambil dari element-nya list available store dan list portfolio store.
                 filter(cdkScrollable => {
-                    return this.availableStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id;
+                    return (
+                        this.availableStoreScroll.nativeElement.id ===
+                        (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id
+                    );
                     // || this.portfolioStoreScroll.nativeElement.id === (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id;
                 }),
                 // Mengambil nilai dari observable-nya loading list store and loading portfolio store.
-                withLatestFrom(this.isListStoreLoading$, this.isPortfolioStoreLoading$, this.totalAvailableStore$, this.availableStores$),
+                withLatestFrom(
+                    this.isListStoreLoading$,
+                    this.isPortfolioStoreLoading$,
+                    this.totalAvailableStore$,
+                    this.availableStores$
+                ),
                 // Tidak akan dilanjutkan jika keduanya sedang loading.
-                filter(([cdkScrollable, listStoreLoading, portfolioStoreLoading, totalStores, availableStores]) => {
-                    if ((cdkScrollable as CdkScrollable).getElementRef().nativeElement.id === this.availableStoreScroll.nativeElement.id
-                        && availableStores.length >= totalStores) {
-                        return false;
-                    }
+                filter(
+                    ([
+                        cdkScrollable,
+                        listStoreLoading,
+                        portfolioStoreLoading,
+                        totalStores,
+                        availableStores
+                    ]) => {
+                        if (
+                            (cdkScrollable as CdkScrollable).getElementRef().nativeElement.id ===
+                                this.availableStoreScroll.nativeElement.id &&
+                            availableStores.length >= totalStores
+                        ) {
+                            return false;
+                        }
 
-                    return !listStoreLoading || !portfolioStoreLoading;
-                }),
+                        return !listStoreLoading || !portfolioStoreLoading;
+                    }
+                ),
                 // Mengubah nilai observable menjadi element-nya saja tanpa membawa status loading.
                 map(([cdkScrollable]) => (cdkScrollable as CdkScrollable).getElementRef()),
                 // Hanya diteruskan jika element sudah ter-scroll sampai bawah.
-                filter((elementRef) => this.helperSvc.isElementScrolledToBottom(elementRef)),
+                filter(elementRef => this.helperSvc.isElementScrolledToBottom(elementRef)),
                 withLatestFrom(
                     this.shopStore.select(StoreSelector.getStoreTotalEntity),
                     this.portfolioStore.select(PortfolioSelector.getPortfolioTotalEntity),
                     this.shopStore.select(StoreSelector.getAllFilters),
                     this.shopStore.select(StoreSelector.getStoreEntityType),
                     this.portfolioStore.select(PortfolioSelector.getSelectedInvoiceGroupId),
-                    (elementRef, totalAvailableStore, totalPortfolioStore, filters, type, invoiceGroupId) => {
-                        if (elementRef.nativeElement.id === this.availableStoreScroll.nativeElement.id) {
+                    (
+                        elementRef,
+                        totalAvailableStore,
+                        totalPortfolioStore,
+                        filters,
+                        type,
+                        invoiceGroupId
+                    ) => {
+                        if (
+                            elementRef.nativeElement.id ===
+                            this.availableStoreScroll.nativeElement.id
+                        ) {
                             return ([
-                                'AVAILABLE_STORES', elementRef, totalAvailableStore, filters, type, invoiceGroupId
-                            ]) as unknown as [string, ElementRef<HTMLElement>, number, Array<Filter>, string, string];
-                        } else if (elementRef.nativeElement.id === this.portfolioStoreScroll.nativeElement.id) {
+                                'AVAILABLE_STORES',
+                                elementRef,
+                                totalAvailableStore,
+                                filters,
+                                type,
+                                invoiceGroupId
+                            ] as unknown) as [
+                                string,
+                                ElementRef<HTMLElement>,
+                                number,
+                                Array<Filter>,
+                                string,
+                                string
+                            ];
+                        } else if (
+                            elementRef.nativeElement.id ===
+                            this.portfolioStoreScroll.nativeElement.id
+                        ) {
                             return ([
-                                'PORTFOLIO_STORES', elementRef, totalPortfolioStore, filters, type, invoiceGroupId
-                            ]) as unknown as [string, ElementRef<HTMLElement>, number, Array<Filter>, string, string];
+                                'PORTFOLIO_STORES',
+                                elementRef,
+                                totalPortfolioStore,
+                                filters,
+                                type,
+                                invoiceGroupId
+                            ] as unknown) as [
+                                string,
+                                ElementRef<HTMLElement>,
+                                number,
+                                Array<Filter>,
+                                string,
+                                string
+                            ];
                         } else {
                             return ([
-                                'UNKNOWN', elementRef, 0, filters, type, invoiceGroupId
-                            ]) as unknown as [string, ElementRef<HTMLElement>, number, Array<Filter>, string, string];
+                                'UNKNOWN',
+                                elementRef,
+                                0,
+                                filters,
+                                type,
+                                invoiceGroupId
+                            ] as unknown) as [
+                                string,
+                                ElementRef<HTMLElement>,
+                                number,
+                                Array<Filter>,
+                                string,
+                                string
+                            ];
                         }
                     }
                 ),
                 takeUntil(this.subs$)
-            ).subscribe(([element, elementRef, total, filters, type, invoiceGroupId]) => {
+            )
+            .subscribe(([element, elementRef, total, filters, type, invoiceGroupId]) => {
                 // Melakukan scrolling ke atas terhadap elemen tersebut.
                 // elementRef.nativeElement.scrollTop = 0;
-                
+
                 // Pemisahan tugas berdasarkan element yang ingin diperiksa.
                 if (element === 'AVAILABLE_STORES') {
                     // Debugging purpose.
-                    this.debug('AVAILABLE STORE SCROLL HAPPENED.', { element, elementRef, total, filters, type, invoiceGroupId });
+                    this.debug('AVAILABLE STORE SCROLL HAPPENED.', {
+                        element,
+                        elementRef,
+                        total,
+                        filters,
+                        type,
+                        invoiceGroupId
+                    });
                     // Menaikkan scroll ke atas agar tidak ikut ke bawah.
                     elementRef.nativeElement.scrollTop -= 100;
 
@@ -543,7 +654,6 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                 } else if (element === 'PORTFOLIO_STORES') {
                     // Debugging purpose.
                     // this.debug('PORTFOLIO STORE SCROLL HAPPENED.', { element, elementRef, total, filters, type, invoiceGroupId });
-
                     // Menaikkan scroll ke atas agar tidak ikut ke bawah.
                     // elementRef.nativeElement.scrollTop -= 100;
                     // // Menangkap ID dari parameter URL.
@@ -554,7 +664,14 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
                     //     this.requestPortfolioStore(portfolioId, total);
                     // }
                 } else {
-                    this.debug('UNKNOWN SCROLL HAPPENED.', { element, elementRef, total, filters, type, invoiceGroupId });
+                    this.debug('UNKNOWN SCROLL HAPPENED.', {
+                        element,
+                        elementRef,
+                        total,
+                        filters,
+                        type,
+                        invoiceGroupId
+                    });
                 }
             });
     }
@@ -569,5 +686,4 @@ export class PortfoliosSelectedStoresComponent implements OnInit, OnDestroy, Aft
         this.selectedStoreSub$.next();
         this.selectedStoreSub$.complete();
     }
-
 }

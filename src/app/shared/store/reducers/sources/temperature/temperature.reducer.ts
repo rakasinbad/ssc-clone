@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Temperature } from 'app/shared/models';
+import { Temperature } from 'app/shared/models/temperature.model';
 import { TemperatureActions } from 'app/shared/store/actions';
 
 // Keyname for reducer

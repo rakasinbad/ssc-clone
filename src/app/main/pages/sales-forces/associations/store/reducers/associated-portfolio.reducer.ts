@@ -60,30 +60,45 @@ const reducer = createReducer<State>(
     }),
     on(AssociatedPortfolioActions.addSelectedPortfolios, (state, { payload }) => {
         return adapter.upsertMany(payload, {
-            ...state,
+            ...state
         });
     }),
     on(AssociatedPortfolioActions.removeSelectedPortfolios, (state, { payload }) => {
         return adapter.removeMany(payload, {
-            ...state,
+            ...state
         });
     }),
     on(AssociatedPortfolioActions.removeSelectedPortfolios, (state, { payload }) => {
         return adapter.removeMany(payload, {
-            ...state,
+            ...state
         });
     }),
     on(AssociatedPortfolioActions.markPortfolioAsRemoved, (state, { payload }) => {
-        return adapter.upsertMany(payload.map(id => new Portfolio({ ...state.entities[id], isSelected: false, deletedAt: new Date().toISOString() })), {
-            ...state,
-        });
+        return adapter.upsertMany(
+            payload.map(
+                id =>
+                    new Portfolio({
+                        ...state.entities[id],
+                        isSelected: false,
+                        deletedAt: new Date().toISOString()
+                    })
+            ),
+            {
+                ...state
+            }
+        );
     }),
     on(AssociatedPortfolioActions.abortPortfolioAsRemoved, (state, { payload }) => {
-        return adapter.upsertMany(payload.map(id => new Portfolio({ ...state.entities[id], isSelected: true, deletedAt: null })), {
-            ...state,
-        });
+        return adapter.upsertMany(
+            payload.map(
+                id => new Portfolio({ ...state.entities[id], isSelected: true, deletedAt: null })
+            ),
+            {
+                ...state
+            }
+        );
     }),
-    on(AssociatedPortfolioActions.clearAssociatedPortfolios, (state) => adapter.removeAll(state))
+    on(AssociatedPortfolioActions.clearAssociatedPortfolios, state => adapter.removeAll(state))
 );
 
 // Set anything for the export

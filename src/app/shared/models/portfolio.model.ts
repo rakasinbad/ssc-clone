@@ -1,6 +1,8 @@
 import { StorePortfolio } from 'app/main/pages/accounts/merchants/models';
-import { InvoiceGroup, ITimestamp, TNullable } from 'app/shared/models';
 
+import { TNullable } from './global.model';
+import { InvoiceGroup } from './invoice-group.model';
+import { ITimestamp } from './timestamp.model';
 import { User } from './user.model';
 
 export interface IPortfolio extends ITimestamp {

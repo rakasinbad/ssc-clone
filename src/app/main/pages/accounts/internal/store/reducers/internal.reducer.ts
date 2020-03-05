@@ -1,6 +1,8 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource, User, UserSupplier } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import * as fromRoot from 'app/store/app.reducer';
 
 import { InternalActions } from '../actions';

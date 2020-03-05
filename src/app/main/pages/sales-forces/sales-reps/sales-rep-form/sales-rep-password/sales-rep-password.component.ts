@@ -13,9 +13,10 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
-import { LifecyclePlatform } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
@@ -25,7 +26,6 @@ import { SalesRep, SalesRepFormPasswordPut } from '../../models';
 import { SalesRepActions } from '../../store/actions';
 import * as fromSalesReps from '../../store/reducers';
 import { SalesRepSelectors } from '../../store/selectors';
-import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-sales-rep-password',

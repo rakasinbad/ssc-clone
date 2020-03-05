@@ -25,31 +25,26 @@ import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validato
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import {
-    Cluster,
-    District,
-    Hierarchy,
-    IQueryParams,
-    Province,
-    StoreGroup,
-    StoreSegment,
-    StoreType,
-    Urban,
-    VehicleAccessibility
-} from 'app/shared/models';
+import { Cluster } from 'app/shared/models/cluster.model';
+import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+import { District, Province, Urban } from 'app/shared/models/location.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { StoreGroup } from 'app/shared/models/store-group.model';
+import { StoreSegment } from 'app/shared/models/store-segment.model';
+import { StoreType } from 'app/shared/models/store-type.model';
+import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
-import { combineLatest, fromEvent, Observable, Subject, of } from 'rxjs';
+import { NgxPermissionsService } from 'ngx-permissions';
+import * as numeral from 'numeral';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
     filter,
     map,
     takeUntil,
-    tap,
-    withLatestFrom,
-    switchMap,
-    finalize
+    withLatestFrom
 } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
@@ -58,8 +53,6 @@ import { Store as Merchant, StoreSetting } from '../models';
 import { StoreActions, StoreSettingActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
-import * as numeral from 'numeral';
-import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-merchant-form',

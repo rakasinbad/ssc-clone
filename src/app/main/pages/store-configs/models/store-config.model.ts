@@ -1,4 +1,5 @@
-import { Timestamp, TNullable, TStatus } from 'app/shared/models';
+import { TNullable, TStatus } from 'app/shared/models/global.model';
+import { Timestamp } from 'app/shared/models/timestamp.model';
 
 export class StoreConfig extends Timestamp {
     id: string;

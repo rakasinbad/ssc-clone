@@ -1,13 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { TNullable } from 'app/shared/models/global.model';
 
-import {
-    fromPortfolios,
-    mainFeatureKey,
-    CoreFeatureState,
-    CoreState,
-} from '../reducers';
-import { Store } from '../../models';
-import { TNullable } from 'app/shared/models';
+import { CoreFeatureState, CoreState, fromPortfolios, mainFeatureKey } from '../reducers';
 
 // Get state from the feature key.
 export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
@@ -61,10 +56,7 @@ export const getTotalRemovedPortfolioStoresEntity = createSelector(
     stores => stores.filter(store => store.deletedAt).length
 );
 
-export const getLoadingState = createSelector(
-    getPortfolioStoreEntity,
-    state => state.isLoading
-);
+export const getLoadingState = createSelector(getPortfolioStoreEntity, state => state.isLoading);
 
 export const getNeedRefreshState = createSelector(
     getPortfolioStoreEntity,
@@ -79,15 +71,15 @@ export const getPortfolioNewStoreIds = createSelector(
 export const getPortfolioNewStore = createSelector(
     getPortfolioNewStoreEntity,
     getPortfolioNewStoreIds,
-    (portfolios, ids) => (portfolios[ids[0]] as TNullable<Store>)
+    (portfolios, ids) => portfolios[ids[0]] as TNullable<Store>
 );
 
 export const getPortfolioNewStores = createSelector(
     getPortfolioNewStoreEntity,
-    selectAllPortfolioNewStores,
+    selectAllPortfolioNewStores
 );
 
 export const getTotalPortfolioNewStoreEntity = createSelector(
     getPortfolioNewStoreEntity,
     selectPortfolioNewStoreTotal
-)
+);

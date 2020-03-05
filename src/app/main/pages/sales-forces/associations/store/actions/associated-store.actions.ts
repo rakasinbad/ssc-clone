@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
-import { Store } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Store } from 'app/shared/models/store.model';
 
 export type failureActionNames = 'fetchAssociatedStoresFailure';
 
@@ -47,6 +48,8 @@ export const markInitialized = createAction('[Associations] Mark as Initialized'
 
 export const abortInitialized = createAction('[Associations] Abort as Initialized');
 
-export const confirmToClearAssociatedStores = createAction('[Associations Page] Confirm to Clear Associated Stores');
+export const confirmToClearAssociatedStores = createAction(
+    '[Associations Page] Confirm to Clear Associated Stores'
+);
 
 export const clearAssociatedStores = createAction('[Associations Page] Clear Associated Stores');

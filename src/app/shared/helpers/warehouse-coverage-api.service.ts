@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams } from '../models';
+import { IQueryParams } from '../models/query.model';
 import { HelperService } from './helper.service';
 
 @Injectable({

@@ -1,5 +1,3 @@
 import * as ExportSelector from './exports.selectors';
 
-export {
-    ExportSelector
-};
+export { ExportSelector };

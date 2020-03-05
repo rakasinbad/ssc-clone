@@ -1,11 +1,13 @@
-import { District, IQueryParams } from 'app/shared/models';
-import { DataSource, CollectionViewer } from '@angular/cdk/collections';
+import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { Store } from '@ngrx/store';
-import { fromMerchant } from '../store/reducers';
-import { Observable, Subject, of, BehaviorSubject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { District } from 'app/shared/models/location.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { DropdownActions } from 'app/shared/store/actions';
+import { DropdownSelectors } from 'app/shared/store/selectors';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import { fromMerchant } from '../store/reducers';
 
 export class DistrictDataSource extends DataSource<District | undefined> {
     search: string;

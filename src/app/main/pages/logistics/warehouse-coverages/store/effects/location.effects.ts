@@ -11,18 +11,20 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable, throwError, forkJoin } from 'rxjs';
 // import { PortfoliosApiService } from '../../services/portfolios-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse, Province, Urban } from 'app/shared/models';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TypedAction } from '@ngrx/store/src/models';
-import { Store } from 'app/main/pages/attendances/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../reducers';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
 import { LocationSelectors } from '../selectors';
-import { LocationApiService } from '../../services';
+import { LocationApiService } from '../../services/location-api.service';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
+import { Province, Urban } from 'app/shared/models/location.model';
 
 type AnyAction = { payload: any; } & TypedAction<any>;
 

@@ -3,7 +3,7 @@ import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
 import { environment } from 'environments/environment';
 import { SkuAssignments } from '../../models/sku-assignments.model';
 import { SkuAssignmentsActions } from '../actions';
-import { Catalogue } from 'app/shared/models';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 
 // Set reducer's feature key
 export const FEATURE_KEY = 'skuAssignments';

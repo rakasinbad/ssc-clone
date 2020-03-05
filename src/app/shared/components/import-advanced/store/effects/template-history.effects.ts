@@ -5,7 +5,8 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { ExportLogApiService, NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, PaginateResponse, User } from 'app/shared/models';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { User } from 'app/shared/models/user.model';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 

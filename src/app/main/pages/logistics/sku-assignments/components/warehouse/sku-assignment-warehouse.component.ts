@@ -17,12 +17,13 @@ import { Observable, Subject, merge } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
-import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { SelectionModel } from '@angular/cdk/collections';
 import { SkuAssignmentsWarehouse } from '../../models/sku-assignments-warehouse.model';
-import { SkuAssignmentsWarehouseSelectors } from '../../store/selectors';
+import * as SkuAssignmentsWarehouseSelectors from '../../store/selectors/sku-assignments-warehouse.selectors';
 import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 
 @Component({
     selector: 'app-sku-assignments-warehouse',

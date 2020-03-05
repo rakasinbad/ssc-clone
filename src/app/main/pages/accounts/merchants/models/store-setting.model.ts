@@ -1,4 +1,5 @@
-import { ITimestamp, TNullable } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
 
 interface IStoreSetting extends ITimestamp {
     id: string;
@@ -27,7 +28,7 @@ export class StoreSetting implements IStoreSetting {
             storeIterationNumber,
             createdAt,
             updatedAt,
-            deletedAt,
+            deletedAt
         } = data;
 
         this.id = id;

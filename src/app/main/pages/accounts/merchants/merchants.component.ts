@@ -14,30 +14,28 @@ import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { ExportSelector } from 'app/shared/components/exports/store/selectors';
+import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import {
-    IQueryParams,
-    LifecyclePlatform,
-    SupplierStore,
-    User,
-    ButtonDesignType
-} from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
-import { merge, Observable, Subject, combineLatest } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil, map } from 'rxjs/operators';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 import { StoreActions } from './store/actions';
 import { fromMerchant } from './store/reducers';
 import { StoreSelectors } from './store/selectors';
-import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 
 @Component({
     selector: 'app-merchants',

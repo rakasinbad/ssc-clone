@@ -5,13 +5,9 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { PortfolioApiService } from 'app/shared/helpers';
-import {
-    ErrorHandler,
-    IPortfolio,
-    IQueryParams,
-    PaginateResponse,
-    Portfolio
-} from 'app/shared/models';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { IPortfolio, Portfolio } from 'app/shared/models/portfolio.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import * as fromRoot from 'app/store/app.reducer';
 import { asyncScheduler, of } from 'rxjs';
 import {

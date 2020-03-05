@@ -1,9 +1,9 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { User } from 'app/shared/models/user.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { User } from '../../models';
 import { UserActions } from '../actions';
 
 export const FEATURE_KEY = 'users';
@@ -44,14 +44,10 @@ export const initialState: State = {
 
 const userReducer = createReducer(
     initialState,
-    on(
-        UserActions.fetchUserRequest,
-        UserActions.fetchUsersRequest,
-        state => ({
-            ...state,
-            isLoading: true
-        })
-    ),
+    on(UserActions.fetchUserRequest, UserActions.fetchUsersRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
     on(UserActions.fetchUsersFailure, (state, { payload }) => ({
         ...state,
         isLoading: false,
@@ -97,20 +93,14 @@ const userReducer = createReducer(
 
         return newState;
     }),
-    on(
-        UserActions.setSelectedUser,
-        (state, { payload }) => ({
-            ...state,
-            user: payload
-        })
-    ),
-    on(
-        UserActions.resetSelectedUser,
-        (state) => ({
-            ...state,
-            user: null
-        })
-    )
+    on(UserActions.setSelectedUser, (state, { payload }) => ({
+        ...state,
+        user: payload
+    })),
+    on(UserActions.resetSelectedUser, state => ({
+        ...state,
+        user: null
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

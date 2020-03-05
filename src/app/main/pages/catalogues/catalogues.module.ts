@@ -1,33 +1,29 @@
-import { environment } from '../../../../environments/environment';
-
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { ExportsEffects } from 'app/shared/components/exports/store/effects';
+import { fromExport } from 'app/shared/components/exports/store/reducers';
+import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
+import { environment } from 'environments/environment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
 
-import { CataloguesRoutingModule } from './catalogues.routes';
-import { CataloguesComponent } from './catalogues.component';
-import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
-import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
-import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
-import { CataloguesSelectCategoryComponent } from './catalogues-select-category/catalogues-select-category.component';
-import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
-import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
-
-import { CatalogueEffects } from './store/effects';
-
-import { fromCatalogue, fromBrand } from './store/reducers';
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
+import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
+import { CataloguesEditPriceStockComponent } from './catalogues-edit-price-stock/catalogues-edit-price-stock.component';
+import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
+import { CataloguesImportComponent } from './catalogues-import/catalogues-import.component';
+import { CataloguesRemoveComponent } from './catalogues-remove/catalogues-remove.component';
+import { CataloguesSelectCategoryComponent } from './catalogues-select-category/catalogues-select-category.component';
+import { CataloguesComponent } from './catalogues.component';
+import { CataloguesRoutingModule } from './catalogues.routes';
+import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
-import { ExportsComponent } from '../../../shared/components/exports/exports.component';
-import { fromExport } from 'app/shared/components/exports/store/reducers';
-import { ExportsEffects } from 'app/shared/components/exports/store/effects';
-import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
+import { fromBrand, fromCatalogue } from './store/reducers';
+
 // import { style } from '@angular/animations';
 
 @NgModule({
@@ -53,10 +49,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         NgxPermissionsModule.forChild(),
         QuillModule.forRoot({
             modules: {
-                toolbar: [
-                    ['bold'],
-                    [{ list: 'ordered'}, { list: 'bullet' }],
-                ]
+                toolbar: [['bold'], [{ list: 'ordered' }, { list: 'bullet' }]]
             },
             placeholder: '',
             debug: environment.staging ? 'warn' : environment.production ? false : 'log'
@@ -66,7 +59,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         StoreModule.forFeature(fromBrand.FEATURE_KEY, fromBrand.reducer),
         StoreModule.forFeature(fromExport.featureKey, fromExport.reducer),
 
-        EffectsModule.forFeature([ BrandEffects, CatalogueEffects, ExportsEffects ])
+        EffectsModule.forFeature([BrandEffects, CatalogueEffects, ExportsEffects])
     ],
     entryComponents: [
         CataloguesImportComponent,
@@ -74,7 +67,7 @@ import { SharedComponentsModule } from 'app/shared/components/shared-components.
         CataloguesEditPriceStockComponent,
         CataloguesSelectCategoryComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent,
+        CataloguesActiveInactiveComponent
     ]
 })
-export class CataloguesModule { }
+export class CataloguesModule {}

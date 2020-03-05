@@ -7,13 +7,6 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import {
-    ErrorHandler,
-    IQueryParams,
-    PaginateResponse,
-    EStatus,
-    IPaginatedResponse
-} from 'app/shared/models';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
@@ -27,13 +20,15 @@ import {
 } from 'rxjs/operators';
 
 import { SkuAssignmentsWarehouse } from '../../models';
-import { SkuAssignmentsWarehouseApiService } from '../../services';
+import {SkuAssignmentsWarehouseApiService  } from '../../services/sku-assignments-warehouse-api.service';
 import { SkuAssignmentsWarehouseActions } from '../actions';
 import * as fromSkuAssignmentsWarehouse from '../reducers';
 import { MatDialog } from '@angular/material';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
 import { Update } from '@ngrx/entity';
 import { UpdateStr } from '@ngrx/entity/src/models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class SkuAssignmentsWarehouseEffects {

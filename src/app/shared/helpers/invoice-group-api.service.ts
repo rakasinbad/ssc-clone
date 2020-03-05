@@ -2,7 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { InvoiceGroup, IQueryParams, PaginateResponse } from '../models';
+import { PaginateResponse } from '../models/global.model';
+import { InvoiceGroup } from '../models/invoice-group.model';
+import { IQueryParams } from '../models/query.model';
 import { HelperService } from './helper.service';
 
 /**

@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
 import { WarehouseActions } from 'app/shared/store/actions';
 
 // Keyname for reducer
@@ -27,13 +27,13 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(WarehouseActions.fetchWarehousesFailure, (state, { payload }) => {
+    on(WarehouseActions.fetchWarehouseFailure, (state, { payload }) => {
         return adapter.upsertOne(payload, state);
     }),
-    on(WarehouseActions.fetchWarehousesSuccess, state => {
-        return adapter.removeOne('fetchWarehousesFailure', state);
+    on(WarehouseActions.fetchWarehouseSuccess, state => {
+        return adapter.removeOne('fetchWarehouseFailure', state);
     }),
-    on(WarehouseActions.clearWarehousesState, state => {
+    on(WarehouseActions.clearWarehouseState, state => {
         return adapter.removeAll({ ...state });
     })
 );

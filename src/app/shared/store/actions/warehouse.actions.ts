@@ -1,30 +1,33 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
+import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch [Warehouses]
+// Fetch [Warehouse]
 // -----------------------------------------------------------------------------------------------------
 
-export const fetchWarehousesRequest = createAction(
-    '[Helper Sources - Warehouses API] Fetch Warehouses Request',
+export const fetchWarehouseRequest = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchWarehousesFailure = createAction(
-    '[Helper Sources - Warehouses API] Fetch Warehouses Failure',
+export const fetchWarehouseFailure = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Failure',
     props<{ payload: ErrorHandler }>()
 );
 
-export const fetchWarehousesSuccess = createAction(
-    '[Helper Sources - Warehouses API] Fetch Warehouses Success',
-    props<{ payload: { data: Array<Warehouse>; total: number } }>()
+export const fetchWarehouseSuccess = createAction(
+    '[Helper Sources - Warehouse API] Fetch Warehouse Success',
+    props<{ payload: Array<Warehouse> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
 
-export const clearWarehousesState = createAction(
-    '[Helper Sources - Warehouses] Clear Warehouses State'
+export const clearWarehouseState = createAction(
+    '[Helper Sources - Warehouse] Clear Warehouse State'
 );
+
+export type FailureActions = 'fetchWarehouseFailure';

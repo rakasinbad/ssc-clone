@@ -14,7 +14,7 @@ import {
 } from '@angular/material';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
-import { LifecyclePlatform } from 'app/shared/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { Moment } from 'moment';
 
 @Component({

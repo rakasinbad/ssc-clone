@@ -1,7 +1,7 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
+import { Store } from 'app/shared/models/store.model';
 
-import { Store } from 'app/shared/models';
 import { AssociatedStoreActions } from '../actions';
 
 // Keyname for reducer
@@ -60,37 +60,43 @@ const reducer = createReducer<State>(
     }),
     on(AssociatedStoreActions.addSelectedStores, (state, { payload }) => {
         return adapter.upsertMany(payload, {
-            ...state,
+            ...state
         });
     }),
     on(AssociatedStoreActions.removeSelectedStores, (state, { payload }) => {
         return adapter.removeMany(payload, {
-            ...state,
+            ...state
         });
     }),
     on(AssociatedStoreActions.markStoreAsRemoved, (state, { payload }) => {
-        return adapter.upsertMany(payload.map(id => {
-            const newStore = state.entities[id];
-            newStore.isSelected = false;
-            newStore.deletedAt = new Date().toISOString();
+        return adapter.upsertMany(
+            payload.map(id => {
+                const newStore = state.entities[id];
+                newStore.isSelected = false;
+                newStore.deletedAt = new Date().toISOString();
 
-            return new Store(newStore);
-        }), {
-            ...state,
-        });
+                return new Store(newStore);
+            }),
+            {
+                ...state
+            }
+        );
     }),
     on(AssociatedStoreActions.abortStoreAsRemoved, (state, { payload }) => {
-        return adapter.upsertMany(payload.map(id => {
-            const newStore = state.entities[id];
-            newStore.isSelected = true;
-            newStore.deletedAt = null;
+        return adapter.upsertMany(
+            payload.map(id => {
+                const newStore = state.entities[id];
+                newStore.isSelected = true;
+                newStore.deletedAt = null;
 
-            return new Store(newStore);
-        }), {
-            ...state,
-        });
+                return new Store(newStore);
+            }),
+            {
+                ...state
+            }
+        );
     }),
-    on(AssociatedStoreActions.clearAssociatedStores, (state) => adapter.removeAll(state))
+    on(AssociatedStoreActions.clearAssociatedStores, state => adapter.removeAll(state))
 );
 
 // Set anything for the export

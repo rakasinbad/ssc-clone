@@ -1,18 +1,16 @@
 import {
-    Component,
-    OnInit,
-    OnDestroy,
-    ViewEncapsulation,
     ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation,
     ViewChild
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
-import { IBreadcrumbs } from 'app/shared/models';
-import { UiActions, FormActions } from 'app/shared/store/actions';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { MatSelect } from '@angular/material';
+import { Store as NgRxStore } from '@ngrx/store';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 
 import { fromSkuAssignments } from '../store/reducers';
 import * as fromWarehouses from 'app/main/pages/logistics/warehouses/store/reducers';
@@ -23,6 +21,8 @@ import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { map, takeUntil } from 'rxjs/operators';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { WarehouseActions } from 'app/shared/store/actions';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSelect } from '@angular/material';
 
 @Component({
     selector: 'app-sku-assignment-form',
@@ -108,7 +108,7 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
             map(warehouses => {
                 if (warehouses.length === 0) {
                     this.warehousesStore.dispatch(
-                        WarehouseActions.fetchWarehousesRequest({
+                        WarehouseActions.fetchWarehouseRequest({
                             payload: {
                                 paginate: true
                             }

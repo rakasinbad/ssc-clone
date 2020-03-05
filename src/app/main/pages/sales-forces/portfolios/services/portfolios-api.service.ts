@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HelperService } from 'app/shared/helpers';
 import { HttpClient } from '@angular/common/http';
-import { Portfolio, IPortfolioAddForm } from '../models/portfolios.model';
-import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
+import { Injectable } from '@angular/core';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { HelperService } from 'app/shared/helpers';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
-import { Store } from 'app/main/pages/attendances/models';
+
+import { IPortfolioAddForm, Portfolio } from '../models/portfolios.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class PortfoliosApiService {
-
     private _url: string;
 
     private readonly _endpoint = '/portfolios';
@@ -18,10 +19,7 @@ export class PortfoliosApiService {
     private readonly _storeEndpoint = '/stores';
     private readonly _exportEndpoint = '/download/export-portfolios';
 
-    constructor(
-        private http: HttpClient,
-        private helper$: HelperService,
-    ) { }
+    constructor(private http: HttpClient, private helper$: HelperService) {}
 
     exportPortfoliosRequest(supplierId: string): Observable<{ url: string }> {
         this._url = this.helper$.handleApiRouter(this._exportEndpoint);
@@ -46,7 +44,9 @@ export class PortfoliosApiService {
         if (params['type']) {
             switch (params['type']) {
                 case 'outside':
-                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+                case 'inside':
+                    newArgs.push({ key: 'type', value: params['type'] });
+                    break;
             }
         }
 

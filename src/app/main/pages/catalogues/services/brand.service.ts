@@ -1,12 +1,9 @@
-import { Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-
-import { IQueryParams } from 'app/shared/models';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-
-import { Brand } from '../models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'

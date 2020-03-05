@@ -1,38 +1,36 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ViewEncapsulation,
-    OnDestroy,
-    AfterViewInit,
-    ViewChild,
-    ElementRef
-} from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-import { fuseAnimations } from '@fuse/animations';
-import { PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
-// NgRx's Libraries
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, Portfolio } from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
-// RxJS' Libraries
-import { Observable, Subject, merge } from 'rxjs';
-import { flatMap, takeUntil } from 'rxjs/operators';
-// Environment variables.
 import { environment } from 'environments/environment';
-// Entity model.
-import { AssociationStore } from '../../models/';
-// State management's stuffs.
-import * as fromAssociationStores from '../../store/reducers';
-import { AssociationStoresActions } from '../../store/actions';
-import { AssociationSelectors, AssociationStoreSelectors } from '../../store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
+import { merge, Observable, Subject } from 'rxjs';
+import { flatMap, takeUntil } from 'rxjs/operators';
+
+import { AssociationStore } from '../../models/';
+import { AssociationStoresActions } from '../../store/actions';
+import * as fromAssociationStores from '../../store/reducers';
+import { AssociationSelectors, AssociationStoreSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-associations-store',
     templateUrl: './association-store.component.html',
     styleUrls: ['./association-store.component.scss'],
+    // tslint:disable-next-line: no-host-metadata-property
     host: {
         class: 'content-card mx-16 sinbad-black-10-border'
     },

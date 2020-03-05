@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
 import { WarehouseValueActions } from 'app/shared/store/actions';
 
 // Keyname for reducer
@@ -31,7 +31,7 @@ const reducer = createReducer<State>(
         return adapter.upsertOne(payload, state);
     }),
     on(WarehouseValueActions.fetchWarehouseValueSuccess, state => {
-        return adapter.removeOne('fetchTemperatureFailure', state);
+        return adapter.removeOne('fetchWarehouseValueFailure', state);
     }),
     on(WarehouseValueActions.clearWarehouseValueState, state => {
         return adapter.removeAll({ ...state });

@@ -18,12 +18,14 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import { ExportActions } from 'app/shared/components/exports/store/actions';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { fromExport } from 'app/shared/components/exports/store/reducers';
 import { ExportSelector } from 'app/shared/components/exports/store/selectors';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -38,7 +40,6 @@ import { statusOrder } from './status';
 import { OrderActions } from './store/actions';
 import { fromOrder } from './store/reducers';
 import { OrderSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-orders',
@@ -76,7 +77,7 @@ export class OrdersComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['OMS.IMPORT'],
             useAdvanced: true,
             pageType: 'orders'
-        },
+        }
     };
 
     search: FormControl = new FormControl('');

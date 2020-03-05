@@ -1,50 +1,33 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation,
-    ElementRef,
-    AfterViewInit
+    ViewEncapsulation
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatAutocompleteSelectedEvent, MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import { select, Store as NgRxStore } from '@ngrx/store';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, Role } from 'app/shared/models';
-import { DropdownActions, UiActions } from 'app/shared/store/actions';
-import { DropdownSelectors } from 'app/shared/store/selectors';
+import { Store as NgRxStore } from '@ngrx/store';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+import { HelperService } from 'app/shared/helpers';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Role } from 'app/shared/models/role.model';
+import { UiActions } from 'app/shared/store/actions';
+import { environment } from 'environments/environment';
 import * as moment from 'moment';
-import { Observable, of, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-
-import { Attendance, Store as Merchant } from '../models';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
 import { locale as indonesian } from '../i18n/id';
-
-/**
- * ACTIONS
- */
+import { Attendance } from '../models';
 import { AttendanceActions, MerchantActions, UserActions } from '../store/actions';
-
-/**
- * REDUCERS
- */
 import { fromAttendance, fromMerchant, fromUser } from '../store/reducers';
-
-/**
- * SELECTORS
- */
 import { AttendanceSelectors, MerchantSelectors } from '../store/selectors';
-import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-attendance-store-detail',
@@ -130,8 +113,8 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -219,8 +202,8 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Attendances',
@@ -243,19 +226,19 @@ export class AttendanceStoreDetailComponent implements AfterViewInit, OnInit, On
                 limit: this.paginator.pageSize || this.defaultPageSize,
                 skip: this.defaultPageSize * this.paginator.pageIndex
             };
-    
+
             /** Menyalakan opsi pagination ke back-end. */
             data['paginate'] = true;
-    
+
             /** Mengambil ID dari parameter URL dan dikirim ke back-end untuk mengambil data attendance berdasarkan tokonya. */
             data['storeId'] = this.route.snapshot.params.id;
-    
+
             /** Mengambil arah sortir dan data yang ingin disotir. */
             if (this.sort.direction) {
                 data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
                 data['sortBy'] = this.sort.active;
             }
-    
+
             /** Melakukan request dengan membawa query string yang telah disiapkan. */
             this._fromAttendance.dispatch(
                 AttendanceActions.fetchAttendancesRequest({

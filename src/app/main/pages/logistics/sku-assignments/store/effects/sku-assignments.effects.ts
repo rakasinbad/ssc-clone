@@ -11,7 +11,6 @@ import { of, Observable } from 'rxjs';
 import { SkuAssignmentsApiService } from '../../services/sku-assignments-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
 import { SkuAssignments } from '../../models/sku-assignments.model';
-import { AnyAction, IQueryParams, TNullable, User, ErrorHandler, IPaginatedResponse } from 'app/shared/models';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -19,6 +18,10 @@ import { fromSkuAssignments } from '../reducers';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
+import { User } from 'app/shared/models/user.model';
+import { AnyAction } from 'app/shared/models/actions.model';
 
 @Injectable()
 export class SkuAssignmentsEffects {

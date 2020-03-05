@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-import { PortfoliosComponent } from './portfolios.component';
-import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form.component';
-import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
-import { AuthGuard } from '../../core/auth/auth.guard';
+import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
+
+import { AuthGuard } from '../../core/auth/auth.guard';
+import { PortfolioDetailsComponent } from './pages/portfolio-details/portfolio-details.component';
+import { PortfoliosFormComponent } from './pages/portfolios-form/portfolios-form.component';
+import { PortfoliosComponent } from './portfolios.component';
 
 const routes: Routes = [
     {
@@ -99,11 +99,11 @@ const routes: Routes = [
                 }
             }
         }
-    },
+    }
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class PortfoliosRoutingModule { }
+export class PortfoliosRoutingModule {}

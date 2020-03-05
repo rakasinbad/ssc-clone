@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Profile

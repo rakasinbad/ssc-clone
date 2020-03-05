@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams, ErrorHandler } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { ErrorHandler } from 'app/shared/models/global.model';
 
 export type failureActionNames =
     'fetchWarehouseCoveragesFailure' |

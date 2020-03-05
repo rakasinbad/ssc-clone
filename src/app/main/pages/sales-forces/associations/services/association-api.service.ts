@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { Observable } from 'rxjs';
 
-import { Store as NgRxStore } from '@ngrx/store';
-import { IAssociation, IAssociationForm } from '../models';
-import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/store/reducers';
 import { PortfolioActions } from '../../portfolios/store/actions';
+import { CoreFeatureState as PortfolioCoreFeatureState } from '../../portfolios/store/reducers';
+import { IAssociation, IAssociationForm } from '../models';
 
 /**
  *
@@ -54,11 +54,12 @@ export class AssociationApiService {
     findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
         const newArg = supplierId
             ? [
-                {
-                key: 'supplierId',
-                value: supplierId
-                }
-            ] : [];
+                  {
+                      key: 'supplierId',
+                      value: supplierId
+                  }
+              ]
+            : [];
 
         if (params['associated']) {
             newArg.push({
@@ -108,7 +109,7 @@ export class AssociationApiService {
 
     findStore<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
-    
+
         if (!isNaN(params['supplierId'])) {
             newArgs.push({
                 key: 'supplierId',
@@ -119,7 +120,9 @@ export class AssociationApiService {
         if (params['type']) {
             switch (params['type']) {
                 case 'outside':
-                case 'inside': newArgs.push({ key: 'type', value: params['type']} ); break;
+                case 'inside':
+                    newArgs.push({ key: 'type', value: params['type'] });
+                    break;
             }
         }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { IBreadcrumbs } from 'app/shared/models';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import * as fromRoot from 'app/store/app.reducer';

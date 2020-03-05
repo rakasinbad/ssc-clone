@@ -13,8 +13,8 @@ const featureKey = 'warehouses';
  * @interface State
  */
 interface State {
-    [fromWarehouses.featureKey]: fromWarehouses.State;
     [fromWarehouseErrs.featureKey]: fromWarehouseErrs.State;
+    [fromWarehouses.featureKey]: fromWarehouses.State;
 }
 
 /**
@@ -36,8 +36,8 @@ interface FeatureState extends fromRoot.State {
  */
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
-        [fromWarehouses.featureKey]: fromWarehouses.reducer,
-        [fromWarehouseErrs.featureKey]: fromWarehouseErrs.reducer
+        [fromWarehouseErrs.featureKey]: fromWarehouseErrs.reducer,
+        [fromWarehouses.featureKey]: fromWarehouses.reducer
     })(state, action);
 }
 

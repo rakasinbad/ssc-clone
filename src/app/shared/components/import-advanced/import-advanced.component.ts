@@ -10,15 +10,16 @@ import {
 } from '@angular/core';
 import { MatDialog, ThemePalette } from '@angular/material';
 import { Store } from '@ngrx/store';
+import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 import { NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, ITab, LifecyclePlatform } from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { ITab } from 'app/shared/models/tab.model';
 import { take } from 'rxjs/operators';
 
 import { ImportDialogComponent } from './import-dialog/import-dialog.component';
 import { IButtonImportConfig, IDialogData } from './models';
 import { fromImportAdvanced } from './store/reducers';
-import { ImportAdvancedActions } from './store/actions';
-import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
 
 @Component({
     selector: 'sinbad-import-advanced',

@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams, ErrorHandler, Province } from 'app/shared/models';
-import { Urban } from '../../models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { Province, Urban } from 'app/shared/models/location.model';
 
 export type failureActionNames =
     'fetchProvincesFailure' |

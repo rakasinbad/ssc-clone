@@ -1,7 +1,8 @@
 // Import things.
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
-import { ErrorHandler } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+
 import { PortfolioActions } from '../actions';
 
 // The reducer's feature key.

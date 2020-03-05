@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler, IQueryParams } from 'app/shared/models';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+
 import { Portfolio } from '../../../portfolios/models';
 
 export type failureActionNames = 'fetchAssociatedPortfoliosFailure';
@@ -47,7 +49,11 @@ export const markInitialized = createAction('[Associations] Mark as Initialized'
 
 export const abortInitialized = createAction('[Associations] Abort as Initialized');
 
-export const confirmToClearAssociatedPortfolios = createAction('[Associations Page] Confirm to Clear Associated Portfolios');
+export const confirmToClearAssociatedPortfolios = createAction(
+    '[Associations Page] Confirm to Clear Associated Portfolios'
+);
 
-export const clearAssociatedPortfolios = createAction('[Associations Page] Clear Associated Portfolios');
+export const clearAssociatedPortfolios = createAction(
+    '[Associations Page] Clear Associated Portfolios'
+);
 // export const clearStoreState = createAction('[Association Page] Reset Core State');

@@ -1,42 +1,21 @@
 /** Angular Core Libraries */
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Inject,
     OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    ChangeDetectorRef,
+    ViewEncapsulation
 } from '@angular/core';
-import {
-    FormArray,
-    FormBuilder,
-    Validators
-} from '@angular/forms';
+import { FormArray, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-/** NgRx */
 import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
-/** RxJS */
-import {
-    Observable,
-    Subject
-} from 'rxjs';
-import {
-    map,
-    takeUntil
-} from 'rxjs/operators';
-
-/** Models */
-import {
-    CatalogueCategory
-} from '../models';
-
-/** Actions */
+import { CatalogueCategory } from '../models';
 import { CatalogueActions } from '../store/actions';
-
-/** Reducers */
 import { fromCatalogue } from '../store/reducers';
 import { CatalogueSelectors } from '../store/selectors';
 
@@ -58,7 +37,6 @@ interface ISelectedCategoryForm {
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-
 export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
     /** Untuk penanda bahwa data yang di-input sudah memenuhi kriteria atau belum. */
     public isFulfilled: boolean;
@@ -82,7 +60,7 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
 
     /** Subject, untuk pipe takeUntil-nya Observable biar auto-unsubscribe. */
     private _unSubs$: Subject<void>;
-    
+
     constructor(
         /**
          * Melakukan injeksi data yang dikirim oleh komponen lain.
@@ -91,11 +69,14 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
         @Inject(MAT_DIALOG_DATA) public data: any,
         private _cd: ChangeDetectorRef,
         private fb: FormBuilder,
-        private store: Store<fromCatalogue.FeatureState>,
+        private store: Store<fromCatalogue.FeatureState>
     ) {}
 
     private joinSelectedCategories(categories: Array<ISelectedCategoryForm>): string {
-        return categories.filter(c => c.id).map(c => c.name).join(' > ');
+        return categories
+            .filter(c => c.id)
+            .map(c => c.name)
+            .join(' > ');
     }
 
     private resetSelectedCategoryTree(level: number): void {
@@ -107,8 +88,15 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
             level++;
         }
     }
-    
-    public onSelectCategory(_: Event, id: string, data: CatalogueCategory, name: string, level: number, hasChild: any): void {
+
+    public onSelectCategory(
+        _: Event,
+        id: string,
+        data: CatalogueCategory,
+        name: string,
+        level: number,
+        hasChild: any
+    ): void {
         if (hasChild) {
             this.isFulfilled = false;
             // Jika parentId nya null, berarti dia induk kategori.
@@ -130,85 +118,89 @@ export class CataloguesSelectCategoryComponent implements OnDestroy, OnInit {
     }
 
     public selectCategory(): void {
-        this.store.dispatch(CatalogueActions.setSelectedCategories({
-            payload: [
-                ...this.selectedCategoriesForm.controls
-                    .filter(control => control.get('id').value)
-                    .map((control, idx, controls) => ({
-                        id: control.get('id').value,
-                        name: control.get('name').value,
-                        parent: idx === 0 ? null : controls[idx - 1].get('id').value,
-                        hasChildren: !!control.get('hasChild').value
-                    })
-                )
-            ]
-        }));
+        this.store.dispatch(
+            CatalogueActions.setSelectedCategories({
+                payload: [
+                    ...this.selectedCategoriesForm.controls
+                        .filter(control => control.get('id').value)
+                        .map((control, idx, controls) => ({
+                            id: control.get('id').value,
+                            name: control.get('name').value,
+                            parent: idx === 0 ? null : controls[idx - 1].get('id').value,
+                            hasChildren: !!control.get('hasChild').value
+                        }))
+                ]
+            })
+        );
     }
-    
+
     ngOnInit(): void {
         /** Inisialisasi Subject. */
         this._unSubs$ = new Subject<void>();
 
         /** Inisialisasi FormArray untuk kategori hingga level 4. */
-        this.selectedCategoriesForm = this.fb.array([
-            // Level 1
-            this.fb.group({
-                id: this.fb.control(null, Validators.required),
-                idx: this.fb.control(null, Validators.required),
-                name: this.fb.control(null, Validators.required),
-                hasChild: false,
-            }, Validators.required),
-            // Level 2
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null),
-                hasChild: false
-            }),
-            // Level 3
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null),
-                hasChild: false
-            }),
-            // Level 4
-            this.fb.group({
-                id: this.fb.control(null),
-                idx: this.fb.control(null),
-                name: this.fb.control(null),
-                hasChild: false
-            }),
-        ], Validators.required);
+        this.selectedCategoriesForm = this.fb.array(
+            [
+                // Level 1
+                this.fb.group(
+                    {
+                        id: this.fb.control(null, Validators.required),
+                        idx: this.fb.control(null, Validators.required),
+                        name: this.fb.control(null, Validators.required),
+                        hasChild: false
+                    },
+                    Validators.required
+                ),
+                // Level 2
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null),
+                    hasChild: false
+                }),
+                // Level 3
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null),
+                    hasChild: false
+                }),
+                // Level 4
+                this.fb.group({
+                    id: this.fb.control(null),
+                    idx: this.fb.control(null),
+                    name: this.fb.control(null),
+                    hasChild: false
+                })
+            ],
+            Validators.required
+        );
 
         /** Melakukan observable saat nilai pada FormArray berubah. */
-        this.selectedCategories$
-            = this.selectedCategoriesForm.valueChanges
-                .pipe(
-                    takeUntil(this._unSubs$),
-                    map<(Array<ISelectedCategoryForm>), string>(this.joinSelectedCategories)
-                );
+        this.selectedCategories$ = this.selectedCategoriesForm.valueChanges.pipe(
+            takeUntil(this._unSubs$),
+            map<Array<ISelectedCategoryForm>, string>(this.joinSelectedCategories)
+        );
 
         /** Melakukan subscribe ke selector untuk mendapatkan kategori yang telah terpilih. */
-        this.store.select(CatalogueSelectors.getSelectedCategories)
-                    .pipe(
-                        takeUntil(this._unSubs$)
-                    )
-                    .subscribe(categories => {
-                        console.log(categories);
-                    });
+        this.store
+            .select(CatalogueSelectors.getSelectedCategories)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(categories => {
+                console.log(categories);
+            });
 
-        this.store.select(CatalogueSelectors.getCategoryTree)
-                    .pipe(
-                        takeUntil(this._unSubs$)
-                    ).subscribe(tree => {
-                        if (tree.length === 0) {
-                            return this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
-                        }
-        
-                        this.categoryTree = tree;
-                        this._cd.markForCheck();
-                    });
+        this.store
+            .select(CatalogueSelectors.getCategoryTree)
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(tree => {
+                if (tree.length === 0) {
+                    return this.store.dispatch(CatalogueActions.fetchCategoryTreeRequest());
+                }
+
+                this.categoryTree = tree;
+                this._cd.markForCheck();
+            });
     }
 
     ngOnDestroy(): void {

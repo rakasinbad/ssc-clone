@@ -1,12 +1,12 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { Action, createReducer, on } from '@ngrx/store';
-import { IErrorHandler, TSource } from 'app/shared/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-// import { StoreCatalogue } from '../../models';
+import { StoreCatalogue, StoreHistoryInventory } from '../../models/store-catalogue.model';
 import { StoreCatalogueActions } from '../actions';
-import { StoreHistoryInventory, StoreCatalogue } from '../../models/store-catalogue.model';
 
+// import { StoreCatalogue } from '../../models';
 export const FEATURE_KEY = 'storeCatalogues';
 
 interface StoreCatalogueState extends EntityState<StoreCatalogue> {
@@ -56,13 +56,10 @@ export const initialState: State = {
 
 const storeCatalogueReducer = createReducer(
     initialState,
-    on(
-        StoreCatalogueActions.setSelectedStoreCatalogue,
-        (state, { payload }) => ({
-            ...state,
-            selectedStoreCatalogueId: payload
-        })
-    ),
+    on(StoreCatalogueActions.setSelectedStoreCatalogue, (state, { payload }) => ({
+        ...state,
+        selectedStoreCatalogueId: payload
+    })),
     on(
         StoreCatalogueActions.fetchStoreCatalogueRequest,
         StoreCatalogueActions.fetchStoreCataloguesRequest,
@@ -77,44 +74,39 @@ const storeCatalogueReducer = createReducer(
         StoreCatalogueActions.fetchStoreCataloguesFailure,
         StoreCatalogueActions.fetchStoreCatalogueHistoriesFailure,
         (state, { payload }) => ({
+            ...state,
+            isLoading: false,
+            errors: adapterError.upsertOne(payload, state.errors)
+        })
+    ),
+    on(StoreCatalogueActions.fetchStoreCatalogueSuccess, (state, { payload }) => ({
         ...state,
         isLoading: false,
-        errors: adapterError.upsertOne(payload, state.errors)
+        storeCatalogues: adapterStoreCatalogue.upsertOne(
+            payload.storeCatalogue,
+            state.storeCatalogues
+        ),
+        errors: adapterError.removeOne('fetchStoreCatalogueFailure', state.errors)
     })),
-    on(
-        StoreCatalogueActions.fetchStoreCatalogueSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            storeCatalogues: adapterStoreCatalogue.upsertOne(payload.storeCatalogue, state.storeCatalogues),
-            errors: adapterError.removeOne('fetchStoreCatalogueFailure', state.errors)
-        })
-    ),
-    on(
-        StoreCatalogueActions.fetchStoreCataloguesSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            isDeleting: false,
-            storeCatalogues: adapterStoreCatalogue.addAll(payload.storeCatalogues, {
-                ...state.storeCatalogues,
-                total: payload.total
-            }),
-            errors: adapterError.removeOne('fetchStoreCataloguesFailure', state.errors)
-        })
-    ),
-    on(
-        StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess,
-        (state, { payload }) => ({
-            ...state,
-            isLoading: false,
-            catalogueHistories: adapterCatalogueHistory.addAll(payload.catalogueHistories, {
-                ...state.catalogueHistories,
-                total: payload.total
-            }),
-            errors: adapterError.removeOne('fetchStoreCatalogueHistoriesFailure', state.errors)
-        })
-    ),
+    on(StoreCatalogueActions.fetchStoreCataloguesSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isDeleting: false,
+        storeCatalogues: adapterStoreCatalogue.addAll(payload.storeCatalogues, {
+            ...state.storeCatalogues,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchStoreCataloguesFailure', state.errors)
+    })),
+    on(StoreCatalogueActions.fetchStoreCatalogueHistoriesSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        catalogueHistories: adapterCatalogueHistory.addAll(payload.catalogueHistories, {
+            ...state.catalogueHistories,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchStoreCatalogueHistoriesFailure', state.errors)
+    }))
 );
 
 export function reducer(state: State | undefined, action: Action): State {

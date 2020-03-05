@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
+import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
 import { WarehouseActions } from 'app/shared/store/actions';
 
 // Keyname for reducer
@@ -19,7 +19,7 @@ interface State extends EntityState<Warehouse> {
     total: number;
 }
 
-// Adapter for teams state
+// Adapter for warehouses state
 const adapter = createEntityAdapter<Warehouse>({ selectId: row => row.id });
 
 // Initialize state
@@ -32,23 +32,22 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(WarehouseActions.fetchWarehousesRequest, state => ({
+    on(WarehouseActions.fetchWarehouseRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(WarehouseActions.fetchWarehousesFailure, state => ({
+    on(WarehouseActions.fetchWarehouseFailure, state => ({
         ...state,
         isLoading: false
     })),
-    on(WarehouseActions.fetchWarehousesSuccess, (state, { payload }) => {
-        return adapter.addAll(payload.data, {
+    on(WarehouseActions.fetchWarehouseSuccess, (state, { payload }) => {
+        return adapter.addAll(payload, {
             ...state,
             isLoading: false,
-            selectedId: null,
-            total: payload.total
+            selectedId: null
         });
     }),
-    on(WarehouseActions.clearWarehousesState, state => {
+    on(WarehouseActions.clearWarehouseState, state => {
         return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
     })
 );

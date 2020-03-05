@@ -24,20 +24,19 @@ import { ReactiveFormConfig } from '@rxweb/reactive-form-validators';
 import { locale as navigationEnglish } from 'app/navigation/i18n/en';
 import { locale as navigationIndonesian } from 'app/navigation/i18n/id';
 import { navigation } from 'app/navigation/navigation';
-import { LifecyclePlatform } from 'app/shared/models';
+import { environment } from 'environments/environment';
+import * as LogRocket from 'logrocket';
 import { NgxPermissionsService, NgxRolesService } from 'ngx-permissions';
 import { concat, interval, Subject } from 'rxjs';
 import { distinctUntilChanged, first, takeUntil } from 'rxjs/operators';
-import { environment } from 'environments/environment';
 
+import { IAuth } from './main/pages/core/auth/models';
 import { AuthActions } from './main/pages/core/auth/store/actions';
 import { AuthSelectors } from './main/pages/core/auth/store/selectors';
 import { statusOrder } from './main/pages/orders/status';
 import { NavigationService, NoticeService } from './shared/helpers';
+import { LifecyclePlatform } from './shared/models/global.model';
 import * as fromRoot from './store/app.reducer';
-
-import * as LogRocket from 'logrocket';
-import { IAuth } from './main/pages/core/auth/models';
 
 if (environment.logRocketId) {
     LogRocket.init(environment.logRocketId, {
@@ -51,15 +50,15 @@ if (environment.logRocketId) {
             },
             responseSanitizer: response => {
                 if (response.body) {
-                    if ((response.body as unknown as IAuth).token) {
+                    if (((response.body as unknown) as IAuth).token) {
                         // Menghapus token dari body response.
-                        (response.body as unknown as IAuth).token = null;
+                        ((response.body as unknown) as IAuth).token = null;
                     }
                 }
 
                 return response;
-            },
-        },
+            }
+        }
     });
 }
 

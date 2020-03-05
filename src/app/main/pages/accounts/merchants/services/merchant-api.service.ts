@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
-import { IQueryParams, SupplierStore, SupplierStoreOptions } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { SupplierStore, SupplierStoreOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
+
 import { Store as Merchant } from '../models';
 
 /**

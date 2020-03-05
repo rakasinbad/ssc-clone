@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -7,27 +8,15 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, IQueryParams, PaginateResponse, EStatus } from 'app/shared/models';
-import { FormActions, UiActions } from 'app/shared/store/actions';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { of } from 'rxjs';
-import {
-    catchError,
-    exhaustMap,
-    finalize,
-    map,
-    switchMap,
-    tap,
-    withLatestFrom
-} from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { SalesRep, SalesRepForm, SalesRepFormPatch, SalesRepBatchActions } from '../../models';
+import { SalesRep } from '../../../sales-reps/models';
 import { SalesRepApiService } from '../../services';
 import { SalesRepActions } from '../actions';
 import * as fromSalesReps from '../reducers';
-import { MatDialog } from '@angular/material';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { Update } from '@ngrx/entity';
-import { UpdateStr } from '@ngrx/entity/src/models';
 
 @Injectable()
 export class SalesRepEffects {

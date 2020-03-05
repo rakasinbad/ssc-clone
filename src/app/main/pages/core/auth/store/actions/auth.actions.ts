@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler } from 'app/shared/models';
+import { IErrorHandler } from 'app/shared/models/global.model';
 
 import { Auth } from '../../models';
 

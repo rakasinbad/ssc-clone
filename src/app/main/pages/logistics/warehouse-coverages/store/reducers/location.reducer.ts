@@ -1,8 +1,7 @@
 import { WarehouseCoverageActions, LocationActions } from '../actions';
 import { createReducer, on } from '@ngrx/store';
 import { EntityState, createEntityAdapter } from '@ngrx/entity';
-import { Province } from 'app/shared/models';
-import { Urban } from '../../models';
+import { Province, Urban } from 'app/shared/models/location.model';
 
 // Keyname for reducer
 export const featureKey = 'locations';

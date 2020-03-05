@@ -1,10 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { IQueryParams, IErrorHandler } from 'app/shared/models';
-import { StoreSetting } from '../../models/store-setting.model';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
-export type storeSettingFailureActionNames =
-    'fetchStoreSettingsFailure' | 'updateStoreSettingFailure' | 'createStoreSettingFailure'
-;
+import { StoreSetting } from '../../models/store-setting.model';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Settings
@@ -31,7 +29,7 @@ export const fetchStoreSettingsSuccess = createAction(
 
 export const createStoreSettingRequest = createAction(
     '[Store Setting API] Create Store Setting Request',
-    props<{ payload: { body: Partial<StoreSetting>; } }>()
+    props<{ payload: { body: Partial<StoreSetting> } }>()
 );
 
 export const createStoreSettingFailure = createAction(
@@ -77,6 +75,13 @@ export const confirmUpdateStoreSetting = createAction(
     props<{ payload: { body: Partial<StoreSetting>; id: string } }>()
 );
 
-export const resetSelectedStoreSettingId = createAction('[Store Setting] Reset Selected Store Setting ID');
+export const resetSelectedStoreSettingId = createAction(
+    '[Store Setting] Reset Selected Store Setting ID'
+);
 
 export const truncateStoreSetting = createAction('[Store Setting] Truncate Store Settings');
+
+export type storeSettingFailureActionNames =
+    | 'fetchStoreSettingsFailure'
+    | 'updateStoreSettingFailure'
+    | 'createStoreSettingFailure';

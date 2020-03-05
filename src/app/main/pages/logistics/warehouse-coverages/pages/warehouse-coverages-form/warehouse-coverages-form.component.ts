@@ -7,10 +7,8 @@ import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxj
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take, exhaustMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { Province, IQueryParams, IBreadcrumbs } from 'app/shared/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
-import { LocationSelectors } from '../../store/selectors';
-import { LocationActions, WarehouseCoverageActions } from '../../store/actions';
+import { WarehouseCoverageActions, LocationActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actions';
@@ -20,6 +18,10 @@ import { FormSelectors } from 'app/shared/store/selectors';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
+import { Province } from 'app/shared/models/location.model';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { LocationSelectors } from '../../store/selectors';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -280,7 +282,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         );
 
         // Mengambil daftar warehouse dari state.
-        this.locationStore.dispatch(WarehouseActions.fetchWarehousesRequest({
+        this.locationStore.dispatch(WarehouseActions.fetchWarehouseRequest({
             payload: {
                 paginate: true,
                 limit: 100,

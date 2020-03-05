@@ -1,4 +1,4 @@
-import { ITimestamp, TNullable } from 'app/shared/models';
+import { TNullable } from 'app/shared/models/global.model';
 
 interface ISkuAssignmentsWarehouse {
     id: string;

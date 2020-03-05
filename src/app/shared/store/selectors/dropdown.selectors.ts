@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { GeoParameterType } from 'app/shared/models';
+import { GeoParameterType } from 'app/shared/models/global.model';
 import { sortBy, unionBy, uniqBy } from 'lodash';
 
 import { fromDropdown } from '../reducers';

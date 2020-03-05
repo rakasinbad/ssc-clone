@@ -11,8 +11,9 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dial
 import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
-import { ErrorMessageService, LogService, NoticeService } from 'app/shared/helpers';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
+import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
+import { ChangeConfirmationComponent } from 'app/shared/modals';
+import { NgxPermissionsService } from 'ngx-permissions';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
@@ -20,7 +21,6 @@ import { CreditLimitStore } from '../models';
 import { CreditLimitBalanceActions } from '../store/actions';
 import { fromCreditLimitBalance } from '../store/reducers';
 import { CreditLimitBalanceSelectors } from '../store/selectors';
-import { NgxPermissionsService } from 'ngx-permissions';
 
 @Component({
     selector: 'app-credit-store-form',

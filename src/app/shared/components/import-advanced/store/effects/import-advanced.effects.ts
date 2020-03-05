@@ -1,20 +1,26 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { StorageMap } from '@ngx-pwa/local-storage';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { ExportServiceApiService, NoticeService, UploadApiService, HelperService } from 'app/shared/helpers';
+import {
+    ExportServiceApiService,
+    HelperService,
+    NoticeService,
+    UploadApiService
+} from 'app/shared/helpers';
 import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { ErrorHandler, AnyAction } from 'app/shared/models';
-import { of, Observable } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap, withLatestFrom, tap } from 'rxjs/operators';
+import { AnyAction } from 'app/shared/models/actions.model';
+import { ErrorHandler } from 'app/shared/models/global.model';
+import { Observable, of } from 'rxjs';
+import { catchError, exhaustMap, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { IImportAdvanced } from '../../models';
 import { ImportAdvancedActions } from '../actions';
 import { fromImportAdvanced } from '../reducers';
-import { StorageMap } from '@ngx-pwa/local-storage';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class ImportAdvancedEffects {
@@ -141,45 +147,62 @@ export class ImportAdvancedEffects {
         )
     );
 
-    failureAction$ = createEffect(() =>
-        this.actions$.pipe(
-            // Hanya untuk action fetch export logs failure.
-            ofType(...[
-                ImportAdvancedActions.importFailure,
-                ImportAdvancedActions.importConfigFailure,
-            ]),
-            // Hanya mengambil payload-nya saja.
-            map(action => action.payload),
-            // Memunculkan notif bahwa request export gagal.
-            tap(this._$helper.showErrorNotification)
-        )
-    , { dispatch: false });
+    failureAction$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                // Hanya untuk action fetch export logs failure.
+                ofType(
+                    ...[
+                        ImportAdvancedActions.importFailure,
+                        ImportAdvancedActions.importConfigFailure
+                    ]
+                ),
+                // Hanya mengambil payload-nya saja.
+                map(action => action.payload),
+                // Memunculkan notif bahwa request export gagal.
+                tap(this._$helper.showErrorNotification)
+            ),
+        { dispatch: false }
+    );
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: 'importFailure' | 'importConfigFailure'): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: 'importFailure' | 'importConfigFailure'
+    ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
-            return of(ImportAdvancedActions[dispatchTo]({
-                payload: err
-            }));
+            return of(
+                ImportAdvancedActions[dispatchTo]({
+                    payload: err
+                })
+            );
         }
 
         if ((err as HttpErrorResponse).message) {
             if ((err as HttpErrorResponse).message.startsWith('Http failure response')) {
-                return of(ImportAdvancedActions[dispatchTo]({
-                    payload: {
-                        id: `ERR_HTTP_${(err as HttpErrorResponse).error.name ? (err as HttpErrorResponse).error.name.toUpperCase() : 'UNKNOWN_ERROR'}`,
-                        errors: err
-                    }
-                }));
+                return of(
+                    ImportAdvancedActions[dispatchTo]({
+                        payload: {
+                            id: `ERR_HTTP_${
+                                (err as HttpErrorResponse).error.name
+                                    ? (err as HttpErrorResponse).error.name.toUpperCase()
+                                    : 'UNKNOWN_ERROR'
+                            }`,
+                            errors: err
+                        }
+                    })
+                );
             }
         }
 
-        return of(ImportAdvancedActions[dispatchTo]({
-            payload: {
-                id: `ERR_UNRECOGNIZED`,
-                errors: err
-            }
-        }));
-    }
+        return of(
+            ImportAdvancedActions[dispatchTo]({
+                payload: {
+                    id: `ERR_UNRECOGNIZED`,
+                    errors: err
+                }
+            })
+        );
+    };
 
     constructor(
         private actions$: Actions,

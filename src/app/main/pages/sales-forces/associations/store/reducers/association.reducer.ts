@@ -1,10 +1,10 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { User } from 'app/shared/models/user.model';
 
-import { Association } from '../../models';
-import { AssociationActions } from '../actions';
 import { SalesRep } from '../../../sales-reps/models';
-import { InvoiceGroup, User } from 'app/shared/models';
+import { AssociationActions } from '../actions';
 
 // Keyname for reducer
 const featureKey = 'associations';
@@ -45,13 +45,10 @@ const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entitie
 // Reducer manage the action
 const reducer = createReducer<State>(
     initialState,
-    on(
-        AssociationActions.createAssociationRequest,
-        state => ({
-            ...state,
-            isRequesting: true
-        })
-    ),
+    on(AssociationActions.createAssociationRequest, state => ({
+        ...state,
+        isRequesting: true
+    })),
     on(
         AssociationActions.createAssociationFailure,
         AssociationActions.createAssociationSuccess,
@@ -98,7 +95,7 @@ const reducer = createReducer<State>(
     on(AssociationActions.setSearchValue, (state, { payload }) => ({
         ...state,
         textSearch: payload
-    })),
+    }))
 );
 
 // Set anything for the export

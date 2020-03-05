@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as faker from 'faker/locale/id_ID';
-import { date } from '@rxweb/reactive-form-validators';
 
 @Injectable({
     providedIn: 'root'

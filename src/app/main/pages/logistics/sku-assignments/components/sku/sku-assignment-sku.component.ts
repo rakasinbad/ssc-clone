@@ -16,14 +16,15 @@ import { fromSkuAssignments } from '../../store/reducers';
 import { FormControl } from '@angular/forms';
 import { SelectionModel } from '@angular/cdk/collections';
 import { SkuAssignmentsSku } from '../../models/sku-assignments-sku.model';
-import { SkuAssignmentsSkuSelectors } from '../../store/selectors';
+import * as SkuAssignmentsSkuSelectors from '../../store/selectors/sku-assignments-sku.selectors';
 import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
 import { Observable, Subject, merge } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
-import { IQueryParams, LifecyclePlatform } from 'app/shared/models';
 import { SkuAssignmentsSkuActions } from '../../store/actions';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
 
 @Component({
     selector: 'app-sku-assignments-sku',

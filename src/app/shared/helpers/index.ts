@@ -35,5 +35,6 @@ export * from './user-api.service';
 export * from './vehicle-accessibility-api.service';
 export * from './warehouse-api.service';
 export * from './warehouse-catalogue-api.service';
+export * from './warehouse-confirmation-api.service';
 export * from './warehouse-coverage-api.service';
 export * from './warehouse-value-api.service';

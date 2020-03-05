@@ -1,4 +1,3 @@
-import { state } from '@angular/animations';
 import { InjectionToken } from '@angular/core';
 import { getSelectors, routerReducer, RouterReducerState } from '@ngrx/router-store';
 import {

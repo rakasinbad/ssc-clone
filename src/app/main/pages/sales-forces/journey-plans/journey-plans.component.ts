@@ -1,32 +1,36 @@
-import { IButtonImportConfig } from './../../../../shared/components/import-advanced/models/import-advanced.model';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { SelectionModel } from '@angular/cdk/collections';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    Inject,
     OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    Inject
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { HelperService, WINDOW } from 'app/shared/helpers';
-import { IBreadcrumbs, IQueryParams, LifecyclePlatform, ButtonDesignType } from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { merge, Observable, Subject } from 'rxjs';
-import { take, takeUntil, tap, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, take, takeUntil, tap } from 'rxjs/operators';
 
+import { IButtonImportConfig } from './../../../../shared/components/import-advanced/models/import-advanced.model';
 import { ExportFilterComponent } from './components';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
@@ -35,8 +39,6 @@ import { JourneyPlanSales } from './models/journey-plan-sales.model';
 import { JourneyPlanActions, JourneyPlanSalesActions } from './store/actions';
 import * as fromJourneyPlans from './store/reducers';
 import { JourneyPlanSalesSelectors, JourneyPlanSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-journey-plans',
@@ -75,9 +77,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         },
         viewBy: {
-            list: [
-                { id: 'date-sales-rep', label: 'Date - Sales Rep' }
-            ]
+            list: [{ id: 'date-sales-rep', label: 'Date - Sales Rep' }]
         },
         export: {
             permissions: ['SRM.JP.EXPORT'],
@@ -88,7 +88,7 @@ export class JourneyPlansComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['SRM.JP.IMPORT'],
             useAdvanced: true,
             pageType: 'journey-plans'
-        },
+        }
     };
 
     search: FormControl = new FormControl('');

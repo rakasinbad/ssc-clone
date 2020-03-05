@@ -1,27 +1,25 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
-import { map, switchMap, withLatestFrom, catchError, retry, tap } from 'rxjs/operators';
-
-import {
-    PortfolioActions,
-    portfolioFailureActionNames,
-    StoreActions,
-} from '../actions';
+import { TypedAction } from '@ngrx/store/src/models';
+import { catchOffline } from '@ngx-pwa/offline';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { Auth } from 'app/main/pages/core/auth/models';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { of, Observable, throwError } from 'rxjs';
-import { StoresApiService } from '../../services';
-import { catchOffline } from '@ngx-pwa/offline';
-import { IQueryParams, TNullable, User, ErrorHandler } from 'app/shared/models';
-import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService } from 'app/shared/helpers';
-import { HttpErrorResponse } from '@angular/common/http';
-import { TypedAction } from '@ngrx/store/src/models';
-import { Store } from 'app/main/pages/attendances/models';
+import { ErrorHandler, TNullable } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { User } from 'app/shared/models/user.model';
+import { Observable, of } from 'rxjs';
+import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+
+import { StoresApiService } from '../../services';
+import { PortfolioActions, portfolioFailureActionNames, StoreActions } from '../actions';
 import { CoreFeatureState } from '../reducers';
 
-type AnyAction = { payload: any; } & TypedAction<any>;
+type AnyAction = { payload: any } & TypedAction<any>;
 
 @Injectable()
 export class StoreEffects {
@@ -49,7 +47,9 @@ export class StoreEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStoresRequest),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processStoresRequest
+                        ),
                         catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
                     );
                 } else {
@@ -57,7 +57,9 @@ export class StoreEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processStoresRequest),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                            this.processStoresRequest
+                        ),
                         catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
                     );
                 }
@@ -69,123 +71,150 @@ export class StoreEffects {
         this.actions$.pipe(
             ofType(StoreActions.checkStoreAtInvoiceGroupRequest),
             map(action => action.payload),
-            switchMap<{ storeId: string; invoiceGroupId: string }, Observable<AnyAction>>((payload) =>
+            switchMap<{ storeId: string; invoiceGroupId: string }, Observable<AnyAction>>(payload =>
                 this.checkStoreAtInvoiceGroup(payload.storeId, payload.invoiceGroupId)
             ),
             catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
         )
     );
 
-    checkStoreAtInvoiceGroupSuccess$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
-            map(action => action.payload),
-            tap(({ portfolioId, code, name, storeId }) => {
-                this.portfolioStore.dispatch(PortfolioActions.updateStore({
-                    payload: {
-                        id: storeId,
-                        changes: {
-                            portfolio: portfolioId ? { code, name, id: portfolioId } : null
-                        }
-                    }
-                }));
-            })
-    ) , { dispatch: false });
+    checkStoreAtInvoiceGroupSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreActions.checkStoreAtInvoiceGroupSuccess),
+                map(action => action.payload),
+                tap(({ portfolioId, code, name, storeId }) => {
+                    this.portfolioStore.dispatch(
+                        PortfolioActions.updateStore({
+                            payload: {
+                                id: storeId,
+                                changes: {
+                                    portfolio: portfolioId ? { code, name, id: portfolioId } : null
+                                }
+                            }
+                        })
+                    );
+                })
+            ),
+        { dispatch: false }
+    );
 
     checkStoreAtInvoiceGroup = (storeId: string, invoiceGroupId: string): Observable<AnyAction> => {
-        return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId)
-            .pipe(
-                catchOffline(),
-                switchMap(response =>
-                    of(StoreActions.checkStoreAtInvoiceGroupSuccess({ payload: { ...response, storeId } }))
-                ),
-                catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
-            );
-    }
+        return this.storesService.checkStoreAtInvoiceGroup(storeId, invoiceGroupId).pipe(
+            catchOffline(),
+            switchMap(response =>
+                of(
+                    StoreActions.checkStoreAtInvoiceGroupSuccess({
+                        payload: { ...response, storeId }
+                    })
+                )
+            ),
+            catchError(err => this.sendErrorToState(err, 'checkStoreAtInvoiceGroupFailure'))
+        );
+    };
 
     checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
-            throwError(new ErrorHandler({
+            throw new ErrorHandler({
                 id: 'ERR_USER_SUPPLIER_NOT_FOUND',
                 errors: `User Data: ${userData}`
-            }));
+            });
         }
-    
+
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
-    }
+    };
 
-    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processStoresRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<
+        AnyAction
+    > => {
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
         // Membentuk parameter query yang baru.
         const newQuery: IQueryParams = Object.assign({}, queryParams, { supplierId });
 
-        return this.storesService
-            .findStores(newQuery)
-            .pipe(
-                catchOffline(),
-                switchMap(response =>
-                    of(StoreActions.fetchStoresSuccess({
+        return this.storesService.findStores(newQuery).pipe(
+            catchOffline(),
+            switchMap(response =>
+                of(
+                    StoreActions.fetchStoresSuccess({
                         payload: {
                             stores: queryParams.paginate
-                                    ? response.data.map(store => new Store(store))
-                                    : ((response as unknown) as Array<Store>).map(store => new Store(store)),
+                                ? response.data.map(store => new Store(store))
+                                : ((response as unknown) as Array<Store>).map(
+                                      store => new Store(store)
+                                  ),
                             total: response.total,
-                            source: 'fetch',
+                            source: 'fetch'
                         }
-                    }))
-                ),
-                catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
-            );
-    }
+                    })
+                )
+            ),
+            catchError(err => this.sendErrorToState(err, 'fetchStoresFailure'))
+        );
+    };
 
-    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: portfolioFailureActionNames): Observable<AnyAction> => {
+    sendErrorToState = (
+        err: ErrorHandler | HttpErrorResponse | object,
+        dispatchTo: portfolioFailureActionNames
+    ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             if (dispatchTo === 'fetchStoresFailure') {
-                return of(StoreActions[dispatchTo]({
-                    payload: err
-                }));
+                return of(
+                    StoreActions[dispatchTo]({
+                        payload: err
+                    })
+                );
             } else {
-                return of(PortfolioActions[dispatchTo]({
-                    payload: err
-                }));
+                return of(
+                    PortfolioActions[dispatchTo]({
+                        payload: err
+                    })
+                );
             }
         }
-        
+
         if (err instanceof HttpErrorResponse) {
             if (dispatchTo === 'fetchStoresFailure') {
-                return of(StoreActions[dispatchTo]({
-                    payload: {
-                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                        errors: err.toString()
-                    }
-                }));
+                return of(
+                    StoreActions[dispatchTo]({
+                        payload: {
+                            id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                            errors: err.toString()
+                        }
+                    })
+                );
             } else {
-                return of(PortfolioActions[dispatchTo]({
-                    payload: {
-                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                        errors: err.toString()
-                    }
-                }));
+                return of(
+                    PortfolioActions[dispatchTo]({
+                        payload: {
+                            id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                            errors: err.toString()
+                        }
+                    })
+                );
             }
         }
 
         if (dispatchTo === 'fetchStoresFailure') {
-            return of(StoreActions[dispatchTo]({
-                payload: {
-                    id: `ERR_UNRECOGNIZED`,
-                    errors: err.toString()
-                }
-            }));
+            return of(
+                StoreActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_UNRECOGNIZED`,
+                        errors: err.toString()
+                    }
+                })
+            );
         } else {
-            return of(PortfolioActions[dispatchTo]({
-                payload: {
-                    id: `ERR_UNRECOGNIZED`,
-                    errors: err.toString()
-                }
-            }));
+            return of(
+                PortfolioActions[dispatchTo]({
+                    payload: {
+                        id: `ERR_UNRECOGNIZED`,
+                        errors: err.toString()
+                    }
+                })
+            );
         }
-    }
+    };
 }

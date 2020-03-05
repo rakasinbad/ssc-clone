@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
@@ -9,12 +8,11 @@ import { SharedModule } from 'app/shared/shared.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
 import { MerchantEffects } from '../store/effects';
-import { fromMerchant } from '../store/reducers';
 import { StoreSettingEffects } from '../store/effects/store-setting.effects';
-
-import { MerchantSettingRoutes } from './merchant-setting.routes';
-import { MerchantSettingComponent } from './merchant-setting.component';
+import { fromMerchant } from '../store/reducers';
 import { MerchantSettingStoreIdGenerationComponent } from './components/store-id-generation/store-id-generation.component';
+import { MerchantSettingComponent } from './merchant-setting.component';
+import { MerchantSettingRoutes } from './merchant-setting.routes';
 
 /**
  *
@@ -32,7 +30,7 @@ import { MerchantSettingStoreIdGenerationComponent } from './components/store-id
         // MerchantEmployeeComponent,
         // MerchantFormComponent,
         MerchantSettingComponent,
-        MerchantSettingStoreIdGenerationComponent,
+        MerchantSettingStoreIdGenerationComponent
     ],
     imports: [
         MerchantSettingRoutes,
@@ -49,8 +47,6 @@ import { MerchantSettingStoreIdGenerationComponent } from './components/store-id
         StoreModule.forFeature(fromMerchant.FEATURE_KEY, fromMerchant.reducer),
         EffectsModule.forFeature([MerchantEffects, StoreSettingEffects])
     ],
-    entryComponents: [
-        MerchantSettingStoreIdGenerationComponent
-    ]
+    entryComponents: [MerchantSettingStoreIdGenerationComponent]
 })
 export class MerchantSettingModule {}

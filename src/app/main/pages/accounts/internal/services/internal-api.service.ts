@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, UserSupplier, UserSupplierOptions } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { UserSupplier, UserSupplierOptions } from 'app/shared/models/supplier.model';
 import { Observable } from 'rxjs';
 
 import { IInternalEmployeeDetail, InternalEmployeeDetail } from '../models';

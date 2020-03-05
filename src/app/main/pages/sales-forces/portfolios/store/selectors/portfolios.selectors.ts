@@ -1,12 +1,7 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import {
-    fromPortfolios,
-    mainFeatureKey,
-    CoreFeatureState,
-    CoreState,
-} from '../reducers';
 import { Portfolio } from '../../models/portfolios.model';
+import { CoreFeatureState, CoreState, fromPortfolios, mainFeatureKey } from '../reducers';
 
 // Get state from the feature key.
 export const getPortfolioState = createFeatureSelector<CoreFeatureState, CoreState>(mainFeatureKey);
@@ -18,50 +13,32 @@ export const {
     selectTotal: selectPortfolioTotal
 } = fromPortfolios.adapter.getSelectors();
 
-export const getPortfolioEntity = createSelector(
-    getPortfolioState,
-    state => state[mainFeatureKey]
-);
+export const getPortfolioEntity = createSelector(getPortfolioState, state => state[mainFeatureKey]);
 
-export const getPortfolioTotalEntity = createSelector(
-    getPortfolioEntity,
-    selectPortfolioTotal
-);
+export const getPortfolioTotalEntity = createSelector(getPortfolioEntity, selectPortfolioTotal);
 
-export const getPortfolioEntityType = createSelector(
-    getPortfolioEntity,
-    state => state.type
-);
+export const getPortfolioEntityType = createSelector(getPortfolioEntity, state => state.type);
 
 export const getSelectedPortfolioIds = createSelector(
     getPortfolioEntity,
     state => state.selectedIds
 );
 
-export const getSearchKeywordPortfolio = createSelector(
-    getPortfolioEntity,
-    state => state.search
-);
+export const getSearchKeywordPortfolio = createSelector(getPortfolioEntity, state => state.search);
 
 export const getSelectedInvoiceGroupId = createSelector(
     getPortfolioEntity,
     state => state.selectedInvoiceGroupId
 );
 
-export const getTotalPortfolios = createSelector(
-    getPortfolioEntity,
-    state => state.total
-);
+export const getTotalPortfolios = createSelector(getPortfolioEntity, state => state.total);
 
-export const getAllPortfolios = createSelector(
-    getPortfolioEntity,
-    selectAllPortfolios
-);
+export const getAllPortfolios = createSelector(getPortfolioEntity, selectAllPortfolios);
 
 export const getSelectedPortfolio = createSelector(
     getPortfolioEntity,
     getSelectedPortfolioIds,
-    (portfolios, ids) => (portfolios.entities[ids[0]] as Portfolio)
+    (portfolios, ids) => portfolios.entities[ids[0]] as Portfolio
 );
 
 export const getSelectedPortfolios = createSelector(
@@ -70,12 +47,6 @@ export const getSelectedPortfolios = createSelector(
     (portfolios, ids) => ids.map(id => portfolios.entities[id])
 );
 
-export const getLoadingState = createSelector(
-    getPortfolioEntity,
-    state => state.isLoading
-);
+export const getLoadingState = createSelector(getPortfolioEntity, state => state.isLoading);
 
-export const getNeedRefreshState = createSelector(
-    getPortfolioEntity,
-    state => state.needRefresh
-);
+export const getNeedRefreshState = createSelector(getPortfolioEntity, state => state.needRefresh);

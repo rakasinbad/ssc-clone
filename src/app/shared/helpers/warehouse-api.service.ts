@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { IQueryParams } from '../models';
+import { IQueryParams } from '../models/query.model';
 import { HelperService } from './helper.service';
 
 /**
@@ -47,19 +47,25 @@ export class WarehouseApiService {
      *
      * @template T
      * @param {IQueryParams} params
-     * @param {string} [supplierId]
      * @returns {Observable<T>}
      * @memberof WarehouseApiService
      */
-    findAll<T>(params: IQueryParams, supplierId?: string): Observable<T> {
-        const newArg = supplierId
-            ? [
-                  {
-                      key: 'supplierId',
-                      value: supplierId
-                  }
-              ]
-            : [];
+    findAll<T>(params: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId']
+            });
+        }
+
+        if (params['keyword']) {
+            newArg.push({
+                key: 'keyword',
+                value: params['keyword']
+            });
+        }
 
         const newParams = this._$helper.handleParams(this._url, params, ...newArg);
 

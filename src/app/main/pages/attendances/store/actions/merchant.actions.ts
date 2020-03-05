@@ -1,7 +1,7 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, TSource } from 'app/shared/models';
-
-import { Store as Merchant } from '../../models';
+import { Store as Merchant } from 'app/main/pages/accounts/merchants/models';
+import { IErrorHandler, TSource } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 /**
  * STORE

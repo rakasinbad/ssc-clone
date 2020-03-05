@@ -5,6 +5,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { MaterialModule } from 'app/shared/material.module';
 import { SharedModule } from 'app/shared/shared.module';
 
+import { SearchBarModule } from '../search-bar/search-bar.module';
 import { ImportAdvancedComponent } from './import-advanced.component';
 import {
     ImportDialogComponent,
@@ -13,7 +14,6 @@ import {
     TemplateHistoryComponent
 } from './import-dialog';
 import { ImportAdvancedStoreModule } from './store/import-advanced-store.module';
-import { SearchBarModule } from '../search-bar/search-bar.module';
 
 @NgModule({
     declarations: [

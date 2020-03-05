@@ -1,52 +1,24 @@
-/** Angular Core Libraries */
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     Inject,
     OnDestroy,
     OnInit,
-    ViewEncapsulation,
-    ChangeDetectorRef,
+    ViewEncapsulation
 } from '@angular/core';
-import {
-    FormArray,
-    FormBuilder,
-    Validators,
-    FormGroup,
-    FormControl
-} from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-/** NgRx */
 import { Store } from '@ngrx/store';
-
-/** RxJS */
-import {
-    Observable,
-    Subject
-} from 'rxjs';
-import {
-    map,
-    takeUntil,
-    distinctUntilChanged,
-    debounceTime,
-    filter
-} from 'rxjs/operators';
-
-/** Models */
-import {
-    Catalogue,
-    CatalogueCategory
-} from '../models';
-
-/** Actions */
-import { CatalogueActions } from '../store/actions';
-
-/** Reducers */
-import { fromCatalogue } from '../store/reducers';
-import { CatalogueSelectors } from '../store/selectors';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService } from 'app/shared/helpers';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+
+import { Catalogue, CatalogueCategory } from '../models';
+import { CatalogueActions } from '../store/actions';
+import { fromCatalogue } from '../store/reducers';
+import { CatalogueSelectors } from '../store/selectors';
 
 interface IMatDialogData {
     catalogue: Catalogue;
@@ -74,11 +46,10 @@ interface ISelectedCategoryForm {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
-
     /** Untuk menampilkan margin. */
     public oldMargin: number;
     public newMargin: number;
-    
+
     /** Untuk menyimpan nilai yang akan dikirim ke back-end. */
     public form: FormGroup;
 
@@ -109,8 +80,9 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
                             id: this.data.catalogue.id,
                             data: Catalogue.patch({
                                 // discountedRetailBuyingPrice: this.form.get('discountPrice').value,
-                                discountedRetailBuyingPrice: this.form.get('salePrice').value || null,
-                                retailBuyingPrice: this.form.get('retailPrice').value,
+                                discountedRetailBuyingPrice:
+                                    this.form.get('salePrice').value || null,
+                                retailBuyingPrice: this.form.get('retailPrice').value
                                 // suggestedConsumerBuyingPrice: this.form.get('salePrice').value,
                             }),
                             source: 'list'
@@ -146,43 +118,70 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
             // this.form.addControl('oldDiscountPrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
             // this.form.addControl('discountPrice', this.fb.control('', [Validators.min(0)]));
             //
-            this.form.addControl('oldRetailPrice', this.fb.control({ value: this.data.catalogue.retailBuyingPrice, disabled: true }));
-            this.form.addControl('retailPrice', this.fb.control('', [
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                })
-            ]));
+            this.form.addControl(
+                'oldRetailPrice',
+                this.fb.control({ value: this.data.catalogue.retailBuyingPrice, disabled: true })
+            );
+            this.form.addControl(
+                'retailPrice',
+                this.fb.control('', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ])
+            );
             //
-            this.form.addControl('oldSalePrice', this.fb.control({ value: this.data.catalogue.discountedRetailBuyingPrice, disabled: true }));
+            this.form.addControl(
+                'oldSalePrice',
+                this.fb.control({
+                    value: this.data.catalogue.discountedRetailBuyingPrice,
+                    disabled: true
+                })
+            );
             this.form.addControl('salePrice', this.fb.control(''));
 
-            this.oldMargin = !(this.data.catalogue.discountedRetailBuyingPrice) ? null
-                            : (1 - ((+this.data.catalogue.discountedRetailBuyingPrice) / (+this.data.catalogue.retailBuyingPrice))) * 100;
+            this.oldMargin = !this.data.catalogue.discountedRetailBuyingPrice
+                ? null
+                : (1 -
+                      +this.data.catalogue.discountedRetailBuyingPrice /
+                          +this.data.catalogue.retailBuyingPrice) *
+                  100;
         } else if (this.data.editMode === 'stock') {
             /** Memasukkan FormControl untuk stock JIKA mode-nya adalah stock. */
             // this.form.addControl('reservedStock', this.fb.control({ value: '', disabled: true }));
             this.form.addControl('stockEnroute', this.fb.control({ value: '', disabled: true }));
-            this.form.addControl('oldStock', this.fb.control({ value: this.data.catalogue.stock, disabled: true }));
-            this.form.addControl('stock', this.fb.control('', [
-                RxwebValidators.required({
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                }),
-                RxwebValidators.minNumber({
-                    value: 0,
-                    message: this.errorMessageSvc.getErrorMessageNonState('default', 'min_number', { minValue: 0 })
-                })
-            ]));
+            this.form.addControl(
+                'oldStock',
+                this.fb.control({ value: this.data.catalogue.stock, disabled: true })
+            );
+            this.form.addControl(
+                'stock',
+                this.fb.control('', [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 0,
+                        message: this.errorMessageSvc.getErrorMessageNonState(
+                            'default',
+                            'min_number',
+                            { minValue: 0 }
+                        )
+                    })
+                ])
+            );
 
             /** Mendapatkan stock en route dari state. */
             this.store
                 .select(CatalogueSelectors.getSelectedCatalogueEntity)
-                .pipe(
-                    takeUntil(this._unSubs$)
-                ).subscribe(catalogue => {
+                .pipe(takeUntil(this._unSubs$))
+                .subscribe(catalogue => {
                     if (isNaN(catalogue.stockEnRoute)) {
-                        this.store.dispatch(CatalogueActions.fetchCatalogueStockRequest({
-                            payload: catalogue.id
-                        }));
+                        this.store.dispatch(
+                            CatalogueActions.fetchCatalogueStockRequest({
+                                payload: catalogue.id
+                            })
+                        );
                     } else {
                         this.form.get('stockEnroute').patchValue(String(catalogue.stockEnRoute));
                     }
@@ -192,19 +191,16 @@ export class CataloguesEditPriceStockComponent implements OnDestroy, OnInit {
         /** Subscribe ke selector updating activity. */
         this.store
             .select(CatalogueSelectors.getUpdatingActivity)
-            .pipe(
-                takeUntil(this._unSubs$)
-            ).subscribe(isUpdating => this.isUpdating = isUpdating);
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(isUpdating => (this.isUpdating = isUpdating));
 
-        this.form
-            .valueChanges
-            .pipe(
-                distinctUntilChanged(),
-                debounceTime(200),
-                takeUntil(this._unSubs$)
-            ).subscribe(value => {
+        this.form.valueChanges
+            .pipe(distinctUntilChanged(), debounceTime(200), takeUntil(this._unSubs$))
+            .subscribe(value => {
                 if (this.data.editMode === 'price') {
-                    this.newMargin = !value.salePrice ? null : (1 - ((+value.salePrice) / (+value.retailPrice))) * 100;
+                    this.newMargin = !value.salePrice
+                        ? null
+                        : (1 - +value.salePrice / +value.retailPrice) * 100;
                 }
 
                 this._cd.markForCheck();

@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams, IPaginatedResponse } from 'app/shared/models';
 import { Observable } from 'rxjs';
 
 import { Store as NgRxStore } from '@ngrx/store';
 import { fromSkuAssignments } from '../store/reducers';
 import { SkuAssignmentsWarehouse } from '../models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { IPaginatedResponse } from 'app/shared/models/global.model';
 
 /**
  *

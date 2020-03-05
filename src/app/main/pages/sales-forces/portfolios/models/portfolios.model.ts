@@ -1,5 +1,8 @@
-import { ITimestamp, TNullable, User, InvoiceGroup, TSource } from 'app/shared/models';
-import { Store } from '.';
+import { Store } from 'app/main/pages/accounts/merchants/models';
+import { TNullable } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+import { User } from 'app/shared/models/user.model';
 
 type TPortfolioType = 'multi' | 'single' | 'group' | 'direct';
 
@@ -33,7 +36,7 @@ export interface IPortfolioAddForm {
     type: 'direct' | 'group';
     invoiceGroupId: string;
     stores: Array<IPortfolioStore>;
-    removedStore?: Array<{ storeId: string; portfolioId: string; }>;
+    removedStore?: Array<{ storeId: string; portfolioId: string }>;
 }
 
 export class Portfolio implements IPortfolio {
@@ -73,7 +76,7 @@ export class Portfolio implements IPortfolio {
             stores = [],
             source = 'fetch',
             totalTargetSales,
-            actualTargetSales,
+            actualTargetSales
         } = data;
 
         this.id = id;
@@ -91,7 +94,10 @@ export class Portfolio implements IPortfolio {
         this.totalTargetSales = totalTargetSales;
         this.source = source;
 
-        this.stores = Array.isArray(stores) && stores.length > 0 ? stores.map(store => new Store(store)) : stores;
+        this.stores =
+            Array.isArray(stores) && stores.length > 0
+                ? stores.map(store => new Store(store))
+                : stores;
 
         this.user = user ? new User(user) : user;
 

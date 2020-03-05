@@ -5,6 +5,7 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    NgZone,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -23,17 +24,13 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import {
-    District,
-    IBreadcrumbs,
-    InvoiceGroup,
-    IQueryParams,
-    LifecyclePlatform,
-    SupplierStore,
-    Temperature,
-    Urban,
-    WarehouseValue
-} from 'app/shared/models';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { District, Urban } from 'app/shared/models/location.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
+import { Temperature } from 'app/shared/models/temperature.model';
+import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
 import {
     DropdownActions,
     FormActions,
@@ -43,20 +40,20 @@ import {
 } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { combineLatest, fromEvent, Observable, Subject } from 'rxjs';
 import {
+    debounceTime,
+    distinctUntilChanged,
     filter,
     map,
     takeUntil,
     tap,
-    withLatestFrom,
-    distinctUntilChanged,
-    debounceTime
+    withLatestFrom
 } from 'rxjs/operators';
 
+import { WarehouseActions } from '../store/actions';
 import * as fromWarehouses from '../store/reducers';
 import { WarehouseSelectors } from '../store/selectors';
-import { WarehouseActions } from '../store/actions';
 
 @Component({
     selector: 'app-warehouse-form',
@@ -136,6 +133,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     private _selectedDistrict = null;
     private _selectedUrban = null;
     private _timer: Array<NodeJS.Timer> = [];
+    private _deletedInvoiceGroups = [];
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -143,6 +141,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         private location: Location,
         private route: ActivatedRoute,
         private router: Router,
+        private ngZone: NgZone,
         private agmGeocoder: AgmGeocoder,
         private store: Store<fromWarehouses.FeatureState>,
         private _$errorMessage: ErrorMessageService,
@@ -211,12 +210,6 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         return this.form.get('invoices').value;
     }
 
-    compareInvoiceFn(c1: string, c2: string): boolean {
-        console.log('Compare 1', c1);
-        console.log('Compare 2', c2);
-        return true;
-    }
-
     displayDistrictOption(item: District, isHtml = false): string {
         if (!isHtml) {
             return `${item.province.name}, ${item.city}, ${item.district}`;
@@ -240,7 +233,6 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     getLeadTime(day: number): string {
-        console.log('LEAD', day);
         return day > 1 ? ' Days' : ' Day';
     }
 
@@ -299,6 +291,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
         if (ev.checked === true) {
             this.draggAble = false;
+
+            this.form.get('address').reset();
 
             this.cdRef.detectChanges();
             this._handleTrigger();
@@ -531,7 +525,14 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     onInvoiceOptionChange(ev: MatOptionSelectionChange): void {
         if (ev.isUserInput) {
             if (!ev.source.selected) {
-                console.log(`Show dialog uncheck ${ev.source.value} ${ev.source.viewValue}`);
+                this._deletedInvoiceGroups.push(ev.source.value);
+                // console.log(`Show dialog uncheck ${ev.source.value} ${ev.source.viewValue}`);
+            } else {
+                const idx = this._deletedInvoiceGroups.indexOf(ev.source.value);
+
+                if (idx !== -1) {
+                    this._deletedInvoiceGroups.splice(idx, 1);
+                }
             }
         }
     }
@@ -561,6 +562,11 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                 // Reset urban state
                 this.store.dispatch(DropdownActions.resetUrbansState());
+
+                if (this.pageType === 'edit') {
+                    // Reset core state warehouses
+                    this.store.dispatch(WarehouseActions.clearState());
+                }
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -603,6 +609,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                             title: 'Edit Warehouse'
                         }
                     ];
+
+                    this.store.dispatch(WarehouseActions.fetchWarehouseRequest({ payload: id }));
                 } else {
                     this.router.navigateByUrl('/pages/logistics/warehouses');
                 }
@@ -663,7 +671,17 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
                 this.isLoadingDistrict$ = this.store.select(DropdownSelectors.getIsLoadingDistrict);
 
-                this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading);
+                this.isLoading$ = this.store.select(WarehouseSelectors.getIsLoading).pipe(
+                    tap(isLoading => {
+                        if (!isLoading) {
+                            // Display footer action
+                            this.store.dispatch(UiActions.showFooterAction());
+                        } else {
+                            // Hide footer action
+                            this.store.dispatch(UiActions.hideFooterAction());
+                        }
+                    })
+                );
 
                 // Handle search district autocomplete & try request to endpoint
                 this.form
@@ -823,11 +841,137 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             ],
             notes: ''
         });
+
+        if (this.pageType === 'edit') {
+            this._initEditForm();
+        }
+    }
+
+    private _initEditForm(): void {
+        combineLatest([
+            this.store.select(WarehouseSelectors.getSelectedItem),
+            this.store.select(DropdownSelectors.getInvoiceGroupDropdownState),
+            this.store.select(TemperatureSelectors.selectAll),
+            this.store.select(WarehouseValueSelectors.selectAll)
+        ])
+            .pipe(
+                filter(([row, invoices, temperatures, whValues]) => !!row),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(([row, invoices, temperatures, whValues]) => {
+                const whIdField = this.form.get('whId');
+                const whNameField = this.form.get('whName');
+                const leadTimeField = this.form.get('leadTime');
+                const invoiceField = this.form.get('invoices');
+                const temperatureField = this.form.get('temperature');
+                const whValueField = this.form.get('whValue');
+                const addressField = this.form.get('address');
+                const notesField = this.form.get('notes');
+                const districtField = this.form.get('district');
+                const urbanField = this.form.get('urban');
+                const postcodeField = this.form.get('postcode');
+                const lngField = this.form.get('lng');
+                const latField = this.form.get('lat');
+
+                if (row) {
+                    if (row.code) {
+                        whIdField.setValue(row.code);
+                    }
+                    if (whIdField.invalid) {
+                        whIdField.markAsTouched();
+                    }
+                    if (row.name) {
+                        whNameField.setValue(row.name);
+                    }
+                    if (whNameField.invalid) {
+                        whNameField.markAsTouched();
+                    }
+                    if (row.leadTime) {
+                        leadTimeField.setValue(row.leadTime);
+                    }
+                    if (leadTimeField.invalid) {
+                        leadTimeField.markAsTouched();
+                    }
+                    if (row.warehouseInvoiceGroups && row.warehouseInvoiceGroups.length > 0) {
+                        const currInvoices = row.warehouseInvoiceGroups
+                            .map((v, i) => {
+                                return v && v.invoiceGroup.id
+                                    ? invoices.findIndex(r => r.id === v.invoiceGroup.id) === -1
+                                        ? null
+                                        : v.invoiceGroup.id
+                                    : null;
+                            })
+                            .filter(v => v !== null);
+
+                        invoiceField.setValue(currInvoices);
+
+                        if (invoiceField.invalid) {
+                            invoiceField.markAsTouched();
+                        }
+                    }
+
+                    if (row.warehouseTemperatureId) {
+                        temperatureField.setValue(row.warehouseTemperatureId);
+                    }
+
+                    if (temperatureField.invalid) {
+                        temperatureField.markAsTouched();
+                    }
+
+                    if (row.warehouseValueId) {
+                        whValueField.setValue(row.warehouseValueId);
+                    }
+
+                    if (whValueField.invalid) {
+                        whValueField.markAsTouched();
+                    }
+
+                    if (row.address) {
+                        addressField.setValue(row.address);
+                    }
+
+                    if (addressField.invalid) {
+                        addressField.markAsTouched();
+                    }
+
+                    if (row.noteAddress) {
+                        notesField.setValue(row.noteAddress);
+                    }
+
+                    if (notesField.invalid) {
+                        notesField.markAsTouched();
+                    }
+
+                    if (row.longitude) {
+                        lngField.setValue(row.longitude);
+                    }
+
+                    if (lngField.invalid) {
+                        lngField.markAsTouched();
+                    }
+
+                    if (row.latitude) {
+                        latField.setValue(row.latitude);
+                    }
+
+                    if (latField.invalid) {
+                        latField.markAsTouched();
+                    }
+
+                    if (row.urban) {
+                        if (row.urban.provinceId) {
+                            districtField.setValue(row.urban);
+                            urbanField.setValue(row.urban);
+                            postcodeField.setValue(row.urban.zipCode);
+                        }
+                    }
+
+                    this.form.markAsPristine();
+                }
+            });
     }
 
     private _addressValid(): boolean {
-        // console.log('CHECK', this.form.pristine, this.form.dirty);
-
         if (this.isManually) {
             return (
                 this.form.get('address').valid &&
@@ -838,9 +982,27 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             );
         } else {
             if (this.draggAble) {
-                return this.form.pristine;
-            } else {
-                return !this.form.pristine;
+                // if (
+                //     this.form.get('address').invalid ||
+                //     this.form.get('district').invalid ||
+                //     this.form.get('urban').invalid ||
+                //     !this.form.get('postcode').value
+                // ) {
+                //     this.ngZone.run(() => {
+                //         this._$notice.open(
+                //             'Could not find any data about this location. Please input it manually.',
+                //             'warning',
+                //             {
+                //                 verticalPosition: 'bottom',
+                //                 horizontalPosition: 'right'
+                //             }
+                //         );
+                //     });
+
+                //     return false;
+                // }
+
+                return this.form.dirty;
             }
         }
     }
@@ -895,33 +1057,68 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
         this.store.dispatch(DropdownActions.fetchLocationRequest({ payload: locSearch }));
 
+        const districtCtrl = this.form.get('district');
+        const urbanCtrl = this.form.get('urban');
+        const postcodeCtrl = this.form.get('postcode');
+        const latCtrl = this.form.get('lat');
+        const lngCtrl = this.form.get('lng');
+        const addressCtrl = this.form.get('address');
+
+        districtCtrl.setValue(null);
+        urbanCtrl.setValue(null);
+        postcodeCtrl.setValue(null);
+        latCtrl.setValue(null);
+        lngCtrl.setValue(null);
+
         this.store
             .select(DropdownSelectors.getLocationState)
             .pipe(takeUntil(this._unSubs$))
             .subscribe(x => {
-                if (x) {
-                    this._onSearchDistrict(x.district);
-
-                    this.form.get('district').setValue(x);
-                    this.form.get('urban').setValue(x);
-                    this.form.get('postcode').setValue(x.zipCode);
-                    this.form.get('lat').setValue(lat);
-                    this.form.get('lng').setValue(lng);
-
-                    this.lat = lat;
-                    this.lng = lng;
-                }
-
-                this.form.markAsPristine();
-
                 if (this.form.status === 'PENDING') {
                     this.cdRef.markForCheck();
                     return;
+                } else {
+                    console.log('XX', x);
+
+                    if (x) {
+                        console.log('OK');
+
+                        this._onSearchDistrict(x.district);
+
+                        districtCtrl.setValue(x);
+                        urbanCtrl.setValue(x);
+                        postcodeCtrl.setValue(x.zipCode);
+                        latCtrl.setValue(lat);
+                        lngCtrl.setValue(lng);
+
+                        this.lat = lat;
+                        this.lng = lng;
+                    }
+
+                    setTimeout(() => {
+                        if (
+                            addressCtrl.invalid ||
+                            districtCtrl.invalid ||
+                            urbanCtrl.invalid ||
+                            !postcodeCtrl.value
+                        ) {
+                            this.ngZone.run(() => {
+                                this._$notice.open(
+                                    'Could not find any data about this location. Please input it manually.',
+                                    'warning',
+                                    {
+                                        verticalPosition: 'bottom',
+                                        horizontalPosition: 'right'
+                                    }
+                                );
+                            });
+                        } else {
+                            this.form.markAsDirty();
+                        }
+
+                        this.cdRef.detectChanges();
+                    }, 1000);
                 }
-
-                this._setFormStatus(this.form.status);
-
-                this.cdRef.detectChanges();
             });
     }
 
@@ -1045,7 +1242,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     private _setFormStatus(status: string): void {
-        // console.log('TEST FORM', this._addressValid());
+        // console.log('TEST FORM', status, this._addressValid(), this.form);
 
         if (!status) {
             return;
@@ -1114,14 +1311,22 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
             this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
         } else if (this.pageType === 'edit') {
-            const { id } = this.route.parent.snapshot.params;
+            const { id } = this.route.snapshot.params;
 
             const payload = {
                 urbanId: urban.id,
+                warehouseValueId: body.whValue,
+                warehouseTemperatureId: body.temperature,
+                code: body.whId,
+                name: body.whName,
+                leadTime: body.leadTime,
                 longitude: body.lng,
                 latitude: body.lat,
                 noteAddress: body.notes,
-                address: body.address
+                address: body.address,
+                invoiceGroup: body.invoices,
+                deletedInvoiceGroup: this._deletedInvoiceGroups,
+                status: 'active'
             };
 
             if (!body.longitude) {
@@ -1141,12 +1346,12 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
             }
 
             if (id && Object.keys(payload).length > 0) {
-                // this.store.dispatch(
-                //     StoreActions.updateStoreRequest({ payload: { id, body: payload } })
-                // );
+                this.store.dispatch(
+                    WarehouseActions.updateWarehouseRequest({
+                        payload: { id, body: payload }
+                    })
+                );
             }
         }
-
-        this.store.dispatch(FormActions.resetClickSaveButton());
     }
 }

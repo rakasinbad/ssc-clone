@@ -12,6 +12,7 @@ import {
     DistrictApiService,
     HierarchyApiService,
     InvoiceGroupApiService,
+    LocationSearchApiService,
     LogService,
     ProvinceApiService,
     StoreClusterApiService,
@@ -19,25 +20,19 @@ import {
     StoreSegmentApiService,
     StoreTypeApiService,
     UrbanApiService,
-    VehicleAccessibilityApiService,
-    LocationSearchApiService
+    VehicleAccessibilityApiService
 } from 'app/shared/helpers';
 import { RoleApiService } from 'app/shared/helpers/role-api.service';
-import {
-    Cluster,
-    District,
-    Hierarchy,
-    IDistrict,
-    InvoiceGroup,
-    PaginateResponse,
-    Province,
-    Role,
-    StoreGroup,
-    StoreSegment,
-    StoreType,
-    Urban,
-    VehicleAccessibility
-} from 'app/shared/models';
+import { Cluster } from 'app/shared/models/cluster.model';
+import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+import { PaginateResponse } from 'app/shared/models/global.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { District, IDistrict, Province, Urban } from 'app/shared/models/location.model';
+import { Role } from 'app/shared/models/role.model';
+import { StoreGroup } from 'app/shared/models/store-group.model';
+import { StoreSegment } from 'app/shared/models/store-segment.model';
+import { StoreType } from 'app/shared/models/store-type.model';
+import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 import * as fromRoot from 'app/store/app.reducer';
 import { sortBy } from 'lodash';
 import { asyncScheduler, of } from 'rxjs';
@@ -53,9 +48,6 @@ import {
 
 import { DropdownActions } from '../actions';
 
-// import { Account } from 'app/main/pages/accounts/models';
-// import { RoleApiService } from 'app/main/pages/roles/role-api.service';
-// import { Role } from 'app/main/pages/roles/role.model';
 /**
  *
  *

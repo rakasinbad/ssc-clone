@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models';
+import { IBreadcrumbs, IFooterActionConfig } from 'app/shared/models/global.model';
 
 import { UiActions } from '../actions';
 
@@ -9,8 +9,8 @@ export interface State {
     isShowCustomToolbar: boolean;
     isShowFooterAction: boolean;
     configFooterAction: IFooterActionConfig;
-    breadcrumbs: IBreadcrumbs[];
-    smallBreadcrumbs: IBreadcrumbs[];
+    breadcrumbs: Array<IBreadcrumbs>;
+    smallBreadcrumbs: Array<IBreadcrumbs>;
     customToolbarActive?: string;
     selectedRowIndex: string;
     // showCustomToolbar: string;

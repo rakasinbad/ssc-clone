@@ -18,7 +18,10 @@ export class DashboardComponent {
     widget1SelectedYear = '2016';
     widget5SelectedDay = 'today';
 
-    constructor(private _analyticsDashboardService: DashboardService, private _fuseTranslationLoaderService: FuseTranslationLoaderService) {
+    constructor(
+        private _analyticsDashboardService: DashboardService,
+        private _fuseTranslationLoaderService: FuseTranslationLoaderService
+    ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
         // Register the custom chart.js plugin

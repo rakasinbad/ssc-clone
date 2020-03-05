@@ -15,8 +15,8 @@ import {
     TeamEffects,
     TemperatureEffects,
     UiEffects,
-    WarehouseValueEffects,
-    WarehouseEffects
+    WarehouseEffects,
+    WarehouseValueEffects
 } from './shared/store/effects';
 import * as fromRoot from './store/app.reducer';
 import { CustomSerializer } from './store/custom-serializer';

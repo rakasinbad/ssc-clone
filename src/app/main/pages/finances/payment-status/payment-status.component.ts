@@ -15,9 +15,12 @@ import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.
 import { FuseNavigation } from '@fuse/types';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { IButtonImportConfig } from 'app/shared/components/import-advanced/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ButtonDesignType, IQueryParams, LifecyclePlatform } from 'app/shared/models';
+import { ButtonDesignType } from 'app/shared/models/button.model';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
@@ -34,7 +37,6 @@ import { statusPayment } from './status';
 import { PaymentStatusActions } from './store/actions';
 import { fromPaymentStatus } from './store/reducers';
 import { PaymentStatusSelectors } from './store/selectors';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-payment-status',
@@ -72,7 +74,7 @@ export class PaymentStatusComponent implements OnInit, AfterViewInit, OnDestroy 
             permissions: ['FINANCE.PS.IMPORT'],
             useAdvanced: true,
             pageType: 'payments'
-        },
+        }
     };
 
     search: FormControl = new FormControl('');

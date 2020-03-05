@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Update } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { NoticeService } from 'app/shared/helpers';
-import { EStatus } from 'app/shared/models';
+import { EStatus } from 'app/shared/models/global.model';
 import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 

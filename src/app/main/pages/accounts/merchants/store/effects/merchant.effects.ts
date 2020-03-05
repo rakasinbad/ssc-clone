@@ -14,9 +14,10 @@ import {
     StoreApiService,
     UserApiService
 } from 'app/shared/helpers';
-import { ChangeConfirmationComponent } from 'app/shared/modals/change-confirmation/change-confirmation.component';
-import { DeleteConfirmationComponent } from 'app/shared/modals/delete-confirmation/delete-confirmation.component';
-import { ErrorHandler, PaginateResponse, SupplierStore, TStatus, User } from 'app/shared/models';
+import { ChangeConfirmationComponent, DeleteConfirmationComponent } from 'app/shared/modals';
+import { ErrorHandler, PaginateResponse, TStatus } from 'app/shared/models/global.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
+import { User } from 'app/shared/models/user.model';
 import { FormActions, ProgressActions, UiActions } from 'app/shared/store/actions';
 import { getParams } from 'app/store/app.reducer';
 import { of } from 'rxjs';

@@ -1,37 +1,35 @@
-import { environment } from '../../../../environments/environment';
-
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    SecurityContext
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { LogService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models';
+import { IQueryParams } from 'app/shared/models/query.model';
 import { UiActions } from 'app/shared/store/actions';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
+import { environment } from '../../../../environments/environment';
 import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
-
 import { StoreCatalogueApiService } from './services';
 import { StoreCatalogueActions } from './store/actions';
 import { fromStoreCatalogue } from './store/reducers';
 import { StoreCatalogueSelectors } from './store/selectors';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 
 @Component({
     selector: 'app-in-store-inventories',
@@ -44,14 +42,14 @@ import { ICardHeaderConfiguration } from 'app/shared/components/card-header/mode
 export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
-    
+
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
             label: 'In-Store Inventory'
         },
         search: {
-            active: true,
+            active: true
         },
         add: {
             // permissions: ['INVENTORY.ISI.CREATE'],
@@ -61,9 +59,9 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         },
         import: {
             // permissions: ['INVENTORY.ISI.IMPORT']
-        },
+        }
     };
-    
+
     total: number;
     search: FormControl;
     displayedColumns = [
@@ -78,7 +76,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // 'condition',
         // 'employeeName',
         // 'role',
-        'date',
+        'date'
         // 'actions',
     ];
     environment = environment;
@@ -109,13 +107,13 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         private sanitizer: DomSanitizer
     ) {
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-        
+
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home',
-                       // translate: 'BREADCRUMBS.HOME'
+                        title: 'Home'
+                        // translate: 'BREADCRUMBS.HOME'
                     },
                     {
                         title: 'Inventory',
@@ -150,7 +148,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         this.applyCardHeaderEvent();
 
         this._unSubs$ = new Subject<void>();
-        this.search = new FormControl('' , [
+        this.search = new FormControl('', [
             Validators.required,
             control => {
                 const value = control.value;
@@ -182,19 +180,14 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         // );
 
         this.dataSource$ = this.store
-                            .select(StoreCatalogueSelectors.getAllStoreCatalogue)
-                            .pipe(
-                                takeUntil(this._unSubs$)
-                            );
+            .select(StoreCatalogueSelectors.getAllStoreCatalogue)
+            .pipe(takeUntil(this._unSubs$));
         this.totalDataSource$ = this.store
-                                .select(StoreCatalogueSelectors.getTotalStoreCatalogue)
-                                .pipe(
-                                    takeUntil(this._unSubs$)
-                                );
-        this.isLoading$ = this.store.select(StoreCatalogueSelectors.getIsLoading)
-                                .pipe(
-                                    takeUntil(this._unSubs$)
-                                );
+            .select(StoreCatalogueSelectors.getTotalStoreCatalogue)
+            .pipe(takeUntil(this._unSubs$));
+        this.isLoading$ = this.store
+            .select(StoreCatalogueSelectors.getIsLoading)
+            .pipe(takeUntil(this._unSubs$));
 
         this.initTable();
 
@@ -244,7 +237,6 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
-
     onChangePage(ev: PageEvent): void {
         console.log('Change page', ev);
     }
@@ -256,9 +248,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
             })
         );
 
-        this.router.navigate([
-            '/pages/in-store-inventories/' + id + '/detail'
-        ]);
+        this.router.navigate(['/pages/in-store-inventories/' + id + '/detail']);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -269,7 +259,7 @@ export class InStoreInventoriesComponent implements OnInit, AfterViewInit, OnDes
         this.paginator.pageIndex = 0;
         this.initTable();
     }
-// 
+    //
     private initTable(): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || this.defaultPageSize,
