@@ -56,7 +56,11 @@
                             *ngIf="!!selectedWarehouse"
                             mat-flat-button
                             fxFlexAlign="center"
-                            class="mb-8 ml-16 w-84 h-44 sinbad-yellow"
+                            class="mb-8 ml-16 w-84 h-44"
+                            [disabled]="(!!isFilterApplied)"
+                            [class.sinbad-yellow]="!(!!isFilterApplied)"
+                            [class.sinbad-grey]="(!!isFilterApplied)"
+                            (click)="onApplyFilter()"
                         >
                             Apply
                         </button>
@@ -67,6 +71,7 @@
                             mat-stroked-button
                             fxFlexAlign="center"
                             class="mb-8 ml-16 w-84 h-44 h-44 sinbad-yellow-fg sinbad-yellow-border"
+                            (click)="onOpenWarehouseDetail(selectedWarehouse.id)"
                         >
                             Detail
                         </button>
@@ -80,21 +85,25 @@
                         *ngIf="selectedViewBy === 'area'"
                     ></sinbad-geolocation>
                     <!-- / GEOLOCATION SELECTION -->
-                    <ng-template
-                        *ngIf="!!selectedWarehouse && selectedViewBy === 'warehouse'"
-                        last-bottom-left
+                </div>
+                <div
+                    *ngIf="selectedViewBy === 'area'"
+                    last-bottom-left
+                >
+                    <!-- "APPLY FILTER" BUTTON -->
+                    <button
+                        mat-flat-button
+                        fxFlexAlign="center"
+                        class="w-92 h-32"
+                        (click)="onApplyFilter()"
+                        [disabled]="(!!isFilterApplied)"
+                        [class.sinbad-yellow]="!(!!isFilterApplied)"
+                        [class.sinbad-grey]="(!!isFilterApplied)"
+                        (click)="onApplyFilter()"
                     >
-                        <!-- "APPLY FILTER" BUTTON -->
-                        <button
-                            *ngIf="!!selectedWarehouse"
-                            mat-flat-button
-                            fxFlexAlign="center"
-                            class="mb-8 ml-16 w-84 h-44 sinbad-yellow"
-                        >
-                            Apply
-                        </button>
-                        <!-- / "APPLY FILTER" BUTTON -->
-                    </ng-template>
+                        Apply
+                    </button>
+                    <!-- / "APPLY FILTER" BUTTON -->
                 </div>
                 <!-- / FILTER -->
             </sinbad-card-header>
