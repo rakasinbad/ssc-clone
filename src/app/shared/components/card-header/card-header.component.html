@@ -32,9 +32,9 @@
     </div>
     <!-- / TITLE & SEARCH SECTION -->
     <!-- "VIEW BY" SECTION -->
+    <ng-content select="[first-middle-left]"></ng-content>
     <div *ngIf="viewByList.length > 0" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start center">
         <!-- "FIRST MIDDLE LEFT" CONTENT -->
-        <ng-content select="[first-middle-left]"></ng-content>
         <!-- / "FIRST MIDDLE LEFT" CONTENT -->
         <!-- "VIEW BY" LABEL -->
         <p>View by :</p>
@@ -53,9 +53,9 @@
         </mat-chip-list>
         <!-- / "VIEW BY" LIST -->
         <!-- "LAST MIDDLE LEFT" CONTENT -->
-        <ng-content select="[last-middle-left]"></ng-content>
         <!-- / "LAST MIDDLE LEFT" CONTENT -->
     </div>
+    <ng-content select="[last-middle-left]"></ng-content>
     <!-- / "VIEW BY" SECTION -->
     <!-- BUTTONS SECTION -->
     <div fxLayout="row" fxLayoutGap="8px" fxLayoutAlign="space-between stretch">

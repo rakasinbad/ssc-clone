@@ -26,7 +26,7 @@ import { locale as english } from './i18n/en';
 
 import { locale as indonesian } from './i18n/id';
 
-import { fromSkuAssignments } from './store/reducers';
+import { FeatureState as SkuAssignmentCoreState } from './store/reducers';
 
 @Component({
     selector: 'sku-assignments',
@@ -96,7 +96,7 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
     sort: MatSort;
 
     constructor(
-        private SkuAssignmentsStore: NgRxStore<fromSkuAssignments.SkuAssignmentsState>,
+        private SkuAssignmentsStore: NgRxStore<SkuAssignmentCoreState>,
         private fuseNavigation$: FuseNavigationService,
         private fuseTranslationLoader$: FuseTranslationLoaderService,
         private router: Router

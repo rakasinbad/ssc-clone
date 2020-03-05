@@ -1,163 +1,125 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { TypedAction } from '@ngrx/store/src/models';
-import { catchOffline } from '@ngx-pwa/offline';
+import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { Warehouse } from 'app/main/pages/logistics/warehouses/models';
-import { HelperService, NoticeService, WarehouseApiService } from 'app/shared/helpers';
-import { ErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { User } from 'app/shared/models/user.model';
+import { WarehouseApiService } from 'app/shared/helpers';
+import { Warehouse, IWarehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
 import * as fromRoot from 'app/store/app.reducer';
-import { Observable, of } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { asyncScheduler, of } from 'rxjs';
+import {
+    catchError,
+    debounceTime,
+    exhaustMap,
+    map,
+    switchMap,
+    withLatestFrom
+} from 'rxjs/operators';
 
-import { FailureActions, WarehouseActions } from '../actions';
-
-type AnyAction = { payload: any } & TypedAction<any>;
+import { WarehouseActions } from '../actions';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class WarehouseEffects {
-    // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [WAREHOUSES]
-    // -----------------------------------------------------------------------------------------------------
-
-    fetchWarehouseRequest$ = createEffect(() =>
+    fetchWarehousesRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(WarehouseActions.fetchWarehouseRequest),
             map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([params, authState]: [IQueryParams, TNullable<Auth>]) => {
-                if (!authState) {
-                    return this._$helper.decodeUserToken().pipe(
-                        map(this.checkUserSupplier),
-                        retry(3),
-                        switchMap(userData => of([userData, params])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._handleFetchWarehouseRequest$
-                        ),
-                        catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
-                    );
-                } else {
-                    return of(authState.user).pipe(
-                        map(this.checkUserSupplier),
-                        retry(3),
-                        switchMap(userData => of([userData, params])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._handleFetchWarehouseRequest$
-                        ),
-                        catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
+            withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
+            exhaustMap(([params, userSupplier]) => {
+                if (!userSupplier) {
+                    return this.storage
+                        .get('user')
+                        .toPromise()
+                        .then(user => (user ? [params, user] : [params, null]));
+                }
+
+                const { supplierId } = userSupplier;
+
+                return of([params, supplierId]);
+            }),
+            switchMap(([params, data]: [IQueryParams, string | Auth]) => {
+                if (!data) {
+                    return of(
+                        WarehouseActions.fetchWarehouseFailure({
+                            payload: new ErrorHandler({
+                                id: 'fetchWarehouseFailure',
+                                errors: 'Not Found!'
+                            })
+                        })
                     );
                 }
+
+                let supplierId;
+
+                if (typeof data === 'string') {
+                    supplierId = data;
+                } else {
+                    supplierId = (data as Auth).user.userSuppliers[0].supplierId;
+                }
+
+                const newParams: IQueryParams = {
+                    ...params
+                };
+
+                newParams['supplierId'] = supplierId;
+
+                return this._$warehouseApi
+                    .findAll<Array<IWarehouse> | PaginateResponse<IWarehouse>>(newParams)
+                    .pipe(
+                        map(resp => {
+                            if (params.paginate) {
+                                const res: PaginateResponse<IWarehouse> = resp as PaginateResponse<IWarehouse>;
+
+                                const newResp = {
+                                    data:
+                                        res && res.data && res.data.length > 0
+                                            ? res.data.map(row => new Warehouse(row))
+                                            : [],
+                                    total: res.total
+                                };
+    
+                                return WarehouseActions.fetchWarehouseSuccess({
+                                    payload: res.data.map(row => new Warehouse(row))
+                                });
+                            } else {
+                                const res: Array<IWarehouse> = resp as Array<IWarehouse>;
+
+                                const newResp = {
+                                    data:
+                                        res && res.length > 0
+                                            ? res.map(row => new Warehouse(row))
+                                            : [],
+                                    total: res.length
+                                };
+    
+                                return WarehouseActions.fetchWarehouseSuccess({
+                                    payload: res.map(row => new Warehouse(row))
+                                });
+                            }
+
+                        }),
+                        catchError(err =>
+                            of(
+                                WarehouseActions.fetchWarehouseFailure({
+                                    payload: new ErrorHandler({
+                                        id: 'fetchWarehousesFailure',
+                                        errors: 'Not Found!'
+                                    })
+                                })
+                            )
+                        )
+                    );
             })
         )
-    );
-
-    fetchWarehouseFailure$ = createEffect(
-        () =>
-            this.actions$.pipe(
-                ofType(WarehouseActions.fetchWarehouseFailure),
-                map(action => action.payload),
-                tap(resp => {
-                    const message = this._handleErrMessage(resp);
-
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
-                })
-            ),
-        { dispatch: false }
     );
 
     constructor(
         private actions$: Actions,
         private store: Store<fromRoot.State>,
-        private _$helper: HelperService,
-        private _$notice: NoticeService,
+        private storage: StorageMap,
         private _$warehouseApi: WarehouseApiService
     ) {}
-
-    checkUserSupplier = (userData: User): User => {
-        // Jika user tidak ada data supplier.
-        if (!userData.userSupplier) {
-            throw new ErrorHandler({
-                id: 'ERR_USER_SUPPLIER_NOT_FOUND',
-                errors: `User Data: ${userData}`
-            });
-        }
-
-        // Mengembalikan data user jika tidak ada masalah.
-        return userData;
-    };
-
-    _handleFetchWarehouseRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
-        AnyAction
-    > => {
-        const newParams = { ...params };
-        const { supplierId } = userData.userSupplier;
-
-        if (supplierId) {
-            newParams['supplierId'] = supplierId;
-        }
-
-        return this._$warehouseApi.findAll<Array<Warehouse>>(newParams).pipe(
-            catchOffline(),
-            map(resp => {
-                const newResp =
-                    (resp && resp.length > 0 ? resp.map(v => new Warehouse(v)) : []) || [];
-
-                return WarehouseActions.fetchWarehouseSuccess({
-                    payload: newResp
-                });
-            }),
-            catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
-        );
-    };
-
-    sendErrorToState$ = (
-        err: ErrorHandler | HttpErrorResponse | object,
-        dispatchTo: FailureActions
-    ): Observable<AnyAction> => {
-        if (err instanceof ErrorHandler) {
-            return of(
-                WarehouseActions[dispatchTo]({
-                    payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-                })
-            );
-        }
-
-        if (err instanceof HttpErrorResponse) {
-            return of(
-                WarehouseActions[dispatchTo]({
-                    payload: {
-                        id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
-                        errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-                    }
-                })
-            );
-        }
-
-        return of(
-            WarehouseActions[dispatchTo]({
-                payload: {
-                    id: `ERR_UNRECOGNIZED`,
-                    errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
-                }
-            })
-        );
-    };
-
-    private _handleErrMessage(resp: ErrorHandler): string {
-        if (typeof resp.errors === 'string') {
-            return resp.errors;
-        } else if (resp.errors.error && resp.errors.error.message) {
-            return resp.errors.error.message;
-        } else {
-            return resp.errors.message;
-        }
-    }
 }

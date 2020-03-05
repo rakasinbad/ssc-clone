@@ -1,8 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler } from 'app/shared/models/global.model';
-import { IQueryParams } from 'app/shared/models/query.model';
-
 import { SkuAssignments } from '../../models';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { IErrorHandler } from 'app/shared/models/global.model';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 
 export type requestActionNames =
     | 'fetchSkuAssignmentsRequest'
@@ -106,6 +106,40 @@ export const removeSkuAssignmentsSuccess = createAction(
 export const removeSkuAssignmentsFailure = createAction(
     '[SkuAssignments API] Remove SkuAssignments Failure',
     props<{ payload: IErrorHandler }>()
+);
+
+/**
+ * FOR HANDLE SELECT SKU TO WAREHOUSE
+ */
+
+export const addSelectedCatalogues = createAction(
+    '[Catalogues Page] Add Selected Catalogues',
+    props<{ payload: Array<Catalogue> }>()
+);
+
+export const removeSelectedCatalogues = createAction(
+    '[Catalogues Page] Remove Selected Catalogues',
+    props<{ payload: Array<string> }>()
+);
+
+export const markCatalogueAsRemovedFromWarehouse = createAction(
+    '[Catalogues Page] Mark Catalogue as Removed from Warehouse',
+    props<{ payload: string }>()
+);
+
+export const markCataloguesAsRemovedFromWarehouse = createAction(
+    '[Catalogues Page] Mark Catalogues as Removed from Warehouse',
+    props<{ payload: Array<string> }>()
+);
+
+export const abortCatalogueAsRemovedFromWarehouse = createAction(
+    '[Catalogues Page] Abort Catalogue as Removed from Warehouse',
+    props<{ payload: string }>()
+);
+
+export const abortCataloguesAsRemovedFromWarehouse = createAction(
+    '[Catalogues Page] Abort Catalogues as Removed from Warehouse',
+    props<{ payload: Array<string> }>()
 );
 
 /**

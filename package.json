@@ -11,6 +11,7 @@
         "build-stats": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --dev --stats-json",
         "build-production": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration production",
         "build-staging": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration staging",
+        "build-demo": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration demo",
         "build-development": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration development",
         "build-prod-stats": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --stats-json",
         "build-staging-stats": "node --max-old-space-size=6144 ./node_modules/@angular/cli/bin/ng build --prod --configuration staging --stats-json",

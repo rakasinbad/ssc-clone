@@ -1,20 +1,21 @@
-import { Brand } from 'app/shared/models/brand.model';
-import { IResponsePaginate, TNullable } from 'app/shared/models/global.model';
+import { TNullable, IResponsePaginate } from 'app/shared/models/global.model';
 import { ITimestamp, Timestamp } from 'app/shared/models/timestamp.model';
+import { Brand } from 'app/shared/models/brand.model';
+
 
 /*
- ______              __                           ______
-/      |            /  |                         /      \
-$$$$$$/  _______   _$$ |_     ______    ______  /$$$$$$  |______    _______   ______    _______
+ ______              __                           ______                                        
+/      |            /  |                         /      \                                       
+$$$$$$/  _______   _$$ |_     ______    ______  /$$$$$$  |______    _______   ______    _______ 
   $$ |  /       \ / $$   |   /      \  /      \ $$ |_ $$//      \  /       | /      \  /       |
-  $$ |  $$$$$$$  |$$$$$$/   /$$$$$$  |/$$$$$$  |$$   |   $$$$$$  |/$$$$$$$/ /$$$$$$  |/$$$$$$$/
-  $$ |  $$ |  $$ |  $$ | __ $$    $$ |$$ |  $$/ $$$$/    /    $$ |$$ |      $$    $$ |$$      \
+  $$ |  $$$$$$$  |$$$$$$/   /$$$$$$  |/$$$$$$  |$$   |   $$$$$$  |/$$$$$$$/ /$$$$$$  |/$$$$$$$/ 
+  $$ |  $$ |  $$ |  $$ | __ $$    $$ |$$ |  $$/ $$$$/    /    $$ |$$ |      $$    $$ |$$      \ 
  _$$ |_ $$ |  $$ |  $$ |/  |$$$$$$$$/ $$ |      $$ |    /$$$$$$$ |$$ \_____ $$$$$$$$/  $$$$$$  |
-/ $$   |$$ |  $$ |  $$  $$/ $$       |$$ |      $$ |    $$    $$ |$$       |$$       |/     $$/
-$$$$$$/ $$/   $$/    $$$$/   $$$$$$$/ $$/       $$/      $$$$$$$/  $$$$$$$/  $$$$$$$/ $$$$$$$/
-
-
-
+/ $$   |$$ |  $$ |  $$  $$/ $$       |$$ |      $$ |    $$    $$ |$$       |$$       |/     $$/ 
+$$$$$$/ $$/   $$/    $$$$/   $$$$$$$/ $$/       $$/      $$$$$$$/  $$$$$$$/  $$$$$$$/ $$$$$$$/  
+                                                                                                
+                                                                                                
+                                                                                                
 */
 
 type TCatalogueStatus = 'active' | 'inactive' | 'banned';
@@ -177,6 +178,8 @@ export interface ICatalogue extends ITimestamp {
     catalogueKeywords?: Array<CatalogueKeyword>;
     deletedImages?: Array<number>;
     uploadedImages?: Array<{ base64: string }>;
+    source?: 'fetch' | 'list';
+    isSelected?: boolean;
 }
 
 export interface ICatalogueUnitResponse extends IResponsePaginate {
@@ -206,15 +209,15 @@ export interface ICatalogueDemo {
 }
 
 /*
-  ______   __
- /      \ /  |
-/$$$$$$  |$$ |  ______    _______  _______   ______    _______
+  ______   __                                                  
+ /      \ /  |                                                 
+/$$$$$$  |$$ |  ______    _______  _______   ______    _______ 
 $$ |  $$/ $$ | /      \  /       |/       | /      \  /       |
-$$ |      $$ | $$$$$$  |/$$$$$$$//$$$$$$$/ /$$$$$$  |/$$$$$$$/
-$$ |   __ $$ | /    $$ |$$      \$$      \ $$    $$ |$$      \
+$$ |      $$ | $$$$$$  |/$$$$$$$//$$$$$$$/ /$$$$$$  |/$$$$$$$/ 
+$$ |   __ $$ | /    $$ |$$      \$$      \ $$    $$ |$$      \ 
 $$ \__/  |$$ |/$$$$$$$ | $$$$$$  |$$$$$$  |$$$$$$$$/  $$$$$$  |
-$$    $$/ $$ |$$    $$ |/     $$//     $$/ $$       |/     $$/
- $$$$$$/  $$/  $$$$$$$/ $$$$$$$/ $$$$$$$/   $$$$$$$/ $$$$$$$/
+$$    $$/ $$ |$$    $$ |/     $$//     $$/ $$       |/     $$/ 
+ $$$$$$/  $$/  $$$$$$$/ $$$$$$$/ $$$$$$$/   $$$$$$$/ $$$$$$$/  
 */
 
 export class ViolationType implements IViolationType {
@@ -580,6 +583,8 @@ export class Catalogue implements ICatalogue {
     deletedImages: Array<number>;
     uploadedImages: Array<{ base64: string }>;
     stockEnRoute: number;
+    source?: 'fetch' | 'list';
+    isSelected?: boolean;
 
     constructor(data: ICatalogue) {
         const {
@@ -629,7 +634,9 @@ export class Catalogue implements ICatalogue {
             catalogueUnit,
             violationType,
             brand,
-            stockEnRoute
+            stockEnRoute,
+            source = 'fetch',
+            isSelected
         } = data;
 
         this.id = id;
@@ -674,12 +681,13 @@ export class Catalogue implements ICatalogue {
         this.violationType = violationType ? violationType : null;
         this.brand = brand;
         this.stockEnRoute = stockEnRoute;
-
+        this.source = source;
+        this.isSelected = isSelected;
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88 88b  d88   dPYb   dP   `" 88__   `Ybo."
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88 88YbdP88  dP__Yb  Yb  "88 88""   o.`Y8b
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88 88 YY 88 dP""""Yb  YboodP 888888 8bodP'
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88 8b    d8    db     dP""b8 888888 .dP"Y8 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88 88b  d88   dPYb   dP   `" 88__   `Ybo." 
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88 88YbdP88  dP__Yb  Yb  "88 88""   o.`Y8b 
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88 88 YY 88 dP""""Yb  YboodP 888888 8bodP' 
         */
         this.catalogueImages = Array.isArray(catalogueImages)
             ? catalogueImages
@@ -698,10 +706,10 @@ export class Catalogue implements ICatalogue {
                   .sort((catA, catB) => +catA.id - +catB.id)
             : [];
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888    db    Yb  dP
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88     dPYb    YbdP
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88    dP__Yb   dPYb
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88   dP""""Yb dP  Yb
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888    db    Yb  dP 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88     dPYb    YbdP  
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88    dP__Yb   dPYb  
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88   dP""""Yb dP  Yb 
         */
         this.catalogueTax = catalogueTax
             ? {
@@ -719,10 +727,10 @@ export class Catalogue implements ICatalogue {
               }
             : null;
         /*
-         dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 888888 88 88""Yb .dP"Y8 888888 Yb
-        dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88__   88 88__dP `Ybo."   88    Yb
-        Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88""   88 88"Yb  o.`Y8b   88    dP
-         YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88     88 88  Yb 8bodP'   88   dP
+         dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 888888 88 88""Yb .dP"Y8 888888 Yb  
+        dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88__   88 88__dP `Ybo."   88    Yb 
+        Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88""   88 88"Yb  o.`Y8b   88    dP 
+         YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88     88 88  Yb 8bodP'   88   dP  
         */
         this.firstCatalogueCategory = firstCatalogueCategory
             ? new CatalogueCategory(
@@ -740,10 +748,10 @@ export class Catalogue implements ICatalogue {
               )
             : null;
         /*
-         dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 88        db    .dP"Y8 888888 Yb
-        dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88       dPYb   `Ybo."   88    Yb
-        Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88  .o  dP__Yb  o.`Y8b   88    dP
-         YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88ood8 dP""""Yb 8bodP'   88   dP
+         dP""b8    db    888888 888888  dP""b8  dP"Yb  88""Yb Yb  dP      dP 88        db    .dP"Y8 888888 Yb  
+        dP   `"   dPYb     88   88__   dP   `" dP   Yb 88__dP  YbdP      dP  88       dPYb   `Ybo."   88    Yb 
+        Yb       dP__Yb    88   88""   Yb  "88 Yb   dP 88"Yb    8P       Yb  88  .o  dP__Yb  o.`Y8b   88    dP 
+         YboodP dP""""Yb   88   888888  YboodP  YbodP  88  Yb  dP         Yb 88ood8 dP""""Yb 8bodP'   88   dP  
         */
         this.lastCatalogueCategory = lastCatalogueCategory
             ? new CatalogueCategory(
@@ -761,10 +769,10 @@ export class Catalogue implements ICatalogue {
               )
             : null;
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88  dP 888888 Yb  dP Yb        dP  dP"Yb  88""Yb 8888b.  .dP"Y8
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88odP  88__    YbdP   Yb  db  dP  dP   Yb 88__dP  8I  Yb `Ybo."
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88"Yb  88""     8P     YbdPYbdP   Yb   dP 88"Yb   8I  dY o.`Y8b
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88  Yb 888888  dP       YP  YP     YbodP  88  Yb 8888Y"  8bodP'
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88  dP 888888 Yb  dP Yb        dP  dP"Yb  88""Yb 8888b.  .dP"Y8 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88odP  88__    YbdP   Yb  db  dP  dP   Yb 88__dP  8I  Yb `Ybo." 
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       88"Yb  88""     8P     YbdPYbdP   Yb   dP 88"Yb   8I  dY o.`Y8b 
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     88  Yb 888888  dP       YP  YP     YbodP  88  Yb 8888Y"  8bodP' 
         */
         this.catalogueKeywordCatalogues = Array.isArray(catalogueKeywordCatalogues)
             ? [
@@ -794,10 +802,10 @@ export class Catalogue implements ICatalogue {
               ]
             : [];
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888 Yb  dP 88""Yb 888888
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88    YbdP  88__dP 88__
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88     8P   88"""  88""
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88    dP    88     888888
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     888888 Yb  dP 88""Yb 888888 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__         88    YbdP  88__dP 88__   
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         88     8P   88"""  88""   
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888       88    dP    88     888888 
         */
         // this.catalogueType = catalogueType ? {
         //     ...new CatalogueType(
@@ -809,10 +817,10 @@ export class Catalogue implements ICatalogue {
         //     )
         // } : null;
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88   88 88b 88 88 888888
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88   88 88Yb88 88   88
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       Y8   8P 88 Y88 88   88
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     `YbodP' 88  Y8 88   88
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     88   88 88b 88 88 888888 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__       88   88 88Yb88 88   88   
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""       Y8   8P 88 Y88 88   88   
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888     `YbodP' 88  Y8 88   88   
         */
         this.catalogueUnit = catalogueUnit
             ? new CatalogueUnit(
@@ -825,10 +833,10 @@ export class Catalogue implements ICatalogue {
               )
             : null;
         /*
-         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     Yb    dP    db    88""Yb 88    db    88b 88 888888
-        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__        Yb  dP    dPYb   88__dP 88   dPYb   88Yb88   88
-        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         YbdP    dP__Yb  88"Yb  88  dP__Yb  88 Y88   88
-         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888        YP    dP""""Yb 88  Yb 88 dP""""Yb 88  Y8   88
+         dP""b8    db    888888    db    88      dP"Yb   dP""b8 88   88 888888     Yb    dP    db    88""Yb 88    db    88b 88 888888 
+        dP   `"   dPYb     88     dPYb   88     dP   Yb dP   `" 88   88 88__        Yb  dP    dPYb   88__dP 88   dPYb   88Yb88   88   
+        Yb       dP__Yb    88    dP__Yb  88  .o Yb   dP Yb  "88 Y8   8P 88""         YbdP    dP__Yb  88"Yb  88  dP__Yb  88 Y88   88   
+         YboodP dP""""Yb   88   dP""""Yb 88ood8  YbodP   YboodP `YbodP' 888888        YP    dP""""Yb 88  Yb 88 dP""""Yb 88  Y8   88   
         */
         // this.catalogueVariant = catalogueVariant ? {
         //     ...new CatalogueVariant(

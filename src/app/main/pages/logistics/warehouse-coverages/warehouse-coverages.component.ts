@@ -1,15 +1,29 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+    ChangeDetectorRef,
+    OnDestroy
+} from '@angular/core';
+import { MatPaginator, MatSort, MatRadioChange } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { UiActions } from 'app/shared/store/actions';
+import { Observable, Subject } from 'rxjs';
 import { UiSelectors } from 'app/shared/store/selectors';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { UiActions, WarehouseActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
 
 import * as fromWarehouseCoverages from './store/reducers';
+import { tap, takeUntil } from 'rxjs/operators';
+import { Warehouse } from '../warehouses/models';
+import { SelectedLocation } from 'app/shared/components/geolocation/models/selected-location.model';
+import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
+import { IBreadcrumbs } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -19,11 +33,18 @@ import * as fromWarehouseCoverages from './store/reducers';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WarehouseCoveragesComponent implements OnInit {
+export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    buttonViewByActive$: Observable<string>;
+    warehouses$: Observable<Array<Warehouse>>;
+    selectedWarehouse: Warehouse;
+// 
+    // tslint:disable-next-line: no-inferrable-types
+    selectedViewBy: string = 'warehouse';
+
+    // buttonViewByActive$: Observable<string>;
+    subs$: Subject<void> = new Subject<void>();
 
     // CardHeader config
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -31,21 +52,10 @@ export class WarehouseCoveragesComponent implements OnInit {
             label: 'Warehouse Coverage'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: false
         },
         add: {
             permissions: []
-        },
-        viewBy: {
-            list: [
-                { id: 'warehouse-coverage-main', label: 'Warehouse' },
-                { id: 'warehouse-covearge-urban', label: 'Urban' }
-            ],
-            onChanged: (value: { id: string; label: string }) => this.clickTabViewBy(value.id)
         },
         export: {
             permissions: ['SRM.JP.EXPORT'],
@@ -72,9 +82,40 @@ export class WarehouseCoveragesComponent implements OnInit {
     ];
 
     constructor(
+        private cdRef: ChangeDetectorRef,
         private router: Router,
         private store: Store<fromWarehouseCoverages.FeatureState>
-    ) {}
+    ) {
+        this.warehouses$ = this.store.select(
+            WarehouseSelectors.selectAll
+        ).pipe(
+            tap(warehouses => {
+                const newQuery: IQueryParams = {
+                    paginate: false,
+                };
+                
+                if (warehouses.length === 0) {
+                    this.store.dispatch(
+                        WarehouseActions.fetchWarehouseRequest({
+                            payload: newQuery
+                        })
+                    );
+                }
+            }),
+            takeUntil(this.subs$)
+        );
+    }
+
+    private debug(label: string, data: any = {}): void {
+        if (!environment.production) {
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
+        }
+    }
 
     ngOnInit(): void {
         // Set breadcrumbs
@@ -83,7 +124,24 @@ export class WarehouseCoveragesComponent implements OnInit {
                 payload: this._breadCrumbs
             })
         );
-        this.buttonViewByActive$ = this.store.select(UiSelectors.getCustomToolbarActive);
+    }
+
+    ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+    }
+
+    onSelectedLocation($event: SelectedLocation): void {
+        this.debug('onSelectedLocation', $event);
+    }
+
+    onSelectedWarehouse(warehouse: Warehouse): void {
+        this.selectedWarehouse = warehouse;
+        this.cdRef.markForCheck();
+    }
+// 
+    onChangedViewBy($event: MatRadioChange): void {
+        this.selectedViewBy = $event.value;
     }
 
     onClickAdd(): void {
