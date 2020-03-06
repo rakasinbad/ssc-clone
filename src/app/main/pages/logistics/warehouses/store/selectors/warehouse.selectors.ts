@@ -30,6 +30,11 @@ const getSelectedItem = createSelector(
     (entities, id) => entities[id]
 );
 
+const getInvoiceConfirmation = createSelector(
+    getWarehouseEntitiesState,
+    state => state.invoiceConfirmation
+);
+
 const getIsLoading = createSelector(getWarehouseEntitiesState, state => state.isLoading);
 
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+export { getInvoiceConfirmation, getIsLoading, getSelectedId, getSelectedItem, getTotalItem };

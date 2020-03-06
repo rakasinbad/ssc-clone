@@ -3,6 +3,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import { Warehouse } from '../../models';
 import { WarehouseActions } from './../actions';
+import { WarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
 
 // Keyname for reducer
 export const featureKey = 'warehouses';
@@ -12,6 +13,7 @@ export interface State extends EntityState<Warehouse> {
     isRefresh: boolean;
     selectedId: string;
     total: number;
+    invoiceConfirmation: WarehouseConfirmation;
 }
 
 // Adapter for warehouses state
@@ -22,20 +24,27 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
     isLoading: false,
     isRefresh: undefined,
     selectedId: null,
-    total: 0
+    total: 0,
+    invoiceConfirmation: undefined
 });
 
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(WarehouseActions.createWarehouseRequest, WarehouseActions.fetchWarehousesRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
+    on(
+        WarehouseActions.createWarehouseRequest,
+        WarehouseActions.fetchWarehousesRequest,
+        WarehouseActions.confirmationChangeInvoiceRequest,
+        state => ({
+            ...state,
+            isLoading: true
+        })
+    ),
     on(
         WarehouseActions.createWarehouseFailure,
         WarehouseActions.fetchWarehousesFailure,
         WarehouseActions.fetchWarehouseFailure,
+        WarehouseActions.confirmationChangeInvoiceFailure,
         state => ({
             ...state,
             isLoading: false
@@ -60,6 +69,11 @@ export const reducer = createReducer<State>(
             total: payload.total
         });
     }),
+    on(WarehouseActions.confirmationChangeInvoiceSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        invoiceConfirmation: payload
+    })),
     on(WarehouseActions.clearState, state => {
         return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
     })

@@ -1,6 +1,7 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { createReducer, on } from '@ngrx/store';
+
 import { StockManagementActions } from '../actions';
-import { Action, createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter } from '@ngrx/entity';
 
 // Keyname for reducer
 export const featureKey = 'stockManagements';
@@ -30,11 +31,18 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: true
     })),
+    on(StockManagementActions.fetchStockManagementsFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
     on(StockManagementActions.fetchStockManagementsSuccess, (state, { payload }) => {
-        return adapter.upsertMany(payload.data, {
+        return adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             total: payload.total
         });
+    }),
+    on(StockManagementActions.clearState, state => {
+        return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
     })
 );

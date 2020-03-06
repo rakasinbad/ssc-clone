@@ -34,5 +34,8 @@ export const reducer = createReducer(
     }),
     on(StockManagementActions.fetchStockManagementsSuccess, state => {
         return adapter.removeOne('fetchStockManagementsFailure', state);
+    }),
+    on(StockManagementActions.clearState, state => {
+        return adapter.removeAll({ ...state });
     })
 );

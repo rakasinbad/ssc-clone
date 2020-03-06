@@ -30,6 +30,7 @@ import { District, Urban } from 'app/shared/models/location.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
 import { Temperature } from 'app/shared/models/temperature.model';
+import { PayloadWarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
 import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
 import {
     DropdownActions,
@@ -363,7 +364,9 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     onKeydown(ev: KeyboardEvent, field: string): void {
-        if (!field) {
+        const keyCode = String.fromCharCode(ev.keyCode);
+
+        if (!field || !/[a-zA-Z0-9-_ ]/.test(keyCode)) {
             return;
         }
 
@@ -371,6 +374,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     onKeyup(ev: KeyboardEvent, field: string): void {
+        const keyCode = String.fromCharCode(ev.keyCode);
+
         switch (field) {
             case 'district':
                 {
@@ -379,16 +384,18 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         return;
                     }
 
-                    this.isDistrictTyping = true;
+                    if (/[a-zA-Z0-9-_ ]/.test(keyCode)) {
+                        this.isDistrictTyping = true;
 
-                    clearTimeout(this._timer[field]);
+                        clearTimeout(this._timer[field]);
 
-                    this._timer[field] = setTimeout(() => {
-                        this.isDistrictTyping = false;
+                        this._timer[field] = setTimeout(() => {
+                            this.isDistrictTyping = false;
 
-                        // Detect change manually
-                        this.cdRef.markForCheck();
-                    }, 100);
+                            // Detect change manually
+                            this.cdRef.markForCheck();
+                        }, 100);
+                    }
                 }
                 break;
 
@@ -399,16 +406,18 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         return;
                     }
 
-                    this.isUrbanTyping = true;
+                    if (/[a-zA-Z0-9-_ ]/.test(keyCode)) {
+                        this.isUrbanTyping = true;
 
-                    clearTimeout(this._timer[field]);
+                        clearTimeout(this._timer[field]);
 
-                    this._timer[field] = setTimeout(() => {
-                        this.isUrbanTyping = false;
+                        this._timer[field] = setTimeout(() => {
+                            this.isUrbanTyping = false;
 
-                        // Detect change manually
-                        this.cdRef.markForCheck();
-                    }, 100);
+                            // Detect change manually
+                            this.cdRef.markForCheck();
+                        }, 100);
+                    }
                 }
                 break;
 
@@ -523,12 +532,33 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     onInvoiceOptionChange(ev: MatOptionSelectionChange): void {
-        if (ev.isUserInput) {
+        console.log('Opt Change', ev);
+
+        if (ev.isUserInput && this.pageType === 'edit') {
+            const invoiceId = ev.source.value;
+
             if (!ev.source.selected) {
-                this._deletedInvoiceGroups.push(ev.source.value);
-                // console.log(`Show dialog uncheck ${ev.source.value} ${ev.source.viewValue}`);
+                const { id } = this.route.snapshot.params;
+
+                this.store.dispatch(
+                    WarehouseActions.confirmationChangeInvoiceRequest({
+                        payload: new PayloadWarehouseConfirmation({
+                            warehouseId: id,
+                            invoiceGroupId: invoiceId
+                        })
+                    })
+                );
+
+                this.store
+                    .select(WarehouseSelectors.getInvoiceConfirmation)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(data => {
+                        console.log('INVOICE', data);
+                    });
+                this._deletedInvoiceGroups.push(invoiceId);
+                // console.log(`Show dialog uncheck ${invoiceId} ${ev.source.viewValue}`);
             } else {
-                const idx = this._deletedInvoiceGroups.indexOf(ev.source.value);
+                const idx = this._deletedInvoiceGroups.indexOf(invoiceId);
 
                 if (idx !== -1) {
                     this._deletedInvoiceGroups.splice(idx, 1);

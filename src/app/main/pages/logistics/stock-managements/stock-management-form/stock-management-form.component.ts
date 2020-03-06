@@ -56,42 +56,40 @@ export class StockManagementFormComponent implements OnInit {
         }
     };
     displayedColumns = [
-        'checkbox',
-        'wh-id',
-        'wh-name',
-        'total-sku',
-        'stock-sellable',
-        'stock-on-hand',
-        'last-action-date',
-        'actions'
+        'no',
+        'sku-id',
+        'sku-name',
+        'stock-type',
+        'qty-change',
+        'reason',
+        'sellable',
+        'after'
+        // 'on-hand',
+        // 'final'
     ];
     dataSource = [
         {
             id: '1',
-            code: 'WH001',
-            name: 'DC Cibinong',
-            invoice: 'Danone, Combine, Mars',
+            code: '82716127',
+            name: 'LAKME CLASSIC EYEBROW PENCIL Brown',
             total: 58
         },
         {
             id: '2',
-            code: 'WH002',
-            name: 'DC Pulogebang 1',
-            invoice: 'Danone, Combine, Mars',
+            code: '82716127',
+            name: 'LAKME CLASSIC EYEBROW PENCIL Red',
             total: 51
         },
         {
             id: '3',
-            code: 'WH003',
-            name: 'DC Pulogebang 2',
-            invoice: 'Danone, Combine, Mars',
+            code: '82716127',
+            name: 'LAKME CLASSIC EYEBROW PENCIL White',
             total: 34
         },
         {
             id: '4',
-            code: 'WH004',
-            name: 'DC Cikampek',
-            invoice: 'Danone, Combine, Mars',
+            code: '82716127',
+            name: 'LAKME CLASSIC EYEBROW PENCIL Black',
             total: 100
         }
     ];
@@ -123,6 +121,10 @@ export class StockManagementFormComponent implements OnInit {
         private store: Store<fromStockManagements.FeatureState>
     ) {}
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
@@ -137,6 +139,14 @@ export class StockManagementFormComponent implements OnInit {
         );
 
         this._initForm();
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    generateNumber(idx: number): number {
+        return this.paginator.pageIndex * this.paginator.pageSize + (idx + 1);
     }
 
     private _initForm(): void {

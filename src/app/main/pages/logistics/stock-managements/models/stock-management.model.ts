@@ -3,7 +3,7 @@ import { Urban } from 'app/shared/models/location.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 import { WarehouseInvoiceGroup } from 'app/shared/models/warehouse-invoice-group.model';
 
-export interface IWarehouse extends ITimestamp {
+export interface IStockManagement extends ITimestamp {
     readonly id: NonNullable<string>;
     address: string;
     code: string;
@@ -24,7 +24,7 @@ export interface IWarehouse extends ITimestamp {
     warehouseValueId: string;
 }
 
-export class Warehouse implements IWarehouse {
+export class StockManagement implements IStockManagement {
     readonly id: NonNullable<string>;
     address: string;
     code: string;
@@ -47,7 +47,7 @@ export class Warehouse implements IWarehouse {
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: IWarehouse) {
+    constructor(data: IStockManagement) {
         const {
             id,
             address,
@@ -105,7 +105,7 @@ export class Warehouse implements IWarehouse {
             value && value.length > 0 ? value.map(v => new WarehouseInvoiceGroup(v)) : [];
     }
 
-    clear(): Warehouse {
-        return new Warehouse(undefined);
+    clear(): StockManagement {
+        return new StockManagement(undefined);
     }
 }

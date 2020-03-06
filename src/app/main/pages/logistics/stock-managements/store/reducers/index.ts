@@ -1,4 +1,4 @@
-import { combineReducers, Action } from '@ngrx/store';
+import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromStockManagementsErrs from './error.reducer';

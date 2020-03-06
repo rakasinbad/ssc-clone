@@ -1,7 +1,10 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { PayloadWarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
+import {
+    PayloadWarehouseConfirmation,
+    WarehouseConfirmation
+} from 'app/shared/models/warehouse-confirmation.model';
 
 import { Warehouse } from '../../models';
 
@@ -90,7 +93,8 @@ export const confirmationChangeInvoiceFailure = createAction(
 );
 
 export const confirmationChangeInvoiceSuccess = createAction(
-    '[Warehouses Update] Confirmation Change Invoice Success'
+    '[Warehouses Update] Confirmation Change Invoice Success',
+    props<{ payload: WarehouseConfirmation }>()
 );
 
 export const clearState = createAction('[Warehouses] Reset Core State');

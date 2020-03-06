@@ -1,3 +1,5 @@
 import * as StockManagementActions from './stock-management.actions';
 
-export { StockManagementActions };
+type StockManagementFailureActions = StockManagementActions.FailureActions;
+
+export { StockManagementActions, StockManagementFailureActions };

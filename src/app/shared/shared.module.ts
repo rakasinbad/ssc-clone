@@ -18,7 +18,8 @@ import { ScrollTopComponent } from './components/scroll-top/scroll-top.component
 import {
     CheckboxValidatorDirective,
     ContentDirective,
-    MaterialElevationDirective
+    MaterialElevationDirective,
+    TabAutocompleteDirective
 } from './directives';
 import { MaterialModule } from './material.module';
 import { ChangeConfirmationComponent } from './modals/change-confirmation/change-confirmation.component';
@@ -45,6 +46,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ContentDirective,
         CheckboxValidatorDirective,
         MaterialElevationDirective,
+        TabAutocompleteDirective,
 
         // Component
         ScrollTopComponent,
@@ -93,6 +95,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ContentDirective,
         CheckboxValidatorDirective,
         MaterialElevationDirective,
+        TabAutocompleteDirective,
 
         // Custom Module
         ExportAdvancedModule,

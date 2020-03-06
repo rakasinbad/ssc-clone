@@ -210,7 +210,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.sort.sort({
-                    id: 'id',
+                    id: 'updated_at',
                     start: 'desc',
                     disableClear: true
                 });

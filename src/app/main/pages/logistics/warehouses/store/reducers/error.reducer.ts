@@ -34,6 +34,7 @@ export const reducer = createReducer(
         WarehouseActions.fetchWarehousesFailure,
         WarehouseCoverageActions.fetchWarehouseCoveragesFailure,
         WarehouseSkuStockActions.fetchWarehouseSkuStocksFailure,
+        WarehouseActions.confirmationChangeInvoiceFailure,
         (state, { payload }) => {
             return adapter.upsertOne(payload, state);
         }
@@ -58,6 +59,9 @@ export const reducer = createReducer(
             return adapter.removeOne('fetchWarehouseSkuStocksFailure', state);
         }
     ),
+    on(WarehouseActions.confirmationChangeInvoiceSuccess, state => {
+        return adapter.removeOne('confirmationChangeInvoiceFailure', state);
+    }),
     on(WarehouseActions.clearState, state => {
         return adapter.removeAll({ ...state });
     })
