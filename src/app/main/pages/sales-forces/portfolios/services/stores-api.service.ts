@@ -31,7 +31,7 @@ export class StoresApiService {
             });
         }
 
-        if (!isNaN(params['supplierId'])) {
+        if (!isNaN(params['supplierId']) && !params['noSupplierId']) {
             newArgs.push({
                 key: 'supplierId',
                 value: params['supplierId']

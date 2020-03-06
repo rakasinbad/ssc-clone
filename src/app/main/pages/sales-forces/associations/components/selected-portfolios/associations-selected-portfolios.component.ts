@@ -245,6 +245,7 @@ export class AssociationsSelectedPortfoliosComponent implements OnInit, OnDestro
     showStore(portfolio: Portfolio): void {
         const query: IQueryParams = { paginate: false, limit: 100, skip: 0 };
         query['portfolioId'] = portfolio.id;
+        query['noSupplierId'] = true;
 
         this.portfolioStore.dispatch(
             StoreActions.fetchStoresRequest({
