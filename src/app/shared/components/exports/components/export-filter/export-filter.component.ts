@@ -121,7 +121,6 @@ export class ExportFilterComponent implements OnInit {
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'pattern')
                     })
                 );
-
                 this.form.get('status').setValidators(rules);
             }
         }

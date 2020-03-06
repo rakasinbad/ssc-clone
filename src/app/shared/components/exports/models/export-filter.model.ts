@@ -1,3 +1,5 @@
+import { HelperService } from 'app/shared/helpers';
+
 interface ExportFilterFormConfiguration {
     required: boolean;
     placeholder?: string;
@@ -7,13 +9,13 @@ interface ExportFilterFormConfiguration {
 export interface ExportFormFilterConfiguration {
     requireFilter?: boolean;
     filterAspect?: {
-        status?: ExportFilterFormConfiguration;
+        status?: ExportFilterFormConfiguration,
         rangeDate?: ExportFilterFormConfiguration & {
             maxRange: {
-                number: number;
-                duration: 'year' | 'month' | 'week' | 'day';
-            };
-        };
+                number: number,
+                duration: 'year' | 'month' | 'week' | 'day',
+            }
+        },
     };
 }
 
@@ -44,7 +46,7 @@ export interface ExportConfiguration {
 }
 
 export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
-    orders: {
+    'orders': {
         requireFilter: true,
         filterAspect: {
             status: {
@@ -61,7 +63,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             }
         }
     },
-    catalogues: {
+    'catalogues': {
         requireFilter: true,
         filterAspect: {
             status: {
@@ -78,7 +80,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             }
         }
     },
-    payments: {
+    'payments': {
         requireFilter: true,
         filterAspect: {
             status: {
@@ -95,7 +97,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             }
         }
     },
-    stores: {
+    'stores': {
         requireFilter: true,
         filterAspect: {
             status: {
@@ -124,7 +126,7 @@ export const defaultExportFilterConfiguration: ExportFilterConfiguration = {
             }
         }
     },
-    portfolios: {
+    'portfolios': {
         requireFilter: false
     },
     'sr-assignment': {

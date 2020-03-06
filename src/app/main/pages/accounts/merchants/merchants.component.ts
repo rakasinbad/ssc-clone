@@ -46,7 +46,7 @@ import { StoreSelectors } from './store/selectors';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
-    readonly defaultPageSize = environment.pageSize;
+    readonly defaultPageSize = 10;
     readonly defaultPageOpts = environment.pageSizeTable;
 
     // Untuk menentukan konfigurasi card header.
@@ -76,10 +76,45 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['ACCOUNT.STORE.IMPORT'],
             useAdvanced: true,
             pageType: 'stores'
-        }
+        },
     };
 
     search: FormControl = new FormControl('');
+    formConfig = {
+        status: {
+            label: 'Store List Status',
+            placeholder: 'Choose Store List Status',
+            sources: this._$helper.storeStatus(),
+            rules: {
+                required: true
+            }
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+                setTimeout(() => this._onRefreshTable(), 100);
+            }
+        },
+        add: {
+            permissions: ['ACCOUNT.STORE.CREATE'],
+            onClick: () => {
+                this.router.navigate(['/pages/account/stores/new']);
+            }
+        },
+        export: {
+            permissions: ['ACCOUNT.STORE.EXPORT'],
+            useAdvanced: true,
+            pageType: 'stores'
+        },
+        import: {
+            permissions: ['ACCOUNT.STORE.IMPORT'],
+            useAdvanced: true,
+            pageType: 'stores'
+        }
+    };
+
+    // search: FormControl = new FormControl('');
     total: number;
     displayedColumns = [
         'store-code',

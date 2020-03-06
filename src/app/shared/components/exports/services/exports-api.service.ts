@@ -50,7 +50,10 @@ export class ExportsApiService {
      * @param {HelperService} _$helper
      * @memberof ExportsApiService
      */
-    constructor(private http: HttpClient, private helperSvc: HelperService) {}
+    constructor(
+        private http: HttpClient,
+        private helperSvc: HelperService
+    ) {}
 
     findExportLogs<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
@@ -75,7 +78,6 @@ export class ExportsApiService {
                 value: params['page']
             });
         }
-
         this._url = this.helperSvc.handleApiRouter(this._exportLogsEndpoint);
         const newParams = this.helperSvc.handleParams(this._url, params, ...newArgs);
 

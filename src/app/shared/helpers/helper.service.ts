@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
-import { MatSnackBarConfig } from '@angular/material';
+import { MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { environment } from 'environments/environment';
@@ -108,7 +108,7 @@ export class HelperService {
     private static _storeStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'All'
+            label: 'Semua'
         },
         {
             id: 'active',
