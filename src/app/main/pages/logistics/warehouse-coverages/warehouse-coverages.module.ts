@@ -15,9 +15,11 @@ import { WarehouseCoverageMainComponent } from './components/main/warehouse-cove
 import { WarehouseCoverageUrbanComponent } from './components/urban/warehouse-coverage-urban.component';
 import { WarehouseCoveragesFormComponent } from './pages/warehouse-coverages-form/warehouse-coverages-form.component';
 import { WarehouseCoveragesSelectedLocationsComponent } from './components/warehouse-coverages-selected-locations/warehouse-coverages-selected-locations.component';
+import { CoveragesTableComponent } from './components/coverages-table/coverages-table.component';
 
 @NgModule({
     declarations: [
+        CoveragesTableComponent,
         WarehouseCoveragesComponent,
         WarehouseCoverageFormComponent,
 

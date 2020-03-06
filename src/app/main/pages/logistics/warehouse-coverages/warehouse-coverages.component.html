@@ -109,19 +109,18 @@
             </sinbad-card-header>
             <!-- / CARD HEADER -->
 
-            <!-- WAREHOUSE COVERAGES -->
+            <!-- AREA TYPE WAREHOUSE COVERAGE -->
             
-            <!-- / WAREHOUSE COVERAGES -->
+            <!-- / AREA TYPE WAREHOUSE COVERAGE -->
 
-            <!-- WAREHOUSE COVERAGES BY AREA -->
-
-            <!-- / WAREHOUSE COVERAGES BY AREA -->
-
-            <!-- <app-warehouse-coverages-main *ngIf="(buttonViewByActive$ | async) ==='warehouse-coverage-main'">
-            </app-warehouse-coverages-main>
-
-            <app-warehouse-coverages-urban *ngIf="(buttonViewByActive$ | async) ==='warehouse-covearge-urban'">
-            </app-warehouse-coverages-urban> -->
+            <!-- WAREHOUSE COVERAGES TABLE -->
+            <app-warehouse-coverages-table
+                [viewBy]="selectedViewBy"
+                [areaType]="coverageAreaType"
+                [dataSource]="coverages$ | async"
+                [loadingState]="isLoading$ | async"
+            ></app-warehouse-coverages-table>
+            <!-- / WAREHOUSE COVERAGES TABLE -->
         </div>
         <!-- / CONTENT CARD -->
     </div>
