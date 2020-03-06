@@ -24,6 +24,9 @@ import { SelectedLocation } from 'app/shared/components/geolocation/models/selec
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { NotCoveredWarehouse } from './models/not-covered-warehouse.model';
+import { WarehouseCoverage } from './models/warehouse-coverage.model';
+import { WarehouseCoverageSelectors } from './store/selectors';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -36,14 +39,19 @@ import { IQueryParams } from 'app/shared/models/query.model';
 export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
+    displayedColumns: Array<string> = [
+        'wh-name', 'province', 'city', 'district', 'urban', 'actions'
+    ];
 
     // tslint:disable-next-line: no-inferrable-types
     isFilterApplied: boolean = false;
 
+    isLoading$: Observable<boolean>;
     warehouses$: Observable<Array<Warehouse>>;
+    coverages$: Observable<Array<WarehouseCoverage>> | Observable<Array<NotCoveredWarehouse>>;
     selectedWarehouse: Warehouse;
     selectedLocation: SelectedLocation;
-// 
+
     // tslint:disable-next-line: no-inferrable-types
     selectedViewBy: string = 'warehouse';
 
@@ -61,16 +69,16 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         add: {
             permissions: []
         },
-        export: {
-            permissions: ['SRM.JP.EXPORT'],
-            useAdvanced: true,
-            pageType: 'journey-plans'
-        },
-        import: {
-            permissions: ['SRM.JP.IMPORT'],
-            useAdvanced: true,
-            pageType: 'journey-plans'
-        }
+        // export: {
+        //     permissions: ['SRM.JP.EXPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'journey-plans'
+        // },
+        // import: {
+        //     permissions: ['SRM.JP.IMPORT'],
+        //     useAdvanced: true,
+        //     pageType: 'journey-plans'
+        // }
     };
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
@@ -81,7 +89,8 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
             title: 'Logistics'
         },
         {
-            title: 'Warehouse Coverage'
+            title: 'Warehouse Coverage',
+            active: true
         }
     ];
 
@@ -105,6 +114,15 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
                         })
                     );
                 }
+            }),
+            takeUntil(this.subs$)
+        );
+
+        this.coverages$ = this.store.select(
+            WarehouseCoverageSelectors.selectAll
+        ).pipe(
+            tap(coverages => {
+
             }),
             takeUntil(this.subs$)
         );

@@ -57,5 +57,72 @@ app-warehouse-coverages {
         }
     }
 
+    .warehouse-coverages-table {
+        flex: 1 1 auto;
+        border: 1px solid;
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        // .mat-header-row {
+        //     min-height: 64px;
+        // }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            height: 40px !important;
+            min-height: 40px !important;
+            max-height: 40px !important;
+        }
+
+        .mat-row:hover {
+            background-color: #fafafa;
+        }
+
+        .portfolio {
+            position: relative;
+            cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+            // padding-right: 8px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+
+            .word-wrap {
+                word-break: break-all;
+            }
+        }
+
+        .mat-column-checkbox {
+            flex: 0 1 5.5%;
+        }
+
+        .mat-column-code {
+            flex: 0 1 17%;
+        }
+
+        .mat-column-name {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-salesForce {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-actions {
+            justify-content: flex-end;
+        }
+    }
 
 }
