@@ -11,6 +11,7 @@
                 id="stock-management-form"
                 name="stockManagementForm"
                 class="stock-management w-100-p"
+                [formGroup]="form"
                 fxLayout="column"
                 fxFlex
                 novalidate
@@ -27,9 +28,32 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <mat-select placeholder="Choose Warehouse">
+                                <ng-container
+                                    *ngIf="warehouses$ | async as warehouses; else noWarehouses"
+                                >
+                                    <mat-select
+                                        formControlName="whName"
+                                        placeholder="Choose Warehouse"
+                                    >
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="let row of warehouses"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.name || '-' }}
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noWarehouses>
+                                    <mat-select placeholder="Warehouse not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <!-- <mat-select placeholder="Choose Warehouse">
                                     <mat-option>None</mat-option>
-                                </mat-select>
+                                </mat-select> -->
                             </mat-form-field>
                         </div>
                     </div>
@@ -118,7 +142,7 @@
                     </ng-container>
 
                     <!-- Sellable Column -->
-                    <ng-container matColumnDef="l">
+                    <ng-container matColumnDef="sellable">
                         <mat-header-cell *matHeaderCellDef>
                             Sellable
                         </mat-header-cell>

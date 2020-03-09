@@ -21,6 +21,7 @@ export * from './order-brand-catalogue-api.service';
 export * from './order-parcel-api.service';
 export * from './portfolio-api.service';
 export * from './province-api.service';
+export * from './stock-management-reason-api.service';
 export * from './store-api.service';
 export * from './store-cluster-api.service';
 export * from './store-group-api.service';

@@ -76,5 +76,11 @@ export const reducer = createReducer<State>(
     })),
     on(WarehouseActions.clearState, state => {
         return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
+    }),
+    on(WarehouseActions.clearConfirmationChangeState, state => {
+        return {
+            ...state,
+            invoiceConfirmation: undefined
+        };
     })
 );

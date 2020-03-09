@@ -99,6 +99,10 @@ export const confirmationChangeInvoiceSuccess = createAction(
 
 export const clearState = createAction('[Warehouses] Reset Core State');
 
+export const clearConfirmationChangeState = createAction(
+    '[Warehouses] Reset Confirmation Change State'
+);
+
 export type FailureActions =
     | 'fetchWarehousesFailure'
     | 'fetchWarehouseFailure'

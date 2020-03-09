@@ -4,22 +4,15 @@ import { Store } from '@ngrx/store';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
+import { IWarehouse, Warehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
 import { WarehouseApiService } from 'app/shared/helpers';
-import { Warehouse, IWarehouse } from 'app/main/pages/logistics/warehouses/models/warehouse.model';
+import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
 import * as fromRoot from 'app/store/app.reducer';
-import { asyncScheduler, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    exhaustMap,
-    map,
-    switchMap,
-    withLatestFrom
-} from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { WarehouseActions } from '../actions';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { ErrorHandler, PaginateResponse } from 'app/shared/models/global.model';
 
 @Injectable()
 export class WarehouseEffects {
@@ -71,7 +64,9 @@ export class WarehouseEffects {
                     .pipe(
                         map(resp => {
                             if (params.paginate) {
-                                const res: PaginateResponse<IWarehouse> = resp as PaginateResponse<IWarehouse>;
+                                const res: PaginateResponse<IWarehouse> = resp as PaginateResponse<
+                                    IWarehouse
+                                >;
 
                                 const newResp = {
                                     data:
@@ -80,7 +75,7 @@ export class WarehouseEffects {
                                             : [],
                                     total: res.total
                                 };
-    
+
                                 return WarehouseActions.fetchWarehouseSuccess({
                                     payload: res.data.map(row => new Warehouse(row))
                                 });
@@ -94,12 +89,11 @@ export class WarehouseEffects {
                                             : [],
                                     total: res.length
                                 };
-    
+
                                 return WarehouseActions.fetchWarehouseSuccess({
                                     payload: res.map(row => new Warehouse(row))
                                 });
                             }
-
                         }),
                         catchError(err =>
                             of(

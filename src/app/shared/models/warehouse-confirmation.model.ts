@@ -20,17 +20,20 @@ export class PayloadWarehouseConfirmation implements IPayloadWarehouseConfirmati
 }
 
 export interface IWarehouseConfirmation {
+    invoiceId?: string;
     countCatalogue: string;
     faktur: string;
 }
 
 export class WarehouseConfirmation implements IWarehouseConfirmation {
+    invoiceId: string;
     countCatalogue: string;
     faktur: string;
 
     constructor(data: IWarehouseConfirmation) {
-        const { countCatalogue, faktur } = data;
+        const { invoiceId, countCatalogue, faktur } = data;
 
+        this.invoiceId = invoiceId || undefined;
         this.countCatalogue = countCatalogue;
         this.faktur = faktur ? String(faktur).trim() : null;
     }

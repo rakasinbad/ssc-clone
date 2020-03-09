@@ -17,13 +17,16 @@ import {
     MatAutocompleteSelectedEvent,
     MatAutocompleteTrigger,
     MatCheckboxChange,
-    MatOptionSelectionChange
+    MatDialog,
+    MatOptionSelectionChange,
+    MatSelect
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { District, Urban } from 'app/shared/models/location.model';
@@ -107,7 +110,9 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
 
-    @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
+    @ViewChild('invoiceSelect', { static: false }) invoiceSelect: MatSelect;
+    @ViewChild('autoDistrict', { static: false })
+    autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
     triggerDistrict: MatAutocompleteTrigger;
     @ViewChild('triggerUrban', { static: false, read: MatAutocompleteTrigger })
@@ -140,6 +145,7 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         private location: Location,
+        private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
         private ngZone: NgZone,
@@ -211,6 +217,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         return this.form.get('invoices').value;
     }
 
+    closeInvoice(): void {
+        this.invoiceSelect.close();
+    }
+
     displayDistrictOption(item: District, isHtml = false): string {
         if (!isHtml) {
             return `${item.province.name}, ${item.city}, ${item.district}`;
@@ -235,6 +245,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
     getLeadTime(day: number): string {
         return day > 1 ? ' Days' : ' Day';
+    }
+
+    openInvoice(): void {
+        this.invoiceSelect.open();
     }
 
     getErrorMessage(field: string): string {
@@ -532,12 +546,14 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
     }
 
     onInvoiceOptionChange(ev: MatOptionSelectionChange): void {
-        console.log('Opt Change', ev);
-
         if (ev.isUserInput && this.pageType === 'edit') {
             const invoiceId = ev.source.value;
 
             if (!ev.source.selected) {
+                setTimeout(() => {
+                    this.closeInvoice();
+                }, 100);
+
                 const { id } = this.route.snapshot.params;
 
                 this.store.dispatch(
@@ -548,15 +564,6 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         })
                     })
                 );
-
-                this.store
-                    .select(WarehouseSelectors.getInvoiceConfirmation)
-                    .pipe(takeUntil(this._unSubs$))
-                    .subscribe(data => {
-                        console.log('INVOICE', data);
-                    });
-                this._deletedInvoiceGroups.push(invoiceId);
-                // console.log(`Show dialog uncheck ${invoiceId} ${ev.source.viewValue}`);
             } else {
                 const idx = this._deletedInvoiceGroups.indexOf(invoiceId);
 
@@ -712,6 +719,60 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                         }
                     })
                 );
+
+                if (this.pageType === 'edit') {
+                    // Handle invoice confirmation
+                    this.store
+                        .select(WarehouseSelectors.getInvoiceConfirmation)
+                        .pipe(takeUntil(this._unSubs$))
+                        .subscribe(data => {
+                            if (data && Object.keys(data).length === 3) {
+                                const invoice = data.faktur;
+                                const totalSku = data.countCatalogue;
+                                const whId = this.form.get('whId').value;
+
+                                const dialogRef = this.matDialog.open<
+                                    DeleteConfirmationComponent,
+                                    any,
+                                    string
+                                >(DeleteConfirmationComponent, {
+                                    data: {
+                                        title: 'Confirmation',
+                                        message: `Are you want to remove faktur ${invoice}. Currently your ${whId}
+                                        <br/>is connect to ${totalSku} SKU from faktur ${invoice}.
+                                        <br/>Removing the assignment will disconnect the ${totalSku} SKU from
+                                        <br/>${whId}. As a consequence, product will be made non visible
+                                        <br/>from ${whId}, new order will not be taken. Current order under<br/>fulfillment will be continued`,
+                                        id: id
+                                    },
+                                    disableClose: true
+                                });
+
+                                dialogRef
+                                    .afterClosed()
+                                    .pipe(takeUntil(this._unSubs$))
+                                    .subscribe(res => {
+                                        if (res) {
+                                            this._deletedInvoiceGroups.push(data.invoiceId);
+                                            dialogRef.close();
+                                        } else {
+                                            const newValue = [...this.invoices];
+                                            newValue.push(data.invoiceId);
+
+                                            this.form.get('invoices').patchValue(newValue);
+                                        }
+
+                                        setTimeout(() => {
+                                            this.openInvoice();
+                                        }, 100);
+
+                                        this.store.dispatch(
+                                            WarehouseActions.clearConfirmationChangeState()
+                                        );
+                                    });
+                            }
+                        });
+                }
 
                 // Handle search district autocomplete & try request to endpoint
                 this.form
@@ -1108,10 +1169,10 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
                     this.cdRef.markForCheck();
                     return;
                 } else {
-                    console.log('XX', x);
+                    // console.log('XX', x);
 
                     if (x) {
-                        console.log('OK');
+                        // console.log('OK');
 
                         this._onSearchDistrict(x.district);
 

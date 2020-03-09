@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -33,7 +33,7 @@ export class WarehouseConfirmationApiService {
      * @private
      * @memberof WarehouseConfirmationApiService
      */
-    private readonly _endpoint = '/warehouse-confirmation';
+    private readonly _endpoint = '/warehouses';
 
     /**
      * Creates an instance of WarehouseConfirmationApiService.
@@ -53,6 +53,8 @@ export class WarehouseConfirmationApiService {
      * @memberof WarehouseConfirmationApiService
      */
     check(body: PayloadWarehouseConfirmation): Observable<IWarehouseConfirmation> {
-        return this.http.post<IWarehouseConfirmation>(this._url, body);
+        return this.http.put<IWarehouseConfirmation>(this._url, body, {
+            params: new HttpParams().set('type', 'confirmation')
+        });
     }
 }

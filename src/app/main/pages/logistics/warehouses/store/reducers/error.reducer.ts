@@ -59,9 +59,13 @@ export const reducer = createReducer(
             return adapter.removeOne('fetchWarehouseSkuStocksFailure', state);
         }
     ),
-    on(WarehouseActions.confirmationChangeInvoiceSuccess, state => {
-        return adapter.removeOne('confirmationChangeInvoiceFailure', state);
-    }),
+    on(
+        WarehouseActions.clearConfirmationChangeState,
+        WarehouseActions.confirmationChangeInvoiceSuccess,
+        state => {
+            return adapter.removeOne('confirmationChangeInvoiceFailure', state);
+        }
+    ),
     on(WarehouseActions.clearState, state => {
         return adapter.removeAll({ ...state });
     })

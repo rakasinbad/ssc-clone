@@ -45,7 +45,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, payload])),
                         switchMap<[User, any], Observable<AnyAction>>(
-                            this.handleCreateWarehousesRequest$
+                            this._createWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure'))
                     );
@@ -55,7 +55,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, payload])),
                         switchMap<[User, any], Observable<AnyAction>>(
-                            this.handleCreateWarehousesRequest$
+                            this._createWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'createWarehouseFailure'))
                     );
@@ -113,7 +113,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, payload.body, payload.id])),
                         switchMap<[User, any, string], Observable<AnyAction>>(
-                            this.handleUpdateWarehousesRequest$
+                            this._updateWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'updateWarehouseFailure'))
                     );
@@ -123,7 +123,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, payload.body, payload.id])),
                         switchMap<[User, any, string], Observable<AnyAction>>(
-                            this.handleUpdateWarehousesRequest$
+                            this._updateWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'updateWarehouseFailure'))
                     );
@@ -181,7 +181,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this.handleFetchWarehousesRequest$
+                            this._fetchWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehousesFailure'))
                     );
@@ -191,7 +191,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this.handleFetchWarehousesRequest$
+                            this._fetchWarehousesRequest$
                         ),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehousesFailure'))
                     );
@@ -232,7 +232,7 @@ export class WarehouseEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(() => of(id)),
-                        switchMap<string, Observable<AnyAction>>(this.handleFetchWarehouseRequest$),
+                        switchMap<string, Observable<AnyAction>>(this._fetchWarehouseRequest$),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
                     );
                 } else {
@@ -240,7 +240,7 @@ export class WarehouseEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(() => of(id)),
-                        switchMap<string, Observable<AnyAction>>(this.handleFetchWarehouseRequest$),
+                        switchMap<string, Observable<AnyAction>>(this._fetchWarehouseRequest$),
                         catchError(err => this.sendErrorToState$(err, 'fetchWarehouseFailure'))
                     );
                 }
@@ -281,7 +281,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(() => of(payload)),
                         switchMap<PayloadWarehouseConfirmation, Observable<AnyAction>>(
-                            this.handleConfirmationChangeInvoiceRequest$
+                            this._confirmationChangeInvoiceRequest$
                         ),
                         catchError(err =>
                             this.sendErrorToState$(err, 'confirmationChangeInvoiceFailure')
@@ -293,7 +293,7 @@ export class WarehouseEffects {
                         retry(3),
                         switchMap(() => of(payload)),
                         switchMap<PayloadWarehouseConfirmation, Observable<AnyAction>>(
-                            this.handleConfirmationChangeInvoiceRequest$
+                            this._confirmationChangeInvoiceRequest$
                         ),
                         catchError(err =>
                             this.sendErrorToState$(err, 'confirmationChangeInvoiceFailure')
@@ -351,7 +351,7 @@ export class WarehouseEffects {
         return userData;
     };
 
-    handleCreateWarehousesRequest$ = ([userData, payload]: [User, any]): Observable<AnyAction> => {
+    _createWarehousesRequest$ = ([userData, payload]: [User, any]): Observable<AnyAction> => {
         const newPayload = {
             ...payload
         };
@@ -373,7 +373,7 @@ export class WarehouseEffects {
         );
     };
 
-    handleUpdateWarehousesRequest$ = ([userData, body, id]: [User, any, string]): Observable<
+    _updateWarehousesRequest$ = ([userData, body, id]: [User, any, string]): Observable<
         AnyAction
     > => {
         const newPayload = {
@@ -404,7 +404,7 @@ export class WarehouseEffects {
         );
     };
 
-    handleFetchWarehousesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
+    _fetchWarehousesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
         AnyAction
     > => {
         const { supplierId } = userData.userSupplier;
@@ -428,7 +428,7 @@ export class WarehouseEffects {
         );
     };
 
-    handleFetchWarehouseRequest$ = (warehouseId: string): Observable<AnyAction> => {
+    _fetchWarehouseRequest$ = (warehouseId: string): Observable<AnyAction> => {
         return this._$warehouseApi.findById(warehouseId).pipe(
             catchOffline(),
             map(resp =>
@@ -440,13 +440,16 @@ export class WarehouseEffects {
         );
     };
 
-    handleConfirmationChangeInvoiceRequest$ = (
+    _confirmationChangeInvoiceRequest$ = (
         payload: PayloadWarehouseConfirmation
     ): Observable<AnyAction> => {
         return this._$warehouseConfirmationApi.check(payload).pipe(
             map(resp => {
                 return WarehouseActions.confirmationChangeInvoiceSuccess({
-                    payload: new WarehouseConfirmation(resp)
+                    payload: new WarehouseConfirmation({
+                        ...resp,
+                        invoiceId: payload.invoiceGroupId
+                    })
                 });
             }),
             catchError(err => this.sendErrorToState$(err, 'confirmationChangeInvoiceFailure'))

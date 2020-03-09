@@ -14,7 +14,7 @@
 
     .mat-header-row,
     .mat-row {
-        background: white;
+        background: white !important;
     }
 
     .mat-row {
@@ -56,63 +56,27 @@
         padding-right: 8px;
     }
 
-    .mat-column-checkbox {
+    .mat-column-no {
         flex: 0 1 80px;
     }
 
-    .mat-column-wh-id {
+    .mat-column-sku-id {
         flex: 0 1 120px;
         min-width: 120px;
     }
 
-    .mat-column-wh-name {
-        flex: 1 2 40em;
-        min-width: 120px;
+    .mat-column-sku-name {
+        flex: 1 1 50em;
+        min-width: 125px;
     }
 
-    .mat-column-total-sku {
-        flex: 0 1 80px;
-        min-width: 80px;
-    }
-
-    .mat-column-stock-sellable {
-        flex: 0 1 120px;
-        min-width: 120px;
-    }
-
-    .mat-column-stock-on-hand {
-        flex: 0 1 20em;
-        min-width: 80px;
-        // justify-content: flex-end;
-    }
-
-    .mat-column-last-action-date {
-        flex: 0 1 20em;
+    .mat-column-sellable {
+        flex: 0 1 10em;
         min-width: 100px;
-        // justify-content: flex-end;
     }
 
-    .mat-column-actions {
-        flex: 0 1 60px;
-        min-width: 60px;
-        justify-content: flex-end;
-    }
-
-    .quantity-indicator {
-        display: inline-block;
-        vertical-align: middle;
-        width: 8px;
-        height: 8px;
-        border-radius: 4px;
-        margin-right: 8px;
-
-        &+span {
-            display: inline-block;
-            vertical-align: middle;
-        }
-    }
-
-    .active-icon {
-        border-radius: 50%;
+    .mat-column-after {
+        flex: 0 1 10em;
+        min-width: 80px;
     }
 }

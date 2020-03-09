@@ -2,6 +2,7 @@ import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromPortfolios from './sources/portfolio';
+import * as fromStockManagementReasons from './sources/stock-management-reason';
 import * as fromTeams from './sources/team';
 import * as fromTemperatures from './sources/temperature';
 import * as fromWarehouses from './sources/warehouse';
@@ -17,9 +18,11 @@ const featureKey = 'sources';
  */
 interface State {
     [fromPortfolios.featureKey]: fromPortfolios.State;
+    [fromStockManagementReasons.featureKey]: fromStockManagementReasons.State;
     [fromTeams.featureKey]: fromTeams.State;
     [fromTemperatures.featureKey]: fromTemperatures.State;
     [fromWarehouses.featureKey]: fromWarehouses.State;
+    [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
     [fromWarehouseValues.featureKey]: fromWarehouseValues.State;
 }
 
@@ -43,6 +46,7 @@ interface FeatureState extends fromRoot.State {
 function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
         [fromPortfolios.featureKey]: fromPortfolios.reducers,
+        [fromStockManagementReasons.featureKey]: fromStockManagementReasons.reducers,
         [fromTeams.featureKey]: fromTeams.reducers,
         [fromTemperatures.featureKey]: fromTemperatures.reducers,
         [fromWarehouses.featureKey]: fromWarehouses.reducers,
