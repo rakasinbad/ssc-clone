@@ -5,20 +5,22 @@ import {
     ViewChild,
     ViewEncapsulation,
     ChangeDetectorRef,
-    OnDestroy
+    OnDestroy,
+    ElementRef,
+    AfterViewInit
 } from '@angular/core';
-import { MatPaginator, MatSort, MatRadioChange } from '@angular/material';
+import { MatPaginator, MatSort, MatRadioChange, MatTabChangeEvent } from '@angular/material';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, merge, of } from 'rxjs';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { UiActions, WarehouseActions } from 'app/shared/store/actions';
 import { environment } from 'environments/environment';
 
 import * as fromWarehouseCoverages from './store/reducers';
-import { tap, takeUntil } from 'rxjs/operators';
+import { tap, takeUntil, map, switchMap } from 'rxjs/operators';
 import { Warehouse } from '../warehouses/models';
 import { SelectedLocation } from 'app/shared/components/geolocation/models/selected-location.model';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
@@ -27,6 +29,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { NotCoveredWarehouse } from './models/not-covered-warehouse.model';
 import { WarehouseCoverage } from './models/warehouse-coverage.model';
 import { WarehouseCoverageSelectors } from './store/selectors';
+import { WarehouseCoverageActions } from './store/actions';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -36,11 +39,11 @@ import { WarehouseCoverageSelectors } from './store/selectors';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
+export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
     displayedColumns: Array<string> = [
-        'wh-name', 'province', 'city', 'district', 'urban', 'actions'
+        'province', 'city', 'district', 'urban', 'actions'
     ];
 
     // tslint:disable-next-line: no-inferrable-types
@@ -48,9 +51,12 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
 
     isLoading$: Observable<boolean>;
     warehouses$: Observable<Array<Warehouse>>;
-    coverages$: Observable<Array<WarehouseCoverage>> | Observable<Array<NotCoveredWarehouse>>;
+    coverages$: Observable<Array<WarehouseCoverage> | Array<NotCoveredWarehouse>>;
+    totalCoverages$: Observable<number>;
     selectedWarehouse: Warehouse;
     selectedLocation: SelectedLocation;
+    // tslint:disable-next-line: no-inferrable-types
+    selectedAreaCoverage: string = 'covered';
 
     // tslint:disable-next-line: no-inferrable-types
     selectedViewBy: string = 'warehouse';
@@ -80,6 +86,18 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         //     pageType: 'journey-plans'
         // }
     };
+
+    // ViewChild untuk tabel.
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
+
+    // ViewChild untuk MatPaginator.
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    // ViewChild untuk MatSort.
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
@@ -121,9 +139,19 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         this.coverages$ = this.store.select(
             WarehouseCoverageSelectors.selectAll
         ).pipe(
-            tap(coverages => {
-
+            switchMap(coverages => {
+                if (this.selectedViewBy === 'area') {
+                    return of(coverages as Array<WarehouseCoverage>);
+                } else {
+                    return of(coverages as Array<NotCoveredWarehouse>);
+                }
             }),
+            takeUntil(this.subs$)
+        );
+
+        this.totalCoverages$ = this.store.select(
+            WarehouseCoverageSelectors.selectTotal
+        ).pipe(
             takeUntil(this.subs$)
         );
     }
@@ -139,11 +167,85 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         }
     }
 
+    private truncateTable(): void {
+        this.store.dispatch(
+            WarehouseCoverageActions.truncateWarehouseCoverages()
+        );
+    }
+
+    private onRefreshTable(): void {
+        // Melakukan dispatch untuk mengambil data store berdasarkan ID portfolio.
+        if (this.paginator) {
+            // Menyiapkan query parameter yang akan dikirim ke server.
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || this.defaultPageSize,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
+
+            // Menyalakan pagination.
+            data['paginate'] = true;
+
+            if (this.selectedViewBy === 'warehouse') {
+                data['viewBy'] = 'warehouse';
+                data['warehouseId'] = this.selectedWarehouse.id;
+            } else if (this.selectedViewBy === 'area') {
+                data['viewBy'] = 'area';
+                data['type'] = this.selectedAreaCoverage;
+
+                // Mengambil location yang telah dipilih.
+                data['province'] = this.selectedLocation.province.name;
+                data['city'] = this.selectedLocation.city;
+                data['district'] = this.selectedLocation.district;
+                data['urban'] = this.selectedLocation.urban.urban;
+            }
+
+
+            // if (this.sort.direction) {
+            //     // Menentukan sort direction tabel.
+            //     data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+
+            //     // Jika sort yg aktif adalah code, maka sortBy yang dikirim adalah store_code.
+            //     if (this.sort.active === 'code') {
+            //         data['sortBy'] = 'store_code';
+            //     }
+            // } else {
+            //     // Sortir default jika tidak ada sort yang aktif.
+            //     data['sort'] = 'desc';
+            //     data['sortBy'] = 'id';
+            // }
+
+            // Mengambil nilai dari search bar dan melakukan 'sanitasi' untuk menghindari injection.
+            // const searchValue = this.sanitizer.sanitize(SecurityContext.HTML, this.search.value);
+            // // Jika hasil sanitasi lolos, maka akan melanjutkan pencarian.
+            // if (searchValue) {
+            //     data['search'] = [
+            //         {
+            //             fieldName: 'code',
+            //             keyword: searchValue
+            //         },
+            //         {
+            //             fieldName: 'name',
+            //             keyword: searchValue
+            //         }
+            //     ];
+            // }
+
+            // Melakukan request store ke server via dispatch state.
+            this.store.dispatch(
+                WarehouseCoverageActions.fetchWarehouseCoveragesRequest({ payload: data })
+            );
+        }
+    }
+
     onApplyFilter(): void {
         if (this.selectedViewBy === 'warehouse') {
             this.isFilterApplied = true;
+            this.truncateTable();
+            this.onRefreshTable();
         } else if (this.selectedViewBy === 'area') {
             this.isFilterApplied = true;
+            this.truncateTable();
+            this.onRefreshTable();
         }
     }
 
@@ -160,9 +262,33 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         );
     }
 
+    ngAfterViewInit(): void {
+        // Melakukan merge Observable pada perubahan sortir dan halaman tabel.
+        merge(
+            this.sort.sortChange,
+            this.paginator.page
+        ).pipe(
+            takeUntil(this.subs$)
+        ).subscribe(() => {
+            this.onRefreshTable();
+        });
+    }
+
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+    }
+
+    onEditWarehouseCoverage(item: WarehouseCoverage | NotCoveredWarehouse): void {
+        if (item instanceof WarehouseCoverage) {
+            this.store.dispatch(
+                WarehouseCoverageActions.selectWarehouse({
+                    payload: (item as WarehouseCoverage).warehouseId
+                })
+            );
+        }
+
+        this.router.navigate(['/pages/logistics/warehouse-coverages/' + (item as WarehouseCoverage).warehouseId + '/edit']);
     }
 
     onSelectedLocation($event: SelectedLocation): void {
@@ -184,11 +310,35 @@ export class WarehouseCoveragesComponent implements OnInit, OnDestroy {
         this.isFilterApplied = false;
         this.cdRef.markForCheck();
     }
-// 
+
+    onSelectedAreaCoverage($event: number): void {
+        if ($event === 0) {
+            this.selectedAreaCoverage = 'covered';
+
+            this.truncateTable();
+        } else if ($event === 1) {
+            this.selectedAreaCoverage = 'not_covered';
+
+            this.truncateTable();
+        }
+
+    }
+
     onChangedViewBy($event: MatRadioChange): void {
         this.selectedViewBy = $event.value;
         this.isFilterApplied = true;
 
+        if (this.selectedViewBy === 'area') {
+            this.displayedColumns = [
+                'wh-name', 'province', 'city', 'district', 'urban', 'actions'
+            ];
+        } else if (this.selectedViewBy === 'warehouse') {
+            this.displayedColumns = [
+                'province', 'city', 'district', 'urban'
+            ];
+        }
+
+        this.truncateTable();
         this.cdRef.markForCheck();
     }
 

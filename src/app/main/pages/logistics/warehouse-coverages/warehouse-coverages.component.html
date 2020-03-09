@@ -110,7 +110,7 @@
             <!-- / CARD HEADER -->
 
             <!-- AREA TYPE WAREHOUSE COVERAGE SELECTION -->
-            <mat-tab-group class="mx-12" color="accent" *ngIf="selectedViewBy === 'area'">
+            <mat-tab-group class="mx-12" color="accent" *ngIf="selectedViewBy === 'area'" (selectedIndexChange)="onSelectedAreaCoverage($event)">
                 <mat-tab class="sinbad-red-fg" label="Covered"></mat-tab>
                 <mat-tab class="sinbad-red-fg" label="Not Covered"></mat-tab>
             </mat-tab-group>
@@ -213,39 +213,11 @@
                             </button>
             
                             <mat-menu #moreMenu="matMenu">
-                                <ng-template>
-                                    <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
-                                        [routerLink]="[row?.id]">
-                                        <mat-icon>edit</mat-icon>
-                                        <span>Edit</span>
-                                    </button>
-            
-                                    <!--<button
-                                        mat-menu-item
-                                        type="button"
-                                        class="sinbad-mat-menu-item"
-                                        [attr.aria-label]="
-                                            row?.status === 'active' ? 'Inactive' : 'Active'
-                                        "
-                                        (click)="onChangeStatus(row)"
-                                    >
-                                        <mat-icon>
-                                            {{
-                                                row?.status === 'active'
-                                                    ? 'archive'
-                                                    : 'check_circle_outline'
-                                            }}
-                                        </mat-icon>
-                                        <span>
-                                            {{
-                                                (row?.status === 'active'
-                                                    ? 'ACTION.INACTIVE'
-                                                    : 'ACTION.ACTIVE'
-                                                ) | translate
-                                            }}
-                                        </span>
-                                    </button> -->
-                                </ng-template>
+                                <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
+                                    (click)="onEditWarehouseCoverage(row)">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Edit</span>
+                                </button>
                             </mat-menu>
                         </div>
                     </mat-cell>
@@ -256,13 +228,13 @@
                 <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse"></mat-row>
             </mat-table>
             
-            <div class="no-records" *ngIf="!(isLoading$ | async) && (coverages$ | async).length === 0">
+            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalCoverages$ | async) === 0">
                 No records found
             </div>
             
             <mat-paginator
-                *ngIf="(coverages$ | async).length > 0"
-                [length]="(coverages$ | async)"
+                [fxHide]="(totalCoverages$ | async) === 0"
+                [length]="(coverages$ | async).length"
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons

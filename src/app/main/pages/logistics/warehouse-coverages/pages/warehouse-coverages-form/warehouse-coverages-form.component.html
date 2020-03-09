@@ -12,7 +12,7 @@
                     <!-- / WAREHOUSE COVERAGE DETAIL -->
                     <!-- WAREHOUSE NAME -->
                     <div
-                        class="custom-field"
+                        [class.custom-field]="!isEditMode"
                         fxLayout="row"
                         fxLayoutAlign="start stretch"
                     >
@@ -26,8 +26,8 @@
                                 class="sinbad-red-fg"
                             >* </span> Warehouse<br/> Name
                         </label>
-                
-                        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex="50">
+
+                        <mat-form-field [fxHide]="isEditMode" fxFlexAlign="center" appearance="outline" fxFlex="50">
                             <mat-select
                                 #warehouse
                                 name="warehouse"
@@ -47,6 +47,11 @@
                                 {{ getFormError(form.get('warehouse')) }}
                             </mat-error>
                         </mat-form-field>
+                        <ng-container *ngIf="isEditMode">
+                            <p fxFlexAlign="center" class="sinbad-black-60-fg">
+                                {{ selectedWarehouse?.code || '-' }} - {{ selectedWarehouse?.name }}
+                            </p>
+                        </ng-container>
                     </div>
                     <!-- / WAREHOUSE NAME -->
                     <!-- WAREHOUSE ADDRESS -->
@@ -276,6 +281,7 @@
                     <!-- MULTIPLE SELECTION -->
                     <sinbad-multiple-selection
                         [availableOptions]="availableOptions"
+                        [initialSelectedOptions]="initialSelectedOptions"
                         [totalAvailableOptions]="(totalUrbans$ | async)"
                         [isAvailableOptionsLoading]="(isUrbanLoading$ | async)"
                         (availableReachedBottom)="onAvailableOptionLoadMore()"

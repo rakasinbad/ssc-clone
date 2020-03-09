@@ -9,18 +9,6 @@ const getWarehouseCoveragesCoreState = createFeatureSelector<
     fromWarehouseCoveragesCore.State
 >(fromWarehouseCoveragesCore.featureKey);
 
-export const getWarehouseEntitiesState = createSelector(
-    getWarehouseCoveragesCoreState,
-    state => state.warehouseCoverages
-);
-
-export const {
-    selectAll: selectAllWarehouseCoverages,
-    selectEntities: selectWarehouseCoveragesEntities,
-    selectIds: selectWarehouseCoveragesIds,
-    selectTotal: selectWarehouseCoveragesTotal
-} = fromWarehouseCoverages.adapter.getSelectors(getWarehouseEntitiesState);
-
 export const getLocationState = createSelector(
     getWarehouseCoveragesCoreState,
     state => state.locations

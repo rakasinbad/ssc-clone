@@ -102,21 +102,34 @@ app-warehouse-coverages {
             .word-wrap {
                 word-break: break-all;
             }
+
+
+            &.mat-column-actions {
+                padding-right: 8px !important;
+            }
         }
 
         .mat-column-checkbox {
             flex: 0 1 5.5%;
         }
 
-        .mat-column-code {
-            flex: 0 1 17%;
+        .mat-column-wh-name {
+            flex: 0 1 25%;
         }
 
-        .mat-column-name {
+        .mat-column-province {
             flex: 0 1 20%;
         }
 
-        .mat-column-salesForce {
+        .mat-column-city {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-district {
+            flex: 0 1 20%;
+        }
+
+        .mat-column-urban {
             flex: 0 1 20%;
         }
 

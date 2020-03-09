@@ -7,12 +7,13 @@ import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxj
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take, exhaustMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
+import { FeatureState as WarehouseCoverageCoreState, featureKey } from '../../store/reducers';
 import { WarehouseCoverageActions, LocationActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actions';
 import { Warehouse } from '../../../warehouses/models';
+import { Warehouse as WarehouseFromCoverages } from '../../models/warehouse-coverage.model';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
@@ -22,6 +23,8 @@ import { Province } from 'app/shared/models/location.model';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
 import { LocationSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { WarehouseCoverageSelectors } from '../../store/selectors';
+import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -34,12 +37,15 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     // Form
     form: FormGroup;
+    // Untuk menyimpan mode edit.
+    // tslint:disable-next-line: no-inferrable-types
+    isEditMode: boolean = false;
 
     // Untuk menyimpan daftar warehouse yang tersedia.
     availableWarehouses$: Observable<Array<Warehouse>>;
 
     // Untuk menyimpan warehouse yang terpilih.
-    selectedWarehouse: Warehouse;
+    selectedWarehouse: WarehouseFromCoverages;
     // Untuk menyimpan province yang terpilih.
     selectedProvince$: Observable<string>;
     // Untuk menyimpan city yang terpilih.
@@ -141,12 +147,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 // translate: 'BREADCRUMBS.EDIT_PRODUCT',
                 active: true
             });
+
+            this.isEditMode = true;
         } else {
             breadcrumbs.push({
                 title: 'Add Warehouse Coverage',
                 // translate: 'BREADCRUMBS.ADD_PRODUCT',
                 active: true
             });
+
+            this.isEditMode = false;
         }
 
         this.locationStore.dispatch(
@@ -536,7 +546,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     }
 
     onSelectedWarehouse(warehouse: Warehouse): void {
-        this.selectedWarehouse = warehouse;
+        this.selectedWarehouse = (warehouse as WarehouseFromCoverages);
     }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
@@ -1028,6 +1038,22 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             this.submitWarehouseCoverage();
         });
 
+        this.locationStore.select(
+            WarehouseCoverageSelectors.getSelectedId
+        ).pipe(
+            withLatestFrom(this.availableWarehouses$),
+            take(1)
+        ).subscribe(([warehouseId, warehouses]: [string, Array<Warehouse>]) => {
+            if (warehouseId || warehouses) {
+                this.isEditMode = true;
+                this.selectedWarehouse = (warehouses.find(wh => wh.id === warehouseId) as WarehouseFromCoverages);
+                this.form.patchValue({
+                    warehouse: warehouseId
+                });
+            } else {
+                this.isEditMode = false;
+            }
+        });
 
         // this.warehouseSub.pipe(
         //     withLatestFrom(
