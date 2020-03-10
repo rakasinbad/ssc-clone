@@ -10,6 +10,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 export class WarehouseCoverageApiService {
     private _url: string;
     private readonly _endpoint = '/warehouse-coverages';
+    private readonly _endpointWarehouseUrbans = '/warehouse-urbans';
 
     constructor(
         private http: HttpClient,
@@ -78,9 +79,28 @@ export class WarehouseCoverageApiService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
+    findCoverage<T>(params: IQueryParams): Observable<T> {
+        const newArgs = [];
+
+        if (!params['warehouseId']) {
+            throw new Error('warehouseId is required.');
+        } else {
+            newArgs.push({ key: 'warehouseId', value: params['warehouseId'] });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._endpointWarehouseUrbans);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+        return this.http.get<T>(this._url, { params: newParams });
+    }
+
     createWarehouseCoverage<T>(payload: { warehouseId: number; urbanId: Array<number>; }): Observable<T> {
         this._url = this._$helper.handleApiRouter(this._endpoint);
         return this.http.post<T>(this._url, payload);
+    }
+
+    updateWarehouseCoverage<T>(payload: { warehouseId: number; urbanId: Array<number>; deletedUrbanId: Array<number>; }): Observable<T> {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
+        return this.http.patch<T>(this._url + `/${payload.warehouseId}`, payload);
     }
 
 }

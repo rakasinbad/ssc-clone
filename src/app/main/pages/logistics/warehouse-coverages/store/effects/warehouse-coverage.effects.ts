@@ -145,6 +145,74 @@ export class WarehouseCoverageEffects {
         )
     , { dispatch: false });
 
+    updateWarehouseCoverageRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action request update warehouse coverage.
+            ofType(WarehouseCoverageActions.updateWarehouseCoverageRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(payload => {
+                return of(payload).pipe(
+                    switchMap(this.updateWarehouseCoverageRequest),
+                    catchError(err => this.sendErrorToState(err, 'updateWarehouseCoverageFailure'))
+                );
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
+            })
+        )
+    );
+
+    updateWarehouseCoverageFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action create warehouse coverage success.
+            ofType(WarehouseCoverageActions.updateWarehouseCoverageFailure),
+            // Memunculkan notifikasi dan pindah halaman.
+            tap(({ payload }) => {
+                this.notice$.open('Failed to update warehouse coverage. Reason: ' + payload.errors, 'error', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                    duration: 5000,
+                });
+
+                this.locationStore.dispatch(FormActions.resetClickSaveButton());
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
+            })
+        )
+    , { dispatch: false });
+
+    updateWarehouseCoverageSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action create warehouse coverage success.
+            ofType(WarehouseCoverageActions.updateWarehouseCoverageSuccess),
+            // Memunculkan notifikasi dan pindah halaman.
+            tap(() => {
+                this.notice$.open('Update warehouse coverage success.', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right',
+                    duration: 5000,
+                });
+
+                this.router.navigate(['/pages/logistics/warehouse-coverages']);
+            }),
+            // Me-reset state tombol save.
+            finalize(() => {
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
+            })
+        )
+    , { dispatch: false });
+
     checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
@@ -163,6 +231,20 @@ export class WarehouseCoverageEffects {
                 catchOffline(),
                 switchMap(({ message }) => {
                     return of(WarehouseCoverageActions.createWarehouseCoverageSuccess({
+                        payload: {
+                            message
+                        }
+                    }));
+                })
+            );
+    }
+
+    updateWarehouseCoverageRequest = (payload): Observable<AnyAction> => {
+        return this.whApi$.updateWarehouseCoverage<{ message: string }>(payload)
+            .pipe(
+                catchOffline(),
+                switchMap(({ message }) => {
+                    return of(WarehouseCoverageActions.updateWarehouseCoverageSuccess({
                         payload: {
                             message
                         }

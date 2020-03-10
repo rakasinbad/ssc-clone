@@ -58,6 +58,19 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: false,
     })),
+    // UPDATE
+    on(WarehouseCoverageActions.updateWarehouseCoverageRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(WarehouseCoverageActions.updateWarehouseCoverageFailure, (state) => ({
+        ...state,
+        isLoading: false
+    })),
+    on(WarehouseCoverageActions.updateWarehouseCoverageSuccess, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
     // SELECTIONS
     on(WarehouseCoverageActions.selectWarehouse, (state, { payload }) => ({
         ...state,

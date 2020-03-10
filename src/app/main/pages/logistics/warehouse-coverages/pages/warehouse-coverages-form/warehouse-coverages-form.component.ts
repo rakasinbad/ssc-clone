@@ -8,7 +8,7 @@ import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, d
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { FeatureState as WarehouseCoverageCoreState, featureKey } from '../../store/reducers';
-import { WarehouseCoverageActions, LocationActions } from '../../store/actions';
+import { WarehouseCoverageActions, LocationActions, WarehouseUrbanActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actions';
@@ -21,7 +21,7 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { Province } from 'app/shared/models/location.model';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { LocationSelectors } from '../../store/selectors';
+import { LocationSelectors, WarehouseUrbanSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { WarehouseCoverageSelectors } from '../../store/selectors';
 import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
@@ -765,12 +765,24 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         // Mendapatkan urban yang terpilih.
         const urbans = (formValue.selectedUrbans as Array<Selection>);
 
-        this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
-            payload: {
-                urbanId: urbans.map(u => +u.id),
-                warehouseId: formValue.warehouse
-            }
-        }));
+        if (this.isEditMode) {
+            const removedUrbans = (formValue.removedUrbans as Array<Selection>);
+
+            this.locationStore.dispatch(WarehouseCoverageActions.updateWarehouseCoverageRequest({
+                payload: {
+                    warehouseId: formValue.warehouse,
+                    urbanId: urbans.map(u => +u.id),
+                    deletedUrbanId: removedUrbans.map(r => +r.id),
+                }
+            }));
+        } else {
+            this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
+                payload: {
+                    urbanId: urbans.map(u => +u.id),
+                    warehouseId: formValue.warehouse
+                }
+            }));
+        }
     }
 
     getFormError(form: any): string {
@@ -1030,6 +1042,21 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         ).subscribe();
 
         this.locationStore.select(
+            WarehouseUrbanSelectors.selectAll
+        ).pipe(
+            tap(coverages => {
+                if (Array.isArray(coverages)) {
+                    if (coverages.length > 0) {
+                        this.initialSelectedOptions = coverages.map<Selection>(d => ({ id: d.id, group: 'urban', label: d.urban.urban }));
+                    }
+                }
+
+                this.cdRef.markForCheck();
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        this.locationStore.select(
             FormSelectors.getIsClickSaveButton
         ).pipe(
             filter(isClick => !!isClick),
@@ -1050,6 +1077,17 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 this.form.patchValue({
                     warehouse: warehouseId
                 });
+
+                const query: IQueryParams = {
+                    paginate: false
+                };
+                query['warehouseId'] = warehouseId;
+
+                this.locationStore.dispatch(
+                    WarehouseUrbanActions.fetchWarehouseUrbansRequest({
+                        payload: query
+                    })
+                );
             } else {
                 this.isEditMode = false;
             }

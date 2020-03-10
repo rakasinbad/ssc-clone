@@ -6,7 +6,8 @@ import { NotCoveredWarehouse } from '../../models/not-covered-warehouse.model';
 
 export type failureActionNames =
     'fetchWarehouseCoveragesFailure' |
-    'createWarehouseCoverageFailure'
+    'createWarehouseCoverageFailure' |
+    'updateWarehouseCoverageFailure'
 ;
 
 export const fetchWarehouseCoveragesRequest = createAction(
@@ -36,6 +37,21 @@ export const createWarehouseCoverageFailure = createAction(
 
 export const createWarehouseCoverageSuccess = createAction(
     '[Warehouse/Warehouse Coverages] Create Warehouse Coverage Success',
+    props<{ payload: { message: string } }>()
+);
+
+export const updateWarehouseCoverageRequest = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Request',
+    props<{ payload: { warehouseId: number; urbanId: Array<number>; deletedUrbanId: Array<number>; } }>()
+);
+
+export const updateWarehouseCoverageFailure = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateWarehouseCoverageSuccess = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Success',
     props<{ payload: { message: string } }>()
 );
 

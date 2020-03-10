@@ -7,6 +7,7 @@ import {
     reducers as WarehouseCoverageReducers
 } from './reducers';
 import { WarehouseCoverageEffects } from './effects/warehouse-coverage.effects';
+import { WarehouseUrbanEffects } from './effects/warehouse-urban.effects';
 import { LocationEffects } from './effects';
 
 @NgModule({
@@ -15,6 +16,7 @@ import { LocationEffects } from './effects';
         StoreModule.forFeature(WarehouseCoveragesFeatureKey, WarehouseCoverageReducers),
         EffectsModule.forFeature([
             WarehouseCoverageEffects,
+            WarehouseUrbanEffects,
             LocationEffects,
         ])
     ]
