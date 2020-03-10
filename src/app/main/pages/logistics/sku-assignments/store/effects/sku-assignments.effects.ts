@@ -10,7 +10,7 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { of, Observable } from 'rxjs';
 import { SkuAssignmentsApiService } from '../../services/sku-assignments-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
-import { SkuAssignments } from '../../models/sku-assignments.model';
+import { SkuAssignments, SkuAssignmentsCreationPayload } from '../../models/sku-assignments.model';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { HelperService, NoticeService } from 'app/shared/helpers';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -22,6 +22,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 import { User } from 'app/shared/models/user.model';
 import { AnyAction } from 'app/shared/models/actions.model';
+import { FormActions } from 'app/shared/store/actions';
 
 @Injectable()
 export class SkuAssignmentsEffects {
@@ -67,6 +68,59 @@ export class SkuAssignmentsEffects {
             })
         )
     );
+
+    addSkuAssignmentsRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan SkuAssignments.
+            ofType(SkuAssignmentsActions.addSkuAssignmentsRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [SkuAssignmentsCreationPayload, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, SkuAssignmentsCreationPayload], Observable<AnyAction>>(this.addSkuAssignmentRequest),
+                        catchError(err => this.sendErrorToState(err, 'addSkuAssignmentsFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, SkuAssignmentsCreationPayload], Observable<AnyAction>>(this.addSkuAssignmentRequest),
+                        catchError(err => this.sendErrorToState(err, 'addSkuAssignmentsFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    addSkuAssignmentsSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan SkuAssignments.
+            ofType(SkuAssignmentsActions.addSkuAssignmentsSuccess),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            tap(payload => {
+                const noticeSetting: MatSnackBarConfig = {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom',
+                    duration: 5000,
+                };
+                this.notice$.open(`Assign SKU success.`, 'success', noticeSetting);
+                
+                if (!payload) {
+                    this.router.navigate(['/pages/logistics/sku-assignments']);
+                }
+            })
+        )
+    , { dispatch: false });
 
     confirmRemoveSkuAssignments$ = createEffect(
         () =>
@@ -191,6 +245,30 @@ export class SkuAssignmentsEffects {
             );
     }
 
+    addSkuAssignmentRequest = ([userData, payload]: [User, SkuAssignmentsCreationPayload]): Observable<AnyAction> => {
+        // Hanya mengambil ID supplier saja.
+        // const { supplierId } = userData.userSupplier;
+        // Membentuk parameter query yang baru.
+        const newQuery: SkuAssignmentsCreationPayload = {
+            ...payload
+        };
+    
+        // Memasukkan ID supplier ke dalam parameter.
+        // newQuery['supplierId'] = supplierId;
+
+        return this.SkuAssignmentsApi$
+            .addSkuAssignments<SkuAssignmentsCreationPayload, { message: string }>(newQuery)
+            .pipe(
+                catchOffline(),
+                switchMap(() => {
+                    return of(SkuAssignmentsActions.addSkuAssignmentsSuccess({
+                        payload: null
+                    }));
+                }),
+                catchError(err => this.sendErrorToState(err, 'addSkuAssignmentsFailure'))
+            );
+    }
+
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: failureActionNames): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             return of(SkuAssignmentsActions[dispatchTo]({
@@ -229,5 +307,10 @@ export class SkuAssignmentsEffects {
         } else {
             this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
         }
+
+        // Me-reset state tombol save.
+        this.SkuAssignmentsStore.dispatch(
+            FormActions.resetClickSaveButton()
+        );
     }
 }

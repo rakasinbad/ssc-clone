@@ -33,7 +33,7 @@ export class SkuAssignmentsApiService {
      * @private
      * @memberof SkuAssignmentsApiService
      */
-    private readonly _SkuAssignmentsEndpoint = '/sku-assignments';
+    private readonly _SkuAssignmentsEndpoint = '/sku-assignment';
 
     /**
      * Creates an instance of SkuAssignmentsApiService.
@@ -60,5 +60,10 @@ export class SkuAssignmentsApiService {
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 
         return this.http.get<SkuAssignments>(this._url, { params: newParams });
+    }
+
+    addSkuAssignments<T, R>(payload: T): Observable<R> {
+        this._url = this._$helper.handleApiRouter(this._SkuAssignmentsEndpoint);
+        return this.http.post<R>(this._url, payload);
     }
 }

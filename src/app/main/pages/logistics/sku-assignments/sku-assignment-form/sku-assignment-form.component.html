@@ -57,4 +57,9 @@
         </form>
     </div>
     <!-- / CENTER -->
+    <!-- LOADER -->
+    <div class="loader" *ngIf="(isLoading$ | async)">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- / LOADER -->
 </div>

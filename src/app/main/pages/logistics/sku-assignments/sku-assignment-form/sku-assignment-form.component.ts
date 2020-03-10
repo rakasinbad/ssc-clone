@@ -33,6 +33,10 @@ import { CatalogueSelectors } from 'app/main/pages/catalogues/store/selectors';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { environment } from 'environments/environment';
+import { FormSelectors } from 'app/shared/store/selectors';
+import { SkuAssignmentsActions } from '../store/actions';
+import { SkuAssignmentsSelectors } from '../store/selectors';
+import { FeatureState as SkuAssignmentCoreFeatureState } from '../store/reducers';
 
 @Component({
     selector: 'app-sku-assignment-form',
@@ -50,6 +54,7 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
     // Untuk keperluan mat dialog ref.
     dialogRef$: Subject<string> = new Subject<string>();
 
+    isLoading$: Observable<boolean>;
     warehouseList$: Observable<Array<Warehouse>>;
 
     availableCatalogues$: Observable<Array<Catalogue>>;
@@ -90,7 +95,7 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         private multiple$: MultipleSelectionService,
         private notice$: NoticeService,
         private catalogueStore: NgRxStore<fromCatalogue.FeatureState>,
-        private SkuAssignmentsStore: NgRxStore<fromSkuAssignments.SkuAssignmentsState>,
+        private SkuAssignmentsStore: NgRxStore<SkuAssignmentCoreFeatureState>,
         private warehousesStore: NgRxStore<fromWarehouses.FeatureState>,
         private _notice: NoticeService,
         private errorMessageSvc: ErrorMessageService
@@ -129,6 +134,12 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
                     }
                 }
             })
+        );
+
+        this.isLoading$ = this.SkuAssignmentsStore.select(
+            SkuAssignmentsSelectors.getLoadingState
+        ).pipe(
+            takeUntil(this.subs$)
         );
 
         this.warehouseList$ = this.warehousesStore.select(WarehouseSelectors.selectAll).pipe(
@@ -285,6 +296,23 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    private submitSkuAssignment(): void {
+        // Mendapatkan nilai dari form.
+        const formValue = this.form.getRawValue();
+        // Mendapatkan urban yang terpilih.
+        const catalogues = (formValue.catalogues as Array<Selection>) || [];
+        // Mendapatkan urban yang terpilih.
+        const deletedCatalogue = (formValue.deletedCatalogue as Array<Selection>) || [];
+
+        this.warehousesStore.dispatch(SkuAssignmentsActions.addSkuAssignmentsRequest({
+            payload: {
+                warehouseId: +formValue.warehouse,
+                catalogueId: catalogues.map(u => +u.id),
+                deletedCatalogue: deletedCatalogue.map(d => +d.id)
+            }
+        }));
+    }
+
     // private clearAvailableOptions(): void {
     //     this.availableOptions = [];
     //     this.cdRef.markForCheck();
@@ -365,7 +393,7 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         this.debug('onSelectionChanged', $event);
 
         this.form.patchValue({
-            catalogueId: $event.added.length === 0 ? '' : $event.added,
+            catalogues: $event.added.length === 0 ? '' : $event.added,
             deletedCatalogue: $event.removed.length === 0 ? '' : $event.removed,
         });
     }
@@ -388,7 +416,7 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
                     })
                 ]
             ],
-            catalogueId: [
+            catalogues: [
                 '',
                 [
                     RxwebValidators.required({
@@ -410,6 +438,15 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
             } else {
                 this.warehousesStore.dispatch(FormActions.setFormStatusInvalid());
             }
+        });
+
+        this.warehousesStore.select(
+            FormSelectors.getIsClickSaveButton
+        ).pipe(
+            filter(isClick => !!isClick),
+            takeUntil(this.subs$)
+        ).subscribe(() => {
+            this.submitSkuAssignment();
         });
 
         this.initCatalogueSelection();

@@ -98,6 +98,27 @@ export const reducer = createReducer(
      */
     on(
         SkuAssignmentsActions.addSkuAssignmentsSuccess,
+        (state, { payload }) => {
+            if (!payload) {
+                return {
+                    ...state,
+                    skuAssignment: {
+                        ...state.skuAssignment,
+                        isLoading: false
+                    }
+                };
+            } else {
+                return {
+                    ...state,
+                    skuAssignment: adapterSkuAssignments.upsertOne(payload, {
+                        ...state.skuAssignment,
+                        isLoading: false,
+                    })
+                };
+            }
+        }
+    ),
+    on(
         SkuAssignmentsActions.updateSkuAssignmentsSuccess,
         (state, { payload }) => ({
             ...state,
@@ -117,9 +138,9 @@ export const reducer = createReducer(
     })),
     on(SkuAssignmentsActions.addSelectedCatalogues, (state, { payload }) => {
         const newCatalogues = (payload as Array<Catalogue>).map(store => {
-            const newCatalogues = new Catalogue(store);
-            newCatalogues.isSelected = true;
-            return newCatalogues;
+            const nC = new Catalogue(store);
+            nC.isSelected = true;
+            return nC;
         });
 
         return {

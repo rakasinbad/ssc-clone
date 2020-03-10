@@ -1,8 +1,9 @@
 import { createAction, props } from '@ngrx/store';
 import { SkuAssignments } from '../../models';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { IErrorHandler } from 'app/shared/models/global.model';
+import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
+import { SkuAssignmentsCreationPayload } from '../../models/sku-assignments.model';
 
 export type requestActionNames =
     | 'fetchSkuAssignmentsRequest'
@@ -59,12 +60,12 @@ export const confirmRemoveSkuAssignments = createAction(
  */
 export const addSkuAssignmentsRequest = createAction(
     '[SkuAssignments API] Add SkuAssignments Request',
-    props<{ payload: SkuAssignments }>()
+    props<{ payload: SkuAssignmentsCreationPayload }>()
 );
 
 export const addSkuAssignmentsSuccess = createAction(
     '[SkuAssignments API] Add SkuAssignments Success',
-    props<{ payload: SkuAssignments }>()
+    props<{ payload: TNullable<SkuAssignments> }>()
 );
 
 export const addSkuAssignmentsFailure = createAction(
