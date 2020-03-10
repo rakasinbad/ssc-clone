@@ -330,11 +330,11 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
 
         if (this.selectedViewBy === 'area') {
             this.displayedColumns = [
-                'wh-name', 'province', 'city', 'district', 'urban', 'actions'
+                'wh-name', 'province', 'city', 'district', 'urban'
             ];
         } else if (this.selectedViewBy === 'warehouse') {
             this.displayedColumns = [
-                'province', 'city', 'district', 'urban'
+                'province', 'city', 'district', 'urban', 'actions'
             ];
         }
 
