@@ -7,12 +7,13 @@ import { Subject, Observable, fromEvent, Subscription, combineLatest } from 'rxj
 import { takeUntil, map, tap, debounceTime, withLatestFrom, filter, startWith, distinctUntilChanged, take, exhaustMap } from 'rxjs/operators';
 import { environment } from 'environments/environment';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { FeatureState as WarehouseCoverageCoreState } from '../../store/reducers';
-import { WarehouseCoverageActions, LocationActions } from '../../store/actions';
+import { FeatureState as WarehouseCoverageCoreState, featureKey } from '../../store/reducers';
+import { WarehouseCoverageActions, LocationActions, WarehouseUrbanActions } from '../../store/actions';
 import { Selection } from 'app/shared/components/multiple-selection/models';
 import { ActivatedRoute } from '@angular/router';
 import { UiActions, FormActions, WarehouseActions } from 'app/shared/store/actions';
 import { Warehouse } from '../../../warehouses/models';
+import { Warehouse as WarehouseFromCoverages } from '../../models/warehouse-coverage.model';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
@@ -20,8 +21,10 @@ import { MultipleSelectionComponent } from 'app/shared/components/multiple-selec
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { Province } from 'app/shared/models/location.model';
 import { IBreadcrumbs } from 'app/shared/models/global.model';
-import { LocationSelectors } from '../../store/selectors';
+import { LocationSelectors, WarehouseUrbanSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { WarehouseCoverageSelectors } from '../../store/selectors';
+import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
 
 @Component({
     selector: 'app-warehouse-coverages-form',
@@ -34,12 +37,15 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
     // Form
     form: FormGroup;
+    // Untuk menyimpan mode edit.
+    // tslint:disable-next-line: no-inferrable-types
+    isEditMode: boolean = false;
 
     // Untuk menyimpan daftar warehouse yang tersedia.
     availableWarehouses$: Observable<Array<Warehouse>>;
 
     // Untuk menyimpan warehouse yang terpilih.
-    selectedWarehouse: Warehouse;
+    selectedWarehouse: WarehouseFromCoverages;
     // Untuk menyimpan province yang terpilih.
     selectedProvince$: Observable<string>;
     // Untuk menyimpan city yang terpilih.
@@ -141,12 +147,16 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 // translate: 'BREADCRUMBS.EDIT_PRODUCT',
                 active: true
             });
+
+            this.isEditMode = true;
         } else {
             breadcrumbs.push({
                 title: 'Add Warehouse Coverage',
                 // translate: 'BREADCRUMBS.ADD_PRODUCT',
                 active: true
             });
+
+            this.isEditMode = false;
         }
 
         this.locationStore.dispatch(
@@ -536,7 +546,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     }
 
     onSelectedWarehouse(warehouse: Warehouse): void {
-        this.selectedWarehouse = warehouse;
+        this.selectedWarehouse = (warehouse as WarehouseFromCoverages);
     }
 
     onSelectedProvince(event: MatAutocompleteSelectedEvent): void {
@@ -755,12 +765,24 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         // Mendapatkan urban yang terpilih.
         const urbans = (formValue.selectedUrbans as Array<Selection>);
 
-        this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
-            payload: {
-                urbanId: urbans.map(u => +u.id),
-                warehouseId: formValue.warehouse
-            }
-        }));
+        if (this.isEditMode) {
+            const removedUrbans = (formValue.removedUrbans as Array<Selection>);
+
+            this.locationStore.dispatch(WarehouseCoverageActions.updateWarehouseCoverageRequest({
+                payload: {
+                    warehouseId: formValue.warehouse,
+                    urbanId: urbans.map(u => +u.id),
+                    deletedUrbanId: removedUrbans.map(r => +r.id),
+                }
+            }));
+        } else {
+            this.locationStore.dispatch(WarehouseCoverageActions.createWarehouseCoverageRequest({
+                payload: {
+                    urbanId: urbans.map(u => +u.id),
+                    warehouseId: formValue.warehouse
+                }
+            }));
+        }
     }
 
     getFormError(form: any): string {
@@ -1020,6 +1042,21 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         ).subscribe();
 
         this.locationStore.select(
+            WarehouseUrbanSelectors.selectAll
+        ).pipe(
+            tap(coverages => {
+                if (Array.isArray(coverages)) {
+                    if (coverages.length > 0) {
+                        this.initialSelectedOptions = coverages.map<Selection>(d => ({ id: d.id, group: 'urban', label: d.urban.urban }));
+                    }
+                }
+
+                this.cdRef.markForCheck();
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        this.locationStore.select(
             FormSelectors.getIsClickSaveButton
         ).pipe(
             filter(isClick => !!isClick),
@@ -1028,6 +1065,33 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             this.submitWarehouseCoverage();
         });
 
+        this.locationStore.select(
+            WarehouseCoverageSelectors.getSelectedId
+        ).pipe(
+            withLatestFrom(this.availableWarehouses$),
+            take(1)
+        ).subscribe(([warehouseId, warehouses]: [string, Array<Warehouse>]) => {
+            if (warehouseId || warehouses) {
+                this.isEditMode = true;
+                this.selectedWarehouse = (warehouses.find(wh => wh.id === warehouseId) as WarehouseFromCoverages);
+                this.form.patchValue({
+                    warehouse: warehouseId
+                });
+
+                const query: IQueryParams = {
+                    paginate: false
+                };
+                query['warehouseId'] = warehouseId;
+
+                this.locationStore.dispatch(
+                    WarehouseUrbanActions.fetchWarehouseUrbansRequest({
+                        payload: query
+                    })
+                );
+            } else {
+                this.isEditMode = false;
+            }
+        });
 
         // this.warehouseSub.pipe(
         //     withLatestFrom(

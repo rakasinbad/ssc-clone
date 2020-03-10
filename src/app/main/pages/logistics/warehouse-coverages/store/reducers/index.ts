@@ -4,6 +4,7 @@ import * as fromRoot from 'app/store/app.reducer';
 import * as fromWarehousesErrs from './error.reducer';
 import * as fromLocation from './location.reducer';
 import * as fromWarehouseCoverages from './warehouse-coverage.reducer';
+import * as fromWarehouseUrbans from './warehouse-urban.reducer';
 
 // Keyname for core reducer
 export const featureKey = 'warehouseCoverages';
@@ -15,6 +16,7 @@ export const featureKey = 'warehouseCoverages';
  */
 export interface State {
     [fromWarehouseCoverages.featureKey]: fromWarehouseCoverages.State;
+    [fromWarehouseUrbans.featureKey]: fromWarehouseUrbans.State;
     [fromWarehousesErrs.featureKey]: fromWarehousesErrs.State;
     [fromLocation.featureKey]: fromLocation.LocationState;
 }
@@ -40,6 +42,7 @@ export interface FeatureState extends fromRoot.State {
 export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
         [fromWarehouseCoverages.featureKey]: fromWarehouseCoverages.reducer,
+        [fromWarehouseUrbans.featureKey]: fromWarehouseUrbans.reducer,
         [fromWarehousesErrs.featureKey]: fromWarehousesErrs.reducer,
         [fromLocation.featureKey]: fromLocation.reducer
     })(state, action);

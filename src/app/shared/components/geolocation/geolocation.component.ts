@@ -691,9 +691,19 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
             ],
             district: [
                 { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
+                    })
+                ]
             ],
             urban: [
                 { value: '', disabled: true },
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState('default', 'required')
+                    })
+                ]
             ],
         });
 

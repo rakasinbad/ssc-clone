@@ -1,38 +1,65 @@
 import { createAction, props } from '@ngrx/store';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { ErrorHandler } from 'app/shared/models/global.model';
+import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
+import { NotCoveredWarehouse } from '../../models/not-covered-warehouse.model';
 
 export type failureActionNames =
     'fetchWarehouseCoveragesFailure' |
-    'createWarehouseCoverageFailure'
+    'createWarehouseCoverageFailure' |
+    'updateWarehouseCoverageFailure'
 ;
 
 export const fetchWarehouseCoveragesRequest = createAction(
-    '[Warehouse Coverages] Fetch Warehouse Coverages Request',
+    '[Warehouse/Warehouse Coverages] Fetch Warehouse Coverages Request',
     props<{ payload: IQueryParams }>()
 );
 
 export const fetchWarehouseCoveragesFailure = createAction(
-    '[Warehouse Coverages] Fetch Warehouse Coverages Failure',
+    '[Warehouse/Warehouse Coverages] Fetch Warehouse Coverages Failure',
     props<{ payload: ErrorHandler }>()
 );
 
 export const fetchWarehouseCoveragesSuccess = createAction(
-    '[Warehouse Coverages] Fetch Warehouse Coverages Success',
-    props<{ payload: { data: any; total: number } }>()
+    '[Warehouse/Warehouse Coverages] Fetch Warehouse Coverages Success',
+    props<{ payload: { data: Array<WarehouseCoverage> | Array<NotCoveredWarehouse>; total: number } }>()
 );
 
 export const createWarehouseCoverageRequest = createAction(
-    '[Warehouse Coverages] Create Warehouse Coverage Request',
+    '[Warehouse/Warehouse Coverages] Create Warehouse Coverage Request',
     props<{ payload: { warehouseId: number; urbanId: Array<number>; } }>()
 );
 
 export const createWarehouseCoverageFailure = createAction(
-    '[Warehouse Coverages] Create Warehouse Coverage Failure',
+    '[Warehouse/Warehouse Coverages] Create Warehouse Coverage Failure',
     props<{ payload: ErrorHandler }>()
 );
 
 export const createWarehouseCoverageSuccess = createAction(
-    '[Warehouse Coverages] Create Warehouse Coverage Success',
+    '[Warehouse/Warehouse Coverages] Create Warehouse Coverage Success',
     props<{ payload: { message: string } }>()
 );
+
+export const updateWarehouseCoverageRequest = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Request',
+    props<{ payload: { warehouseId: number; urbanId: Array<number>; deletedUrbanId: Array<number>; } }>()
+);
+
+export const updateWarehouseCoverageFailure = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateWarehouseCoverageSuccess = createAction(
+    '[Warehouse/Warehouse Coverages] Update Warehouse Coverage Success',
+    props<{ payload: { message: string } }>()
+);
+
+export const selectWarehouse = createAction(
+    '[Warehouse/Warehouse Coverages] Select Warehouse',
+    props<{ payload: string }>()
+);
+
+export const deselectWarehouse = createAction('[Warehouse/Warehouse Coverages] Deselect Warehouse');
+
+export const truncateWarehouseCoverages = createAction('[Warehouse/Warehouse Coverages] Truncate Warehouse Coverages');

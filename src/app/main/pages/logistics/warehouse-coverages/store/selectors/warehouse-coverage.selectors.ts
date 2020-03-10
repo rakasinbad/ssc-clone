@@ -1,15 +1,15 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-import * as fromWarehouseCoveragesCore from '../reducers';
 import * as fromWarehouseCoverages from '../reducers/warehouse-coverage.reducer';
+import * as fromWarehouseCoveragesCore from '../reducers';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getWarehouseCoverageCoreState = createFeatureSelector<
     fromWarehouseCoveragesCore.FeatureState,
     fromWarehouseCoveragesCore.State
 >(fromWarehouseCoveragesCore.featureKey);
 
-export const getWarehouseEntitiesState = createSelector(
-    getSalesRepsCoreState,
+export const getWarehouseCoveragesState = createSelector(
+    getWarehouseCoverageCoreState,
     state => state.warehouseCoverages
 );
 
@@ -18,18 +18,16 @@ export const {
     selectEntities,
     selectIds,
     selectTotal
-} = fromWarehouseCoverages.adapter.getSelectors(getWarehouseEntitiesState);
+} = fromWarehouseCoverages.adapter.getSelectors(getWarehouseCoveragesState);
 
-const getTotalItem = createSelector(getWarehouseEntitiesState, state => state.total);
+export const getTotalItem = createSelector(getWarehouseCoveragesState, state => state.total);
 
-const getSelectedId = createSelector(getWarehouseEntitiesState, state => state.selectedId);
+export const getSelectedId = createSelector(getWarehouseCoveragesState, state => state.selectedId);
 
-const getSelectedItem = createSelector(
+export const getSelectedItem = createSelector(
     selectEntities,
     getSelectedId,
     (entities, id) => entities[id]
 );
 
-const getIsLoading = createSelector(getWarehouseEntitiesState, state => state.isLoading);
-
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+export const getIsLoading = createSelector(getWarehouseCoveragesState, state => state.isLoading);

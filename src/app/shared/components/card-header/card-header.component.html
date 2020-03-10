@@ -92,7 +92,7 @@
                 <span>Action</span>
                 <mat-icon>arrow_drop_down</mat-icon>
             </button>
-            <mat-menu #actionMenu="matMenu">
+            <mat-menu #actionMenu="matMenu" *ngIf="(config?.batchAction?.show || showBatchActions)">
                 <button
                     type="button"
                     mat-menu-item

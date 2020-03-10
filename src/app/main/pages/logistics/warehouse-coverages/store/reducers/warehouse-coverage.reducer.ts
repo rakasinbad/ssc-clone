@@ -2,11 +2,13 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
 import { WarehouseCoverageActions } from '../actions';
+import { NotCoveredWarehouse } from '../../models/not-covered-warehouse.model';
+import { WarehouseCoverage } from '../../models/warehouse-coverage.model';
 
 // Keyname for reducer
 export const featureKey = 'warehouseCoverages';
 
-export interface State extends EntityState<any> {
+export interface State extends EntityState<WarehouseCoverage | NotCoveredWarehouse> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -14,7 +16,7 @@ export interface State extends EntityState<any> {
 }
 
 // Adapter for warehouses state
-export const adapter = createEntityAdapter<any>({ selectId: row => row.id });
+export const adapter = createEntityAdapter<WarehouseCoverage | NotCoveredWarehouse>({ selectId: row => row.id });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -55,5 +57,36 @@ export const reducer = createReducer<State>(
     on(WarehouseCoverageActions.createWarehouseCoverageSuccess, (state) => ({
         ...state,
         isLoading: false,
-    }))
+    })),
+    // UPDATE
+    on(WarehouseCoverageActions.updateWarehouseCoverageRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(WarehouseCoverageActions.updateWarehouseCoverageFailure, (state) => ({
+        ...state,
+        isLoading: false
+    })),
+    on(WarehouseCoverageActions.updateWarehouseCoverageSuccess, (state) => ({
+        ...state,
+        isLoading: false,
+    })),
+    // SELECTIONS
+    on(WarehouseCoverageActions.selectWarehouse, (state, { payload }) => ({
+        ...state,
+        selectedId: payload
+    })),
+    on(WarehouseCoverageActions.deselectWarehouse, (state) => ({
+        ...state,
+        selectedId: null
+    })),
+    // TRUNCATE
+    on(WarehouseCoverageActions.truncateWarehouseCoverages, (state) =>
+        adapter.removeAll({
+            ...state,
+            total: 0,
+            isLoading: false,
+            isRefresh: false,
+        })
+    ),
 );
