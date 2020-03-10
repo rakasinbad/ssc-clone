@@ -102,6 +102,19 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             if (changes['initialSelectedOptions'].isFirstChange()) {
                 this.mergedSelectedOptions = this.initialSelectedOptions;
                 this.totalSelectedOptions = this.initialSelectedOptions.length;
+            } else {
+                this.mergedSelectedOptions = this.initialSelectedOptions.concat(
+                                                this.selectedOptions
+                                            ).filter(merged =>
+                                                this.removedOptions.length === 0
+                                                ? true
+                                                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+                                            );
+
+                this.totalSelectedOptions = (this.selectedOptions.length - this.removedOptions.length) + this.initialSelectedOptions.length;
+
+                // Mendeteksi adanya perubahan.
+                this.cdRef.markForCheck();
             }
         }
     }

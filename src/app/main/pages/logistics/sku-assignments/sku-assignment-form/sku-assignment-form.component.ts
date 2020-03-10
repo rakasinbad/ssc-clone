@@ -5,7 +5,8 @@ import {
     OnInit,
     ViewEncapsulation,
     ViewChild,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    AfterViewInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -46,13 +47,18 @@ import { FeatureState as SkuAssignmentCoreFeatureState } from '../store/reducers
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
+export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDestroy {
     pageType: string;
 
     subs$: Subject<string> = new Subject<string>();
     loadMore$: Subject<string> = new Subject<string>();
     // Untuk keperluan mat dialog ref.
     dialogRef$: Subject<string> = new Subject<string>();
+    // Untuk menyimpan mode edit.
+    // tslint:disable-next-line: no-inferrable-types
+    isEditMode: boolean = false;
+    // Untuk menyimpan warehouse yang terpilih.
+    selectedWarehouse: Warehouse;
 
     isLoading$: Observable<boolean>;
     warehouseList$: Observable<Array<Warehouse>>;
@@ -76,10 +82,8 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
             title: 'Warehouse'
         },
         {
-            title: 'SKU Assignment'
-        },
-        {
-            title: 'Add New SKU Assignment'
+            title: 'SKU Assignment',
+            keepCase: true,
         }
     ];
 
@@ -100,6 +104,26 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         private _notice: NoticeService,
         private errorMessageSvc: ErrorMessageService
     ) {
+        if (this.route.snapshot.url.filter(url => url.path === 'edit').length > 0) {
+            this._breadCrumbs.push({
+                title: 'Edit SKU Assignment',
+                // translate: 'BREADCRUMBS.EDIT_PRODUCT',
+                keepCase: true,
+                active: true
+            });
+
+            this.isEditMode = true;
+        } else {
+            this._breadCrumbs.push({
+                title: 'Add New SKU Assignment',
+                // translate: 'BREADCRUMBS.ADD_PRODUCT',
+                keepCase: true,
+                active: true
+            });
+
+            this.isEditMode = false;
+        }
+
         this.SkuAssignmentsStore.dispatch(
             UiActions.setFooterActionConfig({
                 payload: {
@@ -398,6 +422,10 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         });
     }
 
+    onSelectedWarehouse(warehouse: Warehouse): void {
+        this.selectedWarehouse = (warehouse as Warehouse);
+    }
+
     ngOnInit(): void {
         // Set breadcrumbs
         this.SkuAssignmentsStore.dispatch(
@@ -450,6 +478,36 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         });
 
         this.initCatalogueSelection();
+    }
+
+    ngAfterViewInit(): void {
+        // this.warehousesStore.select(
+        //     WarehouseCoverageSelectors.getSelectedId
+        // ).pipe(
+        //     withLatestFrom(this.availableWarehouses$),
+        //     take(1)
+        // ).subscribe(([warehouseId, warehouses]: [string, Array<Warehouse>]) => {
+        //     if (warehouseId || warehouses) {
+        //         this.isEditMode = true;
+        //         this.selectedWarehouse = (warehouses.find(wh => wh.id === warehouseId) as WarehouseFromCoverages);
+        //         this.form.patchValue({
+        //             warehouse: warehouseId
+        //         });
+
+        //         const query: IQueryParams = {
+        //             paginate: false
+        //         };
+        //         query['warehouseId'] = warehouseId;
+
+        //         this.warehousesStore.dispatch(
+        //             WarehouseUrbanActions.fetchWarehouseUrbansRequest({
+        //                 payload: query
+        //             })
+        //         );
+        //     } else {
+        //         this.isEditMode = false;
+        //     }
+        // });
     }
 
     ngOnDestroy(): void {

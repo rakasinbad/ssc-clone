@@ -51,7 +51,7 @@ export class SkuAssignmentSkuComponent implements OnInit {
         'sku-name',
         'brand',
         'total-warehouse',
-        'actions'
+        // 'actions'
     ];
 
     selection: SelectionModel<SkuAssignmentsSku>;
@@ -261,7 +261,7 @@ export class SkuAssignmentSkuComponent implements OnInit {
                         'sku-name',
                         'brand',
                         'total-warehouse',
-                        'actions'
+                        // 'actions'
                     ];
                 } else {
                     this.displayedColumns = [
@@ -270,7 +270,7 @@ export class SkuAssignmentSkuComponent implements OnInit {
                         'sku-name',
                         'brand',
                         'total-warehouse',
-                        'actions'
+                        // 'actions'
                     ];
                 }
             });

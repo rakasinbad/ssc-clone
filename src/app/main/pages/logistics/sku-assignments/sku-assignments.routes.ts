@@ -33,7 +33,8 @@ const routes: Routes = [
             }
         }
     },
-    { path: ':id', component: SkuAssignmentFormComponent }
+    { path: 'new', component: SkuAssignmentFormComponent },
+    { path: ':id/edit', component: SkuAssignmentFormComponent }
 ];
 
 @NgModule({

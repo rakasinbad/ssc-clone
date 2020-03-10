@@ -115,8 +115,9 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
                         title: 'Warehouse'
                     },
                     {
-                        title: 'Sku Assignments',
-                        active: true
+                        title: 'SKU Assignments',
+                        active: true,
+                        keepCase: true,
                     }
                 ]
             })

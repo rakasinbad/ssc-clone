@@ -24,6 +24,7 @@ import * as SkuAssignmentsWarehouseSelectors from '../../store/selectors/sku-ass
 import { FeatureState as skuAssignmentCoreState } from '../../store/reducers';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { Warehouse } from '../../../warehouse-coverages/models/warehouse-coverage.model';
 
 @Component({
     selector: 'app-sku-assignments-warehouse',
@@ -71,6 +72,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
+        private router: Router,
         private readonly sanitizer: DomSanitizer,
         private ngxPermissionsService: NgxPermissionsService,
         private SkuAssignmentsStore: NgRxStore<skuAssignmentCoreState>
@@ -102,6 +104,18 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
         );
 
         this.updatePrivileges();
+    }
+
+    onEditSkuAssignment(item: Warehouse): void {
+        // if (item instanceof Warehouse) {
+        //     this.SkuAssignmentsStore.dispatch(
+        //         SkuAssignmentsActions.({
+        //             payload: (item as Warehouse).id
+        //         })
+        //     );
+        // }
+
+        // this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
     }
 
     ngAfterViewInit(): void {

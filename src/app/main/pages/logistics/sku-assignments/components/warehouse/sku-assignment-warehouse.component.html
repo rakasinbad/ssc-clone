@@ -85,8 +85,13 @@
 
                 <mat-menu #moreMenu="matMenu">
                     <ng-template [ngxPermissionsOnly]="['SRM.SR.UPDATE']">
-                        <button type="button" mat-menu-item class="sinbad-mat-menu-item" aria-label="Edit"
-                            [routerLink]="[row?.id]">
+                        <button
+                            type="button"
+                            mat-menu-item
+                            class="sinbad-mat-menu-item"
+                            aria-label="Edit"
+                            (click)="onEditSkuAssignment(row)"
+                        >
                             <mat-icon>edit</mat-icon>
                             <span>Edit</span>
                         </button>
