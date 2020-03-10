@@ -15,28 +15,44 @@
 
                     <div class="form-box">
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12" class="label-form">
-                                Warehouse Name
+                            <label [class.mat-error]="hasError(form.get('warehouse'))" fxFlexAlign="center" fxFlex="12" class="label-form">
+                                <span
+                                    class="sinbad-red-fg"
+                                >* </span> Warehouse Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <mat-select name="warehouse" formControlName="warehouse">
+                                    <mat-option>(None)</mat-option>
                                     <mat-option *ngFor="let rowList of warehouseList$ | async" [value]="rowList.id">
                                         {{ rowList.name }}
                                     </mat-option>
                                 </mat-select>
+                                <mat-error *ngIf="hasError(form.get('warehouse'))">
+                                    {{ getFormError(form.get('warehouse')) }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
 
-                    <span class="choose-sku">
-                        Choose SKU
-                    </span>
+                    <sinbad-multiple-selection
+                    [availableTitle]="'Available SKU'"
+                    [selectedTitle]="'Chosen SKU'"
+                    [availableOptions]="availableOptions"
+                    [initialSelectedOptions]="initialSelectedOptions"
+                    [totalAvailableOptions]="(totalCatalogues$ | async)"
+                    [isAvailableOptionsLoading]="(isCatalogueLoading$ | async)"
+                    (availableReachedBottom)="onAvailableOptionLoadMore()"
+                    (selectedReachedBottom)="onSelectedOptionLoadMore()"
+                    (selectionListChanged)="onSelectionChanged($event)"
+                    (clearAll)="onClearAll()"
+                    (search)="onSearch($event)"
+                    ></sinbad-multiple-selection>
                 </div>
 
-                <div class="content-card pt-8">
+                <!-- <div class="content-card pt-8">
                     <app-find-sku></app-find-sku>
-                </div>
+                </div> -->
             </mat-card>
         </form>
     </div>

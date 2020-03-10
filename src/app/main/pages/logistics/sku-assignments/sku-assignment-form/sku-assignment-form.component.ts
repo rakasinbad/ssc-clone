@@ -4,7 +4,8 @@ import {
     OnDestroy,
     OnInit,
     ViewEncapsulation,
-    ViewChild
+    ViewChild,
+    ChangeDetectorRef
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -18,11 +19,20 @@ import { Warehouse } from '../../warehouses/models';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
 import { Observable, Subject } from 'rxjs';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, takeUntil, filter, exhaustMap, tap, debounceTime } from 'rxjs/operators';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { WarehouseActions } from 'app/shared/store/actions';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatSelect } from '@angular/material';
+import { MatSelect, MatDialog } from '@angular/material';
+import { Catalogue } from 'app/main/pages/catalogues/models';
+import { fromCatalogue } from 'app/main/pages/catalogues/store/reducers';
+import { CatalogueActions } from 'app/main/pages/catalogues/store/actions';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { Selection } from 'app/shared/components/multiple-selection/models';
+import { CatalogueSelectors } from 'app/main/pages/catalogues/store/selectors';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
+import { environment } from 'environments/environment';
 
 @Component({
     selector: 'app-sku-assignment-form',
@@ -36,10 +46,22 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
     pageType: string;
 
     subs$: Subject<string> = new Subject<string>();
+    loadMore$: Subject<string> = new Subject<string>();
+    // Untuk keperluan mat dialog ref.
+    dialogRef$: Subject<string> = new Subject<string>();
 
     warehouseList$: Observable<Array<Warehouse>>;
 
+    availableCatalogues$: Observable<Array<Catalogue>>;
+    totalCatalogues$: Observable<number>;
+    isCatalogueLoading$: Observable<boolean>;
+
     form: FormGroup;
+
+    initialSelectedOptions: Array<Selection> = [];
+    availableOptions: Array<Selection> = [];
+    // tslint:disable-next-line: no-inferrable-types
+    isAvailableOptionsLoading: boolean = true;
 
     private readonly _breadCrumbs: Array<IBreadcrumbs> = [
         {
@@ -63,6 +85,11 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private fb: FormBuilder,
+        private cdRef: ChangeDetectorRef,
+        private matDialog: MatDialog,
+        private multiple$: MultipleSelectionService,
+        private notice$: NoticeService,
+        private catalogueStore: NgRxStore<fromCatalogue.FeatureState>,
         private SkuAssignmentsStore: NgRxStore<fromSkuAssignments.SkuAssignmentsState>,
         private warehousesStore: NgRxStore<fromWarehouses.FeatureState>,
         private _notice: NoticeService,
@@ -120,6 +147,100 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
             }),
             takeUntil(this.subs$)
         );
+// 
+        this.totalCatalogues$ = this.catalogueStore.select(
+            CatalogueSelectors.getTotalCatalogue
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.isCatalogueLoading$ = this.catalogueStore.select(
+            CatalogueSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
+        this.dialogRef$.pipe(
+            exhaustMap(subjectValue => {
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogTitle: string = '';
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogMessage: string = '';
+
+                if (subjectValue === 'clear-all') {
+                    dialogTitle = 'Clear Selected Options';
+                    dialogMessage = 'It will clear all your selected options. Are you sure?';
+                }
+
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: dialogTitle,
+                        message: dialogMessage,
+                        id: subjectValue
+                    }, disableClose: true
+                });
+        
+                return dialogRef.afterClosed().pipe(
+                    tap(value => {
+                        if (value === 'clear-all') {
+                            this.form.patchValue({
+                                selectedUrbans: [],
+                                removedUrbans: []
+                            });
+
+                            this.multiple$.clearAllSelectedOptions();
+
+                            this.notice$.open('Your selected options has been cleared.', 'success', {
+                                horizontalPosition: 'right',
+                                verticalPosition: 'bottom',
+                                duration: 5000
+                            });
+
+                            this.cdRef.markForCheck();
+                        }
+                    })
+                );
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        this.catalogueStore.select(
+            CatalogueSelectors.getAllCatalogues
+        ).pipe(
+            takeUntil(this.subs$)
+        ).subscribe(catalogues => {
+            this.availableOptions = catalogues.map<Selection>(d => ({ id: d.id, group: 'sku', label: d.name }));
+        });
+
+        this.loadMore$.pipe(
+            filter(message => {
+                if (message === 'load-more-available') {
+                    return true;
+                }
+
+                return false;
+            }),
+            takeUntil(this.subs$)
+        ).subscribe(([message]) => {
+            if (message === 'load-more-available') {
+                // Menyiapkan query untuk pencarian district.
+                const newQuery: IQueryParams = {
+                    paginate: true,
+                    limit: 30,
+                    skip: this.availableOptions.length
+                };
+
+                // Mengirim state untuk melakukan request urban.
+                this.catalogueStore.dispatch(
+                    CatalogueActions.fetchCataloguesRequest({
+                        payload: newQuery
+                    })
+                );
+
+                this.cdRef.markForCheck();
+            }
+        });
 
         this.SkuAssignmentsStore.dispatch(UiActions.showFooterAction());
 
@@ -135,6 +256,120 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
         // }
     }
 
+    private initCatalogueSelection(): void {
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 30,
+            skip: 0
+        };
+        
+        this.catalogueStore.dispatch(
+            CatalogueActions.resetCatalogues()
+        );
+
+        this.catalogueStore.dispatch(
+            CatalogueActions.fetchCataloguesRequest({
+                payload: newQuery
+            })
+        );
+    }
+
+    private debug(label: string, data: any = {}): void {
+        if (!environment.production) {
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
+        }
+    }
+
+    // private clearAvailableOptions(): void {
+    //     this.availableOptions = [];
+    //     this.cdRef.markForCheck();
+    // }
+
+    getFormError(form: any): string {
+        // console.log('get error');
+        return this.errorMessageSvc.getFormError(form);
+    }
+
+    hasError(form: any, args: any = {}): boolean {
+        // console.log('check error');
+        const { ignoreTouched, ignoreDirty } = args;
+
+        if (ignoreTouched && ignoreDirty) {
+            return !!form.errors;
+        }
+
+        if (ignoreDirty) {
+            return (form.errors || form.status === 'INVALID') && form.touched;
+        }
+
+        if (ignoreTouched) {
+            return (form.errors || form.status === 'INVALID') && form.dirty;
+        }
+
+        return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
+    }
+
+    onAvailableOptionLoadMore(): void {
+        this.loadMore$.next('load-more-available');
+    }
+
+    onSelectedOptionLoadMore(): void {
+        this.loadMore$.next('load-more-selected');
+    }
+
+    onSearch($event: string): void {
+        const newQuery: IQueryParams = {
+            paginate: true,
+            limit: 30,
+            skip: 0
+        };
+
+        if ($event) {
+            newQuery['search'] = [
+                {
+                    fieldName: 'name',
+                    keyword: $event
+                },
+                {
+                    fieldName: 'sku',
+                    keyword: $event
+                },
+                {
+                    fieldName: 'external_id',
+                    keyword: $event
+                }
+            ];
+        }
+        
+        this.catalogueStore.dispatch(
+            CatalogueActions.resetCatalogues()
+        );
+
+        this.catalogueStore.dispatch(
+            CatalogueActions.fetchCataloguesRequest({
+                payload: newQuery
+            })
+        );
+    }
+
+    onClearAll(): void {
+        this.dialogRef$.next('clear-all');
+    }
+
+    onSelectionChanged($event: { added: Array<Selection>; removed: Array<Selection> }): void {
+        this.debug('onSelectionChanged', $event);
+
+        this.form.patchValue({
+            catalogueId: $event.added.length === 0 ? '' : $event.added,
+            deletedCatalogue: $event.removed.length === 0 ? '' : $event.removed,
+        });
+    }
+
     ngOnInit(): void {
         // Set breadcrumbs
         this.SkuAssignmentsStore.dispatch(
@@ -142,16 +377,6 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
                 payload: this._breadCrumbs
             })
         );
-
-        const { id } = this.route.snapshot.params;
-
-        if (id === 'new') {
-            this.pageType = 'new';
-        } else if (Math.sign(id) === 1) {
-            this.pageType = 'edit';
-        } else {
-            this.router.navigateByUrl('/pages/logistics/sku-assignments');
-        }
 
         // Inisialisasi form.
         this.form = this.fb.group({
@@ -162,11 +387,44 @@ export class SkuAssignmentFormComponent implements OnInit, OnDestroy {
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     })
                 ]
+            ],
+            catalogueId: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
+            deletedCatalogue: [
+                ''
             ]
         });
+
+        this.form.valueChanges.pipe(
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(() => {
+            if (this.form.valid) {
+                this.warehousesStore.dispatch(FormActions.setFormStatusValid());
+            } else {
+                this.warehousesStore.dispatch(FormActions.setFormStatusInvalid());
+            }
+        });
+
+        this.initCatalogueSelection();
     }
 
     ngOnDestroy(): void {
+        this.subs$.next();
+        this.subs$.complete();
+
+        this.loadMore$.next();
+        this.loadMore$.complete();
+
+        this.dialogRef$.next();
+        this.dialogRef$.complete();
+
         this.SkuAssignmentsStore.dispatch(UiActions.hideFooterAction());
         this.SkuAssignmentsStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.SkuAssignmentsStore.dispatch(UiActions.hideCustomToolbar());

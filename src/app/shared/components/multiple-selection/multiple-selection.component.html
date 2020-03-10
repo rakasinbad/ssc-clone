@@ -35,118 +35,134 @@
     >
         <!-- AVAILABLE LIST CONTENT SECTION -->
         <div class="content" fxLayout="column" fxFlex>
-            <!-- HEADER -->
-            <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
-                <!-- LABEL -->
-                <p fxFlexAlign="center" fxFlex="10">Find:</p>
-                <!-- / LABEL -->
-                <!-- SEARCH -->
-                <sinbad-search-bar fxFlex fxFlexAlign="center" [useBorder]="true" (changed)="onSearch($event)"></sinbad-search-bar>
-                <!-- / SEARCH -->
+            <!-- TITLE -->
+            <p class="font-size-16 font-weight-600" [fxHide]="!availableTitle">
+                {{ availableTitle }}
+            </p>
+            <ng-content select="available-title"></ng-content>
+            <!-- / TITLE -->
+            <div>
+                <!-- HEADER -->
+                <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
+                    <!-- LABEL -->
+                    <p fxFlexAlign="center" fxFlex="10">Find:</p>
+                    <!-- / LABEL -->
+                    <!-- SEARCH -->
+                    <sinbad-search-bar fxFlex fxFlexAlign="center" [useBorder]="true" (changed)="onSearch($event)"></sinbad-search-bar>
+                    <!-- / SEARCH -->
+                </div>
+                <!-- / HEADER -->
+                <!-- AVAILABLE SELECTION LIST -->
+                <mat-selection-list
+                    fxFlex
+                    cdkScrollable
+                    #availableSelectionList
+                    id="available-selection-list"
+                    [style.overflow]="'auto'"
+                    [style.border]="'1px solid'"
+                    class="grey-300-border h-400"
+                    [disableRipple]="true"
+                    (selectionChange)="$event.option.value === '__select-all__' ? onToggleSelectAll($event) : selectedOptionSub$.next($event)"
+                >
+                    <!-- SELECT ALL OPTION -->
+                    <!-- <mat-list-option
+                        value="__select-all__"
+                        [checkboxPosition]="'before'"
+                        *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0"
+                    >
+                        (Select All)
+                    </mat-list-option> -->
+                    <!-- / SELECT ALL -->
+                    <mat-list-option
+                        *ngFor="let option of (availableOptions)"
+                        [checkboxPosition]="'before'"
+                        [value]="option"
+                        [selected]="isAvailableAtSelection(option)"
+                    >
+                        {{ option?.label }}
+                    </mat-list-option>
+                    <!-- LOADING OPTION -->
+                    <mat-option
+                        [disabled]="true"
+                        style="text-align: center; font-style: italic; max-height: 30px;"
+                        *ngIf="totalAvailableOptions > availableOptions.length"
+                    >
+                        Loading ...
+                    </mat-option>
+                    <!-- / LOADING OPTION -->
+                </mat-selection-list>
+                <!-- / LIST -->
+                <!-- LOADER -->
+                <div class="loader" *ngIf="isAvailableOptionsLoading">
+                    <mat-spinner color="accent"></mat-spinner>
+                </div>
+                <!-- / LOADER -->
             </div>
-            <!-- / HEADER -->
-            <!-- AVAILABLE SELECTION LIST -->
-            <mat-selection-list
-                fxFlex
-                cdkScrollable
-                #availableSelectionList
-                id="available-selection-list"
-                [style.overflow]="'auto'"
-                [style.border]="'1px solid'"
-                class="grey-300-border h-400"
-                [disableRipple]="true"
-                (selectionChange)="$event.option.value === '__select-all__' ? onToggleSelectAll($event) : selectedOptionSub$.next($event)"
-            >
-                <!-- SELECT ALL OPTION -->
-                <!-- <mat-list-option
-                    value="__select-all__"
-                    [checkboxPosition]="'before'"
-                    *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0"
-                >
-                    (Select All)
-                </mat-list-option> -->
-                <!-- / SELECT ALL -->
-                <mat-list-option
-                    *ngFor="let option of (availableOptions)"
-                    [checkboxPosition]="'before'"
-                    [value]="option"
-                    [selected]="isAvailableAtSelection(option)"
-                >
-                    {{ option?.label }}
-                </mat-list-option>
-                <!-- LOADING OPTION -->
-                <mat-option
-                    [disabled]="true"
-                    style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="totalAvailableOptions > availableOptions.length"
-                >
-                    Loading ...
-                </mat-option>
-                <!-- / LOADING OPTION -->
-            </mat-selection-list>
-            <!-- / LIST -->
-            <!-- LOADER -->
-            <div class="loader" *ngIf="isAvailableOptionsLoading">
-                <mat-spinner color="accent"></mat-spinner>
-            </div>
-            <!-- / LOADER -->
         </div>
         <!-- / AVAILABLE LIST CONTENT SECTION -->
         <!-- SELECTED LIST CONTENT SECTION -->
         <div class="content" fxLayout="column" fxFlex>
-            <!-- HEADER -->
-            <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
-                <!-- LABEL -->
-                <p fxFlexAlign="center">Your Selections ({{ totalSelectedOptions }})</p>
-                <!-- / LABEL -->
-                <!-- CLEAR ALL -->
-                <a
-                    fxFlexAlign="center"
-                    [style.cursor]="'pointer'"
-                    class="red-500-fg"
-                    *ngIf="totalSelectedOptions > 0"
-                    (click)="onClearAll()"
-                >Clear All</a>
-                <!-- / CLEAR ALL -->
-            </div>
-            <!-- / HEADER -->
-            <!-- LIST -->
-            <mat-selection-list
-                fxFlex
-                cdkScrollable
-                #selectedSelectionList
-                id="selected-selection-list"
-                [style.overflow]="'auto'"
-                [style.border]="'1px solid'"
-                class="grey-300-border h-400"
-                [disableRipple]="true"
-                (selectionChange)="selectedOptionSub$.next($event)"
-            >
-                <mat-list-option
-                    *ngFor="let option of (mergedSelectedOptions)"
-                    class="relative"
-                    [checkboxPosition]="'before'"
-                    [selected]="true"
-                    [value]="option"
+            <!-- TITLE -->
+            <p class="font-size-16 font-weight-600" [fxHide]="!selectedTitle">
+                {{ selectedTitle }}
+            </p>
+            <ng-content select="selected-title"></ng-content>
+            <!-- / TITLE -->
+            <div>
+                <!-- HEADER -->
+                <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
+                    <!-- LABEL -->
+                    <p fxFlexAlign="center">Your Selections ({{ totalSelectedOptions }})</p>
+                    <!-- / LABEL -->
+                    <!-- CLEAR ALL -->
+                    <a
+                        fxFlexAlign="center"
+                        [style.cursor]="'pointer'"
+                        class="red-500-fg"
+                        *ngIf="totalSelectedOptions > 0"
+                        (click)="onClearAll()"
+                    >Clear All</a>
+                    <!-- / CLEAR ALL -->
+                </div>
+                <!-- / HEADER -->
+                <!-- LIST -->
+                <mat-selection-list
+                    fxFlex
+                    cdkScrollable
+                    #selectedSelectionList
+                    id="selected-selection-list"
+                    [style.overflow]="'auto'"
+                    [style.border]="'1px solid'"
+                    class="grey-300-border h-400"
+                    [disableRipple]="true"
+                    (selectionChange)="selectedOptionSub$.next($event)"
                 >
-                    {{ option?.label }}
-                </mat-list-option>
-                <!-- LOADING OPTION -->
-                <mat-option
-                    [disabled]="true"
-                    style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="totalSelectedOptions > mergedSelectedOptions.length"
-                >
-                    Loading ...
-                </mat-option>
-                <!-- / LOADING OPTION -->
-            </mat-selection-list>
-            <!-- / LIST -->
-            <!-- LOADER -->
-            <div class="loader" *ngIf="isSelectedOptionsLoading">
-                <mat-spinner color="accent"></mat-spinner>
+                    <mat-list-option
+                        *ngFor="let option of (mergedSelectedOptions)"
+                        class="relative"
+                        [checkboxPosition]="'before'"
+                        [selected]="true"
+                        [value]="option"
+                    >
+                        {{ option?.label }}
+                    </mat-list-option>
+                    <!-- LOADING OPTION -->
+                    <mat-option
+                        [disabled]="true"
+                        style="text-align: center; font-style: italic; max-height: 30px;"
+                        *ngIf="totalSelectedOptions > mergedSelectedOptions.length"
+                    >
+                        Loading ...
+                    </mat-option>
+                    <!-- / LOADING OPTION -->
+                </mat-selection-list>
+                <!-- / LIST -->
+                <!-- LOADER -->
+                <div class="loader" *ngIf="isSelectedOptionsLoading">
+                    <mat-spinner color="accent"></mat-spinner>
+                </div>
+                <!-- / LOADER -->
             </div>
-            <!-- / LOADER -->
         </div>
         <!-- / SELECTED LIST CONTENT SECTION -->
     </div>

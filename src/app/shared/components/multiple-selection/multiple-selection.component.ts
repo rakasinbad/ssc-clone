@@ -19,6 +19,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     // Untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
 
+    // Untuk meletakkan judul di kolom available options.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() availableTitle: string;
     // Untuk menyimpan daftar option yang tersedia.
     @Input() availableOptions: Array<Selection> = [];
     // Untuk menyimpan jumlah option yang tersedia.
@@ -31,6 +34,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     // tslint:disable-next-line: no-inferrable-types
     @Output() availableReachedBottom: EventEmitter<void> = new EventEmitter<void>();
 
+    // Untuk meletakkan judul di kolom selected options.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() selectedTitle: string;
     // Untuk menyimpan daftar list yang dianggap sebagai nilai awal.
     @Input() initialSelectedOptions: Array<Selection> = [];
     // Untuk menyimpan daftar list yang terpilih.
