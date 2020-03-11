@@ -1,0 +1,162 @@
+<div id="sku-assignment-detail-form" class="page-layout inner-scroll carded fullwidth" fusePerfectScrollbar>
+    <!-- TOP BACKGROUND -->
+    <div class="top-bg accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CONTENT -->
+    <div class="center px-32">
+        <!-- CONTENT HEADER -->
+        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="25px">
+            <div
+                class="h-120 accent mb-0 mt-20"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+            >
+                <!-- APP TITLE -->
+                <div fxLayout="row" fxLayoutAlign="start center">
+                    <button mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/logistics/sku-assignments']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </button>
+    
+                    <div
+                        fxLayout="column"
+                        fxLayoutGap="12px"
+                        fxLayoutAlign="space-between start"
+                        [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                    >
+                        <div class="h2">
+                            <!-- <strong>{{ form.get('productInfo.name').value }}</strong> -->
+                            <strong>{{ selectedWarehouse?.name || '-' }}</strong>
+                        </div>
+    
+                        <div class="subtitle secondary-text">
+                            <strong>SKU Assignment Detail</strong>
+                        </div>
+                    </div>
+                </div>
+                <!-- / APP TITLE -->
+            </div>
+            <!-- EDIT BUTTON -->
+            <button mat-flat-button (click)="onEditSkuAssignment()">
+                <span class="red-500-fg">Edit</span>
+            </button>
+            <!-- / EDIT BUTTON -->
+        </div>
+        <!-- / CONTENT HEADER -->
+
+        <!-- CONTENT CARD -->
+        <div class="content-card">
+            <!-- CONTENT CARD HEADER -->
+            <sinbad-card-header
+                [config]="cardHeaderConfig"
+            >
+                <p first-bottom-left>
+                    Total {{ (totalDataSource$ | async | number) }} SKU
+                </p>
+            </sinbad-card-header>
+            <!-- / CONTENT CARD HEADER -->
+
+            <!-- TABLE -->
+            <mat-table
+                #table
+                matSort
+                fusePerfectScrollbar
+                class="sku-assignment-detail-table sinbad-table grey-300-border mx-16"
+                [dataSource]="dataSource$ | async"
+                [@animateStagger]="{ value: '50' }"
+            >
+                <!-- Index Column -->
+                <ng-container matColumnDef="indexNumber">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
+                    <mat-cell *matCellDef="let row; index as index;">
+                        <p>{{ (paginator?.pageSize * paginator?.pageIndex) + index + 1 }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Sinbad SKU's Product Column -->
+                <ng-container matColumnDef="sinbadSku">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Code</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p>{{ row?.catalogue?.sku }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Product Name Column -->
+                <ng-container matColumnDef="productName">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Product Name
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{ row?.catalogue?.name || '-' }}
+                    </mat-cell>
+                </ng-container>
+
+                <!-- SKU's Status Column -->
+                <ng-container matColumnDef="skuStatus">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <p class="word-wrap">{{ (row?.catalogue?.status) ? (row?.catalogue?.status | titlecase) : 'Unknown' }}</p>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell class="pr-8" *matHeaderCellDef>
+                        Actions
+                    </mat-header-cell>
+
+                    <mat-cell class="pr-8" *matCellDef="let row">
+                        <div fxFlex="row" fxLayoutAlign="end center">
+                            <button mat-icon-button [matMenuTriggerFor]="moreMenu" aria-label="More"
+                                (click)="$event.stopPropagation()">
+                                <mat-icon class="secondary-text">more_vert</mat-icon>
+                            </button>
+
+                            <mat-menu #moreMenu="matMenu">
+                                <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                    aria-label="archive" (click)="setActive(row?.catalogue)"
+                                    *ngIf="row?.catalogue?.status === 'inactive'">
+                                    <mat-icon>unarchive</mat-icon>
+                                    <span>Active</span>
+                                </button>
+
+                                <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                                    aria-label="archive" (click)="setInactive(row?.catalogue)"
+                                    *ngIf="row?.catalogue?.status === 'active'">
+                                    <mat-icon>archive</mat-icon>
+                                    <span>Inactive</span>
+                                </button>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+                <mat-row matRipple *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+                <div class="no-records" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
+                    No records found
+                </div>
+            </mat-table>
+
+            <mat-paginator
+                [fxHide]="(totalDataSource$ | async) === 0"
+                [length]="totalDataSource$ | async"
+                [pageSize]="defaultPageSize"
+                [pageSizeOptions]="defaultPageOpts"
+                showFirstLastButtons
+            >
+            </mat-paginator>
+            <!-- / TABLE -->
+        </div>
+        <!-- / CONTENT CARD -->
+    </div>
+    <!-- CONTENT -->
+
+    <!-- LOADER -->
+    <div class="loader" *ngIf="(isLoading$ | async)">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- / LOADER -->
+</div>
