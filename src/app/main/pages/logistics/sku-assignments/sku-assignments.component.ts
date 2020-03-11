@@ -45,7 +45,7 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Sku Assignments'
+            label: 'SKU Assignment'
         },
         search: {
             active: true
@@ -115,7 +115,7 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
                         title: 'Warehouse'
                     },
                     {
-                        title: 'SKU Assignments',
+                        title: 'SKU Assignment',
                         active: true,
                         keepCase: true,
                     }
