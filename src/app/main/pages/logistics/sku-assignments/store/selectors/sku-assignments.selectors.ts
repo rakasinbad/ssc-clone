@@ -35,6 +35,8 @@ export const getSkuAssignmentsIds = createSelector(getSkuAssignmentsState, selec
 
 export const getLoadingState = createSelector(getSkuAssignmentsState, state => state.isLoading);
 
+export const getSelectedWarehouse = createSelector(getSkuAssignmentsState, state => state.selectedWarehouse);
+
 // New SKU
 
 export const {

@@ -107,15 +107,13 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     }
 
     onEditSkuAssignment(item: Warehouse): void {
-        // if (item instanceof Warehouse) {
-        //     this.SkuAssignmentsStore.dispatch(
-        //         SkuAssignmentsActions.({
-        //             payload: (item as Warehouse).id
-        //         })
-        //     );
-        // }
+        this.SkuAssignmentsStore.dispatch(
+            SkuAssignmentsActions.selectWarehouse({
+                payload: item
+            })
+        );
 
-        // this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
+        this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
     }
 
     ngAfterViewInit(): void {

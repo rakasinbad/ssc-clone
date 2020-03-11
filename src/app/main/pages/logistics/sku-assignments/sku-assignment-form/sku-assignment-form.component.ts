@@ -17,10 +17,11 @@ import { FormActions, UiActions } from 'app/shared/store/actions';
 import { fromSkuAssignments } from '../store/reducers';
 import * as fromWarehouses from 'app/main/pages/logistics/warehouses/store/reducers';
 import { Warehouse } from '../../warehouses/models';
+import { Warehouse as WarehouseFromCoverages } from '../../warehouse-coverages/models/warehouse-coverage.model';
 import { NoticeService, ErrorMessageService } from 'app/shared/helpers';
 import { Observable, Subject } from 'rxjs';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { map, takeUntil, filter, exhaustMap, tap, debounceTime } from 'rxjs/operators';
+import { map, takeUntil, filter, exhaustMap, tap, debounceTime, take } from 'rxjs/operators';
 import { WarehouseSelectors } from 'app/shared/store/selectors/sources';
 import { WarehouseActions } from 'app/shared/store/actions';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -35,8 +36,8 @@ import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { environment } from 'environments/environment';
 import { FormSelectors } from 'app/shared/store/selectors';
-import { SkuAssignmentsActions } from '../store/actions';
-import { SkuAssignmentsSelectors } from '../store/selectors';
+import { SkuAssignmentsActions, WarehouseCatalogueActions } from '../store/actions';
+import { SkuAssignmentsSelectors, WarehouseCatalogueSelectors } from '../store/selectors';
 import { FeatureState as SkuAssignmentCoreFeatureState } from '../store/reducers';
 
 @Component({
@@ -58,7 +59,7 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
     // tslint:disable-next-line: no-inferrable-types
     isEditMode: boolean = false;
     // Untuk menyimpan warehouse yang terpilih.
-    selectedWarehouse: Warehouse;
+    selectedWarehouse: WarehouseFromCoverages;
 
     isLoading$: Observable<boolean>;
     warehouseList$: Observable<Array<Warehouse>>;
@@ -110,6 +111,14 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
                 // translate: 'BREADCRUMBS.EDIT_PRODUCT',
                 keepCase: true,
                 active: true
+            });
+
+            this.SkuAssignmentsStore.select(
+                WarehouseCatalogueSelectors.selectAll
+            ).pipe(
+                takeUntil(this.subs$)
+            ).subscribe(data => {
+                this.initialSelectedOptions = data.map<Selection>(d => ({ id: d.catalogueId, group: 'sku', label: d.catalogue.name }));
             });
 
             this.isEditMode = true;
@@ -330,7 +339,7 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
 
         this.warehousesStore.dispatch(SkuAssignmentsActions.addSkuAssignmentsRequest({
             payload: {
-                warehouseId: +formValue.warehouse,
+                warehouseId: +formValue.warehouse.id,
                 catalogueId: catalogues.map(u => +u.id),
                 deletedCatalogue: deletedCatalogue.map(d => +d.id)
             }
@@ -423,7 +432,7 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
     }
 
     onSelectedWarehouse(warehouse: Warehouse): void {
-        this.selectedWarehouse = (warehouse as Warehouse);
+        this.selectedWarehouse = (warehouse as WarehouseFromCoverages);
     }
 
     ngOnInit(): void {
@@ -448,12 +457,19 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
                 '',
                 [
                     RxwebValidators.required({
+                        conditionalExpression: x => x.deletedCatalogue || x.catalogues,
                         message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
                     })
                 ]
             ],
             deletedCatalogue: [
-                ''
+                '',
+                [
+                    RxwebValidators.required({
+                        conditionalExpression: x => x.deletedCatalogue || x.catalogues,
+                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
+                    })
+                ]
             ]
         });
 
@@ -461,7 +477,9 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
             debounceTime(100),
             takeUntil(this.subs$)
         ).subscribe(() => {
-            if (this.form.valid) {
+            const formValue = this.form.getRawValue();
+
+            if (this.form.valid && formValue.warehouse && (formValue.catalogues || formValue.deletedCatalogue)) {
                 this.warehousesStore.dispatch(FormActions.setFormStatusValid());
             } else {
                 this.warehousesStore.dispatch(FormActions.setFormStatusInvalid());
@@ -481,6 +499,35 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
     }
 
     ngAfterViewInit(): void {
+        this.SkuAssignmentsStore.select(
+            SkuAssignmentsSelectors.getSelectedWarehouse
+        ).pipe(
+            take(1)
+        ).subscribe((warehouse: WarehouseFromCoverages) => {
+            if (warehouse) {
+                this.selectedWarehouse = warehouse;
+                this.form.patchValue({
+                    warehouse
+                });
+
+                // Menyiapkan query untuk pencarian district.
+                const newQuery: IQueryParams = {
+                    paginate: true,
+                    limit: 30,
+                    skip: 0
+                };
+
+                newQuery['warehouseId'] = warehouse.id;
+
+                // Mengirim state untuk melakukan request urban.
+                this.SkuAssignmentsStore.dispatch(
+                    WarehouseCatalogueActions.fetchWarehouseCataloguesRequest({
+                        payload: newQuery
+                    })
+                );
+
+            }
+        });
         // this.warehousesStore.select(
         //     WarehouseCoverageSelectors.getSelectedId
         // ).pipe(
@@ -519,6 +566,10 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
 
         this.dialogRef$.next();
         this.dialogRef$.complete();
+
+        this.SkuAssignmentsStore.dispatch(SkuAssignmentsActions.deselectWarehouse());
+        this.SkuAssignmentsStore.dispatch(CatalogueActions.resetCatalogues());
+        this.SkuAssignmentsStore.dispatch(WarehouseCatalogueActions.resetWarehouseCatalogue());
 
         this.SkuAssignmentsStore.dispatch(UiActions.hideFooterAction());
         this.SkuAssignmentsStore.dispatch(UiActions.createBreadcrumb({ payload: null }));

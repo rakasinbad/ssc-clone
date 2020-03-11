@@ -4,16 +4,18 @@ import { environment } from 'environments/environment';
 import { SkuAssignments } from '../../models/sku-assignments.model';
 import { SkuAssignmentsActions } from '../actions';
 import { Catalogue } from 'app/main/pages/catalogues/models';
+import { Warehouse } from '../../../warehouse-coverages/models/warehouse-coverage.model';
 
 // Set reducer's feature key
 export const FEATURE_KEY = 'skuAssignments';
 
 // Store's SkuAssignments
-interface _SkuAssignmentsState extends EntityState<SkuAssignments> {
+interface SkuAssignmentsInternalState extends EntityState<SkuAssignments> {
     isLoading: boolean;
     limit: number;
     skip: number;
     total: number;
+    selectedWarehouse: Warehouse;
 }
 
 export const adapterSkuAssignments: EntityAdapter<SkuAssignments> = createEntityAdapter<
@@ -31,13 +33,12 @@ export const adapterNewCatalogue: EntityAdapter<Catalogue> = createEntityAdapter
 });
 
 // Initial value for SkuAssignments State.
-const initialSkuAssignmentsState: _SkuAssignmentsState = adapterSkuAssignments.getInitialState<
-    Omit<_SkuAssignmentsState, 'ids' | 'entities'>
->({
+const initialSkuAssignmentsState: SkuAssignmentsInternalState = adapterSkuAssignments.getInitialState<Omit<SkuAssignmentsInternalState, 'ids' | 'entities'>>({
     isLoading: false,
     total: 0,
     limit: environment.pageSize,
-    skip: 0
+    skip: 0,
+    selectedWarehouse: null,
 });
 
 const intialNewCatalogueState = adapterNewCatalogue.getInitialState({
@@ -45,7 +46,7 @@ const intialNewCatalogueState = adapterNewCatalogue.getInitialState({
 });
 
 export interface SkuAssignmentsState {
-    skuAssignment: _SkuAssignmentsState;
+    skuAssignment: SkuAssignmentsInternalState;
     newSku: NewCatalogueState;
 }
 
@@ -136,6 +137,26 @@ export const reducer = createReducer(
             ...state.skuAssignment
         })
     })),
+    on(
+        SkuAssignmentsActions.selectWarehouse,
+        (state, { payload }) => ({
+            ...state,
+            skuAssignment: {
+                ...state.skuAssignment,
+                selectedWarehouse: payload
+            }
+        })
+    ),
+    on(
+        SkuAssignmentsActions.deselectWarehouse,
+        (state) => ({
+            ...state,
+            skuAssignment: {
+                ...state.skuAssignment,
+                selectedWarehouse: null
+            }
+        })
+    ),
     on(SkuAssignmentsActions.addSelectedCatalogues, (state, { payload }) => {
         const newCatalogues = (payload as Array<Catalogue>).map(store => {
             const nC = new Catalogue(store);

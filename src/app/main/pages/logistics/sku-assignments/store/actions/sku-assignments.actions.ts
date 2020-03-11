@@ -4,6 +4,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { SkuAssignmentsCreationPayload } from '../../models/sku-assignments.model';
+import { Warehouse } from '../../../warehouse-coverages/models/warehouse-coverage.model';
 
 export type requestActionNames =
     | 'fetchSkuAssignmentsRequest'
@@ -108,6 +109,13 @@ export const removeSkuAssignmentsFailure = createAction(
     '[SkuAssignments API] Remove SkuAssignments Failure',
     props<{ payload: IErrorHandler }>()
 );
+
+export const selectWarehouse = createAction(
+    '[Warehouse/SkuAssignments] Select Warehouse',
+    props<{ payload: Warehouse }>()
+);
+
+export const deselectWarehouse = createAction('[Warehouse/SkuAssignments] Deselect Warehouse');
 
 /**
  * FOR HANDLE SELECT SKU TO WAREHOUSE

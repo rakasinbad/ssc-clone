@@ -11,6 +11,7 @@ import { fromCatalogue } from '../../catalogues/store/reducers';
 import { CatalogueEffects } from '../../catalogues/store/effects';
 import { SkuAssignmentsWarehouseEffects } from './store/effects/sku-assignments-warehouse.effects';
 import { SkuAssignmentsSkuEffects } from './store/effects/sku-assignments-sku.effects';
+import { WarehouseCatalogueEffects } from './store/effects/warehouse-catalogue.effects';
 
 @NgModule({
     imports: [
@@ -21,6 +22,7 @@ import { SkuAssignmentsSkuEffects } from './store/effects/sku-assignments-sku.ef
             SkuAssignmentsWarehouseEffects,
             SkuAssignmentsSkuEffects,
             CatalogueEffects,
+            WarehouseCatalogueEffects,
         ])
     ]
 })
