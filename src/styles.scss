@@ -285,6 +285,10 @@ quill-editor {
 .mat-table {
     &.sinbad-table-no-record {
         background: #ffffff !important;
+
+        .mat-footer-row {
+            border-bottom: none;
+        }
     }
 }
 

@@ -1,5 +1,8 @@
+import * as StockManagementCatalogueActions from './stock-management-catalogue.actions';
 import * as StockManagementActions from './stock-management.actions';
 
-type StockManagementFailureActions = StockManagementActions.FailureActions;
+type StockManagementFailureActions =
+    | StockManagementActions.FailureActions
+    | StockManagementCatalogueActions.FailureActions;
 
-export { StockManagementActions, StockManagementFailureActions };
+export { StockManagementActions, StockManagementCatalogueActions, StockManagementFailureActions };

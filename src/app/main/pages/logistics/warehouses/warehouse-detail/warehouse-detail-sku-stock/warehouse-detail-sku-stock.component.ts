@@ -18,11 +18,11 @@ import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { WarehouseCatalogue } from 'app/shared/models/warehouse-catalogue.model';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
+import { WarehouseCatalogue } from '../../models';
 import { WarehouseSkuStockActions } from '../../store/actions';
 import * as fromWarehouses from '../../store/reducers';
 import { WarehouseSkuStockSelectors } from '../../store/selectors';

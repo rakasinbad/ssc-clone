@@ -1,6 +1,7 @@
-import { Catalogue } from './../../main/pages/catalogues/models/catalogue.model';
-import { EStatus, TNullable } from './global.model';
-import { ITimestamp } from './timestamp.model';
+import { EStatus, TNullable } from 'app/shared/models/global.model';
+import { ITimestamp } from 'app/shared/models/timestamp.model';
+
+import { Catalogue } from './catalogue.model';
 
 export interface IWarehouseCatalogue extends ITimestamp {
     readonly id: NonNullable<string>;
@@ -53,5 +54,9 @@ export class WarehouseCatalogue implements IWarehouseCatalogue {
 
     set setCatalogue(value: Catalogue) {
         this.catalogue = value ? new Catalogue(value) : null;
+    }
+
+    clear(): WarehouseCatalogue {
+        return new WarehouseCatalogue(undefined);
     }
 }

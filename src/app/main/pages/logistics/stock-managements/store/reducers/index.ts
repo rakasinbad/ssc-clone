@@ -2,6 +2,7 @@ import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromStockManagementsErrs from './error.reducer';
+import * as fromStockManagementCataloguess from './stock-management-catalogue.reducer';
 import * as fromStockManagements from './stock-management.reducer';
 
 // Keyname for core reducer
@@ -13,6 +14,7 @@ export const featureKey = 'stockManagements';
  * @interface State
  */
 export interface State {
+    [fromStockManagementCataloguess.featureKey]: fromStockManagementCataloguess.State;
     [fromStockManagements.featureKey]: fromStockManagements.State;
     [fromStockManagementsErrs.featureKey]: fromStockManagementsErrs.State;
 }
@@ -37,6 +39,7 @@ export interface FeatureState extends fromRoot.State {
  */
 export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
+        [fromStockManagementCataloguess.featureKey]: fromStockManagementCataloguess.reducer,
         [fromStockManagements.featureKey]: fromStockManagements.reducer,
         [fromStockManagementsErrs.featureKey]: fromStockManagementsErrs.reducer
     })(state, action);

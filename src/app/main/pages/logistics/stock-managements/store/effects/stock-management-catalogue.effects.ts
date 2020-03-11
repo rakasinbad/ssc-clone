@@ -1,64 +1,69 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { HelperService, NoticeService, WarehouseCatalogueApiService } from 'app/shared/helpers';
+import { HelperService, NoticeService } from 'app/shared/helpers';
 import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { WarehouseCatalogue } from '../../models';
-import { WarehouseFailureActions, WarehouseSkuStockActions } from '../actions';
-import * as fromWarehouses from '../reducers';
+import { StockManagementCatalogue } from '../../models';
+import { StockManagementCatalogueApiService } from '../../services';
+import { StockManagementCatalogueActions, StockManagementFailureActions } from '../actions';
+import * as fromStockManagements from '../reducers';
 
-type AnyAction = { payload: any } & TypedAction<any>;
+type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
 @Injectable()
-export class WarehouseSkuStockEffects {
+export class StockManagementCatalogueEffects {
     // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [WAREHOUSE SKU STOCKS]
+    // @ FETCH methods [STOCK MANAGEMENT CATALOGUES]
     // -----------------------------------------------------------------------------------------------------
 
-    fetchWarehouseSkuStocksRequest$ = createEffect(() =>
+    fetchStockManagementCataloguesRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(WarehouseSkuStockActions.fetchWarehouseSkuStocksRequest),
+            ofType(StockManagementCatalogueActions.fetchStockManagementCataloguesRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(
-                ([{ params, warehouseId }, authState]: [
+                ([payload, authState]: [
                     { params: IQueryParams; warehouseId: string },
                     TNullable<Auth>
                 ]) => {
                     if (!authState) {
                         return this._$helper.decodeUserToken().pipe(
-                            map(this.checkUserSupplier),
+                            map(this._checkUserSupplier),
                             retry(3),
-                            switchMap(() => of([warehouseId, params])),
-                            switchMap<[string, IQueryParams], Observable<AnyAction>>(
-                                this.fetchWareouseSkuStocksRequest$
+                            switchMap(() => of([payload.params, payload.warehouseId])),
+                            switchMap<[IQueryParams, string], Observable<AnyAction>>(
+                                this._fetchStockManagementCataloguesRequest$
                             ),
                             catchError(err =>
-                                this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure')
+                                this._sendErrorToState$(
+                                    err,
+                                    'fetchStockManagementCataloguesFailure'
+                                )
                             )
                         );
                     } else {
                         return of(authState.user).pipe(
-                            map(this.checkUserSupplier),
+                            map(this._checkUserSupplier),
                             retry(3),
-                            switchMap(() => of([warehouseId, params])),
-                            switchMap<[string, IQueryParams], Observable<AnyAction>>(
-                                this.fetchWareouseSkuStocksRequest$
+                            switchMap(() => of([payload.params, payload.warehouseId])),
+                            switchMap<[IQueryParams, string], Observable<AnyAction>>(
+                                this._fetchStockManagementCataloguesRequest$
                             ),
                             catchError(err =>
-                                this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure')
+                                this._sendErrorToState$(
+                                    err,
+                                    'fetchStockManagementCataloguesFailure'
+                                )
                             )
                         );
                     }
@@ -67,10 +72,10 @@ export class WarehouseSkuStockEffects {
         )
     );
 
-    fetchWarehouseSkuStocksFailure$ = createEffect(
+    fetchStockManagementCataloguesFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(WarehouseSkuStockActions.fetchWarehouseSkuStocksFailure),
+                ofType(StockManagementCatalogueActions.fetchStockManagementCataloguesFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -86,15 +91,13 @@ export class WarehouseSkuStockEffects {
 
     constructor(
         private actions$: Actions,
-        private matDialog: MatDialog,
-        private router: Router,
-        private store: Store<fromWarehouses.FeatureState>,
+        private store: Store<fromStockManagements.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private _$warehouseCatalogueApi: WarehouseCatalogueApiService
+        private _$stockManagementCatalogueApi: StockManagementCatalogueApiService
     ) {}
 
-    checkUserSupplier = (userData: User): User => {
+    _checkUserSupplier = (userData: User): User => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
             throw new ErrorHandler({
@@ -107,43 +110,53 @@ export class WarehouseSkuStockEffects {
         return userData;
     };
 
-    fetchWareouseSkuStocksRequest$ = ([warehouseId, params]: [string, IQueryParams]): Observable<
-        AnyAction
-    > => {
-        const newParams = { ...params };
+    _fetchStockManagementCataloguesRequest$ = ([params, warehouseId]: [
+        IQueryParams,
+        string
+    ]): Observable<AnyAction> => {
+        const newParams = {
+            ...params
+        };
 
         if (warehouseId) {
             newParams['warehouseId'] = warehouseId;
+        } else {
+            throw new ErrorHandler({
+                id: 'ERR_WAREHOUSE_ID_NOT_FOUND',
+                errors: 'WarehouseID is required'
+            });
         }
 
-        return this._$warehouseCatalogueApi
-            .findAll<PaginateResponse<WarehouseCatalogue>>(newParams)
+        return this._$stockManagementCatalogueApi
+            .findAll<PaginateResponse<StockManagementCatalogue>>(newParams)
             .pipe(
                 catchOffline(),
                 map(resp => {
                     const newResp = {
                         data:
                             (resp.data && resp.data.length > 0
-                                ? resp.data.map(v => new WarehouseCatalogue(v))
+                                ? resp.data.map(v => new StockManagementCatalogue(v))
                                 : []) || [],
                         total: resp.total
                     };
 
-                    return WarehouseSkuStockActions.fetchWarehouseSkuStocksSuccess({
+                    return StockManagementCatalogueActions.fetchStockManagementCataloguesSuccess({
                         payload: newResp
                     });
                 }),
-                catchError(err => this.sendErrorToState$(err, 'fetchWarehouseSkuStocksFailure'))
+                catchError(err =>
+                    this._sendErrorToState$(err, 'fetchStockManagementCataloguesFailure')
+                )
             );
     };
 
-    sendErrorToState$ = (
+    _sendErrorToState$ = (
         err: ErrorHandler | HttpErrorResponse | object,
-        dispatchTo: WarehouseFailureActions
+        dispatchTo: StockManagementFailureActions
     ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             return of(
-                WarehouseSkuStockActions[dispatchTo]({
+                StockManagementCatalogueActions[dispatchTo]({
                     payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                 })
             );
@@ -151,7 +164,7 @@ export class WarehouseSkuStockEffects {
 
         if (err instanceof HttpErrorResponse) {
             return of(
-                WarehouseSkuStockActions[dispatchTo]({
+                StockManagementCatalogueActions[dispatchTo]({
                     payload: {
                         id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
                         errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
@@ -161,7 +174,7 @@ export class WarehouseSkuStockEffects {
         }
 
         return of(
-            WarehouseSkuStockActions[dispatchTo]({
+            StockManagementCatalogueActions[dispatchTo]({
                 payload: {
                     id: `ERR_UNRECOGNIZED`,
                     errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))

@@ -1,4 +1,4 @@
-<div id="stock-managements" class="page-layout carded fullwidth inner-scroll">
+<div id="stock-management-catalogues" class="page-layout carded fullwidth inner-scroll">
     <!-- TOP BACKGROUND -->
     <div class="accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -59,12 +59,26 @@
                     </div>
                 </div>
 
-                <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
+                <sinbad-card-header [config]="cardHeaderConfig">
+                    <span first-bottom-left *ngIf="!(isLoading$ | async)">
+                        Total {{ totalDataSource$ | async }} SKU
+                    </span>
+
+                    <span first-bottom-left *ngIf="isLoading$ | async">
+                        <ngx-skeleton-loader
+                            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </span>
+                </sinbad-card-header>
 
                 <mat-table
-                    class="stock-managements-table sinbad-table mx-16"
+                    class="stock-management-catalogues-table sinbad-table mx-16"
+                    [class.sinbad-table-no-record]="
+                        !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                    "
                     #table
-                    [dataSource]="dataSource"
+                    [dataSource]="dataSource$ | async"
+                    formArrayName="skus"
                     matSort
                     [@animateStagger]="{ value: '50' }"
                     fusePerfectScrollbar
@@ -88,7 +102,7 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
-                                {{ row?.code || '-' }}
+                                {{ row?.catalogue?.externalId || '-' }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -100,7 +114,7 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
-                                {{ row?.name || '-' }}
+                                {{ row?.catalogue?.name || '-' }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -109,11 +123,41 @@
                     <ng-container matColumnDef="stock-type">
                         <mat-header-cell *matHeaderCellDef>
                             Stock Type
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
-                                100
-                            </p>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <mat-form-field appearance="outline" fxFlex>
+                                    <ng-container *ngIf="stockTypes; else noStockTypes">
+                                        <mat-select
+                                            formControlName="unlimitedStock"
+                                            placeholder="Choose Stock Type"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="let row of stockTypes"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.label }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+
+                                    <ng-template #noStockTypes>
+                                        <mat-select placeholder="Stock Type not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+                                </mat-form-field>
+                            </div>
                         </mat-cell>
                     </ng-container>
 
@@ -121,11 +165,28 @@
                     <ng-container matColumnDef="qty-change">
                         <mat-header-cell *matHeaderCellDef>
                             Qty Change
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="State the quantity you would like to add to&#10;or subtract from the existing stock level.&#10;Enter a number toa add the quantity, enter&#10;a (-) before the number to subtract the&#10;quantity."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
-                                100
-                            </p>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <mat-form-field appearance="outline" fxFlex="100">
+                                    <input
+                                        type="number"
+                                        matInput
+                                        formControlName="qtyChange"
+                                        step="1"
+                                        autocomplete="off"
+                                    />
+                                </mat-form-field>
+                            </div>
                         </mat-cell>
                     </ng-container>
 
@@ -134,10 +195,40 @@
                         <mat-header-cell *matHeaderCellDef>
                             Reason
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
-                                30
-                            </p>
+                        <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
+                            <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                                <mat-form-field appearance="outline" fxFlex>
+                                    <ng-container
+                                        *ngIf="
+                                            (stockManagementReasons$ | async)(
+                                                form.get(['skus', i, 'qtyChange']).value > 0
+                                                    ? 'plus'
+                                                    : 'minus'
+                                            ) as stockManagementReasons;
+                                            else noStockManagementReasons
+                                        "
+                                    >
+                                        <mat-select
+                                            formControlName="warehouseCatalogueReasonId"
+                                            placeholder="Choose Reason"
+                                        >
+                                            <mat-option>None</mat-option>
+                                            <mat-option
+                                                *ngFor="let row of stockManagementReasons"
+                                                [value]="row?.id"
+                                            >
+                                                {{ row?.reason || '-' }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </ng-container>
+
+                                    <ng-template #noStockManagementReasons>
+                                        <mat-select placeholder="Reason not found" disabled>
+                                            <mat-option>None</mat-option>
+                                        </mat-select>
+                                    </ng-template>
+                                </mat-form-field>
+                            </div>
                         </mat-cell>
                     </ng-container>
 
@@ -145,10 +236,19 @@
                     <ng-container matColumnDef="sellable">
                         <mat-header-cell *matHeaderCellDef>
                             Sellable
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Sellable stock on hand in the warehouse&#10;that can be sold."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
-                                30
+                                {{ row?.stock }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -157,6 +257,15 @@
                     <ng-container matColumnDef="after">
                         <mat-header-cell *matHeaderCellDef>
                             After
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Sellable stock in the selected warehouse&#10;after the stock adjustment."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
@@ -165,19 +274,44 @@
                         </mat-cell>
                     </ng-container>
 
+                    <!-- No Record Column -->
+                    <ng-container matColumnDef="no-record">
+                        <mat-footer-cell *matFooterCellDef colspan="8">
+                            No records found
+                        </mat-footer-cell>
+                    </ng-container>
+
                     <mat-header-row
                         *matHeaderRowDef="displayedColumns; sticky: true"
                     ></mat-header-row>
 
                     <mat-row
                         *matRowDef="let row; columns: displayedColumns"
-                        class="warehouse"
-                        [routerLink]="[row?.id, 'detail']"
+                        class="stock-management-catalogue"
                     ></mat-row>
+
+                    <mat-footer-row
+                        *matFooterRowDef="['no-record']"
+                        [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                    ></mat-footer-row>
                 </mat-table>
 
+                <div
+                    class="loader-content"
+                    *ngIf="
+                        (isLoading$ | async) &&
+                        (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                    "
+                >
+                    <mat-spinner color="accent"></mat-spinner>
+                </div>
+
                 <mat-paginator
-                    [length]="dataSource.length"
+                    [disabled]="
+                        ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+                        (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+                    "
+                    [length]="totalDataSource$ | async"
                     [pageSize]="defaultPageSize"
                     [pageSizeOptions]="defaultPageOpts"
                     showFirstLastButtons

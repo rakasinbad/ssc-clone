@@ -24,6 +24,22 @@ export const {
     selectTotal
 } = fromStockManagementReasons.adapter.getSelectors(getStockManagementReasonEntitiesState);
 
+const getReasons = createSelector(selectAll, reasons => (method: string) => {
+    if (reasons && reasons.length > 0) {
+        return reasons.filter(
+            v =>
+                String(v.method)
+                    .toLowerCase()
+                    .trim() ===
+                String(method)
+                    .toLowerCase()
+                    .trim()
+        );
+    }
+
+    return null;
+});
+
 const getTotalItem = createSelector(getStockManagementReasonEntitiesState, state => state.total);
 
 const getSelectedId = createSelector(
@@ -42,4 +58,4 @@ const getIsLoading = createSelector(
     state => state.isLoading
 );
 
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+export { getIsLoading, getReasons, getSelectedId, getSelectedItem, getTotalItem };
