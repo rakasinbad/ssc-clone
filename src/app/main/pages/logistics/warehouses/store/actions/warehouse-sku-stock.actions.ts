@@ -1,7 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { WarehouseCatalogue } from 'app/shared/models/warehouse-catalogue.model';
+
+import { WarehouseCatalogue } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Warehouse Sku Stocks
