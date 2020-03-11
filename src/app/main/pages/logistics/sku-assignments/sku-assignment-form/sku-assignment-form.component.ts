@@ -454,22 +454,10 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
                 ]
             ],
             catalogues: [
-                '',
-                [
-                    RxwebValidators.required({
-                        conditionalExpression: x => x.deletedCatalogue || x.catalogues,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                ''
             ],
             deletedCatalogue: [
-                '',
-                [
-                    RxwebValidators.required({
-                        conditionalExpression: x => x.deletedCatalogue || x.catalogues,
-                        message: this.errorMessageSvc.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                ''
             ]
         });
 
