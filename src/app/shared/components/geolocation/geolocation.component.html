@@ -55,7 +55,7 @@
                 <mat-option
                     [disabled]="true"
                     style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="!(totalProvinces$ | async) || ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                    *ngIf="!(totalProvinces$ | async) && ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
                 >
                     Loading ...
                 </mat-option>
@@ -115,7 +115,7 @@
                 <mat-option
                     [disabled]="true"
                     style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="!(totalCities$ | async) || ((totalCities$ | async) > (availableCities$ | async)?.length)"
+                    *ngIf="!(totalCities$ | async) && ((totalCities$ | async) > (availableCities$ | async)?.length)"
                 >
                     Loading ...
                 </mat-option>
@@ -175,7 +175,7 @@
                 <mat-option
                     [disabled]="true"
                     style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="!(totalDistricts$ | async) || ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
+                    *ngIf="!(totalDistricts$ | async) && ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
                 >
                     Loading ...
                 </mat-option>
@@ -235,7 +235,7 @@
                 <mat-option
                     [disabled]="true"
                     style="text-align: center; font-style: italic; max-height: 30px;"
-                    *ngIf="!(totalUrbans$ | async) || ((totalUrbans$ | async) > (availableUrbans$ | async)?.length)"
+                    *ngIf="!(totalUrbans$ | async) && ((totalUrbans$ | async) > (availableUrbans$ | async)?.length)"
                 >
                     Loading ...
                 </mat-option>
