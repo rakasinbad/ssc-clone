@@ -2,10 +2,10 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { StockManagementCatalogue } from '../../models';
+import { PayloadStockManagementCatalogue, StockManagementCatalogue } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Stock Management Catalogues
+// [FETCH] Stock Management Catalogues
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchStockManagementCataloguesRequest = createAction(
@@ -23,8 +23,28 @@ export const fetchStockManagementCataloguesSuccess = createAction(
     props<{ payload: { data: Array<StockManagementCatalogue>; total: number } }>()
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Stock Management Catalogue
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStockManagementCatalogueRequest = createAction(
+    '[Stock Managements] Update Stock Management Catalogue Request',
+    props<{ payload: PayloadStockManagementCatalogue }>()
+);
+
+export const updateStockManagementCatalogueFailure = createAction(
+    '[Stock Managements] Update Stock Management Catalogue Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateStockManagementCatalogueSuccess = createAction(
+    '[Stock Managements] Update Stock Management Catalogue Success'
+);
+
 export const clearState = createAction(
     '[Stock Managements] Reset Stock Management Catalogues State'
 );
 
-export type FailureActions = 'fetchStockManagementCataloguesFailure';
+export type FailureActions =
+    | 'fetchStockManagementCataloguesFailure'
+    | 'updateStockManagementCatalogueFailure';

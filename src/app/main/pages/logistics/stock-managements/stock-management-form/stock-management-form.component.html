@@ -22,12 +22,36 @@
                     </span>
 
                     <div class="form-box">
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="8" class="label-form">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="15px"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="8"
+                                class="custom-field__label"
+                                [class.sinbad-red-fg]="hasError('whName')"
+                            >
+                                <ng-container *ngIf="pageType === 'new'">*</ng-container>
                                 Warehouse Name
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="100"
+                                class="custom-field__label"
+                                *ngIf="pageType === 'edit'"
+                            >
+                                <span>{{ selectedWhName || '-' }}</span>
+                            </label>
+
+                            <mat-form-field
+                                appearance="outline"
+                                fxFlex="50"
+                                *ngIf="pageType === 'new'"
+                            >
                                 <ng-container
                                     *ngIf="warehouses$ | async as warehouses; else noWarehouses"
                                 >
@@ -51,9 +75,9 @@
                                     </mat-select>
                                 </ng-template>
 
-                                <!-- <mat-select placeholder="Choose Warehouse">
-                                    <mat-option>None</mat-option>
-                                </mat-select> -->
+                                <mat-error *ngIf="hasError('whName', true)">
+                                    {{ getErrorMessage('whName') }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
                     </div>
@@ -135,28 +159,39 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
                             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                                <mat-form-field appearance="outline" fxFlex>
-                                    <ng-container *ngIf="stockTypes; else noStockTypes">
-                                        <mat-select
-                                            formControlName="unlimitedStock"
-                                            placeholder="Choose Stock Type"
-                                        >
-                                            <mat-option>None</mat-option>
-                                            <mat-option
-                                                *ngFor="let row of stockTypes"
-                                                [value]="row?.id"
+                                <ng-container *ngIf="form.get('whName').valid">
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <ng-container *ngIf="stockTypes; else noStockTypes">
+                                            <mat-select
+                                                formControlName="unlimitedStock"
+                                                placeholder="Choose Stock Type"
+                                                (selectionChange)="onStockTypeChange($event, i)"
                                             >
-                                                {{ row?.label }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </ng-container>
+                                                <mat-option>None</mat-option>
+                                                <mat-option
+                                                    *ngFor="let row of stockTypes"
+                                                    [value]="row?.id"
+                                                >
+                                                    {{ row?.label }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </ng-container>
 
-                                    <ng-template #noStockTypes>
-                                        <mat-select placeholder="Stock Type not found" disabled>
+                                        <ng-template #noStockTypes>
+                                            <mat-select placeholder="Stock Type not found" disabled>
+                                                <mat-option>None</mat-option>
+                                            </mat-select>
+                                        </ng-template>
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container *ngIf="form.get('whName').invalid">
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <mat-select placeholder="Choose Stock Type" disabled>
                                             <mat-option>None</mat-option>
                                         </mat-select>
-                                    </ng-template>
-                                </mat-form-field>
+                                    </mat-form-field>
+                                </ng-container>
                             </div>
                         </mat-cell>
                     </ng-container>
@@ -177,15 +212,37 @@
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
                             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                                <mat-form-field appearance="outline" fxFlex="100">
-                                    <input
-                                        type="number"
-                                        matInput
-                                        formControlName="qtyChange"
-                                        step="1"
-                                        autocomplete="off"
-                                    />
-                                </mat-form-field>
+                                <ng-container
+                                    *ngIf="
+                                        form.get(['skus', i, 'unlimitedStock']).value ||
+                                        form.get(['skus', i, 'unlimitedStock']).value === false
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex="100">
+                                        <input
+                                            type="number"
+                                            matInput
+                                            formControlName="qtyChange"
+                                            step="1"
+                                            autocomplete="off"
+                                            (input)="onQtyChange($event.target.value, i)"
+                                        />
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="!form.get(['skus', i, 'unlimitedStock']).value"
+                                >
+                                    <mat-form-field appearance="outline" fxFlex="100">
+                                        <input
+                                            type="number"
+                                            matInput
+                                            step="1"
+                                            autocomplete="off"
+                                            disabled
+                                        />
+                                    </mat-form-field>
+                                </ng-container>
                             </div>
                         </mat-cell>
                     </ng-container>
@@ -194,40 +251,70 @@
                     <ng-container matColumnDef="reason">
                         <mat-header-cell *matHeaderCellDef>
                             Reason
+
+                            <mat-icon
+                                class="active-icon s-14 ml-8 cursor-pointer"
+                                color="accent"
+                                matTooltip="Reason that affect changes in&#10;particular SKU stock level."
+                                matTooltipClass="tooltip-br"
+                            >
+                                help
+                            </mat-icon>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; index as i" [formGroupName]="i">
                             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                                <mat-form-field appearance="outline" fxFlex>
-                                    <ng-container
-                                        *ngIf="
-                                            (stockManagementReasons$ | async)(
-                                                form.get(['skus', i, 'qtyChange']).value > 0
-                                                    ? 'plus'
-                                                    : 'minus'
-                                            ) as stockManagementReasons;
-                                            else noStockManagementReasons
-                                        "
-                                    >
-                                        <mat-select
-                                            formControlName="warehouseCatalogueReasonId"
-                                            placeholder="Choose Reason"
+                                <ng-container
+                                    *ngIf="
+                                        form.get(['skus', i, 'qtyChange']).value &&
+                                        form.get(['skus', i, 'qtyChange']).valid
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <ng-container
+                                            *ngIf="
+                                                (stockManagementReasons$ | async)(
+                                                    form.get(['skus', i, 'qtyChange']).value > 0
+                                                        ? 'plus'
+                                                        : 'minus'
+                                                ) as stockManagementReasons;
+                                                else noStockManagementReasons
+                                            "
                                         >
-                                            <mat-option>None</mat-option>
-                                            <mat-option
-                                                *ngFor="let row of stockManagementReasons"
-                                                [value]="row?.id"
+                                            <mat-select
+                                                formControlName="warehouseCatalogueReasonId"
+                                                placeholder="Choose Reason"
+                                                (selectionChange)="onReasonChange($event, i)"
                                             >
-                                                {{ row?.reason || '-' }}
-                                            </mat-option>
-                                        </mat-select>
-                                    </ng-container>
+                                                <mat-option>None</mat-option>
+                                                <mat-option
+                                                    *ngFor="let row of stockManagementReasons"
+                                                    [value]="row?.id"
+                                                >
+                                                    {{ row?.reason || '-' }}
+                                                </mat-option>
+                                            </mat-select>
+                                        </ng-container>
 
-                                    <ng-template #noStockManagementReasons>
-                                        <mat-select placeholder="Reason not found" disabled>
+                                        <ng-template #noStockManagementReasons>
+                                            <mat-select placeholder="Reason not found" disabled>
+                                                <mat-option>None</mat-option>
+                                            </mat-select>
+                                        </ng-template>
+                                    </mat-form-field>
+                                </ng-container>
+
+                                <ng-container
+                                    *ngIf="
+                                        !form.get(['skus', i, 'qtyChange']).value ||
+                                        form.get(['skus', i, 'qtyChange']).invalid
+                                    "
+                                >
+                                    <mat-form-field appearance="outline" fxFlex>
+                                        <mat-select placeholder="Choose Reason" disabled>
                                             <mat-option>None</mat-option>
                                         </mat-select>
-                                    </ng-template>
-                                </mat-form-field>
+                                    </mat-form-field>
+                                </ng-container>
                             </div>
                         </mat-cell>
                     </ng-container>
@@ -267,9 +354,9 @@
                                 help
                             </mat-icon>
                         </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
+                        <mat-cell *matCellDef="let row; index as i">
                             <p style="word-break: break-word;">
-                                30
+                                {{ afterCalc(row?.stock, i) < 0 ? '-' : afterCalc(row?.stock, i) }}
                             </p>
                         </mat-cell>
                     </ng-container>
@@ -315,7 +402,8 @@
                     [pageSize]="defaultPageSize"
                     [pageSizeOptions]="defaultPageOpts"
                     showFirstLastButtons
-                ></mat-paginator>
+                    ><button mat-raised-button>Cancel</button></mat-paginator
+                >
             </form>
         </div>
         <!-- / CONTENT CARD -->

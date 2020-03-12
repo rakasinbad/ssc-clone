@@ -13,8 +13,8 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { StockManagementCatalogue } from '../../models';
-import { StockManagementCatalogueApiService } from '../../services';
+import { PayloadStockManagementCatalogue, StockManagementCatalogue } from '../../models';
+import { StockHistoryApiService, StockManagementCatalogueApiService } from '../../services';
 import { StockManagementCatalogueActions, StockManagementFailureActions } from '../actions';
 import * as fromStockManagements from '../reducers';
 
@@ -22,6 +22,70 @@ type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
 @Injectable()
 export class StockManagementCatalogueEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - STOCK MANAGEMENT CATALOGUE]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStockManagementCatalogueRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StockManagementCatalogueActions.updateStockManagementCatalogueRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [PayloadStockManagementCatalogue, TNullable<Auth>]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(() => of(payload)),
+                            switchMap<PayloadStockManagementCatalogue, Observable<AnyAction>>(
+                                this._updateStockManagementCatalogueRequest$
+                            ),
+                            catchError(err =>
+                                this._sendErrorToState$(
+                                    err,
+                                    'updateStockManagementCatalogueFailure'
+                                )
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(() => of(payload)),
+                            switchMap<PayloadStockManagementCatalogue, Observable<AnyAction>>(
+                                this._updateStockManagementCatalogueRequest$
+                            ),
+                            catchError(err =>
+                                this._sendErrorToState$(
+                                    err,
+                                    'updateStockManagementCatalogueFailure'
+                                )
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStockManagementCatalogueFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StockManagementCatalogueActions.updateStockManagementCatalogueFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [STOCK MANAGEMENT CATALOGUES]
     // -----------------------------------------------------------------------------------------------------
@@ -94,6 +158,7 @@ export class StockManagementCatalogueEffects {
         private store: Store<fromStockManagements.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
+        private _$stockHistoryApi: StockHistoryApiService,
         private _$stockManagementCatalogueApi: StockManagementCatalogueApiService
     ) {}
 
@@ -108,6 +173,17 @@ export class StockManagementCatalogueEffects {
 
         // Mengembalikan data user jika tidak ada masalah.
         return userData;
+    };
+
+    _updateStockManagementCatalogueRequest$ = (
+        payload: PayloadStockManagementCatalogue
+    ): Observable<AnyAction> => {
+        return this._$stockHistoryApi.update<PayloadStockManagementCatalogue>(payload).pipe(
+            map(resp => {
+                return StockManagementCatalogueActions.updateStockManagementCatalogueSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStockManagementCatalogueFailure'))
+        );
     };
 
     _fetchStockManagementCataloguesRequest$ = ([params, warehouseId]: [

@@ -10,12 +10,14 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSelectChange, MatSort } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { Store, select } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { StockManagementReason } from 'app/shared/models/stock-management-reason.model';
@@ -30,14 +32,13 @@ import {
 } from 'app/shared/store/selectors/sources';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, filter, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 
 import { Warehouse } from '../../warehouses/models';
-import { StockManagementCatalogue } from '../models';
+import { PayloadStockManagementCatalogue, StockManagementCatalogue } from '../models';
 import { StockManagementCatalogueActions } from '../store/actions';
 import * as fromStockManagements from '../store/reducers';
 import { StockManagementCatalogueSelectors } from '../store/selectors';
-import { HelperService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-stock-management-form',
@@ -60,11 +61,10 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
             label: 'List SKU'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
         },
         // add: {
         //     permissions: []
@@ -120,6 +120,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
     search: FormControl = new FormControl('');
     stockTypes: { id: boolean; label: string }[] = this._$helper.stockType();
+    selectedWhName = '';
 
     dataSource$: Observable<Array<StockManagementCatalogue>>;
     totalDataSource$: Observable<number>;
@@ -160,8 +161,49 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromStockManagements.FeatureState>,
-        private _$helper: HelperService
-    ) {}
+        private _$errorMessage: ErrorMessageService,
+        private _$helper: HelperService,
+        private _$notice: NoticeService
+    ) {
+        // Set footer action
+        this.store.dispatch(
+            UiActions.setFooterActionConfig({
+                payload: {
+                    progress: {
+                        title: {
+                            label: 'Skor tambah toko',
+                            active: false
+                        },
+                        value: {
+                            active: false
+                        },
+                        active: false
+                    },
+                    action: {
+                        save: {
+                            label: 'Save',
+                            active: false
+                        },
+                        draft: {
+                            label: 'Save Draft',
+                            active: false
+                        },
+                        cancel: {
+                            label: 'Cancel',
+                            active: false
+                        },
+                        goBack: {
+                            label: 'Back',
+                            active: true,
+                            url: '/pages/logistics/stock-managements'
+                        }
+                    }
+                }
+            })
+        );
+
+        this.store.dispatch(UiActions.showFooterAction());
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -196,8 +238,126 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         return this.form.get('skus') as FormArray;
     }
 
+    afterCalc(sellable: number, idx: number): number {
+        if (typeof sellable !== 'number' || typeof idx !== 'number') {
+            return -1;
+        }
+
+        const qtyChange = this.form.get(['skus', idx, 'qtyChange']).value;
+
+        if (typeof qtyChange === 'string' && isNaN(+qtyChange)) {
+            return -1;
+        }
+
+        return sellable + +qtyChange;
+    }
+
     generateNumber(idx: number): number {
         return this.paginator.pageIndex * this.paginator.pageSize + (idx + 1);
+    }
+
+    getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
+        if (!fieldName) {
+            return;
+        }
+
+        if (parentName && typeof index === 'number') {
+            const formParent = this.form.get(parentName) as FormArray;
+            const { errors } = formParent.at(index).get(fieldName);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        } else {
+            const { errors } = this.form.get(fieldName);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        }
+    }
+
+    hasError(field: string, isMatError = false): boolean {
+        if (!field) {
+            return;
+        }
+
+        const errors = this.form.get(field).errors;
+        const touched = this.form.get(field).touched;
+        const dirty = this.form.get(field).dirty;
+
+        if (isMatError) {
+            return errors && (dirty || touched);
+        }
+
+        return errors && ((touched && dirty) || touched);
+    }
+
+    hasLength(field: string, minLength: number): boolean {
+        if (!field || !minLength) {
+            return;
+        }
+
+        const value = this.form.get(field).value;
+
+        return !value ? false : value.length <= minLength;
+    }
+
+    onReasonChange(ev: MatSelectChange, idx: number): void {
+        setTimeout(() => {
+            // console.log(
+            //     `Reason ${idx}`,
+            //     this.form.get(['skus', idx]),
+            //     `is Valid ${this.form.get(['skus', idx]).valid}`,
+            //     `is Invalid ${this.form.get(['skus', idx]).invalid}`
+            // );
+
+            const isValid = this.form.get(['skus', idx]).valid;
+
+            if (isValid) {
+                this._onSubmit(idx);
+            }
+        }, 100);
+    }
+
+    onStockTypeChange(ev: MatSelectChange, idx: number): void {
+        if (typeof ev.value !== 'boolean') {
+            this.form.get(['skus', idx, 'qtyChange']).reset();
+            return;
+        }
+
+        if (ev.value) {
+            this.form.get(['skus', idx, 'qtyChange']).setValue(0);
+            this.form.get(['skus', idx, 'qtyChange']).disable();
+
+            this._onSubmit(idx);
+        } else {
+            this.form.get(['skus', idx, 'qtyChange']).reset();
+            this.form.get(['skus', idx, 'qtyChange']).enable();
+        }
+    }
+
+    onQtyChange(value: number, idx: number): void {
+        if (this.form.get(['skus', idx, 'qtyChange']).invalid) {
+            const message = `${this.getErrorMessage(
+                'qtyChange',
+                'skus',
+                idx
+            )} at row ${this.generateNumber(idx)}`;
+
+            this._$notice.open(message, 'error', {
+                verticalPosition: 'bottom',
+                horizontalPosition: 'right'
+            });
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -208,7 +368,26 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         const row = this.formBuilder.group({
             warehouseCatalogueId: [''],
             unlimitedStock: [{ value: '', disabled: false }],
-            qtyChange: [{ value: '', disabled: false }],
+            qtyChange: [
+                { value: '', disabled: false },
+                [
+                    RxwebValidators.minNumber({
+                        value: -source.stock,
+                        conditionalExpression: (x, y) => x.qtyChange !== 0,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.minNumber({
+                        value: 1,
+                        conditionalExpression: (x, y) => x.qtyChange === 0,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.Both,
+                        allowDecimal: false,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
+                    })
+                ]
+            ],
             warehouseCatalogueReasonId: [{ value: '', disabled: false }]
         });
 
@@ -218,8 +397,6 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.AfterViewInit:
-                const whName = this.form.get('whName').value;
-
                 this.sort.sortChange
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => (this.paginator.pageIndex = 0));
@@ -229,11 +406,20 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                     .subscribe(() => {
                         // this.table.nativeElement.scrollIntoView(true);
                         this.table.nativeElement.scrollTop = 0;
-                        this._initTable(whName);
+                        this._initTable(this.form.get('whName').value);
                     });
                 break;
 
             case LifecyclePlatform.OnDestroy:
+                // Hide footer action
+                this.store.dispatch(UiActions.hideFooterAction());
+
+                // Reset core state stock management reasons
+                this.store.dispatch(StockManagementReasonActions.clearStockManagementReasonState());
+
+                // Reset core state stock management catalogues
+                this.store.dispatch(StockManagementCatalogueActions.clearState());
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
@@ -283,6 +469,19 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                         .subscribe(v => {
                             this._initTable(v);
                         });
+                } else if (this.pageType === 'edit') {
+                    this._initTable(id);
+
+                    this.store
+                        .select(WarehouseSelectors.selectAll)
+                        .pipe(takeUntil(this._unSubs$))
+                        .subscribe(data => {
+                            if (data && data.length > 0) {
+                                const selectedData = data.find(v => v.id === id);
+                                this.selectedWhName = selectedData.name;
+                                this.form.get('whName').setValue(id);
+                            }
+                        });
                 }
 
                 this.dataSource$ = this.store
@@ -303,13 +502,46 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                 this.stockManagementReasons$ = this.store.pipe(
                     select(StockManagementReasonSelectors.getReasons)
                 );
+
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return (
+                                    !!this.domSanitizer.sanitize(SecurityContext.HTML, v) &&
+                                    this.form.get('whName').valid
+                                );
+                            }
+
+                            return true && this.form.get('whName').valid;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this.table.nativeElement.scrollTop = 0;
+                        this._onRefreshTable(this.form.get('whName').value);
+                    });
+
+                // Handle stock type if Limit set qty 0 then disabled
+                // this.form.valueChanges.pipe(takeUntil(this._unSubs$)).subscribe(x => {
+                //     console.log('VV', this.form);
+                // });
                 break;
         }
     }
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
-            whName: [''],
+            whName: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                    })
+                ]
+            ],
             skus: this.formBuilder.array([])
         });
     }
@@ -350,5 +582,42 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     private _onRefreshTable(warehouseId: string): void {
         this.paginator.pageIndex = 0;
         this._initTable(warehouseId);
+    }
+
+    private _onSubmit(idx: number): void {
+        const isValid = this.form.get(['skus', idx]).valid;
+        const body = this.form.getRawValue();
+
+        if (!isValid && !body.whName) {
+            return;
+        }
+
+        console.log(typeof idx, idx);
+
+        console.log('Request backend', {
+            warehouseCatalogueId: body.whName,
+            unlimitedStock: body.skus[idx].unlimitedStock,
+            qtyChange: body.skus[idx].unlimitedStock === true ? 0 : body.skus[idx].qtyChange,
+            warehouseCatalogueReasonId:
+                body.skus[idx].unlimitedStock === true
+                    ? null
+                    : body.skus[idx].warehouseCatalogueReasonId
+        });
+
+        const payload = new PayloadStockManagementCatalogue({
+            warehouseCatalogueId: body.whName,
+            unlimitedStock: body.skus[idx].unlimitedStock,
+            qtyChange: body.skus[idx].unlimitedStock === true ? 0 : +body.skus[idx].qtyChange,
+            warehouseCatalogueReasonId:
+                body.skus[idx].unlimitedStock === true
+                    ? null
+                    : body.skus[idx].warehouseCatalogueReasonId
+        });
+
+        this.form.get(['skus', idx]).reset();
+
+        this.store.dispatch(
+            StockManagementCatalogueActions.updateStockManagementCatalogueRequest({ payload })
+        );
     }
 }
