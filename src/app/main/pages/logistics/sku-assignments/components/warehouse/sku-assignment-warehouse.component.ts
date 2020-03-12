@@ -87,7 +87,10 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
         this._initTable();
 
-        this.SkuAssignmentsStore.select(SkuAssignmentsWarehouseSelectors.getSearchValue).subscribe(
+        this.SkuAssignmentsStore.select(
+            SkuAssignmentsWarehouseSelectors.getSearchValue
+        ).pipe(takeUntil(this._unSubs$))
+        .subscribe(
             val => {
                 this._initTable(val);
             }
@@ -95,13 +98,13 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
         this.dataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.selectAll
-        );
+        ).pipe(takeUntil(this._unSubs$));
         this.totalDataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getTotalItem
-        );
+        ).pipe(takeUntil(this._unSubs$));
         this.isLoading$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getLoadingState
-        );
+        ).pipe(takeUntil(this._unSubs$));
 
         this.updatePrivileges();
     }
@@ -188,7 +191,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
+            : this.dataSource$.pipe(flatMap(v => v), takeUntil(this._unSubs$)).forEach(row => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -239,6 +242,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
             };
 
             data['paginate'] = true;
+            data['keyword'] = searchText;
 
             if (this.activeTab === 'assigned-to-sku') {
                 data['assigned'] = 'true';
@@ -246,15 +250,6 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
                 data['assigned'] = 'false';
             } else {
                 data['assigned'] = 'all';
-            }
-
-            if (searchText) {
-                data['search'] = [
-                    {
-                        fieldName: 'name',
-                        keyword: searchText
-                    }
-                ];
             }
 
             this.SkuAssignmentsStore.dispatch(
