@@ -117,6 +117,12 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     }
 
     onEditSkuAssignment(item: Warehouse): void {
+        this.SkuAssignmentsStore.dispatch(
+            SkuAssignmentsActions.selectWarehouse({
+                payload: (item as Warehouse)
+            })
+        );
+
         this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
     }
 
