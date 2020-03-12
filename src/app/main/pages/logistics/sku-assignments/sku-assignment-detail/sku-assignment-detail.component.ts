@@ -34,11 +34,11 @@ export class SkuAssignmentDetailComponent implements OnInit, AfterViewInit, OnDe
             label: 'List Product'
         },
         search: {
-            active: false,
-            // changed: (value: string) => {
-            //     this.truncateTable();
-            //     this.onRefreshTable(value);
-            // }
+            active: true,
+            changed: (value: string) => {
+                this.truncateTable();
+                this.onRefreshTable(value);
+            }
         },
     };
 
@@ -222,6 +222,7 @@ export class SkuAssignmentDetailComponent implements OnInit, AfterViewInit, OnDe
 
         this.store.dispatch(UiActions.hideCustomToolbar());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
+        this.store.dispatch(WarehouseCatalogueActions.resetWarehouseCatalogue());
     }
 
 }
