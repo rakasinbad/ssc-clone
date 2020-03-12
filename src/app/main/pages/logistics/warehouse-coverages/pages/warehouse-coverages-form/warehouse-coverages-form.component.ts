@@ -86,6 +86,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     availableUrbans$: Observable<Array<string>>;
 
     initialSelectedOptions: Array<Selection> = [];
+    totallInitialSelectedOptions$: Observable<number>;
     availableOptions: Array<Selection> = [];
     // selectedOptions: Array<Selection> = [];
     // tslint:disable-next-line: no-inferrable-types
@@ -1047,7 +1048,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             tap(coverages => {
                 if (Array.isArray(coverages)) {
                     if (coverages.length > 0) {
-                        this.initialSelectedOptions = coverages.map<Selection>(d => ({ id: d.id, group: 'urban', label: d.urban.urban }));
+                        this.initialSelectedOptions = coverages.map<Selection>(d => ({ id: d.urbanId, group: 'urban', label: d.urban.urban }));
                     }
                 }
 
@@ -1055,6 +1056,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             }),
             takeUntil(this.subs$)
         ).subscribe();
+
+        this.totallInitialSelectedOptions$ = this.locationStore.select(
+            WarehouseUrbanSelectors.getTotalItem
+        ).pipe(
+            takeUntil(this.subs$)
+        );
 
         this.locationStore.select(
             FormSelectors.getIsClickSaveButton
