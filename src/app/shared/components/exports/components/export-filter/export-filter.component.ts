@@ -37,9 +37,9 @@ export class ExportFilterComponent implements OnInit {
     statusSources: Array<{ id: string; label: string }> = [];
 
     minStartDate: Date;
-    maxStartDate: Date;
+    maxStartDate: Date = moment().toDate();
     minEndDate: Date;
-    maxEndDate: Date;
+    maxEndDate: Date = moment().toDate();
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public data: ExportConfiguration,
@@ -198,17 +198,34 @@ export class ExportFilterComponent implements OnInit {
                         if (startDate.isAfter(endDate)) {
                             this.form.get('endDate').reset();
                         } else {
-                            const monthDuration = endDate.diff(startDate, 'months', true);
+                            const duration = endDate.diff(startDate, this.activeConfiguration.filterAspect.rangeDate.maxRange.duration, true);
 
-                            if (monthDuration > 1) {
+                            if (duration > this.activeConfiguration.filterAspect.rangeDate.maxRange.number) {
                                 this.form.get('endDate').reset();
                             }
                         }
                     }
 
                     this.minEndDate = startDate.toDate();
-                    const maxEndDate = startDate.add(1, 'month');
-                    this.maxEndDate = maxEndDate.toDate();
+                    const isAfter = moment(startDate).add(
+                        this.activeConfiguration.filterAspect.rangeDate.maxRange.number,
+                        this.activeConfiguration.filterAspect.rangeDate.maxRange.duration
+                    ).isAfter(moment());
+
+                    if (isAfter) {
+                        // const duration = this.activeConfiguration.filterAspect.rangeDate.maxRange.duration;
+                        // const lowerDuration = duration === 'year' ? 'month' : duration === 'month' ? 'week' : duration === 'week' ? 'day' : 'day';
+
+                        // const delta = Math.abs(moment(startDate).diff(moment(), lowerDuration));
+                        // this.maxEndDate = moment(startDate).add(delta, lowerDuration).toDate();
+                        this.maxEndDate = moment().toDate();
+                    } else {
+                        const mED = startDate.add(
+                            this.activeConfiguration.filterAspect.rangeDate.maxRange.number,
+                            this.activeConfiguration.filterAspect.rangeDate.maxRange.duration
+                        );
+                        this.maxEndDate = mED.toDate();
+                    }
                 }
                 return;
 
