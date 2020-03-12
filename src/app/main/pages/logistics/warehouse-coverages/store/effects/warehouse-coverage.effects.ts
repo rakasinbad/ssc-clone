@@ -269,6 +269,15 @@ export class WarehouseCoverageEffects {
             switchMap(response => {
                 if (newQuery.paginate) {
                     if (newQuery['viewBy'] === 'area') {
+                        if (newQuery['type'] === 'covered') {
+                            return of(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
+                                payload: {
+                                    data: (response as IPaginatedResponse<WarehouseCoverage>).data.map(wh => new WarehouseCoverage(wh)),
+                                    total: response.total,
+                                }
+                            }));
+                        }
+
                         return of(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
                             payload: {
                                 data: (response as IPaginatedResponse<NotCoveredWarehouse>).data.map(wh => new NotCoveredWarehouse(wh)),
@@ -285,17 +294,26 @@ export class WarehouseCoverageEffects {
                     }
                 } else {
                     if (newQuery['viewBy'] === 'area') {
+                        if (newQuery['type'] === 'covered') {
+                            return of(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
+                                payload: {
+                                    data: (response as unknown as Array<WarehouseCoverage>).map(wh => new WarehouseCoverage(wh)),
+                                    total: (response as unknown as Array<WarehouseCoverage>).length,
+                                }
+                            }));
+                        }
+
                         return of(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
                             payload: {
                                 data: (response as unknown as Array<NotCoveredWarehouse>).map(wh => new NotCoveredWarehouse(wh)),
-                                total: response.total,
+                                total: (response as unknown as Array<NotCoveredWarehouse>).length,
                             }
                         }));
                     } else if (newQuery['viewBy'] === 'warehouse') {
                         return of(WarehouseCoverageActions.fetchWarehouseCoveragesSuccess({
                             payload: {
                                 data: (response as unknown as Array<WarehouseCoverage>).map(wh => new WarehouseCoverage(wh)),
-                                total: response.total,
+                                total: (response as unknown as Array<WarehouseCoverage>).length,
                             }
                         }));
                     }
