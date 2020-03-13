@@ -87,7 +87,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
         'externalId',
         // 'variant',
         'price',
-        'stock',
+        // 'stock',
         // 'sales',
         'actions'
     ];
@@ -195,7 +195,7 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                             'externalId',
                             // 'variant',
                             'price',
-                            'stock',
+                            // 'stock',
                             // 'sales',
                             'actions'
                         ];
