@@ -101,15 +101,31 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['initialSelectedOptions']) {
+            // Menggabungkan opsi yang tergabung antara initial selected options dengan selected options.
+            const initialOptions = this.initialSelectedOptions.map(selected => String(selected.id + selected.group));
+            // Membuang opsi yang terpilih agar tidak terduplikasi dengan initial selected options.
+            this.selectedOptions = this.selectedOptions.filter(selected => !initialOptions.includes(String(selected.id + selected.group)));
+
             this.mergedSelectedOptions = this.initialSelectedOptions.concat(
                 this.selectedOptions
             ).filter(merged =>
                 this.removedOptions.length === 0
                 ? true
                 : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+            ).filter(merged =>
+                this.removedOptions.length === 0
+                ? true
+                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
             );
 
+            // Menghitung kembali jumlah opsi yang terpilih.
             this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
+
+            // Mengirim emit event kembali untuk di-update hasil pilihannya.
+            this.selectionListChanged.emit({
+                added: this.selectedOptions,
+                removed: this.removedOptions,
+            });
 
             // Mendeteksi adanya perubahan.
             this.cdRef.markForCheck();
