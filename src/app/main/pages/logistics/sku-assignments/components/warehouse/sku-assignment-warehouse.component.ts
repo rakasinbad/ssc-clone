@@ -87,7 +87,10 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
         this._initTable();
 
-        this.SkuAssignmentsStore.select(SkuAssignmentsWarehouseSelectors.getSearchValue).subscribe(
+        this.SkuAssignmentsStore.select(
+            SkuAssignmentsWarehouseSelectors.getSearchValue
+        ).pipe(takeUntil(this._unSubs$))
+        .subscribe(
             val => {
                 this._initTable(val);
             }
@@ -95,21 +98,31 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
 
         this.dataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.selectAll
-        );
+        ).pipe(takeUntil(this._unSubs$));
         this.totalDataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getTotalItem
-        );
+        ).pipe(takeUntil(this._unSubs$));
         this.isLoading$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsWarehouseSelectors.getLoadingState
-        );
+        ).pipe(takeUntil(this._unSubs$));
 
         this.updatePrivileges();
+    }
+
+    onSkuAssignmentDetail(row: SkuAssignmentsWarehouse): void {
+        this.SkuAssignmentsStore.dispatch(
+            SkuAssignmentsActions.selectWarehouse({
+                payload: (row as Warehouse)
+            })
+        );
+
+        this.router.navigate(['/pages/logistics/sku-assignments/' + row.id + '/detail']);
     }
 
     onEditSkuAssignment(item: Warehouse): void {
         this.SkuAssignmentsStore.dispatch(
             SkuAssignmentsActions.selectWarehouse({
-                payload: item
+                payload: (item as Warehouse)
             })
         );
 
@@ -178,7 +191,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
+            : this.dataSource$.pipe(flatMap(v => v), takeUntil(this._unSubs$)).forEach(row => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -229,6 +242,7 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
             };
 
             data['paginate'] = true;
+            data['keyword'] = searchText;
 
             if (this.activeTab === 'assigned-to-sku') {
                 data['assigned'] = 'true';
@@ -236,15 +250,6 @@ export class SkuAssignmentWarehouseComponent implements OnInit {
                 data['assigned'] = 'false';
             } else {
                 data['assigned'] = 'all';
-            }
-
-            if (searchText) {
-                data['search'] = [
-                    {
-                        fieldName: 'name',
-                        keyword: searchText
-                    }
-                ];
             }
 
             this.SkuAssignmentsStore.dispatch(

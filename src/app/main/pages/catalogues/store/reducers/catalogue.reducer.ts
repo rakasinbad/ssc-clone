@@ -304,11 +304,11 @@ const catalogueReducer = createReducer(
     on(CatalogueActions.fetchTotalCatalogueStatusSuccess, (state, { payload }) => ({
         ...state,
         // isLoading: false,
-        totalAllStatus: +payload.totalAllStatus,
-        totalEmptyStock: +payload.totalEmptyStock,
-        totalActive: +payload.totalActive,
-        totalInactive: +payload.totalInactive,
-        totalBanned: +payload.totalBanned
+        totalAllStatus: isNaN(+payload.totalAllStatus) ? 0 : +payload.totalAllStatus,
+        totalEmptyStock: isNaN(+payload.totalEmptyStock) ? 0 : +payload.totalEmptyStock,
+        totalActive: isNaN(+payload.totalActive) ? 0 : +payload.totalActive,
+        totalInactive: isNaN(+payload.totalInactive) ? 0 : +payload.totalInactive,
+        totalBanned: isNaN(+payload.totalBanned) ? 0 : +payload.totalBanned,
     })),
     /**
      *  ===================================================================

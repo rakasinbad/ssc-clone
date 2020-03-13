@@ -2,10 +2,10 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { StockManagement } from './../../models';
+import { StockManagement, StockManagementCatalogue } from './../../models';
 
 // -----------------------------------------------------------------------------------------------------
-// Fetch Stock Managments
+// Fetch Stock Managements
 // -----------------------------------------------------------------------------------------------------
 
 export const fetchStockManagementsRequest = createAction(

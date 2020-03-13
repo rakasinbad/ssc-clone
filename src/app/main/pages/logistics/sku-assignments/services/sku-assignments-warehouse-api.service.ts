@@ -63,6 +63,10 @@ export class SkuAssignmentsWarehouseApiService {
             newArgs.push({ key: 'assigned', value: params['assigned'] });
         }
 
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
         this._url = this._$helper.handleApiRouter(this._SkuAssignmentsEndpoint);
         const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
 

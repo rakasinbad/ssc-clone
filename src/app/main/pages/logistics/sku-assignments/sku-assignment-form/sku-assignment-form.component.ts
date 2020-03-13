@@ -66,7 +66,9 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
 
     availableCatalogues$: Observable<Array<Catalogue>>;
     totalCatalogues$: Observable<number>;
+    totalSelectedCatalogues$: Observable<number>;
     isCatalogueLoading$: Observable<boolean>;
+    isWarehouseCatalogueLoading$: Observable<boolean>;
 
     form: FormGroup;
 
@@ -198,8 +200,20 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
             takeUntil(this.subs$)
         );
 
+        this.totalSelectedCatalogues$ = this.SkuAssignmentsStore.select(
+            WarehouseCatalogueSelectors.getTotalItem
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+        
         this.isCatalogueLoading$ = this.catalogueStore.select(
             CatalogueSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.isWarehouseCatalogueLoading$ = this.SkuAssignmentsStore.select(
+            WarehouseCatalogueSelectors.getLoadingState
         ).pipe(
             takeUntil(this.subs$)
         );
@@ -259,14 +273,14 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
 
         this.loadMore$.pipe(
             filter(message => {
-                if (message === 'load-more-available') {
+                if (message === 'load-more-available' || message === 'load-more-selected') {
                     return true;
                 }
 
                 return false;
             }),
             takeUntil(this.subs$)
-        ).subscribe(([message]) => {
+        ).subscribe(message => {
             if (message === 'load-more-available') {
                 // Menyiapkan query untuk pencarian district.
                 const newQuery: IQueryParams = {
@@ -281,9 +295,25 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
                         payload: newQuery
                     })
                 );
+            } else if (message === 'load-more-selected') {
+                // Menyiapkan query untuk pencarian district.
+                const newQuery: IQueryParams = {
+                    paginate: true,
+                    limit: 30,
+                    skip: this.initialSelectedOptions.length
+                };
 
-                this.cdRef.markForCheck();
+                newQuery['warehouseId'] = this.selectedWarehouse.id;
+
+                // Mengirim state untuk melakukan request urban.
+                this.SkuAssignmentsStore.dispatch(
+                    WarehouseCatalogueActions.fetchWarehouseCataloguesRequest({
+                        payload: newQuery
+                    })
+                );
             }
+
+            this.cdRef.markForCheck();
         });
 
         this.SkuAssignmentsStore.dispatch(UiActions.showFooterAction());
@@ -501,7 +531,7 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
                 // Menyiapkan query untuk pencarian district.
                 const newQuery: IQueryParams = {
                     paginate: true,
-                    limit: 30,
+                    limit: 15,
                     skip: 0
                 };
 

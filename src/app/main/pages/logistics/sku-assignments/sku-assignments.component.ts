@@ -27,6 +27,7 @@ import { locale as english } from './i18n/en';
 import { locale as indonesian } from './i18n/id';
 
 import { FeatureState as SkuAssignmentCoreState } from './store/reducers';
+import { SkuAssignmentsSkuActions, SkuAssignmentsWarehouseActions } from './store/actions';
 
 @Component({
     selector: 'sku-assignments',
@@ -41,14 +42,37 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
     readonly defaultPageOpts = environment.pageSizeTable;
 
     buttonViewByActive$: Observable<string>;
+    // tslint:disable-next-line: no-inferrable-types
+    selectedViewBy: string = 'sku-assignment-warehouse';
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Sku Assignments'
+            label: 'SKU Assignment'
         },
         search: {
-            active: true
+            active: true,
+            changed: (value: string) => {
+                switch (this.selectedViewBy) {
+                    case 'sku-assignment-warehouse':
+                        this.SkuAssignmentsStore.dispatch(
+                            SkuAssignmentsWarehouseActions.setSearchValue({
+                                payload: value
+                            })
+                        );
+                        break;
+                    case 'sku-assignment-sku':
+                        this.SkuAssignmentsStore.dispatch(
+                            SkuAssignmentsSkuActions.setSearchValue({
+                                payload: value
+                            })
+                        );
+                        break;
+        
+                    default:
+                        return;
+                }
+            }
         },
         add: {
             permissions: []
@@ -115,7 +139,7 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
                         title: 'Warehouse'
                     },
                     {
-                        title: 'SKU Assignments',
+                        title: 'SKU Assignment',
                         active: true,
                         keepCase: true,
                     }
@@ -141,11 +165,15 @@ export class SkuAssignmentsComponent implements OnInit, OnDestroy {
 
         switch (action) {
             case 'sku-assignment-warehouse':
+                this.selectedViewBy = action;
+
                 this.SkuAssignmentsStore.dispatch(
                     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-warehouse' })
                 );
                 break;
             case 'sku-assignment-sku':
+                this.selectedViewBy = action;
+
                 this.SkuAssignmentsStore.dispatch(
                     UiActions.setCustomToolbarActive({ payload: 'sku-assignment-sku' })
                 );

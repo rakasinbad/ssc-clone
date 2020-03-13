@@ -13,6 +13,7 @@ import { AuthGuard } from '../../core/auth/auth.guard';
 // The component.
 import { SkuAssignmentsComponent } from './sku-assignments.component';
 import { SkuAssignmentFormComponent } from './sku-assignment-form';
+import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
 
 // Routes
 const routes: Routes = [
@@ -34,7 +35,8 @@ const routes: Routes = [
         }
     },
     { path: 'new', component: SkuAssignmentFormComponent },
-    { path: ':id/edit', component: SkuAssignmentFormComponent }
+    { path: ':id/edit', component: SkuAssignmentFormComponent },
+    { path: ':id/detail', component: SkuAssignmentDetailComponent },
 ];
 
 @NgModule({

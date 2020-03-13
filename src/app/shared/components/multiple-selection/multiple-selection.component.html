@@ -150,7 +150,7 @@
                     <mat-option
                         [disabled]="true"
                         style="text-align: center; font-style: italic; max-height: 30px;"
-                        *ngIf="totalSelectedOptions > mergedSelectedOptions.length"
+                        *ngIf="totalInitialSelectedOptions > (mergedSelectedOptions.length + removedOptions.length)"
                     >
                         Loading ...
                     </mat-option>

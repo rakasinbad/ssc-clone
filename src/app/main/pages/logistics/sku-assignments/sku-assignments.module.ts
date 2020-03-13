@@ -16,6 +16,7 @@ import { SkuAssignmentFormComponent } from './sku-assignment-form/sku-assignment
 
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
         FindLocationComponent,
         SkuAssignmentFormComponent,
         SkuAssignmentWarehouseComponent,
-        SkuAssignmentSkuComponent
+        SkuAssignmentSkuComponent,
+        SkuAssignmentDetailComponent,
     ],
     imports: [
         CommonModule,

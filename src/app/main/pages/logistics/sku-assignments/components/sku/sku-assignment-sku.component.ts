@@ -87,19 +87,24 @@ export class SkuAssignmentSkuComponent implements OnInit {
 
         this._initTable();
 
-        this.SkuAssignmentsStore.select(SkuAssignmentsSkuSelectors.getSearchValue).subscribe(
+        this.SkuAssignmentsStore.select(
+            SkuAssignmentsSkuSelectors.getSearchValue
+        ).pipe(takeUntil(this._unSubs$))
+        .subscribe(
             val => {
                 this._initTable(val);
             }
         );
 
-        this.dataSource$ = this.SkuAssignmentsStore.select(SkuAssignmentsSkuSelectors.selectAll);
+        this.dataSource$ = this.SkuAssignmentsStore.select(
+            SkuAssignmentsSkuSelectors.selectAll
+        ).pipe(takeUntil(this._unSubs$));
         this.totalDataSource$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsSkuSelectors.getTotalItem
-        );
+        ).pipe(takeUntil(this._unSubs$));
         this.isLoading$ = this.SkuAssignmentsStore.select(
             SkuAssignmentsSkuSelectors.getLoadingState
-        );
+        ).pipe(takeUntil(this._unSubs$));
 
         this.updatePrivileges();
     }
@@ -117,6 +122,11 @@ export class SkuAssignmentSkuComponent implements OnInit {
             .subscribe(() => {
                 this._initTable();
             });
+    }
+
+    ngOnDestroy(): void {
+        this._unSubs$.next();
+        this._unSubs$.complete();
     }
 
     clickTab(action: 'all' | 'assign-to-warehouse' | 'not-assign-to-warehouse'): void {
@@ -166,7 +176,7 @@ export class SkuAssignmentSkuComponent implements OnInit {
     handleCheckbox(): void {
         this.isAllSelected()
             ? this.selection.clear()
-            : this.dataSource$.pipe(flatMap(v => v)).forEach(row => this.selection.select(row));
+            : this.dataSource$.pipe(flatMap(v => v), takeUntil(this._unSubs$)).forEach(row => this.selection.select(row));
     }
 
     isAllSelected(): boolean {
@@ -217,6 +227,7 @@ export class SkuAssignmentSkuComponent implements OnInit {
             };
 
             data['paginate'] = true;
+            data['keyword'] = searchText;
 
             if (this.activeTab === 'assign-to-warehouse') {
                 data['assigned'] = 'true';
@@ -224,15 +235,6 @@ export class SkuAssignmentSkuComponent implements OnInit {
                 data['assigned'] = 'false';
             } else {
                 data['assigned'] = 'all';
-            }
-
-            if (searchText) {
-                data['search'] = [
-                    {
-                        fieldName: 'name',
-                        keyword: searchText
-                    }
-                ];
             }
 
             this.SkuAssignmentsStore.dispatch(SkuAssignmentsSkuActions.resetSkuAssignmentsSku());

@@ -283,6 +283,7 @@
                         [availableOptions]="availableOptions"
                         [initialSelectedOptions]="initialSelectedOptions"
                         [totalAvailableOptions]="(totalUrbans$ | async)"
+                        [totalInitialSelectedOptions]="(totallInitialSelectedOptions$ | async)"
                         [isAvailableOptionsLoading]="(isUrbanLoading$ | async)"
                         (availableReachedBottom)="onAvailableOptionLoadMore()"
                         (selectedReachedBottom)="onSelectedOptionLoadMore()"

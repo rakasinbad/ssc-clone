@@ -129,7 +129,7 @@
 
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
 
-    <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse" (click)="$event.stopPropagation(); onSkuAssignmentDetail(row);"></mat-row>
 </mat-table>
 
 <div class="no-records" *ngIf="(isLoading$ | async)">

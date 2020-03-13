@@ -659,6 +659,21 @@ export class CatalogueEffects {
         )
     );
 
+    setRefreshStatusToActive$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(
+                    CatalogueActions.setCatalogueToActiveSuccess,
+                    CatalogueActions.setCatalogueToInactiveSuccess,
+                ),
+                map(action => action.payload),
+                tap(() => {
+                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
+                })
+            ),
+        { dispatch: false }
+    );
+
     setCatalogueToActive$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.setCatalogueToActiveRequest),

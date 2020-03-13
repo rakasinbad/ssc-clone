@@ -37,6 +37,8 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     // Untuk meletakkan judul di kolom selected options.
     // tslint:disable-next-line: no-inferrable-types
     @Input() selectedTitle: string;
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() totalInitialSelectedOptions: number = 0;
     // Untuk menyimpan daftar list yang dianggap sebagai nilai awal.
     @Input() initialSelectedOptions: Array<Selection> = [];
     // Untuk menyimpan daftar list yang terpilih.
@@ -99,23 +101,18 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['initialSelectedOptions']) {
-            if (changes['initialSelectedOptions'].isFirstChange()) {
-                this.mergedSelectedOptions = this.initialSelectedOptions;
-                this.totalSelectedOptions = this.initialSelectedOptions.length;
-            } else {
-                this.mergedSelectedOptions = this.initialSelectedOptions.concat(
-                                                this.selectedOptions
-                                            ).filter(merged =>
-                                                this.removedOptions.length === 0
-                                                ? true
-                                                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
-                                            );
+            this.mergedSelectedOptions = this.initialSelectedOptions.concat(
+                this.selectedOptions
+            ).filter(merged =>
+                this.removedOptions.length === 0
+                ? true
+                : !this.removedOptions.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
+            );
 
-                this.totalSelectedOptions = (this.selectedOptions.length - this.removedOptions.length) + this.initialSelectedOptions.length;
+            this.totalSelectedOptions = (this.totalInitialSelectedOptions - this.removedOptions.length) + this.selectedOptions.length;
 
-                // Mendeteksi adanya perubahan.
-                this.cdRef.markForCheck();
-            }
+            // Mendeteksi adanya perubahan.
+            this.cdRef.markForCheck();
         }
     }
 
@@ -136,17 +133,23 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             ).subscribe((elementRef: ElementRef<HTMLElement>) => {
                 // Pemisahan tugas berdasarkan element yang ingin diperiksa.
                 if (elementRef.nativeElement.id === this.availableSelectionList.nativeElement.id) {
-                    // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
-                    elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
-
-                    // Meluncurkan 'emit' untuk memberitahu bahwa available list telah mencapai dasarnya.
-                    this.availableReachedBottom.emit();
-                } else if (elementRef === this.selectedSelectionList.nativeElement.id) {
-                    // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
-                    elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
-
-                    // Meluncurkan 'emit' untuk memberitahu bahwa selection list telah mencapai dasarnya.
-                    this.selectedReachedBottom.emit();
+                    // Memastikan tidak meng-emit event load more kembali ketika sudah tidak ada yang bisa dimuat lagi.
+                    if (this.totalAvailableOptions > this.availableOptions.length) {
+                        // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
+                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
+    
+                        // Meluncurkan 'emit' untuk memberitahu bahwa available list telah mencapai dasarnya.
+                        this.availableReachedBottom.emit();
+                    }
+                } else if (elementRef.nativeElement.id === this.selectedSelectionList.nativeElement.id) {
+                    // Memastikan tidak meng-emit event load more kembali ketika sudah tidak ada yang bisa dimuat lagi.
+                    if (this.totalInitialSelectedOptions > (this.mergedSelectedOptions.length + this.removedOptions.length)) {
+                        // Menetapkan posisi scroll agar tidak ikut ke bawah ketika ada penambahan di bawahnya.
+                        elementRef.nativeElement.scrollTop = elementRef.nativeElement.scrollTop;
+    
+                        // Meluncurkan 'emit' untuk memberitahu bahwa selection list telah mencapai dasarnya.
+                        this.selectedReachedBottom.emit();
+                    }
                 }
             });
 
@@ -170,16 +173,22 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 // Mengambil status pemilihannya (unchecked atau checked).
                 const isSelected = $event.option.selected;
 
-                if (isSelected) {
-                    this.selectedOptions.push(value);
-                } else {
-                    const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
+                const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
 
-                    if (isAtInitialSelection) {
+                if (isAtInitialSelection) {
+                    if (isSelected) {
+                        this.removedOptions = this.removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                    } else {
                         this.removedOptions.push(value);
+                    }
+                } else {
+                    if (isSelected) {
+                        this.selectedOptions.push(value);
                     } else {
                         this.selectedOptions = this.selectedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
                     }
+
+                    
                 }
 
                 // Memeriksa apakah option berada di initial selection.
@@ -228,7 +237,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);
                 const removedLength =  (removed.length);
-                this.totalSelectedOptions = (addedLength - removedLength) + this.initialSelectedOptions.length;
+                this.totalSelectedOptions = (this.totalInitialSelectedOptions - removedLength) + addedLength;
 
                 // Mendeteksi adanya perubahan.
                 this.cdRef.markForCheck();

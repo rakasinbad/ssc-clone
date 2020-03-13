@@ -12,10 +12,10 @@ import { HelperService, NoticeService, WarehouseCatalogueApiService } from 'app/
 import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
-import { WarehouseCatalogue } from 'app/shared/models/warehouse-catalogue.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { WarehouseCatalogue } from '../../models';
 import { WarehouseFailureActions, WarehouseSkuStockActions } from '../actions';
 import * as fromWarehouses from '../reducers';
 
