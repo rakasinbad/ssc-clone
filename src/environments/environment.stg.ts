@@ -14,6 +14,6 @@ export const environment = {
     host: 'https://kong-stg.sinbad.web.id',
     hiddenMenu: [
         'dashboard',
-        'warehouse',
+        // 'warehouse',
     ],
 };
