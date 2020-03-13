@@ -126,19 +126,6 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         this.warehouses$ = this.store.select(
             WarehouseSelectors.selectAll
         ).pipe(
-            tap(warehouses => {
-                const newQuery: IQueryParams = {
-                    paginate: false,
-                };
-                
-                if (warehouses.length === 0) {
-                    this.store.dispatch(
-                        WarehouseActions.fetchWarehouseRequest({
-                            payload: newQuery
-                        })
-                    );
-                }
-            }),
             takeUntil(this.subs$)
         );
 
@@ -264,6 +251,14 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         this.store.dispatch(
             UiActions.createBreadcrumb({
                 payload: this._breadCrumbs
+            })
+        );
+
+        this.store.dispatch(
+            WarehouseActions.fetchWarehouseRequest({
+                payload: {
+                    paginate: false
+                }
             })
         );
     }
