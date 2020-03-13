@@ -68,7 +68,10 @@ export const reducer = createReducer(
         SkuAssignmentsActions.removeSkuAssignmentsRequest,
         state => ({
             ...state,
-            isLoading: true
+            skuAssignment: {
+                ...state.skuAssignment,
+                isLoading: true
+            }
         })
     ),
     /**
@@ -81,7 +84,10 @@ export const reducer = createReducer(
         SkuAssignmentsActions.removeSkuAssignmentsFailure,
         state => ({
             ...state,
-            isLoading: false
+            skuAssignment: {
+                ...state.skuAssignment,
+                isLoading: false
+            }
         })
     ),
     /**
@@ -91,7 +97,7 @@ export const reducer = createReducer(
         ...state,
         skuAssignment: adapterSkuAssignments.upsertMany(payload.data, {
             ...state.skuAssignment,
-            total: payload.total
+            total: payload.total,
         })
     })),
     /**
@@ -105,7 +111,7 @@ export const reducer = createReducer(
                     ...state,
                     skuAssignment: {
                         ...state.skuAssignment,
-                        isLoading: false
+                        isLoading: false,
                     }
                 };
             } else {

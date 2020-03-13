@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store as NgRxStore } from '@ngrx/store';
 import { MatSnackBarConfig } from '@angular/material';
-import { exhaustMap, map, switchMap, withLatestFrom, catchError, retry, tap } from 'rxjs/operators';
+import { exhaustMap, map, switchMap, withLatestFrom, catchError, retry, tap, finalize } from 'rxjs/operators';
 
 import { SkuAssignmentsActions, failureActionNames } from '../actions';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
@@ -22,7 +22,7 @@ import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/global.model';
 import { User } from 'app/shared/models/user.model';
 import { AnyAction } from 'app/shared/models/actions.model';
-import { FormActions } from 'app/shared/store/actions';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 
 @Injectable()
 export class SkuAssignmentsEffects {
@@ -65,7 +65,7 @@ export class SkuAssignmentsEffects {
                         catchError(err => this.sendErrorToState(err, 'fetchSkuAssignmentsFailure'))
                     );
                 }
-            })
+            }),
         )
     );
 
@@ -174,11 +174,23 @@ export class SkuAssignmentsEffects {
         ), { dispatch: false }
     );
 
-    failureAction$ = createEffect(() =>
+    fetchFailureAction$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action fetch export logs failure.
             ofType(...[
                 SkuAssignmentsActions.fetchSkuAssignmentsFailure,
+            ]),
+            // Hanya mengambil payload-nya saja.
+            map(action => action.payload),
+            // Memunculkan notif bahwa request export gagal.
+            tap(this.showErrorNotification),
+        )
+    , { dispatch: false });
+
+    idempotentFailureAction$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action fetch export logs failure.
+            ofType(...[
                 SkuAssignmentsActions.addSkuAssignmentsFailure,
                 SkuAssignmentsActions.updateSkuAssignmentsFailure,
                 SkuAssignmentsActions.removeSkuAssignmentsFailure,
@@ -186,7 +198,12 @@ export class SkuAssignmentsEffects {
             // Hanya mengambil payload-nya saja.
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
-            tap(this.showErrorNotification)
+            tap(this.showErrorNotification),
+            finalize(() => {
+                this.SkuAssignmentsStore.dispatch(
+                    UiActions.showFooterAction()
+                );
+            })
         )
     , { dispatch: false });
 

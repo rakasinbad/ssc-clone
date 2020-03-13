@@ -146,7 +146,7 @@
                                     <mat-option
                                         [disabled]="true"
                                         style="text-align: center; font-style: italic; max-height: 30px;"
-                                        *ngIf="!(totalProvinces$ | async) || ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
+                                        *ngIf="!(totalProvinces$ | async) && ((totalProvinces$ | async) > (availableProvinces$ | async)?.length)"
                                     >
                                         Loading ...
                                     </mat-option>
@@ -205,7 +205,7 @@
                                     <mat-option
                                         [disabled]="true"
                                         style="text-align: center; font-style: italic; max-height: 30px;"
-                                        *ngIf="!(totalCities$ | async) || ((totalCities$ | async) > (availableCities$ | async)?.length)"
+                                        *ngIf="!(totalCities$ | async) && ((totalCities$ | async) > (availableCities$ | async)?.length)"
                                     >
                                         Loading ...
                                     </mat-option>
@@ -264,7 +264,7 @@
                                     <mat-option
                                         [disabled]="true"
                                         style="text-align: center; font-style: italic; max-height: 30px;"
-                                        *ngIf="!(totalDistricts$ | async) || ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
+                                        *ngIf="!(totalDistricts$ | async) && ((totalDistricts$ | async) > (availableDistricts$ | async)?.length)"
                                     >
                                         Loading ...
                                     </mat-option>
@@ -299,8 +299,8 @@
     </div>
     <!-- / CENTER -->
     <!-- Spinner Loader -->
-    <!-- <div class="loader" *ngIf="isPortfolioLoading$ | async">
+    <div class="loader" *ngIf="isLoading$ | async">
         <mat-spinner color="accent"></mat-spinner>
-    </div> -->
+    </div>
     <!-- Spinner Loader -->
 </div>

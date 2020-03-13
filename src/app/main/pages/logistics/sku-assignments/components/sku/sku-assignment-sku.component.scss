@@ -46,8 +46,11 @@ app-sku-assignments-sku {
             padding-left: 12px;
         }
 
+        mat-header-cell:last-of-type {
+            padding-right: 24px;
+        }
+
         mat-cell:last-of-type,
-        .mat-header-cell:last-of-type,
         .mat-cell:last-of-type {
             padding-right: 12px;
         }

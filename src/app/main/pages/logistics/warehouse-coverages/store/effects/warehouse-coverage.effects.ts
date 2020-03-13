@@ -16,7 +16,7 @@ import { TypedAction } from '@ngrx/store/src/models';
 import { FeatureState as WarehouseCoverageCoreState } from '../reducers';
 import { Router } from '@angular/router';
 import { WarehouseCoverageActions } from '../actions';
-import { FormActions } from 'app/shared/store/actions';
+import { FormActions, UiActions } from 'app/shared/store/actions';
 import { User } from 'app/shared/models/user.model';
 import { ErrorHandler, TNullable, IPaginatedResponse } from 'app/shared/models/global.model';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -115,8 +115,12 @@ export class WarehouseCoverageEffects {
             }),
             // Me-reset state tombol save.
             finalize(() => {
+                // this.locationStore.dispatch(
+                //     FormActions.resetClickSaveButton()
+                // );
+
                 this.locationStore.dispatch(
-                    FormActions.resetClickSaveButton()
+                    UiActions.showFooterAction()
                 );
             })
         )
@@ -183,8 +187,12 @@ export class WarehouseCoverageEffects {
             }),
             // Me-reset state tombol save.
             finalize(() => {
+                // this.locationStore.dispatch(
+                //     FormActions.resetClickSaveButton()
+                // );
+
                 this.locationStore.dispatch(
-                    FormActions.resetClickSaveButton()
+                    UiActions.showFooterAction()
                 );
             })
         )

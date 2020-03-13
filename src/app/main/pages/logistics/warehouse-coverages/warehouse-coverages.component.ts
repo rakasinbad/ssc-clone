@@ -117,6 +117,12 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
         private router: Router,
         private store: Store<fromWarehouseCoverages.FeatureState>
     ) {
+        this.isLoading$ = this.store.select(
+            WarehouseCoverageSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
         this.warehouses$ = this.store.select(
             WarehouseSelectors.selectAll
         ).pipe(

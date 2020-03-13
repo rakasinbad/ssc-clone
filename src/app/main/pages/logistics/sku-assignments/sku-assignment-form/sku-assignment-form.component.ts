@@ -511,6 +511,10 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
             takeUntil(this.subs$)
         ).subscribe(() => {
             this.submitSkuAssignment();
+
+            this.SkuAssignmentsStore.dispatch(
+                UiActions.hideFooterAction()
+            );
         });
 
         this.initCatalogueSelection();

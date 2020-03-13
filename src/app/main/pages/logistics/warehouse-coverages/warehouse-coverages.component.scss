@@ -9,6 +9,10 @@ app-warehouse-coverages {
         }
     }
 
+    .no-records {
+        border: 1px solid;
+    }
+
     #warehouse-coverages {
         .top-bg {
             @include media-breakpoint('lt-md') {

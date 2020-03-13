@@ -108,6 +108,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     loadMore$: Subject<string> = new Subject<string>();
     // Untuk keperluan mat dialog ref.
     dialogRef$: Subject<string> = new Subject<string>();
+    // Untuk menyimpan state loading.
+    isLoading$: Observable<boolean>;
 
     // Warehouse Dropdown
     @ViewChild('warehouse', { static: false }) invoiceGroup: MatSelect;
@@ -159,6 +161,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
             this.isEditMode = false;
         }
+
+        this.isLoading$ = this.locationStore.select(
+            WarehouseCoverageSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
 
         this.locationStore.dispatch(
             UiActions.createBreadcrumb({
@@ -850,7 +858,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
                 ]
             ],
             removedUrbans: [
-                { value: '', disabled: false }, []
+                { value: [], disabled: false }, []
             ],
         });
 
@@ -975,11 +983,24 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             debounceTime(100),
             takeUntil(this.subs$)
         ).subscribe(() => {
-            if (this.form.valid) {
-                this.locationStore.dispatch(FormActions.setFormStatusValid());
+            if (!this.isEditMode) {
+                if (this.form.valid) {
+                    this.locationStore.dispatch(FormActions.setFormStatusValid());
+                } else {
+                    this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+                } 
             } else {
-                this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+                const warehouse: string = this.form.get('warehouse').value;
+                const selectedUrbans: Array<Selection> = this.form.get('selectedUrbans').value;
+                const removedUrbans: Array<Selection> = this.form.get('removedUrbans').value;
+
+                if (warehouse && (selectedUrbans.length > 0 || removedUrbans.length > 0)) {
+                    this.locationStore.dispatch(FormActions.setFormStatusValid());
+                } else {
+                    this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+                }
             }
+
         });
     }
 
@@ -995,6 +1016,9 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.locationStore.dispatch(LocationActions.truncateCities());
         this.locationStore.dispatch(LocationActions.truncateDistricts());
         this.locationStore.dispatch(LocationActions.truncateUrbans());
+        this.locationStore.dispatch(FormActions.resetClickResetButton());
+        this.locationStore.dispatch(FormActions.setFormStatusInvalid());
+        this.locationStore.dispatch(WarehouseCoverageActions.truncateWarehouseCoverages());
 
         this.locationStore.dispatch(UiActions.hideFooterAction());
         this.locationStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
@@ -1069,6 +1093,10 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             filter(isClick => !!isClick),
             takeUntil(this.subs$)
         ).subscribe(() => {
+            this.locationStore.dispatch(
+                UiActions.hideFooterAction()
+            );
+
             this.submitWarehouseCoverage();
         });
 
@@ -1078,9 +1106,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
             withLatestFrom(this.availableWarehouses$),
             take(1)
         ).subscribe(([warehouseId, warehouses]: [string, Array<Warehouse>]) => {
-            if (warehouseId || warehouses) {
-                this.isEditMode = true;
+            if (warehouses.length > 0) {
                 this.selectedWarehouse = (warehouses.find(wh => wh.id === warehouseId) as WarehouseFromCoverages);
+            }
+
+            if (warehouseId) {
+                this.isEditMode = true;
                 this.form.patchValue({
                     warehouse: warehouseId
                 });

@@ -228,7 +228,7 @@
                 <mat-row *matRowDef="let row; columns: displayedColumns" class="warehouse"></mat-row>
             </mat-table>
             
-            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalCoverages$ | async) === 0">
+            <div class="no-records grey-300-border mx-12 mb-12" *ngIf="!(isLoading$ | async) && (totalCoverages$ | async) === 0">
                 No records found
             </div>
             
