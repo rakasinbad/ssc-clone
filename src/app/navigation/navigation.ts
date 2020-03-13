@@ -115,13 +115,13 @@ export const navigation: Array<FuseNavigation> = [
         type: 'collapsable',
         icon: 'custom-sinbad-inventory-logo',
         children: [
-            {
-                id: 'supp',
-                title: 'Supplier Inventory',
-                translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
-                type: 'item',
-                url: '/pages/supplier-inventories'
-            },
+            // {
+            //     id: 'supp',
+            //     title: 'Supplier Inventory',
+            //     translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
+            //     type: 'item',
+            //     url: '/pages/supplier-inventories'
+            // },
             {
                 id: 'instore',
                 title: 'In-Store Inventory',
