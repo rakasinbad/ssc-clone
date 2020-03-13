@@ -134,7 +134,7 @@ build_demo:
         - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
         - sed -i "s@appVersion:\s''@appVersion:'$CI_COMMIT_TAG'@" src/environments/environment.demo.ts
         - sed -i "s@appHash:\s''@appHash:'$CI_COMMIT_SHORT_SHA'@" src/environments/environment.demo.ts
-        - npm run build-staging
+        - npm run build-demo
     artifacts:
         paths:
         - dist/supplier-center/
