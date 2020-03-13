@@ -128,7 +128,6 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
                 merge(this.sort.sortChange, this.paginator.page)
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => {
-                        // this.table.nativeElement.scrollIntoView(true);
                         this.table.nativeElement.scrollTop = 0;
                         this._initTable();
                     });
@@ -207,6 +206,7 @@ export class WarehouseDetailCoverageComponent implements OnInit, AfterViewInit, 
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
         this._initTable();
     }

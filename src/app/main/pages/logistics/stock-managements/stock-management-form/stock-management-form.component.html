@@ -214,8 +214,8 @@
                             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                                 <ng-container
                                     *ngIf="
-                                        form.get(['skus', i, 'unlimitedStock']).value ||
-                                        form.get(['skus', i, 'unlimitedStock']).value === false
+                                        form.get(['skus', i, 'unlimitedStock'])?.value ||
+                                        form.get(['skus', i, 'unlimitedStock'])?.value === false
                                     "
                                 >
                                     <mat-form-field appearance="outline" fxFlex="100">
@@ -231,7 +231,7 @@
                                 </ng-container>
 
                                 <ng-container
-                                    *ngIf="!form.get(['skus', i, 'unlimitedStock']).value"
+                                    *ngIf="!form.get(['skus', i, 'unlimitedStock'])?.value"
                                 >
                                     <mat-form-field appearance="outline" fxFlex="100">
                                         <input
@@ -265,8 +265,8 @@
                             <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                                 <ng-container
                                     *ngIf="
-                                        form.get(['skus', i, 'qtyChange']).value &&
-                                        form.get(['skus', i, 'qtyChange']).valid
+                                        form.get(['skus', i, 'qtyChange'])?.value &&
+                                        form.get(['skus', i, 'qtyChange'])?.valid
                                     "
                                 >
                                     <mat-form-field appearance="outline" fxFlex>
@@ -305,8 +305,8 @@
 
                                 <ng-container
                                     *ngIf="
-                                        !form.get(['skus', i, 'qtyChange']).value ||
-                                        form.get(['skus', i, 'qtyChange']).invalid
+                                        !form.get(['skus', i, 'qtyChange'])?.value ||
+                                        form.get(['skus', i, 'qtyChange'])?.invalid
                                     "
                                 >
                                     <mat-form-field appearance="outline" fxFlex>
@@ -334,9 +334,17 @@
                             </mat-icon>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row">
-                            <p style="word-break: break-word;">
-                                {{ row?.stock }}
-                            </p>
+                            <ng-container *ngIf="row?.unlimitedStock === false">
+                                <p class="text-word-break-break-word">
+                                    {{ row?.stock }}
+                                </p>
+                            </ng-container>
+
+                            <ng-container *ngIf="row?.unlimitedStock === true">
+                                <mat-icon class="active-icon s-14">
+                                    all_inclusive
+                                </mat-icon>
+                            </ng-container>
                         </mat-cell>
                     </ng-container>
 
@@ -355,9 +363,21 @@
                             </mat-icon>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let row; index as i">
-                            <p style="word-break: break-word;">
-                                {{ afterCalc(row?.stock, i) < 0 ? '-' : afterCalc(row?.stock, i) }}
-                            </p>
+                            <ng-container *ngIf="row?.unlimitedStock === false">
+                                <p class="text-word-break-break-word">
+                                    {{
+                                        afterCalc(row?.stock, i) < 0
+                                            ? '-'
+                                            : afterCalc(row?.stock, i)
+                                    }}
+                                </p>
+                            </ng-container>
+
+                            <ng-container *ngIf="row?.unlimitedStock === true">
+                                <mat-icon class="active-icon s-14">
+                                    all_inclusive
+                                </mat-icon>
+                            </ng-container>
                         </mat-cell>
                     </ng-container>
 
@@ -402,8 +422,7 @@
                     [pageSize]="defaultPageSize"
                     [pageSizeOptions]="defaultPageOpts"
                     showFirstLastButtons
-                    ><button mat-raised-button>Cancel</button></mat-paginator
-                >
+                ></mat-paginator>
             </form>
         </div>
         <!-- / CONTENT CARD -->

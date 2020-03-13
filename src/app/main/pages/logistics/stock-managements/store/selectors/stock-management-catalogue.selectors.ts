@@ -38,4 +38,9 @@ const getIsLoading = createSelector(
     state => state.isLoading
 );
 
-export { getIsLoading, getSelectedId, getSelectedItem, getTotalItem };
+const getIsRefresh = createSelector(
+    getStockManagementCatalogueEntitiesState,
+    state => state.isRefresh
+);
+
+export { getIsLoading, getIsRefresh, getSelectedId, getSelectedItem, getTotalItem };

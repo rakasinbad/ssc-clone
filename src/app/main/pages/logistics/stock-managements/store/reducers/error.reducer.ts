@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 
-import { StockManagementActions } from '../actions';
+import { StockManagementActions, StockManagementCatalogueActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'errors';
@@ -29,11 +29,26 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer(
     initialState,
-    on(StockManagementActions.fetchStockManagementsFailure, (state, { payload }) => {
-        return adapter.upsertOne(payload, state);
+    on(
+        StockManagementActions.fetchStockManagementFailure,
+        StockManagementActions.fetchStockManagementsFailure,
+        StockManagementCatalogueActions.fetchStockManagementCataloguesFailure,
+        StockManagementCatalogueActions.updateStockManagementCatalogueFailure,
+        (state, { payload }) => {
+            return adapter.upsertOne(payload, state);
+        }
+    ),
+    on(StockManagementActions.fetchStockManagementSuccess, state => {
+        return adapter.removeOne('fetchStockManagementFailure', state);
     }),
     on(StockManagementActions.fetchStockManagementsSuccess, state => {
         return adapter.removeOne('fetchStockManagementsFailure', state);
+    }),
+    on(StockManagementCatalogueActions.fetchStockManagementCataloguesSuccess, state => {
+        return adapter.removeOne('fetchStockManagementCataloguesFailure', state);
+    }),
+    on(StockManagementCatalogueActions.updateStockManagementCatalogueSuccess, state => {
+        return adapter.removeOne('updateStockManagementCatalogueFailure', state);
     }),
     on(StockManagementActions.clearState, state => {
         return adapter.removeAll({ ...state });

@@ -18,6 +18,7 @@
         [dataSource]="dataSource$ | async"
         matSort
         [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
     >
         <!-- Warehouse Name Column -->
         <ng-container matColumnDef="wh-name">

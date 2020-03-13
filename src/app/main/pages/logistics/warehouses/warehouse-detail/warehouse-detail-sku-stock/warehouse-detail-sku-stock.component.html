@@ -18,6 +18,7 @@
         [dataSource]="dataSource$ | async"
         matSort
         [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
     >
         <!-- No Column -->
         <ng-container matColumnDef="no">
@@ -105,11 +106,22 @@
             </mat-cell>
         </ng-container>
 
+        <!-- No Record Column -->
+        <ng-container matColumnDef="no-record">
+            <mat-footer-cell *matFooterCellDef colspan="5">
+                No records found
+            </mat-footer-cell>
+        </ng-container>
+
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row
             *matRowDef="let row; columns: displayedColumns"
             class="warehouse-detail-sku-stock"
         ></mat-row>
+        <mat-footer-row
+            *matFooterRowDef="['no-record']"
+            [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+        ></mat-footer-row>
     </mat-table>
 
     <div
@@ -119,12 +131,8 @@
         <mat-spinner color="accent"></mat-spinner>
     </div>
 
-    <div class="loader-content" *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0">
-        No records found
-    </div>
-
     <mat-paginator
-        [fxHide]="
+        [disabled]="
             ((isLoading$ | async) && !(totalDataSource$ | async)) ||
             (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
         "

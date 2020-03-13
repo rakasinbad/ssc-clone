@@ -239,7 +239,11 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
     }
 
     afterCalc(sellable: number, idx: number): number {
-        if (typeof sellable !== 'number' || typeof idx !== 'number') {
+        if (
+            typeof sellable !== 'number' ||
+            typeof idx !== 'number' ||
+            !this.form.get(['skus', idx, 'qtyChange'])
+        ) {
             return -1;
         }
 
@@ -338,7 +342,9 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
             this.form.get(['skus', idx, 'qtyChange']).setValue(0);
             this.form.get(['skus', idx, 'qtyChange']).disable();
 
-            this._onSubmit(idx);
+            setTimeout(() => {
+                this._onSubmit(idx);
+            }, 100);
         } else {
             this.form.get(['skus', idx, 'qtyChange']).reset();
             this.form.get(['skus', idx, 'qtyChange']).enable();
@@ -366,7 +372,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
     private createSkusForm(source: StockManagementCatalogue): void {
         const row = this.formBuilder.group({
-            warehouseCatalogueId: [''],
+            warehouseCatalogueId: source.id,
             unlimitedStock: [{ value: '', disabled: false }],
             qtyChange: [
                 { value: '', disabled: false },
@@ -426,6 +432,12 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
+
+                this.sort.sort({
+                    id: 'updated_at',
+                    start: 'desc',
+                    disableClear: true
+                });
 
                 // Set breadcrumbs
                 this.store.dispatch(
@@ -524,10 +536,14 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
                         this._onRefreshTable(this.form.get('whName').value);
                     });
 
-                // Handle stock type if Limit set qty 0 then disabled
-                // this.form.valueChanges.pipe(takeUntil(this._unSubs$)).subscribe(x => {
-                //     console.log('VV', this.form);
-                // });
+                // Trigger refresh
+                this.store
+                    .select(StockManagementCatalogueSelectors.getIsRefresh)
+                    .pipe(
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(() => this._onRefreshTable(this.form.get('whName').value));
                 break;
         }
     }
@@ -581,6 +597,7 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
 
     private _onRefreshTable(warehouseId: string): void {
         this.paginator.pageIndex = 0;
+        this.skus.clear();
         this._initTable(warehouseId);
     }
 
@@ -588,24 +605,12 @@ export class StockManagementFormComponent implements OnInit, AfterViewInit, OnDe
         const isValid = this.form.get(['skus', idx]).valid;
         const body = this.form.getRawValue();
 
-        if (!isValid && !body.whName) {
+        if (!isValid || !body.skus[idx].warehouseCatalogueId) {
             return;
         }
 
-        console.log(typeof idx, idx);
-
-        console.log('Request backend', {
-            warehouseCatalogueId: body.whName,
-            unlimitedStock: body.skus[idx].unlimitedStock,
-            qtyChange: body.skus[idx].unlimitedStock === true ? 0 : body.skus[idx].qtyChange,
-            warehouseCatalogueReasonId:
-                body.skus[idx].unlimitedStock === true
-                    ? null
-                    : body.skus[idx].warehouseCatalogueReasonId
-        });
-
         const payload = new PayloadStockManagementCatalogue({
-            warehouseCatalogueId: body.whName,
+            warehouseCatalogueId: body.skus[idx].warehouseCatalogueId,
             unlimitedStock: body.skus[idx].unlimitedStock,
             qtyChange: body.skus[idx].unlimitedStock === true ? 0 : +body.skus[idx].qtyChange,
             warehouseCatalogueReasonId:
