@@ -285,7 +285,10 @@ export class HelperService {
                             version: environment.appVersion,
                             commitHash: environment.appHash
                         },
-                        extra: { sessionId }
+                        extra: {
+                            sessionId,
+                            requestId: error.error.errors.uuid ? error.error.errors.uuid : null
+                        }
                     });
                 });
         } else {
