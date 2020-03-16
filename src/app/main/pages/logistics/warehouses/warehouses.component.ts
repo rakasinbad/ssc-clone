@@ -283,6 +283,7 @@ export class WarehousesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
         this._initTable();
     }

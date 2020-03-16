@@ -69,10 +69,15 @@ app-merchants {
 
     .merchants-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
 
         // .mat-header-row {
         //     min-height: 64px;
@@ -81,6 +86,8 @@ app-merchants {
         .mat-header-row,
         .mat-row {
             background: white;
+            min-width: 50em;
+            width: 100%;
         }
 
         .mat-row {
@@ -161,31 +168,38 @@ app-merchants {
         // }
 
         .mat-column-store-code {
-            flex: 0 1 18%;
+            flex: 0 1 10em;
+            min-width: 130px;
         }
 
         .mat-column-name {
-            flex: 0 1 18%;
+            flex: 1 1 10em;
+            min-width: 150px;
         }
 
         .mat-column-city {
-            flex: 0 1 18%;
+            flex: 0 1 8em;
+            min-width: 100px;
         }
 
         .mat-column-address {
-            flex: 0 1 20%;
+            flex: 1 1 10em;
+            min-width: 125px;
         }
 
         .mat-column-store-phone-no {
-            flex: 0 1 15%;
+            flex: 0 1 10em;
+            min-width: 100px;
         }
 
         .mat-column-owner-phone-no {
-            flex: 0 1 15%;
+            flex: 0 1 10em;
+            min-width: 100px;
         }
 
         .mat-column-owner-name {
-            flex: 0 1 12%;
+            flex: 1 1 10em;
+            min-width: 120px;
         }
 
         .mat-column-store-segment {
@@ -193,28 +207,43 @@ app-merchants {
         }
 
         .mat-column-store-type {
-            flex: 0 1 10%;
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
         .mat-column-sr-name {
-            flex: 0 1 10%;
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
         .mat-column-joining-date {
-            flex: 0 1 10%;
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
         .mat-column-status {
-            flex: 0 1 75px;
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
         .mat-column-actions {
-            flex: 0 1 90px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
         }
 
         .active-icon {
             border-radius: 50%;
         }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

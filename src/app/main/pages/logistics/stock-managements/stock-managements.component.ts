@@ -1,14 +1,14 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
+    OnDestroy,
     OnInit,
     SecurityContext,
     ViewChild,
-    ViewEncapsulation,
-    AfterViewInit,
-    OnDestroy
+    ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
@@ -47,11 +47,10 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
             label: 'Stock Management'
         },
         search: {
-            active: true
-            // changed: (value: string) => {
-            //     this.search.setValue(value);
-            //     setTimeout(() => this._onRefreshTable(), 100);
-            // }
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
         },
         add: {
             permissions: []
@@ -183,6 +182,9 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
                 break;
 
             case LifecyclePlatform.OnDestroy:
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
                 // Reset core state stock managements
                 this.store.dispatch(StockManagementActions.clearState());
 
@@ -191,6 +193,13 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
                 break;
 
             default:
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs
+                    })
+                );
+
                 this.paginator.pageSize = this.defaultPageSize;
 
                 this.sort.sort({
@@ -198,13 +207,6 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
                     start: 'desc',
                     disableClear: true
                 });
-
-                // Set breadcrumbs
-                this.store.dispatch(
-                    UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
-                    })
-                );
 
                 this.dataSource$ = this.store.select(StockManagementSelectors.selectAll).pipe(
                     tap(source => {
@@ -214,6 +216,8 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
                 );
                 this.totalDataSource$ = this.store.select(StockManagementSelectors.getTotalItem);
                 this.isLoading$ = this.store.select(StockManagementSelectors.getIsLoading);
+
+                this._initTable();
 
                 this.search.valueChanges
                     .pipe(
@@ -231,8 +235,6 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
                     .subscribe(v => {
                         this._onRefreshTable();
                     });
-
-                this._initTable();
                 break;
         }
     }
@@ -269,6 +271,7 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
         this._initTable();
     }
