@@ -58,6 +58,10 @@ app-warehouses {
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
         .mat-header-row,
         .mat-row {
             background: white;
@@ -148,6 +152,12 @@ app-warehouses {
             flex: 0 1 60px;
             min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 10em;
+            justify-content: center;
         }
 
         .quantity-indicator {

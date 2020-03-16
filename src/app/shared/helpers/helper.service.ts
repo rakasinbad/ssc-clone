@@ -6,8 +6,9 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { environment } from 'environments/environment';
 import * as jwt_decode from 'jwt-decode';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, throwError, forkJoin } from 'rxjs';
+import { catchError, map, take } from 'rxjs/operators';
+import * as LogRocket from 'logrocket';
 
 import { IQueryParams } from '../models/query.model';
 import { NoticeService } from './notice.service';
@@ -253,26 +254,65 @@ export class HelperService {
             duration: 10000
         };
 
-        if (!errId.startsWith('ERR_UNRECOGNIZED')) {
-            this._$notice.open(
-                `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
-                    typeof error.error === 'string' ? 'Unknown error' : error.error.message
-                },<br/>Request code: ${
-                    typeof error.error === 'string'
-                        ? '-'
-                        : error.error.errors.uuid
-                        ? error.error.errors.uuid
-                        : '-'
-                }`,
-                'error',
-                noticeSetting
-            );
+        if (environment.logRocketId) {
+            this.storage.get<string>('session', { type: 'string' })
+                .subscribe(sessionId => {
+                    if (!errId.startsWith('ERR_UNRECOGNIZED')) {
+                        this._$notice.open(
+                            `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
+                                typeof error.error === 'string' ? 'Unknown error' : error.error.message
+                            },<br/>Request code: ${
+                                typeof error.error === 'string'
+                                    ? '-'
+                                    : error.error.errors.uuid
+                                    ? error.error.errors.uuid
+                                    : '-'
+                            }`,
+                            'error',
+                            noticeSetting
+                        );
+                    } else {
+                        this._$notice.open(
+                            `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
+                            'error',
+                            noticeSetting
+                        );
+                    }
+        
+                    LogRocket.captureMessage(typeof error.error === 'string' ? 'Unknown error' : error.error.message, {
+                        tags: {
+                            environment: environment.environment.toUpperCase(),
+                            version: environment.appVersion,
+                            commitHash: environment.appHash
+                        },
+                        extra: {
+                            sessionId,
+                            requestId: error.error.errors.uuid ? error.error.errors.uuid : null
+                        }
+                    });
+                });
         } else {
-            this._$notice.open(
-                `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
-                'error',
-                noticeSetting
-            );
+            if (!errId.startsWith('ERR_UNRECOGNIZED')) {
+                this._$notice.open(
+                    `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
+                        typeof error.error === 'string' ? 'Unknown error' : error.error.message
+                    },<br/>Request code: ${
+                        typeof error.error === 'string'
+                            ? '-'
+                            : error.error.errors.uuid
+                            ? error.error.errors.uuid
+                            : '-'
+                    }`,
+                    'error',
+                    noticeSetting
+                );
+            } else {
+                this._$notice.open(
+                    `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
+                    'error',
+                    noticeSetting
+                );
+            }
         }
     };
 

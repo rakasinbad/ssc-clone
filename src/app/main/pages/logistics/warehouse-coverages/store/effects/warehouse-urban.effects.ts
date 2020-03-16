@@ -123,8 +123,10 @@ export class WarehouseUrbanEffects {
 
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: WarehouseFailureActionNames): Observable<AnyAction> => {
         // Memunculkan error di console.
-        console.error(err);
-        
+        // console.error(err);
+
+        this.helper$.showErrorNotification(err);
+
         if (err instanceof ErrorHandler) {
             return of(WarehouseUrbanActions[dispatchTo]({
                 payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))

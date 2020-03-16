@@ -198,12 +198,13 @@ export class SkuAssignmentsEffects {
             // Hanya mengambil payload-nya saja.
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
-            tap(this.showErrorNotification),
-            finalize(() => {
+            tap(payload => {
+                this.helper$.showErrorNotification(payload);
+
                 this.SkuAssignmentsStore.dispatch(
                     UiActions.showFooterAction()
                 );
-            })
+            }),
         )
     , { dispatch: false });
 

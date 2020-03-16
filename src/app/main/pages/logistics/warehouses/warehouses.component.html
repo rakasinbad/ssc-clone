@@ -24,7 +24,7 @@
                 fusePerfectScrollbar
             >
                 <!-- Checkbox Column -->
-                <ng-container matColumnDef="checkbox">
+                <!-- <ng-container matColumnDef="checkbox">
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox
                             (change)="$event ? handleCheckbox() : null"
@@ -32,12 +32,6 @@
                             [checked]="selection.hasValue() && isAllSelected()"
                             [indeterminate]="selection.hasValue() && !isAllSelected()"
                         ></mat-checkbox>
-                        <!-- <mat-checkbox
-                            (change)="$event ? handleCheckbox() : null"
-                            (click)="$event.stopPropagation()"
-                            [checked]="selection.hasValue() && isAllSelected()"
-                            [indeterminate]="selection.hasValue() && !isAllSelected()"
-                        ></mat-checkbox> -->
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <mat-checkbox
@@ -45,13 +39,8 @@
                             (change)="$event ? selection.toggle(row) : null"
                             [checked]="selection.isSelected(row)"
                         ></mat-checkbox>
-                        <!-- <mat-checkbox
-                            (click)="$event.stopPropagation()"
-                            (change)="$event ? selection.toggle(row) : null"
-                            [checked]="selection.isSelected(row)"
-                        ></mat-checkbox> -->
                     </mat-cell>
-                </ng-container>
+                </ng-container> -->
 
                 <!-- Warehouse ID Column -->
                 <ng-container matColumnDef="wh-id">
@@ -197,16 +186,36 @@
                     </mat-cell>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="8">
+                        No records found
+                    </mat-footer-cell>
+                </ng-container>
 
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="warehouse"
                     [routerLink]="[row?.id, 'detail']"
                 ></mat-row>
+                <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row>
             </mat-table>
 
-            <div class="loader-content" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+            <div
+                class="loader-content"
+                *ngIf="
+                    (isLoading$ | async) &&
+                    (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                "
+            >
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <!-- <div class="loader-content" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
@@ -215,10 +224,10 @@
                 *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
             >
                 No records found
-            </div>
+            </div> -->
 
             <mat-paginator
-                [fxHide]="
+                [disabled]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
@@ -228,9 +237,9 @@
                 showFirstLastButtons
             ></mat-paginator>
 
-            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+            <!-- <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
-            </div>
+            </div> -->
         </div>
         <!-- / CONTENT CARD -->
     </div>

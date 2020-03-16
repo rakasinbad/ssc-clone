@@ -34,10 +34,10 @@ export class LocationEffects {
         private actions$: Actions,
         // private authStore: NgRxStore<fromAuth.FeatureState>,
         private locationStore: NgRxStore<WarehouseCoverageCoreState>,
-        private notice: NoticeService,
+        // private notice: NoticeService,
         private locationApi$: LocationApiService,
         // private router: Router,
-        // private helper$: HelperService,
+        private helper$: HelperService,
         // private matDialog: MatDialog,
     ) {}
 
@@ -277,7 +277,9 @@ export class LocationEffects {
 
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: LocationFailureActionNames): Observable<AnyAction> => {
         // Memunculkan error di console.
-        console.error(err);
+        // console.error(err);
+
+        this.helper$.showErrorNotification(err);
         
         if (err instanceof ErrorHandler) {
             return of(LocationActions[dispatchTo]({

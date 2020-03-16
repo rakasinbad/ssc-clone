@@ -88,15 +88,16 @@ export class WarehouseCatalogueEffects {
                 ofType(SkuAssignmentsWarehouseActions.fetchSkuAssignmentsWarehouseFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    this.helper$.showErrorNotification(resp);
+                    // const message =
+                    //     typeof resp.errors === 'string'
+                    //         ? resp.errors
+                    //         : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
+                    // this._$notice.open(message, 'error', {
+                    //     verticalPosition: 'bottom',
+                    //     horizontalPosition: 'right'
+                    // });
                 })
             ),
         { dispatch: false }
