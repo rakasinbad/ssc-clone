@@ -2,17 +2,23 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
 import { Store } from '@ngrx/store';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { NoticeService } from 'app/shared/helpers';
+import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { Role } from 'app/shared/models/role.model';
 import { UserSupplier } from 'app/shared/models/supplier.model';
@@ -21,7 +27,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { Auth } from '../../core/auth/models';
 import { AuthSelectors } from '../../core/auth/store/selectors';
@@ -43,15 +49,41 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
-    search: FormControl = new FormControl('');
-    total: number;
+    // CardHeader config
+    cardHeaderConfig: ICardHeaderConfiguration = {
+        title: {
+            label: 'Internal Employee'
+        },
+        search: {
+            active: true,
+            changed: (value: string) => {
+                this.search.setValue(value);
+            }
+        },
+        add: {
+            permissions: ['ACCOUNT.INTERNAL.CREATE']
+        },
+        export: {
+            // permissions: ['OMS.EXPORT']
+        },
+        import: {
+            // permissions: ['OMS.IMPORT'],
+            // useAdvanced: true,
+            // pageType: ''
+        }
+    };
     displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
+
+    search: FormControl = new FormControl('');
 
     auth$: Observable<Auth>;
     dataSource$: Observable<Array<UserSupplier>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -64,7 +96,25 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     private _unSubs$: Subject<void> = new Subject<void>();
 
+    private readonly _breadCrumbs: Array<IBreadcrumbs> = [
+        {
+            title: 'Home'
+            // translate: 'BREADCRUMBS.HOME'
+        },
+        // {
+        //     title: 'Account',
+        //     translate: 'BREADCRUMBS.ACCOUNT'
+        // },
+        {
+            title: 'Internal',
+            translate: 'BREADCRUMBS.INTERNAL',
+            active: true
+        }
+    ];
+
     constructor(
+        private domSanitizer: DomSanitizer,
+        private router: Router,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromInternal.FeatureState>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
@@ -72,27 +122,6 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     ) {
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
-
-        // Set breadcrumbs
-        this.store.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home'
-                        // translate: 'BREADCRUMBS.HOME'
-                    },
-                    // {
-                    //     title: 'Account',
-                    //     translate: 'BREADCRUMBS.ACCOUNT'
-                    // },
-                    {
-                        title: 'Internal',
-                        translate: 'BREADCRUMBS.INTERNAL',
-                        active: true
-                    }
-                ]
-            })
-        );
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -103,85 +132,27 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this.paginator.pageSize = this.defaultPageSize;
-        this.sort.sort({
-            id: 'id',
-            start: 'desc',
-            disableClear: true
-        });
-
-        localStorage.removeItem('filter.internal.employee');
-
-        this.auth$ = this.store.select(AuthSelectors.getUserState);
-        this.dataSource$ = this.store.select(InternalSelectors.getAllInternalEmployee);
-        this.totalDataSource$ = this.store.select(InternalSelectors.getTotalInternalEmployee);
-        this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
-        this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
-
-        this._initTable();
-
-        this.search.valueChanges
-            .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-            .subscribe(v => {
-                if (v) {
-                    localStorage.setItem('filter.internal.employee', v);
-                }
-
-                this._onRefreshTable();
-            });
-
-        this.store
-            .select(InternalSelectors.getIsRefresh)
-            .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-            .subscribe(isRefresh => {
-                if (isRefresh) {
-                    this._onRefreshTable();
-                }
-            });
+        this._initPage();
     }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this._initTable();
-            });
-
-        const canDoActions = this.ngxPermissions.hasPermission([
-            'ACCOUNT.INTERNAL.UPDATE',
-            'ACCOUNT.INTERNAL.DELETE'
-        ]);
-
-        canDoActions.then(hasAccess => {
-            if (hasAccess) {
-                this.displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
-            } else {
-                this.displayedColumns = ['user', 'email', 'role', 'status'];
-            }
-        });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
 
-        this.store.dispatch(UiActions.resetBreadcrumb());
-        this.store.dispatch(InternalActions.resetInternalEmployees());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
     get searchInternalEmployee(): string {
         return localStorage.getItem('filter.internal.employee') || '';
     }
@@ -222,6 +193,10 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
+    onClickAdd(): void {
+        this.router.navigateByUrl('/pages/account/internal/new');
+    }
+
     onDelete(item: UserSupplier): void {
         if (!item || !item.id) {
             return;
@@ -257,34 +232,133 @@ export class InternalComponent implements OnInit, AfterViewInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
+    private _initPage(lifeCycle?: LifecyclePlatform): void {
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+
+                const canDoActions = this.ngxPermissions.hasPermission([
+                    'ACCOUNT.INTERNAL.UPDATE',
+                    'ACCOUNT.INTERNAL.DELETE'
+                ]);
+
+                canDoActions.then(hasAccess => {
+                    if (hasAccess) {
+                        this.displayedColumns = ['user', 'email', 'role', 'status', 'actions'];
+                    } else {
+                        this.displayedColumns = ['user', 'email', 'role', 'status'];
+                    }
+                });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset breadcrumb state
+                this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset core state internals
+                this.store.dispatch(InternalActions.resetInternalEmployees());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                // Set breadcrumbs
+                this.store.dispatch(
+                    UiActions.createBreadcrumb({
+                        payload: this._breadCrumbs
+                    })
+                );
+
+                this.paginator.pageSize = this.defaultPageSize;
+
+                this.sort.sort({
+                    id: 'updated_at',
+                    start: 'desc',
+                    disableClear: true
+                });
+
+                // localStorage.removeItem('filter.internal.employee');
+
+                this.auth$ = this.store.select(AuthSelectors.getUserState);
+                this.dataSource$ = this.store.select(InternalSelectors.getAllInternalEmployee);
+                this.totalDataSource$ = this.store.select(
+                    InternalSelectors.getTotalInternalEmployee
+                );
+                this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
+                this.isLoading$ = this.store.select(InternalSelectors.getIsLoading);
+
+                this._initTable();
+
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                            }
+
+                            return true;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(v => {
+                        this._onRefreshTable();
+                    });
+
+                this.store
+                    .select(InternalSelectors.getIsRefresh)
+                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                    .subscribe(isRefresh => {
+                        if (isRefresh) {
+                            this._onRefreshTable();
+                        }
+                    });
+                break;
+        }
+    }
+
     private _initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-        };
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 5,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
 
-        data['paginate'] = true;
+            data['paginate'] = true;
 
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            }
+
+            this.store.dispatch(InternalActions.fetchInternalEmployeesRequest({ payload: data }));
         }
-
-        if (this.search.value) {
-            const query = this.search.value;
-
-            data['search'] = [
-                {
-                    fieldName: 'keyword',
-                    keyword: query
-                }
-            ];
-        }
-
-        this.store.dispatch(InternalActions.fetchInternalEmployeesRequest({ payload: data }));
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
         this._initTable();
     }

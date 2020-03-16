@@ -59,10 +59,15 @@ app-internal {
 
     .internals-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
 
         // .mat-header-row {
         //     min-height: 64px;
@@ -114,25 +119,36 @@ app-internal {
             padding-right: 8px;
         }
 
-        // .mat-column-user {
-        //     flex: 0 1 20%;
-        // }
+        .mat-column-user {
+            flex: 1 1 20em;
+            min-width: 250px;
+        }
 
-        // .mat-column-email {
-        //     flex: 0 1 20%;
-        // }
+        .mat-column-email {
+            flex: 1 1 10em;
+            min-width: 250px;
+        }
 
         .mat-column-role {
-            flex: 0 1 20%;
+            flex: 0 1 8em;
+            min-width: 150px;
         }
 
         .mat-column-status {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 10em;
+            justify-content: center;
         }
 
         .active-icon {

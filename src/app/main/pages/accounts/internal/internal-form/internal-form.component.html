@@ -57,11 +57,13 @@
                     fxLayoutAlign="start start"
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
-                    <div class="h2" *ngIf="employee$ | async">
+                    <div class="h2" *ngIf="!(isLoading$ | async) && (employee$ | async)">
+                        {{ (employee$ | async)?.fullName }}
+                    </div>
+
+                    <div class="h2" *ngIf="!(isLoading$ | async) && !(employee$ | async)">
                         {{
-                            form?.value?.fullName
-                                ? form?.value?.fullName
-                                : (employee$ | async)?.fullName
+                            form?.value?.fullName ? form?.value?.fullName : 'New Internal Employee'
                         }}
                     </div>
 
@@ -74,12 +76,7 @@
                     ></ngx-skeleton-loader>
 
                     <div class="subtitle secondary-text">
-                        <span
-                            *ngIf="
-                                (!(isLoading$ | async) || ((isLoading$ | async) && !isEdit)) &&
-                                    employee$ | async
-                            "
-                        >
+                        <span *ngIf="!(isLoading$ | async)">
                             Account Detail
                         </span>
                         <ngx-skeleton-loader
@@ -106,20 +103,22 @@
                 <button
                     mat-raised-button
                     type="button"
+                    class="accent-fg"
                     (click)="onEdit(isEdit)"
                     *ngIf="!isEdit && pageType === 'edit'"
                 >
-                    <span>EDIT</span>
+                    <span>Edit</span>
                 </button>
 
                 <button
                     mat-raised-button
                     type="submit"
+                    class="accent-fg"
                     [disabled]="form.invalid || form.pristine"
                     form="internal-form"
                     *ngIf="isEdit || pageType === 'new'"
                 >
-                    <span>SAVE</span>
+                    <span>Save</span>
                 </button>
             </ng-container>
         </div>

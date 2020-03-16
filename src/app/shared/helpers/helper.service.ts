@@ -264,9 +264,7 @@ export class HelperService {
                 ).subscribe(sessionId => {
                     if (!errId.startsWith('ERR_UNRECOGNIZED')) {
                         this._$notice.open(
-                            `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
-                                typeof error.error === 'string' ? 'Unknown error' : error.error.message
-                            },<br/>Request code: ${uuid}`,
+                            `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message},<br/>Request code: ${uuid}`,
                             'error',
                             noticeSetting
                         );
@@ -293,9 +291,7 @@ export class HelperService {
         } else {
             if (!errId.startsWith('ERR_UNRECOGNIZED')) {
                 this._$notice.open(
-                    `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
-                        typeof error.error === 'string' ? 'Unknown error' : error.error.message
-                    },<br/>Request code: ${uuid}`,
+                    `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message},<br/>Request code: ${uuid}`,
                     'error',
                     noticeSetting
                 );
