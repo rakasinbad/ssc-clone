@@ -1387,8 +1387,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
         if (this.pageType === 'new') {
             const payload = {
                 urbanId: urban.id,
-                warehouseValueId: body.whValue,
-                warehouseTemperatureId: body.temperature,
+                warehouseValueId: body.whValue ? body.whValue : null,
+                warehouseTemperatureId: body.temperature ? body.temperature : null,
                 code: body.whId,
                 name: body.whName,
                 leadTime: body.leadTime,
@@ -1406,8 +1406,8 @@ export class WarehouseFormComponent implements OnInit, OnDestroy {
 
             const payload = {
                 urbanId: urban.id,
-                warehouseValueId: body.whValue,
-                warehouseTemperatureId: body.temperature,
+                warehouseValueId: body.whValue ? body.whValue : null,
+                warehouseTemperatureId: body.temperature ? body.temperature : null,
                 code: body.whId,
                 name: body.whName,
                 leadTime: body.leadTime,

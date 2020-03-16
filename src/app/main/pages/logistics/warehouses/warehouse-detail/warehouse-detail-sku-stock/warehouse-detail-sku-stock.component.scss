@@ -17,6 +17,10 @@ app-warehouse-detail-sku-stock {
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
         .mat-header-row,
         .mat-row {
             background: white;
@@ -86,6 +90,12 @@ app-warehouse-detail-sku-stock {
         .mat-column-sellable {
             flex: 0 1 10em;
             min-width: 100px;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 10em;
+            justify-content: center;
         }
 
         .active-icon {

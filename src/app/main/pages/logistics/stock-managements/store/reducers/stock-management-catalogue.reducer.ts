@@ -28,10 +28,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StockManagementCatalogueActions.fetchStockManagementCataloguesRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
+    on(
+        StockManagementCatalogueActions.fetchStockManagementCataloguesRequest,
+        StockManagementCatalogueActions.updateStockManagementCatalogueRequest,
+        state => ({ ...state, isLoading: true, isRefresh: false })
+    ),
     on(StockManagementCatalogueActions.fetchStockManagementCataloguesFailure, state => ({
         ...state,
         isLoading: false
@@ -46,7 +47,18 @@ export const reducer = createReducer<State>(
             });
         }
     ),
+    on(
+        StockManagementCatalogueActions.updateStockManagementCatalogueFailure,
+        StockManagementCatalogueActions.updateStockManagementCatalogueSuccess,
+        state => ({ ...state, isLoading: false, isRefresh: true })
+    ),
     on(StockManagementCatalogueActions.clearState, state => {
-        return adapter.removeAll({ ...state, isLoading: false, selectedId: null, total: 0 });
+        return adapter.removeAll({
+            ...state,
+            isLoading: false,
+            isRefresh: undefined,
+            selectedId: null,
+            total: 0
+        });
     })
 );

@@ -256,9 +256,11 @@ export class WarehouseEffects {
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
 
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
+                    this.router.navigateByUrl('/pages/logistics/warehouses').finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
                     });
                 })
             ),

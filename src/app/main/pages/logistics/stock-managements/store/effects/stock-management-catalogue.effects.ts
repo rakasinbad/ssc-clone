@@ -86,6 +86,20 @@ export class StockManagementCatalogueEffects {
         { dispatch: false }
     );
 
+    updateStockManagementCatalogueSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StockManagementCatalogueActions.updateStockManagementCatalogueSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated stock', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [STOCK MANAGEMENT CATALOGUES]
     // -----------------------------------------------------------------------------------------------------

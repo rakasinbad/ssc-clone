@@ -27,6 +27,10 @@ app-stock-management-detail-general {
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
         .mat-header-row,
         .mat-row {
             background: white;
@@ -101,6 +105,12 @@ app-stock-management-detail-general {
         .mat-column-on-hand {
             flex: 0 1 10em;
             min-width: 100px;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 10em;
+            justify-content: center;
         }
 
         .active-icon {

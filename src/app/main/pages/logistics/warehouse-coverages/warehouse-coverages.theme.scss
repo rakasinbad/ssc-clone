@@ -1,3 +1,5 @@
+@import 'src/@sinbad/scss/helper';
+
 @mixin warehouse-coverages-theme($theme) {
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
@@ -17,6 +19,17 @@
                         color: map-get($foreground, text);
                     }
                 }
+            }
+        }
+    }
+
+    .sinbad-mat-tab-group {
+        .mat-tab-label {
+            color: sinbad-color('black', '50');
+
+            &.mat-tab-label-active {
+                color: sinbad-color('red', '50');
+                opacity: 1;
             }
         }
     }

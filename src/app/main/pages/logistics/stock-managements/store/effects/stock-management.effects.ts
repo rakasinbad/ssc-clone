@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { TypedAction } from '@ngrx/store/src/models';
@@ -78,8 +79,67 @@ export class StockManagementEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [STOCK MANAGEMENT]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchStockManagementRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StockManagementActions.fetchStockManagementRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([id, authState]: [string, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([id, userData])),
+                        switchMap<[string, User], Observable<AnyAction>>(
+                            this._fetchStockManagementRequest$
+                        ),
+                        catchError(err =>
+                            this._sendErrorToState$(err, 'fetchStockManagementFailure')
+                        )
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([id, userData])),
+                        switchMap<[string, User], Observable<AnyAction>>(
+                            this._fetchStockManagementRequest$
+                        ),
+                        catchError(err =>
+                            this._sendErrorToState$(err, 'fetchStockManagementFailure')
+                        )
+                    );
+                }
+            })
+        )
+    );
+
+    fetchStockManagementFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StockManagementActions.fetchStockManagementFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.router.navigateByUrl('/pages/logistics/stock-managements').finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right'
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
+        private router: Router,
         private store: Store<fromStockManagements.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
@@ -127,6 +187,29 @@ export class StockManagementEffects {
                 });
             }),
             catchError(err => this._sendErrorToState$(err, 'fetchStockManagementsFailure'))
+        );
+    };
+
+    _fetchStockManagementRequest$ = ([warehouseId, userData]: [string, User]): Observable<
+        AnyAction
+    > => {
+        const { supplierId } = userData.userSupplier;
+
+        if (!warehouseId) {
+            throw new ErrorHandler({
+                id: 'ERR_WAREHOUSE_ID_NOT_FOUND',
+                errors: 'WarehouseID is required'
+            });
+        }
+
+        return this._$stockManagementApi.findById(warehouseId, supplierId).pipe(
+            catchOffline(),
+            map(resp =>
+                StockManagementActions.fetchStockManagementSuccess({
+                    payload: new StockManagement(resp)
+                })
+            ),
+            catchError(err => this._sendErrorToState$(err, 'fetchStockManagementFailure'))
         );
     };
 

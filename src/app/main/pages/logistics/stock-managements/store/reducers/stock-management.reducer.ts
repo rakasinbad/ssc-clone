@@ -31,10 +31,22 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: true
     })),
-    on(StockManagementActions.fetchStockManagementsFailure, state => ({
+    on(
+        StockManagementActions.fetchStockManagementsFailure,
+        StockManagementActions.fetchStockManagementFailure,
+        state => ({
+            ...state,
+            isLoading: false
+        })
+    ),
+    on(StockManagementActions.fetchStockManagementRequest, (state, { payload }) => ({
         ...state,
-        isLoading: false
+        isLoading: true,
+        selectedId: payload
     })),
+    on(StockManagementActions.fetchStockManagementSuccess, (state, { payload }) => {
+        return adapter.addOne(payload, { ...state, isLoading: false });
+    }),
     on(StockManagementActions.fetchStockManagementsSuccess, (state, { payload }) => {
         return adapter.addAll(payload.data, {
             ...state,
