@@ -30,6 +30,7 @@ import { NotCoveredWarehouse } from './models/not-covered-warehouse.model';
 import { WarehouseCoverage } from './models/warehouse-coverage.model';
 import { WarehouseCoverageSelectors } from './store/selectors';
 import { WarehouseCoverageActions } from './store/actions';
+import { NoticeService } from 'app/shared/helpers';
 
 @Component({
     selector: 'app-warehouse-coverages',
@@ -115,7 +116,8 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     constructor(
         private cdRef: ChangeDetectorRef,
         private router: Router,
-        private store: Store<fromWarehouseCoverages.FeatureState>
+        private store: Store<fromWarehouseCoverages.FeatureState>,
+        private notice$: NoticeService,
     ) {
         this.isLoading$ = this.store.select(
             WarehouseCoverageSelectors.getIsLoading
@@ -325,11 +327,19 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
             this.truncateTable();
         }
 
-        const { province, city, district, urban } = this.selectedLocation;
-        if (province && city && district && urban) {
-            this.onRefreshTable();
+        if (this.selectedLocation) {
+            const { province, city, district, urban } = this.selectedLocation;
+            if (province && city && district && urban) {
+                this.onRefreshTable();
+            } else {
+                this.isFilterApplied = true;
+            }
         } else {
-            this.isFilterApplied = true;
+            this.notice$.open('Please fulfill the warehouse\'s location to view the coverages', 'info', {
+                horizontalPosition: 'right',
+                verticalPosition: 'bottom',
+                duration: 5000
+            });
         }
 
         this.cdRef.markForCheck();
