@@ -89,8 +89,6 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     totallInitialSelectedOptions$: Observable<number>;
     availableOptions: Array<Selection> = [];
     // selectedOptions: Array<Selection> = [];
-    // tslint:disable-next-line: no-inferrable-types
-    isAvailableOptionsLoading: boolean = true;
 
     // AutoComplete for Province
     @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
@@ -110,6 +108,8 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
     dialogRef$: Subject<string> = new Subject<string>();
     // Untuk menyimpan state loading.
     isLoading$: Observable<boolean>;
+    // Untuk menyimpan state loading-nya Warehouse Urban.
+    isWarehouseUrbanLoading$: Observable<boolean>;
 
     // Warehouse Dropdown
     @ViewChild('warehouse', { static: false }) invoiceGroup: MatSelect;
@@ -164,6 +164,12 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
 
         this.isLoading$ = this.locationStore.select(
             WarehouseCoverageSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.isWarehouseUrbanLoading$ = this.locationStore.select(
+            WarehouseUrbanSelectors.getIsLoading
         ).pipe(
             takeUntil(this.subs$)
         );
