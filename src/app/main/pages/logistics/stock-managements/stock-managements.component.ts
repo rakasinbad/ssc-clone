@@ -57,16 +57,16 @@ export class StockManagementsComponent implements OnInit, AfterViewInit, OnDestr
             permissions: []
         },
         export: {
-            permissions: ['OMS.EXPORT']
+            // permissions: ['OMS.EXPORT']
         },
         import: {
-            permissions: ['OMS.IMPORT'],
-            useAdvanced: true,
-            pageType: ''
+            // permissions: ['OMS.IMPORT'],
+            // useAdvanced: true,
+            // pageType: ''
         }
     };
     displayedColumns = [
-        'checkbox',
+        // 'checkbox',
         'wh-id',
         'wh-name',
         'total-sku', // totalCatalogue

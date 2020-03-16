@@ -76,7 +76,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
             permissions: ['ACCOUNT.STORE.IMPORT'],
             useAdvanced: true,
             pageType: 'stores'
-        },
+        }
     };
 
     search: FormControl = new FormControl('');
@@ -121,10 +121,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'name',
         'city',
         'address',
-        'store-phone-no',
+        // 'store-phone-no',
         'owner-phone-no',
         'owner-name',
-        'store-segment',
+        // 'store-segment',
         'store-type',
         'sr-name',
         'joining-date',
@@ -362,10 +362,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'name',
                                 'city',
                                 'address',
-                                'store-phone-no',
+                                // 'store-phone-no',
                                 'owner-phone-no',
                                 'owner-name',
-                                'store-segment',
+                                // 'store-segment',
                                 'store-type',
                                 'sr-name',
                                 'joining-date',
@@ -378,10 +378,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'name',
                                 'city',
                                 'address',
-                                'store-phone-no',
+                                // 'store-phone-no',
                                 'owner-phone-no',
                                 'owner-name',
-                                'store-segment',
+                                // 'store-segment',
                                 'store-type',
                                 'sr-name',
                                 'joining-date',

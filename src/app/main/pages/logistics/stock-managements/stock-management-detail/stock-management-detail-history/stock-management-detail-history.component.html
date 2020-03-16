@@ -3,10 +3,12 @@
 
     <mat-table
         class="stock-management-detail-history-table sinbad-table"
+        [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
         #table
-        [dataSource]="dataSource"
+        [dataSource]="dataSource$ | async"
         matSort
         [@animateStagger]="{ value: '50' }"
+        fusePerfectScrollbar
     >
         <!-- Date Column -->
         <ng-container matColumnDef="date">
@@ -15,7 +17,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.date }}
+                    {{ (row?.createdAt | date: 'dd/MM/yyyy') || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -27,7 +29,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.skuId }}
+                    {{ row?.warehouseCatalogue?.catalogue?.externalId || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -39,7 +41,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.skuName }}
+                    {{ row?.warehouseCatalogue?.catalogue?.name || '-' }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -51,7 +53,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.valueAdd }}
+                    {{ row?.addition }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -63,7 +65,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.valueSub }}
+                    {{ row?.subtraction }}
                 </p>
             </mat-cell>
         </ng-container>
@@ -75,9 +77,16 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let row">
                 <p class="text-word-break-break-word">
-                    {{ row.reason }}
+                    {{ row?.warehouseCatalogueReason?.reason || '-' }}
                 </p>
             </mat-cell>
+        </ng-container>
+
+        <!-- No Record Column -->
+        <ng-container matColumnDef="no-record">
+            <mat-footer-cell *matFooterCellDef colspan="6">
+                No records found
+            </mat-footer-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
@@ -85,10 +94,25 @@
             *matRowDef="let row; columns: displayedColumns"
             class="stock-management-detail-history"
         ></mat-row>
+        <mat-footer-row
+            *matFooterRowDef="['no-record']"
+            [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+        ></mat-footer-row>
     </mat-table>
 
+    <div
+        class="loader-content"
+        *ngIf="(isLoading$ | async) && (!(totalDataSource$ | async) || (totalDataSource$ | async))"
+    >
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+
     <mat-paginator
-        [length]="dataSource.length"
+        [disabled]="
+            ((isLoading$ | async) && !(totalDataSource$ | async)) ||
+            (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
+        "
+        [length]="totalDataSource$ | async"
         [pageSize]="defaultPageSize"
         [pageSizeOptions]="defaultPageOpts"
         showFirstLastButtons
