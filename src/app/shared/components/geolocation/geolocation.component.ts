@@ -7,7 +7,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { GeolocationSelectors } from './store/selectors';
 import { GeolocationActions } from './store/actions';
 import { Urban } from './models';
@@ -647,18 +647,22 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     listenProvinceAutoComplete(): void {
+        this.autocompleteTrigger.autocomplete = this.provinceAutoComplete;
         setTimeout(() => this.processProvinceAutoComplete());
     }
 
     listenCityAutoComplete(): void {
+        this.autocompleteTrigger.autocomplete = this.cityAutoComplete;
         setTimeout(() => this.processCityAutoComplete());
     }
 
     listenDistrictAutoComplete(): void {
+        this.autocompleteTrigger.autocomplete = this.districtAutoComplete;
         setTimeout(() => this.processDistrictAutoComplete());
     }
 
     listenUrbanAutoComplete(): void {
+        this.autocompleteTrigger.autocomplete = this.urbanAutoComplete;
         setTimeout(() => this.processUrbanAutoComplete());
     }
 
@@ -843,12 +847,18 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                     ([urbanForm, selectedCity, selectedDistrict, selectedUrban] as [string, string, string, Urban])
             ),
             filter(([urbanForm, _, __, selectedUrban]) => {
-                if (!selectedUrban) {
+                if (selectedUrban && urbanForm && !this.urbanAutoComplete.isOpen) {
+                    this.location$.next('');
+                    return false;
+                }
+                
+                if (selectedUrban || (!urbanForm && !this.urbanAutoComplete.isOpen)) {
                     return false;
                 }
 
-                if (!urbanForm) {
-                    this.clearLocationForm('urban');
+                if (!urbanForm && selectedUrban && !this.urbanAutoComplete.isOpen) {
+                    this.form.get('urban').patchValue(selectedUrban);
+                    return false;
                 }
 
                 return true;
@@ -863,11 +873,11 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                 queryParams['keyword'] = value;
 
                 this.geolocationStore.dispatch(
-                    GeolocationActions.truncateDistricts()
+                    GeolocationActions.truncateUrbans()
                 );
 
                 this.geolocationStore.dispatch(
-                    GeolocationActions.fetchDistrictsRequest({
+                    GeolocationActions.fetchUrbansRequest({
                         payload: queryParams
                     })
                 );
