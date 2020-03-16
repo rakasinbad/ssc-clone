@@ -288,6 +288,28 @@ export class HelperService {
                         extra: { sessionId }
                     });
                 });
+        } else {
+            if (!errId.startsWith('ERR_UNRECOGNIZED')) {
+                this._$notice.open(
+                    `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
+                        typeof error.error === 'string' ? 'Unknown error' : error.error.message
+                    },<br/>Request code: ${
+                        typeof error.error === 'string'
+                            ? '-'
+                            : error.error.errors.uuid
+                            ? error.error.errors.uuid
+                            : '-'
+                    }`,
+                    'error',
+                    noticeSetting
+                );
+            } else {
+                this._$notice.open(
+                    `Something wrong with our web while processing your request. Please contact Sinbad Team.<br/><br/>Error code: ${errId}`,
+                    'error',
+                    noticeSetting
+                );
+            }
         }
     };
 
