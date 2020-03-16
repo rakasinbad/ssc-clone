@@ -325,6 +325,14 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
             this.truncateTable();
         }
 
+        const { province, city, district, urban } = this.selectedLocation;
+        if (province && city && district && urban) {
+            this.onRefreshTable();
+        } else {
+            this.isFilterApplied = true;
+        }
+
+        this.cdRef.markForCheck();
     }
 
     onChangedViewBy($event: MatRadioChange): void {

@@ -4,11 +4,11 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CONTENT -->
-    <div class="center px-32">
+    <div class="center px-12">
         <!-- CONTENT HEADER -->
         <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="25px">
             <div
-                class="h-120 accent mb-0 mt-20"
+                class="h-120 accent"
                 fxLayout="row"
                 fxLayoutAlign="start center"
             >
@@ -50,9 +50,17 @@
             <sinbad-card-header
                 [config]="cardHeaderConfig"
             >
-                <p first-bottom-left>
-                    Total {{ (totalDataSource$ | async | number) }} SKU
-                </p>
+                <ng-container first-bottom-left>
+                    <p *ngIf="!(isLoading$ | async); else loading;">
+                        Total {{ (totalDataSource$ | async | number) }} SKU
+                    </p>
+                    <ng-template #loading>
+                        <ngx-skeleton-loader
+                            first-bottom-left
+                            [theme]="{ width: '100px', height: '25px', 'margin-bottom': '-5px' }"
+                        ></ngx-skeleton-loader>
+                    </ng-template>
+                </ng-container>
             </sinbad-card-header>
             <!-- / CONTENT CARD HEADER -->
 
@@ -67,7 +75,7 @@
             >
                 <!-- Index Column -->
                 <ng-container matColumnDef="indexNumber">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>No.</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>No.</mat-header-cell>
                     <mat-cell *matCellDef="let row; index as index;">
                         <p>{{ (paginator?.pageSize * paginator?.pageIndex) + index + 1 }}</p>
                     </mat-cell>
@@ -75,7 +83,7 @@
 
                 <!-- Sinbad SKU's Product Column -->
                 <ng-container matColumnDef="sinbadSku">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>SKU Code</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>SKU Code</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p>{{ row?.catalogue?.sku }}</p>
                     </mat-cell>
@@ -83,7 +91,7 @@
 
                 <!-- Product Name Column -->
                 <ng-container matColumnDef="productName">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <mat-header-cell *matHeaderCellDef>
                         Product Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
@@ -93,7 +101,7 @@
 
                 <!-- SKU's Status Column -->
                 <ng-container matColumnDef="skuStatus">
-                    <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                    <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p class="word-wrap">{{ (row?.catalogue?.status) ? (row?.catalogue?.status | titlecase) : 'Unknown' }}</p>
                     </mat-cell>
@@ -101,7 +109,7 @@
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
-                    <mat-header-cell class="pr-8" *matHeaderCellDef>
+                    <mat-header-cell class="pr-24" *matHeaderCellDef>
                         Actions
                     </mat-header-cell>
 

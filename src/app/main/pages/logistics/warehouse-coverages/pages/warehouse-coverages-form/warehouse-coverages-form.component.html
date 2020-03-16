@@ -288,6 +288,7 @@
                         [totalAvailableOptions]="(totalUrbans$ | async)"
                         [totalInitialSelectedOptions]="(totallInitialSelectedOptions$ | async)"
                         [isAvailableOptionsLoading]="(isUrbanLoading$ | async)"
+                        [isSelectedOptionsLoading]="(isWarehouseUrbanLoading$ | async)"
                         (availableReachedBottom)="onAvailableOptionLoadMore()"
                         (selectedReachedBottom)="onSelectedOptionLoadMore()"
                         (selectionListChanged)="onSelectionChanged($event)"
