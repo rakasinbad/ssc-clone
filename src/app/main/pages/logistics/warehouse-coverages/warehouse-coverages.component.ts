@@ -278,6 +278,8 @@ export class WarehouseCoveragesComponent implements OnInit, AfterViewInit, OnDes
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        this.store.dispatch(WarehouseCoverageActions.truncateWarehouseCoverages());
     }
 
     onEditWarehouseCoverage(item: WarehouseCoverage | NotCoveredWarehouse): void {
