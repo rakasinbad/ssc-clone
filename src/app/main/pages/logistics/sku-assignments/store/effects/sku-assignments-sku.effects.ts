@@ -6,7 +6,7 @@ import { StorageMap } from '@ngx-pwa/local-storage';
 import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { NoticeService } from 'app/shared/helpers';
+import { NoticeService, HelperService } from 'app/shared/helpers';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { of } from 'rxjs';
 import {
@@ -122,15 +122,16 @@ export class SkuAssignmentsSkuEffects {
                 ofType(SkuAssignmentsSkuActions.fetchSkuAssignmentsSkuFailure),
                 map(action => action.payload),
                 tap(resp => {
-                    const message =
-                        typeof resp.errors === 'string'
-                            ? resp.errors
-                            : resp.errors.error.message || resp.errors.message;
+                    this.helper$.showErrorNotification(resp);
+                    // const message =
+                    //     typeof resp.errors === 'string'
+                    //         ? resp.errors
+                    //         : resp.errors.error.message || resp.errors.message;
 
-                    this._$notice.open(message, 'error', {
-                        verticalPosition: 'bottom',
-                        horizontalPosition: 'right'
-                    });
+                    // this._$notice.open(message, 'error', {
+                    //     verticalPosition: 'bottom',
+                    //     horizontalPosition: 'right'
+                    // });
                 })
             ),
         { dispatch: false }
@@ -138,6 +139,7 @@ export class SkuAssignmentsSkuEffects {
 
     constructor(
         private actions$: Actions,
+        private helper$: HelperService,
         private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromSkuAssignmentsSku.FeatureState>,

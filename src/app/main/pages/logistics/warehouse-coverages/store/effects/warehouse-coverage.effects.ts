@@ -105,24 +105,21 @@ export class WarehouseCoverageEffects {
             ofType(WarehouseCoverageActions.createWarehouseCoverageFailure),
             // Memunculkan notifikasi dan pindah halaman.
             tap(({ payload }) => {
-                this.notice$.open('Failed to create warehouse coverage. Reason: ' + payload.errors, 'error', {
-                    verticalPosition: 'bottom',
-                    horizontalPosition: 'right',
-                    duration: 5000,
-                });
+                // this.notice$.open('Failed to create warehouse coverage. Reason: ' + payload.errors, 'error', {
+                //     verticalPosition: 'bottom',
+                //     horizontalPosition: 'right',
+                //     duration: 5000,
+                // });
+                this.helper$.showErrorNotification(payload);
 
-                this.locationStore.dispatch(FormActions.resetClickSaveButton());
-            }),
-            // Me-reset state tombol save.
-            finalize(() => {
-                // this.locationStore.dispatch(
-                //     FormActions.resetClickSaveButton()
-                // );
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
 
                 this.locationStore.dispatch(
                     UiActions.showFooterAction()
                 );
-            })
+            }),
         )
     , { dispatch: false });
 
@@ -139,13 +136,12 @@ export class WarehouseCoverageEffects {
                 });
 
                 this.router.navigate(['/pages/logistics/warehouse-coverages']);
-            }),
-            // Me-reset state tombol save.
-            finalize(() => {
+
+                // Me-reset state tombol save.
                 this.locationStore.dispatch(
                     FormActions.resetClickSaveButton()
                 );
-            })
+            }),
         )
     , { dispatch: false });
 
@@ -159,15 +155,9 @@ export class WarehouseCoverageEffects {
             switchMap(payload => {
                 return of(payload).pipe(
                     switchMap(this.updateWarehouseCoverageRequest),
-                    catchError(err => this.sendErrorToState(err, 'updateWarehouseCoverageFailure'))
+                    catchError(err => this.sendErrorToState(err, 'updateWarehouseCoverageFailure')),
                 );
             }),
-            // Me-reset state tombol save.
-            finalize(() => {
-                this.locationStore.dispatch(
-                    FormActions.resetClickSaveButton()
-                );
-            })
         )
     );
 
@@ -183,13 +173,9 @@ export class WarehouseCoverageEffects {
                     duration: 5000,
                 });
 
-                this.locationStore.dispatch(FormActions.resetClickSaveButton());
-            }),
-            // Me-reset state tombol save.
-            finalize(() => {
-                // this.locationStore.dispatch(
-                //     FormActions.resetClickSaveButton()
-                // );
+                this.locationStore.dispatch(
+                    FormActions.resetClickSaveButton()
+                );
 
                 this.locationStore.dispatch(
                     UiActions.showFooterAction()
@@ -366,7 +352,7 @@ export class WarehouseCoverageEffects {
 
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: WarehouseFailureActionNames): Observable<AnyAction> => {
         // Memunculkan error di console.
-        console.error(err);
+        // console.error(err);
         
         if (err instanceof ErrorHandler) {
             return of(WarehouseCoverageActions[dispatchTo]({
