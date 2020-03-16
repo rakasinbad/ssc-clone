@@ -1025,6 +1025,7 @@ export class WarehouseCoveragesFormComponent implements OnInit, OnDestroy, After
         this.locationStore.dispatch(FormActions.resetClickResetButton());
         this.locationStore.dispatch(FormActions.setFormStatusInvalid());
         this.locationStore.dispatch(WarehouseCoverageActions.truncateWarehouseCoverages());
+        this.locationStore.dispatch(WarehouseUrbanActions.truncateWarehouseUrbans());
 
         this.locationStore.dispatch(UiActions.hideFooterAction());
         this.locationStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
