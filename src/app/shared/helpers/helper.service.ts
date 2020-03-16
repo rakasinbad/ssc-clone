@@ -254,20 +254,19 @@ export class HelperService {
             duration: 10000
         };
 
+        const message = typeof error.error === 'string' ? 'Unknown error' : !error.error ? 'Unknown error' : !error.error.message ? 'Unknown error' : error.error.message;
+        const uuid = typeof error.error === 'string' ? '-' : !error.error ? '-' : !error.error.errors ? '-' : error.error.errors.uuid;
+
         if (environment.logRocketId) {
             this.storage.get<string>('session', { type: 'string' })
-                .subscribe(sessionId => {
+                .pipe(
+                    take(1)
+                ).subscribe(sessionId => {
                     if (!errId.startsWith('ERR_UNRECOGNIZED')) {
                         this._$notice.open(
                             `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
                                 typeof error.error === 'string' ? 'Unknown error' : error.error.message
-                            },<br/>Request code: ${
-                                typeof error.error === 'string'
-                                    ? '-'
-                                    : error.error.errors.uuid
-                                    ? error.error.errors.uuid
-                                    : '-'
-                            }`,
+                            },<br/>Request code: ${uuid}`,
                             'error',
                             noticeSetting
                         );
@@ -279,7 +278,7 @@ export class HelperService {
                         );
                     }
         
-                    LogRocket.captureMessage(typeof error.error === 'string' ? 'Unknown error' : error.error.message, {
+                    LogRocket.captureMessage(message, {
                         tags: {
                             environment: environment.environment.toUpperCase(),
                             version: environment.appVersion,
@@ -287,7 +286,7 @@ export class HelperService {
                         },
                         extra: {
                             sessionId,
-                            requestId: error.error.errors.uuid ? error.error.errors.uuid : null
+                            requestId: uuid
                         }
                     });
                 });
@@ -296,13 +295,7 @@ export class HelperService {
                 this._$notice.open(
                     `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${
                         typeof error.error === 'string' ? 'Unknown error' : error.error.message
-                    },<br/>Request code: ${
-                        typeof error.error === 'string'
-                            ? '-'
-                            : error.error.errors.uuid
-                            ? error.error.errors.uuid
-                            : '-'
-                    }`,
+                    },<br/>Request code: ${uuid}`,
                     'error',
                     noticeSetting
                 );
