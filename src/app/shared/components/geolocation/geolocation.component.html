@@ -22,6 +22,7 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> Province
         </label>
 
@@ -34,7 +35,7 @@
                 [matAutocomplete]="provinceAutoComplete"
             />
             <mat-autocomplete
-                #provinceAutoComplete="matAutocomplete"
+                #provinceAutoComplete
                 [displayWith]="displayProvince"
                 (opened)="listenProvinceAutoComplete()"
                 (optionSelected)="onSelectedProvince($event)"
@@ -83,6 +84,7 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> City
         </label>
 
@@ -95,7 +97,7 @@
                 [matAutocomplete]="cityAutoComplete"
             />
             <mat-autocomplete
-                #cityAutoComplete="matAutocomplete"
+                #cityAutoComplete
                 [displayWith]="displayCity"
                 (opened)="listenCityAutoComplete()"
                 (optionSelected)="onSelectedCity($event)"
@@ -144,6 +146,7 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> District
         </label>
 
@@ -156,7 +159,7 @@
                 [matAutocomplete]="districtAutoComplete"
             />
             <mat-autocomplete
-                #districtAutoComplete="matAutocomplete"
+                #districtAutoComplete
                 [displayWith]="displayDistrict"
                 (opened)="listenDistrictAutoComplete()"
                 (optionSelected)="onSelectedDistrict($event)"
@@ -205,6 +208,7 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> Urban
         </label>
 
@@ -217,7 +221,7 @@
                 [matAutocomplete]="urbanAutoComplete"
             />
             <mat-autocomplete
-                #urbanAutoComplete="matAutocomplete"
+                #urbanAutoComplete
                 [displayWith]="displayUrban"
                 (opened)="listenUrbanAutoComplete()"
                 (optionSelected)="onSelectedUrban($event)"

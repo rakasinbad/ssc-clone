@@ -71,19 +71,21 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Untuk menentukan arah flex dari setiap input-nya.
     @Input() direction: 'row' | 'column' = 'row';
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() showRequiredMark: boolean = false;
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selectedLocation: EventEmitter<SelectedLocation> = new EventEmitter<SelectedLocation>();
 
     // AutoComplete for Province
-    @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
+    @ViewChild('provinceAutoComplete', { static: false }) provinceAutoComplete: MatAutocomplete;
     // AutoComplete for City
-    @ViewChild('cityAutoComplete', { static: true }) cityAutoComplete: MatAutocomplete;
+    @ViewChild('cityAutoComplete', { static: false }) cityAutoComplete: MatAutocomplete;
     // AutoComplete for District
-    @ViewChild('districtAutoComplete', { static: true }) districtAutoComplete: MatAutocomplete;
+    @ViewChild('districtAutoComplete', { static: false }) districtAutoComplete: MatAutocomplete;
     // AutoComplete for Urban
-    @ViewChild('urbanAutoComplete', { static: true }) urbanAutoComplete: MatAutocomplete;
+    @ViewChild('urbanAutoComplete', { static: false }) urbanAutoComplete: MatAutocomplete;
 
-    @ViewChild(MatAutocompleteTrigger, { static: true }) autocompleteTrigger: MatAutocompleteTrigger;
+    @ViewChild(MatAutocompleteTrigger, { static: false }) autocompleteTrigger: MatAutocompleteTrigger;
 
     constructor(
         private fb: FormBuilder,
