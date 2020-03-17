@@ -27,7 +27,7 @@
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <mat-select name="warehouse" formControlName="warehouse">
                                     <mat-option (click)="onSelectedWarehouse(null)">(None)</mat-option>
-                                    <mat-option *ngFor="let rowList of warehouseList$ | async" [value]="rowList.id" (click)="onSelectedWarehouse(rowList)">
+                                    <mat-option *ngFor="let rowList of warehouseList$ | async" [value]="rowList" (click)="onSelectedWarehouse(rowList)">
                                         {{ rowList.name }}
                                     </mat-option>
                                 </mat-select>
