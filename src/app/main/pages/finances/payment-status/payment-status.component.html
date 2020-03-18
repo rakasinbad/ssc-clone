@@ -1,4 +1,4 @@
-<div id="payment-status" class="page-layout carded fullwidth inner-scroll" fusePerfectScrollbar>
+<div id="payment-status" class="page-layout carded fullwidth inner-scroll">
     <!-- <navbar variant="horizontal-custom-style-1" class="top-navbar"></navbar> -->
 
     <!-- TOP BACKGROUND -->
@@ -6,14 +6,16 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center p-8">        
+    <div class="center p-8">
         <!-- CONTENT CARD -->
         <div class="content-card">
             <sinbad-card-header [config]="cardHeaderConfig"></sinbad-card-header>
 
             <mat-table
-                class="payments-table grey-300-border mx-12"
-                style="border: 1px solid; border-radius: 4px;"
+                class="payments-table sinbad-table mx-16"
+                [class.sinbad-table-no-record]="
+                    !(isLoading$ | async) && (totalDataSource$ | async) === 0
+                "
                 #table
                 [dataSource]="dataSource$ | async"
                 [trackBy]="onTrackBy"
@@ -27,8 +29,8 @@
                         Order Reference
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.orderRef) }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.orderRef || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -39,8 +41,8 @@
                         Order Code
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.orderCode) }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.orderCode || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -51,8 +53,8 @@
                         Store Name
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.store?.name) }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.store?.name || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -63,12 +65,11 @@
                         Account Receivable
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p class="price" style="word-break: break-word;">
+                        <p class="price text-word-break-break-word">
                             {{
-                                row?.parcelDetails?.totalNettPrice > 0 ||
-                                row?.parcelDetails?.totalNettPrice == 0
-                                    ? (row?.parcelDetails?.totalNettPrice | price: 'short')
-                                    : safeValue(row?.parcelDetails?.totalNettPrice)
+                                +row?.parcelDetails?.totalNettPrice > 0
+                                    ? (row?.parcelDetails?.totalNettPrice | price: 'short') || '-'
+                                    : row?.parcelDetails?.totalNettPrice
                             }}
                         </p>
                     </mat-cell>
@@ -82,7 +83,7 @@
                     <mat-cell *matCellDef="let row">
                         <p
                             [attr.data-content]="safeValue(row?.statusPayment)"
-                            style="word-break: break-word;"
+                            class="text-word-break-break-word"
                         >
                             <ng-container [ngSwitch]="row?.statusPayment">
                                 <ng-container *ngSwitchCase="'waiting_for_payment'">
@@ -94,7 +95,7 @@
                                 </ng-container>
 
                                 <ng-container *ngSwitchDefault>
-                                    {{ safeValue(row?.statusPayment) | titlecase }}
+                                    {{ (row?.statusPayment | titlecase) || '-' }}
                                 </ng-container>
                             </ng-container>
                         </p>
@@ -107,7 +108,7 @@
                         <span class="text-left">Source</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                       <p style="word-break: break-word;">
+                       <p class="text-word-break-break-word">
                             {{ row?.source }}
                         </p>
                     </mat-cell>
@@ -119,12 +120,10 @@
                         Payment Type
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{
-                                safeValue(
-                                    row?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType
-                                        ?.name
-                                )
+                                row?.paymentTypeSupplierMethod?.paymentTypeSupplier?.paymentType
+                                    ?.name || '-'
                             }}
                         </p>
                     </mat-cell>
@@ -136,8 +135,8 @@
                         Payment Method
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.paymentTypeSupplierMethod?.paymentMethod?.name) }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.paymentTypeSupplierMethod?.paymentMethod?.name || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -148,12 +147,8 @@
                         Date Order
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{
-                                safeValue(row?.createdAt) !== '-'
-                                    ? (row?.createdAt | date: 'dd MMM yyyy')
-                                    : safeValue(row?.createdAt)
-                            }}
+                        <p class="text-word-break-break-word">
+                            {{ (row?.createdAt | date: 'dd MMM yyyy') || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -164,24 +159,12 @@
                         Due Date
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p
-                            class="indicator-green"
-                            style="word-break: break-word;"
-                            *ngIf="!row?.dueDate"
-                        >
-                            {{
-                                safeValue(row?.estDueDate) !== '-'
-                                    ? (row?.estDueDate | date: 'dd MMM yyyy')
-                                    : safeValue(row?.estDueDate)
-                            }}
+                        <p class="indicator-green text-word-break-break-word" *ngIf="!row?.dueDate">
+                            {{ (row?.estDueDate | date: 'dd MMM yyyy') || '-' }}
                         </p>
 
-                        <p style="word-break: break-word;" *ngIf="row?.dueDate">
-                            {{
-                                safeValue(row?.dueDate) !== '-'
-                                    ? (row?.dueDate | date: 'dd MMM yyyy')
-                                    : safeValue(row?.dueDate)
-                            }}
+                        <p class="text-word-break-break-word" *ngIf="row?.dueDate">
+                            {{ (row?.dueDate | date: 'dd MMM yyyy') || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -192,15 +175,11 @@
                         Paid On
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;" *ngIf="row?.statusPayment === 'paid'">
-                            {{
-                                safeValue(row?.paidTime) !== '-'
-                                    ? (row?.paidTime | date: 'dd MMM yyyy')
-                                    : safeValue(row?.paidTime)
-                            }}
+                        <p class="text-word-break-break-word" *ngIf="row?.statusPayment === 'paid'">
+                            {{ (row?.paidTime | date: 'dd MMM yyyy') || '-' }}
                         </p>
 
-                        <p style="word-break: break-word;" *ngIf="row?.statusPayment !== 'paid'">
+                        <p class="text-word-break-break-word" *ngIf="row?.statusPayment !== 'paid'">
                             -
                         </p>
                     </mat-cell>
@@ -211,9 +190,8 @@
                     <mat-header-cell *matHeaderCellDef>
                         Aging Day
                     </mat-header-cell>
-
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
+                        <p class="text-word-break-break-word">
                             {{ agingDate(row?.agingDay) }}
                         </p>
                     </mat-cell>
@@ -225,8 +203,8 @@
                         <span class="text-left">D-</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <p style="word-break: break-word;">
-                            {{ safeValue(row?.dueDay) }}
+                        <p class="text-word-break-break-word">
+                            {{ row?.dueDay || '-' }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -299,13 +277,23 @@
                     </mat-cell>
                 </ng-container>
 
-                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                <!-- No Record Column -->
+                <ng-container matColumnDef="no-record">
+                    <mat-footer-cell *matFooterCellDef colspan="8">
+                        No records found
+                    </mat-footer-cell>
+                </ng-container>
 
+                <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
                 <mat-row
                     *matRowDef="let row; columns: displayedColumns"
                     class="payment"
                     [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                 ></mat-row>
+                <mat-footer-row
+                    *matFooterRowDef="['no-record']"
+                    [fxShow]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
+                ></mat-footer-row>
 
                 <!-- <mat-row
                     *matRowDef="let row; columns: displayedColumns"
@@ -316,7 +304,17 @@
                 </mat-row> -->
             </mat-table>
 
-            <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
+            <div
+                class="loader-content"
+                *ngIf="
+                    (isLoading$ | async) &&
+                    (!(totalDataSource$ | async) || (totalDataSource$ | async))
+                "
+            >
+                <mat-spinner color="accent"></mat-spinner>
+            </div>
+
+            <!-- <div class="no-records" *ngIf="(isLoading$ | async) && !(totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
             </div>
 
@@ -325,10 +323,10 @@
                 *ngIf="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
             >
                 No records found
-            </div>
+            </div> -->
 
             <mat-paginator
-                [fxHide]="
+                [disabled]="
                     ((isLoading$ | async) && !(totalDataSource$ | async)) ||
                     (!(isLoading$ | async) && (totalDataSource$ | async) === 0)
                 "
@@ -336,12 +334,11 @@
                 [pageSize]="defaultPageSize"
                 [pageSizeOptions]="defaultPageOpts"
                 showFirstLastButtons
-            >
-            </mat-paginator>
+            ></mat-paginator>
 
-            <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
+            <!-- <div class="loader" *ngIf="(isLoading$ | async) && (totalDataSource$ | async)">
                 <mat-spinner color="accent"></mat-spinner>
-            </div>
+            </div> -->
         </div>
         <!-- / CONTENT CARD -->
     </div>

@@ -1,110 +1,53 @@
 @import 'src/@fuse/scss/fuse';
 
 app-attendances {
-    // #attendances {
-    //     .top-bg {
-    //         @include media-breakpoint('lt-md') {
-    //             height: 256px;
-    //         }
-    //     }
-
-    //     > .center {
-    //         > .header {
-    //             .search-wrapper {
-    //                 width: 100%;
-    //                 max-width: 200px;
-    //                 border-radius: 28px;
-    //                 overflow: hidden;
-    //                 // @include mat-elevation(1);
-
-    //                 @include media-breakpoint('xs') {
-    //                     width: 100%;
-    //                 }
-
-    //                 .search {
-    //                     width: 100%;
-    //                     height: 48px;
-    //                     line-height: 48px;
-    //                     padding: 0 18px;
-
-    //                     input {
-    //                         width: 100%;
-    //                         height: 48px;
-    //                         min-height: 48px;
-    //                         max-height: 48px;
-    //                         padding: 0 16px;
-    //                         border: none;
-    //                         outline: none;
-    //                     }
-    //                 }
-    //             }
-
-    //             @include media-breakpoint('lt-md') {
-    //                 padding: 8px 0;
-    //                 height: 192px !important;
-    //                 min-height: 192px !important;
-    //                 max-height: 192px !important;
-    //             }
-    //         }
-    //     }
-    // }
-    .header {
-        height: 80px;
-        min-height: 80px;
-        max-height: 136px;
-
-        .search-wrapper {
-            width: 100%;
-            max-width: 200px;
-            border-radius: 28px;
-            overflow: hidden;
-            // @include mat-elevation(1);
-
-            @include media-breakpoint('xs') {
-                width: 100%;
-            }
-
-            .search {
-                width: 100%;
-                height: 36px;
-                line-height: 36px;
-                padding: 0 18px;
-
-                input {
-                    width: 100%;
-                    height: 36px;
-                    min-height: 36px;
-                    max-height: 36px;
-                    padding: 0 16px 0 4px;
-                    border: none;
-                    outline: none;
-                    font-size: 13px;
-                }
-            }
-        }
-
-        @include media-breakpoint('lt-md') {
-            padding: 8px 0;
-            height: 192px !important;
-            min-height: 192px !important;
-            max-height: 192px !important;
-        }
-    }
-
     .attendances-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        min-height: 40px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
 
-        .mat-header-row {
-            min-height: 64px;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+        }
+
+        .mat-row {
+            min-height: unset;
         }
 
         .attendance {
             position: relative;
             cursor: pointer;
-            height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
         }
 
         .mat-cell {
@@ -112,96 +55,43 @@ app-attendances {
             min-width: 0;
             display: flex;
             align-items: center;
-
-            &.mat-column-actions {
-                flex: 0 1 10%;
-                padding-right: 10px;
-                justify-content: flex-end;
-            }
+            padding-right: 8px;
         }
 
-        mat-header-cell {
-            text-align: left;
-            font-weight: 700;
-            // padding-right: 8px;
-
-            .mat-column-actions {
-                flex: 0 1 10%;
-                justify-content: flex-end;
-            }
+        .mat-column-store-code {
+            flex: 0 1 10em;
+            min-width: 130px;
         }
 
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .attendance-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
+        .mat-column-store-name {
+            flex: 1 1 10em;
+            min-width: 150px;
         }
 
-        .mat-column-checkin {
-            flex: 0 1 160px;
-            justify-content: flex-end;
+        .mat-column-store-address {
+            flex: 1 1 10em;
+            min-width: 125px;
         }
 
-        .mat-column-checkout {
-            flex: 0 1 160px;
-            justify-content: flex-end;
-        }
-
-        .mat-column-date {
-            flex: 0 1 160px;
-            justify-content: flex-end;
-        }
-
-        .mat-column-workinghours {
-            flex: 0 1 120px;
-            justify-content: flex-end;
-        }
-
-        .mat-column-active {
-            flex: 0 1 80px;
-        }
-
-        .quantity-indicator {
-            display: inline-block;
-            vertical-align: middle;
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            margin-right: 8px;
-
-            & + span {
-                display: inline-block;
-                vertical-align: middle;
-            }
-        }
-
-        .active-icon {
-            border-radius: 50%;
-        }
-
-        .mat-column-idToko {
-            flex: 0 1 20%;
-        }
-
-        .mat-column-storeName {
-            flex: 0 1 35%;
-        }
-
-        .mat-column-storeAddress {
-            flex: 0 1 20%;
-        }
-
-        .mat-column-storePhoneNumber {
-            flex: 0 1 20%;
+        .mat-column-store-phone-no {
+            flex: 0 1 10em;
+            min-width: 100px;
         }
 
         .mat-column-actions {
-            flex: 0 1 10%;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
         }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
+        }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

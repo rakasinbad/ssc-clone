@@ -86,7 +86,7 @@ app-merchants {
         .mat-header-row,
         .mat-row {
             background: white;
-            min-width: 50em;
+            min-width: fit-content;
             width: 100%;
         }
 

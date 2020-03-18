@@ -59,10 +59,15 @@ app-payment-status {
 
     .payments-table {
         flex: 1 1 auto;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
 
         // .mat-header-row {
         //     min-height: 64px;
@@ -71,6 +76,8 @@ app-payment-status {
         .mat-header-row,
         .mat-row {
             background: white;
+            min-width: fit-content;
+            width: 100%;
         }
 
         .mat-row {
@@ -129,57 +136,75 @@ app-payment-status {
         // }
 
         .mat-column-order-reference {
-            flex: 0 1 15%;
+            flex: 0 1 10em;
+            min-width: 120px;
         }
 
         .mat-column-order-code {
-            flex: 0 1 18%;
+            flex: 0 1 10em;
+            min-width: 125px;
         }
 
         .mat-column-store-name {
-            flex: 0 1 15%;
+            flex: 1 1 10em;
+            min-width: 150px;
         }
 
         .mat-column-account-receivable {
-            flex: 0 1 12%;
+            flex: 1 1 10em;
+            min-width: 130px;
         }
 
         .mat-column-status {
-            flex: 0 1 12%;
+            flex: 0 1 70px;
+            min-width: 70px;
         }
 
         .mat-column-payment-type {
-            flex: 0 1 12%;
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
         .mat-column-payment-method {
-            flex: 0 1 12%;
+            flex: 0 1 110px;
+            min-width: 110px;
         }
 
         .mat-column-order-date {
-            flex: 0 1 12%;
+            flex: 0 1 90px;
+            min-width: 90px;
         }
 
         .mat-column-due-date {
-            flex: 0 1 12%;
+            flex: 0 1 90px;
+            min-width: 90px;
         }
 
         .mat-column-paid-on {
-            flex: 0 1 10%;
+            flex: 0 1 90px;
+            min-width: 90px;
         }
 
         .mat-column-aging-day {
-            flex: 0 1 10%;
-            // justify-content: flex-end;
+            flex: 0 1 75px;
+            min-width: 75px;
         }
 
         .mat-column-d {
             flex: 0 1 50px;
+            min-width: 50px;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
         }
     }
 }
