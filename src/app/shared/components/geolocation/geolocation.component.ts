@@ -77,15 +77,17 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     @Output() selectedLocation: EventEmitter<SelectedLocation> = new EventEmitter<SelectedLocation>();
 
     // AutoComplete for Province
-    @ViewChild('provinceAutoComplete', { static: false }) provinceAutoComplete: MatAutocomplete;
+    @ViewChild('provinceAutoComplete', { static: true }) provinceAutoComplete: MatAutocomplete;
+    @ViewChild('triggerProvince', { static: true, read: MatAutocompleteTrigger }) triggerProvince: MatAutocompleteTrigger;
     // AutoComplete for City
-    @ViewChild('cityAutoComplete', { static: false }) cityAutoComplete: MatAutocomplete;
+    @ViewChild('cityAutoComplete', { static: true }) cityAutoComplete: MatAutocomplete;
+    @ViewChild('triggerCity', { static: true, read: MatAutocompleteTrigger }) triggerCity: MatAutocompleteTrigger;
     // AutoComplete for District
-    @ViewChild('districtAutoComplete', { static: false }) districtAutoComplete: MatAutocomplete;
+    @ViewChild('districtAutoComplete', { static: true }) districtAutoComplete: MatAutocomplete;
+    @ViewChild('triggerDistrict', { static: true, read: MatAutocompleteTrigger }) triggerDistrict: MatAutocompleteTrigger;
     // AutoComplete for Urban
-    @ViewChild('urbanAutoComplete', { static: false }) urbanAutoComplete: MatAutocomplete;
-
-    @ViewChild(MatAutocompleteTrigger, { static: false }) autocompleteTrigger: MatAutocompleteTrigger;
+    @ViewChild('urbanAutoComplete', { static: true }) urbanAutoComplete: MatAutocomplete;
+    @ViewChild('triggerUrban', { static: true, read: MatAutocompleteTrigger }) triggerUrban: MatAutocompleteTrigger;
 
     constructor(
         private fb: FormBuilder,
@@ -407,7 +409,8 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.geolocationStore.dispatch(GeolocationActions.selectProvince({ payload: province.id }));
 
-        this.autocompleteTrigger.closePanel();
+        // this.autocompleteTrigger.closePanel();
+        // this.triggerProvince.closePanel();
 
         this.initCity();
     }
@@ -429,7 +432,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.geolocationStore.dispatch(GeolocationActions.selectCity({ payload: city }));
 
-        this.autocompleteTrigger.closePanel();
+        this.triggerCity.closePanel();
 
         this.initDistrict();
     }
@@ -451,7 +454,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.geolocationStore.dispatch(GeolocationActions.selectDistrict({ payload: district }));
 
-        this.autocompleteTrigger.closePanel();
+        this.triggerDistrict.closePanel();
 
         this.initUrban();
     }
@@ -473,7 +476,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.geolocationStore.dispatch(GeolocationActions.selectUrban({ payload: urban.id }));
 
-        this.autocompleteTrigger.closePanel();
+        this.triggerUrban.closePanel();
     }
 
     displayUrban(item: Urban): string {
@@ -485,7 +488,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     processProvinceAutoComplete(): void {
-        if (this.autocompleteTrigger && this.provinceAutoComplete && this.provinceAutoComplete.panel) {
+        if (this.triggerProvince && this.provinceAutoComplete && this.provinceAutoComplete.panel) {
             fromEvent<Event>(this.provinceAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     tap(() => this.debug(`fromEvent<Event>(this.provinceAutoComplete.panel.nativeElement, 'scroll')`)),
@@ -506,7 +509,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                         (totalProvinces > provinces.length) &&
                         this.helper$.isElementScrolledToBottom(this.provinceAutoComplete.panel)
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
+                    takeUntil(this.triggerProvince.panelClosingActions.pipe(
                         tap(() => this.debug('Province is closing ...'))
                     ))
                 ).subscribe(({ provinces }) => {
@@ -526,7 +529,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     processCityAutoComplete(): void {
-        if (this.autocompleteTrigger && this.cityAutoComplete && this.cityAutoComplete.panel) {
+        if (this.triggerCity && this.cityAutoComplete && this.cityAutoComplete.panel) {
             fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     tap(() => this.debug(`fromEvent<Event>(this.cityAutoComplete.panel.nativeElement, 'scroll')`)),
@@ -547,7 +550,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                         (totalCities > cities.length) &&
                         this.helper$.isElementScrolledToBottom(this.cityAutoComplete.panel)
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
+                    takeUntil(this.triggerCity.panelClosingActions.pipe(
                         tap(() => this.debug('City is closing ...'))
                     ))
                 ).subscribe(({ cities }) => {
@@ -567,7 +570,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     processDistrictAutoComplete(): void {
-        if (this.autocompleteTrigger && this.districtAutoComplete && this.districtAutoComplete.panel) {
+        if (this.triggerDistrict && this.districtAutoComplete && this.districtAutoComplete.panel) {
             fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     tap(() => this.debug(`fromEvent<Event>(this.districtAutoComplete.panel.nativeElement, 'scroll')`)),
@@ -588,7 +591,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                         (totalDistricts > districts.length) &&
                         this.helper$.isElementScrolledToBottom(this.districtAutoComplete.panel)
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
+                    takeUntil(this.triggerDistrict.panelClosingActions.pipe(
                         tap(() => this.debug('District is closing ...'))
                     ))
                 ).subscribe(({ districts }) => {
@@ -608,7 +611,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     processUrbanAutoComplete(): void {
-        if (this.autocompleteTrigger && this.urbanAutoComplete && this.urbanAutoComplete.panel) {
+        if (this.triggerUrban && this.urbanAutoComplete && this.urbanAutoComplete.panel) {
             fromEvent<Event>(this.urbanAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     tap(() => this.debug(`fromEvent<Event>(this.urbanAutoComplete.panel.nativeElement, 'scroll')`)),
@@ -629,7 +632,7 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
                         (totalUrbans > urbans.length) &&
                         this.helper$.isElementScrolledToBottom(this.urbanAutoComplete.panel)
                     ),
-                    takeUntil(this.autocompleteTrigger.panelClosingActions.pipe(
+                    takeUntil(this.triggerUrban.panelClosingActions.pipe(
                         tap(() => this.debug('Urban is closing ...'))
                     ))
                 ).subscribe(({ urbans }) => {
@@ -649,22 +652,22 @@ export class GeolocationComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     listenProvinceAutoComplete(): void {
-        this.autocompleteTrigger.autocomplete = this.provinceAutoComplete;
+        // this.triggerProvince.autocomplete = this.provinceAutoComplete;
         setTimeout(() => this.processProvinceAutoComplete());
     }
 
     listenCityAutoComplete(): void {
-        this.autocompleteTrigger.autocomplete = this.cityAutoComplete;
+        // this.triggerCity.autocomplete = this.cityAutoComplete;
         setTimeout(() => this.processCityAutoComplete());
     }
 
     listenDistrictAutoComplete(): void {
-        this.autocompleteTrigger.autocomplete = this.districtAutoComplete;
+        // this.triggerDistrict.autocomplete = this.districtAutoComplete;
         setTimeout(() => this.processDistrictAutoComplete());
     }
 
     listenUrbanAutoComplete(): void {
-        this.autocompleteTrigger.autocomplete = this.urbanAutoComplete;
+        // this.triggerUrban.autocomplete = this.urbanAutoComplete;
         setTimeout(() => this.processUrbanAutoComplete());
     }
 
