@@ -23,6 +23,8 @@ import { CataloguesRoutingModule } from './catalogues.routes';
 import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
+import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
+import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 
 // import { style } from '@angular/animations';
 
@@ -35,7 +37,10 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         CataloguesSelectCategoryComponent,
         CataloguesEditPriceStockComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent
+        CataloguesActiveInactiveComponent,
+        // Catalogue's Card Component
+        CatalogueDetailComponent,
+        CatalogueSkuInformationComponent,
     ],
     imports: [
         CataloguesRoutingModule,

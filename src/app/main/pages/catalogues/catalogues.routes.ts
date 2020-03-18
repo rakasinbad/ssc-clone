@@ -6,6 +6,7 @@ import { AuthGuard } from '../core/auth/auth.guard';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
 import { CataloguesComponent } from './catalogues.component';
+import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 
 const routes: Routes = [
     {
@@ -120,7 +121,7 @@ const routes: Routes = [
     },
     {
         path: 'view/:id',
-        component: CataloguesFormComponent,
+        component: CatalogueDetailComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
