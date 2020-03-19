@@ -1,0 +1,233 @@
+<sinbad-card-header [config]="cardHeaderConfig">
+    <p first-bottom-left>
+        Description:
+    </p>
+    <p
+        class="font-weight-700 text-truncate"
+        last-bottom-left
+        matTooltip="Small scale business targeting the&#10;consumers who opt day to day&#10;purchases in small quantity"
+        matTooltipClass="tooltip-br"
+    >
+        Small scale business targeting the consumers who opt day to day purchases in small quantity.
+    </p>
+</sinbad-card-header>
+
+<div class="sinbad-black-5 h-552 p-16">
+    <div fxLayout="column" fxLayoutAlign="start stretch" fxLayoutGap="16px">
+        <div fxLayout="row" fxLayoutAlign="start center">
+            <span class="sinbad-black-fg font-weight-600 font-size-16">
+                Hierarchy
+            </span>
+
+            <mat-icon
+                class="active-icon s-14 ml-8 cursor-pointer"
+                color="accent"
+                matTooltip="Example for creating segment :&#10;Apotek -> x -> y"
+                matTooltipClass="tooltip-br"
+            >
+                help
+            </mat-icon>
+        </div>
+
+        <div fusePerfectScrollbar>
+            <div class="h-480" fxLayout="row" fxLayoutAlign="space-between stretch">
+                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                        Lv1
+                    </div>
+
+                    <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
+                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                            <div fxFlexAlign="center" class="cursor-pointer">
+                                <mat-icon>more_vert</mat-icon>
+                            </div>
+
+                            <div
+                                fxFlexAlign="center"
+                                class="cursor-pointer"
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                fxFlex
+                            >
+                                <span>Channel 1</span>
+                                <mat-icon>chevron_right</mat-icon>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                            <div fxFlexAlign="center" class="cursor-pointer">
+                                <mat-icon>more_vert</mat-icon>
+                            </div>
+
+                            <div
+                                fxFlexAlign="center"
+                                class="cursor-pointer"
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                fxFlex
+                            >
+                                <span>Channel 2</span>
+                                <mat-icon>chevron_right</mat-icon>
+                            </div>
+                        </div>
+
+                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px">
+                    <div class="h-24"></div>
+
+                    <div class="fuse-white h-440 py-16">
+                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                        Lv2
+                    </div>
+
+                    <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
+                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                            <div fxFlexAlign="center" class="cursor-pointer">
+                                <mat-icon>more_vert</mat-icon>
+                            </div>
+
+                            <div
+                                fxFlexAlign="center"
+                                class="cursor-pointer"
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                fxFlex
+                            >
+                                <span>Channel 1.A</span>
+                                <mat-icon>chevron_right</mat-icon>
+                            </div>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                            <div fxFlexAlign="center" class="cursor-pointer">
+                                <mat-icon>more_vert</mat-icon>
+                            </div>
+
+                            <div
+                                fxFlexAlign="center"
+                                class="cursor-pointer"
+                                fxLayout="row"
+                                fxLayoutAlign="space-between center"
+                                fxFlex
+                            >
+                                <span><input type="text" matInput autocomplete="off"/></span>
+                                <mat-icon>chevron_right</mat-icon>
+                            </div>
+                        </div>
+
+                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px">
+                    <div class="h-24"></div>
+
+                    <div class="fuse-white h-440 py-16">
+                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                        Lv3
+                    </div>
+
+                    <div class="fuse-white h-440 p-16" fxLayout="column">
+                        <span class="sinbad-black-60-fg">
+                            List are empty. please add through the button below
+                        </span>
+
+                        <button
+                            mat-button
+                            class="btn-sinbad-dashed sinbad-green-60-fg mt-16 btn-sinbad-disabled"
+                            disabled
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px">
+                    <div class="h-24"></div>
+
+                    <div class="fuse-white h-440 py-16">
+                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                        Lv4
+                    </div>
+
+                    <div class="fuse-white h-440 p-16" fxLayout="column">
+                        <span class="sinbad-black-60-fg">
+                            List are empty. please add through the button below
+                        </span>
+
+                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px">
+                    <div class="h-24"></div>
+
+                    <div class="fuse-white h-440 py-16">
+                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                    </div>
+                </div>
+
+                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                        Lv5
+                    </div>
+
+                    <div class="fuse-white h-440 p-16" fxLayout="column">
+                        <span class="sinbad-black-60-fg">
+                            List are empty. please add through the button below
+                        </span>
+
+                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
+                            Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- <div
+                    fxLayout="column"
+                    fxLayoutAlign="start stretch"
+                    fxLayoutGap="16px"
+                    fxFlex="0 2 calc(200px + 10px)"
+                >
+                    <div class="h-24"></div>
+
+                    <div class="sinbad-black-40 h-440 add-wrapper">
+                        <button mat-button class="fuse-white">
+                            <mat-icon class="sinbad-green-60-fg">
+                                add_circle
+                            </mat-icon>
+                        </button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <span class="font-weight-600">Selected:</span>
+</div>

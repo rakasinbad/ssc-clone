@@ -1,0 +1,15 @@
+@import 'src/@sinbad/scss/helper';
+
+.btn-sinbad-dashed {
+    border: 1.8px dashed sinbad-color('green', '60');
+}
+
+.btn-sinbad-disabled {
+    opacity: 0.5;
+}
+
+.add-wrapper {
+    display: flex;
+    place-content: center;
+    align-items: center;
+}

@@ -29,6 +29,13 @@ export const navigation: Array<FuseNavigation> = [
                 translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
                 url: '/pages/account/store-setting'
+            },
+            {
+                id: 'storeSegmentation',
+                title: 'Store Segmentation',
+                //    translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
+                type: 'item',
+                url: '/pages/account/store-segmentation'
             }
             // {
             //     id: 'accountsInternal',
