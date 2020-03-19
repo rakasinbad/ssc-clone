@@ -1,0 +1,233 @@
+<!-- CONTENT CARD (INFORMASI PRODUK) -->
+<div [ngClass]="catalogueContent" class="px-16 pb-40">
+    <div class="py-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Price Settings</div>
+    </div>
+
+    <p class="font-weight-600 mb-16" *ngIf="(selectedCatalogue$ | async); else catalogueIsLoading;">
+        SKU Name: {{ (selectedCatalogue$ | async)?.name }}
+    </p>
+    <ng-template #catalogueIsLoading>
+        <ngx-skeleton-loader
+            [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+        ></ngx-skeleton-loader>
+    </ng-template>
+
+    <form class="w-100-p" [formGroup]="form" fxLayout="column" fxLayoutGap="16px" novalidate>
+        <!-- PRODUCT ID (HIDDEN) -->
+        <input
+            hidden
+            name="id"
+            formControlName="id"
+        />
+        <!-- PRODUCT ID (HIDDEN) -->
+        <!-- PRODUCT PRICE SECTION -->
+        <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
+            <!-- PRODUCT BASE PRICE -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('basePrice'))"
+                >
+                    <span
+                        class="red-500-fg"
+                    >* </span>Base Price
+                </label>
+        
+                <mat-form-field appearance="outline" *ngIf="!isViewMode()">
+                    <input
+                        matInput
+                        name="basePrice"
+                        formControlName="basePrice"
+                    />
+                    <mat-error
+                        *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                    >
+                        {{ getFormError(form.get('basePrice')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="isViewMode()">
+                    {{ form.get('basePrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
+                </span>
+            </div>
+            <!-- / PRODUCT BASE PRICE -->
+            <!-- PRODUCT RETAIL BUYING PRICE -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxFlex="40"
+                fxLayoutGap="16px"
+            >
+                <label
+                    fxFlexAlign="center"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('retailBuyingPrice'))"
+                >
+                    Retail Buying Price
+                </label>
+        
+                <mat-form-field appearance="outline" *ngIf="!isViewMode()">
+                    <input
+                        matInput
+                        name="retailBuyingPrice"
+                        formControlName="retailBuyingPrice"
+                    />
+                    <mat-error
+                        *ngIf="!isViewMode() && hasError(form.get('retailBuyingPrice'))"
+                    >
+                        {{ getFormError(form.get('retailBuyingPrice')) }}
+                    </mat-error>
+                </mat-form-field>
+                <span fxFlexAlign="center" class="grey-fg" *ngIf="isViewMode()">
+                    {{ form.get('retailBuyingPrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
+                </span>
+            </div>
+            <!-- / PRODUCT RETAIL BUYING PRICE -->
+        </div>
+        <!-- PRODUCT PRICE SECTION -->
+        <!-- ADVANCE PRICE -->
+        <div
+            [ngClass]="formClass"
+        >
+            <mat-checkbox
+                formControlName="advancePrice"
+                labelPosition="after"
+                fxFlexAlign="center"
+            >
+                <ng-container [class.mat-error]="!isViewMode() && hasError(form.get('advancePrice'))">
+                    Advance Price
+                </ng-container>
+            </mat-checkbox>
+        </div>
+        <!-- / ADVANCE PRICE -->
+        <!-- APPLICATION ADVANCE PRICE -->
+        <div
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="16px"
+        >
+            <!-- PRICE SEGMENTATION -->
+            <div
+                cdkDropList
+                class="catalogue-price-toolbar w-100-p"
+                cdkDropListOrientation="horizontal"
+                (cdkDropListDropped)="drop($event)"
+            >
+                <ng-container *ngFor="let tool of cataloguePriceTools">
+                    <div class="catalogue-price-tools" *ngIf="tool === 'warehouse'" cdkDrag>
+                        <!-- <span>A</span> -->
+                        <mat-form-field class="w-85-p" appearance="outline">
+                            <mat-select placeholder="Warehouse">
+                                <mat-option value="A">A</mat-option>
+                                <mat-option value="B">B</mat-option>
+                                <mat-option value="C">C</mat-option>
+                                <mat-option value="D">D</mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                            >
+                                {{ getFormError(form.get('basePrice')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
+                    </div>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'store-type'" cdkDrag>
+                        <!-- <span>B</span> -->
+                        <mat-form-field class="w-85-p" appearance="outline">
+                            <mat-select placeholder="Warehouse">
+                                <mat-option value="A">A</mat-option>
+                                <mat-option value="B">B</mat-option>
+                                <mat-option value="C">C</mat-option>
+                                <mat-option value="D">D</mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                            >
+                                {{ getFormError(form.get('basePrice')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
+                    </div>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'store-group'" cdkDrag>
+                        <!-- <span>C</span> -->
+                        <mat-form-field class="w-85-p" appearance="outline">
+                            <mat-select placeholder="Warehouse">
+                                <mat-option value="A">A</mat-option>
+                                <mat-option value="B">B</mat-option>
+                                <mat-option value="C">C</mat-option>
+                                <mat-option value="D">D</mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                            >
+                                {{ getFormError(form.get('basePrice')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
+                    </div>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'store-channel'" cdkDrag>
+                        <!-- <span>D</span> -->
+                        <mat-form-field class="w-85-p" appearance="outline">
+                            <mat-select placeholder="Warehouse">
+                                <mat-option value="A">A</mat-option>
+                                <mat-option value="B">B</mat-option>
+                                <mat-option value="C">C</mat-option>
+                                <mat-option value="D">D</mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                            >
+                                {{ getFormError(form.get('basePrice')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
+                    </div>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'store-cluster'" cdkDrag>
+                        <!-- <span>E</span> -->
+                        <mat-form-field class="w-85-p" appearance="outline">
+                            <mat-select placeholder="Warehouse">
+                                <mat-option value="A">A</mat-option>
+                                <mat-option value="B">B</mat-option>
+                                <mat-option value="C">C</mat-option>
+                                <mat-option value="D">D</mat-option>
+                            </mat-select>
+                            <mat-error
+                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
+                            >
+                                {{ getFormError(form.get('basePrice')) }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
+                    </div>
+                </ng-container>
+            </div>
+            <!-- / PRICE SEGMENTATION -->
+            <!-- APPLY BUTTON -->
+            <button
+                mat-flat-button
+                class="sinbad-yellow w-84 h-32"
+            >
+                Apply
+            </button>
+
+            <!-- <button
+                mat-button
+                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 btn-sinbad-disabled"
+                disabled
+            >
+                Apply
+            </button> -->
+            <!-- / APPLY BUTTON -->
+        </div>
+        <!-- / APPLICATION ADVANCE PRICE -->
+    </form>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->
