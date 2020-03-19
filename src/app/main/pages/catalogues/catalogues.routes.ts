@@ -96,8 +96,31 @@ const routes: Routes = [
         //     status: CatalogueStatusResolver
         // },
     },
+    // {
+    //     path: 'edit/:id',
+    //     component: CataloguesFormComponent,
+    //     canActivate: [AuthGuard, NgxPermissionsGuard],
+    //     data: {
+    //         permissions: {
+    //             only: [
+    //                 'SUPER_SUPPLIER_ADMIN',
+    //                 'HEAD_OF_SALES',
+    //                 'BOS',
+    //                 'COUNTRY_MANAGER',
+    //                 'SUPPLIER_ADMIN'
+    //             ],
+    //             redirectTo: {
+    //                 navigationCommands: ['/pages/errors/403'],
+    //                 navigationExtras: {
+    //                     replaceUrl: true,
+    //                     skipLocationChange: true
+    //                 }
+    //             }
+    //         }
+    //     }
+    // },
     {
-        path: 'edit/:id',
+        path: 'edit/:section/:id',
         component: CataloguesFormComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {

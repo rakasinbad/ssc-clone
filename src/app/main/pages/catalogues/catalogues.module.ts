@@ -10,6 +10,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { environment } from 'environments/environment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
@@ -24,7 +25,9 @@ import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
 import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
+import { CatalogueMediaSettingsComponent } from './components/catalogue-media-settings/catalogue-media-settings.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
+import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
 
 // import { style } from '@angular/animations';
 
@@ -41,6 +44,8 @@ import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-det
         // Catalogue's Card Component
         CatalogueDetailComponent,
         CatalogueSkuInformationComponent,
+        CatalogueMediaSettingsComponent,
+        CataloguePriceSettingsComponent,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -48,6 +53,7 @@ import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-det
         SharedModule,
         SharedComponentsModule,
         MaterialModule,
+        DragDropModule,
 
         RxReactiveFormsModule,
         // RxReactiveDynamicFormsModule,

@@ -4,7 +4,7 @@ app-catalogue-detail {
             font-weight: 600;
             position: relative;
             // top: -0.78em;
-            text-align: right;
+            // text-align: right;
             padding-right: 2em;
             // padding-right: 10px;
         }
@@ -28,6 +28,17 @@ app-catalogue-detail {
             label {
                 top: 0;
             }
+        }
+    }
+
+    .img-container {
+        width: 100px; /*any size*/
+        height: 100px; /*any size*/
+
+        .fit-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*magic*/
         }
     }
 }

@@ -4,7 +4,7 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center px-32">
+    <div class="center px-16">
         <!-- CONTENT HEADER -->
         <div
             class="h-120 accent mb-0 mt-20"
@@ -26,9 +26,9 @@
                         <img
                             class="fit-image fuse-white"
                             style="border-radius: 5px;"
-                            [defaultImage]="'assets/images/logos/sinbad.svg'"
+                            [defaultImage]="'assets/images/catalogue/no_photo.png'"
                             [lazyLoad]="(selectedCatalogue$ | async)?.catalogueImages[0]?.imageUrl"
-                            [errorImage]="'assets/images/logos/sinbad.svg'"
+                            [errorImage]="'assets/images/catalogue/no_photo.png'"
                         />
                     </ng-container>
                     <ng-template #noCatalogueImage>
@@ -51,7 +51,7 @@
                             ></ngx-skeleton-loader>
                         </ng-container>
                         <ng-template #isCatalogueNameLoading>
-                            <strong>{{ (selectedCatalogue$ | async)?.name }}</strong>
+                            <strong>{{ (selectedCatalogue$ | async)?.name | uppercase }}</strong>
                         </ng-template>
                     </div>
 
@@ -61,19 +61,24 @@
                 </div>
             </div>
             <!-- / APP TITLE -->
+            <!-- EDIT BUTTON -->
+            <button mat-flat-button>
+                <span class="red-500-fg" (click)="navigationSub$.next()">Edit</span>
+            </button>
+            <!-- / EDIT BUTTON -->
         </div>
         <!-- / CONTENT HEADER -->
 
         <!-- TAB GROUP -->
-        <mat-tab-group color="accent" class="px-12 sinbad-white sinbad-mat-tab-group">
+        <mat-tab-group color="accent" style="border-radius: 4px;" class="px-12 sinbad-white sinbad-mat-tab-group" animationDuration="0ms" dynamicHeight="true">
             <mat-tab label="SKU Information">
                 <catalogue-sku-information></catalogue-sku-information>
             </mat-tab>
             <mat-tab label="Price Settings">
-
+                <catalogue-price-settings></catalogue-price-settings>
             </mat-tab>
             <mat-tab label="Media Settings">
-
+                <catalogue-media-settings></catalogue-media-settings>
             </mat-tab>
             <mat-tab label="Weight & Dimension">
 
