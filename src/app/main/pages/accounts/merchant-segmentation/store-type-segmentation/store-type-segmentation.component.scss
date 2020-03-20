@@ -1,15 +1,49 @@
 @import 'src/@sinbad/scss/helper';
 
-.btn-sinbad-dashed {
-    border: 1.8px dashed sinbad-color('green', '60');
-}
+app-store-type-segmentation {
+    .sinbad-nav-item {
+        .sinbad-nav-link {
+            &:hover {
+                color: sinbad-color('red', '10');
+            }
 
-.btn-sinbad-disabled {
-    opacity: 0.5;
-}
+            &.sinbad-nav-link__disabled {
+                pointer-events: none;
 
-.add-wrapper {
-    display: flex;
-    place-content: center;
-    align-items: center;
+                &:hover {
+                    color: unset !important;
+                }
+            }
+
+            &.sinbad-nav-link__readonly {
+                input {
+                    cursor: pointer;
+
+                    &:hover {
+                        color: sinbad-color('red', '10');
+                    }
+                }
+            }
+
+            &.sinbad-nav-link__focus {
+                &:hover {
+                    color: unset !important;
+                }
+            }
+        }
+    }
+
+    .btn-sinbad-dashed {
+        border: 1.8px dashed sinbad-color('green', '60');
+    }
+
+    .btn-sinbad-disabled {
+        opacity: 0.5;
+    }
+
+    .add-wrapper {
+        display: flex;
+        place-content: center;
+        align-items: center;
+    }
 }

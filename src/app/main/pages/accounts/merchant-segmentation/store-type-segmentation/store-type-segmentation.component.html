@@ -30,184 +30,379 @@
         </div>
 
         <div fusePerfectScrollbar>
-            <div class="h-480" fxLayout="row" fxLayoutAlign="space-between stretch">
-                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
-                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
-                        Lv1
-                    </div>
-
-                    <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
-                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
-                            <div fxFlexAlign="center" class="cursor-pointer">
-                                <mat-icon>more_vert</mat-icon>
-                            </div>
-
-                            <div
-                                fxFlexAlign="center"
-                                class="cursor-pointer"
-                                fxLayout="row"
-                                fxLayoutAlign="space-between center"
-                                fxFlex
-                            >
-                                <span>Channel 1</span>
-                                <mat-icon>chevron_right</mat-icon>
-                            </div>
-                        </div>
-
-                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
-                            <div fxFlexAlign="center" class="cursor-pointer">
-                                <mat-icon>more_vert</mat-icon>
-                            </div>
-
-                            <div
-                                fxFlexAlign="center"
-                                class="cursor-pointer"
-                                fxLayout="row"
-                                fxLayoutAlign="space-between center"
-                                fxFlex
-                            >
-                                <span>Channel 2</span>
-                                <mat-icon>chevron_right</mat-icon>
-                            </div>
-                        </div>
-
-                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
-                            Add
-                        </button>
-                    </div>
-                </div>
-
-                <div fxLayout="column" fxLayoutGap="16px">
-                    <div class="h-24"></div>
-
-                    <div class="fuse-white h-440 py-16">
-                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
-                    </div>
-                </div>
-
-                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
-                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
-                        Lv2
-                    </div>
-
-                    <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
-                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
-                            <div fxFlexAlign="center" class="cursor-pointer">
-                                <mat-icon>more_vert</mat-icon>
-                            </div>
-
-                            <div
-                                fxFlexAlign="center"
-                                class="cursor-pointer"
-                                fxLayout="row"
-                                fxLayoutAlign="space-between center"
-                                fxFlex
-                            >
-                                <span>Channel 1.A</span>
-                                <mat-icon>chevron_right</mat-icon>
-                            </div>
-                        </div>
-
-                        <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
-                            <div fxFlexAlign="center" class="cursor-pointer">
-                                <mat-icon>more_vert</mat-icon>
-                            </div>
-
-                            <div
-                                fxFlexAlign="center"
-                                class="cursor-pointer"
-                                fxLayout="row"
-                                fxLayoutAlign="space-between center"
-                                fxFlex
-                            >
-                                <span><input type="text" matInput autocomplete="off"/></span>
-                                <mat-icon>chevron_right</mat-icon>
-                            </div>
-                        </div>
-
-                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
-                            Add
-                        </button>
-                    </div>
-                </div>
-
-                <div fxLayout="column" fxLayoutGap="16px">
-                    <div class="h-24"></div>
-
-                    <div class="fuse-white h-440 py-16">
-                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
-                    </div>
-                </div>
-
-                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
-                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
-                        Lv3
-                    </div>
-
-                    <div class="fuse-white h-440 p-16" fxLayout="column">
-                        <span class="sinbad-black-60-fg">
-                            List are empty. please add through the button below
-                        </span>
-
-                        <button
-                            mat-button
-                            class="btn-sinbad-dashed sinbad-green-60-fg mt-16 btn-sinbad-disabled"
-                            disabled
+            <form id="store-type-form" name="storeTypeForm" [formGroup]="form" novalidate>
+                <div
+                    class="h-480"
+                    fxLayout="row"
+                    [fxLayoutAlign]="
+                        segments().length < maxSegment ? 'start stretch' : 'space-between stretch'
+                    "
+                    formArrayName="segments"
+                >
+                    <ng-container
+                        *ngFor="
+                            let segment of segments().controls;
+                            index as segmentIdx;
+                            last as isLast
+                        "
+                    >
+                        <div
+                            [formGroupName]="segmentIdx"
+                            fxLayout="column"
+                            fxLayoutGap="16px"
+                            fxFlex="0 2 calc(200px + 10px)"
                         >
-                            Add
-                        </button>
+                            <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                                {{ 'Lv' + (segmentIdx + 1) }}
+                            </div>
+
+                            <ng-container *ngIf="segmentBranches(segmentIdx).controls.length > 0">
+                                <div
+                                    class="fuse-white h-440 p-16 pl-8"
+                                    fxLayout="column"
+                                    formArrayName="branches"
+                                >
+                                    <ng-container
+                                        *ngFor="
+                                            let segmentBranch of segmentBranches(segmentIdx)
+                                                .controls;
+                                            index as branchIdx
+                                        "
+                                    >
+                                        <div
+                                            [formGroupName]="branchIdx"
+                                            fxLayout="row"
+                                            fxLayoutAlign="space-between stretch"
+                                            class="h-40 sinbad-nav-item"
+                                        >
+                                            <div
+                                                fxFlexAlign="center"
+                                                class="cursor-pointer sinbad-nav-action"
+                                            >
+                                                <mat-icon>more_vert</mat-icon>
+                                            </div>
+
+                                            <div
+                                                fxFlexAlign="center"
+                                                class="cursor-pointer sinbad-nav-link"
+                                                [class.sinbad-nav-link__focus]="
+                                                    isTyping(segmentIdx, branchIdx)
+                                                "
+                                                [class.sinbad-nav-link__readonly]="
+                                                    isReadonly(segmentIdx, branchIdx)
+                                                "
+                                                fxLayout="row"
+                                                fxLayoutAlign="space-between center"
+                                                fxFlex
+                                            >
+                                                <span>
+                                                    <input
+                                                        type="text"
+                                                        matInput
+                                                        autocomplete="off"
+                                                        formControlName="name"
+                                                        (keydown.enter)="
+                                                            $event.target.blur();
+                                                            $event.stopPropagation()
+                                                        "
+                                                        (blur)="handleEvent(segmentIdx, branchIdx)"
+                                                        [readonly]="
+                                                            isReadonly(segmentIdx, branchIdx)
+                                                        "
+                                                        autofocus
+                                                    />
+                                                </span>
+                                                <mat-icon>chevron_right</mat-icon>
+                                            </div>
+                                        </div>
+
+                                        <!-- <div
+                                        fxLayout="row"
+                                        fxLayoutAlign="space-between stretch"
+                                        class="h-40 sinbad-nav-item"
+                                    >
+                                        <div
+                                            fxFlexAlign="center"
+                                            class="cursor-pointer sinbad-nav-action"
+                                        >
+                                            <mat-icon>more_vert</mat-icon>
+                                        </div>
+
+                                        <div
+                                            fxFlexAlign="center"
+                                            class="cursor-pointer sinbad-nav-link sinbad-nav-link__readonly"
+                                            fxLayout="row"
+                                            fxLayoutAlign="space-between center"
+                                            fxFlex
+                                        >
+                                            <span>
+                                                <input
+                                                    type="text"
+                                                    matInput
+                                                    autocomplete="off"
+                                                    value="Channel 2"
+                                                    readonly
+                                                />
+                                            </span>
+                                            <mat-icon>chevron_right</mat-icon>
+                                        </div>
+                                    </div> -->
+                                    </ng-container>
+
+                                    <button
+                                        type="button"
+                                        mat-button
+                                        class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                                        [class.btn-sinbad-disabled]="isAddDisabled(segmentIdx)"
+                                        (click)="addSegmentBranch(segmentIdx)"
+                                        [disabled]="isAddDisabled(segmentIdx)"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            </ng-container>
+
+                            <ng-container *ngIf="!segmentBranches(segmentIdx).controls.length">
+                                <div class="fuse-white h-440 p-16" fxLayout="column">
+                                    <span class="sinbad-black-60-fg">
+                                        List are empty. please add through the button below
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        mat-button
+                                        class="btn-sinbad-dashed sinbad-green-60-fg mt-16"
+                                        (click)="addSegmentBranch(segmentIdx)"
+                                    >
+                                        Add
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </div>
+
+                        <div fxLayout="column" fxLayoutGap="16px" *ngIf="!isLast">
+                            <div class="h-24"></div>
+
+                            <div class="fuse-white h-440 py-16">
+                                <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <div
+                        fxLayout="column"
+                        fxLayoutAlign="start stretch"
+                        fxLayoutGap="16px"
+                        fxFlex="0 2 calc(200px + 10px)"
+                        [class.btn-sinbad-disabled]="!lastSegmentHasBranchName()"
+                        *ngIf="segments().length < 5"
+                    >
+                        <div class="h-24"></div>
+
+                        <div class="sinbad-black-40 h-440 add-wrapper">
+                            <button
+                                type="button"
+                                mat-button
+                                class="fuse-white"
+                                (click)="addSegment()"
+                                [disabled]="!lastSegmentHasBranchName()"
+                            >
+                                <mat-icon class="sinbad-green-60-fg">
+                                    add_circle
+                                </mat-icon>
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div fxLayout="column" fxLayoutGap="16px">
-                    <div class="h-24"></div>
+                    <!--                     <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                        <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                            Lv1
+                        </div>
 
-                    <div class="fuse-white h-440 py-16">
-                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                        <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
+                            <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                                <div fxFlexAlign="center" class="cursor-pointer">
+                                    <mat-icon>more_vert</mat-icon>
+                                </div>
+
+                                <div
+                                    fxFlexAlign="center"
+                                    class="cursor-pointer"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between center"
+                                    fxFlex
+                                >
+                                    <span>Channel 1</span>
+                                    <mat-icon>chevron_right</mat-icon>
+                                </div>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                                <div fxFlexAlign="center" class="cursor-pointer">
+                                    <mat-icon>more_vert</mat-icon>
+                                </div>
+
+                                <div
+                                    fxFlexAlign="center"
+                                    class="cursor-pointer"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between center"
+                                    fxFlex
+                                >
+                                    <span>Channel 2</span>
+                                    <mat-icon>chevron_right</mat-icon>
+                                </div>
+                            </div>
+
+                            <button
+                                mat-button
+                                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                            >
+                                Add
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
-                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
-                        Lv4
+                    <div fxLayout="column" fxLayoutGap="16px">
+                        <div class="h-24"></div>
+
+                        <div class="fuse-white h-440 py-16">
+                            <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                        </div>
                     </div>
 
-                    <div class="fuse-white h-440 p-16" fxLayout="column">
-                        <span class="sinbad-black-60-fg">
-                            List are empty. please add through the button below
-                        </span>
+                    <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                        <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                            Lv2
+                        </div>
 
-                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
-                            Add
-                        </button>
+                        <div class="fuse-white h-440 p-16 pl-8" fxLayout="column">
+                            <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                                <div fxFlexAlign="center" class="cursor-pointer">
+                                    <mat-icon>more_vert</mat-icon>
+                                </div>
+
+                                <div
+                                    fxFlexAlign="center"
+                                    class="cursor-pointer"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between center"
+                                    fxFlex
+                                >
+                                    <span>Channel 1.A</span>
+                                    <mat-icon>chevron_right</mat-icon>
+                                </div>
+                            </div>
+
+                            <div fxLayout="row" fxLayoutAlign="space-between stretch" class="h-40">
+                                <div fxFlexAlign="center" class="cursor-pointer">
+                                    <mat-icon>more_vert</mat-icon>
+                                </div>
+
+                                <div
+                                    fxFlexAlign="center"
+                                    class="cursor-pointer"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between center"
+                                    fxFlex
+                                >
+                                    <span><input type="text" matInput autocomplete="off"/></span>
+                                    <mat-icon>chevron_right</mat-icon>
+                                </div>
+                            </div>
+
+                            <button
+                                mat-button
+                                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                            >
+                                Add
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <div fxLayout="column" fxLayoutGap="16px">
-                    <div class="h-24"></div>
+                    <div fxLayout="column" fxLayoutGap="16px">
+                        <div class="h-24"></div>
 
-                    <div class="fuse-white h-440 py-16">
-                        <mat-divider class="h-416" [vertical]="true"></mat-divider>
-                    </div>
-                </div>
-
-                <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
-                    <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
-                        Lv5
+                        <div class="fuse-white h-440 py-16">
+                            <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                        </div>
                     </div>
 
-                    <div class="fuse-white h-440 p-16" fxLayout="column">
-                        <span class="sinbad-black-60-fg">
-                            List are empty. please add through the button below
-                        </span>
+                    <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                        <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                            Lv3
+                        </div>
 
-                        <button mat-button class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8">
-                            Add
-                        </button>
+                        <div class="fuse-white h-440 p-16" fxLayout="column">
+                            <span class="sinbad-black-60-fg">
+                                List are empty. please add through the button below
+                            </span>
+
+                            <button
+                                mat-button
+                                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 btn-sinbad-disabled"
+                                disabled
+                            >
+                                Add
+                            </button>
+                        </div>
                     </div>
-                </div>
 
-                <!-- <div
+                    <div fxLayout="column" fxLayoutGap="16px">
+                        <div class="h-24"></div>
+
+                        <div class="fuse-white h-440 py-16">
+                            <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                        </div>
+                    </div>
+
+                    <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                        <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                            Lv4
+                        </div>
+
+                        <div class="fuse-white h-440 p-16" fxLayout="column">
+                            <span class="sinbad-black-60-fg">
+                                List are empty. please add through the button below
+                            </span>
+
+                            <button
+                                mat-button
+                                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div fxLayout="column" fxLayoutGap="16px">
+                        <div class="h-24"></div>
+
+                        <div class="fuse-white h-440 py-16">
+                            <mat-divider class="h-416" [vertical]="true"></mat-divider>
+                        </div>
+                    </div>
+
+                    <div fxLayout="column" fxLayoutGap="16px" fxFlex="0 2 calc(200px + 10px)">
+                        <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
+                            Lv5
+                        </div>
+
+                        <div class="fuse-white h-440 p-16" fxLayout="column">
+                            <span class="sinbad-black-60-fg">
+                                List are empty. please add through the button below
+                            </span>
+
+                            <button
+                                mat-button
+                                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 ml-8"
+                            >
+                                Add
+                            </button>
+                        </div>
+                    </div> -->
+
+                    <!-- <div
                     fxLayout="column"
                     fxLayoutAlign="start stretch"
                     fxLayoutGap="16px"
@@ -223,7 +418,8 @@
                         </button>
                     </div>
                 </div> -->
-            </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
