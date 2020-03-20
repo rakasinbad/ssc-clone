@@ -1,0 +1,46 @@
+<!-- STORE TYPE -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerStoreType
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Store Type"
+            [formControl]="storeTypeForm"
+            [matAutocomplete]="storeTypeAutoComplete"
+        />
+        <mat-autocomplete
+            #storeTypeAutoComplete
+            [displayWith]="displayStoreType"
+            (opened)="listenStoreTypeAutoComplete()"
+            (optionSelected)="onSelectedStoreType($event)"
+        >
+            <!-- NONE OPTION -->
+            <mat-option *ngIf="!(isStoreTypeLoading$ | async)">(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- STORE TYPE OPTIONS -->
+            <mat-option
+                *ngFor="let storeType of (availableStoreTypes$ | async)"
+                [value]="storeType"
+            >
+                {{ storeType?.name || '-' }}
+            </mat-option>
+            <!-- / STORE TYPE OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalStoreTypes$ | async) && ((totalStoreTypes$ | async) > (availableStoreTypes$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(storeTypeForm)">
+            {{ getFormError(storeTypeForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / STORE TYPE -->

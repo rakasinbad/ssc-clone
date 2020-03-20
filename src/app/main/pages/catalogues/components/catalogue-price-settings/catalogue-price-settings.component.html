@@ -124,87 +124,27 @@
                 <ng-container *ngFor="let tool of cataloguePriceTools">
                     <div class="catalogue-price-tools" *ngIf="tool === 'warehouse'" cdkDrag>
                         <!-- <span>A</span> -->
-                        <mat-form-field class="w-85-p" appearance="outline">
-                            <mat-select placeholder="Warehouse">
-                                <mat-option value="A">A</mat-option>
-                                <mat-option value="B">B</mat-option>
-                                <mat-option value="C">C</mat-option>
-                                <mat-option value="D">D</mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                            >
-                                {{ getFormError(form.get('basePrice')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <select-warehouse class="w-100-p"></select-warehouse>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                     <div class="catalogue-price-tools" *ngIf="tool === 'store-type'" cdkDrag>
                         <!-- <span>B</span> -->
-                        <mat-form-field class="w-85-p" appearance="outline">
-                            <mat-select placeholder="Warehouse">
-                                <mat-option value="A">A</mat-option>
-                                <mat-option value="B">B</mat-option>
-                                <mat-option value="C">C</mat-option>
-                                <mat-option value="D">D</mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                            >
-                                {{ getFormError(form.get('basePrice')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <select-store-types class="w-100-p"></select-store-types>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                     <div class="catalogue-price-tools" *ngIf="tool === 'store-group'" cdkDrag>
                         <!-- <span>C</span> -->
-                        <mat-form-field class="w-85-p" appearance="outline">
-                            <mat-select placeholder="Warehouse">
-                                <mat-option value="A">A</mat-option>
-                                <mat-option value="B">B</mat-option>
-                                <mat-option value="C">C</mat-option>
-                                <mat-option value="D">D</mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                            >
-                                {{ getFormError(form.get('basePrice')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <select-store-groups class="w-100-p"></select-store-groups>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                     <div class="catalogue-price-tools" *ngIf="tool === 'store-channel'" cdkDrag>
                         <!-- <span>D</span> -->
-                        <mat-form-field class="w-85-p" appearance="outline">
-                            <mat-select placeholder="Warehouse">
-                                <mat-option value="A">A</mat-option>
-                                <mat-option value="B">B</mat-option>
-                                <mat-option value="C">C</mat-option>
-                                <mat-option value="D">D</mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                            >
-                                {{ getFormError(form.get('basePrice')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <!-- <select-store-channels class="w-100-p"></select-store-channels> -->
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                     <div class="catalogue-price-tools" *ngIf="tool === 'store-cluster'" cdkDrag>
                         <!-- <span>E</span> -->
-                        <mat-form-field class="w-85-p" appearance="outline">
-                            <mat-select placeholder="Warehouse">
-                                <mat-option value="A">A</mat-option>
-                                <mat-option value="B">B</mat-option>
-                                <mat-option value="C">C</mat-option>
-                                <mat-option value="D">D</mat-option>
-                            </mat-select>
-                            <mat-error
-                                *ngIf="!isViewMode() && hasError(form.get('basePrice'))"
-                            >
-                                {{ getFormError(form.get('basePrice')) }}
-                            </mat-error>
-                        </mat-form-field>
+                        <!-- <select-store-clusters class="w-100-p"></select-store-clusters> -->
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                 </ng-container>

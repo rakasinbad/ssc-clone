@@ -72,19 +72,25 @@
         <!-- TAB GROUP -->
         <mat-tab-group color="accent" style="border-radius: 4px;" class="px-12 sinbad-white sinbad-mat-tab-group" animationDuration="0ms" dynamicHeight="true">
             <mat-tab label="SKU Information">
-                <catalogue-sku-information></catalogue-sku-information>
+                <ng-template matTabContent>
+                    <catalogue-sku-information></catalogue-sku-information>
+                </ng-template>
             </mat-tab>
             <mat-tab label="Price Settings">
-                <catalogue-price-settings></catalogue-price-settings>
+                <ng-template matTabContent>
+                    <catalogue-price-settings></catalogue-price-settings>
+                </ng-template>
             </mat-tab>
             <mat-tab label="Media Settings">
-                <catalogue-media-settings></catalogue-media-settings>
+                <ng-template matTabContent>
+                    <catalogue-media-settings></catalogue-media-settings>
+                </ng-template>
             </mat-tab>
             <mat-tab label="Weight & Dimension">
-
+                <!-- <ng-template matTabContent></ng-template> -->
             </mat-tab>
             <mat-tab label="Amount Settings">
-
+                <!-- <ng-template matTabContent></ng-template> -->
             </mat-tab>
         </mat-tab-group>
         <!-- / TAB GROUP -->

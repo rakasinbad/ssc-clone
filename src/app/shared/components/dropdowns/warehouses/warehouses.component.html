@@ -1,0 +1,46 @@
+<!-- PROVINCE -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerWarehouse
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Warehouse"
+            [formControl]="warehouseForm"
+            [matAutocomplete]="warehouseAutoComplete"
+        />
+        <mat-autocomplete
+            #warehouseAutoComplete
+            [displayWith]="displayWarehouse"
+            (opened)="listenWarehouseAutoComplete()"
+            (optionSelected)="onSelectedWarehouse($event)"
+        >
+            <!-- NONE OPTION -->
+            <mat-option *ngIf="!(isWarehouseLoading$ | async)">(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- WAREHOUSE OPTIONS -->
+            <mat-option
+                *ngFor="let warehouse of (availableWarehouses$ | async)"
+                [value]="warehouse"
+            >
+                {{ warehouse?.name || '-' }}
+            </mat-option>
+            <!-- / WAREHOUSE OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalWarehouses$ | async) && ((totalWarehouses$ | async) > (availableWarehouses$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(warehouseForm)">
+            {{ getFormError(warehouseForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / PROVINCE -->
