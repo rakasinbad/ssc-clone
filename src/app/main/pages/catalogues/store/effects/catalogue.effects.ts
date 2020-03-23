@@ -39,7 +39,8 @@ export class CatalogueEffects {
                         return CatalogueActions.patchCatalogueSuccess({
                             payload: {
                                 data: catalogue,
-                                source: payload.source
+                                source: payload.source,
+                                section: payload.section,
                             }
                         });
                     }),
@@ -64,14 +65,27 @@ export class CatalogueEffects {
             this.actions$.pipe(
                 ofType(CatalogueActions.patchCatalogueSuccess),
                 map(action => action.payload),
-                tap(({ data: catalogue, source }) => {
+                tap(({ data: catalogue, source, section }) => {
                     this._$notice.open('Produk berhasil di-update', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
 
                     if (source === 'form') {
-                        this.router.navigate(['pages', 'catalogues']);
+                        if (!section) {
+                            this.router.navigate(['pages', 'catalogues']);
+                        } else {
+                            const changes = { ...catalogue };
+
+                            const updatedCatalogue: Update<Catalogue> = {
+                                id: catalogue.id,
+                                changes
+                            };
+
+                            this.store.dispatch(
+                                CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue })
+                            );
+                        }
                     } else if (source === 'list') {
                         this.matDialog.closeAll();
                         // this.router.navigate(['pages', 'catalogues']);
@@ -86,6 +100,8 @@ export class CatalogueEffects {
                             CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue })
                         );
                     }
+
+                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
                 })
             ),
         { dispatch: false }

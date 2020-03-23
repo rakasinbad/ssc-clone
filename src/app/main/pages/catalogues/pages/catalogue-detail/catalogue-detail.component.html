@@ -62,8 +62,8 @@
             </div>
             <!-- / APP TITLE -->
             <!-- EDIT BUTTON -->
-            <button mat-flat-button>
-                <span class="red-500-fg" (click)="navigationSub$.next()">Edit</span>
+            <button mat-flat-button (click)="editCatalogue()" *ngIf="isViewMode()">
+                <span class="red-500-fg">Edit</span>
             </button>
             <!-- / EDIT BUTTON -->
         </div>
@@ -71,25 +71,29 @@
 
         <!-- TAB GROUP -->
         <mat-tab-group color="accent" style="border-radius: 4px;" class="px-12 sinbad-white sinbad-mat-tab-group" animationDuration="0ms" dynamicHeight="true">
-            <mat-tab label="SKU Information">
+            <mat-tab label="SKU Information" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <catalogue-sku-information></catalogue-sku-information>
+                    <catalogue-sku-information
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-sku-information>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Price Settings">
+            <mat-tab label="Price Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-price-settings></catalogue-price-settings>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Media Settings">
+            <mat-tab label="Media Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-media-settings></catalogue-media-settings>
                 </ng-template>
             </mat-tab>
-            <mat-tab label="Weight & Dimension">
+            <mat-tab label="Weight & Dimension" [disabled]="isEditMode()">
                 <!-- <ng-template matTabContent></ng-template> -->
             </mat-tab>
-            <mat-tab label="Amount Settings">
+            <mat-tab label="Amount Settings" [disabled]="isEditMode()">
                 <!-- <ng-template matTabContent></ng-template> -->
             </mat-tab>
         </mat-tab-group>
@@ -97,3 +101,8 @@
     </div>
     <!-- / CENTER -->
 </div>
+<!-- Spinner Loader -->
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
+<!-- Spinner Loader -->

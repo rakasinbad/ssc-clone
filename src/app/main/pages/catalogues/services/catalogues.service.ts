@@ -11,7 +11,8 @@ import {
     ICatalogue,
     ICataloguesResponse,
     ICatalogueStockResponse,
-    ICatalogueUnitResponse
+    ICatalogueUnitResponse,
+    CatalogueInformation
 } from '../models';
 
 interface ICatalogueTitleParameter {
@@ -182,7 +183,7 @@ export class CataloguesService {
         return this.http.get<T>(this._url, { params: newParams });
     }
 
-    patchCatalogue(id: string, data: Partial<Catalogue>): Observable<Catalogue> {
+    patchCatalogue(id: string, data: Partial<Catalogue> | Partial<CatalogueInformation>): Observable<Catalogue> {
         this._url = this._$helper.handleApiRouter(`${this._endpoint}/${id}`);
         return this.http.patch<Catalogue>(this._url, data);
     }

@@ -8,7 +8,9 @@ import {
     CatalogueCategory,
     CatalogueUnit,
     ICatalogueDemo,
-    ICatalogueStockResponse
+    ICatalogueStockResponse,
+    SimpleCatalogueCategory,
+    CatalogueInformation
 } from '../../models';
 
 export const fetchCatalogues = createAction(
@@ -18,6 +20,8 @@ export const fetchCatalogues = createAction(
 
 /** Untuk mendefinisikan asal tempat pengubahan data katalog. */
 type TSourceEdit = 'list' | 'form';
+
+type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings';
 
 /**
  * FILTER CATALOGUES
@@ -77,7 +81,7 @@ export const startPatchCatalogue = createAction(
 
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
-    props<{ payload: { id: string; data: Partial<Catalogue>; source: TSourceEdit } }>()
+    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
 export const patchCatalogueFailure = createAction(
@@ -87,7 +91,7 @@ export const patchCatalogueFailure = createAction(
 
 export const patchCatalogueSuccess = createAction(
     '[Catalogues API] Patch Catalogue Success',
-    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit } }>()
+    props<{ payload: { data: Partial<Catalogue>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
 export const patchCataloguesRequest = createAction(
@@ -423,26 +427,19 @@ export const setProductName = createAction(
 
 export const addSelectedCategory = createAction(
     '[Catalogues Page] Add Selected Category',
-    props<{
-        payload: { id: string; name: string; parent: TNullable<string>; hasChildren?: boolean };
-    }>()
+    props<{ payload: SimpleCatalogueCategory; }>()
 );
 
 export const setSelectedCategories = createAction(
     '[Catalogues Page] Set Selected Category',
-    props<{
-        payload: Array<{
-            id: string;
-            name: string;
-            parent: TNullable<string>;
-            hasChildren?: boolean;
-        }>;
-    }>()
+    props<{ payload: Array<SimpleCatalogueCategory>; }>()
 );
 
 export const resetSelectedCategories = createAction('[Catalogues Page] Reset Selected Categories');
 
 export const resetSelectedCatalogue = createAction('[Catalogue Page] Reset Selected Catalogue');
+
+export const resetCatalogueUnits = createAction('[Catalogue/SKU Information] Reset Catalogue Units');
 
 /**
  * FOR DEMO PURPOSE ONLY

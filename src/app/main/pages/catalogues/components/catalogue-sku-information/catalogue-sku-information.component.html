@@ -293,7 +293,7 @@
                         formControlName="uom"
                     >
                         <mat-option
-                            *ngFor="let unit of catalogueUnits"
+                            *ngFor="let unit of (catalogueUnits$ | async)"
                             [value]="unit.id"
                         >
                             {{ unit.unit }}
