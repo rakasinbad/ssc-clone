@@ -2,6 +2,12 @@
 
 app-store-type-segmentation {
     .sinbad-nav-item {
+        .sinbad-nav-action {
+            &.sinbad-nav-action__disabled {
+                pointer-events: none;
+            }
+        }
+
         .sinbad-nav-link {
             &:hover {
                 color: sinbad-color('red', '10');

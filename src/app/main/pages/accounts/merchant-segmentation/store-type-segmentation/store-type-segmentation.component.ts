@@ -2,6 +2,9 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { FormBuilder, FormGroup, FormArray, AbstractControl } from '@angular/forms';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { MatDialog } from '@angular/material';
+import { MerchantSegmentationFormComponent } from '../merchant-segmentation-form';
+import { MerchantSegmentationAlertComponent } from '../merchant-segmentation-alert';
 
 @Component({
     selector: 'app-store-type-segmentation',
@@ -63,7 +66,7 @@ export class StoreTypeSegmentationComponent implements OnInit {
         }
     ];
 
-    constructor(private formBuilder: FormBuilder) {}
+    constructor(private formBuilder: FormBuilder, private matDialog: MatDialog) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -167,6 +170,32 @@ export class StoreTypeSegmentationComponent implements OnInit {
         }
 
         return false;
+    }
+
+    onEdit(segmentIdx: number, branchIdx: number): void {
+        const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
+
+        this.matDialog.open(MerchantSegmentationFormComponent, {
+            data: {
+                title: 'Segment Branch Information',
+                form: formValue
+            },
+            panelClass: 'merchant-segment-form-dialog',
+            disableClose: true
+        });
+    }
+
+    onSetStatus(segmentIdx: number, branchIdx: number): void {
+        const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
+
+        this.matDialog.open(MerchantSegmentationAlertComponent, {
+            data: {
+                title: 'Alert',
+                form: formValue
+            },
+            panelClass: 'merchant-segment-alert-dialog',
+            disableClose: true
+        });
     }
 
     // -----------------------------------------------------------------------------------------------------

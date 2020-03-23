@@ -5,12 +5,19 @@ import { MaterialModule, SharedModule } from 'app/shared';
 import { SharedComponentsModule } from 'app/shared/components/shared-components.module';
 import { NgxPermissionsModule } from 'ngx-permissions';
 
-import { StoreTypeSegmentationComponent } from './';
+import { MerchantSegmentationAlertComponent } from './merchant-segmentation-alert';
+import { MerchantSegmentationFormComponent } from './merchant-segmentation-form';
 import { MerchantSegmentationComponent } from './merchant-segmentation.component';
 import { MerchantSegmentationRoutingModule } from './merchant-segmentation.routes';
+import { StoreTypeSegmentationComponent } from './store-type-segmentation';
 
 @NgModule({
-    declarations: [MerchantSegmentationComponent, StoreTypeSegmentationComponent],
+    declarations: [
+        MerchantSegmentationAlertComponent,
+        MerchantSegmentationComponent,
+        MerchantSegmentationFormComponent,
+        StoreTypeSegmentationComponent
+    ],
     imports: [
         MerchantSegmentationRoutingModule,
 
@@ -24,6 +31,7 @@ import { MerchantSegmentationRoutingModule } from './merchant-segmentation.route
 
         // Third Party (NgxPermissions: https://github.com/AlexKhymenko/ngx-permissions)
         NgxPermissionsModule.forChild()
-    ]
+    ],
+    entryComponents: [MerchantSegmentationFormComponent, MerchantSegmentationAlertComponent]
 })
 export class MerchantSegmentationModule {}

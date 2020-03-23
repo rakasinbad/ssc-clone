@@ -77,10 +77,50 @@
                                         >
                                             <div
                                                 fxFlexAlign="center"
+                                                [matMenuTriggerFor]="moreMenu"
                                                 class="cursor-pointer sinbad-nav-action"
+                                                [class.sinbad-nav-action__disabled]="
+                                                    !isReadonly(segmentIdx, branchIdx)
+                                                "
                                             >
                                                 <mat-icon>more_vert</mat-icon>
                                             </div>
+                                            <mat-menu #moreMenu="matMenu">
+                                                <button
+                                                    type="button"
+                                                    mat-menu-item
+                                                    class="sinbad-mat-menu-item"
+                                                    aria-label="Edit"
+                                                    (click)="onEdit(segmentIdx, branchIdx)"
+                                                >
+                                                    <mat-icon>edit</mat-icon>
+                                                    <span>Edit</span>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    mat-menu-item
+                                                    class="sinbad-mat-menu-item"
+                                                    (click)="onSetStatus(segmentIdx, branchIdx)"
+                                                >
+                                                    <mat-icon>
+                                                        archive
+                                                    </mat-icon>
+                                                    <span>
+                                                        {{ 'ACTION.INACTIVE' | translate }}
+                                                    </span>
+                                                </button>
+
+                                                <button
+                                                    mat-menu-item
+                                                    type="button"
+                                                    class="sinbad-mat-menu-item"
+                                                    aria-label="Rename"
+                                                >
+                                                    <mat-icon>title</mat-icon>
+                                                    <span>Rename</span>
+                                                </button>
+                                            </mat-menu>
 
                                             <div
                                                 fxFlexAlign="center"
