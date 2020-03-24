@@ -1,6 +1,13 @@
 @import "src/@sinbad/scss/helper.scss";
 
 catalogue-media-settings {
+    .custom-field-right {
+        label {
+            top: 0 !important;
+            text-align: left !important;
+        }
+    }
+
     .img-container {
         width: 100px; /*any size*/
         height: 100px; /*any size*/

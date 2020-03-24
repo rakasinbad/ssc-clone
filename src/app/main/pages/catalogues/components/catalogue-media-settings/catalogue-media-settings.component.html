@@ -50,8 +50,7 @@
                                     <button
                                         (click)="photos.click()"
                                         mat-stroked-button
-                                        style="border-style: dashed;"
-                                        class="red-fg red-border fit-image"
+                                        class="red-fg fit-image"
                                     >
                                         <mat-icon>add_circle</mat-icon>
                                     </button>
@@ -68,7 +67,7 @@
                                     <button
                                         class="red-fg"
                                         mat-icon-button
-                                        style="bottom: 22px; right: 22px;"
+                                        style="bottom: 26px; right: 22px;"
                                         (click)="onAbortUploadPhoto(photos, i)"
                                         *ngIf="!isViewMode()"
                                     >
@@ -89,7 +88,7 @@
                                     </p>
                                     <ng-template #noPhotoError>
                                         <p
-                                            class="grey-400-fg"
+                                            class="sinbad-black-60-fg"
                                             style="margin-bottom: 0px;"
                                         >    
                                             <span
@@ -123,7 +122,7 @@
                                     fxLayoutAlign="space-between center"
                                     *ngIf="(!isViewMode()) || (isViewMode() && photo.value)"
                                 >
-                                    <p class="grey-400-fg" style="margin-bottom: 0px;">Photo {{ i }}</p>
+                                    <p class="sinbad-black-60-fg" style="margin-bottom: 0px;">Photo {{ i }}</p>
                                     <button
                                         class="red-fg"
                                         matTooltip="Reset to original image"

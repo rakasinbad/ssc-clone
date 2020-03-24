@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, Output, EventEmitter, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest } from 'rxjs';
+import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
 // 
 import { fromCatalogue } from '../../store/reducers';
-import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
+import { ErrorMessageService, NoticeService, HelperService } from 'app/shared/helpers';
 import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -20,7 +20,8 @@ import { MatDialog } from '@angular/material';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
 import { Brand } from 'app/shared/models/brand.model';
 import { SafeHtml } from '@angular/platform-browser';
-import { TNullable } from 'app/shared/models/global.model';
+import { TNullable, FormStatus } from 'app/shared/models/global.model';
+import { CatalogueMedia } from '../../models/catalogue-media.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -30,23 +31,43 @@ type IFormMode = 'add' | 'view' | 'edit';
     styleUrls: ['./catalogue-media-settings.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
-export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
+export class CatalogueMediaSettingsComponent implements OnInit, OnChanges, OnDestroy {
 
+    // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
-
+    // Untuk keperluan re-subcribe form valueChanges dan statusChanges.
+    private formSub$: Subject<void> = new Subject<void>();
+    // Untuk keperluan memicu adanya perubahan view.
+    private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk menyimpan daftar brand dari suatu supplier.
     brands$: Observable<Array<Brand>>;
-
-    catalogueUnits: Array<CatalogueUnit>;
-
-    productCategory$: SafeHtml;
-
-    formMode: IFormMode = 'add';
-
+    // Untuk form.
     form: FormGroup;
+    // Untuk form bagian foto produk yang saat ini.
     productPhotos: FormArray;
+    // Untuk form bagian foto produk yang sebelum di-edit.
     productOldPhotos: FormArray;
+
+    // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
+    formModeValue: IFormMode = 'add';
+
+    @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
+    @Output() formValueChange: EventEmitter<CatalogueMedia> = new EventEmitter<CatalogueMedia>();
+
+    // Untuk mendapatkan event ketika form mode berubah.
+    @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
+
+    @Input()
+    get formMode(): IFormMode {
+        return this.formModeValue;
+    }
+
+    set formMode(mode: IFormMode) {
+        this.formModeValue = mode;
+        this.formModeChange.emit(this.formModeValue);
+    }
 
     catalogueContent: {
         'content-card': boolean;
@@ -68,9 +89,53 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
         private router: Router,
         private dialog: MatDialog,
         private store: NgRxStore<fromCatalogue.FeatureState>,
-        private catalogue$: CataloguesService,
         private errorMessage$: ErrorMessageService,
-    ) { }
+    ) {
+        this.formSub$.pipe(
+            tap(() => HelperService.debug('[CATALOGUE/MEDIA SETTINGS] FORMSUB$ is closed?', this.formSub$.closed)),
+            takeUntil(this.subs$)
+        ).subscribe();
+    }
+    
+    private prepareForm(): void {
+        if (this.formSub$.closed) {
+            this.formSub$ = new Subject<void>();
+        } else {
+            this.formSub$.next();
+            this.formSub$.complete();
+
+            this.formSub$ = new Subject<void>();
+        }
+
+        /** Menyiapkan form. */
+        this.form = this.fb.group({
+            productMedia: this.fb.group({
+                photos: this.fb.array([
+                    this.fb.control(null, [
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'product_photo',
+                                'min_1_photo'
+                            )
+                        })
+                    ]),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null),
+                    this.fb.control(null)
+                ]),
+                oldPhotos: this.fb.array([
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] }),
+                    this.fb.group({ id: [null], value: [null] })
+                ])
+            }),
+        });
+    }
 
     private updateFormView(): void {
         this.formClass = {
@@ -79,7 +144,7 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
         };
 
         this.catalogueContent = {
-            'mt-16': this.isViewMode(),
+            'mt-16': true,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
@@ -105,12 +170,13 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
 
     private prepareEditCatalogue(): void {
         combineLatest([
+            this.trigger$,
             this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
             this.store.select(AuthSelectors.getUserSupplier)
         ])
             .pipe(
                 takeUntil(this.subs$)
-            ).subscribe(([catalogue, userSupplier]: [Catalogue, UserSupplier]) => {
+            ).subscribe(([_, catalogue, userSupplier]: [string, Catalogue, UserSupplier]) => {
                 /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
                 const { id } = this.route.snapshot.params;
 
@@ -149,15 +215,18 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
                     return;
                 }
 
+                // Me-reset ulang semua form.
+                this.prepareForm();
+                this.initFormCheck();
+
                 /** Pemberian jeda untuk memasukkan data katalog ke dalam form. */
-                setTimeout(() => {
-                    this.form.patchValue({
-                        productMedia: {
-                            photos: [...catalogue.catalogueImages.map(image => image.imageUrl)],
-                            oldPhotos: [...catalogue.catalogueImages.map(image => image.imageUrl)]
-                        },
-                    });
+                this.form.get('productMedia').patchValue({
+                    photos: [...catalogue.catalogueImages.map(image => image.imageUrl)],
+                    oldPhotos: [...catalogue.catalogueImages.map(image => image.imageUrl)]
                 });
+
+                this.productPhotos = this.form.get('productMedia.photos') as FormArray;
+                this.productOldPhotos = this.form.get('productMedia.oldPhotos') as FormArray;
 
                 /** Menampilkan foto produk pada form beserta menyimpannya di form invisible untuk sewaktu-waktu ingin undo penghapusan foto. */
                 for (const [idx, image] of catalogue.catalogueImages.entries()) {
@@ -209,8 +278,32 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
 
         this.cdRef.markForCheck();
     }
+// 
+    private initFormCheck(): void {
+        (this.form.statusChanges as Observable<FormStatus>).pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(value => HelperService.debug('CATALOGUE MEDIA SETTINGS FORM STATUS CHANGED:', value)),
+            takeUntil(this.formSub$)
+        ).subscribe(status => {
+            this.formStatusChange.emit(status);
+        });
 
-    onEditCategory(id: string): void {
+        this.form.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(200),
+            tap(value => HelperService.debug('[BEFORE MAP] CATALOGUE MEDIA SETTINGS FORM VALUE CHANGED', value)),
+            map(value => {
+                return value.productMedia;
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] CATALOGUE MEDIA SETTINGS FORM VALUE CHANGED', value)),
+            takeUntil(this.formSub$)
+        ).subscribe(value => {
+            this.formValueChange.emit(value);
+        });
+    }
+
+    onEditCategory(): void {
         this.dialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
     }
 
@@ -249,44 +342,39 @@ export class CatalogueMediaSettingsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        /** Menyiapkan form. */
-        this.form = this.fb.group({
-            productMedia: this.fb.group({
-                photos: this.fb.array([
-                    this.fb.control(null, [
-                        RxwebValidators.required({
-                            message: this.errorMessage$.getErrorMessageNonState(
-                                'product_photo',
-                                'min_1_photo'
-                            )
-                        })
-                    ]),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null),
-                    this.fb.control(null)
-                ]),
-                oldPhotos: this.fb.array([
-                    this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] }),
-                    this.fb.group({ id: [null], value: [null] })
-                ])
-            }),
-        });
+        this.prepareForm();
 
         this.productPhotos = this.form.get('productMedia.photos') as FormArray;
         this.productOldPhotos = this.form.get('productMedia.oldPhotos') as FormArray; 
 
         this.checkRoute();
+        this.initFormCheck();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
+            this.trigger$.next('');
+
+            setTimeout(() => {
+                this.updateFormView();
+            });
+        } else if (changes['formMode'].currentValue) {
+            this.trigger$.next('');
+            setTimeout(() => this.updateFormView());
+        }
     }
 
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        if (!this.formSub$.closed) {
+            this.formSub$.next();
+            this.formSub$.complete();
+        }
+
+        this.trigger$.next(null);
+        this.trigger$.complete();
     }
 
 }

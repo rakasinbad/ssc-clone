@@ -12,6 +12,7 @@ import {
     SimpleCatalogueCategory,
     CatalogueInformation
 } from '../../models';
+import { CatalogueMedia } from '../../models/catalogue-media.model';
 
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
@@ -81,7 +82,7 @@ export const startPatchCatalogue = createAction(
 
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
-    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation>; source: TSourceEdit; section?: CatalogueSection; } }>()
+    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
 export const patchCatalogueFailure = createAction(

@@ -11,6 +11,7 @@ import { FormStatus } from 'app/shared/models/global.model';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { CatalogueActions } from '../../store/actions';
+import { CatalogueMedia, CatalogueMediaForm } from '../../models/catalogue-media.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -33,7 +34,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     section: string = 'sku-information';
 
     formMode: IFormMode = 'view';
-    formValue: Partial<CatalogueInformation>;
+    formValue: Partial<CatalogueInformation> | Partial<CatalogueMediaForm>;
 
     selectedCatalogue$: Observable<Catalogue>;
 
@@ -110,9 +111,9 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
-    onFormValueChanged($event: CatalogueInformation): void {
+    onFormValueChanged($event: CatalogueInformation | CatalogueMediaForm): void {
         switch (this.section) {
-            case 'sku-information':
+            case 'sku-information': {
                 const {
                     externalId,
                     name,
@@ -123,7 +124,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
-                } = $event;
+                } = ($event as CatalogueInformation);
 
                 this.formValue = {
                     externalId,
@@ -138,6 +139,20 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 };
 
                 break;
+            }
+            case 'media-settings': {
+                const {
+                    photos,
+                    oldPhotos,
+                } = ($event as CatalogueMediaForm);
+
+                this.formValue = {
+                    photos,
+                    oldPhotos,
+                };
+
+                break;
+            }
         }
     }
 
@@ -229,15 +244,64 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             takeUntil(this.subs$)
         ).subscribe(([isClick, catalogue]) => {
             if (isClick) {
-                this.store.dispatch(UiActions.hideFooterAction());
-                this.store.dispatch(CatalogueActions.patchCatalogueRequest({
-                    payload: {
-                        id: catalogue.id,
-                        data: this.formValue,
-                        source: 'form',
-                        section: 'sku-information'
+                switch (this.section) {
+                    case 'sku-information': {
+                        this.store.dispatch(UiActions.hideFooterAction());
+                        this.store.dispatch(CatalogueActions.patchCatalogueRequest({
+                            payload: {
+                                id: catalogue.id,
+                                data: this.formValue as CatalogueInformation,
+                                source: 'form',
+                                section: this.section
+                            }
+                        }));
+
+                        break;
                     }
-                }));
+                    case 'media-settings': {
+                        const formPhotos = this.formValue as CatalogueMediaForm;
+                        const oldPhotos = formPhotos.oldPhotos;
+                        const formCatalogue: CatalogueMedia = {
+                            deletedImages: [],
+                            uploadedImages: [],
+                        };
+
+                        /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
+                        const filterPhoto = (photo, idx) => {
+                            const isDeleted = photo === null && oldPhotos[idx].value !== null;
+                            const isNewUpload = photo !== null && oldPhotos[idx].value === null;
+                            const isReplaced = photo !== null && oldPhotos[idx].value !== null && photo !== oldPhotos[idx].value;
+
+                            if (isDeleted) {
+                                formCatalogue.deletedImages.push(oldPhotos[idx].id);
+                            }
+
+                            if (isNewUpload) {
+                                formCatalogue.uploadedImages.push({ base64: photo });
+                            }
+
+                            if (isReplaced) {
+                                formCatalogue.deletedImages.push(oldPhotos[idx].id);
+                                formCatalogue.uploadedImages.push({ base64: photo });
+                            }
+                        };
+
+                        // Mulai mem-filter foto.
+                        formPhotos.photos.forEach(filterPhoto);
+
+                        this.store.dispatch(UiActions.hideFooterAction());
+                        this.store.dispatch(CatalogueActions.patchCatalogueRequest({
+                            payload: {
+                                id: catalogue.id,
+                                data: formCatalogue,
+                                source: 'form',
+                                section: this.section
+                            }
+                        }));
+
+                        break;
+                    }
+                }
             }
         });
     }
