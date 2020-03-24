@@ -95,41 +95,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private errorMessage$: ErrorMessageService,
-    ) {
-        // this.store.dispatch(
-        //     UiActions.setFooterActionConfig({
-        //         payload: {
-        //             progress: {
-        //                 title: {
-        //                     label: 'Skor Konten Produk',
-        //                     active: true
-        //                 },
-        //                 value: {
-        //                     active: false
-        //                 },
-        //                 active: false
-        //             },
-        //             action: {
-        //                 save: {
-        //                     label: 'Save',
-        //                     active: true
-        //                 },
-        //                 draft: {
-        //                     label: 'Save Draft',
-        //                     active: false
-        //                 },
-        //                 cancel: {
-        //                     label: 'Cancel',
-        //                     active: true
-        //                 },
-        //             }
-        //         }
-        //     })
-        // );
-
-        // this.store.dispatch(FormActions.resetFormStatus());
-        // this.store.dispatch(FormActions.setCancelButtonAction({ payload: 'CANCEL' }));
-    }
+    ) { }
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
@@ -649,10 +615,11 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
             this.trigger$.next('');
 
-            // this.store.dispatch(UiActions.showFooterAction());
-
-            setTimeout(() => this.updateFormView());
+            setTimeout(() => {
+                this.updateFormView();
+            });
         } else if (changes['formMode'].currentValue) {
+            this.trigger$.next('');
             setTimeout(() => this.updateFormView());
         }
     }
