@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -36,6 +36,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     formValue: Partial<CatalogueInformation>;
 
     selectedCatalogue$: Observable<Catalogue>;
+
+    @ViewChild('catalogueDetails', { static: true, read: ElementRef }) catalogueDetailRef: ElementRef<HTMLElement>;
 
     constructor(
         private cdRef: ChangeDetectorRef,
@@ -178,6 +180,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     }
 
     ngAfterViewInit(): void {
+        // Memeriksa status refresh untuk keperluan memuat ulang data yang telah di-edit.
         this.store.select(
             CatalogueSelectors.getRefreshStatus
         ).pipe(
@@ -197,9 +200,13 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                         payload: catalogue.id
                     })
                 );
+
+                // Scrolled to top.
+                this.catalogueDetailRef.nativeElement.scrollTop = 0;
             }
         });
 
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "cancel".
         this.store.select(
             FormSelectors.getIsClickCancelButton
         ).pipe(
@@ -214,6 +221,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
             }
         });
 
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
         this.store.select(
             FormSelectors.getIsClickSaveButton
         ).pipe(
