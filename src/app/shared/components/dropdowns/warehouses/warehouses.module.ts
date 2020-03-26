@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FuseSharedModule } from '@fuse/shared.module';
-import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
+import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule } from '@angular/material';
 import { WarehouseDropdownComponent } from './warehouses.component';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
@@ -24,6 +24,7 @@ import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatCheckboxModule,
 
         // Third Party (RxWeb: https://www.rxweb.io)
         RxReactiveFormsModule,

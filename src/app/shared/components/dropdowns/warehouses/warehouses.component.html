@@ -7,25 +7,64 @@
             autocomplete="new-password"
             placeholder="Search Warehouse"
             [formControl]="warehouseForm"
+            [value]="warehouseForm.value"
             [matAutocomplete]="warehouseAutoComplete"
         />
         <mat-autocomplete
             #warehouseAutoComplete
             [displayWith]="displayWarehouse"
             (opened)="listenWarehouseAutoComplete()"
-            (optionSelected)="onSelectedWarehouse($event)"
         >
             <!-- NONE OPTION -->
-            <mat-option *ngIf="!(isWarehouseLoading$ | async)">(None)</mat-option>
+            <!-- <mat-option *ngIf="!(isWarehouseLoading$ | async)">(None)</mat-option> -->
             <!-- / NONE OPTION -->
+            <!-- INVISIBLE OPTION -->
+            <mat-option #invisibleOption fxHide="true"></mat-option>
+            <!-- / INVISIBLE OPTION -->
+
+            <!-- "SELECT ALL" OPTION -->
+            <mat-option class="pr-16 pl-0" *ngIf="!(isWarehouseLoading$ | async)">
+                <div (click)="optionSelected($event, 'all')">
+                    <mat-checkbox
+                        class="ml-16"
+                        [disableRipple]="true"
+                        [checked]="selection.hasValue() && allSelected"
+                        [indeterminate]="selection.hasValue() && !allSelected"
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? toggle$.next('all') : null"
+                    >
+                        (Select All)
+                    </mat-checkbox>
+                </div>
+            </mat-option>
+            <!-- / "SELECT ALL" OPTION -->
 
             <!-- WAREHOUSE OPTIONS -->
             <mat-option
+                class="pr-16 pl-0"
+                *ngFor="let warehouse of (availableWarehouses$ | async)"
+                [value]="warehouse"
+            >
+                <!-- {{ warehouse?.name || '-' }} -->
+                <div (click)="$event.stopPropagation(); toggleSelectedWarehouse(warehouse);">
+                    <mat-checkbox
+                        class="ml-16"
+                        [value]="warehouse"
+                        [disableRipple]="true"
+                        [checked]="selection.isSelected(warehouse)"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleSelectedWarehouse(warehouse)"
+                    >
+                        {{ warehouse?.name || '-' }}
+                    </mat-checkbox>
+                </div>
+            </mat-option>
+            <!-- <mat-checkbox
                 *ngFor="let warehouse of (availableWarehouses$ | async)"
                 [value]="warehouse"
             >
                 {{ warehouse?.name || '-' }}
-            </mat-option>
+            </mat-checkbox> -->
             <!-- / WAREHOUSE OPTIONS -->
 
             <!-- LOADING OPTION -->

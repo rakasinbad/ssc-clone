@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
+import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatOption } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of, forkJoin } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged, delay, take, catchError, switchMap } from 'rxjs/operators';
 import { Warehouse } from './models';
@@ -17,6 +17,7 @@ import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { Auth } from 'app/main/pages/core/auth/models';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
     selector: 'select-warehouse',
@@ -32,20 +33,28 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
     warehouseForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
+    // Subject untuk keperluan toggle selection.
+    toggle$: Subject<Warehouse | string> = new Subject<Warehouse | string>();
 
     // Untuk menyimpan warehouse yang tersedia.
     availableWarehouses$: BehaviorSubject<Array<Warehouse>> = new BehaviorSubject<Array<Warehouse>>([]);
+    // Untuk menyimpan warehouse yang terpilih.
+    selection: SelectionModel<Warehouse> = new SelectionModel<Warehouse>(true, []);
     // Subject untuk mendeteksi adanya perubahan warehouse yang terpilih.
-    selectedWarehouse$: BehaviorSubject<Warehouse> = new BehaviorSubject<Warehouse>(null);
+    selectedWarehouse$: BehaviorSubject<Array<Warehouse>> = new BehaviorSubject<Array<Warehouse>>([]);
     // Menyimpan state loading-nya warehouse.
     isWarehouseLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
     totalWarehouses$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    // Untuk penanda apakah semuanya terpilih atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    allSelected: boolean = false;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selected: EventEmitter<TNullable<Warehouse>> = new EventEmitter<TNullable<Warehouse>>();
+    @Output() selected: EventEmitter<Array<Warehouse>> = new EventEmitter<Array<Warehouse>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
+    @ViewChild('invisibleOption', { static: true }) invisibleOption: MatOption;
     @ViewChild('warehouseAutoComplete', { static: true }) warehouseAutoComplete: MatAutocomplete;
     @ViewChild('triggerWarehouse', { static: true, read: MatAutocompleteTrigger }) triggerWarehouse: MatAutocompleteTrigger;
 
@@ -58,12 +67,19 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         this.availableWarehouses$.pipe(
             tap(x => this.debug('AVAILABLE WAREHOUSES', x)),
             takeUntil(this.subs$)
-        ).subscribe();
+        ).subscribe(warehouses => {
+            if (this.allSelected) {
+                this.selection.clear();
+                warehouses.forEach(warehouse => this.selection.select(warehouse));
+            }
+        });
 
         this.selectedWarehouse$.pipe(
             tap(x => this.debug('SELECTED WAREHOUSE', x)),
             takeUntil(this.subs$)
-        ).subscribe();
+        ).subscribe(warehouses => {
+            this.selected.emit(warehouses);
+        });
 
         this.isWarehouseLoading$.pipe(
             tap(x => this.debug('IS WAREHOUSE LOADING?', x)),
@@ -74,6 +90,19 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
             tap(x => this.debug('TOTAL WAREHOUSES', x)),
             takeUntil(this.subs$)
         ).subscribe();
+
+        this.toggle$.pipe(
+            withLatestFrom(this.totalWarehouses$, this.availableWarehouses$),
+            takeUntil(this.subs$)
+        ).subscribe(([toggleValue, totalWarehouse, warehouses]) => {
+            if (this.allSelected) {
+                this.selection.clear();
+            } else {
+                warehouses.forEach(warehouse => this.selection.select(warehouse));
+            }
+
+            this.allSelected = !this.allSelected;
+        });
     }
 
     private toggleLoading(loading: boolean): void {
@@ -155,6 +184,11 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         this.requestWarehouse(params);
     }
 
+    isAllSelected(): boolean {
+        const numSelected = this.selection.selected.length;
+        return this.totalWarehouses$.value === numSelected;
+    }
+
     getFormError(form: any): string {
         // console.log('get error');
         return this.errorMessage$.getFormError(form);
@@ -179,19 +213,39 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
-    onSelectedWarehouse(event: MatAutocompleteSelectedEvent): void {
-        // Mengambil nilai warehouse terpilih.
-        const warehouse: Warehouse = event.option.value;
-        // Mengirim nilai tersebut melalui subject.
-        this.selectedWarehouse$.next(warehouse);
+    toggleSelectedWarehouse(warehouse: Warehouse): void {
+        if (this.selection.isSelected(warehouse)) {
+            if (this.allSelected) {
+                this.allSelected = !this.allSelected;
+            }
+
+            this.selection.deselect(warehouse);
+        } else {
+            this.selection.select(warehouse);
+
+            if (this.isAllSelected()) {
+                this.allSelected = true;
+            }
+        }
     }
 
-    displayWarehouse(item: Warehouse): string {
-        if (!item) {
-            return;
+    onSelectedWarehouse(event: MatAutocompleteSelectedEvent): void {
+        // Mengambil nilai warehouse terpilih.
+        // const warehouse: Warehouse = event.option.value;
+        // Mengirim nilai tersebut melalui subject.
+        // this.selectedWarehouse$.next(warehouse);
+    }
+
+    displayWarehouse(): string {
+        if (!this.selection) {
+            return '';
         }
 
-        return item.name;
+        if (!this.selection.hasValue()) {
+            return '';
+        }
+
+        return this.selection.selected[0].name + String(this.selection.selected.length > 1 ? `(+${this.selection.selected.length - 1} others)` : '');
     }
 
     processWarehouseAutoComplete(): void {
@@ -212,9 +266,7 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
                     filter(({ isLoading, warehouses, totalWarehouses }) =>
                         !isLoading && (totalWarehouses > warehouses.length) && this.helper$.isElementScrolledToBottom(this.warehouseAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerWarehouse.panelClosingActions.pipe(
-                        tap(() => this.debug('SELECT WAREHOUSE IS CLOSING ...'))
-                    ))
+                    takeUntil(this.triggerWarehouse.panelClosingActions)
                 ).subscribe(({ warehouses }) => {
                     const params: IQueryParams = {
                         paginate: true,
@@ -229,8 +281,13 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
     }
 
     listenWarehouseAutoComplete(): void {
-        // this.triggerWarehouse.autocomplete = this.warehouseAutoComplete;
-        setTimeout(() => this.processWarehouseAutoComplete());
+        this.warehouseForm.setValue('');
+        setTimeout(() => this.processWarehouseAutoComplete(), 100);
+    }
+
+    optionSelected(event: Event, value: string | Warehouse): void {
+        event.stopPropagation();
+        this.toggle$.next(value);
     }
 
     ngOnInit(): void {
@@ -247,7 +304,7 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
                 if (selectedWarehouse && formValue && !this.warehouseAutoComplete.isOpen) {
                     return false;
                 }
-                
+
                 if (selectedWarehouse || (!formValue && !this.warehouseAutoComplete.isOpen)) {
                     this.selectedWarehouse$.next(null);
                     return false;
@@ -260,7 +317,7 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
 
                 return true;
             }),
-            tap<[string | Warehouse, TNullable<Warehouse>]>(([formValue, selectedWarehouse]) => {
+            tap<[string | Warehouse, Array<Warehouse>]>(([formValue, selectedWarehouse]) => {
                 this.debug('WAREHOUSE FORM VALUE IS CHANGED', { formValue, selectedWarehouse });
             }),
             takeUntil(this.subs$)
@@ -294,7 +351,31 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         this.availableWarehouses$.complete();
     }
 
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {
+        this.triggerWarehouse.panelClosingActions.pipe(
+            startWith([]),
+            tap(() => this.debug('SELECT WAREHOUSE IS CLOSING ...'))
+        ).subscribe(() => {
+            this.selectedWarehouse$.next(this.selection.selected);
+
+            if (!this.selection) {
+                this.warehouseForm.setValue('');
+                return;
+            }
+
+            if (!this.selection.hasValue()) {
+                this.warehouseForm.setValue('');
+                return;
+            }
+
+            const selectedFirst = this.selection.selected[0].name;
+            const selectedLength = this.selection.selected.length;
+            this.warehouseForm.setValue(this.warehouseForm.value + ' ');
+            setTimeout(() =>
+                this.warehouseForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''))
+            );
+        });
+    }
 
 }
 
