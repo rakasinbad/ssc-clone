@@ -26,8 +26,9 @@ import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
 import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
 import { CatalogueMediaSettingsComponent } from './components/catalogue-media-settings/catalogue-media-settings.component';
-import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
+import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
+import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 
 // import { style } from '@angular/animations';
 
@@ -46,6 +47,7 @@ import { CataloguePriceSettingsComponent } from './components/catalogue-price-se
         CatalogueSkuInformationComponent,
         CatalogueMediaSettingsComponent,
         CataloguePriceSettingsComponent,
+        CatalogueWeightAndDimensionComponent,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -78,7 +80,8 @@ import { CataloguePriceSettingsComponent } from './components/catalogue-price-se
         CataloguesEditPriceStockComponent,
         CataloguesSelectCategoryComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent
+        CataloguesActiveInactiveComponent,
+        CatalogueWeightAndDimensionComponent,
     ]
 })
 export class CataloguesModule {}

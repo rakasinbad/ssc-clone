@@ -101,7 +101,13 @@
                 </ng-template>
             </mat-tab>
             <mat-tab label="Weight & Dimension" [disabled]="isEditMode()">
-                <!-- <ng-template matTabContent></ng-template> -->
+                <ng-template matTabContent>
+                    <catalogue-weight-and-dimension
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-weight-and-dimension>
+                </ng-template>
             </mat-tab>
             <mat-tab label="Amount Settings" [disabled]="isEditMode()">
                 <!-- <ng-template matTabContent></ng-template> -->

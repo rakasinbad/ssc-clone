@@ -10,7 +10,8 @@ import {
     ICatalogueDemo,
     ICatalogueStockResponse,
     SimpleCatalogueCategory,
-    CatalogueInformation
+    CatalogueInformation,
+    CatalogueWeightDimension
 } from '../../models';
 import { CatalogueMedia } from '../../models/catalogue-media.model';
 
@@ -82,7 +83,7 @@ export const startPatchCatalogue = createAction(
 
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
-    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia>; source: TSourceEdit; section?: CatalogueSection; } }>()
+    props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia> | Partial<CatalogueWeightDimension>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
 export const patchCatalogueFailure = createAction(

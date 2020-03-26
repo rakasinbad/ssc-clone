@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestro
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { Catalogue, CatalogueInformation } from '../../models';
+import { Catalogue, CatalogueInformation, CatalogueWeightDimension } from '../../models';
 import { fromCatalogue } from '../../store/reducers';
 import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
 import { takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
@@ -34,7 +34,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     section: string = 'sku-information';
 
     formMode: IFormMode = 'view';
-    formValue: Partial<CatalogueInformation> | Partial<CatalogueMediaForm>;
+    formValue: Partial<CatalogueInformation> | Partial<CatalogueMediaForm> | Partial<CatalogueWeightDimension>;
 
     selectedCatalogue$: Observable<Catalogue>;
 
@@ -111,7 +111,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         }
     }
 
-    onFormValueChanged($event: CatalogueInformation | CatalogueMediaForm): void {
+    onFormValueChanged($event: CatalogueInformation | CatalogueMediaForm | CatalogueWeightDimension): void {
         switch (this.section) {
             case 'sku-information': {
                 const {
@@ -149,6 +149,25 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 this.formValue = {
                     photos,
                     oldPhotos,
+                };
+
+                break;
+            }
+            case 'weight-and-dimension': {
+                const {
+                    catalogueDimension,
+                    catalogueWeight,
+                    packagedDimension,
+                    packagedWeight,
+                    dangerItem = false,
+                } = ($event as CatalogueWeightDimension);
+
+                this.formValue = {
+                    catalogueDimension,
+                    catalogueWeight,
+                    packagedDimension,
+                    packagedWeight,
+                    dangerItem,
                 };
 
                 break;
@@ -294,6 +313,19 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                             payload: {
                                 id: catalogue.id,
                                 data: formCatalogue,
+                                source: 'form',
+                                section: this.section
+                            }
+                        }));
+
+                        break;
+                    }
+                    case 'weight-and-dimension': {
+                        this.store.dispatch(UiActions.hideFooterAction());
+                        this.store.dispatch(CatalogueActions.patchCatalogueRequest({
+                            payload: {
+                                id: catalogue.id,
+                                data: this.formValue as CatalogueWeightDimension,
                                 source: 'form',
                                 section: this.section
                             }
