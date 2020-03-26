@@ -172,7 +172,25 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
             ),
             takeUntil(this.subs$)
         ).subscribe(({ catalogue, categories, userSupplier }) => {
+            // Butuh mengambil data katalog jika belum ada di state.
             if (!catalogue) {
+                // Mengambil ID dari parameter URL.
+                const { id } = this.route.snapshot.params;
+
+                this.store.dispatch(
+                    CatalogueActions.fetchCatalogueRequest({
+                        payload: id
+                    })
+                );
+
+                this.store.dispatch(
+                    CatalogueActions.setSelectedCatalogue({
+                        payload: id
+                    })
+                );
+
+                return;
+            } else {
                 // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
                 if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
                     this.store.dispatch(
