@@ -333,6 +333,19 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                         break;
                     }
+                    case 'amount-settings': {
+                        this.store.dispatch(UiActions.hideFooterAction());
+                        this.store.dispatch(CatalogueActions.patchCatalogueRequest({
+                            payload: {
+                                id: catalogue.id,
+                                data: this.formValue as CatalogueWeightDimension,
+                                source: 'form',
+                                section: this.section
+                            }
+                        }));
+
+                        break;
+                    }
                 }
             }
         });

@@ -110,7 +110,13 @@
                 </ng-template>
             </mat-tab>
             <mat-tab label="Amount Settings" [disabled]="isEditMode()">
-                <!-- <ng-template matTabContent></ng-template> -->
+                <ng-template matTabContent>
+                    <catalogue-amount-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-amount-settings>
+                </ng-template>
             </mat-tab>
         </mat-tab-group>
         <!-- / TAB GROUP -->

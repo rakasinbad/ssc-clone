@@ -29,6 +29,7 @@ import { CatalogueMediaSettingsComponent } from './components/catalogue-media-se
 import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
 import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
 import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
+import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-settings/catalogue-amount-settings.component';
 
 // import { style } from '@angular/animations';
 
@@ -48,6 +49,7 @@ import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-det
         CatalogueMediaSettingsComponent,
         CataloguePriceSettingsComponent,
         CatalogueWeightAndDimensionComponent,
+        CatalogueAmountSettingsComponent,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -82,6 +84,7 @@ import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-det
         CataloguesRemoveComponent,
         CataloguesActiveInactiveComponent,
         CatalogueWeightAndDimensionComponent,
+        CatalogueAmountSettingsComponent
     ]
 })
 export class CataloguesModule {}
