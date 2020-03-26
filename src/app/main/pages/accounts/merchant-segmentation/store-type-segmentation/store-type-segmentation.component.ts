@@ -1,10 +1,19 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
-import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { FormBuilder, FormGroup, FormArray, AbstractControl } from '@angular/forms';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material';
-import { MerchantSegmentationFormComponent } from '../merchant-segmentation-form';
+import { select, Store } from '@ngrx/store';
+import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
+import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { from, Observable, of, Subject } from 'rxjs';
+import { concatMap, distinctUntilChanged, filter, finalize, takeUntil } from 'rxjs/operators';
+
 import { MerchantSegmentationAlertComponent } from '../merchant-segmentation-alert';
+import { MerchantSegmentationFormComponent } from '../merchant-segmentation-form';
+import { PayloadStoreType, StoreType } from '../models';
+import { StoreTypeActions } from '../store/actions';
+import * as fromStoreSegments from '../store/reducers';
+import { StoreTypeSelectors } from '../store/selectors';
 
 @Component({
     selector: 'app-store-type-segmentation',
@@ -17,6 +26,7 @@ export class StoreTypeSegmentationComponent implements OnInit {
     form: FormGroup;
     maxSegment = 5;
     triggerSegment = [false, false, false, false, false];
+    isFromSelector = false;
 
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
@@ -48,25 +58,16 @@ export class StoreTypeSegmentationComponent implements OnInit {
         // },
     };
 
-    coba = [
-        {
-            id: 'Lv1'
-        },
-        {
-            id: 'Lv2'
-        },
-        {
-            id: 'Lv3'
-        },
-        {
-            id: 'Lv4'
-        },
-        {
-            id: 'Lv5'
-        }
-    ];
+    items$: Observable<Array<StoreType>>;
 
-    constructor(private formBuilder: FormBuilder, private matDialog: MatDialog) {}
+    private _unSubs$: Subject<void> = new Subject();
+
+    constructor(
+        private cdRef: ChangeDetectorRef,
+        private formBuilder: FormBuilder,
+        private matDialog: MatDialog,
+        private store: Store<fromStoreSegments.FeatureState>
+    ) {}
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
@@ -78,6 +79,28 @@ export class StoreTypeSegmentationComponent implements OnInit {
 
         this._initPage();
     }
+
+    // test(items: Array<any>): Array<any> {
+    //     return items.reduce((flatItems, item) => {
+    //         console.log('1', item);
+
+    //         flatItems.push(item);
+
+    //         // if (item.parentId === parentId) {
+    //         //     flatItems.push(item);
+    //         // }
+
+    //         if (item.hasChild && Array.isArray(item.children)) {
+    //             console.log('2', item);
+    //             flatItems = flatItems.concat(this.test(item.children));
+    //             // this.test(item.children, parentId);
+    //         }
+
+    //         console.log('3', item);
+
+    //         return flatItems;
+    //     }, []);
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
@@ -112,6 +135,10 @@ export class StoreTypeSegmentationComponent implements OnInit {
         return this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'name']).value;
     }
 
+    hasChild(segmentIdx: number, branchIdx: number): boolean {
+        return !!this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'hasChild']).value;
+    }
+
     handleBranchNameFocus(segmentIdx: number, branchIdx: number): void {
         console.log(`SegmentID: ${segmentIdx}, BranchID: ${branchIdx}`);
     }
@@ -127,7 +154,7 @@ export class StoreTypeSegmentationComponent implements OnInit {
     }
 
     handleEvent(segmentIdx: number, branchIdx: number): void {
-        console.log('On Event');
+        console.log('On Event', this.isFromSelector);
         console.log(`SegmentID: ${segmentIdx}, BranchID: ${branchIdx}`);
 
         this.triggerSegment[segmentIdx] = false;
@@ -135,6 +162,22 @@ export class StoreTypeSegmentationComponent implements OnInit {
         if (!this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'name']).value) {
             this.deleteSegmentBranch(segmentIdx, branchIdx);
             return;
+        }
+
+        if (!this.isFromSelector) {
+            const selectedId = this.form.get(['segments', segmentIdx - 1, 'selectedId']).value;
+
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
+                .setValue(selectedId);
+
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
+                .setValue(segmentIdx + 1);
+
+            setTimeout(() => {
+                this._onSubmit(segmentIdx, branchIdx);
+            }, 100);
         }
 
         this.form
@@ -160,13 +203,24 @@ export class StoreTypeSegmentationComponent implements OnInit {
         return this.triggerSegment[segmentIdx];
     }
 
+    isSelected(segmentIdx: number, branchIdx: number): boolean {
+        const selectedId = this.form.get(['segments', segmentIdx, 'selectedId']).value;
+        const currentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id'])
+            .value;
+
+        return selectedId === currentId;
+    }
+
     lastSegmentHasBranchName(): boolean {
         if (this.segmentBranches(this.segments().length - 1).length > 0) {
             const branches = this.segmentBranches(this.segments().length - 1)
                 .getRawValue()
                 .filter(v => !!v.name);
 
-            return !!branches.length;
+            return (
+                !!branches.length &&
+                !!this.form.get(['segments', this.segments().length - 1, 'selectedId']).value
+            );
         }
 
         return false;
@@ -183,6 +237,50 @@ export class StoreTypeSegmentationComponent implements OnInit {
             panelClass: 'merchant-segment-form-dialog',
             disableClose: true
         });
+    }
+
+    onShowChild(segmentIdx: number, branchIdx: number): void {
+        const parentId = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'id']).value;
+        const currLevel = this.form.get(['segments', segmentIdx, 'level']).value;
+        const currLastSegment = +this.form.get('lastSegment').value;
+
+        this.form.get(['segments', segmentIdx, 'selectedId']).setValue(parentId);
+
+        const selectedId = this.form.get(['segments', segmentIdx, 'selectedId']).value;
+
+        if (segmentIdx > currLastSegment) {
+            this.form.get('lastSegment').setValue(currLevel);
+        }
+
+        console.log(
+            `Get child from parentId ${parentId} & segmentIdx ${segmentIdx} & branchIdx ${branchIdx} & lastSegment ${currLastSegment} & selectedId ${selectedId}`
+        );
+
+        this._resetSegment(segmentIdx);
+
+        this.store
+            .pipe(
+                select(StoreTypeSelectors.getChild(parentId)),
+                distinctUntilChanged(),
+                // delay(300),
+                filter(items => items && items.length > 0),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(items => {
+                if (!this.form.get(['segments', currLevel])) {
+                    this.addSegment();
+                }
+
+                this._generateHierarchies(items);
+                // console.log('Get Child', item, idx);
+                // this.addSegmentBranch(currLevel);
+
+                // this.form.get(['segments', currLevel, 'level']).setValue(item.sequence);
+                // this.form.get(['segments', currLevel, 'branches', idx, 'id']).setValue(item.id);
+                // this.form.get(['segments', currLevel, 'branches', idx, 'name']).setValue(item.name);
+                // this.handleEvent(currLevel - 1, idx);
+                // this.cdRef.markForCheck();
+            });
     }
 
     onSetStatus(segmentIdx: number, branchIdx: number): void {
@@ -205,7 +303,11 @@ export class StoreTypeSegmentationComponent implements OnInit {
     private _createBranches(): FormGroup {
         return this.formBuilder.group(
             {
+                id: null,
+                parentId: null,
+                sequence: null,
                 name: null,
+                hasChild: false,
                 status: 'typing'
             },
             { updateOn: 'blur' }
@@ -214,17 +316,108 @@ export class StoreTypeSegmentationComponent implements OnInit {
 
     private _createSegments(): FormGroup {
         return this.formBuilder.group({
+            selectedId: null,
             level: null,
             branches: this.formBuilder.array([])
         });
     }
 
+    private _generateHierarchies(items: Array<StoreType>): void {
+        if (items && items.length > 0) {
+            this.isFromSelector = true;
+
+            from(items)
+                .pipe(
+                    // concatMap((item, idx) => of({ item, idx }).pipe(delay(1000))),
+                    concatMap((item, idx) => of({ item, idx })),
+                    finalize(() => {
+                        this.isFromSelector = false;
+                        console.log('Out Looping', this.isFromSelector);
+                    }),
+                    takeUntil(this._unSubs$)
+                )
+                .subscribe(({ item, idx }) => {
+                    if (this.segmentBranches(item.sequence - 1).length < items.length) {
+                        this.addSegmentBranch(item.sequence - 1);
+                    }
+
+                    // Set level control (segments)
+                    this.form.get(['segments', item.sequence - 1, 'level']).setValue(item.sequence);
+
+                    // Set id control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'id'])
+                        .setValue(item.id);
+
+                    // Set parentId control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
+                        .setValue(item.parentId);
+
+                    // Set sequence control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
+                        .setValue(item.sequence);
+
+                    // Set name control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'name'])
+                        .setValue(item.name);
+
+                    // Set hasChild control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
+                        .setValue(item.hasChild);
+                    this.handleEvent(item.sequence - 1, idx);
+                    this.cdRef.markForCheck();
+                });
+            // items.forEach((item, idx) => {
+            //     // if (!this.form.get(['segments', item.sequence - 1])) {
+            //     //     this.addSegment();
+            //     // }
+
+            //     console.log(`In Looping = SegmentID ${item.sequence - 1}, BranchID ${idx}`);
+            //     // console.log('Generate item', item, idx, this.form, this.form.get('segments'));
+            //     setTimeout(() => {
+            //         this.addSegmentBranch(item.sequence - 1);
+
+            //         this.form.get(['segments', item.sequence - 1, 'level']).setValue(item.sequence);
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'name'])
+            //             .setValue(item.name);
+            //         this.handleEvent(item.sequence - 1, idx);
+            //     }, 100);
+
+            //     // if (item.hasChild) {
+            //     //     this._generateHierarchies(item.children);
+            //     // }
+            // });
+
+            // this.cdRef.markForCheck();
+        }
+    }
+
+    private _generateHierarchy(item: Array<StoreType>, itemIdx: number): void {}
+
+    private _resetSegment(currentSegment: number): void {
+        let lastSegment = +this.form.get('lastSegment').value;
+
+        while (lastSegment > currentSegment) {
+            // console.log(`Remove lastSegment: ${lastSegment}, except ${currentSegment}`);
+            this.segments().removeAt(lastSegment);
+            lastSegment--;
+        }
+    }
+
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
+                this._unSubs$.next();
+                this._unSubs$.complete();
                 break;
 
             default:
+                this._initHierarchy();
                 this._initForm();
                 break;
         }
@@ -232,9 +425,56 @@ export class StoreTypeSegmentationComponent implements OnInit {
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
+            lastSegment: null,
             segments: this.formBuilder.array([this._createSegments()])
         });
+
+        this.store
+            .select(StoreTypeSelectors.selectAll)
+            .pipe(
+                // delay(300),
+                filter(items => items && items.length > 0),
+                takeUntil(this._unSubs$)
+            )
+            .subscribe(items => {
+                console.log('Items', items);
+
+                this._generateHierarchies(items);
+
+                // if (items && items.length > 0) {
+                //     items.forEach((item, idx) => this._generateHierarchy(item, idx));
+                // }
+            });
     }
 
-    private _onSubmit(): void {}
+    private _initHierarchy(): void {
+        const data: IQueryParams = {
+            paginate: false
+        };
+
+        this.store.dispatch(StoreTypeActions.fetchStoreTypesRequest({ payload: data }));
+    }
+
+    private _onSubmit(segmentIdx: number, branchIdx: number): void {
+        const isValid = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).valid;
+        const body = this.form.getRawValue();
+
+        if (!isValid && !body.segments[segmentIdx].selectedId) {
+            return;
+        }
+
+        const payload = new PayloadStoreType({
+            supplierId: null,
+            parentId: body.segments[segmentIdx].branches[branchIdx].parentId,
+            sequence: +body.segments[segmentIdx].branches[branchIdx].sequence,
+            name: body.segments[segmentIdx].branches[branchIdx].name
+        });
+
+        console.log('Submit 1', this.form);
+        console.log('Submit 2', this.form.get(['segments', segmentIdx, 'branches', branchIdx]));
+
+        console.log('Submit payload', isValid, payload);
+
+        this.store.dispatch(StoreTypeActions.createStoreTypeRequest({ payload }));
+    }
 }

@@ -122,38 +122,82 @@
                                                 </button>
                                             </mat-menu>
 
-                                            <div
-                                                fxFlexAlign="center"
-                                                class="cursor-pointer sinbad-nav-link"
-                                                [class.sinbad-nav-link__focus]="
-                                                    isTyping(segmentIdx, branchIdx)
-                                                "
-                                                [class.sinbad-nav-link__readonly]="
-                                                    isReadonly(segmentIdx, branchIdx)
-                                                "
-                                                fxLayout="row"
-                                                fxLayoutAlign="space-between center"
-                                                fxFlex
+                                            <ng-container *ngIf="isReadonly(segmentIdx, branchIdx)">
+                                                <div
+                                                    fxFlexAlign="center"
+                                                    class="cursor-pointer sinbad-nav-link"
+                                                    [class.sinbad-nav-link__focus]="
+                                                        isTyping(segmentIdx, branchIdx)
+                                                    "
+                                                    [class.sinbad-nav-link__readonly]="
+                                                        isReadonly(segmentIdx, branchIdx)
+                                                    "
+                                                    [class.sinbad-red-10-fg]="
+                                                        isSelected(segmentIdx, branchIdx)
+                                                    "
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="space-between center"
+                                                    fxFlex
+                                                    (click)="onShowChild(segmentIdx, branchIdx)"
+                                                >
+                                                    <span>
+                                                        <input
+                                                            type="text"
+                                                            matInput
+                                                            autocomplete="off"
+                                                            formControlName="name"
+                                                            [readonly]="
+                                                                isReadonly(segmentIdx, branchIdx)
+                                                            "
+                                                            [class.sinbad-red-10-fg]="
+                                                                isSelected(segmentIdx, branchIdx)
+                                                            "
+                                                        />
+                                                    </span>
+                                                    <mat-icon
+                                                        *ngIf="hasChild(segmentIdx, branchIdx)"
+                                                    >
+                                                        chevron_right
+                                                    </mat-icon>
+                                                </div>
+                                            </ng-container>
+
+                                            <ng-container
+                                                *ngIf="!isReadonly(segmentIdx, branchIdx)"
                                             >
-                                                <span>
-                                                    <input
-                                                        type="text"
-                                                        matInput
-                                                        autocomplete="off"
-                                                        formControlName="name"
-                                                        (keydown.enter)="
-                                                            $event.target.blur();
-                                                            $event.stopPropagation()
-                                                        "
-                                                        (blur)="handleEvent(segmentIdx, branchIdx)"
-                                                        [readonly]="
-                                                            isReadonly(segmentIdx, branchIdx)
-                                                        "
-                                                        autofocus
-                                                    />
-                                                </span>
-                                                <mat-icon>chevron_right</mat-icon>
-                                            </div>
+                                                <div
+                                                    fxFlexAlign="center"
+                                                    class="cursor-pointer sinbad-nav-link"
+                                                    [class.sinbad-nav-link__focus]="
+                                                        isTyping(segmentIdx, branchIdx)
+                                                    "
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="space-between center"
+                                                    fxFlex
+                                                >
+                                                    <span>
+                                                        <input
+                                                            type="text"
+                                                            matInput
+                                                            autocomplete="off"
+                                                            formControlName="name"
+                                                            (keydown.enter)="
+                                                                $event.target.blur();
+                                                                $event.stopPropagation()
+                                                            "
+                                                            (blur)="
+                                                                handleEvent(segmentIdx, branchIdx)
+                                                            "
+                                                            autofocus
+                                                        />
+                                                    </span>
+                                                    <mat-icon
+                                                        *ngIf="hasChild(segmentIdx, branchIdx)"
+                                                    >
+                                                        chevron_right
+                                                    </mat-icon>
+                                                </div>
+                                            </ng-container>
                                         </div>
 
                                         <!-- <div

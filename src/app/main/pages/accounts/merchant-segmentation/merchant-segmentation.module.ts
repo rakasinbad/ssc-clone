@@ -9,6 +9,7 @@ import { MerchantSegmentationAlertComponent } from './merchant-segmentation-aler
 import { MerchantSegmentationFormComponent } from './merchant-segmentation-form';
 import { MerchantSegmentationComponent } from './merchant-segmentation.component';
 import { MerchantSegmentationRoutingModule } from './merchant-segmentation.routes';
+import { MerchantSegmentationNgrxModule } from './store';
 import { StoreTypeSegmentationComponent } from './store-type-segmentation';
 
 @NgModule({
@@ -30,7 +31,10 @@ import { StoreTypeSegmentationComponent } from './store-type-segmentation';
         RxReactiveDynamicFormsModule,
 
         // Third Party (NgxPermissions: https://github.com/AlexKhymenko/ngx-permissions)
-        NgxPermissionsModule.forChild()
+        NgxPermissionsModule.forChild(),
+
+        // Ngrx Store
+        MerchantSegmentationNgrxModule
     ],
     entryComponents: [MerchantSegmentationFormComponent, MerchantSegmentationAlertComponent]
 })
