@@ -4,9 +4,6 @@
         <div class="font-weight-600 font-size-24 line-height-20">Price Settings</div>
     </div>
 
-    <p class="font-weight-600 mb-16" *ngIf="(selectedCatalogue$ | async); else catalogueIsLoading;">
-        SKU Name: {{ (selectedCatalogue$ | async)?.name }}
-    </p>
     <ng-template #catalogueIsLoading>
         <ngx-skeleton-loader
             [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
@@ -24,7 +21,7 @@
         <!-- PRODUCT PRICE SECTION -->
         <div class="mb-28" fxLayout="row" fxFlexAlign="start center" fxLayoutGap="16px" fxFlex>
             <!-- PRODUCT BASE PRICE -->
-            <div
+            <!-- <div
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start center"
@@ -56,7 +53,7 @@
                 <span fxFlexAlign="center" class="grey-fg" *ngIf="isViewMode()">
                     {{ form.get('basePrice').value | price: 'full':'IDR':'narrow':'1.0-2' }}
                 </span>
-            </div>
+            </div> -->
             <!-- / PRODUCT BASE PRICE -->
             <!-- PRODUCT RETAIL BUYING PRICE -->
             <div

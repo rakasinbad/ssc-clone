@@ -15,6 +15,7 @@ import {
     CatalogueInformation
 } from '../models';
 import { CatalogueMedia } from '../models/catalogue-media.model';
+import { CataloguePrice } from '../models/catalogue-price.model';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -47,6 +48,7 @@ export class CataloguesService {
     private readonly _catalogueStockEndpoint = '/get-stocks';
     private readonly _categoryTreeEndpoint = '/categories-tree';
     private readonly _catalogueImportEndpoint = '/upload/import-catalogues';
+    private readonly _cataloguePriceSettingsEndpoint = '/price-settings';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -258,6 +260,74 @@ export class CataloguesService {
         return this.http.post<{ status: string }>(this._url, data, {
             reportProgress: true
         });
+    }
+
+    getCataloguePriceSettings<T>(params: IQueryParams, catalogueId?: string, warehouseId?: string): Observable<T> {
+        const newArgs = [];
+
+        if (!params['catalogueId'] && !catalogueId) {
+            throw new Error('ERR_CATALOGUE_PRICE_SETTINGS_REQUIRE_CATALOGUEID');
+        }
+
+        if (!params['warehouseId'] && !warehouseId) {
+            throw new Error('ERR_CATALOGUE_PRICE_SETTINGS_REQUIRE_WAREHOUSEID');
+        }
+
+        if (params['catalogueId']) {
+            newArgs.push({
+                key: 'catalogueId',
+                value: params['catalogueId']
+            });
+        } else if (catalogueId) {
+            newArgs.push({
+                key: 'catalogueId',
+                value: catalogueId
+            });
+        }
+
+        if (params['warehouseId']) {
+            newArgs.push({
+                key: 'warehouseId',
+                value: params['warehouseId']
+            });
+        } else if (warehouseId) {
+            newArgs.push({
+                key: 'warehouseId',
+                value: warehouseId
+            });
+        }
+
+        if (params['typeIds']) {
+            newArgs.push({
+                key: 'typeIds',
+                value: params['typeIds']
+            });
+        }
+
+        if (params['groupIds']) {
+            newArgs.push({
+                key: 'groupIds',
+                value: params['groupIds']
+            });
+        }
+
+        if (params['channelIds']) {
+            newArgs.push({
+                key: 'channelIds',
+                value: params['channelIds']
+            });
+        }
+
+        if (params['clusterIds']) {
+            newArgs.push({
+                key: 'clusterIds',
+                value: params['clusterIds']
+            });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
+        const newParams = this._$helper.handleParams(this._url, params);
+        return this.http.get<T>(`${this._url}`, { params: newParams });
     }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {

@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, Output, Input, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest } from 'rxjs';
+import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { fromCatalogue } from '../../store/reducers';
-import { ErrorMessageService, NoticeService } from 'app/shared/helpers';
+import { ErrorMessageService, NoticeService, HelperService } from 'app/shared/helpers';
 import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -20,7 +20,8 @@ import { CatalogueActions, BrandActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { SafeHtml } from '@angular/platform-browser';
-import { TNullable } from 'app/shared/models/global.model';
+import { TNullable, FormStatus } from 'app/shared/models/global.model';
+import { CataloguePrice } from '../../models/catalogue-price.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
 // 
@@ -30,23 +31,35 @@ type IFormMode = 'add' | 'view' | 'edit';
     styleUrls: ['./catalogue-price-settings.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
-export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CataloguePriceSettingsComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
+    // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
-
-    selectedCatalogue$: Observable<Catalogue>;
-
-    brands$: Observable<Array<Brand>>;
-
-    catalogueUnits: Array<CatalogueUnit>;
-
-    productCategory$: SafeHtml;
-
-    formMode: IFormMode = 'add';
-
+    // Untuk keperluan memicu adanya perubahan view.
+    private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk form.
     form: FormGroup;
+    // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
+    formModeValue: IFormMode = 'add';
+
+    @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
+    @Output() formValueChange: EventEmitter<CataloguePrice> = new EventEmitter<CataloguePrice>();
+
+    // Untuk mendapatkan event ketika form mode berubah.
+    @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
+
+    @Input()
+    get formMode(): IFormMode {
+        return this.formModeValue;
+    }
+
+    set formMode(mode: IFormMode) {
+        this.formModeValue = mode;
+        this.formModeChange.emit(this.formModeValue);
+    }
+
 
     catalogueContent: {
         'content-card': boolean;
@@ -77,18 +90,13 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private errorMessage$: ErrorMessageService,
-    ) {
-        this.selectedCatalogue$ = this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-        .pipe(
-            takeUntil(this.subs$)
-        );
-    }
+    ) { }
 
     drop(event: CdkDragDrop<Array<string>>): void {
         // this.cataloguePriceTools.
         moveItemInArray(this.cataloguePriceTools, event.previousIndex, event.currentIndex);
     }
-// 
+
     private updateFormView(): void {
         this.formClass = {
             'custom-field-right': !this.isViewMode(),
@@ -96,7 +104,7 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
         };
 
         this.catalogueContent = {
-            'mt-16': this.isViewMode(),
+            'mt-16': true,
             'content-card': this.isViewMode(),
             'sinbad-content': this.isAddMode() || this.isEditMode(),
             'mat-elevation-z1': this.isAddMode() || this.isEditMode(),
@@ -176,7 +184,6 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
                 setTimeout(() => {
                     this.form.patchValue({
                         id: catalogue.id,
-                        basePrice: catalogue.suggestedConsumerBuyingPrice,
                         retailBuyingPrice: catalogue.retailBuyingPrice,
                     });
 
@@ -188,6 +195,46 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
                 this.form.markAllAsTouched();
                 this.form.markAsPristine();
             });
+    }
+
+    private initFormCheck(): void {
+        (this.form.statusChanges as Observable<FormStatus>).pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(value => HelperService.debug('CATALOGUE PRICE SETTINGS FORM STATUS CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(status => {
+            this.formStatusChange.emit(status);
+        });
+
+        this.form.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(value => HelperService.debug('[BEFORE MAP] CATALOGUE PRICE SETTINGS FORM VALUE CHANGED', value)),
+            map(value => {
+                const formValue = {
+                    catalogueDimension: isNaN(Number(value.productShipment.catalogueDimension))
+                        ? null
+                        : Number(value.productShipment.catalogueDimension),
+                    catalogueWeight: isNaN(Number(value.productShipment.catalogueWeight))
+                        ? null
+                        : Number(value.productShipment.catalogueWeight),
+                    packagedDimension: isNaN(Number(value.productShipment.packagedDimension))
+                        ? null
+                        : Number(value.productShipment.packagedDimension),
+                    packagedWeight: isNaN(Number(value.productShipment.packagedWeight))
+                        ? null
+                        : Number(value.productShipment.packagedWeight),
+                    dangerItem: false,
+                };
+
+                return formValue;
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] CATALOGUE WEIGHT & DIMENSION FORM VALUE CHANGED', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            // this.formValueChange.emit(value);
+        });
     }
 
     getFormError(form: any): string {
@@ -228,7 +275,18 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
         /** Menyiapkan form. */
         this.form = this.fb.group({
             id: [''],
-            basePrice: [
+            // basePrice: [
+            //     '',
+            //     [
+            //         RxwebValidators.required({
+            //             message: this.errorMessage$.getErrorMessageNonState(
+            //                 'default',
+            //                 'required'
+            //             )
+            //         })
+            //     ]
+            // ],
+            retailBuyingPrice: [
                 '',
                 [
                     RxwebValidators.required({
@@ -239,14 +297,27 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
                     })
                 ]
             ],
-            retailBuyingPrice: [''],
             advancePrice: [true]
         });
 
         this.checkRoute();
+        // this.initFormCheck();
     }
 
     ngAfterViewInit(): void { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes['formMode'].isFirstChange() && changes['formMode'].currentValue === 'edit') {
+            this.trigger$.next('');
+
+            setTimeout(() => {
+                this.updateFormView();
+            });
+        } else if (changes['formMode'].currentValue) {
+            this.trigger$.next('');
+            setTimeout(() => this.updateFormView());
+        }
+    }
 
     ngOnDestroy(): void {
         this.subs$.next();
