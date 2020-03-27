@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, SimpleChanges, OnChanges } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
@@ -27,7 +27,7 @@ import { SelectionModel } from '@angular/cdk/collections';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
     // Form
     warehouseForm: FormControl = new FormControl('');
@@ -50,6 +50,9 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
     // tslint:disable-next-line: no-inferrable-types
     allSelected: boolean = false;
 
+    // Untuk menyimpan status required untuk input bersifat wajib atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() isRequired: boolean = false;
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<Array<Warehouse>> = new EventEmitter<Array<Warehouse>>();
 
@@ -168,6 +171,17 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         });
     }
 
+    private setValidator(): void {
+        this.warehouseForm.setValidators(
+            RxwebValidators.required({
+                message: this.errorMessage$.getErrorMessageNonState(
+                    'default',
+                    'required'
+                )
+            })
+        );
+    }
+
     private initWarehouse(): void {
         // Menyiapkan query untuk pencarian warehouse.
         const params: IQueryParams = {
@@ -179,6 +193,10 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
         // Reset form-nya warehouse.
         this.warehouseForm.enable();
         this.warehouseForm.reset();
+
+        if (this.isRequired) {
+            this.setValidator();
+        }
 
         // Memulai request data warehouse.
         this.requestWarehouse(params);
@@ -332,6 +350,18 @@ export class WarehouseDropdownComponent implements OnInit, AfterViewInit, OnDest
 
             this.requestWarehouse(queryParams);
         });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['isRequired']) {
+            this.warehouseForm.clearValidators();
+
+            if (changes['isRequired'].currentValue === true) {
+                this.setValidator();
+            }
+
+            this.warehouseForm.updateValueAndValidity();
+        }
     }
 
     ngOnDestroy(): void {

@@ -10,6 +10,7 @@ import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distin
 import { Selection } from './models';
 
 import { SelectionModel } from '@angular/cdk/collections';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 let that: SelectAdvancedComponent;
 
@@ -37,6 +38,10 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line: no-inferrable-types
     allSelected: boolean = false;
 
+    // Untuk menyimpan status required untuk input bersifat wajib atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() isRequired: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types
     // Untuk teks placeholder pada input.
     // tslint:disable-next-line: no-inferrable-types
     @Input() placeholder: string = 'Search';
@@ -98,10 +103,25 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
         });
     }
 
+    private setValidator(): void {
+        this.optionForm.setValidators(
+            RxwebValidators.required({
+                message: this.errorMessage$.getErrorMessageNonState(
+                    'default',
+                    'required'
+                )
+            })
+        );
+    }
+
     private initOption(): void {
         // Reset form-nya option.
         this.optionForm.enable();
         this.optionForm.reset();
+
+        if (this.isRequired) {
+            this.setValidator();
+        }
     }
 
     getValue(option: Selection): string {
@@ -392,6 +412,16 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
 
             HelperService.debug('CHANGES ON availableOptions:', changes['availableOptions']);
             this.cdRef.detectChanges();
+        }
+
+        if (changes['isRequired']) {
+            this.optionForm.clearValidators();
+
+            if (changes['isRequired'].currentValue === true) {
+                this.setValidator();
+            }
+
+            this.optionForm.updateValueAndValidity();
         }
     }
 
