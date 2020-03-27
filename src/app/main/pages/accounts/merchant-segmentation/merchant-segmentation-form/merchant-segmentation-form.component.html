@@ -1,0 +1,61 @@
+<!-- <h2 mat-dialog-title *ngIf="data?.title">
+    {{ data?.title | titlecase }}
+</h2> -->
+
+<mat-toolbar class="m-0 px-16 pt-8 pb-16">
+    <mat-toolbar-row class="p-0">
+        <span mat-dialog-title class="m-0">{{ dialogTitle }}</span>
+        <span class="spacer"></span>
+        <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-dialog-content class="mat-typography m-0 p-0 px-16">
+    <form id="merchant-segmentation-form" class="w-100-p" fxLayout="column" fxFlex novalidate>
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <label fxFlexAlign="center" fxFlex="18">
+                Branch ID
+            </label>
+
+            <mat-form-field appearance="outline" fxFlex="70">
+                <input matInput name="branchId" />
+            </mat-form-field>
+        </div>
+
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <label fxFlexAlign="center" fxFlex="18">
+                *Branch Name
+            </label>
+
+            <mat-form-field appearance="outline" fxFlex="70">
+                <input matInput name="branchName" />
+            </mat-form-field>
+        </div>
+
+        <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
+            <label fxFlexAlign="center" fxFlex="18">
+                Description
+            </label>
+
+            <mat-form-field appearance="outline" fxFlex="70">
+                <textarea #desc matInput name="desc" rows="5"></textarea>
+                <mat-hint align="end">
+                    <span class="text-bold">{{ desc.value.length }}</span> / 250
+                </mat-hint>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <span class="text-semibold">Selected:</span>
+            <span class="sinbad-red-10-fg pl-12">Store Type</span>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="m-0 p-0 px-16" align="end">
+    <button mat-flat-button color="accent" class="w-128">
+        Save
+    </button>
+</mat-dialog-actions>

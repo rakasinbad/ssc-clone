@@ -126,7 +126,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         'owner-name',
         // 'store-segment',
         'store-type',
-        'sr-name',
+        // 'sr-name',
         'joining-date',
         'status',
         'actions'
@@ -367,7 +367,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'owner-name',
                                 // 'store-segment',
                                 'store-type',
-                                'sr-name',
+                                // 'sr-name',
                                 'joining-date',
                                 'status',
                                 'actions'
@@ -383,7 +383,7 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                                 'owner-name',
                                 // 'store-segment',
                                 'store-type',
-                                'sr-name',
+                                // 'sr-name',
                                 'joining-date',
                                 'status'
                             ];
@@ -392,7 +392,10 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             case LifecyclePlatform.OnDestroy:
+                // Reset breadcrumb state
                 this.store.dispatch(UiActions.resetBreadcrumb());
+
+                // Reset core state stores
                 this.store.dispatch(StoreActions.resetStore());
 
                 this._unSubs$.next();
@@ -401,8 +404,9 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
+
                 this.sort.sort({
-                    id: 'id',
+                    id: 'updated_at',
                     start: 'desc',
                     disableClear: true
                 });

@@ -36,7 +36,10 @@ const routes: Routes = [
     },
     {
         path: 'store-setting',
-        loadChildren: () => import('./merchants/merchant-setting/merchant-setting.module').then(m => m.MerchantSettingModule),
+        loadChildren: () =>
+            import('./merchants/merchant-setting/merchant-setting.module').then(
+                m => m.MerchantSettingModule
+            ),
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {
@@ -57,9 +60,6 @@ const routes: Routes = [
                 }
             }
         }
-        // resolve: {
-        //     merchants: MerchantResolver
-        // }
     },
     {
         path: 'internal',
@@ -68,6 +68,33 @@ const routes: Routes = [
         data: {
             permissions: {
                 only: ['SUPER_SUPPLIER_ADMIN', 'SUPPLIER_ADMIN'],
+                redirectTo: {
+                    navigationCommands: ['/pages/errors/403'],
+                    navigationExtras: {
+                        replaceUrl: true,
+                        skipLocationChange: true
+                    }
+                }
+            }
+        }
+    },
+    {
+        path: 'store-segmentation',
+        loadChildren: () =>
+            import('./merchant-segmentation/merchant-segmentation.module').then(
+                m => m.MerchantSegmentationModule
+            ),
+        canLoad: [AuthGuard, NgxPermissionsGuard],
+        data: {
+            permissions: {
+                only: [
+                    'SUPER_SUPPLIER_ADMIN',
+                    'FINANCE',
+                    'HEAD_OF_SALES',
+                    'BOS',
+                    'COUNTRY_MANAGER',
+                    'SUPPLIER_ADMIN'
+                ],
                 redirectTo: {
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {

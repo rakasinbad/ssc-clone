@@ -22,11 +22,13 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> Province
         </label>
 
         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
             <input
+                #triggerProvince
                 matInput
                 autocomplete="new-password"
                 placeholder="Search Province"
@@ -34,7 +36,7 @@
                 [matAutocomplete]="provinceAutoComplete"
             />
             <mat-autocomplete
-                #provinceAutoComplete="matAutocomplete"
+                #provinceAutoComplete
                 [displayWith]="displayProvince"
                 (opened)="listenProvinceAutoComplete()"
                 (optionSelected)="onSelectedProvince($event)"
@@ -83,11 +85,13 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> City
         </label>
 
         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
             <input
+                #triggerCity
                 matInput
                 autocomplete="new-password"
                 placeholder="Search City"
@@ -95,7 +99,7 @@
                 [matAutocomplete]="cityAutoComplete"
             />
             <mat-autocomplete
-                #cityAutoComplete="matAutocomplete"
+                #cityAutoComplete
                 [displayWith]="displayCity"
                 (opened)="listenCityAutoComplete()"
                 (optionSelected)="onSelectedCity($event)"
@@ -144,11 +148,13 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> District
         </label>
 
         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
             <input
+                #triggerDistrict
                 matInput
                 autocomplete="new-password"
                 placeholder="Search District"
@@ -156,7 +162,7 @@
                 [matAutocomplete]="districtAutoComplete"
             />
             <mat-autocomplete
-                #districtAutoComplete="matAutocomplete"
+                #districtAutoComplete
                 [displayWith]="displayDistrict"
                 (opened)="listenDistrictAutoComplete()"
                 (optionSelected)="onSelectedDistrict($event)"
@@ -205,11 +211,13 @@
         >
             <span
                 class="sinbad-red-fg"
+                *ngIf="showRequiredMark === true"
             >* </span> Urban
         </label>
 
         <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
             <input
+                #triggerUrban
                 matInput
                 autocomplete="new-password"
                 placeholder="Search Urban"
@@ -217,7 +225,7 @@
                 [matAutocomplete]="urbanAutoComplete"
             />
             <mat-autocomplete
-                #urbanAutoComplete="matAutocomplete"
+                #urbanAutoComplete
                 [displayWith]="displayUrban"
                 (opened)="listenUrbanAutoComplete()"
                 (optionSelected)="onSelectedUrban($event)"

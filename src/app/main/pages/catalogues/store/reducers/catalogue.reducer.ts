@@ -3,7 +3,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { IErrorHandler, TNullable, TSource } from 'app/shared/models/global.model';
 import * as fromRoot from 'app/store/app.reducer';
 
-import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
+import { Catalogue, CatalogueCategory, CatalogueUnit, SimpleCatalogueCategory } from '../../models';
 import { CatalogueActions } from '../actions';
 
 export const FEATURE_KEY = 'catalogues';
@@ -24,12 +24,7 @@ export interface State {
     isLoading: boolean;
     needRefresh: boolean;
     selectedCatalogueId: string | number;
-    selectedCategories: Array<{
-        id: string;
-        name: string;
-        parent: TNullable<string>;
-        hasChildren?: boolean;
-    }>;
+    selectedCategories: Array<SimpleCatalogueCategory>;
     productName: string;
     category?: CatalogueCategory;
     categories: Array<CatalogueCategory>;
@@ -356,7 +351,8 @@ const catalogueReducer = createReducer(
         ...state,
         catalogues: initialState.catalogues,
         errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
-    }))
+    })),
+    on(CatalogueActions.resetCatalogueUnits, state => ({ ...state, units: initialState.units })),
 );
 
 export function reducer(state: State | undefined, action: Action): State {

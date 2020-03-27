@@ -46,21 +46,22 @@ app-credit-stores {
 
     .stores-table {
         flex: 1 1 auto;
-        border: 1px solid;
+        border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
-        // .mat-header-row {
-        //     min-height: 64px;
-        // }
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
 
         .mat-header-row,
         .mat-row {
             background: white;
+            min-width: fit-content;
+            width: fit-content;
         }
-
         .mat-row {
             min-height: unset;
         }
@@ -72,8 +73,6 @@ app-credit-stores {
         }
 
         .mat-header-cell {
-            // display: flex;
-            // justify-content: flex-end;
             text-align: left;
             font-weight: 700;
 
@@ -110,48 +109,65 @@ app-credit-stores {
         }
 
         .mat-column-name {
-            flex: 0 1 18%;
+            flex: 1 1 10em;
+            min-width: 150px;
         }
 
         .mat-column-credit-limit {
-            flex: 0 1 12%;
+            flex: 0 1 120px;
+            min-width: 120px;
         }
 
         .mat-column-invoice-name {
-            flex: 0 1 18%;
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
         .mat-column-receivable {
-            flex: 0 1 12%;
+            flex: 1 1 10em;
+            min-width: 130px;
         }
 
         .mat-column-balance {
-            flex: 0 1 12%;
+            flex: 0 1 120px;
+            min-width: 120px;
         }
 
         .mat-column-avg-monthly {
-            flex: 0 1 12%;
+            flex: 1 1 10em;
+            min-width: 150px;
         }
 
         .mat-column-credit-limit-group {
-            flex: 0 1 15%;
+            flex: 0 1 122px;
+            min-width: 122px;
         }
 
         .mat-column-store-segment {
-            flex: 0 1 10%;
+            flex: 0 1 70px;
+            min-width: 70px;
         }
 
         .mat-column-top {
-            flex: 0 1 70px;
+            flex: 0 1 40px;
+            min-width: 40px;
         }
 
         .mat-column-last-update {
-            flex: 0 1 15%;
+            flex: 0 1 120px;
+            min-width: 120px;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
         }
 
         .quantity-indicator {
@@ -169,4 +185,8 @@ app-credit-stores {
             }
         }
     }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
 }

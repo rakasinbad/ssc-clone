@@ -2,12 +2,16 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatDialog, MatPaginator, MatSort } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
@@ -19,7 +23,7 @@ import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { CreditStoreFormComponent } from '../credit-store-form/credit-store-form.component';
 import { CreditLimitStore, CreditLimitStoreOptions } from '../models';
@@ -50,10 +54,12 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         search: {
             active: true,
-            changed: (value: string) =>
-                this.store.dispatch(
-                    CreditLimitBalanceActions.searchCreditLimitStore({ payload: value })
-                )
+            changed: (value: string) => {
+                this.search.setValue(value);
+                // this.store.dispatch(
+                //     CreditLimitBalanceActions.searchCreditLimitStore({ payload: value })
+                // );
+            }
         }
         // add: {
         //     permissions: ['CATALOGUE.CREATE'],
@@ -70,7 +76,6 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         // },
     };
 
-    search: any;
     displayedColumns = [
         // 'order',
         'name',
@@ -85,12 +90,17 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
         'last-update',
         'actions'
     ];
+
+    search: FormControl = new FormControl('');
     today = new Date();
 
     dataSource$: Observable<Array<CreditLimitStore>>;
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef;
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -104,6 +114,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private domSanitizer: DomSanitizer,
         private matDialog: MatDialog,
         private ngxPermissions: NgxPermissionsService,
         private store: Store<fromCreditLimitBalance.FeatureState>,
@@ -249,6 +260,7 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
                 merge(this.sort.sortChange, this.paginator.page)
                     .pipe(takeUntil(this._unSubs$))
                     .subscribe(() => {
+                        this.table.nativeElement.scrollTop = 0;
                         this._initTable();
                     });
 
@@ -287,14 +299,18 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
                 break;
 
             case LifecyclePlatform.OnDestroy:
+                // Reset core state creditLimitBalanceStores
+                this.store.dispatch(CreditLimitBalanceActions.resetCreditLimitStoreState());
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
+
                 this.sort.sort({
-                    id: 'id',
+                    id: 'updated_at',
                     start: 'desc',
                     disableClear: true
                 });
@@ -310,58 +326,89 @@ export class CreditStoresComponent implements OnInit, AfterViewInit, OnDestroy {
 
                 this._initTable();
 
-                this.store
-                    .select(CreditLimitBalanceSelectors.getKeyword)
-                    .pipe(takeUntil(this._unSubs$))
+                this.search.valueChanges
+                    .pipe(
+                        distinctUntilChanged(),
+                        debounceTime(1000),
+                        filter(v => {
+                            if (v) {
+                                return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                            }
+
+                            return true;
+                        }),
+                        takeUntil(this._unSubs$)
+                    )
                     .subscribe(v => {
-                        this.search = v;
-
-                        this.store.dispatch(CreditLimitBalanceActions.triggerRefresh());
+                        this._onRefreshTable();
                     });
 
-                this.store
-                    .select(CreditLimitBalanceSelectors.getIsRefresh)
-                    .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
-                    .subscribe(isRefresh => {
-                        if (isRefresh) {
-                            this._onRefreshTable();
-                        }
-                    });
+                // this.store
+                //     .select(CreditLimitBalanceSelectors.getKeyword)
+                //     .pipe(
+                //         distinctUntilChanged(),
+                //         debounceTime(1000),
+                //         filter(v => {
+                //             if (v) {
+                //                 return !!this.domSanitizer.sanitize(SecurityContext.HTML, v);
+                //             }
+
+                //             return true;
+                //         }),
+                //         takeUntil(this._unSubs$)
+                //     )
+                //     .subscribe(v => {
+                //         // this.search = v;
+
+                //         this.store.dispatch(CreditLimitBalanceActions.triggerRefresh());
+                //     });
+
+                // this.store
+                //     .select(CreditLimitBalanceSelectors.getIsRefresh)
+                //     .pipe(distinctUntilChanged(), takeUntil(this._unSubs$))
+                //     .subscribe(isRefresh => {
+                //         if (isRefresh) {
+                //             this._onRefreshTable();
+                //         }
+                //     });
                 break;
         }
     }
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
         this.paginator.pageIndex = 0;
         this._initTable();
     }
 
     private _initTable(): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
-        };
+        if (this.paginator) {
+            const data: IQueryParams = {
+                limit: this.paginator.pageSize || 5,
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            };
 
-        data['paginate'] = true;
+            data['paginate'] = true;
 
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
+            }
+
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
+
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query
+                    }
+                ];
+            }
+            this.store.dispatch(
+                CreditLimitBalanceActions.fetchCreditLimitStoresRequest({
+                    payload: data
+                })
+            );
         }
-
-        if (typeof this.search !== 'undefined' && this.search) {
-            const query = this.search;
-
-            data['search'] = [
-                {
-                    fieldName: 'keyword',
-                    keyword: query
-                }
-            ];
-        }
-        this.store.dispatch(
-            CreditLimitBalanceActions.fetchCreditLimitStoresRequest({
-                payload: data
-            })
-        );
     }
 }

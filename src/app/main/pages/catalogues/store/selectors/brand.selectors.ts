@@ -36,7 +36,7 @@ export const getAllBrands = createSelector(getBrandState, fromBrand.selectAllBra
 //     catalogues => catalogues.filter(catalogue => catalogue.stock)
 // );
 
-// export const getIsLoading = createSelector(
-//     getCatalogueState,
-//     state => state.isLoading
-// );
+export const getIsLoading = createSelector(
+    getBrandState,
+    state => state.isLoading
+);

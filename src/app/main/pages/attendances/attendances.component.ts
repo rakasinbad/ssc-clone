@@ -46,10 +46,10 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
 
     total: number;
     displayedColumns = [
-        'idToko',
-        'storeName',
-        'storeAddress',
-        'storePhoneNumber',
+        'store-code',
+        'store-name',
+        'store-address',
+        'store-phone-no',
         // 'GS',
         // 'SPV',
         // 'check-in',
@@ -157,6 +157,7 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
+
         this._fromStore.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
@@ -302,10 +303,10 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
-                        'idToko',
-                        'storeName',
-                        'storeAddress',
-                        'storePhoneNumber',
+                        'store-code',
+                        'store-name',
+                        'store-address',
+                        'store-phone-no',
                         // 'GS',
                         // 'SPV',
                         // 'check-in',
@@ -315,10 +316,10 @@ export class AttendancesComponent implements OnInit, AfterViewInit, OnDestroy {
                     ];
                 } else {
                     this.displayedColumns = [
-                        'idToko',
-                        'storeName',
-                        'storeAddress',
-                        'storePhoneNumber'
+                        'store-code',
+                        'store-name',
+                        'store-address',
+                        'store-phone-no'
                         // 'GS',
                         // 'SPV',
                         // 'check-in',

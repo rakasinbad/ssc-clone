@@ -1,0 +1,46 @@
+<!-- STORE CLUSTER -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerStoreCluster
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Store Cluster"
+            [formControl]="storeClusterForm"
+            [matAutocomplete]="storeClusterAutoComplete"
+        />
+        <mat-autocomplete
+            #storeClusterAutoComplete
+            [displayWith]="displayStoreCluster"
+            (opened)="listenStoreClusterAutoComplete()"
+            (optionSelected)="onSelectedStoreCluster($event)"
+        >
+            <!-- NONE OPTION -->
+            <mat-option *ngIf="!(isStoreClusterLoading$ | async)">(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- STORE CLUSTER OPTIONS -->
+            <mat-option
+                *ngFor="let storeCluster of (availableStoreClusters$ | async)"
+                [value]="storeCluster"
+            >
+                {{ storeCluster?.name || '-' }}
+            </mat-option>
+            <!-- / STORE CLUSTER OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalStoreClusters$ | async) && ((totalStoreClusters$ | async) > (availableStoreClusters$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(storeClusterForm)">
+            {{ getFormError(storeClusterForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / STORE CLUSTER -->
