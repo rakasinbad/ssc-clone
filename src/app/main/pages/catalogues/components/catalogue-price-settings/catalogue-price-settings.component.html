@@ -127,24 +127,24 @@
                         <select-warehouse class="w-100-p"></select-warehouse>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'store-type'" cdkDrag>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'type'" cdkDrag>
                         <!-- <span>B</span> -->
-                        <select-store-types class="w-100-p"></select-store-types>
+                        <select-store-segmentation-types class="w-100-p"></select-store-segmentation-types>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'store-group'" cdkDrag>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'group'" cdkDrag>
                         <!-- <span>C</span> -->
-                        <select-store-groups class="w-100-p"></select-store-groups>
+                        <select-store-segmentation-groups class="w-100-p"></select-store-segmentation-groups>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'store-channel'" cdkDrag>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'channel'" cdkDrag>
                         <!-- <span>D</span> -->
-                        <!-- <select-store-channels class="w-100-p"></select-store-channels> -->
+                        <select-store-segmentation-channels class="w-100-p"></select-store-segmentation-channels>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'store-cluster'" cdkDrag>
+                    <div class="catalogue-price-tools" *ngIf="tool === 'cluster'" cdkDrag>
                         <!-- <span>E</span> -->
-                        <!-- <select-store-clusters class="w-100-p"></select-store-clusters> -->
+                        <select-store-segmentation-clusters class="w-100-p"></select-store-segmentation-clusters>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
                 </ng-container>
@@ -153,7 +153,7 @@
             <!-- APPLY BUTTON -->
             <button
                 mat-flat-button
-                class="sinbad-yellow w-84 h-32"
+                class="sinbad-yellow w-84 h-32 mb-28"
             >
                 Apply
             </button>

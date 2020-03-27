@@ -23,7 +23,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { TNullable } from 'app/shared/models/global.model';
 
 type IFormMode = 'add' | 'view' | 'edit';
-
+// 
 @Component({
     selector: 'catalogue-price-settings',
     templateUrl: './catalogue-price-settings.component.html',
@@ -61,10 +61,10 @@ export class CataloguePriceSettingsComponent implements OnInit, AfterViewInit, O
     };
     cataloguePriceTools: Array<string> = [
         'warehouse',
-        'store-type',
-        'store-group',
-        'store-channel',
-        'store-cluster',
+        'type',
+        'group',
+        'channel',
+        'cluster',
     ];
 
     constructor(
