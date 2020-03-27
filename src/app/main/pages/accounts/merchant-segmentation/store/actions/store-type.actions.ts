@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreType, StoreType } from '../../models';
+import { PayloadStoreType, StoreSegment, StoreType } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Types
@@ -20,7 +20,26 @@ export const fetchStoreTypesFailure = createAction(
 
 export const fetchStoreTypesSuccess = createAction(
     '[Store Segmentation] Fetch Store Types Success',
-    props<{ payload: { data: Array<StoreType>; deepestLevel: number } }>()
+    props<{ payload: StoreSegment<StoreType> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Refresh Store Types
+// -----------------------------------------------------------------------------------------------------
+
+export const refreshStoreTypesRequest = createAction(
+    '[Store Segmentation] Refresh Store Types Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const refreshStoreTypesFailure = createAction(
+    '[Store Segmentation] Refresh Store Types Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const refreshStoreTypesSuccess = createAction(
+    '[Store Segmentation] Refresh Store Types Success',
+    props<{ payload: StoreSegment<StoreType> }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -43,4 +62,7 @@ export const createStoreTypeSuccess = createAction(
 
 export const clearState = createAction('[Store Segmentation] Reset Store Types Core State');
 
-export type FailureActions = 'fetchStoreTypesFailure' | 'createStoreTypeFailure';
+export type FailureActions =
+    | 'fetchStoreTypesFailure'
+    | 'refreshStoreTypesFailure'
+    | 'createStoreTypeFailure';

@@ -1,9 +1,9 @@
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { ITimestamp } from 'app/shared/models/timestamp.model';
 
-export interface IStoreType extends ITimestamp {
+export interface IStoreGroup extends ITimestamp {
     readonly id: NonNullable<string>;
-    children: Array<StoreType>;
+    children: Array<StoreGroup>;
     description: string;
     externalId: string;
     hasChild: boolean;
@@ -14,9 +14,9 @@ export interface IStoreType extends ITimestamp {
     supplierId: string;
 }
 
-export class StoreType implements IStoreType {
+export class StoreGroup implements IStoreGroup {
     readonly id: NonNullable<string>;
-    children: Array<StoreType>;
+    children: Array<StoreGroup>;
     description: string;
     externalId: string;
     hasChild: boolean;
@@ -29,7 +29,7 @@ export class StoreType implements IStoreType {
     updatedAt: string;
     deletedAt: TNullable<string>;
 
-    constructor(data: IStoreType) {
+    constructor(data: IStoreGroup) {
         const {
             id,
             children,
@@ -62,7 +62,7 @@ export class StoreType implements IStoreType {
         this.setChildren = children;
     }
 
-    set setChildren(value: Array<StoreType>) {
-        this.children = value && value.length > 0 ? value.map(v => new StoreType(v)) : [];
+    set setChildren(value: Array<StoreGroup>) {
+        this.children = value && value.length > 0 ? value.map(v => new StoreGroup(v)) : [];
     }
 }

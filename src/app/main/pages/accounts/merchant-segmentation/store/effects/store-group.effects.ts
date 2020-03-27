@@ -14,54 +14,60 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreType, StoreSegment, StoreType } from '../../models';
-import { StoreTypeApiService, StoreTypeCrudApiService } from '../../services';
-import { StoreSegmentationFailureActions, StoreTypeActions } from '../actions';
+import { PayloadStoreGroup, StoreGroup, StoreSegment } from '../../models';
+import { StoreGroupApiService, StoreGroupCrudApiService } from '../../services';
+import { StoreGroupActions, StoreSegmentationFailureActions } from '../actions';
 import * as fromStoreSegments from '../reducers';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
 @Injectable()
-export class StoreTypeEffects {
+export class StoreGroupEffects {
     // -----------------------------------------------------------------------------------------------------
     // @ CRUD methods [CREATE - STORE TYPE]
     // -----------------------------------------------------------------------------------------------------
 
-    createStoreTypeRequest$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(StoreTypeActions.createStoreTypeRequest),
-            map(action => action.payload),
-            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
-            switchMap(([payload, authState]: [PayloadStoreType, TNullable<Auth>]) => {
-                if (!authState) {
-                    return this._$helper.decodeUserToken().pipe(
-                        map(this._checkUserSupplier),
-                        retry(3),
-                        switchMap(userData => of([userData, payload])),
-                        switchMap<[User, any], Observable<AnyAction>>(
-                            this._createStoreTypeRequest$
-                        ),
-                        catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
-                    );
-                } else {
-                    return of(authState.user).pipe(
-                        map(this._checkUserSupplier),
-                        retry(3),
-                        switchMap(userData => of([userData, payload])),
-                        switchMap<[User, PayloadStoreType], Observable<AnyAction>>(
-                            this._createStoreTypeRequest$
-                        ),
-                        catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
-                    );
-                }
-            })
-        )
-    );
-
-    createStoreTypeFailure$ = createEffect(
+    createStoreGroupRequest$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(StoreTypeActions.createStoreTypeFailure),
+                ofType(StoreGroupActions.createStoreGroupRequest),
+                map(action => action.payload),
+                withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+                switchMap(([payload, authState]: [PayloadStoreGroup, TNullable<Auth>]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<[User, any], Observable<AnyAction>>(
+                                this._createStoreGroupRequest$
+                            ),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'createStoreGroupFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<[User, PayloadStoreGroup], Observable<AnyAction>>(
+                                this._createStoreGroupRequest$
+                            ),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'createStoreGroupFailure')
+                            )
+                        );
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    createStoreGroupFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreGroupActions.createStoreGroupFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -75,12 +81,12 @@ export class StoreTypeEffects {
         { dispatch: false }
     );
 
-    createStoreTypeSuccess$ = createEffect(
+    createStoreGroupSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(StoreTypeActions.createStoreTypeSuccess),
+                ofType(StoreGroupActions.createStoreGroupSuccess),
                 tap(() => {
-                    this._$notice.open('Successfully created store type hierarchy', 'success', {
+                    this._$notice.open('Successfully created store group hierarchy', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -93,9 +99,9 @@ export class StoreTypeEffects {
     // @ FETCH methods [STORE TYPES]
     // -----------------------------------------------------------------------------------------------------
 
-    fetchStoreTypesRequest$ = createEffect(() =>
+    fetchStoreGroupsRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(StoreTypeActions.fetchStoreTypesRequest),
+            ofType(StoreGroupActions.fetchStoreGroupsRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(([params, authState]: [IQueryParams, TNullable<Auth>]) => {
@@ -105,9 +111,9 @@ export class StoreTypeEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._fetchStoreTypesRequest$
+                            this._fetchStoreGroupsRequest$
                         ),
-                        catchError(err => this._sendErrorToState$(err, 'fetchStoreTypesFailure'))
+                        catchError(err => this._sendErrorToState$(err, 'fetchStoreGroupsFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -115,19 +121,19 @@ export class StoreTypeEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._fetchStoreTypesRequest$
+                            this._fetchStoreGroupsRequest$
                         ),
-                        catchError(err => this._sendErrorToState$(err, 'fetchStoreTypesFailure'))
+                        catchError(err => this._sendErrorToState$(err, 'fetchStoreGroupsFailure'))
                     );
                 }
             })
         )
     );
 
-    fetchStoreTypesFailure$ = createEffect(
+    fetchStoreGroupsFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(StoreTypeActions.fetchStoreTypesFailure),
+                ofType(StoreGroupActions.fetchStoreGroupsFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -142,12 +148,12 @@ export class StoreTypeEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
-    // @ REFRESH methods [STORE TYPES]
+    // @ REFRESH methods [STORE GROUPS]
     // -----------------------------------------------------------------------------------------------------
 
-    refreshStoreTypesRequest$ = createEffect(() =>
+    refreshStoreGroupsRequest$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(StoreTypeActions.refreshStoreTypesRequest),
+            ofType(StoreGroupActions.refreshStoreGroupsRequest),
             map(action => action.payload),
             withLatestFrom(this.store.select(AuthSelectors.getUserState)),
             switchMap(([params, authState]: [IQueryParams, TNullable<Auth>]) => {
@@ -157,9 +163,9 @@ export class StoreTypeEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._refreshStoreTypesRequest$
+                            this._refreshStoreGroupsRequest$
                         ),
-                        catchError(err => this._sendErrorToState$(err, 'refreshStoreTypesFailure'))
+                        catchError(err => this._sendErrorToState$(err, 'refreshStoreGroupsFailure'))
                     );
                 } else {
                     return of(authState.user).pipe(
@@ -167,19 +173,19 @@ export class StoreTypeEffects {
                         retry(3),
                         switchMap(userData => of([userData, params])),
                         switchMap<[User, IQueryParams], Observable<AnyAction>>(
-                            this._refreshStoreTypesRequest$
+                            this._refreshStoreGroupsRequest$
                         ),
-                        catchError(err => this._sendErrorToState$(err, 'refreshStoreTypesFailure'))
+                        catchError(err => this._sendErrorToState$(err, 'refreshStoreGroupsFailure'))
                     );
                 }
             })
         )
     );
 
-    refreshStoreTypesFailure$ = createEffect(
+    refreshStoreGroupsFailure$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(StoreTypeActions.refreshStoreTypesFailure),
+                ofType(StoreGroupActions.refreshStoreGroupsFailure),
                 map(action => action.payload),
                 tap(resp => {
                     const message = this._handleErrMessage(resp);
@@ -199,8 +205,8 @@ export class StoreTypeEffects {
         private store: Store<fromStoreSegments.FeatureState>,
         private _$helper: HelperService,
         private _$notice: NoticeService,
-        private _$storeTypeApi: StoreTypeApiService,
-        private _$storeTypeCrudApi: StoreTypeCrudApiService
+        private _$storeGroupApi: StoreGroupApiService,
+        private _$storeGroupCrudApi: StoreGroupCrudApiService
     ) {}
 
     _checkUserSupplier = (userData: User): User => {
@@ -216,25 +222,25 @@ export class StoreTypeEffects {
         return userData;
     };
 
-    _createStoreTypeRequest$ = ([userData, payload]: [User, PayloadStoreType]): Observable<
+    _createStoreGroupRequest$ = ([userData, payload]: [User, PayloadStoreGroup]): Observable<
         AnyAction
     > => {
-        const newPayload = new PayloadStoreType({ ...payload });
+        const newPayload = new PayloadStoreGroup({ ...payload });
         const { supplierId } = userData.userSupplier;
 
         if (supplierId) {
             newPayload.supplierId = supplierId;
         }
 
-        return this._$storeTypeCrudApi.create<PayloadStoreType>(newPayload).pipe(
+        return this._$storeGroupCrudApi.create<PayloadStoreGroup>(newPayload).pipe(
             map(resp => {
-                return StoreTypeActions.createStoreTypeSuccess();
+                return StoreGroupActions.createStoreGroupSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
         );
     };
 
-    _fetchStoreTypesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
+    _fetchStoreGroupsRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
         AnyAction
     > => {
         const newParams = {
@@ -246,18 +252,18 @@ export class StoreTypeEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        return this._$storeTypeApi.findAll<StoreSegment<StoreType>>(newParams).pipe(
+        return this._$storeGroupApi.findAll<StoreSegment<StoreGroup>>(newParams).pipe(
             catchOffline(),
             map(resp => {
                 const newResp = {
                     data:
                         (resp && resp.data.length > 0
-                            ? resp.data.map(v => new StoreType(v))
+                            ? resp.data.map(v => new StoreGroup(v))
                             : []) || [],
                     deepestLevel: resp.deepestLevel
                 };
 
-                return StoreTypeActions.fetchStoreTypesSuccess({
+                return StoreGroupActions.fetchStoreGroupsSuccess({
                     payload: new StoreSegment(newResp.deepestLevel, newResp.data)
                 });
             }),
@@ -265,7 +271,7 @@ export class StoreTypeEffects {
         );
     };
 
-    _refreshStoreTypesRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
+    _refreshStoreGroupsRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
         AnyAction
     > => {
         const newParams = {
@@ -277,18 +283,18 @@ export class StoreTypeEffects {
             newParams['supplierId'] = supplierId;
         }
 
-        return this._$storeTypeApi.findAll<StoreSegment<StoreType>>(newParams).pipe(
+        return this._$storeGroupApi.findAll<StoreSegment<StoreGroup>>(newParams).pipe(
             catchOffline(),
             map(resp => {
                 const newResp = {
                     data:
                         (resp && resp.data.length > 0
-                            ? resp.data.map(v => new StoreType(v))
+                            ? resp.data.map(v => new StoreGroup(v))
                             : []) || [],
                     deepestLevel: resp.deepestLevel
                 };
 
-                return StoreTypeActions.refreshStoreTypesSuccess({
+                return StoreGroupActions.refreshStoreGroupsSuccess({
                     payload: new StoreSegment(newResp.deepestLevel, newResp.data)
                 });
             }),
@@ -302,7 +308,7 @@ export class StoreTypeEffects {
     ): Observable<AnyAction> => {
         if (err instanceof ErrorHandler) {
             return of(
-                StoreTypeActions[dispatchTo]({
+                StoreGroupActions[dispatchTo]({
                     payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
                 })
             );
@@ -310,7 +316,7 @@ export class StoreTypeEffects {
 
         if (err instanceof HttpErrorResponse) {
             return of(
-                StoreTypeActions[dispatchTo]({
+                StoreGroupActions[dispatchTo]({
                     payload: {
                         id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
                         errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
@@ -320,7 +326,7 @@ export class StoreTypeEffects {
         }
 
         return of(
-            StoreTypeActions[dispatchTo]({
+            StoreGroupActions[dispatchTo]({
                 payload: {
                     id: `ERR_UNRECOGNIZED`,
                     errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))

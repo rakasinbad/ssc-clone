@@ -30,7 +30,7 @@
         </div>
 
         <div fusePerfectScrollbar *ngIf="!(isLoading$ | async)">
-            <form id="store-type-form" name="storeTypeForm" [formGroup]="form" novalidate>
+            <form id="store-group-form" name="storeGroupForm" [formGroup]="form" novalidate>
                 <div
                     class="h-480"
                     fxLayout="row"
@@ -316,38 +316,6 @@
                                                 *ngIf="isLoadingRow$ | async"
                                             ></mat-spinner>
                                         </div>
-
-                                        <!-- <div
-                                        fxLayout="row"
-                                        fxLayoutAlign="space-between stretch"
-                                        class="h-40 sinbad-nav-item"
-                                    >
-                                        <div
-                                            fxFlexAlign="center"
-                                            class="cursor-pointer sinbad-nav-action"
-                                        >
-                                            <mat-icon>more_vert</mat-icon>
-                                        </div>
-
-                                        <div
-                                            fxFlexAlign="center"
-                                            class="cursor-pointer sinbad-nav-link sinbad-nav-link__readonly"
-                                            fxLayout="row"
-                                            fxLayoutAlign="space-between center"
-                                            fxFlex
-                                        >
-                                            <span>
-                                                <input
-                                                    type="text"
-                                                    matInput
-                                                    autocomplete="off"
-                                                    value="Channel 2"
-                                                    readonly
-                                                />
-                                            </span>
-                                            <mat-icon>chevron_right</mat-icon>
-                                        </div>
-                                    </div> -->
                                     </ng-container>
 
                                     <button

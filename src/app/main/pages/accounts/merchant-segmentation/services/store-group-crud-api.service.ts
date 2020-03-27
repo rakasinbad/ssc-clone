@@ -3,24 +3,24 @@ import { Injectable } from '@angular/core';
 import { HelperService } from 'app/shared/helpers';
 import { Observable } from 'rxjs';
 
-import { StoreType } from '../models';
+import { StoreGroup } from '../models';
 
 /**
  *
  *
  * @export
- * @class StoreTypeCrudApiService
+ * @class StoreGroupCrudApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class StoreTypeCrudApiService {
+export class StoreGroupCrudApiService {
     /**
      *
      *
      * @private
      * @type {string}
-     * @memberof StoreTypeCrudApiService
+     * @memberof StoreGroupCrudApiService
      */
     private _url: string;
 
@@ -28,15 +28,15 @@ export class StoreTypeCrudApiService {
      *
      *
      * @private
-     * @memberof StoreTypeCrudApiService
+     * @memberof StoreGroupCrudApiService
      */
-    private readonly _endpoint = '/types';
+    private readonly _endpoint = '/groups';
 
     /**
-     * Creates an instance of StoreTypeCrudApiService.
+     * Creates an instance of StoreGroupCrudApiService.
      * @param {HttpClient} http
      * @param {HelperService} _$helper
-     * @memberof StoreTypeCrudApiService
+     * @memberof StoreGroupCrudApiService
      */
     constructor(private http: HttpClient, private _$helper: HelperService) {
         this._url = this._$helper.handleApiRouter(this._endpoint);
@@ -47,10 +47,10 @@ export class StoreTypeCrudApiService {
      *
      * @template T
      * @param {T} body
-     * @returns {Observable<StoreType>}
-     * @memberof StoreTypeCrudApiService
+     * @returns {Observable<StoreGroup>}
+     * @memberof StoreGroupCrudApiService
      */
-    create<T>(body: T): Observable<StoreType> {
-        return this.http.post<StoreType>(this._url, body);
+    create<T>(body: T): Observable<StoreGroup> {
+        return this.http.post<StoreGroup>(this._url, body);
     }
 }

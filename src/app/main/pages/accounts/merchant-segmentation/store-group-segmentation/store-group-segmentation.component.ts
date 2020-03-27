@@ -17,19 +17,19 @@ import { concatMap, distinctUntilChanged, filter, finalize, takeUntil } from 'rx
 
 import { MerchantSegmentationAlertComponent } from '../merchant-segmentation-alert';
 import { MerchantSegmentationFormComponent } from '../merchant-segmentation-form';
-import { PayloadStoreType, StoreType } from '../models';
-import { StoreTypeActions } from '../store/actions';
+import { PayloadStoreGroup, StoreGroup } from '../models';
+import { StoreGroupActions } from '../store/actions';
 import * as fromStoreSegments from '../store/reducers';
-import { StoreTypeSelectors } from '../store/selectors';
+import { StoreGroupSelectors } from '../store/selectors';
 
 @Component({
-    selector: 'app-store-type-segmentation',
-    templateUrl: './store-type-segmentation.component.html',
-    styleUrls: ['./store-type-segmentation.component.scss'],
+    selector: 'app-store-group-segmentation',
+    templateUrl: './store-group-segmentation.component.html',
+    styleUrls: ['./store-group-segmentation.component.scss'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
+export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
     form: FormGroup;
     maxSegment = 5;
     triggerSegment = [false, false, false, false, false];
@@ -65,7 +65,6 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         // },
     };
 
-    items$: Observable<Array<StoreType>>;
     isLoading$: Observable<boolean>;
     isLoadingRow$: Observable<boolean>;
 
@@ -253,7 +252,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
 
         this.store
             .pipe(
-                select(StoreTypeSelectors.getChild(parentId)),
+                select(StoreGroupSelectors.getChild(parentId)),
                 distinctUntilChanged(),
                 // delay(300),
                 filter(items => items && items.length > 0),
@@ -307,7 +306,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         });
     }
 
-    private _generateHierarchies(items: Array<StoreType>): void {
+    private _generateHierarchies(items: Array<StoreGroup>): void {
         if (items && items.length > 0) {
             this.isFromSelector = true;
 
@@ -369,8 +368,6 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         }
     }
 
-    private _generateHierarchy(item: Array<StoreType>, itemIdx: number): void {}
-
     private _resetSegment(currentSegment: number): void {
         let lastSegment = +this.form.get('lastSegment').value;
 
@@ -384,8 +381,8 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     private _initPage(lifeCycle?: LifecyclePlatform): void {
         switch (lifeCycle) {
             case LifecyclePlatform.OnDestroy:
-                // Reset core state storeTypes
-                this.store.dispatch(StoreTypeActions.clearState());
+                // Reset core state storeGroups
+                this.store.dispatch(StoreGroupActions.clearState());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();
@@ -395,12 +392,12 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
                 this._initHierarchy();
                 this._initForm();
 
-                this.isLoading$ = this.store.select(StoreTypeSelectors.getIsLoading);
-                this.isLoadingRow$ = this.store.select(StoreTypeSelectors.getIsLoadingRow);
+                this.isLoading$ = this.store.select(StoreGroupSelectors.getIsLoading);
+                this.isLoadingRow$ = this.store.select(StoreGroupSelectors.getIsLoadingRow);
 
                 // Trigger refresh
                 this.store
-                    .select(StoreTypeSelectors.getIsRefresh)
+                    .select(StoreGroupSelectors.getIsRefresh)
                     .pipe(
                         filter(v => !!v),
                         takeUntil(this._unSubs$)
@@ -417,7 +414,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         });
 
         this.store
-            .select(StoreTypeSelectors.selectAll)
+            .select(StoreGroupSelectors.selectAll)
             .pipe(
                 // delay(300),
                 filter(items => items && items.length > 0),
@@ -433,7 +430,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             paginate: false
         };
 
-        this.store.dispatch(StoreTypeActions.fetchStoreTypesRequest({ payload: data }));
+        this.store.dispatch(StoreGroupActions.fetchStoreGroupsRequest({ payload: data }));
     }
 
     private _onRefreshHierarchy(): void {
@@ -441,7 +438,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             paginate: false
         };
 
-        this.store.dispatch(StoreTypeActions.refreshStoreTypesRequest({ payload: data }));
+        this.store.dispatch(StoreGroupActions.refreshStoreGroupsRequest({ payload: data }));
     }
 
     private _onSubmit(segmentIdx: number, branchIdx: number): void {
@@ -452,13 +449,13 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const payload = new PayloadStoreType({
+        const payload = new PayloadStoreGroup({
             supplierId: null,
             parentId: body.segments[segmentIdx].branches[branchIdx].parentId,
             sequence: +body.segments[segmentIdx].branches[branchIdx].sequence,
             name: body.segments[segmentIdx].branches[branchIdx].name
         });
 
-        this.store.dispatch(StoreTypeActions.createStoreTypeRequest({ payload }));
+        this.store.dispatch(StoreGroupActions.createStoreGroupRequest({ payload }));
     }
 }

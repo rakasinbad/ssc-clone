@@ -1,10 +1,10 @@
 <mat-toolbar class="m-0 px-16 pt-8 pb-16">
     <mat-toolbar-row class="p-0">
         <span mat-dialog-title class="m-0">{{ dialogTitle }}</span>
-        <span class="spacer"></span>
+        <!-- <span class="spacer"></span>
         <button type="button" mat-icon-button aria-label="Close Dialog" mat-dialog-close>
             <mat-icon>close</mat-icon>
-        </button>
+        </button> -->
     </mat-toolbar-row>
 
     <mat-toolbar-row class="p-0 text-truncate">
@@ -127,7 +127,13 @@
 </mat-dialog-content>
 
 <mat-dialog-actions class="m-0 p-0 px-16" align="end">
-    <button mat-raised-button class="w-128">
+    <button
+        type="button"
+        mat-stroked-button
+        class="w-128"
+        aria-label="Close Dialog"
+        mat-dialog-close
+    >
         No
     </button>
     <button mat-flat-button color="accent" class="w-128">

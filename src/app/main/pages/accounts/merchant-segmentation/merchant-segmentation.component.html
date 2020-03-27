@@ -18,7 +18,16 @@
                     </ng-template>
                 </mat-tab>
 
-                <mat-tab label="Store Group"></mat-tab>
+                <mat-tab label="Store Group">
+                    <ng-template matTabContent>
+                        <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar>
+                            <app-store-group-segmentation
+                                fxLayout="column"
+                                fxLayoutGap="16px"
+                            ></app-store-group-segmentation>
+                        </div>
+                    </ng-template>
+                </mat-tab>
 
                 <mat-tab label="Store Channel"></mat-tab>
 

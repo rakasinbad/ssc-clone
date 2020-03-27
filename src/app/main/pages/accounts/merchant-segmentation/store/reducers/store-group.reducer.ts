@@ -1,13 +1,13 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { StoreType } from '../../models';
-import { StoreTypeActions } from '../actions';
+import { StoreGroup } from '../../models';
+import { StoreGroupActions } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'storeTypes';
+export const featureKey = 'storeGroups';
 
-export interface State extends EntityState<StoreType> {
+export interface State extends EntityState<StoreGroup> {
     isLoading: boolean;
     isLoadingRow: boolean;
     isRefresh: boolean;
@@ -16,7 +16,7 @@ export interface State extends EntityState<StoreType> {
 }
 
 // Adapter for store types state
-export const adapter = createEntityAdapter<StoreType>({ selectId: row => row.id });
+export const adapter = createEntityAdapter<StoreGroup>({ selectId: row => row.id });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -30,37 +30,37 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StoreTypeActions.createStoreTypeRequest, state => ({ ...state, isLoadingRow: true })),
-    on(StoreTypeActions.createStoreTypeFailure, state => ({ ...state, isRefresh: true })),
-    on(StoreTypeActions.refreshStoreTypesRequest, state => ({ ...state, isRefresh: false })),
-    on(StoreTypeActions.refreshStoreTypesFailure, state => ({
+    on(StoreGroupActions.createStoreGroupRequest, state => ({ ...state, isLoadingRow: true })),
+    on(StoreGroupActions.createStoreGroupFailure, state => ({ ...state, isRefresh: true })),
+    on(StoreGroupActions.refreshStoreGroupsRequest, state => ({ ...state, isRefresh: false })),
+    on(StoreGroupActions.refreshStoreGroupsFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreTypeActions.fetchStoreTypesRequest, state => ({
+    on(StoreGroupActions.fetchStoreGroupsRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(StoreTypeActions.fetchStoreTypesFailure, state => ({
+    on(StoreGroupActions.fetchStoreGroupsFailure, state => ({
         ...state,
         isLoading: false
     })),
-    on(StoreTypeActions.createStoreTypeSuccess, state => ({ ...state, isRefresh: true })),
-    on(StoreTypeActions.fetchStoreTypesSuccess, (state, { payload }) =>
+    on(StoreGroupActions.createStoreGroupSuccess, state => ({ ...state, isRefresh: true })),
+    on(StoreGroupActions.fetchStoreGroupsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             deepestLevel: payload.deepestLevel
         })
     ),
-    on(StoreTypeActions.refreshStoreTypesSuccess, (state, { payload }) =>
+    on(StoreGroupActions.refreshStoreGroupsSuccess, (state, { payload }) =>
         adapter.upsertMany(payload.data, {
             ...state,
             isLoadingRow: false,
             deepestLevel: payload.deepestLevel
         })
     ),
-    on(StoreTypeActions.clearState, state =>
+    on(StoreGroupActions.clearState, state =>
         adapter.removeAll({
             ...state,
             isLoading: false,

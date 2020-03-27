@@ -1,4 +1,5 @@
 @import 'src/@fuse/scss/fuse';
+@import 'src/@sinbad/scss/helper';
 
 .merchant-segment-alert-dialog {
     min-height: 406px;
@@ -32,7 +33,7 @@
                 flex: 1 1 auto;
                 border: 1px solid rgba(0, 0, 0, 0.12);
                 border-radius: 4px;
-                min-height: 40px;
+                min-height: 235px !important;
                 overflow: auto;
                 -webkit-overflow-scrolling: touch;
                 background: #fafafa !important;
@@ -41,16 +42,18 @@
                     background: #ffffff !important;
                 }
 
-                .mat-header-row {
-                    background-color: #fafafa;
-                }
-
                 .mat-header-row,
                 .mat-row {
-                    background: white;
+                    min-width: fit-content;
+                    width: 100%;
+                }
+
+                .mat-header-row {
+                    background: sinbad-color('black', '10');
                 }
 
                 .mat-row {
+                    background: white;
                     min-height: unset;
                 }
 
@@ -59,6 +62,7 @@
                 }
 
                 .mat-header-cell {
+                    color: sinbad-color('black', '80');
                     text-align: left;
                     font-weight: 700;
 
@@ -103,6 +107,7 @@
                 }
 
                 .mat-column-store-type {
+                    color: sinbad-color('red', '50');
                     flex: 1 2 20em;
                     min-width: 125px;
                 }

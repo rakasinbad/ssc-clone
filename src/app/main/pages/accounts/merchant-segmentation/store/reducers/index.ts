@@ -2,6 +2,8 @@ import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromStoreSegmentsErrs from './error.reducer';
+import * as fromMerchantSegmentTreeTable from './merchant-segment-tree-table.reducer';
+import * as fromStoreGroups from './store-group.reducer';
 import * as fromStoreTypes from './store-type.reducer';
 
 // Keyname for core reducer
@@ -13,8 +15,10 @@ export const featureKey = 'storeSegments';
  * @interface State
  */
 export interface State {
-    [fromStoreTypes.featureKey]: fromStoreTypes.State;
+    [fromMerchantSegmentTreeTable.featureKey]: fromMerchantSegmentTreeTable.State;
     [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.State;
+    [fromStoreGroups.featureKey]: fromStoreGroups.State;
+    [fromStoreTypes.featureKey]: fromStoreTypes.State;
 }
 
 /**
@@ -37,7 +41,9 @@ export interface FeatureState extends fromRoot.State {
  */
 export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
+        [fromMerchantSegmentTreeTable.featureKey]: fromMerchantSegmentTreeTable.reducer,
         [fromStoreTypes.featureKey]: fromStoreTypes.reducer,
+        [fromStoreGroups.featureKey]: fromStoreGroups.reducer,
         [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.reducer
     })(state, action);
 }

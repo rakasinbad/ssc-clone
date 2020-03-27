@@ -1,5 +1,8 @@
+import * as StoreGroupActions from './store-group.actions';
 import * as StoreTypeActions from './store-type.actions';
 
-type StoreSegmentationFailureActions = StoreTypeActions.FailureActions;
+type StoreSegmentationFailureActions =
+    | StoreTypeActions.FailureActions
+    | StoreGroupActions.FailureActions;
 
-export { StoreTypeActions, StoreSegmentationFailureActions };
+export { StoreGroupActions, StoreTypeActions, StoreSegmentationFailureActions };

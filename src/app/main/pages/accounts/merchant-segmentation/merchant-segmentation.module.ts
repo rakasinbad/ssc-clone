@@ -10,6 +10,7 @@ import { MerchantSegmentationFormComponent } from './merchant-segmentation-form'
 import { MerchantSegmentationComponent } from './merchant-segmentation.component';
 import { MerchantSegmentationRoutingModule } from './merchant-segmentation.routes';
 import { MerchantSegmentationNgrxModule } from './store';
+import { StoreGroupSegmentationComponent } from './store-group-segmentation';
 import { StoreTypeSegmentationComponent } from './store-type-segmentation';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { StoreTypeSegmentationComponent } from './store-type-segmentation';
         MerchantSegmentationAlertComponent,
         MerchantSegmentationComponent,
         MerchantSegmentationFormComponent,
+        StoreGroupSegmentationComponent,
         StoreTypeSegmentationComponent
     ],
     imports: [

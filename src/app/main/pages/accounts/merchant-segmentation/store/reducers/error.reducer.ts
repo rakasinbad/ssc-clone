@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 
-import { StoreTypeActions } from '../actions';
+import { StoreGroupActions, StoreTypeActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'errors';
@@ -30,19 +30,35 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 export const reducer = createReducer(
     initialState,
     on(
+        StoreGroupActions.createStoreGroupFailure,
+        StoreGroupActions.fetchStoreGroupsFailure,
+        StoreGroupActions.refreshStoreGroupsFailure,
         StoreTypeActions.createStoreTypeFailure,
         StoreTypeActions.fetchStoreTypesFailure,
+        StoreTypeActions.refreshStoreTypesFailure,
         (state, { payload }) => {
             return adapter.upsertOne(payload, state);
         }
     ),
-    on(StoreTypeActions.createStoreTypeSuccess, state => {
-        return adapter.removeOne('createStoreTypeFailure', state);
-    }),
-    on(StoreTypeActions.fetchStoreTypesSuccess, state => {
-        return adapter.removeOne('fetchStoreTypesFailure', state);
-    }),
-    on(StoreTypeActions.clearState, state => {
-        return adapter.removeAll({ ...state });
-    })
+    on(StoreGroupActions.createStoreGroupSuccess, state =>
+        adapter.removeOne('createStoreGroupFailure', state)
+    ),
+    on(StoreGroupActions.fetchStoreGroupsSuccess, state =>
+        adapter.removeOne('fetchStoreGroupsFailure', state)
+    ),
+    on(StoreGroupActions.refreshStoreGroupsSuccess, state =>
+        adapter.removeOne('refreshStoreGroupsFailure', state)
+    ),
+    on(StoreTypeActions.createStoreTypeSuccess, state =>
+        adapter.removeOne('createStoreTypeFailure', state)
+    ),
+    on(StoreTypeActions.fetchStoreTypesSuccess, state =>
+        adapter.removeOne('fetchStoreTypesFailure', state)
+    ),
+    on(StoreTypeActions.refreshStoreTypesSuccess, state =>
+        adapter.removeOne('refreshStoreTypesFailure', state)
+    ),
+    on(StoreGroupActions.clearState, StoreTypeActions.clearState, state =>
+        adapter.removeAll({ ...state })
+    )
 );
