@@ -5,7 +5,7 @@
             #triggerOption
             matInput
             autocomplete="new-password"
-            placeholder="Search Option"
+            [placeholder]="placeholder"
             [formControl]="optionForm"
             [value]="isMultipleSelections ? (optionForm?.value || null) : (optionForm?.value?.label || null)"
             [matAutocomplete]="optionAutoComplete"
@@ -16,10 +16,6 @@
             (opened)="listenOptionAutoComplete()"
             (optionSelected)="onOptionAutocompleteSelected($event)"
         >
-            <!-- NONE OPTION -->
-            <!-- <mat-option *ngIf="!(isOptionLoading$ | async)">(None)</mat-option> -->
-            <!-- / NONE OPTION -->
-
             <!-- "SELECT ALL" OPTION -->
             <mat-option class="pr-16 pl-0" *ngIf="!isAvailableOptionsLoading && isMultipleSelections">
                 <div (click)="optionSelected($event, 'all')">
@@ -58,6 +54,13 @@
                 </div>
             </mat-option>
             <!-- / MULTPLE SELECTIONS -->
+
+            <!-- NONE OPTION -->
+            <mat-option
+                *ngIf="!isMultipleSelections"
+            >(None)</mat-option>
+            <!-- / NONE OPTION -->
+
             <!-- SINGLE SELECTION -->
             <mat-option
                 *ngFor="let option of (availableOptions)"

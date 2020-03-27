@@ -6,10 +6,12 @@ import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
 import { fromEvent, Subject, BehaviorSubject } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take } from 'rxjs/operators';
 import { Selection } from './models';
 
 import { SelectionModel } from '@angular/cdk/collections';
+
+let that: SelectAdvancedComponent;
 
 @Component({
     selector: 'select-advanced',
@@ -20,7 +22,6 @@ import { SelectionModel } from '@angular/cdk/collections';
     changeDetection: ChangeDetectionStrategy.Default
 })
 export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
-
     // Form
     optionForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
@@ -36,6 +37,9 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
     // tslint:disable-next-line: no-inferrable-types
     allSelected: boolean = false;
 
+    // Untuk teks placeholder pada input.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() placeholder: string = 'Search';
     // Untuk memberitahu apakah select ini bisa multiple atau tidak.
     // tslint:disable-next-line: no-inferrable-types
     @Input() isMultipleSelections: boolean = true;
@@ -64,6 +68,8 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
         private cdRef: ChangeDetectorRef,
         private errorMessage$: ErrorMessageService,
     ) {
+        that = this;
+
         this.selectedOption$.pipe(
             tap(x => HelperService.debug('SELECTED OPTION', x)),
             takeUntil(this.subs$)
@@ -71,7 +77,11 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
             if (this.isMultipleSelections) {
                 this.selected.emit(options);
             } else {
-                this.selected.emit(options[0]);
+                if (options) {
+                    this.selected.emit(options[0]);
+                } else {
+                    this.selected.emit(null);
+                }
             }
         });
 
@@ -161,31 +171,119 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     displayOption(value: Selection): string {
-        if (!this.isMultipleSelections) {
-            if (!value) {
-                return '';
-            }
+        if (!that.isMultipleSelections) {
+            if (value) {
+                return value.label;
+            } else {
+                const selected = that.selectedOption$.value;
 
-            return value.label;
-        } else {
-            if (!this.selection) {
-                if (this.selected) {
-                    this.selected.emit({ id: null, label: null, group: null });
+                if (selected) {
+                    if (selected.length > 0) {
+                        return selected[0].label;
+                    } else {
+                        // if (!that.optionAutoComplete.isOpen) {
+                        //     that.optionForm.setValue('');
+                        // }
+                        return '';
+                    }
+                } else {
+                    // if (!that.optionAutoComplete.isOpen) {
+                    //     that.optionForm.setValue('');
+                    // }
+                    return '';
                 }
-    
-                return '';
             }
+        }
+        // if (!that.isMultipleSelections) {
+            // const selected = that.selectedOption$.value;
+
+            // if (selected.length > 0) {
+            //     if (that.selected) {
+            //         that.selectedOption$.next(selected);
+            //     }
+
+            //     setTimeout(() => {
+            //         if (!(this as unknown as MatAutocomplete).isOpen) {
+            //             return selected[0].label;
+            //         } else {
+            //             return '';
+            //         }
+            //     }, 100);
+            // }   
+
+            // if (!value) {
+            //     return '';
+            // }
+
+            // return value.label;
+        // } else {
+            // if (!this.selection) {
+            //     if (this.selected) {
+            //         this.selected.emit({ id: null, label: null, group: null });
+            //     }
     
-            if (!this.selection.hasValue()) {
-                if (this.selected) {
-                    this.selected.emit({ id: null, label: null, group: null });
+            //     return '';
+            // }
+    
+            // if (!this.selection.hasValue()) {
+            //     if (this.selected) {
+            //         this.selected.emit({ id: null, label: null, group: null });
+            //     }
+    
+            //     return '';
+            // }
+    
+            // this.selected.emit(value);
+            // return this.selection.selected[0].label + String(this.selection.selected.length > 1 ? `(+${this.selection.selected.length - 1} others)` : '');
+        // }
+    }
+
+    listenToAutocompletePanelClosing(): void {
+        if (this.triggerOption) {
+            this.triggerOption.panelClosingActions.pipe(
+                tap(() => HelperService.debug('SELECT OPTION IS CLOSING ...')),
+                take(1),
+            ).subscribe({
+                next: () => {},
+                complete: () => {
+                    HelperService.debug('this.triggerOption.panelClosingActions COMPLETED', {});
+
+                    if (this.isMultipleSelections) {
+                        if (!this.selection) {
+                            this.optionForm.setValue('');
+                            return;
+                        }
+                        
+                        if (!this.selection.hasValue()) {
+                            this.optionForm.setValue('');
+                        } else {
+                            const selectedFirst = this.selection.selected[0].label;
+                            const selectedLength = this.selection.selected.length;
+                            this.optionForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''));
+                            // this.optionForm.setValue(this.optionForm.value + ' ');
+                            // setTimeout(() =>
+                        //     this.optionForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''))
+                            // );
+                        }
+            
+                        this.selectedOption$.next(this.selection.selected);
+                    } else {
+                        // const selected = this.selectedOption$.value;
+
+                        // if (selected.length > 0) {
+                        //     const selectedFirst = selected[0].label;
+                        //     this.optionForm.setValue(selectedFirst);
+                        //     this.selectedOption$.next(selected);
+                        //     this.cdRef.detectChanges();
+                        //     // setTimeout(() => {
+                        //     //     this.optionForm.setValue(selectedFirst);
+                        //     //     this.selectedOption$.next(selected);
+                        //     //     this.cdRef.detectChanges();
+                        //     // });
+                        // }
+                    }
                 }
-    
-                return '';
-            }
-    
-            this.selected.emit(value);
-            return this.selection.selected[0].label + String(this.selection.selected.length > 1 ? `(+${this.selection.selected.length - 1} others)` : '');
+            });
         }
     }
 
@@ -214,7 +312,10 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
 
     listenOptionAutoComplete(): void {
         this.optionForm.setValue('');
-        setTimeout(() => this.processOptionAutoComplete(), 100);
+        setTimeout(() => {
+            this.processOptionAutoComplete();
+            this.listenToAutocompletePanelClosing();
+        });
     }
 
     optionSelected(event: Event, value: string | Selection): void {
@@ -227,7 +328,11 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
             const { value }: { value: Selection } = event.option;
             // this.triggerOption.closePanel();
             // this.optionAutoComplete.closed.emit();
-            this.selectedOption$.next([value]);
+            if (value) {
+                this.selectedOption$.next([value]);
+            } else {
+                this.selectedOption$.next(null);
+            }
         }
     }
 
@@ -299,28 +404,45 @@ export class SelectAdvancedComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     ngAfterViewInit(): void {
-        this.triggerOption.panelClosingActions.pipe(
-            startWith([]),
-            tap(() => HelperService.debug('SELECT OPTION IS CLOSING ...'))
-        ).subscribe(() => {
-            if (!this.selection) {
-                this.optionForm.setValue('');
-                return;
-            }
-            
-            if (!this.selection.hasValue()) {
-                this.optionForm.setValue('');
-            } else {
-                const selectedFirst = this.selection.selected[0].label;
-                const selectedLength = this.selection.selected.length;
-                this.optionForm.setValue(this.optionForm.value + ' ');
-                setTimeout(() =>
-                    this.optionForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''))
-                );
-            }
+        // this.triggerOption.panelClosingActions.pipe(
+        //     startWith([]),
+        //     tap(() => HelperService.debug('SELECT OPTION IS CLOSING ...')),
+        //     takeUntil(this.subs$)
+        // ).subscribe(() => {
+        //     if (that.isMultipleSelections) {
+        //         if (!this.selection) {
+        //             this.optionForm.setValue('');
+        //             return;
+        //         }
+                
+        //         if (!this.selection.hasValue()) {
+        //             this.optionForm.setValue('');
+        //         } else {
+        //             const selectedFirst = this.selection.selected[0].label;
+        //             const selectedLength = this.selection.selected.length;
+        //             this.optionForm.setValue(this.optionForm.value + ' ');
+        //             setTimeout(() =>
+        //                 this.optionForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''))
+        //             );
+        //         }
+    
+        //         this.selectedOption$.next(this.selection.selected);
+        //     } else {
+        //         const selected = that.selectedOption$.value;
 
-            this.selectedOption$.next(this.selection.selected);
-        });
+        //         if (selected.length > 0) {
+        //             if (that.selected) {
+        //                 const selectedFirst = that.selection.selected[0].label;
+        //                 const selectedLength = that.selection.selected.length;
+        //                 that.optionForm.setValue(that.optionForm.value + ' ');
+        //                 setTimeout(() => {
+        //                     that.optionForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''));
+        //                     that.selectedOption$.next(selected);
+        //                 });
+        //             }
+        //         }
+        //     }
+        // });
     }
 }
 
