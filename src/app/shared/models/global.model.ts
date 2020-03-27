@@ -57,6 +57,8 @@ enum StatusError {
 
 type StatusErrorString = keyof typeof StatusError;
 
+export type FormStatus = 'VALID' | 'INVALID' | 'PENDING' | 'DISABLED';
+
 export type TNullable<T> = T | null;
 export type TLogMode = LogModeString;
 export type TSort = SortString;

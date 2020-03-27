@@ -1,0 +1,89 @@
+<!-- PROVINCE -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerOption
+            matInput
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [formControl]="optionForm"
+            [value]="isMultipleSelections ? (optionForm?.value || null) : (optionForm?.value?.label || null)"
+            [matAutocomplete]="optionAutoComplete"
+        />
+        <mat-autocomplete
+            #optionAutoComplete
+            [displayWith]="displayOption"
+            (opened)="listenOptionAutoComplete()"
+            (optionSelected)="onOptionAutocompleteSelected($event)"
+        >
+            <!-- "SELECT ALL" OPTION -->
+            <mat-option class="pr-16 pl-0" *ngIf="!isAvailableOptionsLoading && isMultipleSelections">
+                <div (click)="optionSelected($event, 'all')">
+                    <mat-checkbox
+                        class="ml-16"
+                        [disableRipple]="true"
+                        [checked]="selection.hasValue() && allSelected"
+                        [indeterminate]="selection.hasValue() && !allSelected"
+                        (click)="$event.stopPropagation()"
+                        (change)="$event ? toggle$.next('all') : null"
+                    >
+                        (Select All)
+                    </mat-checkbox>
+                </div>
+            </mat-option>
+            <!-- / "SELECT ALL" OPTION -->
+
+            <!-- MULTIPLE SELECTIONS -->
+            <mat-option
+                class="pr-16 pl-0"
+                *ngFor="let option of (availableOptions)"
+                [value]="option"
+                [fxHide]="!isMultipleSelections"
+            >
+                <div (click)="$event.stopPropagation(); toggleSelectedOption(option);">
+                    <mat-checkbox
+                        class="ml-16"
+                        [value]="option"
+                        [disableRipple]="true"
+                        [checked]="isSelected(option)"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleSelectedOption(option)"
+                    >
+                        {{ option?.label || '-' }}
+                    </mat-checkbox>
+                </div>
+            </mat-option>
+            <!-- / MULTPLE SELECTIONS -->
+
+            <!-- NONE OPTION -->
+            <mat-option
+                *ngIf="!isMultipleSelections"
+            >(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- SINGLE SELECTION -->
+            <mat-option
+                *ngFor="let option of (availableOptions)"
+                [value]="option"
+                [fxHide]="isMultipleSelections"
+            >
+                {{ option?.label || '-' }}
+            </mat-option>
+            <!-- / SINGLE SELECTION -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalAvailableOptions) && ((totalAvailableOptions) > (availableOptions)?.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(optionForm)">
+            {{ getFormError(optionForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / PROVINCE -->

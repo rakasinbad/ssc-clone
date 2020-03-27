@@ -10,6 +10,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { environment } from 'environments/environment';
 import { NgxPermissionsModule } from 'ngx-permissions';
 import { QuillModule } from 'ngx-quill';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { CataloguesActiveInactiveComponent } from './catalogues-active-inactive/catalogues-active-inactive.component';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
@@ -23,6 +24,12 @@ import { CataloguesRoutingModule } from './catalogues.routes';
 import { CatalogueEffects } from './store/effects';
 import { BrandEffects } from './store/effects/brand.effects';
 import { fromBrand, fromCatalogue } from './store/reducers';
+import { CatalogueSkuInformationComponent } from './components/catalogue-sku-information/catalogue-sku-information.component';
+import { CatalogueMediaSettingsComponent } from './components/catalogue-media-settings/catalogue-media-settings.component';
+import { CataloguePriceSettingsComponent } from './components/catalogue-price-settings/catalogue-price-settings.component';
+import { CatalogueWeightAndDimensionComponent } from './components/catalogue-weight-and-dimension/catalogue-weight-and-dimension.component';
+import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
+import { CatalogueAmountSettingsComponent } from './components/catalogue-amount-settings/catalogue-amount-settings.component';
 
 // import { style } from '@angular/animations';
 
@@ -35,7 +42,14 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         CataloguesSelectCategoryComponent,
         CataloguesEditPriceStockComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent
+        CataloguesActiveInactiveComponent,
+        // Catalogue's Card Component
+        CatalogueDetailComponent,
+        CatalogueSkuInformationComponent,
+        CatalogueMediaSettingsComponent,
+        CataloguePriceSettingsComponent,
+        CatalogueWeightAndDimensionComponent,
+        CatalogueAmountSettingsComponent,
     ],
     imports: [
         CataloguesRoutingModule,
@@ -43,6 +57,7 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         SharedModule,
         SharedComponentsModule,
         MaterialModule,
+        DragDropModule,
 
         RxReactiveFormsModule,
         // RxReactiveDynamicFormsModule,
@@ -67,7 +82,9 @@ import { fromBrand, fromCatalogue } from './store/reducers';
         CataloguesEditPriceStockComponent,
         CataloguesSelectCategoryComponent,
         CataloguesRemoveComponent,
-        CataloguesActiveInactiveComponent
+        CataloguesActiveInactiveComponent,
+        CatalogueWeightAndDimensionComponent,
+        CatalogueAmountSettingsComponent
     ]
 })
 export class CataloguesModule {}

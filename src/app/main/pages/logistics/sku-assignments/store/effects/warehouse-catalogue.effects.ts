@@ -141,7 +141,7 @@ export class WarehouseCatalogueEffects {
                     return of(WarehouseCatalogueActions.fetchWarehouseCataloguesSuccess({
                         payload: {
                             data: (response as unknown as Array<WarehouseCatalogue>).map(wh => new WarehouseCatalogue(wh)),
-                            total: response.total,
+                            total: (response as unknown as Array<WarehouseCatalogue>).length,
                         }
                     }));
                 }

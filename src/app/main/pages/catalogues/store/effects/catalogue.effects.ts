@@ -6,7 +6,7 @@ import { Update } from '@ngrx/entity';
 import { Store } from '@ngrx/store';
 import { catchOffline, Network } from '@ngx-pwa/offline';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
-import { LogService, NoticeService } from 'app/shared/helpers';
+import { LogService, NoticeService, HelperService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
@@ -39,39 +39,68 @@ export class CatalogueEffects {
                         return CatalogueActions.patchCatalogueSuccess({
                             payload: {
                                 data: catalogue,
-                                source: payload.source
+                                source: payload.source,
+                                section: payload.section,
                             }
                         });
                     }),
-                    catchError(err =>
-                        of(
+                    catchError(err => {
+                        if (payload.source === 'form') {
+                            if (payload.section) {
+                                this.store.dispatch(UiActions.showFooterAction());
+                                this.store.dispatch(FormActions.resetClickSaveButton());
+                                this.store.dispatch(FormActions.resetClickCancelButton());
+                            }
+                        }
+
+                        return of(
                             CatalogueActions.patchCatalogueFailure({
                                 payload: {
                                     id: 'patchCatalogueFailure',
                                     errors: err
                                 }
                             })
-                        )
-                    ),
-                    finalize(() => this.store.dispatch(FormActions.resetClickSaveButton()))
+                        );
+                    }),
                 );
             })
         )
     );
+
+    patchCatalogueFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.patchCatalogueFailure),
+            map(action => action.payload),
+            tap(payload => this.helper$.showErrorNotification(payload))
+        )
+    , { dispatch: false });
 
     patchCatalogueSuccess$ = createEffect(
         () =>
             this.actions$.pipe(
                 ofType(CatalogueActions.patchCatalogueSuccess),
                 map(action => action.payload),
-                tap(({ data: catalogue, source }) => {
+                tap(({ data: catalogue, source, section }) => {
                     this._$notice.open('Produk berhasil di-update', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
 
                     if (source === 'form') {
-                        this.router.navigate(['pages', 'catalogues']);
+                        if (!section) {
+                            this.router.navigate(['pages', 'catalogues']);
+                        } else {
+                            const changes = { ...catalogue };
+
+                            const updatedCatalogue: Update<Catalogue> = {
+                                id: catalogue.id,
+                                changes
+                            };
+
+                            this.store.dispatch(
+                                CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue })
+                            );
+                        }
                     } else if (source === 'list') {
                         this.matDialog.closeAll();
                         // this.router.navigate(['pages', 'catalogues']);
@@ -86,6 +115,8 @@ export class CatalogueEffects {
                             CatalogueActions.updateCatalogue({ catalogue: updatedCatalogue })
                         );
                     }
+
+                    this.store.dispatch(CatalogueActions.setRefreshStatus({ status: true }));
                 })
             ),
         { dispatch: false }
@@ -1059,6 +1090,7 @@ export class CatalogueEffects {
         protected network: Network,
         private _$log: LogService,
         private _$catalogueApi: CataloguesService,
+        private helper$: HelperService,
         private _$notice: NoticeService
     ) {}
 }

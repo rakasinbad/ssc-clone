@@ -242,6 +242,34 @@ export class ViolationType implements IViolationType {
     }
 }
 
+interface ISimpleCatalogueCategory {
+    id: string;
+    name: string;
+    parent: TNullable<string>;
+    hasChildren?: boolean;
+}
+
+export class SimpleCatalogueCategory implements ISimpleCatalogueCategory {
+    id: string;
+    name: string;
+    parent: TNullable<string>;
+    hasChildren?: boolean;
+
+    constructor(data: ISimpleCatalogueCategory) {
+        const {
+            id,
+            name,
+            parent,
+            hasChildren,
+        } = data;
+
+        this.id = id;
+        this.name = name;
+        this.parent = parent;
+        this.hasChildren = hasChildren;
+    }
+}
+
 export class CatalogueCategory extends Timestamp {
     id: string;
     parentId: TNullable<string>;

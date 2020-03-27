@@ -1,0 +1,46 @@
+<!-- STORE CHANNEL -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerStoreChannel
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Store Channel"
+            [formControl]="storeChannelForm"
+            [matAutocomplete]="storeChannelAutoComplete"
+        />
+        <mat-autocomplete
+            #storeChannelAutoComplete
+            [displayWith]="displayStoreChannel"
+            (opened)="listenStoreChannelAutoComplete()"
+            (optionSelected)="onSelectedStoreChannel($event)"
+        >
+            <!-- NONE OPTION -->
+            <mat-option *ngIf="!(isStoreChannelLoading$ | async)">(None)</mat-option>
+            <!-- / NONE OPTION -->
+
+            <!-- STORE CHANNEL OPTIONS -->
+            <mat-option
+                *ngFor="let storeChannel of (availableStoreChannels$ | async)"
+                [value]="storeChannel"
+            >
+                {{ storeChannel?.name || '-' }}
+            </mat-option>
+            <!-- / STORE CHANNEL OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalStoreChannels$ | async) && ((totalStoreChannels$ | async) > (availableStoreChannels$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option>
+            <!-- / LOADING OPTION -->
+        </mat-autocomplete>
+        <mat-error *ngIf="hasError(storeChannelForm)">
+            {{ getFormError(storeChannelForm) }}
+        </mat-error>
+    </mat-form-field>
+</div>
+<!-- / STORE CHANNEL -->

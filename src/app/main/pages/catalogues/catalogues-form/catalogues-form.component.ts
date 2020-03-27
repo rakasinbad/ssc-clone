@@ -1009,15 +1009,15 @@ export class CataloguesFormComponent implements OnInit, OnDestroy, AfterViewInit
     ngOnDestroy(): void {
         // Called once, before the instance is destroyed.
         // Add 'implements OnDestroy' to the class.
+        this._unSubs$.next();
+        this._unSubs$.complete();
+
         this.store.dispatch(CatalogueActions.resetSelectedCatalogue());
         this.store.dispatch(CatalogueActions.resetSelectedCategories());
         this.store.dispatch(UiActions.hideFooterAction());
         this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
         this.store.dispatch(UiActions.hideCustomToolbar());
         this.store.dispatch(FormActions.resetFormStatus());
-
-        this._unSubs$.next();
-        this._unSubs$.complete();
     }
 
     ngAfterViewInit(): void {

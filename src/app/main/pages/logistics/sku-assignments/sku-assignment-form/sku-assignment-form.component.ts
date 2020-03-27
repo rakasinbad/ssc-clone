@@ -534,9 +534,9 @@ export class SkuAssignmentFormComponent implements OnInit, AfterViewInit, OnDest
 
                 // Menyiapkan query untuk pencarian district.
                 const newQuery: IQueryParams = {
-                    paginate: true,
-                    limit: 15,
-                    skip: 0
+                    paginate: false,
+                    // limit: 15,
+                    // skip: 0
                 };
 
                 newQuery['warehouseId'] = warehouse.id;

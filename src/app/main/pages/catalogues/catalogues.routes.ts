@@ -6,6 +6,7 @@ import { AuthGuard } from '../core/auth/auth.guard';
 import { CataloguesAddNewProductComponent } from './catalogues-add-new-product/catalogues-add-new-product.component';
 import { CataloguesFormComponent } from './catalogues-form/catalogues-form.component';
 import { CataloguesComponent } from './catalogues.component';
+import { CatalogueDetailComponent } from './pages/catalogue-detail/catalogue-detail.component';
 
 const routes: Routes = [
     {
@@ -95,8 +96,31 @@ const routes: Routes = [
         //     status: CatalogueStatusResolver
         // },
     },
+    // {
+    //     path: 'edit/:id',
+    //     component: CataloguesFormComponent,
+    //     canActivate: [AuthGuard, NgxPermissionsGuard],
+    //     data: {
+    //         permissions: {
+    //             only: [
+    //                 'SUPER_SUPPLIER_ADMIN',
+    //                 'HEAD_OF_SALES',
+    //                 'BOS',
+    //                 'COUNTRY_MANAGER',
+    //                 'SUPPLIER_ADMIN'
+    //             ],
+    //             redirectTo: {
+    //                 navigationCommands: ['/pages/errors/403'],
+    //                 navigationExtras: {
+    //                     replaceUrl: true,
+    //                     skipLocationChange: true
+    //                 }
+    //             }
+    //         }
+    //     }
+    // },
     {
-        path: 'edit/:id',
+        path: 'edit/:section/:id',
         component: CataloguesFormComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
@@ -120,7 +144,7 @@ const routes: Routes = [
     },
     {
         path: 'view/:id',
-        component: CataloguesFormComponent,
+        component: CatalogueDetailComponent,
         canActivate: [AuthGuard, NgxPermissionsGuard],
         data: {
             permissions: {

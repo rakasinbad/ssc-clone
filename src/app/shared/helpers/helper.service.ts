@@ -182,6 +182,17 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
+    static debug(label: string, data: any = {}): void {
+        if (!environment.production) {
+            // tslint:disable-next-line:no-console
+            console.groupCollapsed(label, data);
+            // tslint:disable-next-line:no-console
+            console.trace(label, data);
+            // tslint:disable-next-line:no-console
+            console.groupEnd();
+        }
+    }
+
     // Referensi: https://stackoverflow.com/a/1349462
     static generateRandomString(
         len: number,
