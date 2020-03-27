@@ -1,0 +1,1 @@
+Ini adalah komponen untuk dropdown Store Type yang ada di Store Segmentation tanpa tersegmentasi ke Store.

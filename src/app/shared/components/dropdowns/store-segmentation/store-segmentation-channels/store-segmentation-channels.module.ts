@@ -2,15 +2,17 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FuseSharedModule } from '@fuse/shared.module';
 import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
-import { StoreTypesDropdownComponent } from './store-types.component';
-import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
+// import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
+// import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
+
+import { StoreSegmentationChannelsDropdownComponent } from './store-segmentation-channels.component';
+import { SelectAdvancedModule } from '../../select-advanced/select-advanced.module';
 
 
 
 @NgModule({
     declarations: [
-        StoreTypesDropdownComponent,
+        StoreSegmentationChannelsDropdownComponent,
     ],
     imports: [
         CommonModule,
@@ -25,15 +27,16 @@ import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
         MatInputModule,
         MatSelectModule,
 
+        SelectAdvancedModule,
         // Third Party (RxWeb: https://www.rxweb.io)
-        RxReactiveFormsModule,
-        RxReactiveDynamicFormsModule,
+        // RxReactiveFormsModule,
+        // RxReactiveDynamicFormsModule,
     ],
     exports: [
-        StoreTypesDropdownComponent,
+        StoreSegmentationChannelsDropdownComponent,
     ],
     entryComponents: [
-        StoreTypesDropdownComponent,
+        StoreSegmentationChannelsDropdownComponent,
     ],
 })
-export class StoreTypesDropdownModule { }
+export class StoreSegmentationChannelsDropdownModule { }

@@ -6,78 +6,76 @@ import { environment } from 'environments/environment';
 import { FormControl } from '@angular/forms';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of, forkJoin } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged, delay, take, catchError, switchMap } from 'rxjs/operators';
-import { StoreType } from './models';
-import { StoreTypesApiService } from './services';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
+import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap } from 'rxjs/operators';
+import { SegmentedStoreType as Entity } from './models';
+import { SegmentedStoreTypesApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
-import { Auth } from 'app/main/pages/core/auth/models';
 
 @Component({
-    selector: 'select-store-types',
-    templateUrl: './store-types.component.html',
-    styleUrls: ['./store-types.component.scss'],
+    selector: 'select-segmented-store-types',
+    templateUrl: './segmented-store-types.component.html',
+    styleUrls: ['./segmented-store-types.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
+export class SegmentedStoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Form
-    storeTypeForm: FormControl = new FormControl('');
+    entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
 
-    // Untuk menyimpan StoreType yang tersedia.
-    availableStoreTypes$: BehaviorSubject<Array<StoreType>> = new BehaviorSubject<Array<StoreType>>([]);
-    // Subject untuk mendeteksi adanya perubahan StoreType yang terpilih.
-    selectedStoreType$: BehaviorSubject<StoreType> = new BehaviorSubject<StoreType>(null);
-    // Menyimpan state loading-nya StoreType.
-    isStoreTypeLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    // Untuk menyimpan Entity yang tersedia.
+    availableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
+    // Subject untuk mendeteksi adanya perubahan Entity yang terpilih.
+    selectedEntity$: BehaviorSubject<Entity> = new BehaviorSubject<Entity>(null);
+    // Menyimpan state loading-nya Entity.
+    isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
-    totalStoreTypes$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selected: EventEmitter<TNullable<StoreType>> = new EventEmitter<TNullable<StoreType>>();
+    @Output() selected: EventEmitter<TNullable<Entity>> = new EventEmitter<TNullable<Entity>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
-    @ViewChild('storeTypeAutoComplete', { static: true }) storeTypeAutoComplete: MatAutocomplete;
-    @ViewChild('triggerStoreType', { static: true, read: MatAutocompleteTrigger }) triggerStoreType: MatAutocompleteTrigger;
+    @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
+    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
 
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
         private errorMessage$: ErrorMessageService,
-        private storeTypeApi$: StoreTypesApiService,
+        private entityApi$: EntitiesApiService,
     ) {
-        this.availableStoreTypes$.pipe(
-            tap(x => this.debug('AVAILABLE STORE TYPES', x)),
+        this.availableEntities$.pipe(
+            tap(x => this.debug('AVAILABLE ENTITIES', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
-        this.selectedStoreType$.pipe(
-            tap(x => this.debug('SELECTED STORE TYPE', x)),
+        this.selectedEntity$.pipe(
+            tap(x => this.debug('SELECTED ENTITY', x)),
+            takeUntil(this.subs$)
+        ).subscribe(value => this.selected.emit(value));
+
+        this.isEntityLoading$.pipe(
+            tap(x => this.debug('IS ENTITY LOADING?', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
-        this.isStoreTypeLoading$.pipe(
-            tap(x => this.debug('IS STORE TYPE LOADING?', x)),
-            takeUntil(this.subs$)
-        ).subscribe();
-
-        this.totalStoreTypes$.pipe(
-            tap(x => this.debug('TOTAL STORE TYPES', x)),
+        this.totalEntities$.pipe(
+            tap(x => this.debug('TOTAL ENTITIES', x)),
             takeUntil(this.subs$)
         ).subscribe();
     }
 
     private toggleLoading(loading: boolean): void {
-        this.isStoreTypeLoading$.next(loading);
+        this.isEntityLoading$.next(loading);
     }
 
     private debug(label: string, data: any = {}): void {
@@ -91,7 +89,7 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
         }
     }
 
-    private requestStoreType(params: IQueryParams): void {
+    private requestEntity(params: IQueryParams): void {
         of(null).pipe(
             // tap(x => this.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
@@ -99,7 +97,7 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
             tap(x => this.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<StoreType>>>(([_, userSupplier]) => {
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
                     throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
@@ -116,32 +114,32 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
                 newQuery['noSupplierId'] = true;
 
                 // Melakukan request data warehouse.
-                return this.storeTypeApi$
-                    .find<IPaginatedResponse<StoreType>>(newQuery)
+                return this.entityApi$
+                    .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
                         tap(() => this.toggleLoading(true)),
-                        tap(response => this.debug('FIND STORE TYPE', { params: newQuery, response }))
+                        tap(response => this.debug('FIND ENTITY', { params: newQuery, response }))
                     );
             }),
             take(1),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
-                this.availableStoreTypes$.next(response.data);
-                this.totalStoreTypes$.next(response.total);
+                this.availableEntities$.next(response.data);
+                this.totalEntities$.next(response.total);
             },
             error: (err) => {
-                this.debug('ERROR FIND STORE TYPE', { params, error: err }),
+                this.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
             complete: () => {
                 this.toggleLoading(false);
-                this.debug('FIND STORE TYPE COMPLETED');
+                this.debug('FIND ENTITY COMPLETED');
             }
         });
     }
 
-    private initStoreType(): void {
+    private initEntity(): void {
         // Menyiapkan query untuk pencarian store type.
         const params: IQueryParams = {
             paginate: true,
@@ -150,11 +148,11 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
         };
 
         // Reset form-nya store type.
-        this.storeTypeForm.enable();
-        this.storeTypeForm.reset();
+        this.entityForm.enable();
+        this.entityForm.reset();
 
         // Memulai request data store type.
-        this.requestStoreType(params);
+        this.requestEntity(params);
     }
 
     getFormError(form: any): string {
@@ -181,89 +179,89 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
-    onSelectedStoreType(event: MatAutocompleteSelectedEvent): void {
+    onSelectedEntity(event: MatAutocompleteSelectedEvent): void {
         // Mengambil nilai store type terpilih.
-        const storeType: StoreType = event.option.value;
+        const entity: Entity = event.option.value;
         // Mengirim nilai tersebut melalui subject.
-        this.selectedStoreType$.next(storeType);
+        this.selectedEntity$.next(entity);
     }
 
-    displayStoreType(item: StoreType): string {
+    displayEntity(item: Entity): string {
         if (!item) {
             return;
         }
 
-        return item.name;
+        return item.id;
     }
 
-    processStoreTypeAutoComplete(): void {
-        if (this.triggerStoreType && this.storeTypeAutoComplete && this.storeTypeAutoComplete.panel) {
-            fromEvent<Event>(this.storeTypeAutoComplete.panel.nativeElement, 'scroll')
+    processEntityAutoComplete(): void {
+        if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
+            fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
                 .pipe(
                     // Debugging.
-                    tap(() => this.debug(`fromEvent<Event>(this.storeTypeAutoComplete.panel.nativeElement, 'scroll')`)),
+                    tap(() => this.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
                     // Kasih jeda ketika scrolling.
                     debounceTime(500),
                     // Mengambil nilai terakhir store type yang tersedia, jumlah store type dan state loading-nya store type dari subject.
-                    withLatestFrom(this.availableStoreTypes$, this.totalStoreTypes$, this.isStoreTypeLoading$,
-                        ($event, storeTypes, totalStoreTypes, isLoading) => ({ $event, storeTypes, totalStoreTypes, isLoading }),
+                    withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
+                        ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
                     ),
                     // Debugging.
-                    tap(() => this.debug('SELECT STORE TYPE IS SCROLLING...', {})),
+                    tap(() => this.debug('SELECT ENTITY IS SCROLLING...', {})),
                     // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, storeTypes, totalStoreTypes }) =>
-                        !isLoading && (totalStoreTypes > storeTypes.length) && this.helper$.isElementScrolledToBottom(this.storeTypeAutoComplete.panel)
+                    filter(({ isLoading, entities, totalEntities }) =>
+                        !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
                     ),
-                    takeUntil(this.triggerStoreType.panelClosingActions.pipe(
-                        tap(() => this.debug('SELECT STORE TYPE IS CLOSING ...'))
+                    takeUntil(this.triggerEntity.panelClosingActions.pipe(
+                        tap(() => this.debug('SELECT ENTITY IS CLOSING ...'))
                     ))
-                ).subscribe(({ storeTypes }) => {
+                ).subscribe(({ entities }) => {
                     const params: IQueryParams = {
                         paginate: true,
                         limit: 10,
-                        skip: storeTypes.length
+                        skip: entities.length
                     };
 
                     // Memulai request data store type.
-                    this.requestStoreType(params);
+                    this.requestEntity(params);
                 });
         }
     }
 
-    listenStoreTypeAutoComplete(): void {
-        // this.triggerStoreType.autocomplete = this.storeTypeAutoComplete;
-        setTimeout(() => this.processStoreTypeAutoComplete());
+    listenEntityAutoComplete(): void {
+        // this.triggerEntity.autocomplete = this.entityAutoComplete;
+        setTimeout(() => this.processEntityAutoComplete());
     }
 
     ngOnInit(): void {
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initStoreType();
+        this.initEntity();
 
         // Menangani Form Control-nya warehouse.
-        (this.storeTypeForm.valueChanges).pipe(
+        (this.entityForm.valueChanges).pipe(
             startWith(''),
             debounceTime(200),
             distinctUntilChanged(),
-            withLatestFrom(this.selectedStoreType$),
-            filter(([formValue, selectedStoreType]) => {
-                if (selectedStoreType && formValue && !this.storeTypeAutoComplete.isOpen) {
+            withLatestFrom(this.selectedEntity$),
+            filter(([formValue, selectedEntity]) => {
+                if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
                     return false;
                 }
                 
-                if (selectedStoreType || (!formValue && !this.storeTypeAutoComplete.isOpen)) {
-                    this.selectedStoreType$.next(null);
+                if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
+                    this.selectedEntity$.next(null);
                     return false;
                 }
 
-                if (!formValue && selectedStoreType && !this.storeTypeAutoComplete.isOpen) {
-                    this.storeTypeForm.patchValue(selectedStoreType);
+                if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
+                    this.entityForm.patchValue(selectedEntity);
                     return false;
                 }
 
                 return true;
             }),
-            tap<[string | StoreType, TNullable<StoreType>]>(([formValue, selectedStoreType]) => {
-                this.debug('STORE TYPE FORM VALUE IS CHANGED', { formValue, selectedStoreType });
+            tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
+                this.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
             }),
             takeUntil(this.subs$)
         ).subscribe(([formValue]) => {
@@ -275,7 +273,7 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
 
             queryParams['keyword'] = formValue;
 
-            this.requestStoreType(queryParams);
+            this.requestEntity(queryParams);
         });
     }
 
@@ -283,17 +281,17 @@ export class StoreTypesDropdownComponent implements OnInit, AfterViewInit, OnDes
         this.subs$.next();
         this.subs$.complete();
 
-        this.totalStoreTypes$.next(null);
-        this.totalStoreTypes$.complete();
+        this.totalEntities$.next(null);
+        this.totalEntities$.complete();
 
-        this.selectedStoreType$.next(null);
-        this.selectedStoreType$.complete();
+        this.selectedEntity$.next(null);
+        this.selectedEntity$.complete();
 
-        this.isStoreTypeLoading$.next(null);
-        this.isStoreTypeLoading$.complete();
+        this.isEntityLoading$.next(null);
+        this.isEntityLoading$.complete();
 
-        this.availableStoreTypes$.next(null);
-        this.availableStoreTypes$.complete();
+        this.availableEntities$.next(null);
+        this.availableEntities$.complete();
     }
 
     ngAfterViewInit(): void { }

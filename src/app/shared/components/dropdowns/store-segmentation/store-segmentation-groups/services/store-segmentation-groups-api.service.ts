@@ -8,14 +8,14 @@ import { Observable } from 'rxjs';
  *
  *
  * @export
- * @class AssociationApiService
+ * @class StoreSegmentationGroupsApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class StoreTypesApiService {
+export class StoreSegmentationGroupsApiService {
     private _url: string;
-    private readonly _endpoint = '/store-types';
+    private readonly _endpoint = '/groups';
 
     constructor(
         private http: HttpClient,
@@ -26,7 +26,7 @@ export class StoreTypesApiService {
         const newArgs = [];
 
         if (!params['supplierId'] && !params['noSupplierId']) {
-            throw new Error('ERR_STORE_TYPES_REQUIRE_SUPPLIERID');
+            throw new Error('ERR_STORE_SEGMENTATION_GROUPS_REQUIRE_SUPPLIERID');
         }
         
         if (params['supplierId'] && !params['noSupplierId']) {
