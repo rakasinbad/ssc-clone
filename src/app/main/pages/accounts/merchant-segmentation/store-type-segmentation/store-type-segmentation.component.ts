@@ -39,18 +39,18 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     cardHeaderConfig: ICardHeaderConfiguration = {
         class: 'm-0 mt-4 mb-16',
         title: {
-            label: 'Store Segmentation'
+            label: 'Store Type'
         },
         search: {
-            active: true
+            active: false
         },
         // add: {
         //     permissions: [],
         // },
         viewBy: {
             list: [
-                { id: 'segment-tree', label: 'Segment Tree' },
-                { id: 'store', label: 'Store' }
+                { id: 'segment-tree', label: 'Segment Tree' }
+                // { id: 'store', label: 'Store' }
             ]
         }
         // export: {
@@ -152,7 +152,8 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         }
 
         if (!this.isFromSelector) {
-            const selectedId = this.form.get(['segments', segmentIdx - 1, 'selectedId']).value;
+            const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
+            const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
 
             this.form
                 .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
@@ -397,6 +398,8 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
 
                 this.isLoading$ = this.store.select(StoreTypeSelectors.getIsLoading);
                 this.isLoadingRow$ = this.store.select(StoreTypeSelectors.getIsLoadingRow);
+
+                this.store.dispatch(StoreTypeActions.clearTableState());
 
                 // Trigger refresh
                 this.store

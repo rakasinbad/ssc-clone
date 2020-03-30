@@ -8,7 +8,8 @@ app-merchant-segmentation {
         flex: 1 1 auto;
         border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 4px;
-        min-height: 40px;
+        min-height: 236px !important;
+        max-height: 236px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;

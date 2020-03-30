@@ -1,8 +1,18 @@
+import * as StoreChannelActions from './store-channel.actions';
+import * as StoreClusterActions from './store-cluster.actions';
 import * as StoreGroupActions from './store-group.actions';
 import * as StoreTypeActions from './store-type.actions';
 
 type StoreSegmentationFailureActions =
-    | StoreTypeActions.FailureActions
-    | StoreGroupActions.FailureActions;
+    | StoreChannelActions.FailureActions
+    | StoreClusterActions.FailureActions
+    | StoreGroupActions.FailureActions
+    | StoreTypeActions.FailureActions;
 
-export { StoreGroupActions, StoreTypeActions, StoreSegmentationFailureActions };
+export {
+    StoreChannelActions,
+    StoreClusterActions,
+    StoreGroupActions,
+    StoreTypeActions,
+    StoreSegmentationFailureActions
+};

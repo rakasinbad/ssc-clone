@@ -64,6 +64,7 @@ export const reducer = createReducer<State>(
         adapter.removeAll({
             ...state,
             isLoading: false,
+            isRefresh: undefined,
             selectedId: null,
             deepestLevel: 0
         })

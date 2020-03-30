@@ -1,13 +1,13 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
-import { StoreType } from '../../models';
-import { StoreTypeActions } from '../actions';
+import { StoreChannel } from '../../models';
+import { StoreChannelActions } from '../actions';
 
 // Keyname for reducer
-export const featureKey = 'storeTypes';
+export const featureKey = 'storeChannels';
 
-export interface State extends EntityState<StoreType> {
+export interface State extends EntityState<StoreChannel> {
     isLoading: boolean;
     isLoadingRow: boolean;
     isRefresh: boolean;
@@ -15,8 +15,8 @@ export interface State extends EntityState<StoreType> {
     deepestLevel: number;
 }
 
-// Adapter for store types state
-export const adapter = createEntityAdapter<StoreType>({ selectId: row => row.id });
+// Adapter for storeChannels state
+export const adapter = createEntityAdapter<StoreChannel>({ selectId: row => row.id });
 
 // Initialize state
 export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
@@ -30,37 +30,37 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StoreTypeActions.createStoreTypeRequest, state => ({ ...state, isLoadingRow: true })),
-    on(StoreTypeActions.createStoreTypeFailure, state => ({ ...state, isRefresh: true })),
-    on(StoreTypeActions.refreshStoreTypesRequest, state => ({ ...state, isRefresh: false })),
-    on(StoreTypeActions.refreshStoreTypesFailure, state => ({
+    on(StoreChannelActions.createStoreChannelRequest, state => ({ ...state, isLoadingRow: true })),
+    on(StoreChannelActions.createStoreChannelFailure, state => ({ ...state, isRefresh: true })),
+    on(StoreChannelActions.refreshStoreChannelsRequest, state => ({ ...state, isRefresh: false })),
+    on(StoreChannelActions.refreshStoreChannelsFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreTypeActions.fetchStoreTypesRequest, state => ({
+    on(StoreChannelActions.fetchStoreChannelsRequest, state => ({
         ...state,
         isLoading: true
     })),
-    on(StoreTypeActions.fetchStoreTypesFailure, state => ({
+    on(StoreChannelActions.fetchStoreChannelsFailure, state => ({
         ...state,
         isLoading: false
     })),
-    on(StoreTypeActions.createStoreTypeSuccess, state => ({ ...state, isRefresh: true })),
-    on(StoreTypeActions.fetchStoreTypesSuccess, (state, { payload }) =>
+    on(StoreChannelActions.createStoreChannelSuccess, state => ({ ...state, isRefresh: true })),
+    on(StoreChannelActions.fetchStoreChannelsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
             ...state,
             isLoading: false,
             deepestLevel: payload.deepestLevel
         })
     ),
-    on(StoreTypeActions.refreshStoreTypesSuccess, (state, { payload }) =>
+    on(StoreChannelActions.refreshStoreChannelsSuccess, (state, { payload }) =>
         adapter.upsertMany(payload.data, {
             ...state,
             isLoadingRow: false,
             deepestLevel: payload.deepestLevel
         })
     ),
-    on(StoreTypeActions.clearState, state =>
+    on(StoreChannelActions.clearState, state =>
         adapter.removeAll({
             ...state,
             isLoading: false,

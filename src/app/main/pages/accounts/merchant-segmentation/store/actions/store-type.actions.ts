@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreType, StoreSegment, StoreType } from '../../models';
+import { PayloadStoreType, StoreSegment, StoreType, StoreSegmentTree } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Types
@@ -21,6 +21,25 @@ export const fetchStoreTypesFailure = createAction(
 export const fetchStoreTypesSuccess = createAction(
     '[Store Segmentation] Fetch Store Types Success',
     props<{ payload: StoreSegment<StoreType> }>()
+);
+
+// -----------------------------------------------------------------------------------------------------
+// Fetch Store Last Type
+// -----------------------------------------------------------------------------------------------------
+
+export const fetchStoreLastTypeRequest = createAction(
+    '[Store Segmentation] Fetch Store Last Type Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchStoreLastTypeFailure = createAction(
+    '[Store Segmentation] Fetch Store Last Type Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const fetchStoreLastTypeSuccess = createAction(
+    '[Store Segmentation] Fetch Store Last Type Success',
+    props<{ payload: { data: Array<StoreSegmentTree>; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -62,7 +81,12 @@ export const createStoreTypeSuccess = createAction(
 
 export const clearState = createAction('[Store Segmentation] Reset Store Types Core State');
 
+export const clearTableState = createAction(
+    '[Store Segmentation] Reset Store Last Type Core State'
+);
+
 export type FailureActions =
     | 'fetchStoreTypesFailure'
+    | 'fetchStoreLastTypeFailure'
     | 'refreshStoreTypesFailure'
     | 'createStoreTypeFailure';
