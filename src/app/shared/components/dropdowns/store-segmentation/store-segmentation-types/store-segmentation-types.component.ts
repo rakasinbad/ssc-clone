@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent } from '@angular/material';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map } from 'rxjs/operators';
+import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { StoreSegmentationType as Entity } from './models';
 import { StoreSegmentationTypesApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -16,6 +16,12 @@ import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { Selection } from '../../select-advanced/models';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
+import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
+import { SelectionList } from 'app/shared/components/multiple-selection/models';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 
 @Component({
     selector: 'select-store-segmentation-types',
@@ -31,6 +37,8 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
+    // Untuk keperluan mat dialog ref.
+    dialogRef$: Subject<string> = new Subject<string>();
 
     // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
     rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
@@ -42,6 +50,16 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    // Untuk keperluan handle dialog.
+    dialog: ApplyDialogService<MultipleSelectionComponent>;
+
+    // Untuk keperluan form field.
+    // tslint:disable-next-line: no-inferrable-types
+    removing: boolean = false;
+    tempEntity: Array<Selection> = [];
+    initialSelection: Array<Selection> = [];
+    entityFormView: FormControl;
+    entityFormValue: FormControl;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Entity>> = new EventEmitter<TNullable<Entity>>();
@@ -49,12 +67,18 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
     @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
         private errorMessage$: ErrorMessageService,
         private entityApi$: EntitiesApiService,
+        private applyDialogFactory$: ApplyDialogFactoryService<MultipleSelectionComponent>,
+        private matDialog: MatDialog,
+        private cdRef: ChangeDetectorRef,
+        private notice$: NoticeService,
+        private multiple$: MultipleSelectionService,
     ) {
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
@@ -73,6 +97,49 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
 
         this.totalEntities$.pipe(
             tap(x => HelperService.debug('TOTAL ENTITIES', x)),
+            takeUntil(this.subs$)
+        ).subscribe();
+
+        // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
+        this.dialogRef$.pipe(
+            exhaustMap(subjectValue => {
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogTitle: string = '';
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogMessage: string = '';
+
+                if (subjectValue === 'clear-all') {
+                    dialogTitle = 'Clear Selected Options';
+                    dialogMessage = 'It will clear all your selected options. Are you sure?';
+                }
+
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: dialogTitle,
+                        message: dialogMessage,
+                        id: subjectValue
+                    }, disableClose: true
+                });
+        
+                return dialogRef.afterClosed().pipe(
+                    tap(value => {
+                        if (value === 'clear-all') {
+                            this.tempEntity = [];
+                            this.entityFormValue.setValue([]);
+
+                            this.multiple$.clearAllSelectedOptions();
+
+                            this.notice$.open('Your selected options has been cleared.', 'success', {
+                                horizontalPosition: 'right',
+                                verticalPosition: 'bottom',
+                                duration: 5000
+                            });
+
+                            this.cdRef.markForCheck();
+                        }
+                    })
+                );
+            }),
             takeUntil(this.subs$)
         ).subscribe();
     }
@@ -211,6 +278,81 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
         this.requestEntity(params);
     }
 
+    onSelectionChanged($event: SelectionList): void {
+        const { removed, merged = this.entityFormValue.value } = $event;
+        this.tempEntity = merged;
+        this.removing = removed.length > 0;
+        HelperService.debug('SELECTION CHANGED', $event);
+
+        this.cdRef.detectChanges();
+    }
+
+    openStoreTypeSelection(): void {
+        let selected = this.entityFormValue.value;
+
+        if (!Array.isArray(selected)) {
+            selected = [];
+            this.entityFormValue.setValue(selected);
+        }
+
+        this.tempEntity = selected;
+        this.initialSelection = selected;
+        
+        this.dialog = this.applyDialogFactory$.open({
+            title: 'Select Store Type',
+            template: this.selectStoreType,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialog.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION CLOSED', value);
+
+                let selection;
+                if (value === 'apply') {
+                    if (!this.removing) {
+                        if (Array.isArray(this.tempEntity)) {
+                            if (this.tempEntity.length > 0) {
+                                selection = this.tempEntity;
+                            } else {
+                                selection = [];
+                            }
+                        } else {
+                            selection = (this.entityFormValue.value as Array<Selection>);
+                        }
+                    } else {
+                        selection = this.tempEntity;
+                    }
+                } else {
+                    selection = (this.entityFormValue.value as Array<Selection>);
+                }
+
+                if (selection.length === 0) {
+                    this.entityFormView.setValue('');
+                    this.entityFormValue.setValue('');
+                } else {
+                    const firstselection = selection[0].label;
+                    const remainLength = selection.length - 1;
+                    const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+
+                    this.entityFormValue.setValue(selection);
+                    this.entityFormView.setValue(viewValue);
+                }
+
+                this.onSelectedEntity(this.entityFormValue.value);
+                this.cdRef.detectChanges();
+            }
+        });
+    }
+
+    onClearAll(): void {
+        this.dialogRef$.next('clear-all');
+    }
+
     // processEntityAutoComplete(): void {
     //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
     //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
@@ -250,7 +392,14 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     //     setTimeout(() => this.processEntityAutoComplete());
     // }
 
+    private initForm(): void {
+        this.entityFormView = new FormControl('');
+        this.entityFormValue = new FormControl('');
+    }
+
     ngOnInit(): void {
+        this.initForm();
+        
         // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
         this.initEntity();
 
@@ -297,6 +446,9 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        this.dialogRef$.next();
+        this.dialogRef$.complete();
 
         this.totalEntities$.next(null);
         this.totalEntities$.complete();

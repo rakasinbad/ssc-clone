@@ -7,6 +7,7 @@ import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputMod
 
 import { StoreSegmentationClustersDropdownComponent } from './store-segmentation-clusters.component';
 import { SelectAdvancedModule } from '../../select-advanced/select-advanced.module';
+import { MultipleSelectionModule } from 'app/shared/components/multiple-selection/multiple-selection.module';
 
 
 
@@ -28,6 +29,7 @@ import { SelectAdvancedModule } from '../../select-advanced/select-advanced.modu
         MatSelectModule,
 
         SelectAdvancedModule,
+        MultipleSelectionModule,
         // Third Party (RxWeb: https://www.rxweb.io)
         // RxReactiveFormsModule,
         // RxReactiveDynamicFormsModule,
