@@ -45,7 +45,7 @@
                 <!-- HEADER -->
                 <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutGap="24px" fxLayoutAlign="space-between stretch">
                     <!-- LABEL -->
-                    <p fxFlexAlign="center" fxFlex="10">Find:</p>
+                    <p class="my-14 mx-0" fxFlexAlign="center" fxFlex="10">Find:</p>
                     <!-- / LABEL -->
                     <!-- SEARCH -->
                     <sinbad-search-bar fxFlex fxFlexAlign="center" [useBorder]="true" (changed)="onSearch($event)"></sinbad-search-bar>
@@ -112,14 +112,14 @@
                 <!-- HEADER -->
                 <div class="grey-300-border p-24" [style.border]="'1px solid'" fxLayout="row" fxLayoutAlign="space-between stretch">
                     <!-- LABEL -->
-                    <p fxFlexAlign="center">Your Selections ({{ totalSelectedOptions }})</p>
+                    <p class="my-14 mx-0" fxFlexAlign="center">Your Selections ({{ totalSelectedOptions }})</p>
                     <!-- / LABEL -->
                     <!-- CLEAR ALL -->
                     <a
                         fxFlexAlign="center"
                         [style.cursor]="'pointer'"
                         class="red-500-fg"
-                        *ngIf="totalSelectedOptions > 0"
+                        *ngIf="!disableClearAll && totalSelectedOptions > 0"
                         (click)="onClearAll()"
                     >Clear All</a>
                     <!-- / CLEAR ALL -->
