@@ -14,6 +14,7 @@ import {
     CatalogueWeightDimension
 } from '../../models';
 import { CatalogueMedia } from '../../models/catalogue-media.model';
+import { CataloguePrice } from '../../models/catalogue-price.model';
 
 export const fetchCatalogues = createAction(
     '[Catalogues API] Fetch Orders Request',
@@ -24,6 +25,8 @@ export const fetchCatalogues = createAction(
 type TSourceEdit = 'list' | 'form';
 
 type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings';
+
+export type FailureActionNames = 'fetchCataloguePriceSettingsFailure';
 
 /**
  * FILTER CATALOGUES
@@ -83,6 +86,7 @@ export const startPatchCatalogue = createAction(
 
 export const patchCatalogueRequest = createAction(
     '[Catalogues API] Patch Catalogue Request',
+    // tslint:disable-next-line
     props<{ payload: { id: string; data: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMedia> | Partial<CatalogueWeightDimension>; source: TSourceEdit; section?: CatalogueSection; } }>()
 );
 
@@ -317,6 +321,25 @@ export const fetchCataloguesFailure = createAction(
 export const fetchCataloguesSuccess = createAction(
     '[Catalogues API] Fetch Catalogues Success',
     props<{ payload: { catalogues: Array<Catalogue>; total: number } }>()
+);
+
+/**
+ * FETCH CATALOGUE PRICE SETTINGS
+ */
+
+export const fetchCataloguePriceSettingsRequest = createAction(
+    '[Catalogues API] Fetch Catalogue Price Settings Request',
+    props<{ payload: IQueryParams }>()
+);
+
+export const fetchCataloguePriceSettingsFailure = createAction(
+    '[Catalogues API] Fetch Catalogue Price Settings Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const fetchCataloguePriceSettingsSuccess = createAction(
+    '[Catalogues API] Fetch Catalogue Price Settings Success',
+    props<{ payload: { catalogues: Array<CataloguePrice>; total: number } }>()
 );
 
 /**

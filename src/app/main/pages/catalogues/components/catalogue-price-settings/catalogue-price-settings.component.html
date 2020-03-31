@@ -68,7 +68,9 @@
                     class="pr-0"
                     [class.mat-error]="!isViewMode() && hasError(form.get('retailBuyingPrice'))"
                 >
-                    Retail Buying Price
+                    <span
+                        class="red-500-fg"
+                    >* </span>Retail Buying Price
                 </label>
         
                 <mat-form-field appearance="outline" *ngIf="!isViewMode()">
@@ -114,32 +116,32 @@
             <!-- PRICE SEGMENTATION -->
             <div
                 cdkDropList
-                class="catalogue-price-toolbar w-100-p"
+                class="dnd-catalogue-price-toolbar w-100-p"
                 cdkDropListOrientation="horizontal"
                 (cdkDropListDropped)="drop($event)"
             >
                 <ng-container *ngFor="let tool of cataloguePriceTools">
-                    <div class="catalogue-price-tools" *ngIf="tool === 'warehouse'" cdkDrag>
+                    <div class="dnd-catalogue-price-tools" *ngIf="tool === 'warehouse'" cdkDrag>
                         <!-- <span>A</span> -->
                         <select-warehouse class="w-100-p"></select-warehouse>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'type'" cdkDrag>
+                    <div class="dnd-catalogue-price-tools" *ngIf="tool === 'type'" cdkDrag>
                         <!-- <span>B</span> -->
                         <select-store-segmentation-types class="w-100-p"></select-store-segmentation-types>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'group'" cdkDrag>
+                    <div class="dnd-catalogue-price-tools" *ngIf="tool === 'group'" cdkDrag>
                         <!-- <span>C</span> -->
                         <select-store-segmentation-groups class="w-100-p"></select-store-segmentation-groups>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'channel'" cdkDrag>
+                    <div class="dnd-catalogue-price-tools" *ngIf="tool === 'channel'" cdkDrag>
                         <!-- <span>D</span> -->
                         <select-store-segmentation-channels class="w-100-p"></select-store-segmentation-channels>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
                     </div>
-                    <div class="catalogue-price-tools" *ngIf="tool === 'cluster'" cdkDrag>
+                    <div class="dnd-catalogue-price-tools" *ngIf="tool === 'cluster'" cdkDrag>
                         <!-- <span>E</span> -->
                         <select-store-segmentation-clusters class="w-100-p"></select-store-segmentation-clusters>
                         <mat-icon class="sinbad-black-40-fg" cdkDragHandle>control_camera</mat-icon>
@@ -154,17 +156,84 @@
             >
                 Apply
             </button>
-
-            <!-- <button
-                mat-button
-                class="btn-sinbad-dashed sinbad-green-60-fg mt-16 btn-sinbad-disabled"
-                disabled
-            >
-                Apply
-            </button> -->
             <!-- / APPLY BUTTON -->
         </div>
         <!-- / APPLICATION ADVANCE PRICE -->
+        <!-- ADVANCE PRICE TABLE -->
+        <mat-table
+            #table
+            fusePerfectScrollbar
+            class="catalogue-price-table grey-300-border"
+            [dataSource]="(cataloguePrices$ | async)"
+            [@animateStagger]="{ value: '50' }"
+        >
+            <!-- Warehouse Column -->
+            <ng-container matColumnDef="warehouse">
+                <mat-header-cell *matHeaderCellDef>Warehouse</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.warehouseCatalogue?.warehouse?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Store Type Column -->
+            <ng-container matColumnDef="storeType">
+                <mat-header-cell *matHeaderCellDef>Store Type</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.type?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Store Group Column -->
+            <ng-container matColumnDef="storeGroup">
+                <mat-header-cell *matHeaderCellDef>Store Group</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.group?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Store Channel Column -->
+            <ng-container matColumnDef="storeChannel">
+                <mat-header-cell *matHeaderCellDef>Store Channel</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.channel?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Store Cluster Column -->
+            <ng-container matColumnDef="storeCluster">
+                <mat-header-cell *matHeaderCellDef>Store Cluster</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.cluster?.name || '-' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <!-- SKU's Price Column -->
+            <ng-container matColumnDef="price">
+                <mat-header-cell *matHeaderCellDef>Price</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <p>{{ row?.price  | price: 'full':'IDR':'narrow':'1.0-2' }}</p>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+            <div class="no-records" *ngIf="!(isLoading$ | async) && (totalCataloguePrice$ | async) === 0">
+                No records found
+            </div>
+        </mat-table>
+
+        <mat-paginator
+            [fxHide]="(totalCataloguePrice$ | async) === 0"
+            [length]="totalCataloguePrice$ | async"
+            [pageSize]="defaultPageSize"
+            [pageSizeOptions]="defaultPageSizeTable"
+            (page)="onChangePage($event)"
+            showFirstLastButtons
+        >
+        </mat-paginator>
+        <!-- / ADVANCE PRICE TABLE -->
     </form>
 </div>
 <!-- / CONTENT CARD (INFORMASI PRODUK) -->

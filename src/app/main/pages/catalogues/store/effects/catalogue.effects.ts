@@ -10,7 +10,7 @@ import { LogService, NoticeService, HelperService } from 'app/shared/helpers';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import {
     catchError,
     exhaustMap,
@@ -18,13 +18,20 @@ import {
     map,
     switchMap,
     tap,
-    withLatestFrom
+    withLatestFrom,
+    retry
 } from 'rxjs/operators';
 
 import { Catalogue, CatalogueCategory, CatalogueUnit } from '../../models';
 import { CataloguesService } from '../../services';
-import { CatalogueActions } from '../actions';
+import { CatalogueActions, FailureActionNames } from '../actions';
 import { fromCatalogue } from '../reducers';
+import { ErrorHandler, TNullable, IPaginatedResponse } from 'app/shared/models/global.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { User } from 'app/shared/models/user.model';
+import { AnyAction } from 'app/shared/models/actions.model';
+import { Auth } from 'app/main/pages/core/auth/models';
+import { CataloguePrice } from '../../models/catalogue-price.model';
 
 @Injectable()
 export class CatalogueEffects {
@@ -542,6 +549,34 @@ export class CatalogueEffects {
                     )
                 );
             })
+        )
+    );
+
+    fetchCataloguePriceSettingsRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.fetchCataloguePriceSettingsRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processCataloguePriceSettingsRequest),
+                        catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, IQueryParams], Observable<AnyAction>>(this.processCataloguePriceSettingsRequest),
+                        catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
+                    );
+                }
+            }),
         )
     );
 
@@ -1081,6 +1116,81 @@ export class CatalogueEffects {
             ),
         { dispatch: false }
     );
+
+    checkUserSupplier = (userData: User): User | Observable<never> => {
+        // Jika user tidak ada data supplier.
+        if (!userData.userSupplier) {
+            throw new ErrorHandler({
+                id: 'ERR_USER_SUPPLIER_NOT_FOUND',
+                errors: `User Data: ${userData}`
+            });
+        }
+    
+        // Mengembalikan data user jika tidak ada masalah.
+        return userData;
+    }
+
+    processCataloguePriceSettingsRequest = ([_, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+        // Hanya mengambil ID supplier saja.
+        // const { supplierId } = userData.userSupplier;
+        // Membentuk parameter query yang baru.
+        const newQuery: IQueryParams = {
+            ...queryParams
+        };
+
+        // Memasukkan ID supplier ke dalam parameter.
+        // newQuery['supplierId'] = supplierId;
+
+        return this._$catalogueApi.getCataloguePriceSettings<IPaginatedResponse<CataloguePrice>>(newQuery).pipe(
+            catchOffline(),
+            switchMap(response => {
+                if (newQuery.paginate) {
+                    return of(CatalogueActions.fetchCataloguePriceSettingsSuccess({
+                        payload: {
+                            catalogues: (response).data.map(wh => new CataloguePrice(wh)),
+                            total: response.total,
+                        }
+                    }));
+                } else {
+                    return of(CatalogueActions.fetchCataloguePriceSettingsSuccess({
+                        payload: {
+                            catalogues: (response as unknown as Array<CataloguePrice>).map(wh => new CataloguePrice(wh)),
+                            total: (response as unknown as Array<CataloguePrice>).length,
+                        }
+                    }));
+                }
+            }),
+            catchError(err => this.sendErrorToState(err, 'fetchCataloguePriceSettingsFailure'))
+        );
+    };
+
+    sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: FailureActionNames): Observable<AnyAction> => {
+        // Memunculkan error di console.
+        HelperService.debug('catalogue.effects error', err);
+        
+        if (err instanceof ErrorHandler) {
+            return of(CatalogueActions[dispatchTo]({
+                payload: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
+            }));
+        }
+        
+        if (err instanceof HttpErrorResponse) {
+            return of(CatalogueActions[dispatchTo]({
+                payload: {
+                    id: `ERR_HTTP_${err.statusText.toUpperCase()}`,
+                    errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
+                }
+            }));
+        }
+
+        return of(CatalogueActions[dispatchTo]({
+            payload: {
+                id: `ERR_UNRECOGNIZED`,
+                // Referensi: https://stackoverflow.com/a/26199752
+                errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
+            }
+        }));
+    }
 
     constructor(
         private actions$: Actions,

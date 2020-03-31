@@ -5,6 +5,7 @@ import * as fromRoot from 'app/store/app.reducer';
 
 import { Catalogue, CatalogueCategory, CatalogueUnit, SimpleCatalogueCategory } from '../../models';
 import { CatalogueActions } from '../actions';
+import { CataloguePrice } from '../../models/catalogue-price.model';
 
 export const FEATURE_KEY = 'catalogues';
 
@@ -13,6 +14,10 @@ export interface FeatureState extends fromRoot.State {
 }
 
 interface CatalogueState extends EntityState<Catalogue> {
+    total: number;
+}
+
+interface CataloguePriceState extends EntityState<CataloguePrice> {
     total: number;
 }
 
@@ -33,6 +38,7 @@ export interface State {
     source: TSource;
     catalogue?: Catalogue;
     catalogues: CatalogueState;
+    cataloguePrices: CataloguePriceState;
     totalAllStatus: number;
     totalEmptyStock: number;
     totalActive: number;
@@ -48,6 +54,19 @@ const adapterCatalogue: EntityAdapter<Catalogue> = createEntityAdapter<Catalogue
     selectId: catalogue => catalogue.id
 });
 const initialCatalogueState = adapterCatalogue.getInitialState({
+    total: 0,
+    limit: 10,
+    skip: 0,
+    data: []
+});
+
+/**
+ * CATALOGUE PRICE STATE
+ */
+const adapterCataloguePrice: EntityAdapter<CataloguePrice> = createEntityAdapter<CataloguePrice>({
+    selectId: catalogue => catalogue.id
+});
+const initialCataloguePriceState = adapterCataloguePrice.getInitialState({
     total: 0,
     limit: 10,
     skip: 0,
@@ -73,6 +92,7 @@ const initialState: State = {
     source: 'fetch',
     units: [],
     catalogues: initialCatalogueState,
+    cataloguePrices: initialCataloguePriceState,
     totalAllStatus: 0,
     totalEmptyStock: 0,
     totalActive: 0,
@@ -128,6 +148,7 @@ const catalogueReducer = createReducer(
     on(
         CatalogueActions.fetchCatalogueRequest,
         CatalogueActions.fetchCataloguesRequest,
+        CatalogueActions.fetchCataloguePriceSettingsRequest,
         CatalogueActions.fetchCategoryTreeRequest,
         CatalogueActions.fetchCatalogueUnitRequest,
         CatalogueActions.fetchCatalogueCategoryRequest,
@@ -190,6 +211,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueFailure,
         CatalogueActions.fetchCataloguesFailure,
         CatalogueActions.removeCatalogueFailure,
+        CatalogueActions.fetchCataloguePriceSettingsFailure,
         CatalogueActions.fetchCatalogueStockFailure,
         (state, { payload }) => ({
             ...state,
@@ -272,6 +294,16 @@ const catalogueReducer = createReducer(
             total: payload.total
         }),
         errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
+    })),
+    on(CatalogueActions.fetchCataloguePriceSettingsSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+        isDeleting: initialState.isDeleting,
+        cataloguePrices: adapterCataloguePrice.addAll(payload.catalogues, {
+            ...state.cataloguePrices,
+            total: payload.total
+        }),
+        errors: adapterError.removeOne('fetchCataloguePriceSettingsFailure', state.errors)
     })),
     on(
         CatalogueActions.setCatalogueToActiveSuccess,
@@ -369,3 +401,10 @@ export const {
     selectIds: selectCatalogueIds,
     selectTotal: selectCataloguesTotal
 } = adapterCatalogue.getSelectors(getListCatalogueState);
+
+export const {
+    selectAll: selectAllCataloguePrices,
+    selectEntities: selectCataloguePriceEntities,
+    selectIds: selectCataloguePriceIds,
+    selectTotal: selectCataloguePricesTotal
+} = adapterCataloguePrice.getSelectors((state: State) => state.cataloguePrices);
