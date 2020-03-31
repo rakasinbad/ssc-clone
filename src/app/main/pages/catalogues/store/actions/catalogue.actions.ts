@@ -432,6 +432,8 @@ export const resetCatalogue = createAction('[Catalogues Page] Reset Catalogue St
 
 export const resetCatalogues = createAction('[Catalogues Page] Reset Catalogues State');
 
+export const resetCataloguePriceSettings = createAction('[Catalogues Page] Reset Catalogue Price Settings State');
+
 /**
  * HELPERS
  */

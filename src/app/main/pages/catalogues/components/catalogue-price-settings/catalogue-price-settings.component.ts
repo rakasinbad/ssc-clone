@@ -40,6 +40,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    private selectedCatalogue$: BehaviorSubject<Catalogue> = new BehaviorSubject<Catalogue>(null);
+
     // Untuk form.
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
@@ -257,6 +259,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
                     this.cdRef.markForCheck();
                 });
 
+                this.selectedCatalogue$.next(catalogue);
+
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
                 this.form.markAllAsTouched();
@@ -346,12 +350,16 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
             skip: this.paginator.pageSize * this.paginator.pageIndex
         };
 
-        data['paginate'] = true;
+        this.table.nativeElement.scrollTop = 0;
 
-        if (this.sort.direction) {
-            data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
-            data['sortBy'] = this.sort.active;
-        }
+        data['paginate'] = true;
+        data['catalogueId'] = this.selectedCatalogue$.value.id;
+        data['warehouseIds'] = [];
+
+//         if (this.sort.direction) {
+//             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+//             data['sortBy'] = this.sort.active;
+//         }
 
         this.store.dispatch(
             CatalogueActions.fetchCataloguePriceSettingsRequest({
@@ -413,6 +421,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        this.store.dispatch(CatalogueActions.resetCataloguePriceSettings());
     }
 
 }

@@ -384,6 +384,10 @@ const catalogueReducer = createReducer(
         catalogues: initialState.catalogues,
         errors: adapterError.removeOne('fetchCataloguesFailure', state.errors)
     })),
+    on(CatalogueActions.resetCataloguePriceSettings, state => ({
+        ...state,
+        cataloguePrices: initialState.cataloguePrices,
+    })),
     on(CatalogueActions.resetCatalogueUnits, state => ({ ...state, units: initialState.units })),
 );
 

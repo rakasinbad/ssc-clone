@@ -67,7 +67,7 @@ export class CataloguePrice implements CataloguePrice {
         this.price = price;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.warehouseCatalogue = warehouseCatalogue ? new WarehouseCatalogue(warehouseCatalogue) : warehouseCatalogue;
+        this.warehouseCatalogue = warehouseCatalogue;
         this.type = type ? new StoreSegmentationType(type) : type;
         this.group = group ? new StoreSegmentationGroup(group) : group;
         this.channel = channel ? new StoreSegmentationChannel(channel) : channel;
