@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, Output, Input, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, Output, Input, EventEmitter, SimpleChanges, OnChanges, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
@@ -17,11 +17,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserSupplier } from 'app/shared/models/supplier.model';
 import { CatalogueUnit, CatalogueCategory, Catalogue } from '../../models';
 import { CatalogueActions, BrandActions } from '../../store/actions';
-import { MatDialog } from '@angular/material';
+import { MatDialog, PageEvent, MatPaginator, MatSort } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { SafeHtml } from '@angular/platform-browser';
 import { TNullable, FormStatus } from 'app/shared/models/global.model';
 import { CataloguePrice } from '../../models/catalogue-price.model';
+import { environment } from 'environments/environment';
 
 type IFormMode = 'add' | 'view' | 'edit';
 // 
@@ -39,10 +40,30 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    private selectedCatalogue$: BehaviorSubject<Catalogue> = new BehaviorSubject<Catalogue>(null);
+
     // Untuk form.
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
     formModeValue: IFormMode = 'add';
+    // Untuk mendapatkan nilai status loading dari state-nya catalogue.
+    isLoading$: Observable<boolean>;
+    // Untuk menyimpan price settings-nya catalogue.
+    cataloguePrices$: Observable<Array<CataloguePrice>>;
+    // Untuk menyimpan jumlah price setting-nya catalogue yang tersedia di back-end.
+    totalCataloguePrice$: Observable<number>;
+    // Untuk menyimpan kolom tabel yang ingin dimunculkan.
+    displayedColumns: Array<string> = [
+        'warehouse',
+        'storeType',
+        'storeGroup',
+        'storeChannel',
+        'storeCluster',
+        'price',
+    ];
+
+    defaultPageSize: number = environment.pageSize;
+    defaultPageSizeTable: Array<number> = environment.pageSizeTable;
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<CataloguePrice> = new EventEmitter<CataloguePrice>();
@@ -80,6 +101,18 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
         'cluster',
     ];
 
+    @ViewChild('table', { read: ElementRef, static: true })
+    table: ElementRef<HTMLElement>;
+
+    @ViewChild(MatPaginator, { static: true })
+    paginator: MatPaginator;
+
+    @ViewChild(MatSort, { static: true })
+    sort: MatSort;
+
+    @ViewChild('filter', { static: true })
+    filter: ElementRef;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private fb: FormBuilder,
@@ -90,7 +123,25 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
         private store: NgRxStore<fromCatalogue.FeatureState>,
         private catalogue$: CataloguesService,
         private errorMessage$: ErrorMessageService,
-    ) { }
+    ) {
+        this.cataloguePrices$ = this.store.select(
+            CatalogueSelectors.getCataloguePriceSettings
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.totalCataloguePrice$ = this.store.select(
+            CatalogueSelectors.getTotalCataloguePriceSettings
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+
+        this.isLoading$ = this.store.select(
+            CatalogueSelectors.getIsLoading
+        ).pipe(
+            takeUntil(this.subs$)
+        );
+    }
 
     drop(event: CdkDragDrop<Array<string>>): void {
         // this.cataloguePriceTools.
@@ -134,8 +185,9 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
             this.store.select(AuthSelectors.getUserSupplier)
         ])
             .pipe(
+                withLatestFrom(this.cataloguePrices$),
                 takeUntil(this.subs$)
-            ).subscribe(([catalogue, userSupplier]: [Catalogue, UserSupplier]) => {
+            ).subscribe(([[catalogue, userSupplier], cataloguePrices]: [[Catalogue, UserSupplier], Array<CataloguePrice>]) => {
                 /** Mengambil ID dari URL (untuk jaga-jaga ketika ID katalog yang terpilih tidak ada di state) */
                 const { id } = this.route.snapshot.params;
 
@@ -154,6 +206,23 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
                     );
 
                     return;
+                }
+
+                if (cataloguePrices.length === 0) {
+                    const query: IQueryParams = {
+                        paginate: true,
+                        limit: environment.pageSize,
+                        skip: 0
+                    };
+
+                    query['catalogueId'] = catalogue.id;
+                    query['warehouseIds'] = [];
+
+                    this.store.dispatch(
+                        CatalogueActions.fetchCataloguePriceSettingsRequest({
+                            payload: query
+                        })
+                    );
                 }
 
                 /** Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut. */
@@ -189,6 +258,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
 
                     this.cdRef.markForCheck();
                 });
+
+                this.selectedCatalogue$.next(catalogue);
 
                 /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
                 this.form.markAsDirty({ onlySelf: false });
@@ -271,6 +342,34 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
         return this.formMode === 'view';
     }
 
+    onChangePage(ev: PageEvent): void {
+        HelperService.debug('onChangePage', ev);
+
+        const data: IQueryParams = {
+            limit: this.paginator.pageSize,
+            skip: this.paginator.pageSize * this.paginator.pageIndex
+        };
+
+        this.table.nativeElement.scrollTop = 0;
+
+        data['paginate'] = true;
+        data['catalogueId'] = this.selectedCatalogue$.value.id;
+        data['warehouseIds'] = [];
+
+//         if (this.sort.direction) {
+//             data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+//             data['sortBy'] = this.sort.active;
+//         }
+
+        this.store.dispatch(
+            CatalogueActions.fetchCataloguePriceSettingsRequest({
+                payload: data
+            })
+        );
+
+        // this.table.nativeElement.scrollIntoView();
+    }
+
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.form = this.fb.group({
@@ -322,6 +421,8 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+
+        this.store.dispatch(CatalogueActions.resetCataloguePriceSettings());
     }
 
 }

@@ -262,73 +262,110 @@ export class CataloguesService {
         });
     }
 
-    getCataloguePriceSettings<T>(params: IQueryParams, catalogueId?: string, warehouseId?: string): Observable<T> {
+    getCataloguePriceSettings<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        if (!params['catalogueId'] && !catalogueId) {
-            throw new Error('ERR_CATALOGUE_PRICE_SETTINGS_REQUIRE_CATALOGUEID');
+        if (!(params['catalogueId'])) {
+            throw new Error('catalogueId is required.');
+        } else {
+            newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
         }
 
-        if (!params['warehouseId'] && !warehouseId) {
-            throw new Error('ERR_CATALOGUE_PRICE_SETTINGS_REQUIRE_WAREHOUSEID');
-        }
-
-        if (params['catalogueId']) {
-            newArgs.push({
-                key: 'catalogueId',
-                value: params['catalogueId']
-            });
-        } else if (catalogueId) {
-            newArgs.push({
-                key: 'catalogueId',
-                value: catalogueId
-            });
-        }
-
-        if (params['warehouseId']) {
-            newArgs.push({
-                key: 'warehouseId',
-                value: params['warehouseId']
-            });
-        } else if (warehouseId) {
-            newArgs.push({
-                key: 'warehouseId',
-                value: warehouseId
-            });
+        if (!Array.isArray(params['warehouseIds'])) {
+            throw new Error('warehouseIds must be an array.');
+        } else {
+            newArgs.push({ key: 'warehouseIds', value: params['warehouseIds'] });
         }
 
         if (params['typeIds']) {
-            newArgs.push({
-                key: 'typeIds',
-                value: params['typeIds']
-            });
+            if (!Array.isArray(params['typeIds'])) {
+                throw new Error('typeIds must be an array.');
+            } else {
+                newArgs.push({ key: 'typeIds', value: params['typeIds'] });
+            }
         }
 
         if (params['groupIds']) {
-            newArgs.push({
-                key: 'groupIds',
-                value: params['groupIds']
-            });
-        }
-
-        if (params['channelIds']) {
-            newArgs.push({
-                key: 'channelIds',
-                value: params['channelIds']
-            });
+            if (!Array.isArray(params['groupIds'])) {
+                throw new Error('groupIds must be an array.');
+            } else {
+                newArgs.push({ key: 'groupIds', value: params['groupIds'] });
+            }
         }
 
         if (params['clusterIds']) {
-            newArgs.push({
-                key: 'clusterIds',
-                value: params['clusterIds']
-            });
+            if (!Array.isArray(params['clusterIds'])) {
+                throw new Error('clusterIds must be an array.');
+            } else {
+                newArgs.push({ key: 'clusterIds', value: params['clusterIds'] });
+            }
+        }
+
+        if (params['channelIds']) {
+            if (!Array.isArray(params['channelIds'])) {
+                throw new Error('channelIds must be an array.');
+            } else {
+                newArgs.push({ key: 'channelIds', value: params['channelIds'] });
+            }
         }
 
         this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
         const newParams = this._$helper.handleParams(this._url, params);
         return this.http.get<T>(`${this._url}`, { params: newParams });
     }
+
+    // findPriceSettings<T>(params: IQueryParams): Observable<T> {
+    //     const newArgs = [];
+
+    //     if (!(params['catalogueId'])) {
+    //         throw new Error('catalogueId is required.');
+    //     } else {
+    //         newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
+    //     }
+
+    //     if (!Array.isArray(params['warehouseIds'])) {
+    //         throw new Error('warehouseIds must be an array.');
+    //     } else {
+    //         newArgs.push({ key: 'warehouseIds', value: params['warehouseIds'] });
+    //     }
+
+    //     if (params['typeIds']) {
+    //         if (!Array.isArray(params['typeIds'])) {
+    //             throw new Error('typeIds must be an array.');
+    //         } else {
+    //             newArgs.push({ key: 'typeIds', value: params['typeIds'] });
+    //         }
+    //     }
+
+    //     if (params['groupIds']) {
+    //         if (!Array.isArray(params['groupIds'])) {
+    //             throw new Error('groupIds must be an array.');
+    //         } else {
+    //             newArgs.push({ key: 'groupIds', value: params['groupIds'] });
+    //         }
+    //     }
+
+    //     if (params['clusterIds']) {
+    //         if (!Array.isArray(params['clusterIds'])) {
+    //             throw new Error('clusterIds must be an array.');
+    //         } else {
+    //             newArgs.push({ key: 'clusterIds', value: params['clusterIds'] });
+    //         }
+    //     }
+
+    //     if (params['channelIds']) {
+    //         if (!Array.isArray(params['channelIds'])) {
+    //             throw new Error('channelIds must be an array.');
+    //         } else {
+    //             newArgs.push({ key: 'channelIds', value: params['channelIds'] });
+    //         }
+    //     }
+
+    //     this._url = this._$helper.handleApiRouter(this._endpoint);
+    //     const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+    //     return this.http.get<T>(this._url, { params: newParams });
+    // }
 
     // getErrorMessageNonState(field: string, type: string, args?: any): string {
     //     const labelName = this.translate.instant(`FORM.${field.toUpperCase()}`);

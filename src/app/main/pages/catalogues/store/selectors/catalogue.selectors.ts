@@ -102,6 +102,31 @@ export const getLiveCatalogues = createSelector(getAllCatalogues, catalogues =>
     catalogues.filter(catalogue => catalogue.stock)
 );
 
+export const getCataloguePriceSettingsEntityTotal = createSelector(
+    getCatalogueState,
+    fromCatalogue.selectCataloguePricesTotal
+);
+
+export const getCataloguePriceSettingsEntityIds = createSelector(
+    getCatalogueState,
+    fromCatalogue.selectCataloguePriceIds
+);
+
+export const getCataloguePriceSettings = createSelector(
+    getCatalogueState,
+    fromCatalogue.selectAllCataloguePrices
+);
+
+export const getCataloguePriceSettingsEntity = createSelector(
+    getCatalogueState,
+    fromCatalogue.selectCataloguePriceEntities
+);
+
+export const getTotalCataloguePriceSettings = createSelector(
+    getCatalogueState,
+    state => state.cataloguePrices.total
+);
+
 export const getIsLoading = createSelector(getCatalogueState, state => state.isLoading);
 
 export const getUpdatingActivity = createSelector(getCatalogueState, state => state.isUpdating);

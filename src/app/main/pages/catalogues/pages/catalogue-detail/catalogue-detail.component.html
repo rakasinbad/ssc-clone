@@ -88,7 +88,11 @@
             </mat-tab>
             <mat-tab label="Price Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
-                    <catalogue-price-settings></catalogue-price-settings>
+                    <catalogue-price-settings
+                        [(formMode)]="formMode"
+                        (formValueChange)="onFormValueChanged($event)"
+                        (formStatusChange)="onFormStatusChanged($event)"
+                    ></catalogue-price-settings>
                 </ng-template>
             </mat-tab>
             <mat-tab label="Media Settings" [disabled]="isEditMode()">

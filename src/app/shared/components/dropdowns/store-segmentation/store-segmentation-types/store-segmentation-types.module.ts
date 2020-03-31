@@ -6,7 +6,8 @@ import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputMod
 // import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 
 import { StoreSegmentationTypesDropdownComponent } from './store-segmentation-types.component';
-import { SelectAdvancedModule } from '../../select-advanced/select-advanced.module';
+import { MultipleSelectionModule } from 'app/shared/components/multiple-selection/multiple-selection.module';
+import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
 
 
 
@@ -27,7 +28,8 @@ import { SelectAdvancedModule } from '../../select-advanced/select-advanced.modu
         MatInputModule,
         MatSelectModule,
 
-        SelectAdvancedModule,
+        ApplyDialogModule,
+        MultipleSelectionModule,
         // Third Party (RxWeb: https://www.rxweb.io)
         // RxReactiveFormsModule,
         // RxReactiveDynamicFormsModule,

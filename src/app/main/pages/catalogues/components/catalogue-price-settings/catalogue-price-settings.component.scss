@@ -13,9 +13,17 @@ catalogue-price-settings {
             text-align: left !important;
         }
     }
+
+    .catalogue-price-table {
+        flex: 1 1 auto;
+        border: 1px solid;
+        border-radius: 4px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
-.catalogue-price-toolbar {
+.dnd-catalogue-price-toolbar {
     width: 1000px;
     max-width: 100%;
     // border: solid 1px #ccc;
@@ -27,7 +35,7 @@ catalogue-price-settings {
     overflow: hidden;
 }
 
-.catalogue-price-tools {
+.dnd-catalogue-price-tools {
     padding-right: 10px;
     // padding-top: 10px !important;
     // padding-left: 10px !important;
@@ -111,7 +119,7 @@ catalogue-price-settings {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.catalogue-price-tools:last-child {
+.dnd-catalogue-price-tools:last-child {
     border: none;
 }
 

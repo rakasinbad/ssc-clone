@@ -27,6 +27,7 @@ import { DeleteConfirmationComponent } from './modals/delete-confirmation/delete
 import { FilterAdvancedFormComponent } from './modals/filter-advanced-form/filter-advanced-form.component';
 import { ShowImageComponent } from './modals/show-image/show-image.component';
 import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
+import { ApplyDialogModule } from './components/dialogs/apply-dialog/apply-dialog.module';
 
 /**
  *
@@ -69,6 +70,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
+        ApplyDialogModule,
         MaterialModule,
 
         // Third Party
@@ -101,6 +103,7 @@ import { HighlightPipe, PricePipe, ReplacePipe, SafePipe } from './pipes';
         ExportAdvancedModule,
         FiltersModule,
         FilterAdvancedModule,
+        ApplyDialogModule,
         // ExportsModule,
         // CardHeaderModule,
         // SharedComponentsModule,

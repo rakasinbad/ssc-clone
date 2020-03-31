@@ -19,6 +19,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     // Untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
 
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() disableClearAll: boolean = false;
+
     // Untuk meletakkan judul di kolom available options.
     // tslint:disable-next-line: no-inferrable-types
     @Input() availableTitle: string;
@@ -125,6 +128,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
             this.selectionListChanged.emit({
                 added: this.selectedOptions,
                 removed: this.removedOptions,
+                merged: this.mergedSelectedOptions,
             });
 
             // Mendeteksi adanya perubahan.
@@ -177,34 +181,39 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                 this.selectedOptions = [];
                 this.initialSelectedOptions = [];
                 this.totalSelectedOptions = 0;
+                this.totalInitialSelectedOptions = 0;
 
+                this.selectedOptionSub$.next(null);
                 this.cdRef.detectChanges();
             }
         });
 
         this.selectedOptionSub$.pipe(
             tap(($event) => {
-                // Mengambil nilai dari option yang dipilih.
-                const value = ($event.option.value as Selection);
-                // Mengambil status pemilihannya (unchecked atau checked).
-                const isSelected = $event.option.selected;
-
-                const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
-
-                if (isAtInitialSelection) {
-                    if (isSelected) {
-                        this.removedOptions = this.removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                if ($event) {
+                    // Mengambil nilai dari option yang dipilih.
+                    const value = ($event.option.value as Selection);
+                    // Mengambil status pemilihannya (unchecked atau checked).
+                    const isSelected = $event.option.selected;
+    
+                    const isAtInitialSelection = this.initialSelectedOptions.find(selected => String(selected.id + selected.group) === String(value.id + value.group));
+    
+                    if (isAtInitialSelection) {
+                        if (isSelected) {
+                            this.removedOptions = this.removedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                        } else {
+                            this.removedOptions.push(value);
+                        }
                     } else {
-                        this.removedOptions.push(value);
-                    }
-                } else {
-                    if (isSelected) {
-                        this.selectedOptions.push(value);
-                    } else {
-                        this.selectedOptions = this.selectedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                        if (isSelected) {
+                            this.selectedOptions.push(value);
+                        } else {
+                            this.selectedOptions = this.selectedOptions.filter(selected => String(selected.id + selected.group) !== String(value.id + value.group));
+                        }
                     }
 
-                    
+                    // Mengirim event selectionChanged dengan membawa nilai option yang baru saya diklik.
+                    this.selectionChanged.emit(value);
                 }
 
                 // Memeriksa apakah option berada di initial selection.
@@ -235,12 +244,6 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                                                     // this.removedOptions.find(remove => String(selected.id + selected.group) !== String(remove.id + remove.group)));
                 const removed: Array<Selection> = this.removedOptions;
 
-                // Mengirim event selectionChanged dengan membawa nilai option yang baru saya diklik.
-                this.selectionChanged.emit(value);
-
-                // Mengirim event selectionListChanged dengan membawa nilai option-option yang tambahan baru dan terhapus.
-                this.selectionListChanged.emit({ added, removed });
-
                 // Untuk menyimpan initial selected options dengan selected options.
                 this.mergedSelectedOptions = this.initialSelectedOptions.concat(
                                                 this.selectedOptions
@@ -249,6 +252,9 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
                                                 ? true
                                                 : !removed.map(remove => String(remove.id + remove.group)).includes(String(merged.id + merged.group))
                                             );
+
+                // Mengirim event selectionListChanged dengan membawa nilai option-option yang tambahan baru dan terhapus.
+                this.selectionListChanged.emit({ added, removed, merged: this.mergedSelectedOptions });
 
                 // Menetapkan jumlah selected options.
                 const addedLength = (this.selectedOptions.length);
