@@ -35,6 +35,102 @@ import { CataloguePrice } from '../../models/catalogue-price.model';
 
 @Injectable()
 export class CatalogueEffects {
+    updateCataloguePriceSettingRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.updateCataloguePriceSettingRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$catalogueApi.updatePriceSetting(payload.priceSettingId, payload.price).pipe(
+                    catchOffline(),
+                    map(cataloguePrice => {
+                        return CatalogueActions.updateCataloguePriceSettingSuccess({
+                            payload: {
+                                data: {
+                                    id: cataloguePrice.id,
+                                    changes: {
+                                        price: cataloguePrice.price
+                                    }
+                                },
+                                formIndex: payload.formIndex
+                            }
+                        });
+                    }),
+                    catchError(err => this.sendErrorToState(err, 'updateCataloguePriceSettingFailure'))
+                );
+            })
+        )
+    );
+
+    updateCataloguePriceSettingFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.updateCataloguePriceSettingFailure),
+            map(action => action.payload),
+            tap(payload => this.helper$.showErrorNotification(payload))
+        )
+    , { dispatch: false });
+
+    updateCataloguePriceSettingSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.updateCataloguePriceSettingSuccess),
+            map(action => action.payload),
+            tap(payload => {
+                this._$notice.open('Price settings applied.', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                if (payload.formIndex) {
+                    this._$catalogueApi.broadcastUpdateForm(payload.formIndex);
+                }
+            })
+        )
+    , { dispatch: false });
+
+    applyFilteredCataloguePriceRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.applyFilteredCataloguePriceRequest),
+            map(action => action.payload),
+            switchMap(payload => {
+                return this._$catalogueApi.applySegmentationPrice(payload).pipe(
+                    catchOffline(),
+                    map(({ message }) => {
+                        return CatalogueActions.applyFilteredCataloguePriceSuccess({
+                            payload: {
+                                message
+                            }
+                        });
+                    }),
+                    catchError(err => this.sendErrorToState(err, 'applyFilteredCataloguePriceFailure'))
+                );
+            })
+        )
+    );
+
+    applyFilteredCataloguePriceFailure$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.applyFilteredCataloguePriceFailure),
+            map(action => action.payload),
+            tap(payload => this.helper$.showErrorNotification(payload))
+        )
+    , { dispatch: false });
+
+    applyFilteredCataloguePriceSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(CatalogueActions.applyFilteredCataloguePriceSuccess),
+            map(action => action.payload),
+            tap(payload => {
+                this._$notice.open('Price settings applied.', 'success', {
+                    verticalPosition: 'bottom',
+                    horizontalPosition: 'right'
+                });
+
+                this.store.dispatch(
+                    CatalogueActions.setRefreshStatus({ status: true })
+                );
+            })
+        )
+    , { dispatch: false });
+    
     patchCatalogueRequest$ = createEffect(() =>
         this.actions$.pipe(
             ofType(CatalogueActions.patchCatalogueRequest),

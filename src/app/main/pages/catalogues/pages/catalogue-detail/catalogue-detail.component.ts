@@ -34,7 +34,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     section: string = 'sku-information';
 
     formMode: IFormMode = 'view';
-    formValue: Partial<CatalogueInformation> | Partial<CatalogueMediaForm> | Partial<CatalogueWeightDimension>;
+    formValue: Partial<Catalogue> | Partial<CatalogueInformation> | Partial<CatalogueMediaForm> | Partial<CatalogueWeightDimension>;
 
     selectedCatalogue$: Observable<Catalogue>;
 
@@ -149,6 +149,36 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 this.formValue = {
                     photos,
                     oldPhotos,
+                };
+
+                break;
+            }
+            case 'price-settings': {
+                const {
+                    retailBuyingPrice
+                } = ($event as Catalogue);
+
+                this.formValue = {
+                    retailBuyingPrice
+                };
+
+                break;
+            }
+            case 'amount-settings': {
+                const {
+                    packagedQty,
+                    minQty,
+                    minQtyType,
+                    multipleQty,
+                    multipleQtyType,
+                } = ($event as Catalogue);
+
+                this.formValue = {
+                    packagedQty,
+                    minQty,
+                    minQtyType,
+                    multipleQty,
+                    multipleQtyType,
                 };
 
                 break;
@@ -333,12 +363,25 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
                         break;
                     }
+                    case 'price-settings': {
+                        this.store.dispatch(UiActions.hideFooterAction());
+                        this.store.dispatch(CatalogueActions.patchCatalogueRequest({
+                            payload: {
+                                id: catalogue.id,
+                                data: this.formValue as Catalogue,
+                                source: 'form',
+                                section: this.section
+                            }
+                        }));
+
+                        break;
+                    }
                     case 'amount-settings': {
                         this.store.dispatch(UiActions.hideFooterAction());
                         this.store.dispatch(CatalogueActions.patchCatalogueRequest({
                             payload: {
                                 id: catalogue.id,
-                                data: this.formValue as CatalogueWeightDimension,
+                                data: this.formValue as Catalogue,
                                 source: 'form',
                                 section: this.section
                             }

@@ -70,7 +70,6 @@ const initialCataloguePriceState = adapterCataloguePrice.getInitialState({
     total: 0,
     limit: 10,
     skip: 0,
-    data: []
 });
 
 /**
@@ -154,6 +153,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueCategoryRequest,
         CatalogueActions.fetchCatalogueCategoriesRequest,
         CatalogueActions.addNewCatalogueRequest,
+        CatalogueActions.applyFilteredCataloguePriceRequest,
         // CatalogueActions.fetchTotalCatalogueStatusRequest,
         state => ({
             ...state,
@@ -188,6 +188,7 @@ const catalogueReducer = createReducer(
         CatalogueActions.fetchCatalogueCategoryFailure,
         CatalogueActions.fetchCatalogueCategoriesFailure,
         CatalogueActions.addNewCatalogueFailure,
+        CatalogueActions.applyFilteredCataloguePriceFailure,
         (state, { payload }) => ({
             ...state,
             isLoading: false,
@@ -225,7 +226,10 @@ const catalogueReducer = createReducer(
      *  SUCCESSES
      *  ===================================================================
      */
-
+    on(CatalogueActions.applyFilteredCataloguePriceSuccess, state => ({
+        ...state,
+        isLoading: false,
+    })),
     on(CatalogueActions.addNewCatalogueSuccess, state => ({
         ...state,
         isLoading: false,
@@ -301,10 +305,17 @@ const catalogueReducer = createReducer(
         isDeleting: initialState.isDeleting,
         cataloguePrices: adapterCataloguePrice.addAll(payload.catalogues, {
             ...state.cataloguePrices,
-            total: payload.total
+            total: payload.total,
         }),
         errors: adapterError.removeOne('fetchCataloguePriceSettingsFailure', state.errors)
     })),
+    on(
+        CatalogueActions.updateCataloguePriceSettingSuccess,
+        (state, { payload }) => ({
+            ...state,
+            cataloguePrices: adapterCataloguePrice.updateOne(payload.data, state.cataloguePrices)
+        })
+    ),
     on(
         CatalogueActions.setCatalogueToActiveSuccess,
         CatalogueActions.setCatalogueToInactiveSuccess,
