@@ -2,7 +2,13 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreCluster, StoreCluster, StoreSegment, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreCluster,
+    PayloadStoreClusterPatch,
+    StoreCluster,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Clusters
@@ -79,6 +85,24 @@ export const createStoreClusterSuccess = createAction(
     '[Store Segmentation] Create Store Cluster Success'
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Store Cluster
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreClusterRequest = createAction(
+    '[Store Segmentation] Update Store Cluster Request',
+    props<{ payload: { body: PayloadStoreClusterPatch; id: string } }>()
+);
+
+export const updateStoreClusterFailure = createAction(
+    '[Store Segmentation] Update Store Cluster Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateStoreClusterSuccess = createAction(
+    '[Store Segmentation] Update Store Cluster Success'
+);
+
 export const clearState = createAction('[Store Segmentation] Reset Store Clusters Core State');
 
 export const clearTableState = createAction(
@@ -89,4 +113,5 @@ export type FailureActions =
     | 'fetchStoreClustersFailure'
     | 'fetchStoreLastClusterFailure'
     | 'refreshStoreClustersFailure'
-    | 'createStoreClusterFailure';
+    | 'createStoreClusterFailure'
+    | 'updateStoreClusterFailure';

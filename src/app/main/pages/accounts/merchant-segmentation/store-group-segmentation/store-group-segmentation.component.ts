@@ -2,8 +2,12 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
+    QueryList,
+    ViewChild,
+    ViewChildren,
     ViewEncapsulation
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
@@ -67,6 +71,9 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
 
     isLoading$: Observable<boolean>;
     isLoadingRow$: Observable<boolean>;
+
+    @ViewChild('contentDesc', { static: true }) contentDesc: ElementRef<HTMLParagraphElement>;
+    @ViewChildren('inputName') inputName: QueryList<ElementRef<HTMLInputElement>>;
 
     private _unSubs$: Subject<void> = new Subject();
 
@@ -163,7 +170,10 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
                 .setValue(segmentIdx + 1);
 
             setTimeout(() => {
+                this._resetSegment(segmentIdx);
+                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
                 this._onSubmit(segmentIdx, branchIdx);
+                this.cdRef.markForCheck();
             }, 100);
         }
 
@@ -175,6 +185,44 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
                 .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
                 .setValue('readonly');
         }
+    }
+
+    handleRename(segmentIdx: number, branchIdx: number): void {
+        this.triggerSegment[segmentIdx] = false;
+
+        if (!this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'name']).value) {
+            this.deleteSegmentBranch(segmentIdx, branchIdx);
+            return;
+        }
+
+        if (!this.isFromSelector) {
+            const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
+            const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
+
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
+                .setValue(selectedId);
+
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
+                .setValue(segmentIdx + 1);
+
+            setTimeout(() => {
+                this._resetSegment(segmentIdx);
+                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
+                // this._onSubmit(segmentIdx, branchIdx);
+                this.cdRef.markForCheck();
+            }, 100);
+        }
+
+        /*        const status = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
+            .value;
+
+        if (status === 'active') {
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
+                .setValue('readonly');
+        } */
     }
 
     isInactive(segmentIdx: number, branchIdx: number): boolean {
@@ -189,6 +237,37 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
             this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).value ===
             'readonly'
         );
+    }
+
+    isRename(segmentIdx: number, branchIdx: number): boolean {
+        return (
+            this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).value ===
+            'rename'
+        );
+    }
+
+    isTextTruncateDesc(): boolean {
+        const e = this.contentDesc.nativeElement;
+
+        return e.scrollWidth > e.clientWidth;
+    }
+
+    isTextTruncate(segmentIdx: number, branchIdx: number): boolean {
+        if (this.inputName && this.inputName.length > 0) {
+            const id = `input-segment-${segmentIdx}-branch-${branchIdx}`;
+            const inputIdx = this.inputName
+                .toArray()
+                .findIndex(input => input.nativeElement.id === id);
+
+            if (inputIdx !== -1) {
+                const e = this.inputName.toArray()[inputIdx].nativeElement;
+                return e.scrollWidth > e.clientWidth;
+            }
+
+            return false;
+        }
+
+        return false;
     }
 
     isTyping(segmentIdx: number, branchIdx: number): boolean {
@@ -228,14 +307,35 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
     onEdit(segmentIdx: number, branchIdx: number): void {
         const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
 
-        this.matDialog.open(MerchantSegmentationFormComponent, {
+        const dialogRef = this.matDialog.open(MerchantSegmentationFormComponent, {
             data: {
                 title: 'Segment Branch Information',
+                segmentType: 'group',
                 form: formValue
             },
             panelClass: 'merchant-segment-form-dialog',
             disableClose: true
         });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => {
+                this._resetSegment(segmentIdx);
+                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
+                this.cdRef.markForCheck();
+            });
+    }
+
+    onRename(segmentIdx: number, branchIdx: number): void {
+        const id = `input-segment-${segmentIdx}-branch-${branchIdx}`;
+        const inputIdx = this.inputName.toArray().findIndex(input => input.nativeElement.id === id);
+
+        if (inputIdx !== -1) {
+            this.inputName.toArray()[inputIdx].nativeElement.focus();
+        }
+
+        this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).setValue('rename');
     }
 
     onShowChild(segmentIdx: number, branchIdx: number): void {
@@ -245,7 +345,7 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
 
         this.form.get(['segments', segmentIdx, 'selectedId']).setValue(parentId);
 
-        if (segmentIdx > currLastSegment) {
+        if (segmentIdx >= currLastSegment) {
             this.form.get('lastSegment').setValue(currLevel);
         }
 
@@ -290,9 +390,12 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
             {
                 id: null,
                 parentId: null,
+                externalId: null,
                 sequence: null,
                 name: null,
                 hasChild: false,
+                desc: null,
+                statusItem: 'active',
                 status: 'typing'
             },
             { updateOn: 'blur' }
@@ -317,7 +420,6 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
                     concatMap((item, idx) => of({ item, idx })),
                     finalize(() => {
                         this.isFromSelector = false;
-                        console.log('Out Looping', this.isFromSelector, this.form);
                     }),
                     takeUntil(this._unSubs$)
                 )
@@ -339,6 +441,11 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
                         .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
                         .setValue(item.parentId);
 
+                    // Set externalId control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'externalId'])
+                        .setValue(item.externalId);
+
                     // Set sequence control (branches)
                     this.form
                         .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
@@ -358,6 +465,16 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
                         .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
                         .setValue(hasChild);
 
+                    // Set desc control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'desc'])
+                        .setValue(item.description);
+
+                    // Set statusItem control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'statusItem'])
+                        .setValue(item.status);
+
                     // Set status control (branches)
                     this.form
                         .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
@@ -372,11 +489,15 @@ export class StoreGroupSegmentationComponent implements OnInit, OnDestroy {
     private _resetSegment(currentSegment: number): void {
         let lastSegment = +this.form.get('lastSegment').value;
 
+        lastSegment = this.segments().length > lastSegment ? this.segments().length : lastSegment;
+
         while (lastSegment > currentSegment) {
             // console.log(`Remove lastSegment: ${lastSegment}, except ${currentSegment}`);
             this.segments().removeAt(lastSegment);
             lastSegment--;
         }
+
+        this.form.get('lastSegment').setValue(lastSegment);
     }
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {

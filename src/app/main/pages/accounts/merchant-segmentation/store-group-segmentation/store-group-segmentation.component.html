@@ -3,10 +3,15 @@
         Description:
     </p>
     <p
+        #contentDesc
         class="font-weight-700 text-truncate"
         last-bottom-left
-        matTooltip="Small scale business targeting the&#10;consumers who opt day to day&#10;purchases in small quantity"
-        matTooltipClass="tooltip-br"
+        [matTooltip]="
+            isTextTruncateDesc()
+                ? 'Small scale business targeting the&#10;consumers who opt day to day&#10;purchases in small quantity'
+                : null
+        "
+        [matTooltipClass]="isTextTruncateDesc() ? 'tooltip-br' : null"
     >
         Small scale business targeting the consumers who opt day to day purchases in small quantity.
     </p>
@@ -31,12 +36,13 @@
 
         <div fusePerfectScrollbar *ngIf="!(isLoading$ | async)">
             <form id="store-group-form" name="storeGroupForm" [formGroup]="form" novalidate>
+                <!-- [fxLayoutAlign]="
+                        segments().length < maxSegment ? 'start stretch' : 'space-between stretch'
+                    " -->
                 <div
                     class="h-480"
                     fxLayout="row"
-                    [fxLayoutAlign]="
-                        segments().length < maxSegment ? 'start stretch' : 'space-between stretch'
-                    "
+                    fxLayoutAlign="start stretch"
                     formArrayName="segments"
                 >
                     <ng-container
@@ -50,7 +56,7 @@
                             [formGroupName]="segmentIdx"
                             fxLayout="column"
                             fxLayoutGap="16px"
-                            fxFlex="0 2 calc(200px + 10px)"
+                            fxFlex="0 1 calc(200px + 10px)"
                         >
                             <div class="sinbad-black-fg font-weight-600 font-size-16 h-24 px-16">
                                 {{ 'Lv' + (segmentIdx + 1) }}
@@ -117,10 +123,13 @@
                                                         </button>
 
                                                         <button
-                                                            mat-menu-item
                                                             type="button"
+                                                            mat-menu-item
                                                             class="sinbad-mat-menu-item"
                                                             aria-label="Rename"
+                                                            (click)="
+                                                                onRename(segmentIdx, branchIdx)
+                                                            "
                                                         >
                                                             <mat-icon>title</mat-icon>
                                                             <span>Rename</span>
@@ -139,6 +148,13 @@
                                                     >
                                                         <span>
                                                             <input
+                                                                [id]="
+                                                                    'input-segment-' +
+                                                                    segmentIdx +
+                                                                    '-branch-' +
+                                                                    branchIdx
+                                                                "
+                                                                #inputName
                                                                 type="text"
                                                                 matInput
                                                                 autocomplete="off"
@@ -148,6 +164,15 @@
                                                                         segmentIdx,
                                                                         branchIdx
                                                                     )
+                                                                "
+                                                                class="text-truncate"
+                                                                [matTooltip]="
+                                                                    isTextTruncate(
+                                                                        segmentIdx,
+                                                                        branchIdx
+                                                                    )
+                                                                        ? inputName.value
+                                                                        : null
                                                                 "
                                                             />
                                                         </span>
@@ -203,10 +228,13 @@
                                                         </button>
 
                                                         <button
-                                                            mat-menu-item
                                                             type="button"
+                                                            mat-menu-item
                                                             class="sinbad-mat-menu-item"
                                                             aria-label="Rename"
+                                                            (click)="
+                                                                onRename(segmentIdx, branchIdx)
+                                                            "
                                                         >
                                                             <mat-icon>title</mat-icon>
                                                             <span>Rename</span>
@@ -237,6 +265,13 @@
                                                         >
                                                             <span>
                                                                 <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
+                                                                        branchIdx
+                                                                    "
+                                                                    #inputName
                                                                     type="text"
                                                                     matInput
                                                                     autocomplete="off"
@@ -246,6 +281,15 @@
                                                                             segmentIdx,
                                                                             branchIdx
                                                                         )
+                                                                    "
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
                                                                     "
                                                                     [class.sinbad-red-10-fg]="
                                                                         isSelected(
@@ -279,23 +323,95 @@
                                                             fxFlex
                                                         >
                                                             <span>
-                                                                <input
-                                                                    type="text"
-                                                                    matInput
-                                                                    autocomplete="off"
-                                                                    formControlName="name"
-                                                                    (keydown.enter)="
-                                                                        $event.target.blur();
-                                                                        $event.stopPropagation()
-                                                                    "
-                                                                    (blur)="
-                                                                        handleEvent(
+                                                                <!-- IF NOT RENAME -->
+                                                                <ng-container
+                                                                    *ngIf="
+                                                                        !isRename(
                                                                             segmentIdx,
                                                                             branchIdx
                                                                         )
                                                                     "
-                                                                    autofocus
-                                                                />
+                                                                >
+                                                                    <input
+                                                                        [id]="
+                                                                            'input-segment-' +
+                                                                            segmentIdx +
+                                                                            '-branch-' +
+                                                                            branchIdx
+                                                                        "
+                                                                        #inputName
+                                                                        type="text"
+                                                                        matInput
+                                                                        autocomplete="off"
+                                                                        autocapitalize="on"
+                                                                        formControlName="name"
+                                                                        class="text-truncate"
+                                                                        [matTooltip]="
+                                                                            isTextTruncate(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                                ? inputName.value
+                                                                                : null
+                                                                        "
+                                                                        (keydown.enter)="
+                                                                            $event.target.blur();
+                                                                            $event.stopPropagation()
+                                                                        "
+                                                                        (blur)="
+                                                                            handleEvent(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                        "
+                                                                        autofocus
+                                                                    />
+                                                                </ng-container>
+
+                                                                <!-- IF RENAME -->
+                                                                <ng-container
+                                                                    *ngIf="
+                                                                        isRename(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                >
+                                                                    <input
+                                                                        [id]="
+                                                                            'input-segment-' +
+                                                                            segmentIdx +
+                                                                            '-branch-' +
+                                                                            branchIdx
+                                                                        "
+                                                                        #inputName
+                                                                        type="text"
+                                                                        matInput
+                                                                        autocomplete="off"
+                                                                        autocapitalize="on"
+                                                                        formControlName="name"
+                                                                        class="text-truncate"
+                                                                        [matTooltip]="
+                                                                            isTextTruncate(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                                ? inputName.value
+                                                                                : null
+                                                                        "
+                                                                        (keydown.enter)="
+                                                                            $event.target.blur();
+                                                                            $event.stopPropagation()
+                                                                        "
+                                                                        (blur)="
+                                                                            handleRename(
+                                                                                segmentIdx,
+                                                                                branchIdx
+                                                                            )
+                                                                        "
+                                                                        autofocus
+                                                                    />
+                                                                </ng-container>
                                                             </span>
 
                                                             <mat-icon
@@ -349,7 +465,12 @@
                             </ng-container>
                         </div>
 
-                        <div fxLayout="column" fxLayoutGap="16px" *ngIf="!isLast">
+                        <div
+                            fxLayout="column"
+                            fxLayoutGap="16px"
+                            fxFlex="0 2 calc(1px)"
+                            *ngIf="!isLast"
+                        >
                             <div class="h-24"></div>
 
                             <div class="fuse-white h-440 py-16">
@@ -362,7 +483,7 @@
                         fxLayout="column"
                         fxLayoutAlign="start stretch"
                         fxLayoutGap="16px"
-                        fxFlex="0 2 calc(200px + 10px)"
+                        fxFlex="0 1 calc(200px + 10px)"
                         [class.btn-sinbad-disabled]="!lastSegmentHasBranchName()"
                         *ngIf="segments().length < 5"
                     >

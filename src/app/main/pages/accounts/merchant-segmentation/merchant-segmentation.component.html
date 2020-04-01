@@ -186,7 +186,7 @@
                                         mat-menu-item
                                         class="sinbad-mat-menu-item"
                                         aria-label="Edit"
-                                        [routerLink]="[row?.id]"
+                                        (click)="onEdit(row)"
                                     >
                                         <mat-icon>edit</mat-icon>
                                         <span>Edit</span>

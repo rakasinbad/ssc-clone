@@ -14,7 +14,13 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreChannel, StoreChannel, StoreSegment, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreChannel,
+    PayloadStoreChannelPatch,
+    StoreChannel,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 import {
     StoreChannelApiService,
     StoreChannelCrudApiService,
@@ -85,6 +91,83 @@ export class StoreChannelEffects {
                 ofType(StoreChannelActions.createStoreChannelSuccess),
                 tap(() => {
                     this._$notice.open('Successfully created store channel hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - STORE CHANNEL]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStoreChannelRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreChannelActions.updateStoreChannelRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PayloadStoreChannelPatch; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreChannelPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreChannelRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreChannelFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreChannelPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreChannelRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreChannelFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStoreChannelFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreChannelActions.updateStoreChannelFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStoreChannelSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreChannelActions.updateStoreChannelSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated store channel hierarchy', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -296,6 +379,25 @@ export class StoreChannelEffects {
                 return StoreChannelActions.createStoreChannelSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreChannelFailure'))
+        );
+    };
+
+    _updateStoreChannelRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PayloadStoreChannelPatch; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload'
+            });
+        }
+
+        return this._$storeChannelCrudCrudApi.patch<PayloadStoreChannelPatch>(body, id).pipe(
+            map(resp => {
+                return StoreChannelActions.updateStoreChannelSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStoreChannelFailure'))
         );
     };
 

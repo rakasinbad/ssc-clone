@@ -30,22 +30,28 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StoreClusterActions.createStoreClusterRequest, state => ({ ...state, isLoadingRow: true })),
-    on(StoreClusterActions.createStoreClusterFailure, state => ({ ...state, isRefresh: true })),
+    on(
+        StoreClusterActions.createStoreClusterRequest,
+        StoreClusterActions.updateStoreClusterRequest,
+        state => ({ ...state, isLoadingRow: true })
+    ),
+    on(
+        StoreClusterActions.createStoreClusterFailure,
+        StoreClusterActions.updateStoreClusterFailure,
+        state => ({ ...state, isRefresh: true })
+    ),
     on(StoreClusterActions.refreshStoreClustersRequest, state => ({ ...state, isRefresh: false })),
     on(StoreClusterActions.refreshStoreClustersFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreClusterActions.fetchStoreClustersRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(StoreClusterActions.fetchStoreClustersFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
-    on(StoreClusterActions.createStoreClusterSuccess, state => ({ ...state, isRefresh: true })),
+    on(StoreClusterActions.fetchStoreClustersRequest, state => ({ ...state, isLoading: true })),
+    on(StoreClusterActions.fetchStoreClustersFailure, state => ({ ...state, isLoading: false })),
+    on(
+        StoreClusterActions.createStoreClusterSuccess,
+        StoreClusterActions.updateStoreClusterSuccess,
+        state => ({ ...state, isRefresh: true })
+    ),
     on(StoreClusterActions.fetchStoreClustersSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
             ...state,
@@ -54,7 +60,7 @@ export const reducer = createReducer<State>(
         })
     ),
     on(StoreClusterActions.refreshStoreClustersSuccess, (state, { payload }) =>
-        adapter.upsertMany(payload.data, {
+        adapter.addAll(payload.data, {
             ...state,
             isLoadingRow: false,
             deepestLevel: payload.deepestLevel

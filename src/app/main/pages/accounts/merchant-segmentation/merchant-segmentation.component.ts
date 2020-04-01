@@ -10,7 +10,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, MatSort, MatTabChangeEvent, MatTableDataSource } from '@angular/material';
+import { MatDialog, MatPaginator, MatSort, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
@@ -19,8 +19,9 @@ import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
 import { merge, Observable, Subject } from 'rxjs';
-import { takeUntil, distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
+import { MerchantSegmentationFormComponent } from './merchant-segmentation-form';
 import { StoreSegmentTree } from './models';
 import {
     StoreChannelActions,
@@ -101,6 +102,7 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
 
     constructor(
         private domSanitizer: DomSanitizer,
+        private matDialog: MatDialog,
         private store: Store<fromStoreSegments.FeatureState>
     ) {}
 
@@ -132,6 +134,49 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
     // -----------------------------------------------------------------------------------------------------
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
+
+    onEdit(item: StoreSegmentTree): void {
+        if (!item) {
+            return;
+        }
+
+        const formValue = {
+            id: item.id,
+            externalId: item.externalId,
+            name: item.name,
+            desc: item.description
+        };
+
+        let segmentType = 'type';
+
+        switch (this._type) {
+            case 1:
+                segmentType = 'group';
+                break;
+
+            case 2:
+                segmentType = 'channel';
+                break;
+
+            case 3:
+                segmentType = 'cluster';
+                break;
+
+            default:
+                segmentType = 'type';
+                break;
+        }
+
+        this.matDialog.open(MerchantSegmentationFormComponent, {
+            data: {
+                title: 'Segment Branch Information',
+                segmentType: segmentType,
+                form: formValue
+            },
+            panelClass: 'merchant-segment-form-dialog',
+            disableClose: true
+        });
+    }
 
     onSelectedTab(ev: MatTabChangeEvent): void {
         this._type = ev.index;
@@ -179,6 +224,16 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
                 );
                 this.isLoading$ = this.store.select(MerchantSegmentTreeTableSelectors.getIsLoading);
 
+                // Trigger refresh
+                this.store
+                    .select(MerchantSegmentTreeTableSelectors.getIsRefresh)
+                    .pipe(
+                        filter(v => !!v),
+                        takeUntil(this._unSubs$)
+                    )
+                    .subscribe(() => this._onRefreshTable());
+
+                // Trigger search
                 this.search.valueChanges
                     .pipe(
                         distinctUntilChanged(),

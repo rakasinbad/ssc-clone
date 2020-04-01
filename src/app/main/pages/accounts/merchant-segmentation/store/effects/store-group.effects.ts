@@ -14,7 +14,13 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreGroup, StoreGroup, StoreSegment, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreGroup,
+    PayloadStoreGroupPatch,
+    StoreGroup,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 import {
     StoreGroupApiService,
     StoreGroupCrudApiService,
@@ -28,7 +34,7 @@ type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 @Injectable()
 export class StoreGroupEffects {
     // -----------------------------------------------------------------------------------------------------
-    // @ CRUD methods [CREATE - STORE TYPE]
+    // @ CRUD methods [CREATE - STORE GROUP]
     // -----------------------------------------------------------------------------------------------------
 
     createStoreGroupRequest$ = createEffect(() =>
@@ -94,7 +100,84 @@ export class StoreGroupEffects {
     );
 
     // -----------------------------------------------------------------------------------------------------
-    // @ FETCH methods [STORE TYPES]
+    // @ CRUD methods [UPDATE - STORE GROUP]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStoreGroupRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreGroupActions.updateStoreGroupRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PayloadStoreGroupPatch; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreGroupPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreGroupRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreGroupFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreGroupPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreGroupRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreGroupFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStoreGroupFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreGroupActions.updateStoreGroupFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStoreGroupSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreGroupActions.updateStoreGroupSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated store group hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [STORE GROUPS]
     // -----------------------------------------------------------------------------------------------------
 
     fetchStoreGroupsRequest$ = createEffect(() =>
@@ -292,6 +375,25 @@ export class StoreGroupEffects {
                 return StoreGroupActions.createStoreGroupSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
+        );
+    };
+
+    _updateStoreGroupRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PayloadStoreGroupPatch; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload'
+            });
+        }
+
+        return this._$storeGroupCrudApi.patch<PayloadStoreGroupPatch>(body, id).pipe(
+            map(resp => {
+                return StoreGroupActions.updateStoreGroupSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStoreGroupFailure'))
         );
     };
 

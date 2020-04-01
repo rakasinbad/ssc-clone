@@ -2,7 +2,13 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreType, StoreSegment, StoreType, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreType,
+    PayloadStoreTypePatch,
+    StoreSegment,
+    StoreSegmentTree,
+    StoreType
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Types
@@ -79,6 +85,24 @@ export const createStoreTypeSuccess = createAction(
     '[Store Segmentation] Create Store Type Success'
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Store Type
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreTypeRequest = createAction(
+    '[Store Segmentation] Update Store Type Request',
+    props<{ payload: { body: PayloadStoreTypePatch; id: string } }>()
+);
+
+export const updateStoreTypeFailure = createAction(
+    '[Store Segmentation] Update Store Type Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateStoreTypeSuccess = createAction(
+    '[Store Segmentation] Update Store Type Success'
+);
+
 export const clearState = createAction('[Store Segmentation] Reset Store Types Core State');
 
 export const clearTableState = createAction(
@@ -89,4 +113,5 @@ export type FailureActions =
     | 'fetchStoreTypesFailure'
     | 'fetchStoreLastTypeFailure'
     | 'refreshStoreTypesFailure'
-    | 'createStoreTypeFailure';
+    | 'createStoreTypeFailure'
+    | 'updateStoreTypeFailure';

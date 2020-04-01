@@ -14,7 +14,13 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreCluster, StoreCluster, StoreSegment, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreCluster,
+    PayloadStoreClusterPatch,
+    StoreCluster,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 import {
     StoreClusterApiService,
     StoreClusterCrudApiService,
@@ -85,6 +91,83 @@ export class StoreClusterEffects {
                 ofType(StoreClusterActions.createStoreClusterSuccess),
                 tap(() => {
                     this._$notice.open('Successfully created store cluster hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - STORE CLUSTER]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStoreClusterRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreClusterActions.updateStoreClusterRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PayloadStoreClusterPatch; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreClusterPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreClusterRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreClusterFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreClusterPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreClusterRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreClusterFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStoreClusterFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreClusterActions.updateStoreClusterFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStoreClusterSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreClusterActions.updateStoreClusterSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated store cluster hierarchy', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -296,6 +379,25 @@ export class StoreClusterEffects {
                 return StoreClusterActions.createStoreClusterSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreClusterFailure'))
+        );
+    };
+
+    _updateStoreClusterRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PayloadStoreClusterPatch; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload'
+            });
+        }
+
+        return this._$storeClusterCrudCrudApi.patch<PayloadStoreClusterPatch>(body, id).pipe(
+            map(resp => {
+                return StoreClusterActions.updateStoreClusterSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStoreClusterFailure'))
         );
     };
 

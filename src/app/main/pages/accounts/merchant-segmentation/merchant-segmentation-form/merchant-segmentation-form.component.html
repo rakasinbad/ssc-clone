@@ -1,7 +1,3 @@
-<!-- <h2 mat-dialog-title *ngIf="data?.title">
-    {{ data?.title | titlecase }}
-</h2> -->
-
 <mat-toolbar class="m-0 px-16 pt-8 pb-16">
     <mat-toolbar-row class="p-0">
         <span mat-dialog-title class="m-0">{{ dialogTitle }}</span>
@@ -13,24 +9,54 @@
 </mat-toolbar>
 
 <mat-dialog-content class="mat-typography m-0 p-0 px-16">
-    <form id="merchant-segmentation-form" class="w-100-p" fxLayout="column" fxFlex novalidate>
+    <form
+        id="merchant-segmentation-form"
+        [formGroup]="form"
+        class="w-100-p"
+        fxLayout="column"
+        (ngSubmit)="onSubmit()"
+        fxFlex
+        novalidate
+    >
         <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
-            <label fxFlexAlign="center" fxFlex="18">
+            <label fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="hasError('branchId')">
                 Branch ID
             </label>
 
             <mat-form-field appearance="outline" fxFlex="70">
-                <input matInput name="branchId" />
+                <input
+                    type="text"
+                    matInput
+                    name="branchId"
+                    formControlName="branchId"
+                    autocomplete="off"
+                    autocapitalize="on"
+                />
+
+                <mat-error *ngIf="hasError('branchId', true)">
+                    {{ getErrorMessage('branchId') }}
+                </mat-error>
             </mat-form-field>
         </div>
 
         <div class="custom-field" fxLayout="row" fxLayoutAlign="space-between stretch">
-            <label fxFlexAlign="center" fxFlex="18">
+            <label fxFlexAlign="center" fxFlex="18" [class.sinbad-red-fg]="hasError('branchName')">
                 *Branch Name
             </label>
 
             <mat-form-field appearance="outline" fxFlex="70">
-                <input matInput name="branchName" />
+                <input
+                    type="text"
+                    matInput
+                    name="branchName"
+                    formControlName="branchName"
+                    autocomplete="off"
+                    autocapitalize="on"
+                />
+
+                <mat-error *ngIf="hasError('branchName', true)">
+                    {{ getErrorMessage('branchName') }}
+                </mat-error>
             </mat-form-field>
         </div>
 
@@ -40,7 +66,14 @@
             </label>
 
             <mat-form-field appearance="outline" fxFlex="70">
-                <textarea #desc matInput name="desc" rows="5"></textarea>
+                <textarea
+                    #desc
+                    matInput
+                    name="desc"
+                    formControlName="desc"
+                    autocomplete="off"
+                    rows="5"
+                ></textarea>
                 <mat-hint align="end">
                     <span class="text-bold">{{ desc.value.length }}</span> / 250
                 </mat-hint>
@@ -49,13 +82,22 @@
 
         <div>
             <span class="text-semibold">Selected:</span>
-            <span class="sinbad-red-10-fg pl-12">Store Type</span>
+            <span class="sinbad-red-10-fg pl-12">
+                {{ (segmentType | titlecase) || '-' }}
+            </span>
         </div>
     </form>
 </mat-dialog-content>
 
 <mat-dialog-actions class="m-0 p-0 px-16" align="end">
-    <button mat-flat-button color="accent" class="w-128">
+    <button
+        type="submit"
+        mat-flat-button
+        color="accent"
+        class="w-128"
+        [disabled]="form.invalid || form.pristine"
+        form="merchant-segmentation-form"
+    >
         Save
     </button>
 </mat-dialog-actions>

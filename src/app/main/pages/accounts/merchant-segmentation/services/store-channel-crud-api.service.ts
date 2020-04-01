@@ -53,4 +53,17 @@ export class StoreChannelCrudApiService {
     create<T>(body: T): Observable<StoreChannel> {
         return this.http.post<StoreChannel>(this._url, body);
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @param {string} id
+     * @returns {Observable<StoreChannel>}
+     * @memberof StoreChannelCrudApiService
+     */
+    patch<T>(body: T, id: string): Observable<StoreChannel> {
+        return this.http.patch<StoreChannel>(`${this._url}/${id}`, body);
+    }
 }

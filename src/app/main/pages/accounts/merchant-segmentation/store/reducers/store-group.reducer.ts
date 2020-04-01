@@ -30,22 +30,31 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StoreGroupActions.createStoreGroupRequest, state => ({ ...state, isLoadingRow: true })),
-    on(StoreGroupActions.createStoreGroupFailure, state => ({ ...state, isRefresh: true })),
-    on(StoreGroupActions.refreshStoreGroupsRequest, state => ({ ...state, isRefresh: false })),
+    on(
+        StoreGroupActions.createStoreGroupRequest,
+        StoreGroupActions.updateStoreGroupRequest,
+        state => ({ ...state, isLoadingRow: true })
+    ),
+    on(
+        StoreGroupActions.createStoreGroupFailure,
+        StoreGroupActions.updateStoreGroupFailure,
+        state => ({ ...state, isRefresh: true })
+    ),
+    on(StoreGroupActions.refreshStoreGroupsRequest, state => ({
+        ...state,
+        isRefresh: false
+    })),
     on(StoreGroupActions.refreshStoreGroupsFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreGroupActions.fetchStoreGroupsRequest, state => ({
-        ...state,
-        isLoading: true
-    })),
-    on(StoreGroupActions.fetchStoreGroupsFailure, state => ({
-        ...state,
-        isLoading: false
-    })),
-    on(StoreGroupActions.createStoreGroupSuccess, state => ({ ...state, isRefresh: true })),
+    on(StoreGroupActions.fetchStoreGroupsRequest, state => ({ ...state, isLoading: true })),
+    on(StoreGroupActions.fetchStoreGroupsFailure, state => ({ ...state, isLoading: false })),
+    on(
+        StoreGroupActions.createStoreGroupSuccess,
+        StoreGroupActions.updateStoreGroupSuccess,
+        state => ({ ...state, isRefresh: true })
+    ),
     on(StoreGroupActions.fetchStoreGroupsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
             ...state,
@@ -54,7 +63,7 @@ export const reducer = createReducer<State>(
         })
     ),
     on(StoreGroupActions.refreshStoreGroupsSuccess, (state, { payload }) =>
-        adapter.upsertMany(payload.data, {
+        adapter.addAll(payload.data, {
             ...state,
             isLoadingRow: false,
             deepestLevel: payload.deepestLevel

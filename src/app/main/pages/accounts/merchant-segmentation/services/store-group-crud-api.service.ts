@@ -53,4 +53,17 @@ export class StoreGroupCrudApiService {
     create<T>(body: T): Observable<StoreGroup> {
         return this.http.post<StoreGroup>(this._url, body);
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @param {string} id
+     * @returns {Observable<StoreGroup>}
+     * @memberof StoreGroupCrudApiService
+     */
+    patch<T>(body: T, id: string): Observable<StoreGroup> {
+        return this.http.patch<StoreGroup>(`${this._url}/${id}`, body);
+    }
 }

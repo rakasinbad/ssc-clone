@@ -53,4 +53,17 @@ export class StoreClusterCrudApiService {
     create<T>(body: T): Observable<StoreCluster> {
         return this.http.post<StoreCluster>(this._url, body);
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {T} body
+     * @param {string} id
+     * @returns {Observable<StoreCluster>}
+     * @memberof StoreClusterCrudApiService
+     */
+    patch<T>(body: T, id: string): Observable<StoreCluster> {
+        return this.http.patch<StoreCluster>(`${this._url}/${id}`, body);
+    }
 }

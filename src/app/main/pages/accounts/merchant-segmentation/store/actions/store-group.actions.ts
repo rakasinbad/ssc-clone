@@ -2,7 +2,13 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreGroup, StoreGroup, StoreSegment, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreGroup,
+    PayloadStoreGroupPatch,
+    StoreGroup,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Groups
@@ -79,6 +85,24 @@ export const createStoreGroupSuccess = createAction(
     '[Store Segmentation] Create Store Group Success'
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Store Group
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreGroupRequest = createAction(
+    '[Store Segmentation] Update Store Group Request',
+    props<{ payload: { body: PayloadStoreGroupPatch; id: string } }>()
+);
+
+export const updateStoreGroupFailure = createAction(
+    '[Store Segmentation] Update Store Group Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateStoreGroupSuccess = createAction(
+    '[Store Segmentation] Update Store Group Success'
+);
+
 export const clearState = createAction('[Store Segmentation] Reset Store Groups Core State');
 
 export const clearTableState = createAction(
@@ -89,4 +113,5 @@ export type FailureActions =
     | 'fetchStoreGroupsFailure'
     | 'fetchStoreLastGroupFailure'
     | 'refreshStoreGroupsFailure'
-    | 'createStoreGroupFailure';
+    | 'createStoreGroupFailure'
+    | 'updateStoreGroupFailure';

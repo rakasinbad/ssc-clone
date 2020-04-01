@@ -38,7 +38,7 @@ export const reducer = createReducer<State>(
         StoreClusterActions.fetchStoreLastClusterRequest,
         StoreGroupActions.fetchStoreLastGroupRequest,
         StoreTypeActions.fetchStoreLastTypeRequest,
-        state => ({ ...state, isLoading: true })
+        state => ({ ...state, isLoading: true, isRefresh: undefined })
     ),
     on(
         StoreChannelActions.fetchStoreLastChannelFailure,
@@ -46,6 +46,25 @@ export const reducer = createReducer<State>(
         StoreGroupActions.fetchStoreLastGroupFailure,
         StoreTypeActions.fetchStoreLastTypeFailure,
         state => ({ ...state, isLoading: false })
+    ),
+    on(
+        StoreChannelActions.createStoreChannelFailure,
+        StoreChannelActions.createStoreChannelSuccess,
+        StoreChannelActions.updateStoreChannelFailure,
+        StoreChannelActions.updateStoreChannelSuccess,
+        StoreClusterActions.createStoreClusterFailure,
+        StoreClusterActions.createStoreClusterSuccess,
+        StoreClusterActions.updateStoreClusterFailure,
+        StoreClusterActions.updateStoreClusterSuccess,
+        StoreGroupActions.createStoreGroupFailure,
+        StoreGroupActions.createStoreGroupSuccess,
+        StoreGroupActions.updateStoreGroupFailure,
+        StoreGroupActions.updateStoreGroupSuccess,
+        StoreTypeActions.createStoreTypeFailure,
+        StoreTypeActions.createStoreTypeSuccess,
+        StoreTypeActions.updateStoreTypeFailure,
+        StoreTypeActions.updateStoreTypeSuccess,
+        state => ({ ...state, isRefresh: true })
     ),
     on(
         StoreChannelActions.fetchStoreLastChannelSuccess,

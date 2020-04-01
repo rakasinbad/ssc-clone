@@ -2,12 +2,14 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatInput } from '@angular/material';
 import { select, Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
@@ -67,6 +69,8 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
 
     isLoading$: Observable<boolean>;
     isLoadingRow$: Observable<boolean>;
+
+    @ViewChild('contentDesc', { static: true }) contentDesc: ElementRef<HTMLParagraphElement>;
 
     private _unSubs$: Subject<void> = new Subject();
 
@@ -163,7 +167,10 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
                 .setValue(segmentIdx + 1);
 
             setTimeout(() => {
+                this._resetSegment(segmentIdx);
+                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
                 this._onSubmit(segmentIdx, branchIdx);
+                this.cdRef.markForCheck();
             }, 100);
         }
 
@@ -189,6 +196,18 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
             this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).value ===
             'readonly'
         );
+    }
+
+    isTextTruncateDesc(): boolean {
+        const e = this.contentDesc.nativeElement;
+
+        return e.scrollWidth > e.clientWidth;
+    }
+
+    isTextTruncate(el: MatInput): boolean {
+        const e = (el as any)._elementRef.nativeElement;
+
+        return e.scrollWidth > e.clientWidth;
     }
 
     isTyping(segmentIdx: number, branchIdx: number): boolean {
@@ -228,14 +247,24 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
     onEdit(segmentIdx: number, branchIdx: number): void {
         const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
 
-        this.matDialog.open(MerchantSegmentationFormComponent, {
+        const dialogRef = this.matDialog.open(MerchantSegmentationFormComponent, {
             data: {
                 title: 'Segment Branch Information',
+                segmentType: 'channel',
                 form: formValue
             },
             panelClass: 'merchant-segment-form-dialog',
             disableClose: true
         });
+
+        dialogRef
+            .afterClosed()
+            .pipe(takeUntil(this._unSubs$))
+            .subscribe(() => {
+                this._resetSegment(segmentIdx);
+                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
+                this.cdRef.markForCheck();
+            });
     }
 
     onShowChild(segmentIdx: number, branchIdx: number): void {
@@ -245,7 +274,7 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
 
         this.form.get(['segments', segmentIdx, 'selectedId']).setValue(parentId);
 
-        if (segmentIdx > currLastSegment) {
+        if (segmentIdx >= currLastSegment) {
             this.form.get('lastSegment').setValue(currLevel);
         }
 
@@ -290,9 +319,12 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
             {
                 id: null,
                 parentId: null,
+                externalId: null,
                 sequence: null,
                 name: null,
                 hasChild: false,
+                desc: null,
+                statusItem: 'active',
                 status: 'typing'
             },
             { updateOn: 'blur' }
@@ -317,7 +349,6 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
                     concatMap((item, idx) => of({ item, idx })),
                     finalize(() => {
                         this.isFromSelector = false;
-                        console.log('Out Looping', this.isFromSelector, this.form);
                     }),
                     takeUntil(this._unSubs$)
                 )
@@ -339,6 +370,11 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
                         .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
                         .setValue(item.parentId);
 
+                    // Set externalId control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'externalId'])
+                        .setValue(item.externalId);
+
                     // Set sequence control (branches)
                     this.form
                         .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
@@ -358,6 +394,16 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
                         .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
                         .setValue(hasChild);
 
+                    // Set desc control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'desc'])
+                        .setValue(item.description);
+
+                    // Set statusItem control (branches)
+                    this.form
+                        .get(['segments', item.sequence - 1, 'branches', idx, 'statusItem'])
+                        .setValue(item.status);
+
                     // Set status control (branches)
                     this.form
                         .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
@@ -372,11 +418,15 @@ export class StoreChannelSegmentationComponent implements OnInit, OnDestroy {
     private _resetSegment(currentSegment: number): void {
         let lastSegment = +this.form.get('lastSegment').value;
 
+        lastSegment = this.segments().length > lastSegment ? this.segments().length : lastSegment;
+
         while (lastSegment > currentSegment) {
             // console.log(`Remove lastSegment: ${lastSegment}, except ${currentSegment}`);
             this.segments().removeAt(lastSegment);
             lastSegment--;
         }
+
+        this.form.get('lastSegment').setValue(lastSegment);
     }
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {

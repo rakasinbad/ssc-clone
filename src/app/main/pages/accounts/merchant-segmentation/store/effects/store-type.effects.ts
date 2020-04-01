@@ -14,7 +14,13 @@ import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
 import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreType, StoreSegment, StoreSegmentTree, StoreType } from '../../models';
+import {
+    PayloadStoreType,
+    StoreSegment,
+    StoreSegmentTree,
+    StoreType,
+    PayloadStoreTypePatch
+} from '../../models';
 import {
     StoreSegmentApiService,
     StoreTypeApiService,
@@ -22,6 +28,7 @@ import {
 } from '../../services';
 import { StoreSegmentationFailureActions, StoreTypeActions } from '../actions';
 import * as fromStoreSegments from '../reducers';
+import { getParams } from 'app/store/app.reducer';
 
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 
@@ -85,6 +92,83 @@ export class StoreTypeEffects {
                 ofType(StoreTypeActions.createStoreTypeSuccess),
                 tap(() => {
                     this._$notice.open('Successfully created store type hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - STORE TYPE]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStoreTypeRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreTypeActions.updateStoreTypeRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PayloadStoreTypePatch; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreTypePatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreTypeRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreTypeFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreTypePatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreTypeRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreTypeFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStoreTypeFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreTypeActions.updateStoreTypeFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStoreTypeSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreTypeActions.updateStoreTypeSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated store type hierarchy', 'success', {
                         verticalPosition: 'bottom',
                         horizontalPosition: 'right'
                     });
@@ -288,6 +372,25 @@ export class StoreTypeEffects {
                 return StoreTypeActions.createStoreTypeSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreTypeFailure'))
+        );
+    };
+
+    _updateStoreTypeRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PayloadStoreTypePatch; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload'
+            });
+        }
+
+        return this._$storeTypeCrudApi.patch<PayloadStoreTypePatch>(body, id).pipe(
+            map(resp => {
+                return StoreTypeActions.updateStoreTypeSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStoreTypeFailure'))
         );
     };
 
