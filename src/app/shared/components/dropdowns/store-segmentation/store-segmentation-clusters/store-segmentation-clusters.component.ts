@@ -45,7 +45,7 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
     // Untuk menyimpan Entity yang tersedia.
     availableEntities$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Subject untuk mendeteksi adanya perubahan Entity yang terpilih.
-    selectedEntity$: BehaviorSubject<Entity> = new BehaviorSubject<Entity>(null);
+    selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
     // Menyimpan state loading-nya Entity.
     isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
@@ -62,7 +62,7 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
     entityFormValue: FormControl;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selected: EventEmitter<TNullable<Entity>> = new EventEmitter<TNullable<Entity>>();
+    @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
     @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
@@ -244,11 +244,12 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
-    onSelectedEntity(event: Selection): void {
+    onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
         if (event) {
+            const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.find(raw => raw.id === event.id));
+            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
         }
     }
 
@@ -333,7 +334,7 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
 
                 if (selection.length === 0) {
                     this.entityFormView.setValue('');
-                    this.entityFormValue.setValue('');
+                    this.entityFormValue.setValue([]);
                 } else {
                     const firstselection = selection[0].label;
                     const remainLength = selection.length - 1;

@@ -25,6 +25,9 @@ export class StoreSegmentationTypesApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
+        // Temporary fix
+        newArgs.push({ key: 'hasChild', value: 'false' });
+
         if (!params['supplierId'] && !params['noSupplierId']) {
             throw new Error('ERR_STORE_SEGMENTATION_TYPES_REQUIRE_SUPPLIERID');
         }

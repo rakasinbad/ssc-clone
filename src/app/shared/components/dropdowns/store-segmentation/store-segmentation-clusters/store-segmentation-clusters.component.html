@@ -48,7 +48,7 @@
         <input
             matInput
             autocomplete="new-password"
-            placeholder="Search Store Type"
+            placeholder="Search Store Cluster"
             [formControl]="entityFormView"
             [value]="entityFormView.value"
         />
@@ -60,6 +60,7 @@
 <ng-template #selectStoreCluster>
     <sinbad-multiple-selection
         [disableClearAll]="true"
+        [enableSelectAll]="true"
         [availableOptions]="(availableEntities$ | async)"
         [totalAvailableOptions]="(totalEntities$ | async)"
         [initialSelectedOptions]="initialSelection"
