@@ -25,6 +25,9 @@ export class StoreSegmentationClustersApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
+        // Temporary fix
+        newArgs.push({ key: 'hasChild', value: 'false' });
+
         if (!params['supplierId'] && !params['noSupplierId']) {
             throw new Error('ERR_STORE_SEGMENTATION_CLUSTERS_REQUIRE_SUPPLIERID');
         }

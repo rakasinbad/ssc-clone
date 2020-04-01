@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, Input, EventEmitter, Output, ViewChildren, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { Subject } from 'rxjs';
-import { MatSelectionListChange } from '@angular/material';
-import { tap, takeUntil, filter, map } from 'rxjs/operators';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, AfterViewInit, Input, EventEmitter, Output, ViewChildren, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, QueryList } from '@angular/core';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { MatSelectionListChange, MatSelectionList, MatListOption } from '@angular/material';
+import { tap, takeUntil, filter, map, debounceTime } from 'rxjs/operators';
 import { CdkScrollable, ScrollDispatcher } from '@angular/cdk/overlay';
 import { HelperService } from 'app/shared/helpers';
 import { Selection, SelectionList } from './models';
@@ -18,9 +18,13 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
 
     // Untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
+    // tslint:disable-next-line: no-inferrable-types
+    allSelected: boolean = false;
 
     // tslint:disable-next-line: no-inferrable-types
     @Input() disableClearAll: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() enableSelectAll: boolean = false;
 
     // Untuk meletakkan judul di kolom available options.
     // tslint:disable-next-line: no-inferrable-types
@@ -73,8 +77,13 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     totalSelectedOptions: number = 0;
 
     @ViewChildren(CdkScrollable, { read: ElementRef }) scrollable: CdkScrollable;
+    @ViewChild('availableSelectionList', { static: false, read: MatSelectionList }) availableSelection: MatSelectionList;
     @ViewChild('availableSelectionList', { static: false, read: ElementRef }) availableSelectionList: ElementRef;
+    @ViewChild('selectedSelectionList', { static: false, read: MatSelectionList }) selectedSelection: MatSelectionList;
     @ViewChild('selectedSelectionList', { static: false, read: ElementRef }) selectedSelectionList: ElementRef;
+
+    @ViewChildren('availableOption', { read: MatListOption }) availableOption: QueryList<MatListOption>;
+    @ViewChildren('selectedOption', { read: MatListOption }) selectedOption: QueryList<MatListOption>;
 
     constructor(
         private helper$: HelperService,
@@ -96,7 +105,41 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
     }
 
     onToggleSelectAll($event: MatSelectionListChange): void {
-        // const isSelected = $event.option.selected;
+        const isSelected = $event.option.selected;
+
+        if (isSelected) {
+            this.availableSelection.selectAll();
+
+            for (const option of this.availableOption.toArray()) {
+                if (!option.selected) {
+                    option.toggle();
+                }
+
+                this.availableSelection.selectionChange.emit(
+                    new MatSelectionListChange(this.availableSelection, option)
+                );
+            }
+
+            HelperService.debug('SELECTED => this.availableOption from ViewChildren', this.availableOption);
+            this.allSelected = true
+            // this.selectionChanged.emit({ id: 'all', group: 'all', label: 'all' });
+        } else {
+            this.availableSelection.deselectAll();
+
+            for (const option of this.selectedOption.toArray()) {
+                if (option.selected) {
+                    option.toggle();
+                }
+
+                this.selectedSelection.selectionChange.emit(
+                    new MatSelectionListChange(this.selectedSelection, option)
+                );
+            }
+
+            HelperService.debug('DESELECTED => this.selectedOption from ViewChildren', this.availableOption);
+            this.allSelected = false;
+            // this.selectionChanged.emit({ id: null, group: null, label: null });
+        }
     }
 
     ngOnInit(): void {
@@ -189,6 +232,7 @@ export class MultipleSelectionComponent implements OnInit, OnDestroy, OnChanges,
         });
 
         this.selectedOptionSub$.pipe(
+            // debounceTime(200),
             tap(($event) => {
                 if ($event) {
                     // Mengambil nilai dari option yang dipilih.

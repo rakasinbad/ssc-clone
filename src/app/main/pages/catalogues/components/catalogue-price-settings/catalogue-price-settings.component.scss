@@ -20,6 +20,10 @@ catalogue-price-settings {
         border-radius: 4px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
+
+        .mat-form-field-wrapper {
+            padding-bottom: 0 !important;
+        }
     }
 }
 

@@ -41,4 +41,6 @@ app-catalogue-detail {
             object-fit: cover; /*magic*/
         }
     }
+
+    .mat-tab-body-content { display: flex; flex:1; overflow-y: scroll !important; flex-direction: column }
 }

@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { GeneratorService, HelperService } from 'app/shared/helpers';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 import {
     Catalogue,
@@ -16,6 +16,7 @@ import {
 } from '../models';
 import { CatalogueMedia } from '../models/catalogue-media.model';
 import { CataloguePrice } from '../models/catalogue-price.model';
+import { ApplyFilteredCataloguePricePayload } from '../store/actions/catalogue.actions';
 
 interface ICatalogueTitleParameter {
     allCount: number;
@@ -27,7 +28,7 @@ interface ICatalogueTitleParameter {
 @Injectable({
     providedIn: 'root'
 })
-export class CataloguesService {
+export class CataloguesService implements OnDestroy {
     /**
      *
      *
@@ -36,6 +37,7 @@ export class CataloguesService {
      * @memberof MerchantApiService
      */
     private _url: string;
+    private updateForm$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
     /**
      *
@@ -49,6 +51,7 @@ export class CataloguesService {
     private readonly _categoryTreeEndpoint = '/categories-tree';
     private readonly _catalogueImportEndpoint = '/upload/import-catalogues';
     private readonly _cataloguePriceSettingsEndpoint = '/price-settings';
+    private readonly _segmentationPriceEndpoint = '/segmentation-price';
 
     /**
      * Creates an instance of MerchantApiService.
@@ -63,7 +66,26 @@ export class CataloguesService {
         private translate: TranslateService
     ) {}
 
-    fetchTotalCatalogueStatuses(params: IQueryParams) {
+    ngOnDestroy(): void {
+        this.updateForm$.next('');
+        this.updateForm$.complete();
+    }
+
+    getUpdateForm(): Observable<string> {
+        return this.updateForm$.asObservable();
+    }
+
+    broadcastUpdateForm(formIndex: number): void {
+        this.updateForm$.next(String(formIndex));
+    }
+
+    fetchTotalCatalogueStatuses(params: IQueryParams): Observable<{
+        total: string;
+        totalEmptyStock: string;
+        totalActive: string;
+        totalInactive: string;
+        totalBanned: string;
+    }> {
         const newArgs = [];
 
         if (!isNaN(params['supplierId'])) {
@@ -255,6 +277,11 @@ export class CataloguesService {
         return this.http.post<Catalogue>(this._url, data);
     }
 
+    applySegmentationPrice(data: ApplyFilteredCataloguePricePayload): Observable<{ message: string }> {
+        this._url = this._$helper.handleApiRouter(this._segmentationPriceEndpoint);
+        return this.http.post<{ message: string }>(this._url, data);
+    }
+
     updateCataloguePrices(data: FormData): Observable<{ status: string }> {
         this._url = this._$helper.handleApiRouter(this._catalogueImportEndpoint);
         return this.http.post<{ status: string }>(this._url, data, {
@@ -274,44 +301,41 @@ export class CataloguesService {
         if (!Array.isArray(params['warehouseIds'])) {
             throw new Error('warehouseIds must be an array.');
         } else {
-            newArgs.push({ key: 'warehouseIds', value: params['warehouseIds'] });
+            newArgs.push({ key: 'warehouseIds', value: `[${params['warehouseIds']}]` });
         }
 
-        if (params['typeIds']) {
-            if (!Array.isArray(params['typeIds'])) {
-                throw new Error('typeIds must be an array.');
-            } else {
-                newArgs.push({ key: 'typeIds', value: params['typeIds'] });
-            }
+        if (!Array.isArray(params['typeIds'])) {
+            throw new Error('typeIds must be an array.');
+        } else {
+            newArgs.push({ key: 'typeIds', value: `[${params['typeIds']}]` });
         }
 
-        if (params['groupIds']) {
-            if (!Array.isArray(params['groupIds'])) {
-                throw new Error('groupIds must be an array.');
-            } else {
-                newArgs.push({ key: 'groupIds', value: params['groupIds'] });
-            }
+        if (!Array.isArray(params['groupIds'])) {
+            throw new Error('groupIds must be an array.');
+        } else {
+            newArgs.push({ key: 'groupIds', value: `[${params['groupIds']}]` });
         }
 
-        if (params['clusterIds']) {
-            if (!Array.isArray(params['clusterIds'])) {
-                throw new Error('clusterIds must be an array.');
-            } else {
-                newArgs.push({ key: 'clusterIds', value: params['clusterIds'] });
-            }
+        if (!Array.isArray(params['clusterIds'])) {
+            throw new Error('clusterIds must be an array.');
+        } else {
+            newArgs.push({ key: 'clusterIds', value: `[${params['clusterIds']}]` });
         }
 
-        if (params['channelIds']) {
-            if (!Array.isArray(params['channelIds'])) {
-                throw new Error('channelIds must be an array.');
-            } else {
-                newArgs.push({ key: 'channelIds', value: params['channelIds'] });
-            }
+        if (!Array.isArray(params['channelIds'])) {
+            throw new Error('channelIds must be an array.');
+        } else {
+            newArgs.push({ key: 'channelIds', value: `[${params['channelIds']}]` });
         }
 
         this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
-        const newParams = this._$helper.handleParams(this._url, params);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
         return this.http.get<T>(`${this._url}`, { params: newParams });
+    }
+
+    updatePriceSetting(priceSettingId: string, price: number): Observable<CataloguePrice> {
+        this._url = this._$helper.handleApiRouter(this._cataloguePriceSettingsEndpoint);
+        return this.http.patch<CataloguePrice>(`${this._url}/${priceSettingId}`, { price });
     }
 
     // findPriceSettings<T>(params: IQueryParams): Observable<T> {

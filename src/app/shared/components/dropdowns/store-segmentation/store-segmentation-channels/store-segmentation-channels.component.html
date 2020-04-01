@@ -60,6 +60,7 @@
 <ng-template #selectStoreChannel>
     <sinbad-multiple-selection
         [disableClearAll]="true"
+        [enableSelectAll]="true"
         [availableOptions]="(availableEntities$ | async)"
         [totalAvailableOptions]="(totalEntities$ | async)"
         [initialSelectedOptions]="initialSelection"

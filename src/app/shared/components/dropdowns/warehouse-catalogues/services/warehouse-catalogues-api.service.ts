@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 })
 export class StoreSegmentationTypesApiService {
     private _url: string;
-    private readonly _endpoint = '/types';
+    private readonly _endpoint = '/warehouse-catalogues';
 
     constructor(
         private http: HttpClient,
@@ -25,15 +25,12 @@ export class StoreSegmentationTypesApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        // Temporary fix
-        newArgs.push({ key: 'hasChild', value: 'false' });
-
-        if (!params['supplierId'] && !params['noSupplierId']) {
-            throw new Error('ERR_STORE_SEGMENTATION_TYPES_REQUIRE_SUPPLIERID');
+        if (!params['catalogueId'] && !params['noCatalogueId']) {
+            throw new Error('ERR_WAREHOUSE_CATALOGUE_REQUIRES_CATALOGUEID');
         }
         
-        if (params['supplierId'] && !params['noSupplierId']) {
-            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        if (params['catalogueId'] && !params['noCatalogueId']) {
+            newArgs.push({ key: 'catalogueId', value: params['catalogueId'] });
         }
 
         if (params['keyword']) {

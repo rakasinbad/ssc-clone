@@ -8,30 +8,31 @@ import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/he
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
-import { StoreSegmentationType as Entity } from './models';
+import { Warehouse as Entity } from './models';
 import { StoreSegmentationTypesApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
-import { Selection } from '../../select-advanced/models';
+import { Selection } from '../select-advanced/models';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
 import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
+import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
 
 @Component({
-    selector: 'select-store-segmentation-types',
-    templateUrl: './store-segmentation-types.component.html',
-    styleUrls: ['./store-segmentation-types.component.scss'],
+    selector: 'select-warehouse-catalogues',
+    templateUrl: './warehouse-catalogues.component.html',
+    styleUrls: ['./warehouse-catalogues.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default
 })
-export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Form
     entityForm: FormControl = new FormControl('');
@@ -60,6 +61,9 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     initialSelection: Array<Selection> = [];
     entityFormView: FormControl;
     entityFormValue: FormControl;
+
+    // Untuk mengambil warehouse berdasarkan ID catalogue-nya.
+    @Input() catalogueId: string | number;
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -156,7 +160,7 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
             tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<WarehouseCatalogue>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
                     throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
@@ -169,13 +173,14 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                newQuery['catalogueId'] = this.catalogueId;
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
-                    .find<IPaginatedResponse<Entity>>(newQuery)
+                    .find<IPaginatedResponse<WarehouseCatalogue>>(newQuery)
                     .pipe(
                         tap(() => this.toggleLoading(true)),
-                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response }))
+                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
             }),
             take(1),
@@ -184,11 +189,15 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
             next: (response) => {
                 if (Array.isArray(response)) {
                     this.rawAvailableEntities$.next(response);
-                    this.availableEntities$.next((response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-types' })));
-                    this.totalEntities$.next((response as Array<Entity>).length);
+                    this.availableEntities$.next((response as Array<WarehouseCatalogue>).map(d =>
+                        ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
+                    );
+                    this.totalEntities$.next((response as Array<WarehouseCatalogue>).length);
                 } else {
-                    this.rawAvailableEntities$.next(response.data);
-                    this.availableEntities$.next(response.data.map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-types' })));
+                    this.rawAvailableEntities$.next(response.data.map(d => (d.warehouse as unknown as Entity)));
+                    this.availableEntities$.next(response.data.map(d =>
+                        ({ id: d.warehouseId, label: d.warehouse.name, group: 'warehouse-catalogues' }))
+                    );
                     this.totalEntities$.next(response.total);
                 }
 
@@ -300,7 +309,7 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
         this.initialSelection = selected;
         
         this.dialog = this.applyDialogFactory$.open({
-            title: 'Select Store Type',
+            title: 'Select Warehouse',
             template: this.selectStoreType,
         }, {
             disableClose: true,

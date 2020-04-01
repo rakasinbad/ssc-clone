@@ -24,9 +24,20 @@ export const fetchCatalogues = createAction(
 /** Untuk mendefinisikan asal tempat pengubahan data katalog. */
 type TSourceEdit = 'list' | 'form';
 
+export interface ApplyFilteredCataloguePricePayload {
+    warehouseCatalogueId: string | Array<number>;
+    typeId: string | Array<number>;
+    groupId: string | Array<number>;
+    channelId: string | Array<number>;
+    clusterId: string | Array<number>;
+    price: number;
+    catalogueId: number;
+    supplierId: number;
+}
+
 type CatalogueSection = 'sku-information' | 'price-settings' | 'media-settings' | 'weight-and-dimension' | 'amount-settings';
 
-export type FailureActionNames = 'fetchCataloguePriceSettingsFailure';
+export type FailureActionNames = 'fetchCataloguePriceSettingsFailure' | 'updateCataloguePriceSettingFailure' | 'applyFilteredCataloguePriceFailure';
 
 /**
  * FILTER CATALOGUES
@@ -340,6 +351,44 @@ export const fetchCataloguePriceSettingsFailure = createAction(
 export const fetchCataloguePriceSettingsSuccess = createAction(
     '[Catalogues API] Fetch Catalogue Price Settings Success',
     props<{ payload: { catalogues: Array<CataloguePrice>; total: number } }>()
+);
+
+/**
+ * UPDATE CATALOGUE PRICE SETTINGS
+ */
+
+export const updateCataloguePriceSettingRequest = createAction(
+    '[Catalogues API] Update Catalogue Price Setting Request',
+    props<{ payload: { priceSettingId: string; price: number; formIndex?: number; } }>()
+);
+
+export const updateCataloguePriceSettingFailure = createAction(
+    '[Catalogues API] Update Catalogue Price Setting Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const updateCataloguePriceSettingSuccess = createAction(
+    '[Catalogues API] Update Catalogue Price Setting Success',
+    props<{ payload: { data: Update<CataloguePrice>; formIndex?: number; } }>()
+);
+
+/**
+ * APPLY FILTERED CATALOGUE PRICE
+ */
+
+export const applyFilteredCataloguePriceRequest = createAction(
+    '[Catalogues API] Apply Filtered Catalogue Price Request',
+    props<{ payload: ApplyFilteredCataloguePricePayload }>()
+);
+
+export const applyFilteredCataloguePriceFailure = createAction(
+    '[Catalogues API] Apply Filtered Catalogue Price Failure',
+    props<{ payload: IErrorHandler }>()
+);
+
+export const applyFilteredCataloguePriceSuccess = createAction(
+    '[Catalogues API] Apply Filtered Catalogue Price Success',
+    props<{ payload: { message: string } }>()
 );
 
 /**
