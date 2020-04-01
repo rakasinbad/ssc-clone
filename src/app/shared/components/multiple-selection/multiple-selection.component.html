@@ -65,15 +65,17 @@
                     (selectionChange)="$event.option.value === '__select-all__' ? onToggleSelectAll($event) : selectedOptionSub$.next($event)"
                 >
                     <!-- SELECT ALL OPTION -->
-                    <!-- <mat-list-option
+                    <mat-list-option
                         value="__select-all__"
                         [checkboxPosition]="'before'"
-                        *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0"
+                        [selected]="mergedSelectedOptions.length === totalAvailableOptions"
+                        *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0 && enableSelectAll"
                     >
                         (Select All)
-                    </mat-list-option> -->
+                    </mat-list-option>
                     <!-- / SELECT ALL -->
                     <mat-list-option
+                        #availableOption
                         *ngFor="let option of (availableOptions)"
                         [checkboxPosition]="'before'"
                         [value]="option"
@@ -138,6 +140,7 @@
                     (selectionChange)="selectedOptionSub$.next($event)"
                 >
                     <mat-list-option
+                        #selectedOption
                         *ngFor="let option of (mergedSelectedOptions)"
                         class="relative"
                         [checkboxPosition]="'before'"
