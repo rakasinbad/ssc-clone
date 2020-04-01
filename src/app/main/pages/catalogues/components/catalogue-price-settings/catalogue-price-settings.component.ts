@@ -171,7 +171,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
             if (value) {
                 const formControl = this.form.get(['priceSettings', value, 'price']);
 
-                formControl.enable();
+                formControl.enable({ onlySelf: true, emitEvent: false });
                 formControl.markAsPristine();
                 formControl.markAsUntouched();
             }
