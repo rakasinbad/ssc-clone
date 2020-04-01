@@ -9,6 +9,7 @@ import { GeolocationModule } from './geolocation/geolocation.module';
 // Dropdowns
 import { SelectAdvancedModule } from './dropdowns/select-advanced/select-advanced.module';
 import { WarehouseDropdownModule } from './dropdowns/warehouses/warehouses.module';
+import { WarehouseCatalogueDropdownModule } from './dropdowns/warehouse-catalogues/warehouse-catalogues.module';
 import { StoreSegmentationTypesDropdownModule } from './dropdowns/store-segmentation/store-segmentation-types/store-segmentation-types.module';
 import { StoreSegmentationGroupsDropdownModule } from './dropdowns/store-segmentation/store-segmentation-groups/store-segmentation-groups.module';
 import { StoreSegmentationChannelsDropdownModule } from './dropdowns/store-segmentation/store-segmentation-channels/store-segmentation-channels.module';
@@ -29,6 +30,7 @@ import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/stor
         SearchBarModule,
         MultipleSelectionModule,
         WarehouseDropdownModule,
+        WarehouseCatalogueDropdownModule,
         StoreSegmentationTypesDropdownModule,
         SegmentedStoreTypesDropdownModule,
         StoreSegmentationGroupsDropdownModule,
@@ -47,6 +49,7 @@ import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/stor
         SearchBarModule,
         MultipleSelectionModule,
         WarehouseDropdownModule,
+        WarehouseCatalogueDropdownModule,
         StoreSegmentationTypesDropdownModule,
         SegmentedStoreTypesDropdownModule,
         StoreSegmentationGroupsDropdownModule,
