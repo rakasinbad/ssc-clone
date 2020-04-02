@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, Output, Input, EventEmitter, SimpleChanges, OnChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, ViewChildren, QueryList, Output, Input, EventEmitter, SimpleChanges, OnChanges, ViewChild, ElementRef, HostBinding } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, combineLatest, BehaviorSubject, Subscription } from 'rxjs';
@@ -73,6 +73,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<Catalogue> = new EventEmitter<Catalogue>();
+    @Output() changePage: EventEmitter<void> = new EventEmitter<void>();
 
     // Untuk mendapatkan event ketika form mode berubah.
     @Output() formModeChange: EventEmitter<IFormMode> = new EventEmitter<IFormMode>();
@@ -155,6 +156,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
         this.totalCataloguePrice$ = this.store.select(
             CatalogueSelectors.getTotalCataloguePriceSettings
         ).pipe(
+            tap(value => this.form.get('advancePrice').setValue(value > 0)),
             takeUntil(this.subs$)
         );
 
@@ -599,7 +601,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
                             channelId: data['channelIds'],
                             clusterId: data['clusterIds'],
                         }
-                    }))
+                    }));
                 }
             });
         }
@@ -659,6 +661,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
     onChangePage(ev: PageEvent): void {
         HelperService.debug('onChangePage', ev);
         this.updateForm$.next(null);
+        this.changePage.emit();
 
         const data: IQueryParams = {
             limit: this.paginator.pageSize,
@@ -717,7 +720,7 @@ export class CataloguePriceSettingsComponent implements OnInit, OnChanges, After
             retailBuyingPriceView: [''],
             priceToAll: [''],
             priceSettings: this.fb.array([]),
-            advancePrice: [true]
+            advancePrice: [false]
         });
 
         this.filterForm = this.fb.group({
