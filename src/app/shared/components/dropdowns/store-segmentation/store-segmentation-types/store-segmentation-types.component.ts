@@ -169,6 +169,8 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                // Hanya mengambil yang tidak punya child.
+                newQuery['hasChild'] = false;
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
