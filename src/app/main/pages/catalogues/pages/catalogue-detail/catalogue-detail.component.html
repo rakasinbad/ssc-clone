@@ -1,4 +1,4 @@
-<div #catalogueDetails id="catalogue-details" class="page-layout carded fullwidth inner-scroll line-height-1.75" fusePerfectScrollbar>
+<div #catalogueDetails id="catalogue-details" class="page-layout carded fullwidth inner-scroll line-height-1.75">
     <!-- TOP BACKGROUND -->
     <div class="top-bg h-188 accent"></div>
     <!-- / TOP BACKGROUND -->
@@ -72,10 +72,11 @@
         <!-- TAB GROUP -->
         <mat-tab-group
             color="accent" style="border-radius: 4px;"
-            class="px-12 sinbad-white sinbad-mat-tab-group"
+            class="sinbad-white sinbad-mat-tab-group mat-tab-header-px-12"
             animationDuration="0ms"
             dynamicHeight="true"
             (selectedIndexChange)="onSelectedTab($event)"
+            fusePerfectScrollbar
         >
             <mat-tab label="SKU Information" [disabled]="isEditMode()">
                 <ng-template matTabContent>
@@ -89,9 +90,11 @@
             <mat-tab label="Price Settings" [disabled]="isEditMode()">
                 <ng-template matTabContent>
                     <catalogue-price-settings
+                        #cataloguePriceSettings
                         [(formMode)]="formMode"
                         (formValueChange)="onFormValueChanged($event)"
                         (formStatusChange)="onFormStatusChanged($event)"
+                        (changePage)="scrollTop(cataloguePriceSettingRef)"
                     ></catalogue-price-settings>
                 </ng-template>
             </mat-tab>

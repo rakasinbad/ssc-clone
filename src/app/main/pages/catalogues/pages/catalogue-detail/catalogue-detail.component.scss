@@ -1,4 +1,10 @@
 app-catalogue-detail {
+    .mat-tab-header-px-12 {
+        .mat-tab-header {
+            margin: 0 12px !important;
+        }
+    }
+
     .view-field-right {
         label {
             font-weight: 600;

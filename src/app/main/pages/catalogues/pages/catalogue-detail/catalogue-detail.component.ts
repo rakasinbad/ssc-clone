@@ -7,7 +7,7 @@ import { fromCatalogue } from '../../store/reducers';
 import { CatalogueSelectors, BrandSelectors } from '../../store/selectors';
 import { takeUntil, tap, withLatestFrom, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { FormStatus } from 'app/shared/models/global.model';
+import { FormStatus, IBreadcrumbs } from 'app/shared/models/global.model';
 import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { CatalogueActions } from '../../store/actions';
@@ -39,12 +39,46 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
     selectedCatalogue$: Observable<Catalogue>;
 
     @ViewChild('catalogueDetails', { static: true, read: ElementRef }) catalogueDetailRef: ElementRef<HTMLElement>;
+    @ViewChild('cataloguePriceSettings', { static: false, read: ElementRef }) cataloguePriceSettingRef: ElementRef<HTMLElement>;
 
     constructor(
         private cdRef: ChangeDetectorRef,
         // private router: Router,
         private store: NgRxStore<fromCatalogue.FeatureState>
     ) {
+        const breadcrumbs: Array<IBreadcrumbs> = [
+            {
+                title: 'Home',
+                // translate: 'BREADCRUMBS.HOME',
+                active: false
+            },
+            {
+                title: 'Catalogue',
+                translate: 'BREADCRUMBS.CATALOGUE',
+                active: false,
+                // url: '/pages/catalogues'
+            },
+            {
+                title: 'Manage Product',
+                active: false,
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                // url: '/pages/catalogues'
+            },
+            {
+                title: 'SKU Detail',
+                keepCase: true,
+                active: true,
+                // translate: 'BREADCRUMBS.CATALOGUE',
+                // url: '/pages/catalogues'
+            }
+        ];
+
+        this.store.dispatch(
+            UiActions.createBreadcrumb({
+                payload: breadcrumbs
+            })
+        );
+
         this.isLoading$ = combineLatest([
             this.store.select(BrandSelectors.getIsLoading),
             this.store.select(CatalogueSelectors.getIsLoading),
@@ -225,6 +259,10 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
         this.cdRef.markForCheck();
     }
 
+    scrollTop(element: ElementRef<HTMLElement>): void {
+        element.nativeElement.scrollTop = 0;
+    }
+
     ngOnInit(): void {
         this.selectedCatalogue$ = this.store.select(
             CatalogueSelectors.getSelectedCatalogueEntity
@@ -266,7 +304,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                 );
 
                 // Scrolled to top.
-                this.catalogueDetailRef.nativeElement.scrollTop = 0;
+                this.scrollTop(this.catalogueDetailRef);
             }
         });
 
@@ -400,6 +438,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
 
         this.navigationSub$.next();
         this.navigationSub$.complete();
+
+        this.store.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 
 }
