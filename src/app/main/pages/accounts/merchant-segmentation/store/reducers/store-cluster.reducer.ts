@@ -30,6 +30,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
+    on(StoreClusterActions.cancelConfirmChangeStatusStoreCluster, state => ({
+        ...state,
+        isLoadingRow: true,
+        isRefresh: true
+    })),
     on(
         StoreClusterActions.createStoreClusterRequest,
         StoreClusterActions.updateStoreClusterRequest,
@@ -40,13 +45,22 @@ export const reducer = createReducer<State>(
         StoreClusterActions.updateStoreClusterFailure,
         state => ({ ...state, isRefresh: true })
     ),
-    on(StoreClusterActions.refreshStoreClustersRequest, state => ({ ...state, isRefresh: false })),
+    on(StoreClusterActions.refreshStoreClustersRequest, state => ({
+        ...state,
+        isRefresh: false
+    })),
     on(StoreClusterActions.refreshStoreClustersFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreClusterActions.fetchStoreClustersRequest, state => ({ ...state, isLoading: true })),
-    on(StoreClusterActions.fetchStoreClustersFailure, state => ({ ...state, isLoading: false })),
+    on(StoreClusterActions.fetchStoreClustersRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(StoreClusterActions.fetchStoreClustersFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
     on(
         StoreClusterActions.createStoreClusterSuccess,
         StoreClusterActions.updateStoreClusterSuccess,

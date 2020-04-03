@@ -5,13 +5,13 @@ import { StoreChannel } from '../../models';
 import * as fromStoreSegmentsCore from '../reducers';
 import * as fromStoreChannels from '../reducers/store-channel.reducer';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getStoreSegmentsCoreState = createFeatureSelector<
     fromStoreSegmentsCore.FeatureState,
     fromStoreSegmentsCore.State
 >(fromStoreSegmentsCore.featureKey);
 
 export const getStoreChannelEntitiesState = createSelector(
-    getSalesRepsCoreState,
+    getStoreSegmentsCoreState,
     state => state.storeChannels
 );
 

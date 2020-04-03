@@ -5,13 +5,13 @@ import { StoreType } from '../../models';
 import * as fromStoreSegmentsCore from '../reducers';
 import * as fromStoreTypes from '../reducers/store-type.reducer';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getStoreSegmentsCoreState = createFeatureSelector<
     fromStoreSegmentsCore.FeatureState,
     fromStoreSegmentsCore.State
 >(fromStoreSegmentsCore.featureKey);
 
 export const getStoreTypeEntitiesState = createSelector(
-    getSalesRepsCoreState,
+    getStoreSegmentsCoreState,
     state => state.storeTypes
 );
 

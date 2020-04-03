@@ -30,6 +30,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
+    on(StoreTypeActions.cancelConfirmChangeStatusStoreType, state => ({
+        ...state,
+        isLoadingRow: true,
+        isRefresh: true
+    })),
     on(StoreTypeActions.createStoreTypeRequest, StoreTypeActions.updateStoreTypeRequest, state => ({
         ...state,
         isLoadingRow: true

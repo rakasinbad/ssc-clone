@@ -30,6 +30,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
+    on(StoreChannelActions.cancelConfirmChangeStatusStoreChannel, state => ({
+        ...state,
+        isLoadingRow: true,
+        isRefresh: true
+    })),
     on(
         StoreChannelActions.createStoreChannelRequest,
         StoreChannelActions.updateStoreChannelRequest,
@@ -40,13 +45,22 @@ export const reducer = createReducer<State>(
         StoreChannelActions.updateStoreChannelFailure,
         state => ({ ...state, isRefresh: true })
     ),
-    on(StoreChannelActions.refreshStoreChannelsRequest, state => ({ ...state, isRefresh: false })),
+    on(StoreChannelActions.refreshStoreChannelsRequest, state => ({
+        ...state,
+        isRefresh: false
+    })),
     on(StoreChannelActions.refreshStoreChannelsFailure, state => ({
         ...state,
         isLoadingRow: false
     })),
-    on(StoreChannelActions.fetchStoreChannelsRequest, state => ({ ...state, isLoading: true })),
-    on(StoreChannelActions.fetchStoreChannelsFailure, state => ({ ...state, isLoading: false })),
+    on(StoreChannelActions.fetchStoreChannelsRequest, state => ({
+        ...state,
+        isLoading: true
+    })),
+    on(StoreChannelActions.fetchStoreChannelsFailure, state => ({
+        ...state,
+        isLoading: false
+    })),
     on(
         StoreChannelActions.createStoreChannelSuccess,
         StoreChannelActions.updateStoreChannelSuccess,

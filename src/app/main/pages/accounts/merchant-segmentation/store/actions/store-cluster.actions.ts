@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models/global.model';
+import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
 import {
@@ -101,6 +101,33 @@ export const updateStoreClusterFailure = createAction(
 
 export const updateStoreClusterSuccess = createAction(
     '[Store Segmentation] Update Store Cluster Success'
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS] Store Cluster
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeStatusStoreCluster = createAction(
+    '[Store Segmentation] Confirm Change Status Store Cluster',
+    props<{ payload: StoreCluster }>()
+);
+
+export const cancelConfirmChangeStatusStoreCluster = createAction(
+    '[Store Segmentation] Cancel Confirm Change Status Store Cluster'
+);
+
+export const changeStatusStoreClusterRequest = createAction(
+    '[Store Segmentation] Change Status Store Cluster Request',
+    props<{ payload: { body: EStatus; id: string } }>()
+);
+
+export const changeStatusStoreClusterFailure = createAction(
+    '[Store Segmentation] Change Status Store Cluster Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const changeStatusStoreClusterSuccess = createAction(
+    '[Store Segmentation] Change Status Store Cluster Success'
 );
 
 export const clearState = createAction('[Store Segmentation] Reset Store Clusters Core State');

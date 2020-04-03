@@ -22,7 +22,7 @@ import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import { MerchantSegmentationFormComponent } from './merchant-segmentation-form';
-import { StoreSegmentTree } from './models';
+import { StoreChannel, StoreCluster, StoreGroup, StoreSegmentTree, StoreType } from './models';
 import {
     StoreChannelActions,
     StoreClusterActions,
@@ -184,6 +184,62 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
         this._onRefreshTable();
     }
 
+    onSetStatus(item: StoreSegmentTree): void {
+        if (!item) {
+            return;
+        }
+
+        const formValue: any = {
+            id: item.id,
+            externalId: item.externalId,
+            parentId: item.parentId,
+            name: item.name,
+            description: item.description,
+            status: item.status
+        };
+
+        let segmentType = 'type';
+
+        switch (this._type) {
+            case 1:
+                segmentType = 'group';
+                this.store.dispatch(
+                    StoreGroupActions.confirmChangeStatusStoreGroup({
+                        payload: new StoreGroup({ ...formValue })
+                    })
+                );
+                return;
+
+            case 2:
+                segmentType = 'channel';
+                this.store.dispatch(
+                    StoreChannelActions.confirmChangeStatusStoreChannel({
+                        payload: new StoreChannel({ ...formValue })
+                    })
+                );
+                return;
+
+            case 3:
+                segmentType = 'cluster';
+                this.store.dispatch(
+                    StoreClusterActions.confirmChangeStatusStoreCluster({
+                        payload: new StoreCluster({ ...formValue })
+                    })
+                );
+                return;
+
+            default:
+                segmentType = 'type';
+
+                this.store.dispatch(
+                    StoreTypeActions.confirmChangeStatusStoreType({
+                        payload: new StoreType({ ...formValue })
+                    })
+                );
+                return;
+        }
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
@@ -205,6 +261,24 @@ export class MerchantSegmentationComponent implements OnInit, AfterViewInit, OnD
                 break;
 
             case LifecyclePlatform.OnDestroy:
+                switch (this._type) {
+                    case 1:
+                        this.store.dispatch(StoreGroupActions.clearState());
+                        break;
+
+                    case 2:
+                        this.store.dispatch(StoreChannelActions.clearState());
+                        break;
+
+                    case 3:
+                        this.store.dispatch(StoreClusterActions.clearState());
+                        break;
+
+                    default:
+                        this.store.dispatch(StoreTypeActions.clearState());
+                        break;
+                }
+
                 this._unSubs$.next();
                 this._unSubs$.complete();
                 break;

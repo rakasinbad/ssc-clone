@@ -6,6 +6,7 @@ import {
     StoreChannelEffects,
     StoreClusterEffects,
     StoreGroupEffects,
+    StoreSegmentAlertEffects,
     StoreTypeEffects
 } from './effects';
 import * as fromMerchantSegments from './reducers';
@@ -18,6 +19,7 @@ import * as fromMerchantSegments from './reducers';
             StoreChannelEffects,
             StoreClusterEffects,
             StoreGroupEffects,
+            StoreSegmentAlertEffects,
             StoreTypeEffects
         ])
     ]
