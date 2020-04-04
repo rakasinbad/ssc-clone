@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models/global.model';
+import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
 import {
@@ -101,6 +101,33 @@ export const updateStoreChannelFailure = createAction(
 
 export const updateStoreChannelSuccess = createAction(
     '[Store Segmentation] Update Store Channel Success'
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS] Store Channel
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeStatusStoreChannel = createAction(
+    '[Store Segmentation] Confirm Change Status Store Channel',
+    props<{ payload: StoreChannel }>()
+);
+
+export const cancelConfirmChangeStatusStoreChannel = createAction(
+    '[Store Segmentation] Cancel Confirm Change Status Store Channel'
+);
+
+export const changeStatusStoreChannelRequest = createAction(
+    '[Store Segmentation] Change Status Store Channel Request',
+    props<{ payload: { body: EStatus; id: string } }>()
+);
+
+export const changeStatusStoreChannelFailure = createAction(
+    '[Store Segmentation] Change Status Store Channel Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const changeStatusStoreChannelSuccess = createAction(
+    '[Store Segmentation] Change Status Store Channel Success'
 );
 
 export const clearState = createAction('[Store Segmentation] Reset Store Channels Core State');

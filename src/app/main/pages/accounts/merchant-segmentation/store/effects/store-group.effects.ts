@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -8,12 +9,13 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
+import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { MerchantSegmentationAlertComponent } from '../../merchant-segmentation-alert';
 import {
     PayloadStoreGroup,
     PayloadStoreGroupPatch,
@@ -174,6 +176,46 @@ export class StoreGroupEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE STATUS - STORE GROUP]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmChangeStatusStoreGroup$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreGroupActions.confirmChangeStatusStoreGroup),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+
+                const dialogRef = this.matDialog.open<
+                    MerchantSegmentationAlertComponent,
+                    any,
+                    { id: string; change: EStatus }
+                >(MerchantSegmentationAlertComponent, {
+                    data: {
+                        title: 'Alert',
+                        segmentType: 'group',
+                        id: params.id,
+                        change: body
+                    },
+                    panelClass: 'merchant-segment-alert-dialog',
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return StoreGroupActions.updateStoreGroupRequest({
+                        payload: { id, body: new PayloadStoreGroupPatch({ status: change }) }
+                    });
+                } else {
+                    return StoreGroupActions.cancelConfirmChangeStatusStoreGroup();
+                }
+            })
+        )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -338,6 +380,7 @@ export class StoreGroupEffects {
 
     constructor(
         private actions$: Actions,
+        private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromStoreSegments.FeatureState>,
         private _$helper: HelperService,

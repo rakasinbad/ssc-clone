@@ -111,15 +111,36 @@
                                                             type="button"
                                                             mat-menu-item
                                                             class="sinbad-mat-menu-item"
+                                                            [attr.aria-label]="
+                                                                getStatus(segmentIdx, branchIdx) ===
+                                                                'active'
+                                                                    ? 'Inactive'
+                                                                    : 'Active'
+                                                            "
                                                             (click)="
                                                                 onSetStatus(segmentIdx, branchIdx)
                                                             "
                                                         >
                                                             <mat-icon>
-                                                                archive
+                                                                {{
+                                                                    getStatus(
+                                                                        segmentIdx,
+                                                                        branchIdx
+                                                                    ) === 'active'
+                                                                        ? 'archive'
+                                                                        : 'check_circle_outline'
+                                                                }}
                                                             </mat-icon>
                                                             <span>
-                                                                {{ 'ACTION.INACTIVE' | translate }}
+                                                                {{
+                                                                    (getStatus(
+                                                                        segmentIdx,
+                                                                        branchIdx
+                                                                    ) === 'active'
+                                                                        ? 'ACTION.INACTIVE'
+                                                                        : 'ACTION.ACTIVE'
+                                                                    ) | translate
+                                                                }}
                                                             </span>
                                                         </button>
 
@@ -148,34 +169,88 @@
                                                         fxFlex
                                                     >
                                                         <span>
-                                                            <input
-                                                                [id]="
-                                                                    'input-segment-' +
-                                                                    segmentIdx +
-                                                                    '-branch-' +
-                                                                    branchIdx
+                                                            <!-- IF NOT RENAME -->
+                                                            <ng-container
+                                                                *ngIf="
+                                                                    !isRename(segmentIdx, branchIdx)
                                                                 "
-                                                                #inputName
-                                                                type="text"
-                                                                matInput
-                                                                autocomplete="off"
-                                                                formControlName="name"
-                                                                [readonly]="
-                                                                    isInactive(
-                                                                        segmentIdx,
+                                                            >
+                                                                <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
                                                                         branchIdx
-                                                                    )
+                                                                    "
+                                                                    #tooltip="matTooltip"
+                                                                    #inputName
+                                                                    type="text"
+                                                                    matInput
+                                                                    autocomplete="off"
+                                                                    formControlName="name"
+                                                                    [readonly]="
+                                                                        isInactive(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
+                                                                    "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
+                                                                />
+                                                            </ng-container>
+
+                                                            <!-- IF RENAME -->
+                                                            <ng-container
+                                                                *ngIf="
+                                                                    isRename(segmentIdx, branchIdx)
                                                                 "
-                                                                class="text-truncate"
-                                                                [matTooltip]="
-                                                                    isTextTruncate(
-                                                                        segmentIdx,
+                                                            >
+                                                                <input
+                                                                    [id]="
+                                                                        'input-segment-' +
+                                                                        segmentIdx +
+                                                                        '-branch-' +
                                                                         branchIdx
-                                                                    )
-                                                                        ? inputName.value
-                                                                        : null
-                                                                "
-                                                            />
+                                                                    "
+                                                                    #tooltip="matTooltip"
+                                                                    #inputName
+                                                                    type="text"
+                                                                    matInput
+                                                                    autocomplete="off"
+                                                                    autocapitalize="on"
+                                                                    formControlName="name"
+                                                                    class="text-truncate"
+                                                                    [matTooltip]="
+                                                                        isTextTruncate(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                            ? inputName.value
+                                                                            : null
+                                                                    "
+                                                                    (keydown.enter)="
+                                                                        $event.target.blur();
+                                                                        $event.stopPropagation()
+                                                                    "
+                                                                    (blur)="
+                                                                        handleRename(
+                                                                            segmentIdx,
+                                                                            branchIdx
+                                                                        )
+                                                                    "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
+                                                                />
+                                                            </ng-container>
                                                         </span>
                                                         <mat-icon
                                                             *ngIf="hasChild(segmentIdx, branchIdx)"
@@ -216,15 +291,36 @@
                                                             type="button"
                                                             mat-menu-item
                                                             class="sinbad-mat-menu-item"
+                                                            [attr.aria-label]="
+                                                                getStatus(segmentIdx, branchIdx) ===
+                                                                'active'
+                                                                    ? 'Inactive'
+                                                                    : 'Active'
+                                                            "
                                                             (click)="
                                                                 onSetStatus(segmentIdx, branchIdx)
                                                             "
                                                         >
                                                             <mat-icon>
-                                                                archive
+                                                                {{
+                                                                    getStatus(
+                                                                        segmentIdx,
+                                                                        branchIdx
+                                                                    ) === 'active'
+                                                                        ? 'archive'
+                                                                        : 'check_circle_outline'
+                                                                }}
                                                             </mat-icon>
                                                             <span>
-                                                                {{ 'ACTION.INACTIVE' | translate }}
+                                                                {{
+                                                                    (getStatus(
+                                                                        segmentIdx,
+                                                                        branchIdx
+                                                                    ) === 'active'
+                                                                        ? 'ACTION.INACTIVE'
+                                                                        : 'ACTION.ACTIVE'
+                                                                    ) | translate
+                                                                }}
                                                             </span>
                                                         </button>
 
@@ -272,6 +368,7 @@
                                                                         '-branch-' +
                                                                         branchIdx
                                                                     "
+                                                                    #tooltip="matTooltip"
                                                                     #inputName
                                                                     type="text"
                                                                     matInput
@@ -298,6 +395,8 @@
                                                                             branchIdx
                                                                         )
                                                                     "
+                                                                    (mouseenter)="tooltip.show()"
+                                                                    (mouseleave)="tooltip.hide()"
                                                                 />
                                                             </span>
                                                             <mat-icon
@@ -341,6 +440,7 @@
                                                                             '-branch-' +
                                                                             branchIdx
                                                                         "
+                                                                        #tooltip="matTooltip"
                                                                         #inputName
                                                                         type="text"
                                                                         matInput
@@ -366,7 +466,12 @@
                                                                                 branchIdx
                                                                             )
                                                                         "
-                                                                        autofocus
+                                                                        (mouseenter)="
+                                                                            tooltip.show()
+                                                                        "
+                                                                        (mouseleave)="
+                                                                            tooltip.hide()
+                                                                        "
                                                                     />
                                                                 </ng-container>
 
@@ -386,6 +491,7 @@
                                                                             '-branch-' +
                                                                             branchIdx
                                                                         "
+                                                                        #tooltip="matTooltip"
                                                                         #inputName
                                                                         type="text"
                                                                         matInput
@@ -411,7 +517,12 @@
                                                                                 branchIdx
                                                                             )
                                                                         "
-                                                                        autofocus
+                                                                        (mouseenter)="
+                                                                            tooltip.show()
+                                                                        "
+                                                                        (mouseleave)="
+                                                                            tooltip.hide()
+                                                                        "
                                                                     />
                                                                 </ng-container>
                                                             </span>
@@ -548,5 +659,6 @@
 </div>
 
 <div>
-    <span class="font-weight-600">Selected:</span>
+    <span class="text-semibold">Selected:</span>
+    <span class="sinbad-red-10-fg pl-12">{{ generateSelected() }}</span>
 </div>

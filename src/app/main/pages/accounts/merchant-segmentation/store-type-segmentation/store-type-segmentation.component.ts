@@ -11,17 +11,17 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog, MatInput } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { select, Store } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { from, Observable, of, Subject } from 'rxjs';
-import { concatMap, distinctUntilChanged, filter, finalize, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { filter, take, takeUntil } from 'rxjs/operators';
 
 import { MerchantSegmentationAlertComponent } from '../merchant-segmentation-alert';
 import { MerchantSegmentationFormComponent } from '../merchant-segmentation-form';
-import { PayloadStoreType, StoreType } from '../models';
+import { PayloadStoreType, PayloadStoreTypePatch, StoreType } from '../models';
 import { StoreTypeActions } from '../store/actions';
 import * as fromStoreSegments from '../store/reducers';
 import { StoreTypeSelectors } from '../store/selectors';
@@ -76,6 +76,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     @ViewChild('contentDesc', { static: true }) contentDesc: ElementRef<HTMLParagraphElement>;
     @ViewChildren('inputName') inputName: QueryList<ElementRef<HTMLInputElement>>;
 
+    private _items: Array<StoreType> = [];
     private _unSubs$: Subject<void> = new Subject();
 
     constructor(
@@ -119,9 +120,25 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         return this.form.get('segments') as FormArray;
     }
 
-    addSegmentBranch(idx: number): void {
+    addSegmentBranch(idx: number, isSelector?: boolean): void {
         this.segmentBranches(idx).push(this._createBranches());
         this.triggerSegment[idx] = true;
+
+        if (!isSelector) {
+            // Re render view for updating inputName list;
+            this.cdRef.detectChanges();
+
+            const segments = this.segments().getRawValue();
+            const branchIds =
+                segments[idx].branches && segments[idx].branches.length > 0
+                    ? segments[idx].branches.map(branch => branch.id)
+                    : [];
+            const branchIdx = branchIds.lastIndexOf(null);
+
+            if (branchIdx !== -1) {
+                this.onFocus(idx, branchIdx);
+            }
+        }
     }
 
     deleteSegmentBranch(segmentIdx: number, branchIdx: number): void {
@@ -132,22 +149,43 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         return this.form.get(['segments', idx, 'branches']) as FormArray;
     }
 
+    generateSelected(): string {
+        const formValue = this.form.getRawValue();
+        const segments = formValue.segments
+            .map(segmentItem => {
+                if (
+                    segmentItem.selectedId &&
+                    segmentItem.branches &&
+                    segmentItem.branches.length > 0
+                ) {
+                    const branches = segmentItem.branches
+                        .filter(branchItem => branchItem.id === segmentItem.selectedId)
+                        .map(branchItem => branchItem.name);
+
+                    if (branches.length > 0) {
+                        return branches;
+                    }
+
+                    return null;
+                }
+
+                return null;
+            })
+            .filter(item => item);
+
+        return segments.length > 0 ? segments.join(' > ') : '-';
+    }
+
+    getStatus(segmentIdx: number, branchIdx: number): string {
+        return this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'statusItem']).value;
+    }
+
     hasBranchName(segmentIdx: number, branchIdx: number): any {
         return this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'name']).value;
     }
 
     hasChild(segmentIdx: number, branchIdx: number): boolean {
         return !!this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'hasChild']).value;
-    }
-
-    handleSegmentBranchFocus(segmentIdx: number, branchIdx: number): void {
-        (this.form.get([
-            'segments',
-            segmentIdx,
-            'branches',
-            branchIdx,
-            'name'
-        ]) as any).nativeElement.focus();
     }
 
     handleEvent(segmentIdx: number, branchIdx: number): void {
@@ -158,34 +196,26 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.isFromSelector) {
-            const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
-            const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
+        const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
+        const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
 
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
-                .setValue(selectedId);
+        this.form
+            .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
+            .setValue(selectedId);
 
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
-                .setValue(segmentIdx + 1);
+        this.form
+            .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
+            .setValue(segmentIdx + 1);
 
-            setTimeout(() => {
-                this._resetSegment(segmentIdx);
-                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
-                this._onSubmit(segmentIdx, branchIdx);
-                this.cdRef.markForCheck();
-            }, 100);
-        }
+        this._resetSegment(segmentIdx);
 
-        const status = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
-            .value;
+        this.form.get(['segments', segmentIdx, 'selectedId']).reset();
 
-        if (status === 'active') {
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
-                .setValue('readonly');
-        }
+        this.cdRef.markForCheck();
+
+        setTimeout(() => {
+            this._onSubmit(segmentIdx, branchIdx);
+        });
     }
 
     handleRename(segmentIdx: number, branchIdx: number): void {
@@ -196,39 +226,31 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.isFromSelector) {
-            const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
-            const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
+        const selectedIdx = segmentIdx > 0 ? segmentIdx - 1 : segmentIdx;
+        const selectedId = this.form.get(['segments', selectedIdx, 'selectedId']).value;
 
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
-                .setValue(selectedId);
+        this.form
+            .get(['segments', segmentIdx, 'branches', branchIdx, 'parentId'])
+            .setValue(selectedId);
 
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
-                .setValue(segmentIdx + 1);
+        this.form
+            .get(['segments', segmentIdx, 'branches', branchIdx, 'sequence'])
+            .setValue(segmentIdx + 1);
 
-            setTimeout(() => {
-                this._resetSegment(segmentIdx);
-                this.form.get(['segments', segmentIdx, 'selectedId']).reset();
-                // this._onSubmit(segmentIdx, branchIdx);
-                this.cdRef.markForCheck();
-            }, 100);
-        }
+        this._resetSegment(segmentIdx);
 
-        /*        const status = this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
-            .value;
+        this.form.get(['segments', segmentIdx, 'selectedId']).reset();
 
-        if (status === 'active') {
-            this.form
-                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
-                .setValue('readonly');
-        } */
+        this.cdRef.markForCheck();
+
+        setTimeout(() => {
+            this._onUpdate(segmentIdx, branchIdx);
+        });
     }
 
     isInactive(segmentIdx: number, branchIdx: number): boolean {
         return (
-            this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).value ===
+            this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'statusItem']).value ===
             'inactive'
         );
     }
@@ -328,13 +350,20 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
             });
     }
 
-    onRename(segmentIdx: number, branchIdx: number): void {
+    onFocus(segmentIdx: number, branchIdx: number): void {
         const id = `input-segment-${segmentIdx}-branch-${branchIdx}`;
         const inputIdx = this.inputName.toArray().findIndex(input => input.nativeElement.id === id);
 
         if (inputIdx !== -1) {
-            this.inputName.toArray()[inputIdx].nativeElement.focus();
+            setTimeout(() => {
+                this.inputName.toArray()[inputIdx].nativeElement.focus();
+                this.cdRef.markForCheck();
+            });
         }
+    }
+
+    onRename(segmentIdx: number, branchIdx: number): void {
+        this.onFocus(segmentIdx, branchIdx);
 
         this.form.get(['segments', segmentIdx, 'branches', branchIdx, 'status']).setValue('rename');
     }
@@ -347,7 +376,7 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         this.form.get(['segments', segmentIdx, 'selectedId']).setValue(parentId);
 
         if (segmentIdx >= currLastSegment) {
-            this.form.get('lastSegment').patchValue(currLevel);
+            this.form.get('lastSegment').patchValue(segmentIdx);
         }
 
         this._resetSegment(segmentIdx);
@@ -355,10 +384,10 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
         this.store
             .pipe(
                 select(StoreTypeSelectors.getChild(parentId)),
-                distinctUntilChanged(),
+                // distinctUntilChanged(),
                 // delay(300),
                 filter(items => items && items.length > 0),
-                takeUntil(this._unSubs$)
+                take(1)
             )
             .subscribe(items => {
                 if (!this.form.get(['segments', currLevel])) {
@@ -372,14 +401,15 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     onSetStatus(segmentIdx: number, branchIdx: number): void {
         const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
 
-        this.matDialog.open(MerchantSegmentationAlertComponent, {
-            data: {
-                title: 'Alert',
-                form: formValue
-            },
-            panelClass: 'merchant-segment-alert-dialog',
-            disableClose: true
-        });
+        this.store.dispatch(
+            StoreTypeActions.confirmChangeStatusStoreType({
+                payload: new StoreType({
+                    ...formValue,
+                    status: formValue.statusItem,
+                    description: formValue.desc
+                })
+            })
+        );
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -413,94 +443,194 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
 
     private _generateHierarchies(items: Array<StoreType>): void {
         if (items && items.length > 0) {
+            this._items = items;
             this.isFromSelector = true;
 
-            from(items)
-                .pipe(
-                    // concatMap((item, idx) => of({ item, idx }).pipe(delay(1000))),
-                    concatMap((item, idx) => of({ item, idx })),
-                    finalize(() => {
-                        this.isFromSelector = false;
-                    }),
-                    takeUntil(this._unSubs$)
-                )
-                .subscribe(({ item, idx }) => {
-                    if (this.segmentBranches(item.sequence - 1).length < items.length) {
-                        this.addSegmentBranch(item.sequence - 1);
-                    }
+            const formValue = this.form.getRawValue();
 
-                    // Set level control (segments)
-                    this.form.get(['segments', item.sequence - 1, 'level']).setValue(item.sequence);
+            items.forEach((item, idx) => {
+                if (this.segmentBranches(item.sequence - 1).length < items.length) {
+                    this.addSegmentBranch(item.sequence - 1, true);
+                }
 
-                    // Set id control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'id'])
-                        .setValue(item.id);
+                // Set level control (segments)
+                this.form.get(['segments', item.sequence - 1, 'level']).setValue(item.sequence);
 
-                    // Set parentId control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
-                        .setValue(item.parentId);
+                // Set id control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'id'])
+                    .setValue(item.id);
 
-                    // Set externalId control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'externalId'])
-                        .setValue(item.externalId);
+                // Set parentId control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
+                    .setValue(item.parentId);
 
-                    // Set sequence control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
-                        .setValue(item.sequence);
+                // Set externalId control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'externalId'])
+                    .setValue(item.externalId);
 
-                    // Set name control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'name'])
-                        .setValue(item.name);
+                // Set sequence control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
+                    .setValue(item.sequence);
 
-                    const hasChild = item.hasChild
-                        ? Array.isArray(item.children) && item.children.length > 0 && item.hasChild
-                        : item.hasChild;
+                // Set name control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'name'])
+                    .setValue(item.name);
 
-                    // Set hasChild control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
-                        .setValue(hasChild);
+                const hasChild = item.hasChild
+                    ? Array.isArray(item.children) && item.children.length > 0 && item.hasChild
+                    : item.hasChild;
 
-                    // Set desc control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'desc'])
-                        .setValue(item.description);
+                // Set hasChild control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
+                    .setValue(hasChild);
 
-                    // Set statusItem control (branches)
-                    this.form
-                        .get(['segments', item.sequence - 1, 'branches', idx, 'statusItem'])
-                        .setValue(item.status);
+                // Set desc control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'desc'])
+                    .setValue(item.description);
 
-                    // Set status control (branches)
+                // Set statusItem control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'statusItem'])
+                    .setValue(item.status);
+
+                // Set status control (branches)
+                this.form
+                    .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
+                    .setValue(item.status);
+
+                this.triggerSegment[item.sequence - 1] = false;
+
+                if (
+                    !this.form.get(['segments', item.sequence - 1, 'branches', idx, 'name']).value
+                ) {
+                    this.deleteSegmentBranch(item.sequence - 1, idx);
+                    return;
+                }
+
+                if (item.status === 'active') {
                     this.form
                         .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
-                        .setValue(item.status);
+                        .setValue('readonly');
+                }
 
-                    this.handleEvent(item.sequence - 1, idx);
-                    this.cdRef.markForCheck();
-                });
+                if (formValue.lastSegment > 0) {
+                    const itemSegments = formValue.segments[formValue.lastSegment - 1];
+
+                    if (item.id === itemSegments.selectedId && hasChild) {
+                        this._generateHierarchies(item.children);
+                    }
+                }
+            });
+
+            // from(items)
+            //     .pipe(
+            //         // concatMap((item, idx) => of({ item, idx }).pipe(delay(1000))),
+            //         concatMap((item, idx) => of({ item, idx })),
+            //         finalize(() => {
+            //             this.isFromSelector = false;
+            //             this.cdRef.detectChanges();
+            //         }),
+            //         takeUntil(this._unSubs$)
+            //     )
+            //     .subscribe(({ item, idx }) => {
+            //         if (this.segmentBranches(item.sequence - 1).length < items.length) {
+            //             this.addSegmentBranch(item.sequence - 1);
+            //         }
+
+            //         // Set level control (segments)
+            //         this.form.get(['segments', item.sequence - 1, 'level']).setValue(item.sequence);
+
+            //         // Set id control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'id'])
+            //             .setValue(item.id);
+
+            //         // Set parentId control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'parentId'])
+            //             .setValue(item.parentId);
+
+            //         // Set externalId control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'externalId'])
+            //             .setValue(item.externalId);
+
+            //         // Set sequence control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'sequence'])
+            //             .setValue(item.sequence);
+
+            //         // Set name control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'name'])
+            //             .setValue(item.name);
+
+            //         const hasChild = item.hasChild
+            //             ? Array.isArray(item.children) && item.children.length > 0 && item.hasChild
+            //             : item.hasChild;
+
+            //         // Set hasChild control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'hasChild'])
+            //             .setValue(hasChild);
+
+            //         // Set desc control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'desc'])
+            //             .setValue(item.description);
+
+            //         // Set statusItem control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'statusItem'])
+            //             .setValue(item.status);
+
+            //         // Set status control (branches)
+            //         this.form
+            //             .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
+            //             .setValue(item.status);
+
+            //         // this.handleEvent(item.sequence - 1, idx);
+
+            //         this.triggerSegment[item.sequence - 1] = false;
+
+            //         if (
+            //             !this.form.get(['segments', item.sequence - 1, 'branches', idx, 'name'])
+            //                 .value
+            //         ) {
+            //             this.deleteSegmentBranch(item.sequence - 1, idx);
+            //             return;
+            //         }
+
+            //         if (item.status === 'active') {
+            //             this.form
+            //                 .get(['segments', item.sequence - 1, 'branches', idx, 'status'])
+            //                 .setValue('readonly');
+            //         }
+            //     });
+        } else {
+            this._items = [];
         }
     }
-
-    private _generateHierarchy(item: Array<StoreType>, itemIdx: number): void {}
 
     private _resetSegment(currentSegment: number): void {
         let lastSegment = +this.form.get('lastSegment').value;
 
-        lastSegment = this.segments().length > lastSegment ? this.segments().length : lastSegment;
+        lastSegment =
+            this.segments().length > lastSegment ? this.segments().length - 1 : lastSegment;
 
         while (lastSegment > currentSegment) {
-            // console.log(`Remove lastSegment: ${lastSegment}, except ${currentSegment}`);
-            this.segments().removeAt(lastSegment);
+            this.deleteSegment(lastSegment);
             lastSegment--;
         }
 
-        this.form.get('lastSegment').setValue(lastSegment);
+        this.form.get('lastSegment').setValue(currentSegment);
     }
 
     private _initPage(lifeCycle?: LifecyclePlatform): void {
@@ -571,18 +701,70 @@ export class StoreTypeSegmentationComponent implements OnInit, OnDestroy {
     private _onSubmit(segmentIdx: number, branchIdx: number): void {
         const isValid = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).valid;
         const body = this.form.getRawValue();
+        let parentId = body.segments[segmentIdx].branches[branchIdx].parentId;
 
-        if (!isValid && !body.segments[segmentIdx].selectedId) {
+        const parentIdx = body.segments[segmentIdx].branches.findIndex(
+            branch => branch.id === parentId
+        );
+
+        // Set parentId null if have same id in current segment;
+        if (parentIdx !== -1) {
+            parentId = null;
+        }
+
+        if ((!isValid && !body.segments[segmentIdx].selectedId) || !isValid) {
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
+                .setValue('readonly');
             return;
         }
 
         const payload = new PayloadStoreType({
             supplierId: null,
-            parentId: body.segments[segmentIdx].branches[branchIdx].parentId,
+            parentId: parentId,
             sequence: +body.segments[segmentIdx].branches[branchIdx].sequence,
             name: body.segments[segmentIdx].branches[branchIdx].name
         });
 
         this.store.dispatch(StoreTypeActions.createStoreTypeRequest({ payload }));
+    }
+
+    private _onUpdate(segmentIdx: number, branchIdx: number): void {
+        const isValid = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).valid;
+        const formBranch = this.form.get(['segments', segmentIdx, 'branches', branchIdx]);
+        const formValue = this.form.get(['segments', segmentIdx, 'branches', branchIdx]).value;
+
+        if (!isValid || !formValue.id || formBranch.pristine) {
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
+                .setValue('readonly');
+            return;
+        }
+
+        const payload = {
+            name: formValue.name || null
+        };
+
+        const itemIdx = this._items.findIndex(item => item.id === formValue.id);
+
+        if (itemIdx !== -1) {
+            const item = this._items[itemIdx];
+
+            if (item.name === payload.name) {
+                delete payload.name;
+            }
+        }
+
+        if (Object.keys(payload).length > 0) {
+            this.store.dispatch(
+                StoreTypeActions.updateStoreTypeRequest({
+                    payload: { body: new PayloadStoreTypePatch(payload), id: formValue.id }
+                })
+            );
+        } else {
+            this.form
+                .get(['segments', segmentIdx, 'branches', branchIdx, 'status'])
+                .setValue('readonly');
+        }
     }
 }

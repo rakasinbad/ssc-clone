@@ -19,7 +19,7 @@ export interface State extends EntityState<StoreSegmentTree> {
     total: number;
 }
 
-// Adapter for storeSegmentTrees state
+// Adapter for storeSegmentTreeTable state
 export const adapter = createEntityAdapter<StoreSegmentTree>({ selectId: row => row.id });
 
 // Initialize state
@@ -33,6 +33,11 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
+    on(StoreTypeActions.cancelConfirmChangeStatusStoreType, state => ({
+        ...state,
+        isLoading: true,
+        isRefresh: true
+    })),
     on(
         StoreChannelActions.fetchStoreLastChannelRequest,
         StoreClusterActions.fetchStoreLastClusterRequest,

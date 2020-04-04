@@ -3,6 +3,7 @@ import { createReducer, on } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 
 import {
+    StoreAlertActions,
     StoreChannelActions,
     StoreClusterActions,
     StoreGroupActions,
@@ -34,6 +35,9 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer(
     initialState,
+    on(StoreAlertActions.fetchStoreAlertFailure, (state, { payload }) =>
+        adapter.upsertOne(payload, state)
+    ),
     on(
         StoreChannelActions.createStoreChannelFailure,
         StoreChannelActions.updateStoreChannelFailure,
@@ -59,6 +63,9 @@ export const reducer = createReducer(
         StoreTypeActions.fetchStoreLastTypeFailure,
         StoreTypeActions.refreshStoreTypesFailure,
         (state, { payload }) => adapter.upsertOne(payload, state)
+    ),
+    on(StoreAlertActions.fetchStoreAlertSuccess, state =>
+        adapter.removeOne('fetchStoreAlertFailure', state)
     ),
     on(StoreChannelActions.createStoreChannelSuccess, state =>
         adapter.removeOne('createStoreChannelFailure', state)

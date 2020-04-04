@@ -5,13 +5,13 @@ import { StoreCluster } from '../../models';
 import * as fromStoreSegmentsCore from '../reducers';
 import * as fromStoreClusters from '../reducers/store-cluster.reducer';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getStoreSegmentsCoreState = createFeatureSelector<
     fromStoreSegmentsCore.FeatureState,
     fromStoreSegmentsCore.State
 >(fromStoreSegmentsCore.featureKey);
 
 export const getStoreClusterEntitiesState = createSelector(
-    getSalesRepsCoreState,
+    getStoreSegmentsCoreState,
     state => state.storeClusters
 );
 
