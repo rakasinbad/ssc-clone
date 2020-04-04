@@ -304,6 +304,7 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Store Type',
             template: this.selectStoreType,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',

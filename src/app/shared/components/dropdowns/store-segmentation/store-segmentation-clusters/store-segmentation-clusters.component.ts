@@ -304,6 +304,7 @@ export class StoreSegmentationClustersDropdownComponent implements OnInit, After
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Store Cluster',
             template: this.selectStoreCluster,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',

@@ -306,6 +306,7 @@ export class StoreSegmentationGroupsDropdownComponent implements OnInit, AfterVi
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Store Group',
             template: this.selectStoreGroup,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',

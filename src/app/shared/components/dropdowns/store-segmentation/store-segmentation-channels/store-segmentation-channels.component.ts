@@ -304,6 +304,7 @@ export class StoreSegmentationChannelsDropdownComponent implements OnInit, After
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Store Channel',
             template: this.selectStoreChannel,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',
