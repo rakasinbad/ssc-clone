@@ -1248,6 +1248,7 @@
                         <!-- Store Type Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
+                                class="reset-top"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1257,7 +1258,15 @@
                                 Store Type
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
+                            <a
+                                class="sinbad-red-fg py-12 selected-selection-tree" 
+                                fxLayout="row" 
+                                fxLayoutAlign="start center"
+                                (click)="onSelectStoreType()"
+                                [innerHTML]="(selectedStoreType$ | async).lastSaved | safe:'html'"
+                            ></a>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container
                                     *ngIf="storeTypes$ | async as storeTypes; else noStoreTypes"
                                 >
@@ -1291,12 +1300,13 @@
                                 >
                                     {{ getErrorMessage('storeInfo.storeClassification.storeType') }}
                                 </mat-error>
-                            </mat-form-field>
+                            </mat-form-field> -->
                         </div>
 
                         <!-- Store Group Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
+                                class="reset-top"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
@@ -1306,7 +1316,15 @@
                                 Store Group
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
+                            <a
+                                class="sinbad-red-fg py-12 selected-selection-tree" 
+                                fxLayout="row" 
+                                fxLayoutAlign="start center"
+                                (click)="onSelectStoreGroup()"
+                                [innerHTML]="(selectedStoreGroup$ | async).lastSaved | safe:'html'"
+                            ></a>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container
                                     *ngIf="storeGroups$ | async as storeGroups; else noStoreGroups"
                                 >
@@ -1342,9 +1360,9 @@
                                         getErrorMessage('storeInfo.storeClassification.storeGroup')
                                     }}
                                 </mat-error>
-                            </mat-form-field>
+                            </mat-form-field> -->
 
-                            <button
+                            <!-- <button
                                 type="button"
                                 mat-icon-button
                                 color="accent"
@@ -1354,22 +1372,31 @@
                                 *ngIf="form.get('storeInfo.storeClassification.storeGroup').value"
                             >
                                 <mat-icon>refresh</mat-icon>
-                            </button>
+                            </button> -->
                         </div>
 
-                        <!-- Store Cluster Field -->
+                        <!-- Store Channel Field -->
                         <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
+                                class="reset-top"
                                 fxFlexAlign="center"
                                 fxFlex="12"
                                 [class.mat-error]="
-                                    hasError('storeInfo.storeClassification.storeCluster')
+                                    hasError('storeInfo.storeClassification.storeChannel')
                                 "
                             >
-                                Store Cluster
+                                Store Channel
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
+                            <a
+                                class="sinbad-red-fg py-12 selected-selection-tree" 
+                                fxLayout="row" 
+                                fxLayoutAlign="start center"
+                                (click)="onSelectStoreChannel()"
+                                [innerHTML]="(selectedStoreChannel$ | async).lastSaved | safe:'html'"
+                            ></a>
+
+                            <!-- <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container
                                     *ngIf="
                                         storeClusters$ | async as storeClusters;
@@ -1422,11 +1449,33 @@
                                 *ngIf="form.get('storeInfo.storeClassification.storeCluster').value"
                             >
                                 <mat-icon>refresh</mat-icon>
-                            </button>
+                            </button> -->
+                        </div>
+
+                        <!-- Store Cluster Field -->
+                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                            <label
+                                class="reset-top"
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.mat-error]="
+                                    hasError('storeInfo.storeClassification.storeCluster')
+                                "
+                            >
+                                Store Cluster
+                            </label>
+
+                            <a
+                                class="sinbad-red-fg py-12 selected-selection-tree" 
+                                fxLayout="row" 
+                                fxLayoutAlign="start center"
+                                (click)="onSelectStoreCluster()"
+                                [innerHTML]="(selectedStoreCluster$ | async).lastSaved | safe:'html'"
+                            ></a>
                         </div>
 
                         <!-- Store Segment Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
@@ -1479,10 +1528,10 @@
                                     }}
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
 
                         <!-- Customer Hierarchy Field -->
-                        <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
+                        <!-- <div class="custom-field-right" fxLayout="row" fxLayoutAlign="start center">
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
@@ -1525,7 +1574,7 @@
                                     {{ getErrorMessage('storeInfo.storeClassification.hierarchy') }}
                                 </mat-error>
                             </mat-form-field>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Payment Group -->
@@ -1987,3 +2036,36 @@
 <div class="loader" *ngIf="isLoading$ | async">
     <mat-spinner color="accent"></mat-spinner>
 </div>
+
+<ng-template #selectStoreType>
+    <tree-store-segmentation
+        [segmentationType]="'type'"
+        (selected)="onStoreTypeSelected($event)"
+        (selectionChanged)="onStoreTypeSelectionChanged($event)"
+    >
+    </tree-store-segmentation>
+</ng-template>
+<ng-template #selectStoreGroup>
+    <tree-store-segmentation
+        [segmentationType]="'group'"
+        (selected)="onStoreGroupSelected($event)"
+        (selectionChanged)="onStoreGroupSelectionChanged($event)"
+    >
+    </tree-store-segmentation>
+</ng-template>
+<ng-template #selectStoreChannel>
+    <tree-store-segmentation
+        [segmentationType]="'channel'"
+        (selected)="onStoreChannelSelected($event)"
+        (selectionChanged)="onStoreChannelSelectionChanged($event)"
+    >
+    </tree-store-segmentation>
+</ng-template>
+<ng-template #selectStoreCluster>
+    <tree-store-segmentation
+        [segmentationType]="'cluster'"
+        (selected)="onStoreClusterSelected($event)"
+        (selectionChanged)="onStoreClusterSelectionChanged($event)"
+    >
+    </tree-store-segmentation>
+</ng-template>
