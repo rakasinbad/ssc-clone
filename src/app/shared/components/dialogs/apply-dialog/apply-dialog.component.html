@@ -13,6 +13,6 @@
     </div>
 
     <div class="mt-16" fxLayout="row" fxLayoutAlign="end center">
-        <button mat-flat-button class="sinbad-red" (click)="onApply()"> Apply </button>
+        <button mat-flat-button color="accent" (click)="onApply()" [disabled]=!(!!data?.isApplyEnabled)> Apply </button>
     </div>
 </div>
