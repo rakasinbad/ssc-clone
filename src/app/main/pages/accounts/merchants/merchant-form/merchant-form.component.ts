@@ -3301,19 +3301,19 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                         //     delete payload.storeGroupId;
                         // }
 
-                        if (!body.storeInfo.storeClassification.type.typeId) {
+                        if (!body.storeInfo.storeClassification.storeType) {
                             delete payload.type;
                         }
 
-                        if (!body.storeInfo.storeClassification.group.groupId) {
+                        if (!body.storeInfo.storeClassification.storeGroup) {
                             delete payload.group;
                         }
 
-                        if (!body.storeInfo.storeClassification.channel.channelId) {
+                        if (!body.storeInfo.storeClassification.storeChannel) {
                             delete payload.channel;
                         }
 
-                        if (!body.storeInfo.storeClassification.cluster.clusterId) {
+                        if (!body.storeInfo.storeClassification.storeCluster) {
                             delete payload.cluster;
                         }
 
@@ -3463,19 +3463,19 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 delete payload.vehicleAccessibilityId;
             }
 
-            if (!body.storeInfo.storeClassification.type.typeId) {
+            if (!body.storeInfo.storeClassification.storeType) {
                 delete payload.type;
             }
 
-            if (!body.storeInfo.storeClassification.group.groupId) {
+            if (!body.storeInfo.storeClassification.storeGroup) {
                 delete payload.group;
             }
 
-            if (!body.storeInfo.storeClassification.channel.channelId) {
+            if (!body.storeInfo.storeClassification.storeChannel) {
                 delete payload.channel;
             }
 
-            if (!body.storeInfo.storeClassification.cluster.clusterId) {
+            if (!body.storeInfo.storeClassification.storeCluster) {
                 delete payload.cluster;
             }
 
