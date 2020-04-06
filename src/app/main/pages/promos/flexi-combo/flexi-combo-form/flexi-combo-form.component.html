@@ -1,0 +1,346 @@
+<div
+    id="flexi-combo"
+    class="page-layout carded fullwidth inner-scroll"
+    cdkScrollable
+    fusePerfectScrollbar
+>
+    <!-- TOP BACKGROUND -->
+    <div class="accent"></div>
+    <!-- / TOP BACKGROUND -->
+
+    <!-- CENTER -->
+    <div class="center">
+        <form
+            id="flexi-combo-form"
+            name="flexiComboForm"
+            class="merchant pt-24 w-100-p"
+            [formGroup]="form"
+            fxLayout="column"
+            fxFlex
+            novalidate
+        >
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        General Information
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('whId')"
+                            >
+                                *Promo Seller ID
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="whId" formControlName="whId" />
+
+                                <mat-error *ngIf="hasError('whId', true)">
+                                    {{ getErrorMessage('whId') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('whName')"
+                            >
+                                *Promo Name
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="whName" formControlName="whName" />
+
+                                <mat-error *ngIf="hasError('whName', true)">
+                                    {{ getErrorMessage('whName') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('leadTime')"
+                            >
+                                Platform
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    name="leadTime"
+                                    formControlName="leadTime"
+                                    suffix=" days"
+                                    mask="0*"
+                                    placeholder="In days"
+                                />
+
+                                <mat-error *ngIf="hasError('leadTime', true)">
+                                    {{ getErrorMessage('leadTime') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('invoices')"
+                            >
+                                *Max Redemption User
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        #invoiceSelect
+                                        formControlName="invoices"
+                                        placeholder="Choose Faktur"
+                                        multiple
+                                    >
+                                        <!-- <mat-select-trigger>
+                                            {{
+                                                invoices && invoices?.length > 0
+                                                    ? displayInvoices(invoiceGroups, invoices[0])
+                                                    : ''
+                                            }}
+                                            <span
+                                                *ngIf="invoices?.length > 1"
+                                                class="example-additional-selection"
+                                            >
+                                                (+{{ invoices.length - 1 }}
+                                                {{ invoices?.length === 2 ? 'other' : 'others' }})
+                                            </span>
+                                        </mat-select-trigger> -->
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noInvoiceGroups>
+                                    <mat-select placeholder="Faktur not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+
+                                <mat-error *ngIf="hasError('invoices', true)">
+                                    {{ getErrorMessage('invoices') }}
+                                </mat-error> -->
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('whName')"
+                            >
+                                *Promo Budget
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="whName" formControlName="whName" />
+
+                                <mat-error *ngIf="hasError('whName', true)">
+                                    {{ getErrorMessage('whName') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        Trigger
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Temperature
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="temperature"
+                                        placeholder="Choose Temperature"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <ng-template #noTemperatures>
+                                    <mat-select placeholder="Temperature not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Value
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="whValue"
+                                        placeholder="Choose Value"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noWarehouseValues>
+                                    <mat-select placeholder="Value not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        Condition & Benefit Settings
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Temperature
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="temperature"
+                                        placeholder="Choose Temperature"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noTemperatures>
+                                    <mat-select placeholder="Temperature not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Value
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="whValue"
+                                        placeholder="Choose Value"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noWarehouseValues>
+                                    <mat-select placeholder="Value not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+
+            <mat-card class="mb-24">
+                <div fxLayout="column">
+                    <span class="mat-headline">
+                        Customer Segmentation Setting
+                    </span>
+
+                    <div class="form-box">
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Temperature
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="temperature"
+                                        placeholder="Choose Temperature"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noTemperatures>
+                                    <mat-select placeholder="Temperature not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label fxFlexAlign="center" fxFlex="12">
+                                Value
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <ng-container>
+                                    <mat-select
+                                        formControlName="whValue"
+                                        placeholder="Choose Value"
+                                    >
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
+                                        </mat-option>
+                                    </mat-select>
+                                </ng-container>
+
+                                <!-- <ng-template #noWarehouseValues>
+                                    <mat-select placeholder="Value not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </mat-card>
+        </form>
+    </div>
+    <!-- / CENTER -->
+</div>
+
+<div class="loader" *ngIf="isLoading$ | async">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

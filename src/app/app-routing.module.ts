@@ -288,6 +288,11 @@ const routes: Routes = [
                     import('./main/pages/logistics/logistics.module').then(m => m.LogisticsModule)
             },
             {
+                path: 'promos',
+                loadChildren: () =>
+                    import('./main/pages/promos/promos.module').then(m => m.PromosModule)
+            },
+            {
                 path: '',
                 redirectTo: 'account',
                 pathMatch: 'full'

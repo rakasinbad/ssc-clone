@@ -206,5 +206,19 @@ export const navigation: Array<FuseNavigation> = [
                 url: '/pages/logistics/stock-managements'
             }
         ]
+    },
+    {
+        id: 'promo',
+        title: 'Promo',
+        type: 'collapsable',
+        icon: 'custom-sinbad-logistics',
+        children: [
+            {
+                id: 'flexi-combo',
+                title: 'Flexi Combo',
+                type: 'item',
+                url: '/pages/promos/flexi-combo'
+            }
+        ]
     }
 ];
