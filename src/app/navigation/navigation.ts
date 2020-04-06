@@ -218,6 +218,12 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Flexi Combo',
                 type: 'item',
                 url: '/pages/promos/flexi-combo'
+            },
+            {
+                id: 'period-target-promo',
+                title: 'Period Target Promo',
+                type: 'item',
+                url: '/pages/promos/period-target-promo'
             }
         ]
     }

@@ -590,3 +590,18 @@ mat-header-row {
     min-height: 40px !important;
     max-height: 40px !important;
 }
+
+.sinbad-mat-tab-group {
+    .mat-tab-header {
+        border-bottom: 0px solid rgba(0,0,0,0) !important;
+    }
+
+    .mat-tab-label {
+        color: sinbad-color('black', '50');
+
+        &.mat-tab-label-active {
+            color: sinbad-color('red', '50');
+            opacity: 1;
+        }
+    }
+}
