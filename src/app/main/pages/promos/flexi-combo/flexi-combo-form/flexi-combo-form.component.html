@@ -97,19 +97,14 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        invoiceGroups$ | async as invoiceGroups;
-                                        else noInvoiceGroups
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         #invoiceSelect
                                         formControlName="invoices"
                                         placeholder="Choose Faktur"
                                         multiple
                                     >
-                                        <mat-select-trigger>
+                                        <!-- <mat-select-trigger>
                                             {{
                                                 invoices && invoices?.length > 0
                                                     ? displayInvoices(invoiceGroups, invoices[0])
@@ -122,18 +117,14 @@
                                                 (+{{ invoices.length - 1 }}
                                                 {{ invoices?.length === 2 ? 'other' : 'others' }})
                                             </span>
-                                        </mat-select-trigger>
-                                        <mat-option
-                                            (onSelectionChange)="onInvoiceOptionChange($event)"
-                                            *ngFor="let row of invoiceGroups"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        </mat-select-trigger> -->
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noInvoiceGroups>
+                                <!-- <ng-template #noInvoiceGroups>
                                     <mat-select placeholder="Faktur not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
@@ -141,7 +132,7 @@
 
                                 <mat-error *ngIf="hasError('invoices', true)">
                                     {{ getErrorMessage('invoices') }}
-                                </mat-error>
+                                </mat-error> -->
                             </mat-form-field>
                         </div>
 
@@ -179,21 +170,13 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        temperatures$ | async as temperatures;
-                                        else noTemperatures
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="temperature"
                                         placeholder="Choose Temperature"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of temperatures"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
@@ -212,30 +195,22 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        warehouseValues$ | async as warehouseValues;
-                                        else noWarehouseValues
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="whValue"
                                         placeholder="Choose Value"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of warehouseValues"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noWarehouseValues>
+                                <!-- <ng-template #noWarehouseValues>
                                     <mat-select placeholder="Value not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
-                                </ng-template>
+                                </ng-template> -->
                             </mat-form-field>
                         </div>
                     </div>
@@ -255,30 +230,22 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        temperatures$ | async as temperatures;
-                                        else noTemperatures
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="temperature"
                                         placeholder="Choose Temperature"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of temperatures"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noTemperatures>
+                                <!-- <ng-template #noTemperatures>
                                     <mat-select placeholder="Temperature not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
-                                </ng-template>
+                                </ng-template> -->
                             </mat-form-field>
                         </div>
 
@@ -288,30 +255,22 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        warehouseValues$ | async as warehouseValues;
-                                        else noWarehouseValues
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="whValue"
                                         placeholder="Choose Value"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of warehouseValues"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noWarehouseValues>
+                                <!-- <ng-template #noWarehouseValues>
                                     <mat-select placeholder="Value not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
-                                </ng-template>
+                                </ng-template> -->
                             </mat-form-field>
                         </div>
                     </div>
@@ -331,30 +290,22 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        temperatures$ | async as temperatures;
-                                        else noTemperatures
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="temperature"
                                         placeholder="Choose Temperature"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of temperatures"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noTemperatures>
+                                <!-- <ng-template #noTemperatures>
                                     <mat-select placeholder="Temperature not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
-                                </ng-template>
+                                </ng-template> -->
                             </mat-form-field>
                         </div>
 
@@ -364,30 +315,22 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container
-                                    *ngIf="
-                                        warehouseValues$ | async as warehouseValues;
-                                        else noWarehouseValues
-                                    "
-                                >
+                                <ng-container>
                                     <mat-select
                                         formControlName="whValue"
                                         placeholder="Choose Value"
                                     >
-                                        <mat-option
-                                            *ngFor="let row of warehouseValues"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.name || '-' }}
+                                        <mat-option>
+                                            <!-- {{ row?.name || '-' }} -->
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <ng-template #noWarehouseValues>
+                                <!-- <ng-template #noWarehouseValues>
                                     <mat-select placeholder="Value not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
-                                </ng-template>
+                                </ng-template> -->
                             </mat-form-field>
                         </div>
                     </div>
