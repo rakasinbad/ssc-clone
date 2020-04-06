@@ -5,15 +5,15 @@
 $fuse-white: (
     500: white,
     contrast: (
-        500: $dark-primary-text
-    )
+        500: $dark-primary-text,
+    ),
 );
 
 $fuse-black: (
     500: black,
     contrast: (
-        500: $light-primary-text
-    )
+        500: $light-primary-text,
+    ),
 );
 
 $fuse-navy: (
@@ -45,8 +45,8 @@ $fuse-navy: (
         A100: $dark-primary-text,
         A200: $light-primary-text,
         A400: $light-primary-text,
-        A700: $light-primary-text
-    )
+        A700: $light-primary-text,
+    ),
 );
 
 $sinbad: (
@@ -78,8 +78,8 @@ $sinbad: (
         A100: $dark-primary-text,
         A200: $dark-primary-text,
         A400: $dark-primary-text,
-        A700: $dark-primary-text
-    )
+        A700: $dark-primary-text,
+    ),
 );
 
 // Generate Fuse color classes for custom palettes
@@ -87,7 +87,7 @@ $custom_palettes: (
     fuse-white: $fuse-white,
     fuse-black: $fuse-black,
     fuse-navy: $fuse-navy,
-    sinbad-accent: $sinbad
+    sinbad-accent: $sinbad,
 );
 
 @include fuse-color-classes($custom_palettes);
@@ -101,7 +101,7 @@ $typography: mat-typography-config(
     $title: mat-typography-level(20px, 32px, 600),
     $body-2: mat-typography-level(14px, 24px, 600),
     $button: mat-typography-level(14px, 14px, 600),
-    $input: mat-typography-level(16px, 1.125, 400)
+    $input: mat-typography-level(16px, 1.125, 400),
 );
 
 // line-height must be unitless !!!
@@ -152,6 +152,9 @@ $typography: mat-typography-config(
 
 // OMS
 @import 'src/app/main/pages/orders/orders.theme';
+
+// Promos
+@import 'src/app/main/pages/promos/flexi-combo/flexi-combo.theme';
 
 // Sales force
 @import 'src/app/main/pages/sales-forces/associations/associations.theme';
@@ -214,6 +217,9 @@ $typography: mat-typography-config(
     // OMS
     @include orders-theme($theme);
 
+    // Promos
+    @include flexi-combo-theme($theme);
+
     // Sales force
     @include associations-theme($theme);
     @include journey-plans-theme($theme);
@@ -257,7 +263,7 @@ body.theme-default {
     $palettes: (
         primary: $default-primary-palette,
         accent: $default-accent-palette,
-        warn: $default-warn-palette
+        warn: $default-warn-palette,
     );
 
     @include fuse-color-classes($palettes);
@@ -294,7 +300,7 @@ body.theme-yellow-light {
     $palettes: (
         primary: $yellow-light-theme-primary-palette,
         accent: $yellow-light-theme-accent-palette,
-        warn: $yellow-light-theme-warn-palette
+        warn: $yellow-light-theme-warn-palette,
     );
 
     @include fuse-color-classes($palettes);
@@ -331,7 +337,7 @@ body.theme-blue-gray-dark {
     $palettes: (
         primary: $blue-gray-dark-theme-primary-palette,
         accent: $blue-gray-dark-theme-accent-palette,
-        warn: $blue-gray-dark-theme-warn-palette
+        warn: $blue-gray-dark-theme-warn-palette,
     );
 
     @include fuse-color-classes($palettes);
@@ -368,7 +374,7 @@ body.theme-pink-dark {
     $palettes: (
         primary: $pink-dark-theme-primary-palette,
         accent: $pink-dark-theme-accent-palette,
-        warn: $pink-dark-theme-warn-palette
+        warn: $pink-dark-theme-warn-palette,
     );
 
     @include fuse-color-classes($palettes);
@@ -405,7 +411,7 @@ body.theme-sinbad-light {
     $palettes: (
         primary: $sinbad-light-theme-primary-palette,
         accent: $sinbad-light-theme-accent-palette,
-        warn: $sinbad-light-theme-warn-palette
+        warn: $sinbad-light-theme-warn-palette,
     );
 
     @include fuse-color-classes($palettes);

@@ -30,16 +30,16 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.sinbad-red-fg]="hasError('whId')"
+                                [class.sinbad-red-fg]="hasError('promoId')"
                             >
-                                *Promo Seller ID
+                                Promo Seller ID
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="whId" formControlName="whId" />
+                                <input matInput name="promoId" formControlName="promoId" />
 
-                                <mat-error *ngIf="hasError('whId', true)">
-                                    {{ getErrorMessage('whId') }}
+                                <mat-error *ngIf="hasError('promoId', true)">
+                                    {{ getErrorMessage('promoId') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -48,16 +48,16 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.sinbad-red-fg]="hasError('whName')"
+                                [class.sinbad-red-fg]="hasError('promoName')"
                             >
                                 *Promo Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="whName" formControlName="whName" />
+                                <input matInput name="promoName" formControlName="promoName" />
 
-                                <mat-error *ngIf="hasError('whName', true)">
-                                    {{ getErrorMessage('whName') }}
+                                <mat-error *ngIf="hasError('promoName', true)">
+                                    {{ getErrorMessage('promoName') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -66,42 +66,17 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.sinbad-red-fg]="hasError('leadTime')"
+                                [class.sinbad-red-fg]="hasError('platform')"
                             >
                                 Platform
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <input
-                                    matInput
-                                    name="leadTime"
-                                    formControlName="leadTime"
-                                    suffix=" days"
-                                    mask="0*"
-                                    placeholder="In days"
-                                />
-
-                                <mat-error *ngIf="hasError('leadTime', true)">
-                                    {{ getErrorMessage('leadTime') }}
-                                </mat-error>
-                            </mat-form-field>
-                        </div>
-
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label
-                                fxFlexAlign="center"
-                                fxFlex="12"
-                                [class.sinbad-red-fg]="hasError('invoices')"
-                            >
-                                *Max Redemption User
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container>
                                     <mat-select
                                         #invoiceSelect
-                                        formControlName="invoices"
-                                        placeholder="Choose Faktur"
+                                        formControlName="platform"
+                                        placeholder="Choose Platform"
                                         multiple
                                     >
                                         <!-- <mat-select-trigger>
@@ -140,16 +115,38 @@
                             <label
                                 fxFlexAlign="center"
                                 fxFlex="12"
-                                [class.sinbad-red-fg]="hasError('whName')"
+                                [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
-                                *Promo Budget
+                                *Max Redemption User
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="whName" formControlName="whName" />
+                                <input
+                                    matInput
+                                    name="maxRedemption"
+                                    formControlName="maxRedemption"
+                                />
 
-                                <mat-error *ngIf="hasError('whName', true)">
-                                    {{ getErrorMessage('whName') }}
+                                <mat-error *ngIf="hasError('maxRedemption', true)">
+                                    {{ getErrorMessage('maxRedemption') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="12"
+                                [class.sinbad-red-fg]="hasError('promoBudget')"
+                            >
+                                Promo Budget
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input matInput name="promoBudget" formControlName="promoBudget" />
+
+                                <mat-error *ngIf="hasError('promoBudget', true)">
+                                    {{ getErrorMessage('promoBudget') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>
@@ -166,39 +163,34 @@
                     <div class="form-box">
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Temperature
+                                Base
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select
-                                        formControlName="temperature"
-                                        placeholder="Choose Temperature"
-                                    >
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
+                            <mat-radio-group formControlName="base">
+                                <mat-radio-button value="1">
+                                    SKU
+                                </mat-radio-button>
 
-                                <ng-template #noTemperatures>
-                                    <mat-select placeholder="Temperature not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template>
-                            </mat-form-field>
+                                <mat-radio-button value="2">
+                                    Brand
+                                </mat-radio-button>
+
+                                <mat-radio-button value="3">
+                                    Faktur
+                                </mat-radio-button>
+                            </mat-radio-group>
                         </div>
 
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Value
+                                *Chosen SKU (0 Selected)
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container>
                                     <mat-select
-                                        formControlName="whValue"
-                                        placeholder="Choose Value"
+                                        formControlName="chosenSku"
+                                        placeholder="Choose SKU"
                                     >
                                         <mat-option>
                                             <!-- {{ row?.name || '-' }} -->
@@ -226,52 +218,35 @@
                     <div class="form-box">
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Temperature
+                                Calculation Mechanism
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select
-                                        formControlName="temperature"
-                                        placeholder="Choose Temperature"
-                                    >
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
+                            <div>
+                                <mat-radio-group formControlName="calculationMechanism">
+                                    <mat-radio-button value="1">
+                                        Non Cumulative
+                                    </mat-radio-button>
 
-                                <!-- <ng-template #noTemperatures>
-                                    <mat-select placeholder="Temperature not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                            </mat-form-field>
+                                    <mat-radio-button value="2">
+                                        Cumulative
+                                    </mat-radio-button>
+                                </mat-radio-group>
+
+                                <a href="javascript:;">What is this?</a>
+                            </div>
                         </div>
+
+                        <span>Tier 1</span>
 
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Value
+                                Base
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select
-                                        formControlName="whValue"
-                                        placeholder="Choose Value"
-                                    >
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
-
-                                <!-- <ng-template #noWarehouseValues>
-                                    <mat-select placeholder="Value not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                            </mat-form-field>
+                            <mat-radio-group>
+                                <mat-radio-button>Qty</mat-radio-button>
+                                <mat-radio-button>Order Value</mat-radio-button>
+                            </mat-radio-group>
                         </div>
                     </div>
                 </div>
@@ -286,40 +261,28 @@
                     <div class="form-box">
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Temperature
+                                Segmentation Base
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select
-                                        formControlName="temperature"
-                                        placeholder="Choose Temperature"
-                                    >
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
+                            <mat-radio-group>
+                                <mat-radio-button>
+                                    Direct Store
+                                </mat-radio-button>
 
-                                <!-- <ng-template #noTemperatures>
-                                    <mat-select placeholder="Temperature not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                            </mat-form-field>
+                                <mat-radio-button>
+                                    Segmentation
+                                </mat-radio-button>
+                            </mat-radio-group>
                         </div>
 
                         <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
                             <label fxFlexAlign="center" fxFlex="12">
-                                Value
+                                Store (0 Selected)
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <ng-container>
-                                    <mat-select
-                                        formControlName="whValue"
-                                        placeholder="Choose Value"
-                                    >
+                                    <mat-select placeholder="Choose Value">
                                         <mat-option>
                                             <!-- {{ row?.name || '-' }} -->
                                         </mat-option>

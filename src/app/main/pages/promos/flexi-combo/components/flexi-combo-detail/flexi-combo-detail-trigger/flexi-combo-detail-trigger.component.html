@@ -1,0 +1,65 @@
+<div class="pb-16">
+    <span class="mat-headline">
+        Trigger
+    </span>
+</div>
+
+<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Base
+        </div>
+
+        <div class="info" fxFlex="100">
+            <mat-radio-group>
+                <mat-radio-button value="1">
+                    SKU
+                </mat-radio-button>
+
+                <mat-radio-button value="2">
+                    Brand
+                </mat-radio-button>
+
+                <mat-radio-button value="3">
+                    Faktur
+                </mat-radio-button>
+            </mat-radio-group>
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (warehouse$ | async)?.code || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+
+    <div
+        class="custom-field info-field"
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+    >
+        <div class="label" fxFlexAlign="center" fxFlex="10">
+            Choosen SKU
+        </div>
+
+        <div class="info" fxFlex="100">
+            Ovaltine 3in1 10gr
+            <!-- <ng-container *ngIf="!(isLoading$ | async)">
+                {{ (warehouse$ | async)?.name || '-' }}
+            </ng-container>
+
+            <ngx-skeleton-loader
+                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
+                *ngIf="isLoading$ | async"
+            ></ngx-skeleton-loader> -->
+        </div>
+    </div>
+</div>

@@ -4,7 +4,7 @@ import {
     OnInit,
     ViewChild,
     ViewEncapsulation,
-    ElementRef
+    ElementRef,
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -29,12 +29,12 @@ import { LifecyclePlatform } from 'app/shared/models/global.model';
     selector: 'app-flexi-combo-list',
     templateUrl: './flexi-combo-list.component.html',
     styleUrls: ['./flexi-combo-list.component.scss'],
-    host: {
-        class: 'content-card mx-16 sinbad-black-10-border'
-    },
+    // host: {
+    //     class: 'content-card mx-16 sinbad-black-10-border'
+    // },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlexiComboListComponent implements OnInit {
     readonly defaultPageSize = environment.pageSize;
@@ -52,7 +52,7 @@ export class FlexiComboListComponent implements OnInit {
         'start-date',
         'end-date',
         'status',
-        'actions'
+        'actions',
     ];
 
     selection: SelectionModel<FlexiComboList>;
@@ -91,7 +91,7 @@ export class FlexiComboListComponent implements OnInit {
 
         this.FlexiComboStore.select(FlexiComboListSelectors.getSearchValue)
             .pipe(takeUntil(this._unSubs$))
-            .subscribe(val => {
+            .subscribe((val) => {
                 this._initTable(val);
             });
 
@@ -171,7 +171,7 @@ export class FlexiComboListComponent implements OnInit {
     loadTab(activeTab): void {
         const data: IQueryParams = {
             limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
         };
 
         data['paginate'] = true;
@@ -244,7 +244,7 @@ export class FlexiComboListComponent implements OnInit {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
-                skip: this.paginator.pageSize * this.paginator.pageIndex || 0
+                skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
             };
 
             data['paginate'] = true;
@@ -262,7 +262,7 @@ export class FlexiComboListComponent implements OnInit {
 
             this.FlexiComboStore.dispatch(
                 FlexiComboListActions.fetchFlexiComboListRequest({
-                    payload: data
+                    payload: data,
                 })
             );
         }
@@ -275,7 +275,7 @@ export class FlexiComboListComponent implements OnInit {
     private updatePrivileges(): void {
         this.ngxPermissionsService
             .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
-            .then(result => {
+            .then((result) => {
                 // Jika ada permission-nya.
                 if (result) {
                     this.displayedColumns = [
@@ -286,7 +286,7 @@ export class FlexiComboListComponent implements OnInit {
                         'start-date',
                         'end-date',
                         'status',
-                        'actions'
+                        'actions',
                     ];
                 } else {
                     this.displayedColumns = [
@@ -297,7 +297,7 @@ export class FlexiComboListComponent implements OnInit {
                         'start-date',
                         'end-date',
                         'status',
-                        'actions'
+                        'actions',
                     ];
                 }
             });

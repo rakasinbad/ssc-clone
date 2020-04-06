@@ -1,44 +1,37 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-
-import { MatPaginator } from '@angular/material/paginator';
-
-import { MatSort } from '@angular/material/sort';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
 import { Router } from '@angular/router';
-
-import { Store as NgRxStore } from '@ngrx/store';
-
-import { environment } from 'environments/environment';
-
 import { fuseAnimations } from '@fuse/animations';
-
 import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-
 import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-
-import { Observable, Subject } from 'rxjs';
-
+import { Store as NgRxStore } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-
 import { UiActions } from 'app/shared/store/actions';
-import { UiSelectors } from 'app/shared/store/selectors';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { Observable, Subject } from 'rxjs';
 
 import { FeatureState as FlexiComboCoreState } from './store/reducers';
 
 @Component({
-    selector: 'flexi-combo',
+    selector: 'app-flexi-combo',
     templateUrl: './flexi-combo.component.html',
     styleUrls: ['./flexi-combo.component.scss'],
-    animations: fuseAnimations
+    animations: fuseAnimations,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlexiComboComponent implements OnInit, OnDestroy {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
-            label: 'Flexi Combo'
+            label: 'Flexi Combo',
         },
         search: {
-            active: true
+            active: true,
             // changed: (value: string) => {
             //     switch (this.selectedViewBy) {
             //         case 'sku-assignment-warehouse':
@@ -62,7 +55,7 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
             // }
         },
         add: {
-            permissions: []
+            permissions: [],
         },
         // viewBy: {
         //     list: [
@@ -74,13 +67,13 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
         export: {
             permissions: [],
             useAdvanced: true,
-            pageType: ''
+            pageType: '',
         },
         import: {
             permissions: [],
             useAdvanced: true,
-            pageType: ''
-        }
+            pageType: '',
+        },
     };
 
     // Untuk menangkap status loading dari state.
@@ -102,17 +95,17 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
             UiActions.createBreadcrumb({
                 payload: [
                     {
-                        title: 'Home'
+                        title: 'Home',
                     },
                     {
-                        title: 'Promo'
+                        title: 'Promo',
                     },
                     {
                         title: 'Flexi Combo',
                         active: true,
-                        keepCase: true
-                    }
-                ]
+                        keepCase: true,
+                    },
+                ],
             })
         );
     }

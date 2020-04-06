@@ -1,31 +1,46 @@
 @import 'src/@fuse/scss/fuse';
 
 app-flexi-combo-list {
-    display: flex;
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important;
+    /* display: flex;
     flex: 1 1 auto;
     overflow: auto;
     flex-direction: column;
     border: 1px solid;
-    border-radius: 4px !important;
+    border-radius: 4px !important; */
+
+    .mat-tab-header {
+        border-bottom: none;
+    }
 
     .flexi-combo-list-table {
         flex: 1 1 auto;
-        border-top: 1px solid rgba(0, 0, 0, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
         min-height: 40px;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
         background: #fafafa !important;
 
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
         .mat-header-row,
         .mat-row {
             background: white;
+            min-width: fit-content;
+            width: 100%;
         }
 
         .mat-row {
             min-height: unset;
         }
 
-        .warehouse {
+        .flexi-combo-list {
             position: relative;
             cursor: pointer;
             // height: 84px;
@@ -46,11 +61,8 @@ app-flexi-combo-list {
             padding-left: 12px;
         }
 
-        mat-header-cell:last-of-type {
-            padding-right: 24px;
-        }
-
         mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
         .mat-cell:last-of-type {
             padding-right: 12px;
         }
@@ -64,42 +76,47 @@ app-flexi-combo-list {
         }
 
         .mat-column-checkbox {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
-        .mat-column-id {
-            flex: 0 1 84px;
+        .mat-column-promo-seller-id {
+            flex: 0 1 10em;
         }
 
-        .mat-column-image {
-            flex: 0 1 84px;
-
-            .product-image {
-                width: 52px;
-                height: 52px;
-                border: 1px solid rgba(0, 0, 0, 0.12);
-            }
+        .mat-column-promo-name {
+            flex: 1 1 15em;
         }
 
-        .mat-column-category {
-            flex: 0 1 240px;
+        .mat-column-base {
+            flex: 0 1 100px;
         }
 
-        .mat-column-price {
-            flex: 0 1 160px;
+        .mat-column-start-date {
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
-        .mat-column-quantity {
-            flex: 0 1 160px;
+        .mat-column-end-date {
+            flex: 0 1 100px;
+            min-width: 100px;
         }
 
-        .mat-column-active {
-            flex: 0 1 80px;
+        .mat-column-status {
+            flex: 0 1 60px;
+            min-width: 60px;
         }
 
         .mat-column-actions {
-            flex: 0 1 80px;
+            flex: 0 1 60px;
+            min-width: 60px;
             justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
         }
 
         .quantity-indicator {
@@ -120,36 +137,8 @@ app-flexi-combo-list {
             border-radius: 50%;
         }
     }
+}
 
-    .tab-container {
-        background-color: '#ffffff';
-    }
-
-    .button-tab-custom {
-        min-height: 50px !important;
-        max-height: 50px !important;
-        min-width: 120px !important;
-        padding: 20px;
-        cursor: pointer;
-        text-align: center;
-    }
-
-    .button-tab-custom-active {
-        min-height: 50px !important;
-        max-height: 50px !important;
-        min-width: 120px !important;
-        padding: 20px;
-        cursor: pointer;
-        text-align: center;
-        color: #f34247;
-        border-bottom: 1px solid #f34247;
-
-        span {
-            color: #f34247;
-        }
-    }
-
-    .text-tab-custom {
-        color: 'red';
-    }
+.mat-menu-panel {
+    min-height: 52px;
 }

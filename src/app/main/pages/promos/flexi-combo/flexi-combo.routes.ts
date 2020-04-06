@@ -1,21 +1,13 @@
 // Angular Core Libraries.
 import { NgModule } from '@angular/core';
-
-// Angular Routing Libraries
-import { Routes, RouterModule } from '@angular/router';
-
-// NgxPermissions Libraries.
+import { RouterModule, Routes } from '@angular/router';
 import { NgxPermissionsGuard } from 'ngx-permissions';
 
-// Auth Guard Core Libraries.
 import { AuthGuard } from '../../core/auth/auth.guard';
-
-// The component.
-import { FlexiComboComponent } from './flexi-combo.component';
+import { FlexiComboDetailComponent } from './components/flexi-combo-detail';
 import { FlexiComboFormComponent } from './flexi-combo-form';
-// import { SkuAssignmentDetailComponent } from './sku-assignment-detail';
+import { FlexiComboComponent } from './flexi-combo.component';
 
-// Routes
 const routes: Routes = [
     {
         path: '',
@@ -28,19 +20,18 @@ const routes: Routes = [
                     navigationCommands: ['/pages/errors/403'],
                     navigationExtras: {
                         replaceUrl: true,
-                        skipLocationChange: true
-                    }
-                }
-            }
-        }
+                        skipLocationChange: true,
+                    },
+                },
+            },
+        },
     },
-    { path: ':id', component: FlexiComboFormComponent }
-    // { path: ':id/edit', component: SkuAssignmentFormComponent },
-    // { path: ':id/detail', component: SkuAssignmentDetailComponent }
+    { path: ':id/detail', component: FlexiComboDetailComponent },
+    { path: ':id', component: FlexiComboFormComponent },
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
 export class FlexiComboRoutingModule {}

@@ -9,7 +9,7 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
@@ -19,7 +19,7 @@ import {
     MatCheckboxChange,
     MatDialog,
     MatOptionSelectionChange,
-    MatSelect
+    MatSelect,
 } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -39,7 +39,7 @@ import {
     // DropdownActions,
     FormActions,
     // TemperatureActions,
-    UiActions
+    UiActions,
     // WarehouseValueActions
 } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
@@ -52,7 +52,7 @@ import {
     map,
     takeUntil,
     tap,
-    withLatestFrom
+    withLatestFrom,
 } from 'rxjs/operators';
 
 import { FlexiComboActions } from '../store/actions';
@@ -65,7 +65,7 @@ import { FlexiComboSelectors } from '../store/selectors';
     styleUrls: ['./flexi-combo-form.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlexiComboFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
@@ -77,17 +77,17 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
     private _breadCrumbs: Array<IBreadcrumbs> = [
         {
-            title: 'Home'
+            title: 'Home',
         },
         {
-            title: 'Promo'
+            title: 'Promo',
         },
         {
-            title: 'Flexi Combo'
+            title: 'Flexi Combo',
         },
         {
-            title: 'Add Flexi Combo'
-        }
+            title: 'Add Flexi Combo',
+        },
     ];
 
     private _unSubs$: Subject<void> = new Subject<void>();
@@ -109,28 +109,28 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     progress: {
                         title: {
                             label: 'Skor tambah toko',
-                            active: false
+                            active: false,
                         },
                         value: {
-                            active: false
+                            active: false,
                         },
-                        active: false
+                        active: false,
                     },
                     action: {
                         save: {
                             label: 'Save',
-                            active: true
+                            active: true,
                         },
                         draft: {
                             label: 'Save Draft',
-                            active: false
+                            active: false,
                         },
                         cancel: {
                             label: 'Cancel',
-                            active: true
-                        }
-                    }
-                }
+                            active: true,
+                        },
+                    },
+                },
             })
         );
 
@@ -243,17 +243,17 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
                     this._breadCrumbs = [
                         {
-                            title: 'Home'
+                            title: 'Home',
                         },
                         {
-                            title: 'Warehouse'
+                            title: 'Promo',
                         },
                         {
-                            title: 'Warehouse List'
+                            title: 'Flexi Combo',
                         },
                         {
-                            title: 'Edit Warehouse'
-                        }
+                            title: 'Edit Flexi Combo',
+                        },
                     ];
 
                     // this.store.dispatch(WarehouseActions.fetchWarehouseRequest({ payload: id }));
@@ -264,7 +264,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 // Set breadcrumbs
                 this.store.dispatch(
                     UiActions.createBreadcrumb({
-                        payload: this._breadCrumbs
+                        payload: this._breadCrumbs,
                     })
                 );
 
@@ -273,7 +273,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
-                    .subscribe(status => {
+                    .subscribe((status) => {
                         this._setFormStatus(status);
                     });
 
@@ -281,10 +281,10 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 this.store
                     .select(FormSelectors.getIsClickCancelButton)
                     .pipe(
-                        filter(isClick => !!isClick),
+                        filter((isClick) => !!isClick),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(isClick => {
+                    .subscribe((isClick) => {
                         this.store.dispatch(FormActions.resetClickCancelButton());
                         this.store.dispatch(FormActions.resetCancelButtonAction());
                     });
@@ -293,10 +293,10 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 this.store
                     .select(FormSelectors.getIsClickSaveButton)
                     .pipe(
-                        filter(isClick => !!isClick),
+                        filter((isClick) => !!isClick),
                         takeUntil(this._unSubs$)
                     )
-                    .subscribe(isClick => {
+                    .subscribe((isClick) => {
                         this._onSubmit();
                     });
                 break;
@@ -305,101 +305,78 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
     private _initForm(): void {
         this.form = this.formBuilder.group({
-            whId: [
-                '',
+            promoId: null,
+            promoName: [
+                null,
                 [
                     RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
             ],
-            whName: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            leadTime: [
-                '',
+            platform: [
+                null,
                 [
                     RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric')
-                    })
-                ]
-            ],
-            invoices: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            temperature: [''],
-            whValue: [''],
-            address: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            manually: false,
-            district: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            urban: [
-                '',
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
-                    })
-                ]
-            ],
-            postcode: [
-                { value: '', disabled: true },
-                [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required')
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
-                    RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    }),
-                    RxwebValidators.minLength({
-                        value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    }),
-                    RxwebValidators.maxLength({
-                        value: 5,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                ],
             ],
+            maxRedemption: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            promoBudget: null,
+            startDate: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            endDate: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            imgSuggestion: null,
+            allowCombineWithVoucher: false,
+            firstBuy: false,
+            base: null,
+            chosenSku: [
+                '',
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            calculationMechanism: null,
             lat: [
                 '',
                 [
                     RxwebValidators.latitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
             lng: [
                 '',
                 [
                     RxwebValidators.longitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern')
-                    })
-                ]
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
             ],
-            notes: ''
+            notes: '',
         });
 
         if (this.pageType === 'edit') {
@@ -533,7 +510,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 noteAddress: body.notes,
                 address: body.address,
                 invoiceGroup: body.invoices,
-                status: 'active'
+                status: 'active',
             };
 
             // this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
@@ -553,7 +530,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 address: body.address,
                 invoiceGroup: body.invoices,
                 // deletedInvoiceGroup: this._deletedInvoiceGroups,
-                status: 'active'
+                status: 'active',
             };
 
             if (!body.longitude) {
