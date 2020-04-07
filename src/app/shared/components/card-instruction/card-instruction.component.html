@@ -1,0 +1,17 @@
+<div
+    fxLayout="row"
+    fxLayoutAlign="start start"
+>
+    <!-- INSTRUCTION -->
+    <div class="content" [style.display]="isOpened ? 'block' : 'none'">
+        <ng-content></ng-content>
+    </div>
+    <div class="collapsible" (click)="toggleCollapsible()">
+        Instruction
+        <mat-icon *ngIf="isOpened; else closed;">arrow_drop_up</mat-icon>
+        <ng-template #closed>
+            <mat-icon>arrow_drop_down</mat-icon>
+        </ng-template>
+    </div>
+    <!-- / INSTRUCTION -->
+</div>
