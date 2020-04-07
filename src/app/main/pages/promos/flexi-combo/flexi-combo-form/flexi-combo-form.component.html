@@ -26,10 +26,15 @@
                     </span>
 
                     <div class="form-box">
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
                             <label
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('promoId')"
                             >
                                 Promo Seller ID
@@ -44,10 +49,15 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
                             <label
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('promoName')"
                             >
                                 *Promo Name
@@ -62,10 +72,15 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
                             <label
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('platform')"
                             >
                                 Platform
@@ -111,10 +126,15 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
                             <label
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
                                 *Max Redemption User
@@ -133,10 +153,15 @@
                             </mat-form-field>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
                             <label
                                 fxFlexAlign="center"
-                                fxFlex="12"
+                                fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('promoBudget')"
                             >
                                 Promo Budget
@@ -161,28 +186,40 @@
                     </span>
 
                     <div class="form-box">
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="11">
                                 Base
                             </label>
 
-                            <mat-radio-group formControlName="base">
-                                <mat-radio-button value="1">
-                                    SKU
-                                </mat-radio-button>
+                            <div fxFlexAlign="center" fxFlex="50">
+                                <mat-radio-group formControlName="base">
+                                    <mat-radio-button value="1">
+                                        SKU
+                                    </mat-radio-button>
 
-                                <mat-radio-button value="2">
-                                    Brand
-                                </mat-radio-button>
+                                    <mat-radio-button value="2">
+                                        Brand
+                                    </mat-radio-button>
 
-                                <mat-radio-button value="3">
-                                    Faktur
-                                </mat-radio-button>
-                            </mat-radio-group>
+                                    <mat-radio-button value="3">
+                                        Faktur
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="11">
                                 *Chosen SKU (0 Selected)
                             </label>
 
@@ -216,12 +253,17 @@
                     </span>
 
                     <div class="form-box">
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="11">
                                 Calculation Mechanism
                             </label>
 
-                            <div>
+                            <div fxFlexAlign="center" fxFlex="50">
                                 <mat-radio-group formControlName="calculationMechanism">
                                     <mat-radio-button value="1">
                                         Non Cumulative
@@ -236,18 +278,366 @@
                             </div>
                         </div>
 
-                        <span>Tier 1</span>
+                        <!-- START DYNAMIC BOX-GROUP -->
+                        <div class="box-group" fxLayout="column" fxLayoutGap="16px">
+                            <span class="box-title">Tier 1</span>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
-                                Base
-                            </label>
+                            <div fxLayout="row" fxLayoutAlign="start stretch">
+                                <!-- START FIELD-WRAPPER -->
+                                <div
+                                    class="field-wrapper p-16"
+                                    fxLayout="column"
+                                    fxLayoutAlign="start stretch"
+                                    fxFlex="1 1 auto"
+                                    fusePerfectScrollbar
+                                >
+                                    <span class="field-title">
+                                        Condition
 
-                            <mat-radio-group>
-                                <mat-radio-button>Qty</mat-radio-button>
-                                <mat-radio-button>Order Value</mat-radio-button>
-                            </mat-radio-group>
+                                        <mat-icon
+                                            class="active-icon s-14 ml-8 cursor-pointer"
+                                            color="accent"
+                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                            matTooltipClass="tooltip-br"
+                                        >
+                                            help
+                                        </mat-icon>
+                                    </span>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Base
+                                        </label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-radio-group>
+                                                <mat-radio-button>Qty</mat-radio-button>
+                                                <mat-radio-button>Order Value</mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Qty >=
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input matInput name="promoBudget" />
+
+                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                            {{ getErrorMessage('promoBudget') }}
+                                        </mat-error> -->
+                                        </mat-form-field>
+                                    </div>
+
+                                    <span class="field-title">
+                                        Benefit
+
+                                        <mat-icon
+                                            class="active-icon s-14 ml-8 cursor-pointer"
+                                            color="accent"
+                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                            matTooltipClass="tooltip-br"
+                                        >
+                                            help
+                                        </mat-icon>
+                                    </span>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Benefit Type
+                                        </label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-radio-group>
+                                                <mat-radio-button>Qty</mat-radio-button>
+                                                <mat-radio-button>Rp</mat-radio-button>
+                                                <mat-radio-button>%</mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            *Bonus SKU
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <ng-container>
+                                                <mat-select placeholder="Choose Value">
+                                                    <mat-option>
+                                                        <!-- {{ row?.name || '-' }} -->
+                                                    </mat-option>
+                                                </mat-select>
+                                            </ng-container>
+
+                                            <!-- <ng-template #noWarehouseValues>
+                                    <mat-select placeholder="Value not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12"></label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-checkbox>Apply Same SKU</mat-checkbox>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.sinbad-red-fg]="hasError('promoBudget')"
+                                        >
+                                            Bonus Qty
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input matInput name="promoBudget" />
+
+                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                    {{ getErrorMessage('promoBudget') }}
+                                </mat-error> -->
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <!-- ./ FIELD-WRAPPER -->
+
+                                <!-- START CARD-INSTRUCTION -->
+                                <card-instruction fxFlex="0 2 auto">
+                                    <p class="title">Sample Case</p>
+
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
+                                        dignissim interdum accumsan. Sed pretium, felis sit amet
+                                        finibus ullamcorper, elit ligula vehicula diam, eu posuere
+                                        quam nibh ut elit. Nunc suscipit nisi id felis facilisis
+                                        malesuada. Pellentesque suscipit venenatis neque, vel
+                                        aliquet tortor dictum vitae. Mauris eu imperdiet nisl,
+                                        pharetra condimentum lorem. Sed faucibus purus tortor, vel
+                                        sagittis tortor maximus sed. Maecenas lorem arcu, porttitor
+                                        non tellus ut, placerat sollicitudin nibh. Sed vel felis
+                                        vitae augue dictum egestas elementum non nulla. Donec ut
+                                        nunc neque.
+                                    </p>
+                                </card-instruction>
+                                <!-- ./ CARD-INSTRUCTION -->
+                            </div>
                         </div>
+                        <!-- ./ DYNAMIC BOX-GROUP -->
+
+                        <!-- START DYNAMIC BOX-GROUP -->
+                        <div class="box-group" fxLayout="column" fxLayoutGap="16px">
+                            <span class="box-title">Tier 2</span>
+
+                            <div fxLayout="row" fxLayoutAlign="start stretch">
+                                <!-- START FIELD-WRAPPER -->
+                                <div
+                                    class="field-wrapper p-16"
+                                    fxLayout="column"
+                                    fxLayoutAlign="start stretch"
+                                    fxFlex="1 1 auto"
+                                    fusePerfectScrollbar
+                                >
+                                    <span class="field-title">
+                                        Condition
+
+                                        <mat-icon
+                                            class="active-icon s-14 ml-8 cursor-pointer"
+                                            color="accent"
+                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                            matTooltipClass="tooltip-br"
+                                        >
+                                            help
+                                        </mat-icon>
+                                    </span>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Base
+                                        </label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-radio-group>
+                                                <mat-radio-button>Qty</mat-radio-button>
+                                                <mat-radio-button>Order Value</mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Qty >=
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input matInput name="promoBudget" />
+
+                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                            {{ getErrorMessage('promoBudget') }}
+                                        </mat-error> -->
+                                        </mat-form-field>
+                                    </div>
+
+                                    <span class="field-title">
+                                        Benefit
+
+                                        <mat-icon
+                                            class="active-icon s-14 ml-8 cursor-pointer"
+                                            color="accent"
+                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                            matTooltipClass="tooltip-br"
+                                        >
+                                            help
+                                        </mat-icon>
+                                    </span>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            Benefit Type
+                                        </label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-radio-group>
+                                                <mat-radio-button>Qty</mat-radio-button>
+                                                <mat-radio-button>Rp</mat-radio-button>
+                                                <mat-radio-button>%</mat-radio-button>
+                                            </mat-radio-group>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12">
+                                            *Bonus SKU
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <ng-container>
+                                                <mat-select placeholder="Choose Value">
+                                                    <mat-option>
+                                                        <!-- {{ row?.name || '-' }} -->
+                                                    </mat-option>
+                                                </mat-select>
+                                            </ng-container>
+
+                                            <!-- <ng-template #noWarehouseValues>
+                                    <mat-select placeholder="Value not found" disabled>
+                                        <mat-option>None</mat-option>
+                                    </mat-select>
+                                </ng-template> -->
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label fxFlexAlign="center" fxFlex="12"></label>
+
+                                        <div fxFlexAlign="center" fxFlex="50">
+                                            <mat-checkbox>Apply Same SKU</mat-checkbox>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="custom-field"
+                                        fxLayout="row"
+                                        fxLayoutAlign="start stretch"
+                                        fxLayoutGap="16px"
+                                    >
+                                        <label
+                                            fxFlexAlign="center"
+                                            fxFlex="12"
+                                            [class.sinbad-red-fg]="hasError('promoBudget')"
+                                        >
+                                            Bonus Qty
+                                        </label>
+
+                                        <mat-form-field appearance="outline" fxFlex="50">
+                                            <input matInput name="promoBudget" />
+
+                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                    {{ getErrorMessage('promoBudget') }}
+                                </mat-error> -->
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <!-- ./ FIELD-WRAPPER -->
+                            </div>
+                        </div>
+                        <!-- ./ DYNAMIC BOX-GROUP -->
+                    </div>
+
+                    <div>
+                        <button type="button" mat-button color="accent">
+                            Add Tier
+                        </button>
+
+                        <mat-icon
+                            class="active-icon s-14 ml-8 cursor-pointer"
+                            color="accent"
+                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                            matTooltipClass="tooltip-br"
+                        >
+                            help
+                        </mat-icon>
                     </div>
                 </div>
             </mat-card>
@@ -259,24 +649,36 @@
                     </span>
 
                     <div class="form-box">
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="11">
                                 Segmentation Base
                             </label>
 
-                            <mat-radio-group>
-                                <mat-radio-button>
-                                    Direct Store
-                                </mat-radio-button>
+                            <div fxFlexAlign="center" fxFlex="50">
+                                <mat-radio-group>
+                                    <mat-radio-button>
+                                        Direct Store
+                                    </mat-radio-button>
 
-                                <mat-radio-button>
-                                    Segmentation
-                                </mat-radio-button>
-                            </mat-radio-group>
+                                    <mat-radio-button>
+                                        Segmentation
+                                    </mat-radio-button>
+                                </mat-radio-group>
+                            </div>
                         </div>
 
-                        <div class="custom-field" fxLayout="row" fxLayoutAlign="start stretch">
-                            <label fxFlexAlign="center" fxFlex="12">
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="11">
                                 Store (0 Selected)
                             </label>
 

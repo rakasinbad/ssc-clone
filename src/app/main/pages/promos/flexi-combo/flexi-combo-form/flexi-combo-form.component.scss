@@ -1,8 +1,74 @@
-.mat-headline {
-    font-size: 18px;
-    font-weight: 600;
-}
+@import 'src/@sinbad/scss/helper';
 
-.mat-radio-button ~ .mat-radio-button {
-    margin-left: 16px;
+app-flexi-combo-form {
+    .mat-headline {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .mat-radio-button ~ .mat-radio-button {
+        margin-left: 16px;
+    }
+
+    .form-box {
+        .custom-field {
+            label {
+                font-weight: normal;
+                color: sinbad-color('black', '80');
+
+                + div {
+                    a[href] {
+                        margin-left: 16px;
+                        position: relative;
+                        top: -0.6em;
+                    }
+                }
+            }
+
+            .mat-radio-group {
+                position: relative;
+                top: 0.1em;
+            }
+
+            .mat-form-field-outline {
+                background: #ffffff !important;
+            }
+        }
+
+        .box-group {
+            margin-bottom: 16px;
+
+            .box-title {
+                font-size: 16px;
+                font-weight: 600;
+            }
+
+            .field-wrapper {
+                background-color: rgba(232, 232, 232, 0.25);
+                width: 700px;
+                min-width: 700px;
+                max-width: 700px;
+                height: 376px;
+                border-radius: 4px;
+
+                .field-title {
+                    font-weight: 600;
+                    color: sinbad-color('black', '100');
+                    margin-bottom: 18px;
+                }
+            }
+
+            card-instruction {
+                .title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    text-decoration: underline;
+                }
+            }
+
+            // &:not(:last-child) {
+            //     margin-bottom: 16px;
+            // }
+        }
+    }
 }
