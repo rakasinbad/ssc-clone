@@ -109,6 +109,16 @@ export const removePeriodTargetPromoFailure = createAction(
 );
 
 /**
+ * SELECTION
+ */
+export const selectPeriodTargetPromo = createAction(
+    '[Promo/Period Target Promo] Select Period Target Promo',
+    props<{ payload: string }>()
+);
+
+export const deselectPeriodTargetPromo = createAction('[Promo/Period Target Promo] Deselect Period Target Promo');
+
+/**
  * RESET
  */
 export const resetPeriodTargetPromo = createAction('[Promo/Period Target Promo Page] Reset PeriodTargetPromo State');
