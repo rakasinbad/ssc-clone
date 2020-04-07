@@ -29,14 +29,14 @@ import * as moment from 'moment';
 type IFormMode = 'add' | 'view' | 'edit';
 
 @Component({
-    selector: 'period-target-promo-general-information',
-    templateUrl: './general-information.component.html',
-    styleUrls: ['./general-information.component.scss'],
+    selector: 'period-target-promo-trigger-information',
+    templateUrl: './trigger-information.component.html',
+    styleUrls: ['./trigger-information.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default
 })
-export class PeriodTargetPromoGeneralInformationComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class PeriodTargetPromoTriggerInformationComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();

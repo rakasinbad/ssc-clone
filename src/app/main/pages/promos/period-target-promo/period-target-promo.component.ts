@@ -23,7 +23,7 @@ import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { FeatureState as FlexiComboCoreState } from './store/reducers';
+import { FeatureState as PeriodTargetPromoCoreState } from './store/reducers';
 
 @Component({
     selector: 'period-target-promo',
@@ -79,7 +79,7 @@ export class PeriodTargetPromoComponent implements OnInit, OnDestroy {
     private subs$: Subject<void> = new Subject<void>();
 
     constructor(
-        private FlexiComboStore: NgRxStore<FlexiComboCoreState>,
+        private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>,
         private fuseNavigation$: FuseNavigationService,
         // private fuseTranslationLoader$: FuseTranslationLoaderService,
         private router: Router
@@ -87,7 +87,7 @@ export class PeriodTargetPromoComponent implements OnInit, OnDestroy {
         // Memuat terjemahan.
         // this.fuseTranslationLoader$.loadTranslations(indonesian, english);
         // Memuat breadcrumb.
-        this.FlexiComboStore.dispatch(
+        this.PeriodTargetPromoStore.dispatch(
             UiActions.createBreadcrumb({
                 payload: [
                     {
@@ -107,7 +107,7 @@ export class PeriodTargetPromoComponent implements OnInit, OnDestroy {
     }
 
     onClickAdd(): void {
-        this.router.navigateByUrl('/pages/promos/flexi-combo/new');
+        this.router.navigateByUrl('/pages/promos/period-target-promo/new');
     }
 
     onSelectedTab(index: number): void {
