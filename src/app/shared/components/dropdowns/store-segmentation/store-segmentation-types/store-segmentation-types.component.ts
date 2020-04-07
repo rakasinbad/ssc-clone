@@ -169,6 +169,8 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
                 const newQuery: IQueryParams = { ... params };
                 // Memasukkan ID supplier ke dalam params baru.
                 newQuery['supplierId'] = supplierId;
+                // Hanya mengambil yang tidak punya child.
+                newQuery['hasChild'] = false;
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
@@ -302,6 +304,7 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Store Type',
             template: this.selectStoreType,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',

@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewEncapsulation, Inject, TemplateRef, EventEmitter, Output } from '@angular/core';
+import { Component, ViewEncapsulation, Inject, TemplateRef, EventEmitter, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'apply-dialog',
     templateUrl: './apply-dialog.component.html',
     styleUrls: ['./apply-dialog.component.scss'],
-    encapsulation: ViewEncapsulation.None
+    encapsulation: ViewEncapsulation.None,
 })
 export class ApplyDialogComponent<T> {
-
     @Output() closed: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(
@@ -17,6 +17,7 @@ export class ApplyDialogComponent<T> {
             public data: {
                 title: string,
                 template: TemplateRef<any>,
+                isApplyEnabled: boolean,
                 context: T,
             },
     ) {}

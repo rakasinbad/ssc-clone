@@ -186,20 +186,20 @@
                                         mat-menu-item
                                         class="sinbad-mat-menu-item"
                                         aria-label="Edit"
-                                        [routerLink]="[row?.id]"
+                                        (click)="onEdit(row)"
                                     >
                                         <mat-icon>edit</mat-icon>
                                         <span>Edit</span>
                                     </button>
 
-                                    <!--<button
+                                    <button
                                         mat-menu-item
                                         type="button"
                                         class="sinbad-mat-menu-item"
                                         [attr.aria-label]="
                                             row?.status === 'active' ? 'Inactive' : 'Active'
                                         "
-                                        (click)="onChangeStatus(row)"
+                                        (click)="onSetStatus(row)"
                                     >
                                         <mat-icon>
                                             {{
@@ -216,7 +216,7 @@
                                                 ) | translate
                                             }}
                                         </span>
-                                    </button> -->
+                                    </button>
                                 </ng-template>
                             </mat-menu>
                         </div>

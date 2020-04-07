@@ -31,4 +31,16 @@ export class ApplyDialogService<T = undefined> {
     setTemplate(template: TemplateRef<any>): void {
         this.dialogRef.componentInstance.data.template = template;
     }
+
+    enableApply(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.isApplyEnabled = true;
+        });
+    }
+
+    disableApply(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.isApplyEnabled = false;
+        });
+    }
 }

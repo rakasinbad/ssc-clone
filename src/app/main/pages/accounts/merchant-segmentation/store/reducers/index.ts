@@ -2,6 +2,7 @@ import { Action, combineReducers } from '@ngrx/store';
 import * as fromRoot from 'app/store/app.reducer';
 
 import * as fromStoreSegmentsErrs from './error.reducer';
+import * as fromMerchantSegmentAlert from './merchant-segment-alert.reducer';
 import * as fromMerchantSegmentTreeTable from './merchant-segment-tree-table.reducer';
 import * as fromStoreChannels from './store-channel.reducer';
 import * as fromStoreClusters from './store-cluster.reducer';
@@ -17,11 +18,12 @@ export const featureKey = 'storeSegments';
  * @interface State
  */
 export interface State {
+    [fromMerchantSegmentAlert.featureKey]: fromMerchantSegmentAlert.State;
     [fromMerchantSegmentTreeTable.featureKey]: fromMerchantSegmentTreeTable.State;
-    [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.State;
     [fromStoreChannels.featureKey]: fromStoreChannels.State;
     [fromStoreClusters.featureKey]: fromStoreClusters.State;
     [fromStoreGroups.featureKey]: fromStoreGroups.State;
+    [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.State;
     [fromStoreTypes.featureKey]: fromStoreTypes.State;
 }
 
@@ -45,11 +47,12 @@ export interface FeatureState extends fromRoot.State {
  */
 export function reducers(state: State | undefined, action: Action): State {
     return combineReducers({
+        [fromMerchantSegmentAlert.featureKey]: fromMerchantSegmentAlert.reducer,
         [fromMerchantSegmentTreeTable.featureKey]: fromMerchantSegmentTreeTable.reducer,
-        [fromStoreTypes.featureKey]: fromStoreTypes.reducer,
         [fromStoreChannels.featureKey]: fromStoreChannels.reducer,
         [fromStoreClusters.featureKey]: fromStoreClusters.reducer,
         [fromStoreGroups.featureKey]: fromStoreGroups.reducer,
-        [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.reducer
+        [fromStoreSegmentsErrs.featureKey]: fromStoreSegmentsErrs.reducer,
+        [fromStoreTypes.featureKey]: fromStoreTypes.reducer
     })(state, action);
 }

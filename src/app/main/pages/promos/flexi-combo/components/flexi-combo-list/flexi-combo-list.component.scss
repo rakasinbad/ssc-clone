@@ -1,0 +1,144 @@
+@import 'src/@fuse/scss/fuse';
+
+app-flexi-combo-list {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    overflow: auto !important;
+    /* display: flex;
+    flex: 1 1 auto;
+    overflow: auto;
+    flex-direction: column;
+    border: 1px solid;
+    border-radius: 4px !important; */
+
+    .mat-tab-header {
+        border-bottom: none;
+    }
+
+    .flexi-combo-list-table {
+        flex: 1 1 auto;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        min-height: 40px;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #fafafa !important;
+
+        &.sinbad-table-no-record {
+            background: #ffffff !important;
+        }
+
+        .mat-header-row,
+        .mat-row {
+            background: white;
+            min-width: fit-content;
+            width: 100%;
+        }
+
+        .mat-row {
+            min-height: unset;
+        }
+
+        .flexi-combo-list {
+            position: relative;
+            cursor: pointer;
+            // height: 84px;
+        }
+
+        .mat-header-cell {
+            text-align: left;
+            font-weight: 700;
+
+            &:not(:last-of-type) {
+                padding-right: 8px;
+            }
+        }
+
+        mat-header-cell:first-of-type,
+        .mat-header-cell:first-of-type,
+        .mat-cell:first-of-type {
+            padding-left: 12px;
+        }
+
+        mat-cell:last-of-type,
+        .mat-header-cell:last-of-type,
+        .mat-cell:last-of-type {
+            padding-right: 12px;
+        }
+
+        .mat-cell {
+            font-size: 12px;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            padding-right: 8px;
+        }
+
+        .mat-column-checkbox {
+            flex: 0 1 60px;
+            min-width: 60px;
+        }
+
+        .mat-column-promo-seller-id {
+            flex: 0 1 10em;
+        }
+
+        .mat-column-promo-name {
+            flex: 1 1 15em;
+        }
+
+        .mat-column-base {
+            flex: 0 1 100px;
+        }
+
+        .mat-column-start-date {
+            flex: 0 1 100px;
+            min-width: 100px;
+        }
+
+        .mat-column-end-date {
+            flex: 0 1 100px;
+            min-width: 100px;
+        }
+
+        .mat-column-status {
+            flex: 0 1 60px;
+            min-width: 60px;
+        }
+
+        .mat-column-actions {
+            flex: 0 1 60px;
+            min-width: 60px;
+            justify-content: flex-end;
+        }
+
+        .mat-column-no-record {
+            position: relative;
+            top: 15em;
+            justify-content: center;
+        }
+
+        .quantity-indicator {
+            display: inline-block;
+            vertical-align: middle;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+
+            & + span {
+                display: inline-block;
+                vertical-align: middle;
+            }
+        }
+
+        .active-icon {
+            border-radius: 50%;
+        }
+    }
+}
+
+.mat-menu-panel {
+    min-height: 52px;
+}

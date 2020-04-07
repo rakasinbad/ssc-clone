@@ -25,8 +25,9 @@ export class StoreSegmentationChannelsApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        // Temporary fix
-        newArgs.push({ key: 'hasChild', value: 'false' });
+        if (params['hasChild'] === true || params['hasChild'] === false) {
+            newArgs.push({ key: 'hasChild', value: String(params['hasChild']) });
+        }
 
         if (!params['supplierId'] && !params['noSupplierId']) {
             throw new Error('ERR_STORE_SEGMENTATION_CHANNELS_REQUIRE_SUPPLIERID');

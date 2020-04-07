@@ -508,6 +508,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
             data['sortBy'] = this.sort.active;
         }
 
+        this.store.dispatch(CatalogueActions.resetCatalogues());
+
         this.store.dispatch(
             CatalogueActions.fetchCataloguesRequest({
                 payload: data
@@ -691,6 +693,8 @@ export class CataloguesComponent implements OnInit, AfterViewInit, OnDestroy {
                     }
                 ];
             }
+
+            this.store.dispatch(CatalogueActions.resetCatalogues());
 
             this.store.dispatch(
                 CatalogueActions.fetchCataloguesRequest({

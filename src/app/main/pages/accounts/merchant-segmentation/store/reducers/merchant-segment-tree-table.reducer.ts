@@ -19,7 +19,7 @@ export interface State extends EntityState<StoreSegmentTree> {
     total: number;
 }
 
-// Adapter for storeSegmentTrees state
+// Adapter for storeSegmentTreeTable state
 export const adapter = createEntityAdapter<StoreSegmentTree>({ selectId: row => row.id });
 
 // Initialize state
@@ -33,12 +33,17 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
+    on(StoreTypeActions.cancelConfirmChangeStatusStoreType, state => ({
+        ...state,
+        isLoading: true,
+        isRefresh: true
+    })),
     on(
         StoreChannelActions.fetchStoreLastChannelRequest,
         StoreClusterActions.fetchStoreLastClusterRequest,
         StoreGroupActions.fetchStoreLastGroupRequest,
         StoreTypeActions.fetchStoreLastTypeRequest,
-        state => ({ ...state, isLoading: true })
+        state => ({ ...state, isLoading: true, isRefresh: undefined })
     ),
     on(
         StoreChannelActions.fetchStoreLastChannelFailure,
@@ -46,6 +51,25 @@ export const reducer = createReducer<State>(
         StoreGroupActions.fetchStoreLastGroupFailure,
         StoreTypeActions.fetchStoreLastTypeFailure,
         state => ({ ...state, isLoading: false })
+    ),
+    on(
+        StoreChannelActions.createStoreChannelFailure,
+        StoreChannelActions.createStoreChannelSuccess,
+        StoreChannelActions.updateStoreChannelFailure,
+        StoreChannelActions.updateStoreChannelSuccess,
+        StoreClusterActions.createStoreClusterFailure,
+        StoreClusterActions.createStoreClusterSuccess,
+        StoreClusterActions.updateStoreClusterFailure,
+        StoreClusterActions.updateStoreClusterSuccess,
+        StoreGroupActions.createStoreGroupFailure,
+        StoreGroupActions.createStoreGroupSuccess,
+        StoreGroupActions.updateStoreGroupFailure,
+        StoreGroupActions.updateStoreGroupSuccess,
+        StoreTypeActions.createStoreTypeFailure,
+        StoreTypeActions.createStoreTypeSuccess,
+        StoreTypeActions.updateStoreTypeFailure,
+        StoreTypeActions.updateStoreTypeSuccess,
+        state => ({ ...state, isRefresh: true })
     ),
     on(
         StoreChannelActions.fetchStoreLastChannelSuccess,

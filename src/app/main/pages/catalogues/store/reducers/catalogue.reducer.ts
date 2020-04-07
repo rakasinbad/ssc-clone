@@ -293,7 +293,7 @@ const catalogueReducer = createReducer(
         ...state,
         isLoading: false,
         isDeleting: initialState.isDeleting,
-        catalogues: adapterCatalogue.addAll(payload.catalogues, {
+        catalogues: adapterCatalogue.upsertMany(payload.catalogues, {
             ...state.catalogues,
             total: payload.total
         }),

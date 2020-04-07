@@ -1,0 +1,6 @@
+<selection-tree
+    [maxLevel]="5"
+    [entities]="availableEntities$ | async"
+    (selected)="onSelected($event)"
+    (selectionChanged)="onSelectionChanged($event)"
+></selection-tree>

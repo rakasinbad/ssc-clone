@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -8,13 +9,20 @@ import { catchOffline } from '@ngx-pwa/offline';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { HelperService, NoticeService } from 'app/shared/helpers';
-import { ErrorHandler, PaginateResponse, TNullable } from 'app/shared/models/global.model';
+import { ErrorHandler, EStatus, PaginateResponse, TNullable } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { User } from 'app/shared/models/user.model';
 import { Observable, of } from 'rxjs';
-import { catchError, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, map, retry, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PayloadStoreChannel, StoreChannel, StoreSegment, StoreSegmentTree } from '../../models';
+import { MerchantSegmentationAlertComponent } from '../../merchant-segmentation-alert';
+import {
+    PayloadStoreChannel,
+    PayloadStoreChannelPatch,
+    StoreChannel,
+    StoreSegment,
+    StoreSegmentTree
+} from '../../models';
 import {
     StoreChannelApiService,
     StoreChannelCrudApiService,
@@ -91,6 +99,123 @@ export class StoreChannelEffects {
                 })
             ),
         { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [UPDATE - STORE CHANNEL]
+    // -----------------------------------------------------------------------------------------------------
+
+    updateStoreChannelRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreChannelActions.updateStoreChannelRequest),
+            map(action => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(
+                ([payload, authState]: [
+                    { body: PayloadStoreChannelPatch; id: string },
+                    TNullable<Auth>
+                ]) => {
+                    if (!authState) {
+                        return this._$helper.decodeUserToken().pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreChannelPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreChannelRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreChannelFailure')
+                            )
+                        );
+                    } else {
+                        return of(authState.user).pipe(
+                            map(this._checkUserSupplier),
+                            retry(3),
+                            switchMap(userData => of([userData, payload])),
+                            switchMap<
+                                [User, { body: PayloadStoreChannelPatch; id: string }],
+                                Observable<AnyAction>
+                            >(this._updateStoreChannelRequest$),
+                            catchError(err =>
+                                this._sendErrorToState$(err, 'updateStoreChannelFailure')
+                            )
+                        );
+                    }
+                }
+            )
+        )
+    );
+
+    updateStoreChannelFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreChannelActions.updateStoreChannelFailure),
+                map(action => action.payload),
+                tap(resp => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    updateStoreChannelSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(StoreChannelActions.updateStoreChannelSuccess),
+                tap(() => {
+                    this._$notice.open('Successfully updated store channel hierarchy', 'success', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CHANGE STATUS - STORE CHANNEL]
+    // -----------------------------------------------------------------------------------------------------
+
+    confirmChangeStatusStoreChannel$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(StoreChannelActions.confirmChangeStatusStoreChannel),
+            map(action => action.payload),
+            exhaustMap(params => {
+                const body = params.status === EStatus.ACTIVE ? EStatus.INACTIVE : EStatus.ACTIVE;
+
+                const dialogRef = this.matDialog.open<
+                    MerchantSegmentationAlertComponent,
+                    any,
+                    { id: string; change: EStatus }
+                >(MerchantSegmentationAlertComponent, {
+                    data: {
+                        title: 'Alert',
+                        segmentType: 'channel',
+                        id: params.id,
+                        change: body
+                    },
+                    panelClass: 'merchant-segment-alert-dialog',
+                    disableClose: true
+                });
+
+                return dialogRef.afterClosed();
+            }),
+            map(({ id, change }) => {
+                if (id && change) {
+                    return StoreChannelActions.updateStoreChannelRequest({
+                        payload: { id, body: new PayloadStoreChannelPatch({ status: change }) }
+                    });
+                } else {
+                    return StoreChannelActions.cancelConfirmChangeStatusStoreChannel();
+                }
+            })
+        )
     );
 
     // -----------------------------------------------------------------------------------------------------
@@ -259,6 +384,7 @@ export class StoreChannelEffects {
 
     constructor(
         private actions$: Actions,
+        private matDialog: MatDialog,
         private router: Router,
         private store: Store<fromStoreChannels.FeatureState>,
         private _$helper: HelperService,
@@ -296,6 +422,25 @@ export class StoreChannelEffects {
                 return StoreChannelActions.createStoreChannelSuccess();
             }),
             catchError(err => this._sendErrorToState$(err, 'createStoreChannelFailure'))
+        );
+    };
+
+    _updateStoreChannelRequest$ = ([userData, { body, id }]: [
+        User,
+        { body: PayloadStoreChannelPatch; id: string }
+    ]): Observable<AnyAction> => {
+        if (!id || !Object.keys(body).length) {
+            throw new ErrorHandler({
+                id: 'ERR_ID_OR_PAYLOAD_NOT_FOUND',
+                errors: 'Check id or payload'
+            });
+        }
+
+        return this._$storeChannelCrudCrudApi.patch<PayloadStoreChannelPatch>(body, id).pipe(
+            map(resp => {
+                return StoreChannelActions.updateStoreChannelSuccess();
+            }),
+            catchError(err => this._sendErrorToState$(err, 'updateStoreChannelFailure'))
         );
     };
 

@@ -311,6 +311,7 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewIn
         this.dialog = this.applyDialogFactory$.open({
             title: 'Select Warehouse',
             template: this.selectStoreType,
+            isApplyEnabled: true,
         }, {
             disableClose: true,
             width: '80vw',

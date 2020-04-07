@@ -1,8 +1,14 @@
 import { createAction, props } from '@ngrx/store';
-import { ErrorHandler } from 'app/shared/models/global.model';
+import { ErrorHandler, EStatus } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { PayloadStoreType, StoreSegment, StoreType, StoreSegmentTree } from '../../models';
+import {
+    PayloadStoreType,
+    PayloadStoreTypePatch,
+    StoreSegment,
+    StoreSegmentTree,
+    StoreType
+} from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Store Types
@@ -79,6 +85,51 @@ export const createStoreTypeSuccess = createAction(
     '[Store Segmentation] Create Store Type Success'
 );
 
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Store Type
+// -----------------------------------------------------------------------------------------------------
+
+export const updateStoreTypeRequest = createAction(
+    '[Store Segmentation] Update Store Type Request',
+    props<{ payload: { body: PayloadStoreTypePatch; id: string } }>()
+);
+
+export const updateStoreTypeFailure = createAction(
+    '[Store Segmentation] Update Store Type Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateStoreTypeSuccess = createAction(
+    '[Store Segmentation] Update Store Type Success'
+);
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CHANGE STATUS] Store Type
+// -----------------------------------------------------------------------------------------------------
+
+export const confirmChangeStatusStoreType = createAction(
+    '[Store Segmentation] Confirm Change Status Store Type',
+    props<{ payload: StoreType }>()
+);
+
+export const cancelConfirmChangeStatusStoreType = createAction(
+    '[Store Segmentation] Cancel Confirm Change Status Store Type'
+);
+
+export const changeStatusStoreTypeRequest = createAction(
+    '[Store Segmentation] Change Status Store Type Request',
+    props<{ payload: { body: EStatus; id: string } }>()
+);
+
+export const changeStatusStoreTypeFailure = createAction(
+    '[Store Segmentation] Change Status Store Type Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const changeStatusStoreTypeSuccess = createAction(
+    '[Store Segmentation] Change Status Store Type Success'
+);
+
 export const clearState = createAction('[Store Segmentation] Reset Store Types Core State');
 
 export const clearTableState = createAction(
@@ -89,4 +140,5 @@ export type FailureActions =
     | 'fetchStoreTypesFailure'
     | 'fetchStoreLastTypeFailure'
     | 'refreshStoreTypesFailure'
-    | 'createStoreTypeFailure';
+    | 'createStoreTypeFailure'
+    | 'updateStoreTypeFailure';

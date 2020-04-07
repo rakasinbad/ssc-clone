@@ -1,0 +1,62 @@
+<div
+    class="grey-300 p-8 mt-0 mx-0 mb-28"
+    fxLayout="row"
+    fxLayoutGap="1px"
+    fxLayoutAlign="start stretch"
+    style="border-radius: 4px;"
+>
+    <div
+        fxFlex="25"
+        class="fuse-white"
+    >
+        <!-- LEVEL 0 -->
+        <a
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            class="tree"
+            *ngFor="let tree of firstLevelEntities; index as $index;"
+            (click)="onSelectTree(tree, 0)"
+            [class.fuse-black-fg]="!((selectedTree$.value[0]?.id || null) === tree.id)"
+            [class.red-fg]="((selectedTree$.value[0]?.id || null) === tree.id)"
+        >
+            <span style="padding: 10px 0px 10px 8px;">{{ tree?.name || ('unknown') }}</span>
+            <mat-icon *ngIf="tree.hasChild">chevron_right</mat-icon>
+        </a>
+        <!-- / LEVEL 0 -->
+    </div>
+    <!-- ABOVE LEVEL 0 -->
+    <ng-container
+        *ngFor="let selectedTree of (observerSelectedTree$ | async); index as $catLevel"
+    >
+        <div
+            fxFlex="25"
+            class="fuse-white"
+            *ngIf="(childrenOfTree[selectedTree?.id]?.length || []) > 0"
+        >
+            <a
+                fxLayout="row"
+                fxLayoutAlign="space-between center"
+                class="tree"
+                *ngFor="let tree of (childrenOfTree[selectedTree.id]); index as $index;"
+                (click)="onSelectTree(tree, $catLevel + 1)"
+                [class.fuse-black-fg]="!((selectedTree$.value[$catLevel + 1]?.id || null) === tree.id)"
+                [class.red-fg]="((selectedTree$.value[$catLevel + 1]?.id || null) === tree.id)"
+            >
+                <span style="padding: 10px 0px 10px 8px;">{{ tree?.name || ('unknown') }}</span>
+                <mat-icon *ngIf="tree.hasChild">chevron_right</mat-icon>
+            </a>
+        </div>
+    </ng-container>
+    <!-- ABOVE LEVEL 0 -->
+</div>
+<div
+    class="mt-0 mx-16 mb-16"
+    fxLayout="row"
+    fxLayoutGap="16px"
+    fxLayoutAlign="start center"
+>
+    <!-- SELECTED TREE -->
+    <strong>Selected:</strong>
+    <strong><span class="warn-900-fg" fxLayout="row" fxLayoutAlign="start center" [innerHTML]="selectedString | safe:'html'"></span></strong>
+    <!-- / SELECTED TREE -->
+</div>

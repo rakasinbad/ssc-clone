@@ -3,13 +3,13 @@ import { createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromStoreSegmentsCore from '../reducers';
 import * as fromMerchantSegmentTreeTable from '../reducers/merchant-segment-tree-table.reducer';
 
-const getSalesRepsCoreState = createFeatureSelector<
+const getStoreSegmentsCoreState = createFeatureSelector<
     fromStoreSegmentsCore.FeatureState,
     fromStoreSegmentsCore.State
 >(fromStoreSegmentsCore.featureKey);
 
 export const getStoreSegmentTreeTableEntitiesState = createSelector(
-    getSalesRepsCoreState,
+    getStoreSegmentsCoreState,
     state => state.storeSegmentTreeTable
 );
 

@@ -7,7 +7,7 @@ export const navigation: Array<FuseNavigation> = [
         translate: 'NAV.DASHBOARD.TITLE',
         type: 'item',
         icon: 'dashboard',
-        url: '/pages/dashboard'
+        url: '/pages/dashboard',
     },
     {
         id: 'account',
@@ -21,22 +21,22 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Store List',
                 translate: 'NAV.ACCOUNTS_STORE.TITLE',
                 type: 'item',
-                url: '/pages/account/stores'
+                url: '/pages/account/stores',
             },
             {
                 id: 'storeSetting',
                 title: 'Store Setting',
                 translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
-                url: '/pages/account/store-setting'
+                url: '/pages/account/store-setting',
             },
             {
                 id: 'storeSegmentation',
                 title: 'Store Segmentation',
                 //    translate: 'NAV.ACCOUNTS_STORE_SETTING.TITLE',
                 type: 'item',
-                url: '/pages/account/store-segmentation'
-            }
+                url: '/pages/account/store-segmentation',
+            },
             // {
             //     id: 'accountsInternal',
             //     title: 'Internal',
@@ -44,7 +44,7 @@ export const navigation: Array<FuseNavigation> = [
             //     type: 'item',
             //     url: '/pages/account/internal'
             // }
-        ]
+        ],
     },
     {
         id: 'catalogue',
@@ -58,16 +58,16 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Add Product',
                 translate: 'NAV.ADD_PRODUCT.TITLE',
                 type: 'item',
-                url: '/pages/catalogues/add'
+                url: '/pages/catalogues/add',
             },
             {
                 id: 'manageProduct',
                 title: 'Manage Product',
                 translate: 'NAV.MANAGE_PRODUCT.TITLE',
                 type: 'item',
-                url: '/pages/catalogues/list'
-            }
-        ]
+                url: '/pages/catalogues/list',
+            },
+        ],
     },
     {
         id: 'attendance',
@@ -75,7 +75,7 @@ export const navigation: Array<FuseNavigation> = [
         translate: 'NAV.ATTENDANCES.TITLE',
         type: 'item',
         icon: 'custom-sinbad-attendance-logo',
-        url: '/pages/attendances'
+        url: '/pages/attendances',
     },
     {
         id: 'finance',
@@ -89,7 +89,7 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Credit Limit/Balance',
                 translate: 'NAV.CREDIT_LIMIT_BALANCE.TITLE',
                 type: 'item',
-                url: '/pages/finances/credit-limit-balance'
+                url: '/pages/finances/credit-limit-balance',
             },
             // {
             //     id: 'banks',
@@ -103,9 +103,9 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Payment Status',
                 translate: 'NAV.PAYMENT_STATUS.TITLE',
                 type: 'item',
-                url: '/pages/finances/payment-status'
-            }
-        ]
+                url: '/pages/finances/payment-status',
+            },
+        ],
     },
     {
         id: 'orderManagement',
@@ -113,7 +113,7 @@ export const navigation: Array<FuseNavigation> = [
         translate: 'NAV.ORDER_MANAGEMENTS.TITLE',
         type: 'item',
         icon: 'custom-sinbad-oms-logo',
-        url: '/pages/orders'
+        url: '/pages/orders',
     },
     {
         id: 'inventory',
@@ -135,9 +135,9 @@ export const navigation: Array<FuseNavigation> = [
                 translate: 'NAV.IN_STORE_INVENTORIES.TITLE',
                 type: 'item',
                 url: '/pages/in-store-inventories',
-                exactMatch: false
-            }
-        ]
+                exactMatch: false,
+            },
+        ],
     },
     {
         id: 'sales-force',
@@ -151,29 +151,29 @@ export const navigation: Array<FuseNavigation> = [
                 title: 'Sales Rep',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
-                url: '/pages/sales-force/sales-rep'
+                url: '/pages/sales-force/sales-rep',
             },
             {
                 id: 'portfolio',
                 title: 'Portfolio of Store',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
-                url: '/pages/sales-force/portfolio'
+                url: '/pages/sales-force/portfolio',
             },
             {
                 id: 'association',
                 title: 'SR Assignment',
                 //    translate: 'NAV.SUPPLIER_INVENTORIES.TITLE',
                 type: 'item',
-                url: '/pages/sales-force/associations'
+                url: '/pages/sales-force/associations',
             },
             {
                 id: 'journey-plan',
                 title: 'Journey Plan',
                 type: 'item',
-                url: '/pages/sales-force/journey-plans'
-            }
-        ]
+                url: '/pages/sales-force/journey-plans',
+            },
+        ],
     },
     {
         id: 'warehouse',
@@ -185,26 +185,40 @@ export const navigation: Array<FuseNavigation> = [
                 id: 'wh-list',
                 title: 'Warehouse List',
                 type: 'item',
-                url: '/pages/logistics/warehouses'
+                url: '/pages/logistics/warehouses',
             },
             {
                 id: 'wh-coverage',
                 title: 'Warehouse Coverage',
                 type: 'item',
-                url: '/pages/logistics/warehouse-coverages'
+                url: '/pages/logistics/warehouse-coverages',
             },
             {
                 id: 'wh-sku-assignment',
                 title: 'SKU Assignment',
                 type: 'item',
-                url: '/pages/logistics/sku-assignments'
+                url: '/pages/logistics/sku-assignments',
             },
             {
                 id: 'wh-stock-management',
                 title: 'Stock Management',
                 type: 'item',
-                url: '/pages/logistics/stock-managements'
-            }
-        ]
-    }
+                url: '/pages/logistics/stock-managements',
+            },
+        ],
+    },
+    {
+        id: 'promo',
+        title: 'Promo',
+        type: 'collapsable',
+        icon: 'local_play',
+        children: [
+            {
+                id: 'flexi-combo',
+                title: 'Flexi Combo',
+                type: 'item',
+                url: '/pages/promos/flexi-combo',
+            },
+        ],
+    },
 ];

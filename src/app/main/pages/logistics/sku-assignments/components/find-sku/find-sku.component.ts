@@ -157,6 +157,8 @@ export class FindSkuComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.catalogueStore.dispatch(CatalogueActions.resetCatalogues());
+
         this.catalogueStore.dispatch(
             CatalogueActions.fetchCataloguesRequest({
                 payload: {

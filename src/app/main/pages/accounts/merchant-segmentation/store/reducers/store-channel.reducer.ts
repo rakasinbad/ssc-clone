@@ -30,9 +30,25 @@ export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | '
 // Reducer manage the action
 export const reducer = createReducer<State>(
     initialState,
-    on(StoreChannelActions.createStoreChannelRequest, state => ({ ...state, isLoadingRow: true })),
-    on(StoreChannelActions.createStoreChannelFailure, state => ({ ...state, isRefresh: true })),
-    on(StoreChannelActions.refreshStoreChannelsRequest, state => ({ ...state, isRefresh: false })),
+    on(StoreChannelActions.cancelConfirmChangeStatusStoreChannel, state => ({
+        ...state,
+        isLoadingRow: true,
+        isRefresh: true
+    })),
+    on(
+        StoreChannelActions.createStoreChannelRequest,
+        StoreChannelActions.updateStoreChannelRequest,
+        state => ({ ...state, isLoadingRow: true })
+    ),
+    on(
+        StoreChannelActions.createStoreChannelFailure,
+        StoreChannelActions.updateStoreChannelFailure,
+        state => ({ ...state, isRefresh: true })
+    ),
+    on(StoreChannelActions.refreshStoreChannelsRequest, state => ({
+        ...state,
+        isRefresh: false
+    })),
     on(StoreChannelActions.refreshStoreChannelsFailure, state => ({
         ...state,
         isLoadingRow: false
@@ -45,7 +61,11 @@ export const reducer = createReducer<State>(
         ...state,
         isLoading: false
     })),
-    on(StoreChannelActions.createStoreChannelSuccess, state => ({ ...state, isRefresh: true })),
+    on(
+        StoreChannelActions.createStoreChannelSuccess,
+        StoreChannelActions.updateStoreChannelSuccess,
+        state => ({ ...state, isRefresh: true })
+    ),
     on(StoreChannelActions.fetchStoreChannelsSuccess, (state, { payload }) =>
         adapter.addAll(payload.data, {
             ...state,
@@ -54,7 +74,7 @@ export const reducer = createReducer<State>(
         })
     ),
     on(StoreChannelActions.refreshStoreChannelsSuccess, (state, { payload }) =>
-        adapter.upsertMany(payload.data, {
+        adapter.addAll(payload.data, {
             ...state,
             isLoadingRow: false,
             deepestLevel: payload.deepestLevel

@@ -7,7 +7,8 @@ import {
     OnDestroy,
     OnInit,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    TemplateRef
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
@@ -26,25 +27,29 @@ import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { CreditLimitGroup } from 'app/main/pages/finances/credit-limit-balance/models';
 import { ErrorMessageService, HelperService } from 'app/shared/helpers';
 import { Cluster } from 'app/shared/models/cluster.model';
-import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
+// import { Hierarchy } from 'app/shared/models/customer-hierarchy.model';
 import { District, Province, Urban } from 'app/shared/models/location.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { StoreGroup } from 'app/shared/models/store-group.model';
-import { StoreSegment } from 'app/shared/models/store-segment.model';
+// import { StoreSegment } from 'app/shared/models/store-segment.model';
 import { StoreType } from 'app/shared/models/store-type.model';
 import { VehicleAccessibility } from 'app/shared/models/vehicle-accessibility.model';
 import { DropdownActions, FormActions, UiActions } from 'app/shared/store/actions';
 import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 import { NgxPermissionsService } from 'ngx-permissions';
 import * as numeral from 'numeral';
-import { fromEvent, Observable, Subject } from 'rxjs';
+import { fromEvent, Observable, Subject, of, BehaviorSubject } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
     filter,
     map,
     takeUntil,
-    withLatestFrom
+    withLatestFrom,
+    tap,
+    switchMap,
+    take,
+    catchError
 } from 'rxjs/operators';
 
 import { locale as english } from '../i18n/en';
@@ -53,6 +58,20 @@ import { Store as Merchant, StoreSetting } from '../models';
 import { StoreActions, StoreSettingActions } from '../store/actions';
 import { fromMerchant } from '../store/reducers';
 import { StoreSelectors, StoreSettingSelectors } from '../store/selectors';
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { UserSupplier } from 'app/shared/models/supplier.model';
+import { IPaginatedResponse, ErrorHandler, TNullable } from 'app/shared/models/global.model';
+import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/models';
+import { StoreSegmentationTypesApiService } from 'app/shared/components/dropdowns/store-segmentation/store-segmentation-types/services';
+import { StoreSegmentationTreeComponent } from 'app/shared/components/selection-tree/store-segmentation/store-segmentation.component';
+import { SelectedTree } from 'app/shared/components/selection-tree/selection-tree/models';
+import { StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
+
+interface RecordedSelection<T> {
+    lastSaved: T;
+    current: T;
+}
 
 @Component({
     selector: 'app-merchant-form',
@@ -92,9 +111,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     postcode$: Observable<string>;
     storeClusters$: Observable<Cluster[]>;
     storeGroups$: Observable<StoreGroup[]>;
-    storeSegments$: Observable<StoreSegment[]>;
-    storeTypes$: Observable<StoreType[]>;
-    hierarchies$: Observable<Hierarchy[]>;
+    // storeSegments$: Observable<StoreSegment[]>;
+    storeTypes$: BehaviorSubject<StoreType[]> = new BehaviorSubject<StoreType[]>([]);
+    // hierarchies$: Observable<Hierarchy[]>;
     vehicleAccessibilities$: Observable<VehicleAccessibility[]>;
     creditLimitGroups$: Observable<CreditLimitGroup[]>;
     // d2Source$: DistrictDataSource;
@@ -102,11 +121,23 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
     storeSetting$: Observable<StoreSetting>;
+    // Untuk keperluan handle dialog.
+    dialogStoreType: ApplyDialogService<StoreSegmentationTreeComponent>;
 
-    private _unSubs$: Subject<void>;
+    private _unSubs$: Subject<void> = new Subject<void>();
     private _selectedDistrict: string;
     private _selectedUrban: string;
     private _timer: Array<NodeJS.Timer> = [];
+
+    selectedStoreType: Array<StoreSegmentationType> = [];
+    selectedStoreGroup: Array<StoreSegmentationGroup> = [];
+    selectedStoreChannel: Array<StoreSegmentationChannel> = [];
+    selectedStoreCluster: Array<StoreSegmentationCluster> = [];
+
+    selectedStoreType$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Type', current: '' });
+    selectedStoreGroup$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Group', current: '' });
+    selectedStoreChannel$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Channel', current: '' });
+    selectedStoreCluster$: BehaviorSubject<RecordedSelection<string>> = new BehaviorSubject<RecordedSelection<string>>({ lastSaved: 'Choose Store Cluster', current: '' });
 
     @ViewChild('autoDistrict', { static: false }) autoDistrict: MatAutocomplete;
     @ViewChild('triggerDistrict', { static: false, read: MatAutocompleteTrigger })
@@ -122,6 +153,11 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('cdkDistrict2', { static: false }) cdkDistrict2: CdkVirtualScrollViewport;
     @ViewChild('cdkUrban', { static: false }) cdkUrban: CdkVirtualScrollViewport;
 
+    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<StoreSegmentationTreeComponent>;
+    @ViewChild('selectStoreGroup', { static: false }) selectStoreGroup: TemplateRef<StoreSegmentationTreeComponent>;
+    @ViewChild('selectStoreChannel', { static: false }) selectStoreChannel: TemplateRef<StoreSegmentationTreeComponent>;
+    @ViewChild('selectStoreCluster', { static: false }) selectStoreCluster: TemplateRef<StoreSegmentationTreeComponent>;
+
     constructor(
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
@@ -129,10 +165,25 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromMerchant.FeatureState>,
+        private applyDialogFactory$: ApplyDialogFactoryService<StoreSegmentationTreeComponent>,
         private _fuseTranslationLoaderService: FuseTranslationLoaderService,
         private _$errorMessage: ErrorMessageService,
-        private _$helper: HelperService
+        private _$helper: HelperService,
+        private _$typeApi: StoreSegmentationTypesApiService
     ) {
+        // Menyiapkan query untuk pencarian store entity.
+        const params: IQueryParams = {
+            paginate: false,
+            limit: 10,
+            skip: 0
+        };
+        this.requestStoreType(params);
+        
+        this.storeTypes$.pipe(
+            tap(value => HelperService.debug('AVAILABLE STORE TYPES', value)),
+            takeUntil(this._unSubs$)
+        ).subscribe();
+
         // Load translate
         this._fuseTranslationLoaderService.loadTranslations(indonesian, english);
 
@@ -234,7 +285,6 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
         // Add 'implements OnInit' to the class.
 
-        this._unSubs$ = new Subject<void>();
         this.tempInvoiceGroupName = ['-'];
         this.tempCreditLimitAmount = [false];
         this.tempTermOfPayment = [false];
@@ -265,29 +315,29 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
         // this.store.dispatch(DropdownActions.fetchDropdownProvinceRequest());
 
         // Get selector dropdown store type
-        this.storeTypes$ = this.store.select(DropdownSelectors.getStoreTypeDropdownState);
+        // this.storeTypes$ = this.store.select(DropdownSelectors.getStoreTypeDropdownState);
         // Fetch request store stype
-        this.store.dispatch(DropdownActions.fetchDropdownStoreTypeRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownStoreTypeRequest());
 
         // Get selector dropdown store group
-        this.storeGroups$ = this.store.select(DropdownSelectors.getStoreGroupDropdownState);
+        // this.storeGroups$ = this.store.select(DropdownSelectors.getStoreGroupDropdownState);
         // Fetch request store group
-        this.store.dispatch(DropdownActions.fetchDropdownStoreGroupRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownStoreGroupRequest());
 
         // Get selector dropdown store cluster
-        this.storeClusters$ = this.store.select(DropdownSelectors.getStoreClusterDropdownState);
+        // this.storeClusters$ = this.store.select(DropdownSelectors.getStoreClusterDropdownState);
         // Fetch request store cluster
-        this.store.dispatch(DropdownActions.fetchDropdownStoreClusterRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownStoreClusterRequest());
 
         // Get selector dropdown store segment
-        this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
+        // this.storeSegments$ = this.store.select(DropdownSelectors.getStoreSegmentDropdownState);
         // Fetch request store segment
-        this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownStoreSegmentRequest());
 
         // Get selector dropdown hierarcy
-        this.hierarchies$ = this.store.select(DropdownSelectors.getHierarchyDropdownState);
+        // this.hierarchies$ = this.store.select(DropdownSelectors.getHierarchyDropdownState);
         // Fetch request hierarchy
-        this.store.dispatch(DropdownActions.fetchDropdownHierarchyRequest());
+        // this.store.dispatch(DropdownActions.fetchDropdownHierarchyRequest());
 
         // Get selector dropdown vehicle accessibility
         this.vehicleAccessibilities$ = this.store.select(
@@ -523,6 +573,218 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get creditLimitControls(): AbstractControl[] {
         return (this.form.get('storeInfo.payment.creditLimit') as FormArray).controls;
+    }
+
+    onSelectStoreType(): void {
+        this.dialogStoreType = this.applyDialogFactory$.open({
+            title: 'Select Store Type',
+            template: this.selectStoreType,
+            isApplyEnabled: true,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialogStoreType.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION STORE TYPE CLOSED', value);
+
+                const selected = this.selectedStoreType.length === 0 ? null : this.selectedStoreType[this.selectedStoreType.length - 1].id;
+                if (value === 'apply') {
+                    this.form.get('storeInfo.storeClassification.storeType').setValue(selected);
+
+                    this.selectedStoreType$.next({
+                        lastSaved: this.selectedStoreType$.value.current,
+                        current: this.selectedStoreType$.value.current,
+                    });
+                }
+
+                this.cdRef.detectChanges();
+            }
+        });
+    }
+
+    onStoreTypeSelected($event: Array<StoreSegmentationType>): void {
+        this.selectedStoreType = $event;
+        HelperService.debug('onStoreTypeSelected', $event);
+    }
+
+    onStoreTypeSelectionChanged($event: SelectedTree): void {
+        HelperService.debug('onStoreTypeSelectionChanged', $event);
+    
+        if (!$event.selected) {
+            this.dialogStoreType.disableApply();
+        } else if ($event.selected.hasChild) {
+            this.dialogStoreType.disableApply();
+        } else {
+            this.dialogStoreType.enableApply();
+        }
+
+        this.selectedStoreType$.next({
+            lastSaved: this.selectedStoreType$.value.lastSaved,
+            current: $event.selectedString,
+        });
+    }
+
+    onSelectStoreGroup(): void {
+        this.dialogStoreType = this.applyDialogFactory$.open({
+            title: 'Select Store Group',
+            template: this.selectStoreGroup,
+            isApplyEnabled: true,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialogStoreType.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION STORE GROUP CLOSED', value);
+
+                const selected = this.selectedStoreGroup.length === 0 ? null : this.selectedStoreGroup[this.selectedStoreGroup.length - 1].id;
+                if (value === 'apply') {
+                    this.form.get('storeInfo.storeClassification.storeGroup').setValue(selected);
+
+                    this.selectedStoreGroup$.next({
+                        lastSaved: this.selectedStoreGroup$.value.current,
+                        current: this.selectedStoreGroup$.value.current,
+                    });
+                }
+
+                this.cdRef.detectChanges();
+            }
+        });
+    }
+
+    onStoreGroupSelected($event: Array<StoreSegmentationGroup>): void {
+        this.selectedStoreGroup = $event;
+        HelperService.debug('onStoreGroupSelected', $event);
+    }
+
+    onStoreGroupSelectionChanged($event: SelectedTree): void {
+        HelperService.debug('onStoreGroupSelectionChanged', $event);
+    
+        if (!$event.selected) {
+            this.dialogStoreType.disableApply();
+        } else if ($event.selected.hasChild) {
+            this.dialogStoreType.disableApply();
+        } else {
+            this.dialogStoreType.enableApply();
+        }
+
+        this.selectedStoreGroup$.next({
+            lastSaved: this.selectedStoreGroup$.value.lastSaved,
+            current: $event.selectedString,
+        });
+    }
+
+    onSelectStoreChannel(): void {
+        this.dialogStoreType = this.applyDialogFactory$.open({
+            title: 'Select Store Channel',
+            template: this.selectStoreChannel,
+            isApplyEnabled: true,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialogStoreType.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION STORE CHANNEL CLOSED', value);
+
+                const selected = this.selectedStoreChannel.length === 0 ? null : this.selectedStoreChannel[this.selectedStoreChannel.length - 1].id;
+                if (value === 'apply') {
+                    this.form.get('storeInfo.storeClassification.storeChannel').setValue(selected);
+
+                    this.selectedStoreChannel$.next({
+                        lastSaved: this.selectedStoreChannel$.value.current,
+                        current: this.selectedStoreChannel$.value.current,
+                    });
+                }
+
+                this.cdRef.detectChanges();
+            }
+        });
+    }
+
+    onStoreChannelSelected($event: Array<StoreSegmentationChannel>): void {
+        this.selectedStoreChannel = $event;
+        HelperService.debug('onStoreChannelSelected', $event);
+    }
+
+    onStoreChannelSelectionChanged($event: SelectedTree): void {
+        HelperService.debug('onStoreChannelSelectionChanged', $event);
+    
+        if (!$event.selected) {
+            this.dialogStoreType.disableApply();
+        } else if ($event.selected.hasChild) {
+            this.dialogStoreType.disableApply();
+        } else {
+            this.dialogStoreType.enableApply();
+        }
+
+        this.selectedStoreChannel$.next({
+            lastSaved: this.selectedStoreChannel$.value.lastSaved,
+            current: $event.selectedString,
+        });
+    }
+
+    onSelectStoreCluster(): void {
+        this.dialogStoreType = this.applyDialogFactory$.open({
+            title: 'Select Store Cluster',
+            template: this.selectStoreCluster,
+            isApplyEnabled: true,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialogStoreType.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION STORE CLUSTER CLOSED', value);
+
+                const selected = this.selectedStoreCluster.length === 0 ? null : this.selectedStoreCluster[this.selectedStoreCluster.length - 1].id;
+                if (value === 'apply') {
+                    this.form.get('storeInfo.storeClassification.storeCluster').setValue(selected);
+
+                    this.selectedStoreCluster$.next({
+                        lastSaved: this.selectedStoreCluster$.value.current,
+                        current: this.selectedStoreCluster$.value.current,
+                    });
+                }
+
+                this.cdRef.detectChanges();
+            }
+        });
+    }
+
+    onStoreClusterSelected($event: Array<StoreSegmentationCluster>): void {
+        this.selectedStoreCluster = $event;
+        HelperService.debug('onStoreClusterSelected', $event);
+    }
+
+    onStoreClusterSelectionChanged($event: SelectedTree): void {
+        HelperService.debug('onStoreClusterSelectionChanged', $event);
+    
+        if (!$event.selected) {
+            this.dialogStoreType.disableApply();
+        } else if ($event.selected.hasChild) {
+            this.dialogStoreType.disableApply();
+        } else {
+            this.dialogStoreType.enableApply();
+        }
+
+        this.selectedStoreCluster$.next({
+            lastSaved: this.selectedStoreCluster$.value.lastSaved,
+            current: $event.selectedString,
+        });
     }
 
     displayDistrictOption(item: District, isHtml = false): string {
@@ -1130,6 +1392,56 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
+    private requestStoreType(params: IQueryParams): void {
+        of(null).pipe(
+            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+            // delay(1000),
+            withLatestFrom<any, UserSupplier>(
+                this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
+            ),
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<StoreSegmentationType>>>(([_, userSupplier]) => {
+                // Jika user tidak ada data supplier.
+                if (!userSupplier) {
+                    throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
+                }
+
+                // Mengambil ID supplier-nya.
+                const { supplierId } = userSupplier;
+
+                // Membentuk query baru.
+                const newQuery: IQueryParams = { ... params };
+                // Memasukkan ID supplier ke dalam params baru.
+                newQuery['supplierId'] = supplierId;
+
+                // Melakukan request data warehouse.
+                return this._$typeApi
+                    .find<IPaginatedResponse<StoreSegmentationType>>(newQuery)
+                    .pipe(
+                        tap(response => HelperService.debug('FIND STORE TYPE', { params: newQuery, response }))
+                    );
+            }),
+            take(1),
+            catchError(err => { throw err; }),
+        ).subscribe({
+            next: (response) => {
+                HelperService.debug('STORE TYPE RESPONSE', response);
+
+                if (Array.isArray(response)) {
+                    this.storeTypes$.next(response);
+                } else {
+                    this.storeTypes$.next(response.data);
+                }
+            },
+            error: (err) => {
+                HelperService.debug('ERROR FIND STORE TYPE', { params, error: err });
+                this._$helper.showErrorNotification(new ErrorHandler(err));
+            },
+            complete: () => {
+                HelperService.debug('FIND STORE TYPE COMPLETED');
+            }
+        });
+    }
 
     private createCreditLimitForm(): FormGroup {
         return this.formBuilder.group({
@@ -1889,6 +2201,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //     })
                             // ]
                         ],
+                        storeChannel: [
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
+                        ],
                         storeCluster: [
                             ''
                             // [
@@ -1900,18 +2223,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //     })
                             // ]
                         ],
-                        storeSegment: [
-                            ''
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        hierarchy: ['']
+                        // storeSegment: [
+                        //     ''
+                        //     // [
+                        //     //     RxwebValidators.required({
+                        //     //         message: this._$errorMessage.getErrorMessageNonState(
+                        //     //             'default',
+                        //     //             'required'
+                        //     //         )
+                        //     //     })
+                        //     // ]
+                        // ],
+                        // hierarchy: ['']
                     }),
                     payment: this.formBuilder.group({
                         creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
@@ -2340,6 +2663,17 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //     })
                             // ]
                         ],
+                        storeChannel: [
+                            ''
+                            // [
+                            //     RxwebValidators.required({
+                            //         message: this._$errorMessage.getErrorMessageNonState(
+                            //             'default',
+                            //             'required'
+                            //         )
+                            //     })
+                            // ]
+                        ],
                         storeCluster: [
                             ''
                             // [
@@ -2351,18 +2685,18 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             //     })
                             // ]
                         ],
-                        storeSegment: [
-                            ''
-                            // [
-                            //     RxwebValidators.required({
-                            //         message: this._$errorMessage.getErrorMessageNonState(
-                            //             'default',
-                            //             'required'
-                            //         )
-                            //     })
-                            // ]
-                        ],
-                        hierarchy: ['']
+                        // storeSegment: [
+                        //     ''
+                        //     // [
+                        //     //     RxwebValidators.required({
+                        //     //         message: this._$errorMessage.getErrorMessageNonState(
+                        //     //             'default',
+                        //     //             'required'
+                        //     //         )
+                        //     //     })
+                        //     // ]
+                        // ],
+                        // hierarchy: ['']
                     }),
                     payment: this.formBuilder.group({
                         creditLimit: this.formBuilder.array([this.createCreditLimitForm()])
@@ -2701,31 +3035,31 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             }
                         }
 
-                        if (data.storeSegment && data.storeSegment.id) {
-                            this.form
-                                .get('storeInfo.storeClassification.storeSegment')
-                                .patchValue(data.storeSegment.id);
+                        // if (data.storeSegment && data.storeSegment.id) {
+                        //     this.form
+                        //         .get('storeInfo.storeClassification.storeSegment')
+                        //         .patchValue(data.storeSegment.id);
 
-                            if (
-                                this.form.get('storeInfo.storeClassification.storeSegment').invalid
-                            ) {
-                                this.form
-                                    .get('storeInfo.storeClassification.storeSegment')
-                                    .markAsTouched();
-                            }
-                        }
+                        //     if (
+                        //         this.form.get('storeInfo.storeClassification.storeSegment').invalid
+                        //     ) {
+                        //         this.form
+                        //             .get('storeInfo.storeClassification.storeSegment')
+                        //             .markAsTouched();
+                        //     }
+                        // }
 
-                        if (data.hierarchy && data.hierarchy.id) {
-                            this.form
-                                .get('storeInfo.storeClassification.hierarchy')
-                                .patchValue(data.hierarchy.id);
+                        // if (data.hierarchy && data.hierarchy.id) {
+                        //     this.form
+                        //         .get('storeInfo.storeClassification.hierarchy')
+                        //         .patchValue(data.hierarchy.id);
 
-                            if (this.form.get('storeInfo.storeClassification.hierarchy').invalid) {
-                                this.form
-                                    .get('storeInfo.storeClassification.hierarchy')
-                                    .markAsTouched();
-                            }
-                        }
+                        //     if (this.form.get('storeInfo.storeClassification.hierarchy').invalid) {
+                        //         this.form
+                        //             .get('storeInfo.storeClassification.hierarchy')
+                        //             .markAsTouched();
+                        //     }
+                        // }
 
                         if (data.creditLimitStores && data.creditLimitStores.length > 0) {
                             const creditLimitStores = data.creditLimitStores;
@@ -2879,14 +3213,14 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             body.storeInfo.payment.creditLimit &&
                             body.storeInfo.payment.creditLimit.length > 0
                                 ? body.storeInfo.payment.creditLimit.map(row => {
-                                      return {
-                                          allowCreditLimit: row.allowCreditLimit,
-                                          invoiceGroupId: row.invoiceGroup,
-                                          creditLimitGroupId: row.creditLimitGroup,
-                                          creditLimit: row.creditLimit,
-                                          termOfPayment: row.termOfPayment
-                                      };
-                                  })
+                                    return {
+                                        allowCreditLimit: row.allowCreditLimit,
+                                        invoiceGroupId: row.invoiceGroup,
+                                        creditLimitGroupId: row.creditLimitGroup,
+                                        creditLimit: row.creditLimit,
+                                        termOfPayment: row.termOfPayment
+                                    };
+                                })
                                 : [];
 
                         const urban = body.storeInfo.address.urban as Urban;
@@ -2902,9 +3236,21 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             phoneNo: body.profileInfo.phoneNumber,
                             numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
                             status: 'active',
-                            storeTypeId: body.storeInfo.storeClassification.storeType,
-                            storeGroupId: body.storeInfo.storeClassification.storeGroup,
-                            storeSegmentId: body.storeInfo.storeClassification.storeSegment,
+                            type: {
+                                typeId: body.storeInfo.storeClassification.storeType
+                            },
+                            group: {
+                                groupId: body.storeInfo.storeClassification.storeGroup
+                            },
+                            channel: {
+                                clusterId: body.storeInfo.storeClassification.storeChannel
+                            },
+                            cluster: {
+                                clusterId: body.storeInfo.storeClassification.storeCluster
+                            },
+                            // storeTypeId: body.storeInfo.storeClassification.storeType,
+                            // storeGroupId: body.storeInfo.storeClassification.storeGroup,
+                            // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                             vehicleAccessibilityId:
                                 body.storeInfo.physicalStoreInfo.vehicleAccessibility,
                             urbanId: urban.id,
@@ -2918,12 +3264,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                                 status: 'active',
                                 roles: [1]
                             },
-                            cluster: {
-                                clusterId: body.storeInfo.storeClassification.storeCluster
-                            },
-                            hierarchy: {
-                                hierarchyId: body.storeInfo.storeClassification.hierarchy
-                            },
+                            // hierarchy: {
+                            //     hierarchyId: body.storeInfo.storeClassification.hierarchy
+                            // },
                             supplier: {
                                 supplierId: supplierId
                             },
@@ -2950,25 +3293,41 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                             delete payload.vehicleAccessibilityId;
                         }
 
+                        // if (!body.storeInfo.storeClassification.storeType) {
+                        //     delete payload.storeTypeId;
+                        // }
+
+                        // if (!body.storeInfo.storeClassification.storeGroup) {
+                        //     delete payload.storeGroupId;
+                        // }
+
                         if (!body.storeInfo.storeClassification.storeType) {
-                            delete payload.storeTypeId;
+                            delete payload.type;
                         }
 
                         if (!body.storeInfo.storeClassification.storeGroup) {
-                            delete payload.storeGroupId;
+                            delete payload.group;
+                        }
+
+                        if (!body.storeInfo.storeClassification.storeChannel) {
+                            delete payload.channel;
                         }
 
                         if (!body.storeInfo.storeClassification.storeCluster) {
                             delete payload.cluster;
                         }
 
-                        if (!body.storeInfo.storeClassification.storeSegment) {
-                            delete payload.storeSegmentId;
-                        }
+                        // if (!body.storeInfo.storeClassification.storeCluster) {
+                        //     delete payload.cluster;
+                        // }
 
-                        if (!body.storeInfo.storeClassification.hierarchy) {
-                            delete payload.hierarchy;
-                        }
+                        // if (!body.storeInfo.storeClassification.storeSegment) {
+                        //     delete payload.storeSegmentId;
+                        // }
+
+                        // if (!body.storeInfo.storeClassification.hierarchy) {
+                        //     delete payload.hierarchy;
+                        // }
 
                         if (payload.creditLimit && payload.creditLimit.length > 0) {
                             for (const [idx, row] of payload.creditLimit.entries()) {
@@ -3033,15 +3392,15 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             const newCreditLimit =
                 body.storeInfo.payment.creditLimit && body.storeInfo.payment.creditLimit.length > 0
                     ? body.storeInfo.payment.creditLimit.map(row => {
-                          return {
-                              allowCreditLimit: row.allowCreditLimit,
-                              id: row.creditLimitStoreId,
-                              invoiceGroupId: row.invoiceGroup,
-                              creditLimitGroupId: row.creditLimitGroup,
-                              creditLimit: row.creditLimit,
-                              termOfPayment: row.termOfPayment
-                          };
-                      })
+                        return {
+                            allowCreditLimit: row.allowCreditLimit,
+                            id: row.creditLimitStoreId,
+                            invoiceGroupId: row.invoiceGroup,
+                            creditLimitGroupId: row.creditLimitGroup,
+                            creditLimit: row.creditLimit,
+                            termOfPayment: row.termOfPayment
+                        };
+                    })
                     : [];
 
             const urban = body.storeInfo.address.urban as Urban;
@@ -3056,9 +3415,21 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 latitude: body.storeInfo.address.geolocation.lat,
                 phoneNo: body.profileInfo.phoneNumber,
                 numberOfEmployee: body.storeInfo.physicalStoreInfo.numberOfEmployee,
-                storeTypeId: body.storeInfo.storeClassification.storeType,
-                storeGroupId: body.storeInfo.storeClassification.storeGroup,
-                storeSegmentId: body.storeInfo.storeClassification.storeSegment,
+                // storeTypeId: body.storeInfo.storeClassification.storeType,
+                // storeGroupId: body.storeInfo.storeClassification.storeGroup,
+                type: {
+                    typeId: body.storeInfo.storeClassification.storeType
+                },
+                group: {
+                    groupId: body.storeInfo.storeClassification.storeGroup
+                },
+                channel: {
+                    clusterId: body.storeInfo.storeClassification.storeChannel
+                },
+                cluster: {
+                    clusterId: body.storeInfo.storeClassification.storeCluster
+                },
+                // storeSegmentId: body.storeInfo.storeClassification.storeSegment,
                 vehicleAccessibilityId: body.storeInfo.physicalStoreInfo.vehicleAccessibility,
                 urbanId: urban.id,
                 user: {
@@ -3070,12 +3441,9 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     selfieImage: body.storeInfo.legalInfo.identityPhotoSelfie,
                     phone: body.profileInfo.phoneNumber
                 },
-                cluster: {
-                    clusterId: body.storeInfo.storeClassification.storeCluster
-                },
-                hierarchy: {
-                    hierarchyId: body.storeInfo.storeClassification.hierarchy
-                },
+                // hierarchy: {
+                //     hierarchyId: body.storeInfo.storeClassification.hierarchy
+                // },
                 creditLimit: newCreditLimit
             };
 
@@ -3096,24 +3464,40 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
             }
 
             if (!body.storeInfo.storeClassification.storeType) {
-                delete payload.storeTypeId;
+                delete payload.type;
             }
 
             if (!body.storeInfo.storeClassification.storeGroup) {
-                delete payload.storeGroupId;
+                delete payload.group;
+            }
+
+            if (!body.storeInfo.storeClassification.storeChannel) {
+                delete payload.channel;
             }
 
             if (!body.storeInfo.storeClassification.storeCluster) {
                 delete payload.cluster;
             }
 
-            if (!body.storeInfo.storeClassification.storeSegment) {
-                delete payload.storeSegmentId;
-            }
+            // if (!body.storeInfo.storeClassification.storeType) {
+            //     delete payload.storeTypeId;
+            // }
 
-            if (!body.storeInfo.storeClassification.hierarchy) {
-                delete payload.hierarchy;
-            }
+            // if (!body.storeInfo.storeClassification.storeGroup) {
+            //     delete payload.storeGroupId;
+            // }
+
+            // if (!body.storeInfo.storeClassification.storeCluster) {
+            //     delete payload.cluster;
+            // }
+
+            // if (!body.storeInfo.storeClassification.storeSegment) {
+            //     delete payload.storeSegmentId;
+            // }
+
+            // if (!body.storeInfo.storeClassification.hierarchy) {
+            //     delete payload.hierarchy;
+            // }
 
             if (payload.creditLimit && payload.creditLimit.length > 0) {
                 for (const [idx, row] of payload.creditLimit.entries()) {

@@ -18,6 +18,10 @@ import { SegmentedStoreTypesDropdownModule } from './dropdowns/store-segmentatio
 import { StoreGroupsDropdownModule } from './dropdowns/store-segmentation/store-groups/store-groups.module';
 import { StoreChannelsDropdownModule } from './dropdowns/store-segmentation/store-channels/store-channels.module';
 import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/store-clusters/store-clusters.module';
+// Selection Tree
+import { SelectionTreeModule } from './selection-tree/selection-tree/selection-tree.module';
+import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation/store-segmentation.module';
+import { CardInstructionModule } from './card-instruction/card-instruction.module';
 
 
 @NgModule({
@@ -40,6 +44,9 @@ import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/stor
         StoreChannelsDropdownModule,
         StoreClustersDropdownModule,
         SelectAdvancedModule,
+        SelectionTreeModule,
+        StoreSegmentationTreeModule,
+        CardInstructionModule,
     ],
     exports: [
         CardHeaderModule,
@@ -59,6 +66,9 @@ import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/stor
         StoreChannelsDropdownModule,
         StoreClustersDropdownModule,
         SelectAdvancedModule,
+        SelectionTreeModule,
+        StoreSegmentationTreeModule,
+        CardInstructionModule,
     ],
 })
 export class SharedComponentsModule { }
