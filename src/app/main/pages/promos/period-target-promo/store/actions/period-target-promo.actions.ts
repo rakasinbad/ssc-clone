@@ -22,7 +22,7 @@ export type failureActionNames =
 
 export const fetchPeriodTargetPromoRequest = createAction(
     '[Promo/Period Target Promo API] Fetch PeriodTargetPromo Request',
-    props<{ payload: IQueryParams }>()
+    props<{ payload: IQueryParams | string }>()
 );
 
 export const fetchPeriodTargetPromoFailure = createAction(

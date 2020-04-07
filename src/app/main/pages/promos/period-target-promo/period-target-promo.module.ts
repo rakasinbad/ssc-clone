@@ -13,11 +13,15 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 // Component
 import { PeriodTargetPromoListComponent } from './components/list/list.component';
+import { PeriodTargetPromoFormComponent } from './pages/form/form.component';
+import { PeriodTargetPromoGeneralInformationComponent } from './components/general-information/general-information.component';
 
 @NgModule({
     declarations: [
         PeriodTargetPromoComponent,
         PeriodTargetPromoListComponent,
+        PeriodTargetPromoFormComponent,
+        PeriodTargetPromoGeneralInformationComponent,
     ],
     imports: [
         CommonModule,
