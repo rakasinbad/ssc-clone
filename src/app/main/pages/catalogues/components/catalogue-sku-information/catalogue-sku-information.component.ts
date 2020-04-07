@@ -164,14 +164,15 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         combineLatest([
             this.trigger$,
             this.catalogueCategories$,
-            this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
+            this.store.select(CatalogueSelectors.getSelectedCatalogueEntity),
+            this.catalogueUnits$,
         ]).pipe(
             withLatestFrom(
                 this.store.select(AuthSelectors.getUserSupplier),
-                ([_, categories, catalogue], userSupplier) => ({ catalogue, categories, userSupplier })
+                ([_, categories, catalogue, catalogueUnits], userSupplier) => ({ catalogue, categories, userSupplier, catalogueUnits })
             ),
             takeUntil(this.subs$)
-        ).subscribe(({ catalogue, categories, userSupplier }) => {
+        ).subscribe(({ catalogue, categories, userSupplier, catalogueUnits }) => {
             // Butuh mengambil data katalog jika belum ada di state.
             if (!catalogue) {
                 // Mengambil ID dari parameter URL.
@@ -242,6 +243,7 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                         brandName: catalogue.brand.name,
                         stock: catalogue.stock,
                         uom: catalogue.unitOfMeasureId ? catalogue.unitOfMeasureId : '',
+                        uomName: catalogueUnits.filter(u => String(u.id) === String(catalogue.unitOfMeasureId)).map(u => u.unit),
                     },
                 }, { onlySelf: false });
 
@@ -369,17 +371,17 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                     })
                 );
             } else {
-                // Mengambil nilai ID UOM dari form.
-                const uom = this.form.get('productInfo.uom').value;
-                // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-                const selectedUnit = units.filter(unit => unit.id === uom);
-                if (selectedUnit.length > 0) {
-                    this.form.patchValue({
-                        productInfo: {
-                            uomName: selectedUnit[0].unit
-                        }
-                    });
-                }
+                // // Mengambil nilai ID UOM dari form.
+                // const uom = this.form.get('productInfo.uom').value;
+                // // Mengambil data UOM berdasarkan ID UOM yang terpilih.
+                // const selectedUnit = units.filter(unit => unit.id === uom);
+                // if (selectedUnit.length > 0) {
+                //     this.form.patchValue({
+                //         productInfo: {
+                //             uomName: selectedUnit[0].unit
+                //         }
+                //     });
+                // }
 
                 this.cdRef.markForCheck();
             }
