@@ -13,6 +13,7 @@ export interface PeriodTargetPromoState extends EntityState<PeriodTargetPromo> {
     limit: number;
     skip: number;
     total: number;
+    selectedId: string;
 }
 
 export const adapterPeriodTargetPromo: EntityAdapter<PeriodTargetPromo> = createEntityAdapter<PeriodTargetPromo>({
@@ -24,7 +25,8 @@ const initialPeriodTargetPromoState: PeriodTargetPromoState = adapterPeriodTarge
     isLoading: false,
     total: 0,
     limit: environment.pageSize,
-    skip: 0
+    skip: 0,
+    selectedId: null,
 });
 
 // Create the reducer.
@@ -66,6 +68,17 @@ export const reducer = createReducer(
             isLoading: false,
         })
     ),
+    /**
+     * SELECTION STATE.
+     */
+    on(PeriodTargetPromoActions.selectPeriodTargetPromo, (state, { payload }) => ({
+        ...state,
+        selectedId: payload
+    })),
+    on(PeriodTargetPromoActions.deselectPeriodTargetPromo, (state) => ({
+        ...state,
+        selectedId: null
+    })),
     /**
      * RESET STATE.
      */

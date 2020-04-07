@@ -25,4 +25,10 @@ export const getAllPeriodTargetPromo = createSelector(getPeriodTargetPromoState,
 
 export const getPeriodTargetPromoIds = createSelector(getPeriodTargetPromoState, selectPeriodTargetPromoIds);
 
+export const getSelectedPeriodTargetPromo = createSelector(
+    getPeriodTargetPromoState,
+    getPeriodTargetPromoEntity,
+    (state, periodTargetPromo) => periodTargetPromo[state.selectedId]
+);
+
 export const getLoadingState = createSelector(getPeriodTargetPromoState, state => state.isLoading);
