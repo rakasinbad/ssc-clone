@@ -1,32 +1,36 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import * as fromFlexiComboCore from '../reducers';
-import { fromFlexiCombo } from '../reducers';
-import { TNullable } from 'app/shared/models/global.model';
 
-// Get state from the feature key.
+import * as fromFlexiComboCore from '../reducers';
+import * as fromFlexiCombos from '../reducers/flexi-combo.reducer';
+
 export const getFlexiComboCoreState = createFeatureSelector<
     fromFlexiComboCore.FeatureState,
     fromFlexiComboCore.State
 >(fromFlexiComboCore.featureKey);
 
-export const {
-    selectAll: selectAllFlexiCombo,
-    selectEntities: selectFlexiComboEntities,
-    selectIds: selectFlexiComboIds,
-    selectTotal: selectFlexiComboTotal
-} = fromFlexiComboCore.fromFlexiCombo.adapterFlexiCombo.getSelectors();
-
-const getFlexiComboState = createSelector(
+export const getFlexiComboEntitiesState = createSelector(
     getFlexiComboCoreState,
-    state => state[fromFlexiCombo.FEATURE_KEY].flexiCombo
+    (state) => state.flexiCombos
 );
 
-export const getFlexiComboEntity = createSelector(getFlexiComboState, selectFlexiComboEntities);
+export const {
+    selectAll,
+    selectEntities,
+    selectIds,
+    selectTotal,
+} = fromFlexiCombos.adapter.getSelectors(getFlexiComboEntitiesState);
 
-export const getFlexiComboTotalEntity = createSelector(getFlexiComboState, selectFlexiComboTotal);
+export const getTotalItem = createSelector(getFlexiComboEntitiesState, (state) => state.total);
 
-export const getAllFlexiCombo = createSelector(getFlexiComboState, selectAllFlexiCombo);
+export const getSelectedId = createSelector(
+    getFlexiComboEntitiesState,
+    (state) => state.selectedId
+);
 
-export const getFlexiComboIds = createSelector(getFlexiComboState, selectFlexiComboIds);
+export const getSelectedItem = createSelector(
+    selectEntities,
+    getSelectedId,
+    (entities, id) => entities[id]
+);
 
-export const getLoadingState = createSelector(getFlexiComboState, state => state.isLoading);
+export const getIsLoading = createSelector(getFlexiComboEntitiesState, (state) => state.isLoading);

@@ -1,29 +1,30 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
+    OnDestroy,
     OnInit,
+    SecurityContext,
     ViewChild,
     ViewEncapsulation,
-    ElementRef,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
-import { Router, ActivatedRoute } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { environment } from 'environments/environment';
-import { FlexiComboActions, FlexiComboListActions } from '../../store/actions';
-import { FormControl } from '@angular/forms';
-import { Observable, Subject, merge } from 'rxjs';
-import { DomSanitizer } from '@angular/platform-browser';
-import { NgxPermissionsService } from 'ngx-permissions';
-import { takeUntil, flatMap } from 'rxjs/operators';
-import { UiActions } from 'app/shared/store/actions';
-import { SelectionModel } from '@angular/cdk/collections';
-import { FlexiComboList } from '../../models/flexi-combo-list.model';
-import * as FlexiComboListSelectors from '../../store/selectors/flexi-combo-list.selectors';
-import { FeatureState as flexiComboCoreState } from '../../store/reducers';
-import { IQueryParams } from 'app/shared/models/query.model';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
+import { IQueryParams } from 'app/shared/models/query.model';
+import { environment } from 'environments/environment';
+import { NgxPermissionsService } from 'ngx-permissions';
+import { merge, Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
+import * as fromFlexiCombos from '../../store/reducers';
+import { FlexiComboSelectors } from '../../store/selectors';
 
 @Component({
     selector: 'app-flexi-combo-list',
@@ -36,7 +37,7 @@ import { LifecyclePlatform } from 'app/shared/models/global.model';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboListComponent implements OnInit {
+export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -55,9 +56,9 @@ export class FlexiComboListComponent implements OnInit {
         'actions',
     ];
 
-    selection: SelectionModel<FlexiComboList>;
+    selection: SelectionModel<any>;
 
-    dataSource$: Observable<Array<FlexiComboList>>;
+    dataSource$: Observable<any[]>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -73,174 +74,78 @@ export class FlexiComboListComponent implements OnInit {
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
+        private domSanitizer: DomSanitizer,
         private route: ActivatedRoute,
         private router: Router,
-        private readonly sanitizer: DomSanitizer,
         private ngxPermissionsService: NgxPermissionsService,
-        private FlexiComboStore: NgRxStore<flexiComboCoreState>
+        private store: NgRxStore<fromFlexiCombos.FeatureState>
     ) {}
 
     onChangePage($event: PageEvent): void {}
 
     ngOnInit(): void {
-        this._unSubs$ = new Subject();
-        this.paginator.pageSize = this.defaultPageSize;
-        this.selection = new SelectionModel<FlexiComboList>(true, []);
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
 
-        this._initTable();
-
-        this.FlexiComboStore.select(FlexiComboListSelectors.getSearchValue)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe((val) => {
-                this._initTable(val);
-            });
-
-        this.dataSource$ = this.FlexiComboStore.select(FlexiComboListSelectors.selectAll).pipe(
-            takeUntil(this._unSubs$)
-        );
-
-        this.totalDataSource$ = this.FlexiComboStore.select(
-            FlexiComboListSelectors.getTotalItem
-        ).pipe(takeUntil(this._unSubs$));
-
-        this.isLoading$ = this.FlexiComboStore.select(FlexiComboListSelectors.getLoadingState).pipe(
-            takeUntil(this._unSubs$)
-        );
-
-        this.updatePrivileges();
+        this._initPage();
     }
 
-    // onSkuAssignmentDetail(row: SkuAssignmentsWarehouse): void {
-    //     this.SkuAssignmentsStore.dispatch(
-    //         SkuAssignmentsActions.selectWarehouse({
-    //             payload: row as Warehouse
-    //         })
-    //     );
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
 
-    //     this.router.navigate(['/pages/logistics/sku-assignments/' + row.id + '/detail']);
-    // }
-
-    // onEditSkuAssignment(item: Warehouse): void {
-    //     this.SkuAssignmentsStore.dispatch(
-    //         SkuAssignmentsActions.selectWarehouse({
-    //             payload: item as Warehouse
-    //         })
-    //     );
-
-    //     this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
-    // }
+        this._initPage(LifecyclePlatform.OnDestroy);
+    }
 
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
-        this.sort.sortChange
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => (this.paginator.pageIndex = 0));
-
-        merge(this.sort.sortChange, this.paginator.page)
-            .pipe(takeUntil(this._unSubs$))
-            .subscribe(() => {
-                this._initTable();
-            });
+        this._initPage(LifecyclePlatform.AfterViewInit);
     }
 
-    clickTab(action: 'all' | 'active' | 'inactive'): void {
-        if (!action) {
-            return;
-        }
+    // -----------------------------------------------------------------------------------------------------
+    // @ Private methods
+    // -----------------------------------------------------------------------------------------------------
 
-        switch (action) {
-            case 'all':
-                this.activeTab = 'all';
-                break;
-            case 'active':
-                this.activeTab = 'active';
-                break;
-            case 'inactive':
-                this.activeTab = 'inactive';
-                break;
-
-            default:
-                return;
-        }
-
-        this._initTable();
-    }
-
-    loadTab(activeTab): void {
-        const data: IQueryParams = {
-            limit: this.paginator.pageSize || 5,
-            skip: this.paginator.pageSize * this.paginator.pageIndex || 0,
-        };
-
-        data['paginate'] = true;
-
-        if (activeTab === 'active') {
-            data['assigned'] = 'true';
-        } else if (activeTab === 'inactive') {
-            data['assigned'] = 'false';
-        } else {
-            data['assigned'] = 'all';
-        }
-
-        this.FlexiComboStore.dispatch(
-            FlexiComboListActions.fetchFlexiComboListRequest({ payload: data })
-        );
-    }
-
-    handleCheckbox(): void {
-        // this.isAllSelected()
-        //     ? this.selection.clear()
-        //     : this.dataSource$
-        //           .pipe(
-        //               flatMap(v => v),
-        //               takeUntil(this._unSubs$)
-        //           )
-        //           .forEach(row => this.selection.select(row));
-    }
-
-    // isAllSelected(): boolean {
-    //     // const numSelected = this.selection.selected.length;
-    //     const numRows = this.paginator.length;
-
-    //     // console.log('IS ALL SELECTED', numSelected, numRows);
-
-    //     // return numSelected === numRows;
-    // }
-
-    onSelectedActions(action: 'active' | 'inactive' | 'delete'): void {
-        if (!action) {
-            return;
-        }
-
-        switch (action) {
-            case 'active':
-                // console.log('Set Active', this.selection.selected);
-                break;
-
-            default:
-                return;
-        }
-    }
-
-    /**
-     *
-     * Initialize current page
-     * @private
-     * @param {LifecyclePlatform} [lifeCycle]
-     * @memberof FlexiComboListComponent
-     */
     private _initPage(lifeCycle?: LifecyclePlatform): void {
-        // Set breadcrumbs
-        // this.SkuAssignmentsStore.dispatch(
-        //     UiActions.createBreadcrumb({
-        //         payload: this._breadCrumbs
-        //     })
-        // );
+        switch (lifeCycle) {
+            case LifecyclePlatform.AfterViewInit:
+                this.sort.sortChange
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => (this.paginator.pageIndex = 0));
+
+                merge(this.sort.sortChange, this.paginator.page)
+                    .pipe(takeUntil(this._unSubs$))
+                    .subscribe(() => {
+                        // this.table.nativeElement.scrollIntoView(true);
+                        this.table.nativeElement.scrollTop = 0;
+                        this._initTable();
+                    });
+                break;
+
+            case LifecyclePlatform.OnDestroy:
+                // Reset core state warehouses
+                // this.store.dispatch(WarehouseActions.clearState());
+
+                this._unSubs$.next();
+                this._unSubs$.complete();
+                break;
+
+            default:
+                this.paginator.pageSize = this.defaultPageSize;
+                this.selection = new SelectionModel<any>(true, []);
+
+                this._initTable();
+
+                this.dataSource$ = this.store.select(FlexiComboSelectors.selectAll);
+                this.totalDataSource$ = this.store.select(FlexiComboSelectors.getTotalItem);
+                this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+                break;
+        }
     }
 
-    private _initTable(searchText?: string): void {
+    private _initTable(): void {
         if (this.paginator) {
             const data: IQueryParams = {
                 limit: this.paginator.pageSize || this.defaultPageSize,
@@ -248,58 +153,36 @@ export class FlexiComboListComponent implements OnInit {
             };
 
             data['paginate'] = true;
-            data['keyword'] = searchText;
 
-            if (this.activeTab === 'active') {
-                data['assigned'] = 'true';
-            } else if (this.activeTab === 'inactive') {
-                data['assigned'] = 'false';
-            } else {
-                data['assigned'] = 'all';
+            if (this.sort.direction) {
+                data['sort'] = this.sort.direction === 'desc' ? 'desc' : 'asc';
+                data['sortBy'] = this.sort.active;
             }
 
-            this.FlexiComboStore.dispatch(FlexiComboListActions.resetFlexiComboList());
+            const query = this.domSanitizer.sanitize(SecurityContext.HTML, this.search.value);
 
-            this.FlexiComboStore.dispatch(
-                FlexiComboListActions.fetchFlexiComboListRequest({
-                    payload: data,
-                })
-            );
+            if (query) {
+                data['search'] = [
+                    {
+                        fieldName: 'keyword',
+                        keyword: query,
+                    },
+                ];
+            }
+
+            // this.FlexiComboStore.dispatch(FlexiComboListActions.resetFlexiComboList());
+
+            // this.FlexiComboStore.dispatch(
+            //     FlexiComboListActions.fetchFlexiComboListRequest({
+            //         payload: data,
+            //     })
+            // );
         }
     }
 
     private _onRefreshTable(): void {
+        this.table.nativeElement.scrollTop = 0;
+        this.paginator.pageIndex = 0;
         this._initTable();
-    }
-
-    private updatePrivileges(): void {
-        this.ngxPermissionsService
-            .hasPermission(['SRM.ASC.UPDATE', 'SRM.ASC.DELETE'])
-            .then((result) => {
-                // Jika ada permission-nya.
-                if (result) {
-                    this.displayedColumns = [
-                        'checkbox',
-                        'promo-seller-id',
-                        'promo-name',
-                        'base',
-                        'start-date',
-                        'end-date',
-                        'status',
-                        'actions',
-                    ];
-                } else {
-                    this.displayedColumns = [
-                        'checkbox',
-                        'promo-seller-id',
-                        'promo-name',
-                        'base',
-                        'start-date',
-                        'end-date',
-                        'status',
-                        'actions',
-                    ];
-                }
-            });
     }
 }

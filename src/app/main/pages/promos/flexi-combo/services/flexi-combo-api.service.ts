@@ -1,12 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store as NgRxStore } from '@ngrx/store';
 import { HelperService } from 'app/shared/helpers';
-import { IQueryParams } from 'app/shared/models/query.model';
-import { Observable } from 'rxjs';
-
-import { FlexiCombo } from '../models';
-import { fromFlexiCombo } from '../store/reducers';
 
 /**
  *
@@ -15,7 +9,7 @@ import { fromFlexiCombo } from '../store/reducers';
  * @class FlexiComboApiService
  */
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class FlexiComboApiService {
     /**
@@ -33,7 +27,7 @@ export class FlexiComboApiService {
      * @private
      * @memberof FlexiComboApiService
      */
-    private readonly _FlexiComboEndpoint = '/sku-assignment';
+    private readonly _endpoint = '/flexi-combo';
 
     /**
      * Creates an instance of FlexiComboApiService.
@@ -41,29 +35,7 @@ export class FlexiComboApiService {
      * @param {HelperService} _$helper
      * @memberof FlexiComboApiService
      */
-    constructor(
-        private http: HttpClient,
-        private _$helper: HelperService,
-        private portfolioStore: NgRxStore<fromFlexiCombo.FlexiComboState>
-    ) {
-        this._url = this._$helper.handleApiRouter(this._FlexiComboEndpoint);
-    }
-
-    findFlexiCombo(params: IQueryParams): Observable<FlexiCombo> {
-        const newArgs = [];
-
-        if (!isNaN(params['supplierId'])) {
-            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
-        }
-
-        this._url = this._$helper.handleApiRouter(this._FlexiComboEndpoint);
-        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
-
-        return this.http.get<FlexiCombo>(this._url, { params: newParams });
-    }
-
-    addFlexiCombo<T, R>(payload: T): Observable<R> {
-        this._url = this._$helper.handleApiRouter(this._FlexiComboEndpoint);
-        return this.http.post<R>(this._url, payload);
+    constructor(private http: HttpClient, private _$helper: HelperService) {
+        this._url = this._$helper.handleApiRouter(this._endpoint);
     }
 }

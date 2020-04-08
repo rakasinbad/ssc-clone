@@ -1,64 +1,33 @@
-import { AgmGeocoder, GeocoderResult, MouseEvent } from '@agm/core';
 import { Location } from '@angular/common';
 import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
-    NgZone,
     OnDestroy,
     OnInit,
-    ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import {
-    MatAutocomplete,
-    MatAutocompleteSelectedEvent,
-    MatAutocompleteTrigger,
-    MatCheckboxChange,
-    MatDialog,
-    MatOptionSelectionChange,
-    MatSelect,
-} from '@angular/material';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
-import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
-import { District, Urban } from 'app/shared/models/location.model';
-import { IQueryParams } from 'app/shared/models/query.model';
+import { Urban } from 'app/shared/models/location.model';
+import { FormActions, UiActions } from 'app/shared/store/actions';
+import { FormSelectors } from 'app/shared/store/selectors';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+
+import * as fromFlexiCombo from '../store/reducers';
+
 // import { SupplierStore } from 'app/shared/models/supplier.model';
 // import { Temperature } from 'app/shared/models/temperature.model';
 // import { PayloadWarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
 // import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
-import {
-    // DropdownActions,
-    FormActions,
-    // TemperatureActions,
-    UiActions,
-    // WarehouseValueActions
-} from 'app/shared/store/actions';
-import { DropdownSelectors, FormSelectors } from 'app/shared/store/selectors';
 // import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
-import { combineLatest, fromEvent, Observable, Subject } from 'rxjs';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    filter,
-    map,
-    takeUntil,
-    tap,
-    withLatestFrom,
-} from 'rxjs/operators';
-
-import { FlexiComboActions } from '../store/actions';
-import * as fromFlexiCombo from '../store/reducers';
-import { FlexiComboSelectors } from '../store/selectors';
-
 @Component({
     selector: 'app-flexi-combo-form',
     templateUrl: './flexi-combo-form.component.html',
@@ -71,11 +40,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
 
+    platformsSinbad = this._$helperService.platformSinbad();
+
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
 
-    private _breadCrumbs: Array<IBreadcrumbs> = [
+    private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
         },
@@ -87,6 +58,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         },
         {
             title: 'Add Flexi Combo',
+            active: true,
         },
     ];
 
@@ -95,11 +67,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     constructor(
         private cdRef: ChangeDetectorRef,
         private formBuilder: FormBuilder,
+        private location: Location,
         private matDialog: MatDialog,
         private route: ActivatedRoute,
         private router: Router,
         private store: Store<fromFlexiCombo.FeatureState>,
         private _$errorMessage: ErrorMessageService,
+        private _$helperService: HelperService,
         private _$notice: NoticeService
     ) {
         // Set footer action
@@ -253,6 +227,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                         },
                         {
                             title: 'Edit Flexi Combo',
+                            active: true,
                         },
                     ];
 
@@ -285,6 +260,8 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                         takeUntil(this._unSubs$)
                     )
                     .subscribe((isClick) => {
+                        this.location.back();
+
                         this.store.dispatch(FormActions.resetClickCancelButton());
                         this.store.dispatch(FormActions.resetCancelButtonAction());
                     });
@@ -317,8 +294,12 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             platform: [
                 null,
                 [
-                    RxwebValidators.digit({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.oneOf({
+                        matchValues: [...this.platformsSinbad.map((v) => v.id)],
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                 ],
             ],
@@ -328,9 +309,21 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                     }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
                 ],
             ],
-            promoBudget: null,
+            promoBudget: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
             startDate: [
                 null,
                 [

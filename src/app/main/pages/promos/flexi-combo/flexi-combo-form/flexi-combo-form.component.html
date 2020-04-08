@@ -9,11 +9,11 @@
     <!-- / TOP BACKGROUND -->
 
     <!-- CENTER -->
-    <div class="center">
+    <div class="center p-8">
         <form
             id="flexi-combo-form"
             name="flexiComboForm"
-            class="merchant pt-24 w-100-p"
+            class="merchant w-100-p"
             [formGroup]="form"
             fxLayout="column"
             fxFlex
@@ -83,46 +83,34 @@
                                 fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('platform')"
                             >
-                                Platform
+                                *Platform
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
+                                <ng-container *ngIf="platformsSinbad; else noPlatformsSinbad">
                                     <mat-select
-                                        #invoiceSelect
                                         formControlName="platform"
                                         placeholder="Choose Platform"
-                                        multiple
                                     >
-                                        <!-- <mat-select-trigger>
-                                            {{
-                                                invoices && invoices?.length > 0
-                                                    ? displayInvoices(invoiceGroups, invoices[0])
-                                                    : ''
-                                            }}
-                                            <span
-                                                *ngIf="invoices?.length > 1"
-                                                class="example-additional-selection"
-                                            >
-                                                (+{{ invoices.length - 1 }}
-                                                {{ invoices?.length === 2 ? 'other' : 'others' }})
-                                            </span>
-                                        </mat-select-trigger> -->
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
+                                        <mat-option>None</mat-option>
+                                        <mat-option
+                                            *ngFor="let row of platformsSinbad"
+                                            [value]="row.id"
+                                        >
+                                            {{ row.label }}
                                         </mat-option>
                                     </mat-select>
                                 </ng-container>
 
-                                <!-- <ng-template #noInvoiceGroups>
-                                    <mat-select placeholder="Faktur not found" disabled>
+                                <ng-template #noPlatformsSinbad>
+                                    <mat-select placeholder="Platform not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
                                 </ng-template>
 
-                                <mat-error *ngIf="hasError('invoices', true)">
-                                    {{ getErrorMessage('invoices') }}
-                                </mat-error> -->
+                                <mat-error *ngIf="hasError('platform', true)">
+                                    {{ getErrorMessage('platform') }}
+                                </mat-error>
                             </mat-form-field>
                         </div>
 
@@ -137,7 +125,7 @@
                                 fxFlex="11"
                                 [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
-                                *Max Redemption User
+                                *Max Redemption per
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -168,10 +156,58 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoBudget" formControlName="promoBudget" />
+                                <input
+                                    matInput
+                                    name="promoBudget"
+                                    formControlName="promoBudget"
+                                    mask="separator.2"
+                                    thousandSeparator="."
+                                    prefix="Rp"
+                                    placeholder="Rp"
+                                />
 
                                 <mat-error *ngIf="hasError('promoBudget', true)">
                                     {{ getErrorMessage('promoBudget') }}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div
+                            class="custom-field"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="11"
+                                [class.sinbad-red-fg]="hasError('startDate')"
+                            >
+                                *Active From
+                            </label>
+
+                            <mat-form-field appearance="outline" fxFlex="50">
+                                <input
+                                    matInput
+                                    [matDatetimepicker]="startDatePicker"
+                                    autocomplete="false"
+                                    name="startDate"
+                                    formControlName="startDate"
+                                />
+                                <mat-datetimepicker-toggle
+                                    matSuffix
+                                    [for]="startDatePicker"
+                                ></mat-datetimepicker-toggle>
+                                <mat-datetimepicker
+                                    touchUi
+                                    #startDatePicker
+                                    [disabled]="false"
+                                    type="datetime"
+                                >
+                                </mat-datetimepicker>
+
+                                <mat-error *ngIf="hasError('startDate', true)">
+                                    {{ getErrorMessage('startDate') }}
                                 </mat-error>
                             </mat-form-field>
                         </div>

@@ -167,7 +167,10 @@ $typography: mat-typography-config(
 
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
-// @import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
+
+// Plugin https://github.com/kuhnroyal/mat-datetimepicker#installation
+@import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
+
 // Plugin https://github.com/SaturnTeam/saturn-datepicker
 @import '~saturn-datepicker/theming';
 
@@ -232,7 +235,7 @@ $typography: mat-typography-config(
     // Plugin
     // @include mat-datepicker-theme($theme);
     // Using the $theme variable from the pre-built theme you can call the theming function
-    // @include mat-datetimepicker-theme($theme);
+    @include mat-datetimepicker-theme($theme);
     @include sat-datepicker-theme($theme);
 }
 
