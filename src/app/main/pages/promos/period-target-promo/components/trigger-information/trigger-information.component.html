@@ -13,7 +13,7 @@
                 formControlName="id"
             />
             <!-- / *HIDDEN* ID -->
-            <!-- PROMO SELLER ID -->
+            <!-- BASE -->
             <div
                 [ngClass]="formClass"
                 fxLayout="row"
@@ -23,125 +23,19 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('sellerId'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Promo Seller ID
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="sellerId"
-                        formControlName="sellerId"
-                    />
-                    <mat-error
-                        *ngIf="!isViewMode() && hasError(form.get('sellerId'))"
-                    >
-                        {{ getFormError(form.get('sellerId')) }}
-                    </mat-error>
-                    <!-- <mat-error
-                        *ngIf="!isViewMode() && $any(form.get('sellerId').errors)?.skuSupplierExist"
-                    >
-                        SKU already exist.
-                    </mat-error>
-                    <mat-hint
-                        class="mb-4 primary-fg"
-                        *ngIf="form.get('sellerId').status === 'PENDING'"
-                    >
-                        Checking ...
-                    </mat-hint>
-                    <mat-hint
-                        class="mb-4 green-800-fg"
-                        *ngIf="form.get('sellerId').status === 'VALID'"
-                    >
-                        SKU is available.
-                    </mat-hint> -->
-                </mat-form-field>
-                <span fxFlex="80" class="grey-fg" *ngIf="isViewMode()">
-                    {{ form.get('sellerId').value || '-' }}
-                </span>
-            </div>
-            <!-- / PROMO SELLER ID -->
-            <!-- PROMO NAME -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('name'))"
-                >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Promo Name
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="name"
-                        formControlName="name"
-                    />
-                    <mat-error
-                        *ngIf="hasError(form.get('name'))"
-                    >
-                        {{ getFormError(form.get('name')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('name').value || '-' }}
-                </span>
-            </div>
-            <!-- / PROMO NAME -->
-            <!-- PLATFORM -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('platform'))"
-                >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Platform
+                    Base
                 </label>
 
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="formMode !== 'view'">
-                    <mat-select
-                        name="platform"
-                        formControlName="platform"
-                    >
-                        <mat-option
-                            *ngFor="let platform of (platforms$ | async)"
-                            [value]="platform.id"
-                        >
-                            {{ platform.name }}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error
-                        *ngIf="hasError(form.get('platform'))"
-                    >
-                        {{ getFormError(form.get('platform')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('platform').value">
-                    {{ form.get('platform').value || '-' }}
-                </span>
-                <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('platform').value">
-                    -
-                </span>
+                <mat-radio-group formControlName="base" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                    <mat-radio-button value="sku"> SKU </mat-radio-button>
+                    <mat-radio-button value="brand"> Brand </mat-radio-button>
+                    <mat-radio-button value="faktur"> Faktur </mat-radio-button>
+                </mat-radio-group>
             </div>
-            <!-- / PLATFORM -->
-            <!-- MAX REDEMPTION PER USER -->
+            <!-- / BASE -->
+            <!-- CHOSEN SKU -->
             <div
                 [ngClass]="formClass"
                 fxLayout="row"
@@ -151,259 +45,23 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerUser'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
                 >
                     <span
                         class="sinbad-red-fg"
-                    >* </span>Max Redemption <br/> per User
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="maxRedemptionPerUser"
-                        formControlName="maxRedemptionPerUser"
-                    />
-                    <mat-error
-                        *ngIf="hasError(form.get('maxRedemptionPerUser'))"
-                    >
-                        {{ getFormError(form.get('maxRedemptionPerUser')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('maxRedemptionPerUser').value || '-' }}
-                </span>
-            </div>
-            <!-- / MAX REDEMPTION PER USER -->
-            <!-- PROMO BUDGET -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('budget'))"
-                >
-                    Promo Budget
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        name="budget"
-                        formControlName="budget"
-                    />
-                    <mat-error
-                        *ngIf="hasError(form.get('budget'))"
-                    >
-                        {{ getFormError(form.get('budget')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('budget').value || '-' }}
-                </span>
-            </div>
-            <!-- / PROMO BUDGET -->
-            <!-- ACTIVE START DATE -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('activeStartDate'))"
-                >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Active From
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        [matDatetimepicker]="activeStartDatePicker"
-                        [max]="maxActiveStartDate"
-                        [min]="minActiveStartDate"
-                        (dateChange)="onChangeActiveStartDate($event)"
-                        autocomplete="false"
-                        name="activeStartDate"
-                        formControlName="activeStartDate"
-                    />
-                    <mat-datetimepicker-toggle
-                        matSuffix
-                        [for]="activeStartDatePicker"
-                    ></mat-datetimepicker-toggle>
-                    <mat-datetimepicker
-                        touchUi
-                        #activeStartDatePicker
-                        [disabled]="false"
-                        type="datetime"
-                    >
-                    </mat-datetimepicker>
-                    <mat-error
-                        *ngIf="hasError(form.get('activeStartDate'))"
-                    >
-                        {{ getFormError(form.get('activeStartDate')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('activeStartDate').value || '-' }}
-                </span>
-            </div>
-            <!-- / ACTIVE START DATE -->
-            <!-- ACTIVE END DATE -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('activeEndDate'))"
-                >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>To
-                </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
-                    <input
-                        matInput
-                        [matDatetimepicker]="activeEndDatePicker"
-                        [max]="maxActiveEndDate"
-                        [min]="minActiveEndDate"
-                        (dateChange)="onChangeActiveEndDate($event)"
-                        autocomplete="false"
-                        name="activeEndDate"
-                        formControlName="activeEndDate"
-                    />
-                    <mat-datetimepicker-toggle
-                        matSuffix
-                        [for]="activeEndDatePicker"
-                    ></mat-datetimepicker-toggle>
-                    <mat-datetimepicker
-                        touchUi
-                        #activeEndDatePicker
-                        [disabled]="false"
-                        type="datetime"
-                    >
-                    </mat-datetimepicker>
-                    <mat-error
-                        *ngIf="hasError(form.get('activeEndDate'))"
-                    >
-                        {{ getFormError(form.get('activeEndDate')) }}
-                    </mat-error>
-                </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('activeEndDate').value || '-' }}
-                </span>
-            </div>
-            <!-- / ACTIVE END DATE -->
-            <!-- IMAGE SUGGESTION -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('imageSuggestion'))"
-                >
-                    Image<br/>Suggestion
+                    >* </span>Chosen SKU<br/>({{ form.get('chosenSku').value?.length || '0' }} Selected)
                 </label>
 
-                <!-- INPUT SECTION -->
-                <div fxLayout="row" fxLayoutGap="16px" [fxFlex]="formFieldLength">
-                    <!-- FORM FIELD -->
-                    <mat-form-field
-                        appearance="outline"
-                        class="sinbad-file-field"
-                        [class.mat-sinbad-field-error]="hasError(form.get('imageSuggestion'))"
-                        [fxHide]="isViewMode()"
-                        fxFlex="75"
-                    >
-                        <!-- INPUT TRIGGER FOR UPLOAD FILE -->
-                        <input
-                            #imageSuggestionPicker
-                            type="file"
-                            class="custom-file"
-                            accept=".jpg, .jpeg, .png"
-                            formControlName="imageSuggestion"
-                            (change)="onFileBrowse($event)"
-                        />
-                        <!-- / INPUT TRIGGER FOR UPLOAD FILE -->
-                        <!-- INPUT FOR CHOSEN FILE AS FILENAME -->
-                        <input
-                            matInput
-                            name="name"
-                            [formControl]="tmpImageSuggestion"
-                            placeholder="No file chosen"
-                        />
-                        <!-- / INPUT FOR CHOSEN FILE AS FILENAME -->
-                        <!-- ERROR MESSAGE HINT -->
-                        <mat-hint
-                            class="mat-error"
-                            *ngIf="hasError(form.get('imageSuggestion'))"
-                        >
-                            {{ getFormError(form.get('imageSuggestion')) }}
-                        </mat-hint>
-                        <!-- / ERROR MESSAGE HINT -->
-                    </mat-form-field>
-
-                    <span class="grey-fg" fxFlex *ngIf="isViewMode()">
-                        {{ form.get('imageSuggestion').value || '-' }}
-                    </span>
-                    <!-- FORM FIELD -->
-                    <!-- UPLOAD BUTTON -->
-                    <button
-                        mat-flat-button
-                        color="accent"
-                        type="button"
-                        (click)="imageSuggestionPicker.click()"
-                        fxFlexAlign="center"
-                        [fxHide]="isViewMode()"
-                        fxFlex
-                    >
-                        Upload your file
-                    </button>
-                    <!-- / UPLOAD BUTTON -->
-                </div>
-                <!-- / INPUT SECTION -->
+                <select-catalogues [required]="true" [fxFlex]="formFieldLength" (selected)="onCatalogueSelected($event)">
+                    <div error>
+                        {{ getFormError(form.get('chosenSku')) }}
+                    </div>
+                </select-catalogues>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('chosenSku').value || '-' }}
+                </span> -->
             </div>
-            <!-- / IMAGE SUGGESTION -->
-            <!-- CHECKBOXES -->
-            <div
-                [ngClass]="formClass"
-                fxLayout="row"
-                fxLayoutAlign="start stretch"
-            >
-                <label
-                    fxFlexAlign="center"
-                    [fxFlex]="labelLength"
-                    class="pr-0"
-                ></label>
-
-                <div fxLayout="row" fxLayoutGap="21px" fxFlex>
-                    <mat-checkbox
-                        formControlName="isAllowCombineWithVoucher"
-                    >Allow Combine with Voucher</mat-checkbox>
-
-                    <mat-checkbox
-                        formControlName="isFirstBuy"
-                    >First Buy</mat-checkbox>
-                </div>
-            </div>
-            <!-- / CHECKBOXES -->
+            <!-- / CHOSEN SKU -->
         </form>
     </div>
 </div>

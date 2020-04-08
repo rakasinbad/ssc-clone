@@ -20,6 +20,7 @@ import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as moment from 'moment';
+import { Catalogue } from 'app/main/pages/catalogues/models';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -48,16 +49,6 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
     formModeValue: IFormMode = 'add';
-
-    // Untuk menampung foto yang ingin diupload sementara sebelum dikirim.
-    tmpImageSuggestion: FormControl = new FormControl({ value: '', disabled: true });
-    tmpCouponImage: FormControl = new FormControl({ value: '', disabled: true });
-
-    // Untuk membatasi pemberian tanggal.
-    minActiveStartDate: Date;
-    maxActiveStartDate: Date;
-    minActiveEndDate: Date;
-    maxActiveEndDate: Date;
 
     // tslint:disable-next-line: no-inferrable-types
     labelLength: number = 10;
@@ -333,17 +324,10 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     // }
 
     private initForm(): void {
-        this.minActiveStartDate = null;
-        this.minActiveEndDate = null;
-        this.maxActiveEndDate = new Date();
-        this.maxActiveStartDate = this.maxActiveEndDate;
-
-        this.tmpImageSuggestion = new FormControl({ value: '', disabled: true });
-        this.tmpCouponImage = new FormControl({ value: '', disabled: true });
-
         this.form = this.fb.group({
             id: [''],
-            sellerId: ['', [
+            base: [''],
+            chosenSku: ['', [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(
                         'default',
@@ -351,50 +335,6 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     )
                 })
             ]],
-            name: ['', [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
-                })
-            ]],
-            platform: ['', [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
-                })
-            ]],
-            maxRedemptionPerUser: ['', [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
-                })
-            ]],
-            budget: [''],
-            activeStartDate: [{ value: '', disabled: true }, [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
-                })
-            ]],
-            activeEndDate: [{ value: '', disabled: true }, [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
-                })
-            ]],
-            imageSuggestion: [''],
-            isAllowCombineWithVoucher: [''],
-            isFirstBuy: [''],
         });
     }
 
@@ -402,7 +342,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         (this.form.statusChanges as Observable<FormStatus>).pipe(
             distinctUntilChanged(),
             debounceTime(300),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO GENERAL INFORMATION FORM STATUS CHANGED:', value)),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM STATUS CHANGED:', value)),
             takeUntil(this.subs$)
         ).subscribe(status => {
             this.formStatusChange.emit(status);
@@ -411,8 +351,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         this.form.valueChanges.pipe(
             distinctUntilChanged(),
             debounceTime(200),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
-            // tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
+            // tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
+            tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
             // map(value => {
             //     let formValue = {
             //         ...value.productInfo,
@@ -432,7 +372,11 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
 
             //     return formValue;
             // }),
-            // tap(value => HelperService.debug('[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED', value)),
+            map(value => ({
+                ...value,
+                chosenSku: value.chosenSku.length === 0 ? [] : value.chosenSku,
+            })),
+            tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.formValueChange.emit(value);
@@ -524,59 +468,15 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         return this.formMode === 'view';
     }
 
-    onChangeActiveStartDate(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeStartDate = moment(ev.value);
-
-        if (this.form.get('activeEndDate').value) {
-            const activeEndDate = moment(this.form.get('activeEndDate').value);
-
-            if (activeStartDate.isAfter(activeEndDate)) {
-                this.form.get('activeEndDate').reset();
-            }
+    onCatalogueSelected(event: Array<Catalogue>): void {
+        this.form.get('chosenSku').markAsDirty({ onlySelf: true });
+        this.form.get('chosenSku').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenSku').setValue('');
+        } else {
+            this.form.get('chosenSku').setValue(event);
         }
-
-        this.minActiveEndDate = activeStartDate.toDate();
-    }
-
-    onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
-        const activeEndDate = moment(ev.value);
-
-        if (this.form.get('activeStartDate').value) {
-            const activeStartDate = moment(this.form.get('activeStartDate').value);
-
-            if (activeEndDate.isBefore(activeStartDate)) {
-                this.form.get('activeStartDate').reset();
-            }
-        }
-
-        this.maxActiveStartDate = activeEndDate.toDate();
-    }
-
-    onFileBrowse(ev: Event): void {
-        const inputEl = ev.target as HTMLInputElement;
-
-        if (inputEl.files && inputEl.files.length > 0) {
-            const file = inputEl.files[0];
-
-            if (file) {
-                const photoField = this.form.get('imageSuggestion');
-
-                const fileReader = new FileReader();
-
-                fileReader.onload = () => {
-                    photoField.setValue(fileReader.result);
-                    this.tmpImageSuggestion.setValue(file.name);
-
-                    if (photoField.invalid) {
-                        photoField.markAsTouched();
-                    }
-                };
-
-                fileReader.readAsDataURL(file);
-            }
-        }
-
-        return;
     }
 
     ngOnInit(): void {
