@@ -1,85 +1,85 @@
-<!-- PROVINCE -->
-<div class="custom-field" fxLayout="row">
+<!-- ENTITY (STORE SEGMENTATION TYPE) -->
+<!-- <div class="custom-field" fxLayout="row">
     <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
         <input
-            #triggerWarehouse
+            #triggerEntity
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Store Type"
+            [formControl]="entityForm"
+            [matAutocomplete]="entityAutoComplete"
+        />
+        <mat-autocomplete
+            #entityAutoComplete
+            [displayWith]="displayEntity"
+            (opened)="listenEntityAutoComplete()"
+            (optionSelected)="onSelectedEntity($event)"
+        > -->
+            <!-- NONE OPTION -->
+            <!-- <mat-option *ngIf="!(isEntityLoading$ | async)">(None)</mat-option> -->
+            <!-- / NONE OPTION -->
+
+            <!-- ENTITY (STORE SEGMENTATION TYPE) OPTIONS -->
+            <!-- <mat-option
+                *ngFor="let entity of (availableEntities$ | async)"
+                [value]="entity"
+            >
+                {{ entity?.name || '-' }}
+            </mat-option> -->
+            <!-- / ENTITY (STORE SEGMENTATION TYPE) OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <!-- <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalEntities$ | async) && ((totalEntities$ | async) > (availableEntities$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option> -->
+            <!-- / LOADING OPTION -->
+        <!-- </mat-autocomplete>
+        <mat-error *ngIf="hasError(entityForm)">
+            {{ getFormError(entityForm) }}
+        </mat-error>
+    </mat-form-field>
+</div> -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openEntitySelection()">
+        <input
             matInput
             autocomplete="new-password"
             placeholder="Search Warehouse"
-            [formControl]="warehouseForm"
-            [value]="warehouseForm.value"
-            [matAutocomplete]="warehouseAutoComplete"
+            [formControl]="entityFormView"
+            [value]="entityFormView.value"
         />
-        <mat-autocomplete
-            #warehouseAutoComplete
-            [displayWith]="displayWarehouse"
-            (opened)="listenWarehouseAutoComplete()"
-        >
-            <!-- NONE OPTION -->
-            <!-- <mat-option *ngIf="!(isWarehouseLoading$ | async)">(None)</mat-option> -->
-            <!-- / NONE OPTION -->
-            <!-- INVISIBLE OPTION -->
-            <mat-option #invisibleOption fxHide="true"></mat-option>
-            <!-- / INVISIBLE OPTION -->
-
-            <!-- "SELECT ALL" OPTION -->
-            <mat-option class="pr-16 pl-0" *ngIf="!(isWarehouseLoading$ | async)">
-                <div (click)="optionSelected($event, 'all')">
-                    <mat-checkbox
-                        class="ml-16"
-                        [disableRipple]="true"
-                        [checked]="selection.hasValue() && allSelected"
-                        [indeterminate]="selection.hasValue() && !allSelected"
-                        (click)="$event.stopPropagation()"
-                        (change)="$event ? toggle$.next('all') : null"
-                    >
-                        (Select All)
-                    </mat-checkbox>
-                </div>
-            </mat-option>
-            <!-- / "SELECT ALL" OPTION -->
-
-            <!-- WAREHOUSE OPTIONS -->
-            <mat-option
-                class="pr-16 pl-0"
-                *ngFor="let warehouse of (availableWarehouses$ | async)"
-                [value]="warehouse"
-            >
-                <!-- {{ warehouse?.name || '-' }} -->
-                <div (click)="$event.stopPropagation(); toggleSelectedWarehouse(warehouse);">
-                    <mat-checkbox
-                        class="ml-16"
-                        [value]="warehouse"
-                        [disableRipple]="true"
-                        [checked]="selection.isSelected(warehouse)"
-                        (click)="$event.stopPropagation()"
-                        (change)="toggleSelectedWarehouse(warehouse)"
-                    >
-                        {{ warehouse?.name || '-' }}
-                    </mat-checkbox>
-                </div>
-            </mat-option>
-            <!-- <mat-checkbox
-                *ngFor="let warehouse of (availableWarehouses$ | async)"
-                [value]="warehouse"
-            >
-                {{ warehouse?.name || '-' }}
-            </mat-checkbox> -->
-            <!-- / WAREHOUSE OPTIONS -->
-
-            <!-- LOADING OPTION -->
-            <mat-option
-                [disabled]="true"
-                style="text-align: center; font-style: italic; max-height: 30px;"
-                *ngIf="!(totalWarehouses$ | async) && ((totalWarehouses$ | async) > (availableWarehouses$ | async)?.length)"
-            >
-                Loading ...
-            </mat-option>
-            <!-- / LOADING OPTION -->
-        </mat-autocomplete>
-        <mat-error *ngIf="hasError(warehouseForm)">
-            {{ getFormError(warehouseForm) }}
+        <mat-error>
+            <ng-content select="[error]"></ng-content>
         </mat-error>
     </mat-form-field>
 </div>
-<!-- / PROVINCE -->
+<ng-template #selectStoreType>
+    <sinbad-multiple-selection
+        [disableClearAll]="true"
+        [enableSelectAll]="true"
+        [availableOptions]="(availableEntities$ | async)"
+        [totalAvailableOptions]="(totalEntities$ | async)"
+        [initialSelectedOptions]="initialSelection"
+        [totalInitialSelectedOptions]="initialSelection.length"
+        [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        (availableReachedBottom)="onEntityReachedBottom($event)"
+        (selectionListChanged)="onSelectionChanged($event)"
+        (clearAll)="onClearAll()"
+        (search)="onEntitySearch($event)"
+    ></sinbad-multiple-selection>
+</ng-template>
+<!-- <select-advanced
+    [isMultipleSelections]="false"
+    [placeholder]="'Search Store Type'"
+    [availableOptions]="(availableEntities$ | async)"
+    [totalAvailableOptions]="(totalEntities$ | async)"
+    [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+    (availableReachedBottom)="onEntityReachedBottom($event)"
+    (selected)="onSelectedEntity($event)"
+    (search)="onEntitySearch($event)"
+></select-advanced> -->
+<!-- / ENTITY (STORE SEGMENTATION TYPE) -->

@@ -1,0 +1,229 @@
+<!-- CONTENT CARD (INFORMASI PRODUK) -->
+<div [ngClass]="catalogueContent">
+    <div class="p-16 pb-28">
+        <div class="font-weight-600 font-size-24 line-height-20">Trigger</div>
+    </div>
+
+    <div class="p-16 pt-0 pb-40 line-height-1.75">
+        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
+            <!-- *HIDDEN* ID -->
+            <input
+                hidden
+                name="id"
+                formControlName="id"
+            />
+            <!-- / *HIDDEN* ID -->
+            <!-- SEGMENTATION BASE -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+            >
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('segmentationBase'))"
+                >
+                    Segmentation<br/>Base
+                </label>
+
+                <mat-radio-group [selected]="none" formControlName="segmentationBase" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                    <mat-radio-button #none> (None) </mat-radio-button>
+                    <mat-radio-button value="direct-store"> Direct Store </mat-radio-button>
+                    <mat-radio-button value="segmentation"> Segmentation </mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <!-- / SEGMENTATION BASE -->
+            <!-- CHOSEN STORE -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('segmentationBase').value !== 'direct-store'"
+            >
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenStore'))"
+                >
+                    Chosen Store<br/>({{ form.get('chosenStore').value?.length || '0' }} Selected)
+                </label>
+
+                <select-supplier-stores placeholder="Choose Store" [required]="false" [fxFlex]="formFieldLength" (selected)="onStoreSelected($event)">
+                    <div error>
+                        {{ getFormError(form.get('chosenStore')) }}
+                    </div>
+                </select-supplier-stores>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('chosenStore').value || '-' }}
+                </span> -->
+            </div>
+            <!-- / CHOSEN STORE -->
+            <!-- CHOSEN SEGMENTATION -->
+            <div
+                fxLayout="column"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('segmentationBase').value !== 'segmentation'"
+            >
+                <!-- WAREHOUSE -->
+                <div
+                    [ngClass]="formClass"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        [fxFlex]="labelLength"
+                        class="pr-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('chosenWarehouse'))"
+                    >
+                        Warehouse<br/>({{ form.get('chosenWarehouse').value?.length || '0' }} Selected)
+                    </label>
+
+                    <select-warehouses
+                        placeholder="Choose Warehouse"
+                        [required]="false"
+                        [fxFlex]="formFieldLength"
+                        (selected)="onWarehouseSelected($event)"
+                    >
+                        <div error>
+                            {{ getFormError(form.get('chosenWarehouse')) }}
+                        </div>
+                    </select-warehouses>
+                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                        {{ form.get('chosenStore').value || '-' }}
+                    </span> -->
+                </div>
+                <!-- / WAREHOUSE -->
+                <!-- STORE TYPE -->
+                <div
+                    [ngClass]="formClass"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        [fxFlex]="labelLength"
+                        class="pr-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreType'))"
+                    >
+                        Store Type<br/>({{ form.get('chosenStoreType').value?.length || '0' }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        placeholder="Choose Store Type"
+                        segmentationType="type"
+                        [required]="false"
+                        [fxFlex]="formFieldLength"
+                        (selected)="onStoreTypeSelected($event)"
+                    >
+                        <div error>
+                            {{ getFormError(form.get('chosenStoreType')) }}
+                        </div>
+                    </select-store-segmentation>
+                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                        {{ form.get('chosenStore').value || '-' }}
+                    </span> -->
+                </div>
+                <!-- / STORE TYPE -->
+                <!-- STORE GROUP -->
+                <div
+                    [ngClass]="formClass"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        [fxFlex]="labelLength"
+                        class="pr-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreGroup'))"
+                    >
+                        Store Group<br/>({{ form.get('chosenStoreGroup').value?.length || '0' }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        placeholder="Choose Store Group"
+                        segmentationType="group"
+                        [required]="false"
+                        [fxFlex]="formFieldLength"
+                        (selected)="onStoreGroupSelected($event)"
+                    >
+                        <div error>
+                            {{ getFormError(form.get('chosenStoreGroup')) }}
+                        </div>
+                    </select-store-segmentation>
+                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                        {{ form.get('chosenStore').value || '-' }}
+                    </span> -->
+                </div>
+                <!-- / STORE GROUP -->
+                <!-- STORE CHANNEL -->
+                <div
+                    [ngClass]="formClass"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        [fxFlex]="labelLength"
+                        class="pr-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreChannel'))"
+                    >
+                        Store Channel<br/>({{ form.get('chosenStoreChannel').value?.length || '0' }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        placeholder="Choose Store Channel"
+                        segmentationType="channel"
+                        [required]="false"
+                        [fxFlex]="formFieldLength"
+                        (selected)="onStoreChannelSelected($event)"
+                    >
+                        <div error>
+                            {{ getFormError(form.get('chosenStoreChannel')) }}
+                        </div>
+                    </select-store-segmentation>
+                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                        {{ form.get('chosenStore').value || '-' }}
+                    </span> -->
+                </div>
+                <!-- / STORE CHANNEL -->
+                <!-- STORE CLUSTER -->
+                <div
+                    [ngClass]="formClass"
+                    fxLayout="row"
+                    fxLayoutAlign="start stretch"
+                >
+                    <label
+                        fxFlexAlign="center"
+                        [fxFlex]="labelLength"
+                        class="pr-0"
+                        [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreCluster'))"
+                    >
+                        Store Cluster<br/>({{ form.get('chosenStoreCluster').value?.length || '0' }} Selected)
+                    </label>
+
+                    <select-store-segmentation
+                        placeholder="Choose Store Cluster"
+                        segmentationType="cluster"
+                        [required]="false"
+                        [fxFlex]="formFieldLength"
+                        (selected)="onStoreClusterSelected($event)"
+                    >
+                        <div error>
+                            {{ getFormError(form.get('chosenStoreCluster')) }}
+                        </div>
+                    </select-store-segmentation>
+                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                        {{ form.get('chosenStore').value || '-' }}
+                    </span> -->
+                </div>
+                <!-- / STORE CLUSTER -->
+            </div>
+            <!-- / CHOSEN SEGMENTATION -->
+        </form>
+    </div>
+</div>
+<!-- / CONTENT CARD (INFORMASI PRODUK) -->

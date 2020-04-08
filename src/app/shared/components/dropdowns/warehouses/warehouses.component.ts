@@ -1,137 +1,170 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
 
 import { FormControl } from '@angular/forms';
-import { ErrorMessageService, HelperService } from 'app/shared/helpers';
-import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatOption } from '@angular/material';
-import { fromEvent, Observable, Subject, BehaviorSubject, of, forkJoin } from 'rxjs';
-import { tap, debounceTime, withLatestFrom, filter, takeUntil, map, startWith, distinctUntilChanged, delay, take, catchError, switchMap } from 'rxjs/operators';
-import { Warehouse } from './models';
-import { WarehouseApiService } from './services';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
+import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
+import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
+import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
+import { Warehouse as Entity } from './models';
+import { WarehousesApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
-import { Auth } from 'app/main/pages/core/auth/models';
-import { SelectionModel } from '@angular/cdk/collections';
+import { Selection } from '../select-advanced/models';
+import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
+import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
+import { SelectionList } from 'app/shared/components/multiple-selection/models';
+import { DeleteConfirmationComponent } from 'app/shared/modals';
+import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
+import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 @Component({
-    selector: 'select-warehouse',
+    selector: 'select-warehouses',
     templateUrl: './warehouses.component.html',
     styleUrls: ['./warehouses.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
 export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
     // Form
-    warehouseForm: FormControl = new FormControl('');
+    entityForm: FormControl = new FormControl('');
     // Subject untuk keperluan subscription.
     subs$: Subject<void> = new Subject<void>();
-    // Subject untuk keperluan toggle selection.
-    toggle$: Subject<Warehouse | string> = new Subject<Warehouse | string>();
+    // Untuk keperluan mat dialog ref.
+    dialogRef$: Subject<string> = new Subject<string>();
 
-    // Untuk menyimpan warehouse yang tersedia.
-    availableWarehouses$: BehaviorSubject<Array<Warehouse>> = new BehaviorSubject<Array<Warehouse>>([]);
-    // Untuk menyimpan warehouse yang terpilih.
-    selection: SelectionModel<Warehouse> = new SelectionModel<Warehouse>(true, []);
-    // Subject untuk mendeteksi adanya perubahan warehouse yang terpilih.
-    selectedWarehouse$: BehaviorSubject<Array<Warehouse>> = new BehaviorSubject<Array<Warehouse>>([]);
-    // Menyimpan state loading-nya warehouse.
-    isWarehouseLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    // Untuk menyimpan Entity yang belum ditransformasi untuk keperluan select advanced.
+    rawAvailableEntities$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>([]);
+    // Untuk menyimpan Entity yang tersedia.
+    availableEntities$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    // Subject untuk mendeteksi adanya perubahan Entity yang terpilih.
+    selectedEntity$: BehaviorSubject<Array<Entity>> = new BehaviorSubject<Array<Entity>>(null);
+    // Menyimpan state loading-nya Entity.
+    isEntityLoading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     // Untuk menyimpan jumlah semua province.
-    totalWarehouses$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-    // Untuk penanda apakah semuanya terpilih atau tidak.
-    // tslint:disable-next-line: no-inferrable-types
-    allSelected: boolean = false;
+    totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    // Untuk keperluan handle dialog.
+    dialog: ApplyDialogService<MultipleSelectionComponent>;
 
-    // Untuk menyimpan status required untuk input bersifat wajib atau tidak.
+    // Untuk keperluan form field.
     // tslint:disable-next-line: no-inferrable-types
-    @Input() isRequired: boolean = false;
+    removing: boolean = false;
+    tempEntity: Array<Selection> = [];
+    initialSelection: Array<Selection> = [];
+    entityFormView: FormControl;
+    entityFormValue: FormControl;
+
+    // Untuk menandai apakah pilihannya required atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() required: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types no-input-rename
+    @Input('placeholder') placeholder: string = 'Search Warehouse';
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
-    @Output() selected: EventEmitter<Array<Warehouse>> = new EventEmitter<Array<Warehouse>>();
+    @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
     // Untuk keperluan AutoComplete-nya warehouse
-    @ViewChild('invisibleOption', { static: true }) invisibleOption: MatOption;
-    @ViewChild('warehouseAutoComplete', { static: true }) warehouseAutoComplete: MatAutocomplete;
-    @ViewChild('triggerWarehouse', { static: true, read: MatAutocompleteTrigger }) triggerWarehouse: MatAutocompleteTrigger;
+    @ViewChild('entityAutoComplete', { static: true }) entityAutoComplete: MatAutocomplete;
+    @ViewChild('triggerEntity', { static: true, read: MatAutocompleteTrigger }) triggerEntity: MatAutocompleteTrigger;
+    @ViewChild('selectStoreType', { static: false }) selectStoreType: TemplateRef<MultipleSelectionComponent>;
 
     constructor(
         private helper$: HelperService,
         private store: NgRxStore<fromAuth.FeatureState>,
         private errorMessage$: ErrorMessageService,
-        private warehouseApi$: WarehouseApiService,
+        private entityApi$: EntitiesApiService,
+        private applyDialogFactory$: ApplyDialogFactoryService<MultipleSelectionComponent>,
+        private matDialog: MatDialog,
+        private cdRef: ChangeDetectorRef,
+        private notice$: NoticeService,
+        private multiple$: MultipleSelectionService,
     ) {
-        this.availableWarehouses$.pipe(
-            tap(x => this.debug('AVAILABLE WAREHOUSES', x)),
-            takeUntil(this.subs$)
-        ).subscribe(warehouses => {
-            if (this.allSelected) {
-                this.selection.clear();
-                warehouses.forEach(warehouse => this.selection.select(warehouse));
-            }
-        });
-
-        this.selectedWarehouse$.pipe(
-            tap(x => this.debug('SELECTED WAREHOUSE', x)),
-            takeUntil(this.subs$)
-        ).subscribe(warehouses => {
-            this.selected.emit(warehouses);
-        });
-
-        this.isWarehouseLoading$.pipe(
-            tap(x => this.debug('IS WAREHOUSE LOADING?', x)),
+        this.availableEntities$.pipe(
+            tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
-        this.totalWarehouses$.pipe(
-            tap(x => this.debug('TOTAL WAREHOUSES', x)),
+        this.selectedEntity$.pipe(
+            tap(x => HelperService.debug('SELECTED ENTITY', x)),
+            takeUntil(this.subs$)
+        ).subscribe(value => this.selected.emit(value));
+
+        this.isEntityLoading$.pipe(
+            tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
             takeUntil(this.subs$)
         ).subscribe();
 
-        this.toggle$.pipe(
-            withLatestFrom(this.totalWarehouses$, this.availableWarehouses$),
+        this.totalEntities$.pipe(
+            tap(x => HelperService.debug('TOTAL ENTITIES', x)),
             takeUntil(this.subs$)
-        ).subscribe(([toggleValue, totalWarehouse, warehouses]) => {
-            if (this.allSelected) {
-                this.selection.clear();
-            } else {
-                warehouses.forEach(warehouse => this.selection.select(warehouse));
-            }
+        ).subscribe();
 
-            this.allSelected = !this.allSelected;
-        });
+        // Melakukan observe terhadap dialogRef$ untuk menangani dialog ref.
+        this.dialogRef$.pipe(
+            exhaustMap(subjectValue => {
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogTitle: string = '';
+                // tslint:disable-next-line: no-inferrable-types
+                let dialogMessage: string = '';
+
+                if (subjectValue === 'clear-all') {
+                    dialogTitle = 'Clear Selected Options';
+                    dialogMessage = 'It will clear all your selected options. Are you sure?';
+                }
+
+                const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                    data: {
+                        title: dialogTitle,
+                        message: dialogMessage,
+                        id: subjectValue
+                    }, disableClose: true
+                });
+        
+                return dialogRef.afterClosed().pipe(
+                    tap(value => {
+                        if (value === 'clear-all') {
+                            this.tempEntity = [];
+                            this.entityFormValue.setValue([]);
+
+                            this.multiple$.clearAllSelectedOptions();
+
+                            this.notice$.open('Your selected options has been cleared.', 'success', {
+                                horizontalPosition: 'right',
+                                verticalPosition: 'bottom',
+                                duration: 5000
+                            });
+
+                            this.cdRef.markForCheck();
+                        }
+                    })
+                );
+            }),
+            takeUntil(this.subs$)
+        ).subscribe();
     }
 
     private toggleLoading(loading: boolean): void {
-        this.isWarehouseLoading$.next(loading);
+        this.isEntityLoading$.next(loading);
     }
 
-    private debug(label: string, data: any = {}): void {
-        if (!environment.production) {
-            // tslint:disable-next-line:no-console
-            console.groupCollapsed(label, data);
-            // tslint:disable-next-line:no-console
-            console.trace(label, data);
-            // tslint:disable-next-line:no-console
-            console.groupEnd();
-        }
-    }
-
-    private requestWarehouse(params: IQueryParams): void {
+    private requestEntity(params: IQueryParams): void {
         of(null).pipe(
-            // tap(x => this.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
+            // tap(x => HelperService.debug('DELAY 1 SECOND BEFORE GET USER SUPPLIER FROM STATE', x)),
             // delay(1000),
             withLatestFrom<any, UserSupplier>(
                 this.store.select<UserSupplier>(AuthSelectors.getUserSupplier)
             ),
-            tap(x => this.debug('GET USER SUPPLIER FROM STATE', x)),
-            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Warehouse>>>(([_, userSupplier]) => {
+            tap(x => HelperService.debug('GET USER SUPPLIER FROM STATE', x)),
+            switchMap<[null, UserSupplier], Observable<IPaginatedResponse<Entity>>>(([_, userSupplier]) => {
                 // Jika user tidak ada data supplier.
                 if (!userSupplier) {
                     throw new Error('ERR_USER_SUPPLIER_NOT_FOUND');
@@ -146,65 +179,57 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 newQuery['supplierId'] = supplierId;
 
                 // Melakukan request data warehouse.
-                return this.warehouseApi$
-                    .find<IPaginatedResponse<Warehouse>>(newQuery)
+                return this.entityApi$
+                    .find<IPaginatedResponse<Entity>>(newQuery)
                     .pipe(
                         tap(() => this.toggleLoading(true)),
-                        tap(response => this.debug('FIND WAREHOUSE', { params: newQuery, response }))
+                        tap(response => HelperService.debug('FIND ENTITY', { params: newQuery, response })),
                     );
             }),
             take(1),
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
-                this.availableWarehouses$.next(response.data);
-                this.totalWarehouses$.next(response.total);
+                if (Array.isArray(response)) {
+                    this.rawAvailableEntities$.next(response);
+                    this.availableEntities$.next((response as Array<Entity>).map(d =>
+                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                    );
+                    this.totalEntities$.next((response as Array<Entity>).length);
+                } else {
+                    this.rawAvailableEntities$.next(response.data.map(d => d));
+                    this.availableEntities$.next(response.data.map(d =>
+                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                    );
+                    this.totalEntities$.next(response.total);
+                }
+
             },
             error: (err) => {
-                this.debug('ERROR FIND WAREHOUSE', { params, error: err }),
+                HelperService.debug('ERROR FIND ENTITY', { params, error: err }),
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
             complete: () => {
                 this.toggleLoading(false);
-                this.debug('FIND WAREHOUSE COMPLETED');
+                HelperService.debug('FIND ENTITY COMPLETED');
             }
         });
     }
-
-    private setValidator(): void {
-        this.warehouseForm.setValidators(
-            RxwebValidators.required({
-                message: this.errorMessage$.getErrorMessageNonState(
-                    'default',
-                    'required'
-                )
-            })
-        );
-    }
-
-    private initWarehouse(): void {
-        // Menyiapkan query untuk pencarian warehouse.
+// 
+    private initEntity(): void {
+        // Menyiapkan query untuk pencarian store entity.
         const params: IQueryParams = {
-            paginate: true,
+            paginate: false,
             limit: 10,
             skip: 0
         };
 
-        // Reset form-nya warehouse.
-        this.warehouseForm.enable();
-        this.warehouseForm.reset();
+        // Reset form-nya store entity.
+        this.entityForm.enable();
+        this.entityForm.reset();
 
-        if (this.isRequired) {
-            this.setValidator();
-        }
-
-        // Memulai request data warehouse.
-        this.requestWarehouse(params);
-    }
-
-    isAllSelected(): boolean {
-        const numSelected = this.selection.selected.length;
-        return this.totalWarehouses$.value === numSelected;
+        // Memulai request data store entity.
+        this.requestEntity(params);
     }
 
     getFormError(form: any): string {
@@ -231,136 +256,218 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
-    toggleSelectedWarehouse(warehouse: Warehouse): void {
-        if (this.selection.isSelected(warehouse)) {
-            if (this.allSelected) {
-                this.allSelected = !this.allSelected;
-            }
-
-            this.selection.deselect(warehouse);
-        } else {
-            this.selection.select(warehouse);
-
-            if (this.isAllSelected()) {
-                this.allSelected = true;
-            }
-        }
-    }
-
-    onSelectedWarehouse(event: MatAutocompleteSelectedEvent): void {
-        // Mengambil nilai warehouse terpilih.
-        // const warehouse: Warehouse = event.option.value;
+    onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
-        // this.selectedWarehouse$.next(warehouse);
-    }
-
-    displayWarehouse(): string {
-        if (!this.selection) {
-            return '';
-        }
-
-        if (!this.selection.hasValue()) {
-            return '';
-        }
-
-        return this.selection.selected[0].name + String(this.selection.selected.length > 1 ? `(+${this.selection.selected.length - 1} others)` : '');
-    }
-
-    processWarehouseAutoComplete(): void {
-        if (this.triggerWarehouse && this.warehouseAutoComplete && this.warehouseAutoComplete.panel) {
-            fromEvent<Event>(this.warehouseAutoComplete.panel.nativeElement, 'scroll')
-                .pipe(
-                    // Debugging.
-                    tap(() => this.debug(`fromEvent<Event>(this.warehouseAutoComplete.panel.nativeElement, 'scroll')`)),
-                    // Kasih jeda ketika scrolling.
-                    debounceTime(500),
-                    // Mengambil nilai terakhir warehouse yang tersedia, jumlah warehouse dan state loading-nya warehouse dari subject.
-                    withLatestFrom(this.availableWarehouses$, this.totalWarehouses$, this.isWarehouseLoading$,
-                        ($event, warehouses, totalWarehouses, isLoading) => ({ $event, warehouses, totalWarehouses, isLoading }),
-                    ),
-                    // Debugging.
-                    tap(() => this.debug('SELECT WAREHOUSE IS SCROLLING...', {})),
-                    // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
-                    filter(({ isLoading, warehouses, totalWarehouses }) =>
-                        !isLoading && (totalWarehouses > warehouses.length) && this.helper$.isElementScrolledToBottom(this.warehouseAutoComplete.panel)
-                    ),
-                    takeUntil(this.triggerWarehouse.panelClosingActions)
-                ).subscribe(({ warehouses }) => {
-                    const params: IQueryParams = {
-                        paginate: true,
-                        limit: 10,
-                        skip: warehouses.length
-                    };
-
-                    // Memulai request data warehouse.
-                    this.requestWarehouse(params);
-                });
+        if (event) {
+            const eventIds = event.map(e => e.id);
+            const rawEntities = this.rawAvailableEntities$.value;
+            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
         }
     }
 
-    listenWarehouseAutoComplete(): void {
-        this.warehouseForm.setValue('');
-        setTimeout(() => this.processWarehouseAutoComplete(), 100);
+    onEntitySearch(value: string): void {
+        const queryParams: IQueryParams = {
+            paginate: false,
+        };
+
+        queryParams['search'] = [
+            {
+                fieldName: 'name',
+                keyword: value
+            }
+        ];
+
+        this.requestEntity(queryParams);
     }
 
-    optionSelected(event: Event, value: string | Warehouse): void {
-        event.stopPropagation();
-        this.toggle$.next(value);
+    onEntityReachedBottom(entitiesLength: number): void {
+        const params: IQueryParams = {
+            paginate: false,
+            limit: 10,
+            skip: entitiesLength
+        };
+
+        // Memulai request data store entity.
+        this.requestEntity(params);
     }
 
-    ngOnInit(): void {
-        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
-        this.initWarehouse();
+    onSelectionChanged($event: SelectionList): void {
+        const { removed, merged = this.entityFormValue.value } = $event;
+        this.tempEntity = merged;
+        this.removing = removed.length > 0;
+        HelperService.debug('SELECTION CHANGED', $event);
 
-        // Menangani Form Control-nya warehouse.
-        (this.warehouseForm.valueChanges).pipe(
-            startWith(''),
-            debounceTime(200),
-            distinctUntilChanged(),
-            withLatestFrom(this.selectedWarehouse$),
-            filter(([formValue, selectedWarehouse]) => {
-                if (selectedWarehouse && formValue && !this.warehouseAutoComplete.isOpen) {
-                    return false;
+        this.cdRef.detectChanges();
+    }
+
+    openEntitySelection(): void {
+        let selected = this.entityFormValue.value;
+
+        if (!Array.isArray(selected)) {
+            selected = [];
+            this.entityFormValue.setValue(selected);
+        }
+
+        this.tempEntity = selected;
+        this.initialSelection = selected;
+        
+        this.dialog = this.applyDialogFactory$.open({
+            title: 'Select Warehouse',
+            template: this.selectStoreType,
+            isApplyEnabled: true,
+        }, {
+            disableClose: true,
+            width: '80vw',
+            minWidth: '80vw',
+            maxWidth: '80vw',
+        });
+
+        this.dialog.closed$.subscribe({
+            next: (value: TNullable<string>) => {
+                HelperService.debug('DIALOG SELECTION CLOSED', value);
+
+                let selection;
+                if (value === 'apply') {
+                    if (!this.removing) {
+                        if (Array.isArray(this.tempEntity)) {
+                            if (this.tempEntity.length > 0) {
+                                selection = this.tempEntity;
+                            } else {
+                                selection = [];
+                            }
+                        } else {
+                            selection = (this.entityFormValue.value as Array<Selection>);
+                        }
+                    } else {
+                        selection = this.tempEntity;
+                    }
+                } else {
+                    selection = (this.entityFormValue.value as Array<Selection>);
                 }
 
-                if (selectedWarehouse || (!formValue && !this.warehouseAutoComplete.isOpen)) {
-                    this.selectedWarehouse$.next(null);
-                    return false;
+                if (selection.length === 0) {
+                    this.entityFormView.setValue('');
+                    this.entityFormValue.setValue([]);
+                } else {
+                    const firstselection = selection[0].label;
+                    const remainLength = selection.length - 1;
+                    const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+
+                    this.entityFormValue.setValue(selection);
+                    this.entityFormView.setValue(viewValue);
                 }
 
-                if (!formValue && selectedWarehouse && !this.warehouseAutoComplete.isOpen) {
-                    this.warehouseForm.patchValue(selectedWarehouse);
-                    return false;
-                }
-
-                return true;
-            }),
-            tap<[string | Warehouse, Array<Warehouse>]>(([formValue, selectedWarehouse]) => {
-                this.debug('WAREHOUSE FORM VALUE IS CHANGED', { formValue, selectedWarehouse });
-            }),
-            takeUntil(this.subs$)
-        ).subscribe(([formValue]) => {
-            const queryParams: IQueryParams = {
-                paginate: true,
-                limit: 10,
-                skip: 0
-            };
-
-            queryParams['keyword'] = formValue;
-
-            this.requestWarehouse(queryParams);
+                this.onSelectedEntity(this.entityFormValue.value);
+                this.cdRef.detectChanges();
+            }
         });
     }
 
+    onClearAll(): void {
+        this.dialogRef$.next('clear-all');
+    }
+
+    // processEntityAutoComplete(): void {
+    //     if (this.triggerEntity && this.entityAutoComplete && this.entityAutoComplete.panel) {
+    //         fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')
+    //             .pipe(
+    //                 // Debugging.
+    //                 tap(() => HelperService.debug(`fromEvent<Event>(this.entityAutoComplete.panel.nativeElement, 'scroll')`)),
+    //                 // Kasih jeda ketika scrolling.
+    //                 debounceTime(500),
+    //                 // Mengambil nilai terakhir store entity yang tersedia, jumlah store entity dan state loading-nya store entity dari subject.
+    //                 withLatestFrom(this.availableEntities$, this.totalEntities$, this.isEntityLoading$,
+    //                     ($event, entities, totalEntities, isLoading) => ({ $event, entities, totalEntities, isLoading }),
+    //                 ),
+    //                 // Debugging.
+    //                 tap(() => HelperService.debug('SELECT ENTITY IS SCROLLING...', {})),
+    //                 // Hanya diteruskan jika tidak sedang loading, jumlah di back-end > jumlah di state, dan scroll element sudah paling bawah.
+    //                 filter(({ isLoading, entities, totalEntities }) =>
+    //                     !isLoading && (totalEntities > entities.length) && this.helper$.isElementScrolledToBottom(this.entityAutoComplete.panel)
+    //                 ),
+    //                 takeUntil(this.triggerEntity.panelClosingActions.pipe(
+    //                     tap(() => HelperService.debug('SELECT ENTITY IS CLOSING ...'))
+    //                 ))
+    //             ).subscribe(({ entities }) => {
+    //                 const params: IQueryParams = {
+    //                     paginate: true,
+    //                     limit: 10,
+    //                     skip: entities.length
+    //                 };
+
+    //                 // Memulai request data store entity.
+    //                 this.requestEntity(params);
+    //             });
+    //     }
+    // }
+
+    // listenEntityAutoComplete(): void {
+    //     // this.triggerEntity.autocomplete = this.entityAutoComplete;
+    //     setTimeout(() => this.processEntityAutoComplete());
+    // }
+
+    private initForm(): void {
+        this.entityFormView = new FormControl('');
+        this.entityFormValue = new FormControl('');
+
+        if (this.required) {
+            this.entityFormView.setValidators(RxwebValidators.required());
+        }
+    }
+
+    ngOnInit(): void {
+        this.initForm();
+        
+        // Inisialisasi form sudah tidak ada karena sudah diinisialisasi saat deklarasi variabel.
+        this.initEntity();
+
+        // Menangani Form Control-nya warehouse.
+        // (this.entityForm.valueChanges).pipe(
+        //     startWith(''),
+        //     debounceTime(200),
+        //     distinctUntilChanged(),
+        //     withLatestFrom(this.selectedEntity$),
+        //     filter(([formValue, selectedEntity]) => {
+        //         if (selectedEntity && formValue && !this.entityAutoComplete.isOpen) {
+        //             return false;
+        //         }
+                
+        //         if (selectedEntity || (!formValue && !this.entityAutoComplete.isOpen)) {
+        //             this.selectedEntity$.next(null);
+        //             return false;
+        //         }
+
+        //         if (!formValue && selectedEntity && !this.entityAutoComplete.isOpen) {
+        //             this.entityForm.patchValue(selectedEntity);
+        //             return false;
+        //         }
+
+        //         return true;
+        //     }),
+        //     tap<[string | Entity, TNullable<Entity>]>(([formValue, selectedEntity]) => {
+        //         HelperService.debug('ENTITY FORM VALUE IS CHANGED', { formValue, selectedEntity });
+        //     }),
+        //     takeUntil(this.subs$)
+        // ).subscribe(([formValue]) => {
+        //     const queryParams: IQueryParams = {
+        //         paginate: true,
+        //         limit: 10,
+        //         skip: 0
+        //     };
+
+        //     queryParams['keyword'] = formValue;
+
+        //     this.requestEntity(queryParams);
+        // });
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isRequired']) {
-            this.warehouseForm.clearValidators();
+        if (!changes['required'].isFirstChange()) {
+            this.entityFormView.clearValidators();
 
-            if (changes['isRequired'].currentValue === true) {
-                this.setValidator();
+            if (changes['required'].currentValue === true) {
+                this.entityFormView.setValidators(RxwebValidators.required());
             }
-
-            this.warehouseForm.updateValueAndValidity();
         }
     }
 
@@ -368,44 +475,23 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         this.subs$.next();
         this.subs$.complete();
 
-        this.totalWarehouses$.next(null);
-        this.totalWarehouses$.complete();
+        this.dialogRef$.next();
+        this.dialogRef$.complete();
 
-        this.selectedWarehouse$.next(null);
-        this.selectedWarehouse$.complete();
+        this.totalEntities$.next(null);
+        this.totalEntities$.complete();
 
-        this.isWarehouseLoading$.next(null);
-        this.isWarehouseLoading$.complete();
+        this.selectedEntity$.next(null);
+        this.selectedEntity$.complete();
 
-        this.availableWarehouses$.next(null);
-        this.availableWarehouses$.complete();
+        this.isEntityLoading$.next(null);
+        this.isEntityLoading$.complete();
+
+        this.availableEntities$.next(null);
+        this.availableEntities$.complete();
     }
 
-    ngAfterViewInit(): void {
-        this.triggerWarehouse.panelClosingActions.pipe(
-            startWith([]),
-            tap(() => this.debug('SELECT WAREHOUSE IS CLOSING ...'))
-        ).subscribe(() => {
-            this.selectedWarehouse$.next(this.selection.selected);
-
-            if (!this.selection) {
-                this.warehouseForm.setValue('');
-                return;
-            }
-
-            if (!this.selection.hasValue()) {
-                this.warehouseForm.setValue('');
-                return;
-            }
-
-            const selectedFirst = this.selection.selected[0].name;
-            const selectedLength = this.selection.selected.length;
-            this.warehouseForm.setValue(this.warehouseForm.value + ' ');
-            setTimeout(() =>
-                this.warehouseForm.setValue(selectedFirst + String(selectedLength > 1 ? ` (+${selectedLength - 1} ${selectedLength <= 1 ? 'other' : 'others'})` : ''))
-            );
-        });
-    }
+    ngAfterViewInit(): void { }
 
 }
 

@@ -26,6 +26,8 @@ interface TTemplateFiles {
     providedIn: 'root',
 })
 export class HelperService {
+    static debugPrefix: string = '';
+    
     private static _orderStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -198,12 +200,16 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
+    static setDebugPrefix(prefix: string): void {
+        HelperService.debugPrefix = prefix;
+    }
+
     static debug(label: string, data: any = {}): void {
         if (!environment.production) {
             // tslint:disable-next-line:no-console
-            console.groupCollapsed(label, data);
+            console.groupCollapsed(HelperService.debugPrefix + label, data);
             // tslint:disable-next-line:no-console
-            console.trace(label, data);
+            console.trace(HelperService.debugPrefix + label, data);
             // tslint:disable-next-line:no-console
             console.groupEnd();
         }

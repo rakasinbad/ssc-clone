@@ -8,6 +8,7 @@ import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputMod
 import { WarehouseCataloguesDropdownComponent } from './warehouse-catalogues.component';
 import { MultipleSelectionModule } from 'app/shared/components/multiple-selection/multiple-selection.module';
 import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 
 
@@ -27,6 +28,7 @@ import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/ap
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        RxReactiveFormsModule,
 
         ApplyDialogModule,
         MultipleSelectionModule,

@@ -590,3 +590,50 @@ mat-header-row {
     min-height: 40px !important;
     max-height: 40px !important;
 }
+
+.sinbad-mat-tab-group {
+    .mat-tab-header {
+        border-bottom: 0px solid rgba(0,0,0,0) !important;
+    }
+
+    .mat-tab-label {
+        color: sinbad-color('black', '50');
+
+        &.mat-tab-label-active {
+            color: sinbad-color('red', '50');
+            opacity: 1;
+        }
+    }
+}
+
+.view-field {
+    label {
+        font-weight: 600;
+        position: relative;
+        // top: -0.78em;
+        // text-align: right;
+        padding-right: 2em;
+        // padding-right: 10px;
+    }
+
+    .mat-form-field-prefix {
+        top: -0.2em;
+    }
+
+    .mat-form-field-infix {
+        padding: 0.5em 0 !important;
+        top: -0.25em;
+    }
+
+    &.sinbad-textarea {
+        label {
+            top: -3em;
+        }
+    }
+
+    &.sinbad-button {
+        label {
+            top: 0;
+        }
+    }
+}

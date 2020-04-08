@@ -8,12 +8,12 @@ import { Observable } from 'rxjs';
  *
  *
  * @export
- * @class AssociationApiService
+ * @class WarehousesApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class WarehouseApiService {
+export class WarehousesApiService {
     private _url: string;
     private readonly _endpoint = '/warehouses';
 
@@ -25,9 +25,11 @@ export class WarehouseApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        if (!params['supplierId']) {
-            throw new Error('ERR_WAREHOUSE_REQUIRE_SUPPLIERID');
-        } else {
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
+        }
+        
+        if (params['supplierId'] && !params['noSupplierId']) {
             newArgs.push({ key: 'supplierId', value: params['supplierId'] });
         }
 
