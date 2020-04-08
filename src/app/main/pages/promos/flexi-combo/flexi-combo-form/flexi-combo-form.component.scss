@@ -33,6 +33,12 @@ app-flexi-combo-form {
             .mat-form-field-outline {
                 background: #ffffff !important;
             }
+
+            .mat-datetimepicker-toggle {
+                .mat-icon {
+                    color: sinbad-color('red', '50');
+                }
+            }
         }
 
         .box-group {
