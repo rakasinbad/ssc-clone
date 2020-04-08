@@ -1,1 +1,1 @@
-export * from './store-segmentation-types-api.service';
+export * from './store-segmentation-api.service';

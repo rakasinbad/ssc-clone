@@ -42,7 +42,8 @@ export class StoreSegmentationTreeComponent implements OnInit, OnChanges, OnDest
     // Untuk menyimpan jumlah semua province.
     totalEntities$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
-    @Input() segmentationType: 'type' | 'group' | 'channel' | 'cluster';
+    // tslint:disable-next-line: no-input-rename
+    @Input('segmentationType') segmentationType: 'type' | 'group' | 'channel' | 'cluster';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();

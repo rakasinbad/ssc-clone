@@ -20,7 +20,10 @@ import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import * as moment from 'moment';
-import { Catalogue } from 'app/main/pages/catalogues/models';
+import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
+import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
+import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
+import { SupplierStore } from 'app/shared/models/supplier.model';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -328,7 +331,11 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             id: [''],
             segmentationBase: [''],
             chosenStore: [[]],
-            chosenSegmentation: [[]],
+            chosenWarehouse: [[]],
+            chosenStoreType: [[]],
+            chosenStoreGroup: [[]],
+            chosenStoreChannel: [[]],
+            chosenStoreCluster: [[]],
         });
     }
 
@@ -377,7 +384,11 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
                     return ({
                         id: value.id,
                         segmentationBase: value.segmentationBase,
-                        chosenSegmentation: value.chosenSegmentation.length === 0 ? [] : value.chosenSegmentation,
+                        chosenWarehouse: value.chosenWarehouse.length === 0 ? [] : value.chosenWarehouse,
+                        chosenStoreType: value.chosenStoreType.length === 0 ? [] : value.chosenStoreType,
+                        chosenStoreGroup: value.chosenStoreGroup.length === 0 ? [] : value.chosenStoreGroup,
+                        chosenStoreChannel: value.chosenStoreChannel.length === 0 ? [] : value.chosenStoreChannel,
+                        chosenStoreCluster: value.chosenStoreCluster.length === 0 ? [] : value.chosenStoreCluster,
                     });
                 }
 
@@ -475,7 +486,7 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
         return this.formMode === 'view';
     }
 
-    onStoreSelected(event: Array<Catalogue>): void {
+    onStoreSelected(event: Array<SupplierStore>): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
         
@@ -483,6 +494,61 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             this.form.get('chosenStore').setValue('');
         } else {
             this.form.get('chosenStore').setValue(event);
+        }
+    }
+
+    onWarehouseSelected(event: Array<Warehouse>): void {
+        this.form.get('chosenWarehouse').markAsDirty({ onlySelf: true });
+        this.form.get('chosenWarehouse').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenWarehouse').setValue('');
+        } else {
+            this.form.get('chosenWarehouse').setValue(event);
+        }
+    }
+
+    onStoreTypeSelected(event: Array<StoreSegmentationType>): void {
+        this.form.get('chosenStoreType').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreType').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenStoreType').setValue('');
+        } else {
+            this.form.get('chosenStoreType').setValue(event);
+        }
+    }
+
+    onStoreGroupSelected(event: Array<StoreSegmentationGroup>): void {
+        this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenStoreGroup').setValue('');
+        } else {
+            this.form.get('chosenStoreGroup').setValue(event);
+        }
+    }
+
+    onStoreChannelSelected(event: Array<StoreSegmentationChannel>): void {
+        this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenStoreChannel').setValue('');
+        } else {
+            this.form.get('chosenStoreChannel').setValue(event);
+        }
+    }
+
+    onStoreClusterSelected(event: Array<StoreSegmentationCluster>): void {
+        this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenStoreCluster').setValue('');
+        } else {
+            this.form.get('chosenStoreCluster').setValue(event);
         }
     }
 

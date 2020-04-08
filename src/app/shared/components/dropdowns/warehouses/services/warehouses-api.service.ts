@@ -8,14 +8,14 @@ import { Observable } from 'rxjs';
  *
  *
  * @export
- * @class StoreSegmentationTypesApiService
+ * @class WarehousesApiService
  */
 @Injectable({
     providedIn: 'root'
 })
-export class StoreSegmentationTypesApiService {
+export class WarehousesApiService {
     private _url: string;
-    private readonly _endpoint = '/types';
+    private readonly _endpoint = '/warehouses';
 
     constructor(
         private http: HttpClient,
@@ -25,12 +25,8 @@ export class StoreSegmentationTypesApiService {
     find<T>(params: IQueryParams): Observable<T> {
         const newArgs = [];
 
-        if (params['hasChild'] === true || params['hasChild'] === false) {
-            newArgs.push({ key: 'hasChild', value: String(params['hasChild']) });
-        }
-
         if (!params['supplierId'] && !params['noSupplierId']) {
-            throw new Error('ERR_STORE_SEGMENTATION_TYPES_REQUIRE_SUPPLIERID');
+            throw new Error('ERR_WAREHOUSE_REQUIRES_SUPPLIERID');
         }
         
         if (params['supplierId'] && !params['noSupplierId']) {
