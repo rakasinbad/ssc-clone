@@ -5,7 +5,7 @@ import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputMod
 // import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 // import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 
-import { StoreSegmentationTypesDropdownComponent } from './store-segmentation-types.component';
+import { StoreSegmentationDropdownComponent } from './store-segmentation.component';
 import { MultipleSelectionModule } from 'app/shared/components/multiple-selection/multiple-selection.module';
 import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/apply-dialog.module';
 
@@ -13,7 +13,7 @@ import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/ap
 
 @NgModule({
     declarations: [
-        StoreSegmentationTypesDropdownComponent,
+        StoreSegmentationDropdownComponent,
     ],
     imports: [
         CommonModule,
@@ -35,10 +35,10 @@ import { ApplyDialogModule } from 'app/shared/components/dialogs/apply-dialog/ap
         // RxReactiveDynamicFormsModule,
     ],
     exports: [
-        StoreSegmentationTypesDropdownComponent,
+        StoreSegmentationDropdownComponent,
     ],
     entryComponents: [
-        StoreSegmentationTypesDropdownComponent,
+        StoreSegmentationDropdownComponent,
     ],
 })
-export class StoreSegmentationTypesDropdownModule { }
+export class StoreSegmentationDropdownModule { }

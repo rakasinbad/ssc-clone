@@ -48,12 +48,12 @@
         <input
             matInput
             autocomplete="new-password"
-            placeholder="Search Store Type"
+            [placeholder]="placeholder"
             [formControl]="entityFormView"
             [value]="entityFormView.value"
         />
-        <mat-error *ngIf="hasError(entityFormValue)">
-            {{ getFormError(entityFormValue) }}
+        <mat-error>
+            <ng-content select="[error]"></ng-content>
         </mat-error>
     </mat-form-field>
 </div>

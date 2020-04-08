@@ -1,21 +1,21 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
 
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { MatAutocomplete, MatAutocompleteTrigger, MatAutocompleteSelectedEvent, MatDialog } from '@angular/material';
 import { fromEvent, Observable, Subject, BehaviorSubject, of } from 'rxjs';
 import { tap, debounceTime, withLatestFrom, filter, takeUntil, startWith, distinctUntilChanged, take, catchError, switchMap, map, exhaustMap } from 'rxjs/operators';
 import { StoreSegmentationType as Entity } from './models';
-import { StoreSegmentationTypesApiService as EntitiesApiService } from './services';
+import { StoreSegmentationApiService as EntitiesApiService } from './services';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { TNullable, IPaginatedResponse, ErrorHandler } from 'app/shared/models/global.model';
 import { fromAuth } from 'app/main/pages/core/auth/store/reducers';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { UserSupplier } from 'app/shared/models/supplier.model';
-import { Selection } from '../../select-advanced/models';
+import { Selection } from '../select-advanced/models';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { MultipleSelectionComponent } from 'app/shared/components/multiple-selection/multiple-selection.component';
@@ -24,14 +24,14 @@ import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 
 @Component({
-    selector: 'select-store-segmentation-types',
-    templateUrl: './store-segmentation-types.component.html',
-    styleUrls: ['./store-segmentation-types.component.scss'],
+    selector: 'select-store-segmentation',
+    templateUrl: './store-segmentation.component.html',
+    styleUrls: ['./store-segmentation.component.scss'],
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default
 })
-export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
+export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
     // Form
     entityForm: FormControl = new FormControl('');
@@ -61,6 +61,14 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     entityFormView: FormControl;
     entityFormValue: FormControl;
 
+    // Untuk menandai apakah pilihannya required atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() required: boolean = false;
+    // tslint:disable-next-line: no-input-rename
+    @Input('placeholder') placeholder: string = 'Search Store Segmentation';
+    // tslint:disable-next-line: no-input-rename
+    @Input('segmentationType') segmentationType: 'type' | 'group' | 'channel' | 'cluster';
+
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
 
@@ -80,6 +88,9 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
         private notice$: NoticeService,
         private multiple$: MultipleSelectionService,
     ) {
+        // Set debug prefix.
+        HelperService.setDebugPrefix('[STORE SEGMENTATION #2]');
+
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
             takeUntil(this.subs$)
@@ -171,6 +182,8 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
                 newQuery['supplierId'] = supplierId;
                 // Hanya mengambil yang tidak punya child.
                 newQuery['hasChild'] = false;
+                // Request berdasarkan segmentasinya
+                newQuery['segmentation'] = this.segmentationType;
 
                 // Melakukan request data warehouse.
                 return this.entityApi$
@@ -260,12 +273,7 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
             paginate: false,
         };
 
-        queryParams['search'] = [
-            {
-                fieldName: 'name',
-                keyword: value
-            }
-        ];
+        queryParams['keyword'] = value;
 
         this.requestEntity(queryParams);
     }
@@ -399,6 +407,10 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
     private initForm(): void {
         this.entityFormView = new FormControl('');
         this.entityFormValue = new FormControl('');
+        
+        if (this.required) {
+            this.entityFormView.setValidators(Validators.required);
+        }
     }
 
     ngOnInit(): void {
@@ -445,6 +457,16 @@ export class StoreSegmentationTypesDropdownComponent implements OnInit, AfterVie
 
         //     this.requestEntity(queryParams);
         // });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes['required'].isFirstChange()) {
+            this.entityFormView.clearValidators();
+
+            if (changes['required'].currentValue === true) {
+                this.entityFormView.setValidators(Validators.required);
+            }
+        }
     }
 
     ngOnDestroy(): void {
