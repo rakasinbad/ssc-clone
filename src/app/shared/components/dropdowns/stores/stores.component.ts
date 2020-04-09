@@ -264,7 +264,7 @@ export class StoresDropdownComponent implements OnInit, OnChanges, AfterViewInit
         if (event) {
             const eventIds = event.map(e => e.id);
             const rawEntities = this.rawAvailableEntities$.value;
-            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.id)));
+            this.selectedEntity$.next(rawEntities.filter(raw => eventIds.includes(raw.store.id)));
         }
     }
 
