@@ -18,6 +18,7 @@ import { PeriodTargetPromoGeneralInformationComponent } from './components/gener
 import { PeriodTargetPromoTriggerInformationComponent } from './components/trigger-information/trigger-information.component';
 import { PeriodTargetPromoCustomerSegmentationSettingsComponent } from './components/customer-segmentation-settings/customer-segmentation-settings.component';
 import { PeriodTargetPromoRewardInformationComponent } from './components/reward/reward.component';
+import { PeriodTargetPromoTriggerConditionBenefitSettingsComponent } from './components/condition-benefit-settings/condition-benefit-settings.component';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { PeriodTargetPromoRewardInformationComponent } from './components/reward
         PeriodTargetPromoTriggerInformationComponent,
         PeriodTargetPromoCustomerSegmentationSettingsComponent,
         PeriodTargetPromoRewardInformationComponent,
+        PeriodTargetPromoTriggerConditionBenefitSettingsComponent,
     ],
     imports: [
         CommonModule,
