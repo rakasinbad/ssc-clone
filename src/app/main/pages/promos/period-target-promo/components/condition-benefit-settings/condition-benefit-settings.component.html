@@ -31,7 +31,7 @@
                 <div [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
                     <mat-radio-group formControlName="calculationMechanism" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
                         <mat-radio-button value="non-cummulative"> Non Cummulative </mat-radio-button>
-                        <mat-radio-button value="cummulative"> Cummulative </mat-radio-button>
+                        <mat-radio-button value="cummulative" disabled> Cummulative </mat-radio-button>
                     </mat-radio-group>
 
                     <a class="sinbad-blue-fg text-underline mt-4" fxFlexAlign="start" style="cursor: pointer;" (click)="openHint()">What is this?</a>
@@ -151,16 +151,16 @@
                             >
                                 <label
                                     fxFlexAlign="center"
-                                    [fxFlex]="labelLength"
+                                    [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
                                     [class.mat-error]="!isViewMode() && hasError(control.get('benefit.qty.bonusSku'))"
                                 >
                                     <span
                                         class="sinbad-red-fg"
-                                    >* </span>Bonus SKU<br/>({{ control.get('benefit.qty.bonusSku').value?.length || '0' }} Selected)
+                                    >* </span>Bonus SKU
                                 </label>
     
-                                <select-catalogues mode="single" [required]="true" [fxFlex]="formFieldLength" (selected)="onCatalogueSelected($event, control.get('benefit.qty.bonusSku'))">
+                                <select-catalogues mode="single" [required]="true" [fxFlex]="formFieldLength * 2 - 1" (selected)="onCatalogueSelected($event, control.get('benefit.qty.bonusSku'))">
                                     <div error>
                                         {{ getFormError(control.get('benefit.qty.bonusSku')) }}
                                     </div>
@@ -178,11 +178,11 @@
                             >
                                 <label
                                     fxFlexAlign="center"
-                                    [fxFlex]="labelLength"
+                                    [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
                                 ></label>
 
-                                <mat-checkbox [formControl]="control.get('benefit.qty.applySameSku')">
+                                <mat-checkbox [fxFlex]="formFieldLength * 2 - 1" [formControl]="control.get('benefit.qty.applySameSku')">
                                     Apply Same SKU
                                 </mat-checkbox>
                             </div>
@@ -230,9 +230,10 @@
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength"
                                     class="pr-0"
+                                    [fxFlex]="labelLength * 2 - 1"
                                 ></label>
 
-                                <mat-checkbox [formControl]="control.get('benefit.qty.multiplicationOnly')">
+                                <mat-checkbox [fxFlex]="formFieldLength * 2 - 1" [formControl]="control.get('benefit.qty.multiplicationOnly')">
                                     Multiplication Only
                                 </mat-checkbox>
                             </div>
