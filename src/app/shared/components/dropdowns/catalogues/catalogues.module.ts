@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FuseSharedModule } from '@fuse/shared.module';
-import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule } from '@angular/material';
+import { MatAutocompleteModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule } from '@angular/material';
 // import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 // import { RxReactiveDynamicFormsModule } from '@rxweb/reactive-dynamic-forms';
 
@@ -28,6 +28,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
         MatFormFieldModule,
         MatInputModule,
         MatSelectModule,
+        MatOptionModule,
         RxReactiveFormsModule,
 
         ApplyDialogModule,

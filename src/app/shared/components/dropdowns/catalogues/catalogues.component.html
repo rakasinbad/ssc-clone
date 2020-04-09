@@ -43,34 +43,49 @@
         </mat-error>
     </mat-form-field>
 </div> -->
-<div class="custom-field" fxLayout="row">
-    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openCatalogueSelection()">
-        <input
-            matInput
-            autocomplete="new-password"
-            [placeholder]="placeholder"
-            [formControl]="entityFormView"
-            [value]="entityFormView.value"
-        />
+<div class="custom-field" fxLayout="row" *ngIf="mode === 'single'; else multiMode">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <mat-select [placeholder]="placeholder" [formControl]="entityForm">
+            <mat-option>(None)</mat-option>
+            <mat-option *ngFor="let option of (availableEntities$ | async)" [value]="option.id">
+                {{ option?.label || '-' }}
+            </mat-option>
+        </mat-select>
         <mat-error>
             <ng-content select="[error]"></ng-content>
         </mat-error>
     </mat-form-field>
 </div>
-<ng-template #selectStoreType>
-    <sinbad-multiple-selection
-        [disableClearAll]="true"
-        [enableSelectAll]="true"
-        [availableOptions]="(availableEntities$ | async)"
-        [totalAvailableOptions]="(totalEntities$ | async)"
-        [initialSelectedOptions]="initialSelection"
-        [totalInitialSelectedOptions]="initialSelection.length"
-        [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
-        (availableReachedBottom)="onEntityReachedBottom($event)"
-        (selectionListChanged)="onSelectionChanged($event)"
-        (clearAll)="onClearAll()"
-        (search)="onEntitySearch($event)"
-    ></sinbad-multiple-selection>
+<ng-template #multiMode>
+    <div class="custom-field" fxLayout="row">
+        <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openCatalogueSelection()">
+            <input
+                matInput
+                autocomplete="new-password"
+                [placeholder]="placeholder"
+                [formControl]="entityFormView"
+                [value]="entityFormView.value"
+            />
+            <mat-error>
+                <ng-content select="[error]"></ng-content>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <ng-template #selectStoreType>
+        <sinbad-multiple-selection
+            [disableClearAll]="true"
+            [enableSelectAll]="true"
+            [availableOptions]="(availableEntities$ | async)"
+            [totalAvailableOptions]="(totalEntities$ | async)"
+            [initialSelectedOptions]="initialSelection"
+            [totalInitialSelectedOptions]="initialSelection.length"
+            [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+            (availableReachedBottom)="onEntityReachedBottom($event)"
+            (selectionListChanged)="onSelectionChanged($event)"
+            (clearAll)="onClearAll()"
+            (search)="onEntitySearch($event)"
+        ></sinbad-multiple-selection>
+    </ng-template>
 </ng-template>
 <!-- <select-advanced
     [isMultipleSelections]="false"

@@ -67,6 +67,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     @Input() required: boolean = false;
     // tslint:disable-next-line: no-inferrable-types
     @Input() placeholder: string = 'Choose SKU';
+    // tslint:disable-next-line: no-inferrable-types no-input-rename
+    @Input('mode') mode: 'single' | 'multi' = 'multi';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -95,7 +97,13 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.selectedEntity$.pipe(
             tap(x => HelperService.debug('SELECTED ENTITY', x)),
             takeUntil(this.subs$)
-        ).subscribe(value => this.selected.emit(value));
+        ).subscribe(value => {
+            if (this.mode === 'multi') {
+                this.selected.emit(value);
+            } else {
+                this.selected.emit(value ? (value[0] as unknown as Array<Entity>) : null);
+            }
+        });
 
         this.isEntityLoading$.pipe(
             tap(x => HelperService.debug('IS ENTITY LOADING?', x)),
@@ -485,7 +493,19 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         this.availableEntities$.complete();
     }
 
-    ngAfterViewInit(): void { }
+    ngAfterViewInit(): void {
+        this.entityForm.valueChanges.pipe(
+            tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
+            takeUntil(this.subs$)
+        ).subscribe((value: Selection) => {
+            if (value) {
+                const rawEntities = this.rawAvailableEntities$.value;
+                this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+            } else {
+                this.selectedEntity$.next(null);
+            }
+        });
+    }
 
 }
 
