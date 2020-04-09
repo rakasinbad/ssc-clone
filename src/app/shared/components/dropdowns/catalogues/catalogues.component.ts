@@ -414,6 +414,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
         if (this.required) {
             this.entityFormView.setValidators(RxwebValidators.required());
+            this.entityForm.setValidators(RxwebValidators.required());
         }
     }
 
@@ -466,9 +467,11 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     ngOnChanges(changes: SimpleChanges): void {
         if (!changes['required'].isFirstChange()) {
             this.entityFormView.clearValidators();
+            this.entityForm.clearValidators();
 
             if (changes['required'].currentValue === true) {
                 this.entityFormView.setValidators(RxwebValidators.required());
+                this.entityForm.setValidators(RxwebValidators.required());
             }
         }
     }
