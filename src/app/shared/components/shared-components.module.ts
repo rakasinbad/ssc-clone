@@ -21,6 +21,8 @@ import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/stor
 import { CatalogueDropdownModule } from './dropdowns/catalogues/catalogues.module';
 import { StoresDropdownModule } from './dropdowns/stores/stores.module';
 import { StoreSegmentationDropdownModule } from './dropdowns/store-segmentation-2/store-segmentation.module';
+import { BrandsDropdownModule } from './dropdowns/brands/brands.module';
+import { FakturDropdownModule } from './dropdowns/faktur/faktur.module';
 
 // Selection Tree
 import { SelectionTreeModule } from './selection-tree/selection-tree/selection-tree.module';
@@ -54,6 +56,8 @@ import { CardInstructionModule } from './card-instruction/card-instruction.modul
         CatalogueDropdownModule,
         StoresDropdownModule,
         StoreSegmentationDropdownModule,
+        BrandsDropdownModule,
+        FakturDropdownModule,
     ],
     exports: [
         CardHeaderModule,
@@ -78,7 +82,9 @@ import { CardInstructionModule } from './card-instruction/card-instruction.modul
         CardInstructionModule,
         CatalogueDropdownModule,
         StoresDropdownModule,
-        StoreSegmentationDropdownModule
+        StoreSegmentationDropdownModule,
+        BrandsDropdownModule,
+        FakturDropdownModule,
     ],
 })
 export class SharedComponentsModule { }
