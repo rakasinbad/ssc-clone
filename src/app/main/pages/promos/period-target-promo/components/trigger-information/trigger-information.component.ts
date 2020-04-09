@@ -334,7 +334,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     )
                 })
             ]],
-            chosenBrand: ['', [
+            chosenBrand: [{ value: '', disabled: true }, [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(
                         'default',
@@ -342,7 +342,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     )
                 })
             ]],
-            chosenFaktur: ['', [
+            chosenFaktur: [{ value: '', disabled: true }, [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(
                         'default',
@@ -350,6 +350,26 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     )
                 })
             ]]
+        });
+
+        this.form.get('base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'sku') {
+                this.form.get('chosenSku').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'brand') {
+                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenBrand').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'faktur') {
+                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenFaktur').enable({ onlySelf: true, emitEvent: false });
+            }
         });
     }
 
@@ -389,9 +409,9 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             // }),
             map(value => ({
                 ...value,
-                chosenSku: value.chosenSku.length === 0 ? [] : value.chosenSku,
-                chosenBrand: value.chosenBrand.length === 0 ? [] : value.chosenBrand,
-                chosenFaktur: value.chosenFaktur.length === 0 ? [] : value.chosenFaktur,
+                chosenSku: !value.chosenSku ? [] : value.chosenSku,
+                chosenBrand: !value.chosenBrand ? [] : value.chosenBrand,
+                chosenFaktur: !value.chosenFaktur ? [] : value.chosenFaktur,
             })),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
