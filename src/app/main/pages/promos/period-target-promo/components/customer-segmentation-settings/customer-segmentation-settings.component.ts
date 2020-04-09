@@ -329,7 +329,14 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
     private initForm(): void {
         this.form = this.fb.group({
             id: [''],
-            segmentationBase: [''],
+            segmentationBase: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
             chosenStore: [[]],
             chosenWarehouse: [[]],
             chosenStoreType: [[]],
