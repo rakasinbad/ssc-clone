@@ -64,8 +64,10 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     // Untuk menandai apakah pilihannya required atau tidak.
     // tslint:disable-next-line: no-inferrable-types
     @Input() required: boolean = false;
-    // tslint:disable-next-line: no-input-rename
+    // tslint:disable-next-line: no-input-rename no-inferrable-types
     @Input('placeholder') placeholder: string = 'Search Store Segmentation';
+    // tslint:disable-next-line: no-input-rename no-inferrable-types
+    @Input('title') title: string = 'Select Store Segmentation';
     // tslint:disable-next-line: no-input-rename
     @Input('segmentationType') segmentationType: 'type' | 'group' | 'channel' | 'cluster';
 
@@ -89,7 +91,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         private multiple$: MultipleSelectionService,
     ) {
         // Set debug prefix.
-        HelperService.setDebugPrefix('[STORE SEGMENTATION #2]');
+        // HelperService.setDebugPrefix('[STORE SEGMENTATION #2]');
 
         this.availableEntities$.pipe(
             tap(x => HelperService.debug('AVAILABLE ENTITIES', x)),
@@ -310,7 +312,7 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
         this.initialSelection = selected;
         
         this.dialog = this.applyDialogFactory$.open({
-            title: 'Select Store Type',
+            title: this.title,
             template: this.selectStoreType,
             isApplyEnabled: true,
         }, {
