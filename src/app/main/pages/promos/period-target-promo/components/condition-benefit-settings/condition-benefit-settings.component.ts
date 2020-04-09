@@ -327,7 +327,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     //         takeUntil(this.subs$)
     //     );
     // }
-    private addConditionBenefitForm(): void {
+    addConditionBenefitForm(): void {
         (this.form.get('conditionBenefit') as FormArray).push(
             this.fb.group({
                 condition: this.fb.group({
@@ -358,7 +358,12 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                                     'default',
                                     'required'
                                 )
-                            })
+                            }),
+                            RxwebValidators.range({
+                                minimumNumber: 0,
+                                maximumNumber: 100,
+                                message: 'Only accept with range 0 and 100.'
+                            }),
                         ]],
                         maxRebate: ['', [
                             RxwebValidators.required({
@@ -378,7 +383,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         );
     }
 
-    private removeConditionBenefitForm(index: number): void {
+    removeConditionBenefitForm(index: number): void {
         (this.form.get('conditionBenefit') as FormArray).removeAt(index);
     }
 
@@ -532,6 +537,8 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         } else {
             control.setValue(event);
         }
+
+        control.updateValueAndValidity();
     }
 
     onBrandSelected(event: Array<Brand>): void {
