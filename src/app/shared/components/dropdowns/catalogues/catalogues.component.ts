@@ -495,6 +495,8 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
 
     ngAfterViewInit(): void {
         this.entityForm.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
             tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
             takeUntil(this.subs$)
         ).subscribe((value: Selection) => {
