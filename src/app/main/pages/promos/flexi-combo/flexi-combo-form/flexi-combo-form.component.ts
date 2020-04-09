@@ -7,27 +7,29 @@ import {
     OnInit,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatDialog, MatRadioChange } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
-import { RxwebValidators, NumericValueType } from '@rxweb/reactive-form-validators';
+import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { IBreadcrumbs, LifecyclePlatform, EStatus } from 'app/shared/models/global.model';
 import { Urban } from 'app/shared/models/location.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
 import * as fromFlexiCombo from '../store/reducers';
+import { Catalogue } from 'app/main/pages/catalogues/models';
+import { CreateFlexiComboDto } from '../models';
+import { SupplierStore } from 'app/shared/models/supplier.model';
 
-// import { SupplierStore } from 'app/shared/models/supplier.model';
-// import { Temperature } from 'app/shared/models/temperature.model';
-// import { PayloadWarehouseConfirmation } from 'app/shared/models/warehouse-confirmation.model';
-// import { WarehouseValue } from 'app/shared/models/warehouse-value.model';
-// import { TemperatureSelectors, WarehouseValueSelectors } from 'app/shared/store/selectors/sources';
+type TmpKey = 'imgSuggestion';
+
 @Component({
     selector: 'app-flexi-combo-form',
     templateUrl: './flexi-combo-form.component.html',
@@ -39,8 +41,14 @@ import * as fromFlexiCombo from '../store/reducers';
 export class FlexiComboFormComponent implements OnInit, OnDestroy {
     form: FormGroup;
     pageType: string;
+    tmp: Partial<Record<TmpKey, FormControl>> = {};
 
     platformsSinbad = this._$helperService.platformSinbad();
+    triggerBase = this._$helperService.triggerBase();
+    calculationMechanism = this._$helperService.calculationMechanism();
+    conditionBase = this._$helperService.conditionBase();
+    benefitType = this._$helperService.benefitType();
+    segmentBase = this._$helperService.segmentationBase();
 
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
@@ -66,6 +74,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
     constructor(
         private cdRef: ChangeDetectorRef,
+        private domSanitizer: DomSanitizer,
         private formBuilder: FormBuilder,
         private location: Location,
         private matDialog: MatDialog,
@@ -135,6 +144,18 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     // @ Public methods
     // -----------------------------------------------------------------------------------------------------
 
+    get conditions(): FormArray {
+        return this.form.get('conditions') as FormArray;
+    }
+
+    get conditionsCtrl(): AbstractControl[] {
+        return this.conditions.controls;
+    }
+
+    addCondition(): void {
+        this.conditions.push(this._createConditions());
+    }
+
     getErrorMessage(field: string): string {
         if (field) {
             const { errors } = this.form.get(field);
@@ -175,15 +196,112 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         return !value ? false : value.length <= minLength;
     }
 
+    onChangeSegmentBase(ev: MatRadioChange): void {
+        console.log(ev);
+    }
+
+    onFileBrowse(ev: Event, type: string): void {
+        const inputEl = ev.target as HTMLInputElement;
+
+        if (inputEl.files && inputEl.files.length > 0) {
+            const file = inputEl.files[0];
+
+            if (file) {
+                switch (type) {
+                    case 'imgSuggestion':
+                        {
+                            const imgSuggestionField = this.form.get('imgSuggestion');
+
+                            const fileReader = new FileReader();
+
+                            fileReader.onload = () => {
+                                imgSuggestionField.setValue(fileReader.result);
+                                this.tmp['imgSuggestion'].setValue({
+                                    name: file.name,
+                                    url: this.domSanitizer.bypassSecurityTrustUrl(
+                                        window.URL.createObjectURL(file)
+                                    ),
+                                });
+
+                                if (imgSuggestionField.invalid) {
+                                    imgSuggestionField.markAsTouched();
+                                }
+                            };
+
+                            fileReader.readAsDataURL(file);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        } else {
+            switch (type) {
+                case 'imgSuggestion':
+                    {
+                        this.form.get('imgSuggestion').reset();
+                        this.tmp['imgSuggestion'].reset();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    onSkuSelected(ev: Catalogue[]): void {
+        this.form.get('chosenSku').markAsDirty({ onlySelf: true });
+        this.form.get('chosenSku').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenSku').setValue(null);
+        } else {
+            this.form.get('chosenSku').setValue(ev);
+        }
+    }
+
+    onStoreSelected(ev: SupplierStore[]): void {
+        this.form.get('chosenStore').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStore').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenStore').setValue(null);
+        } else {
+            this.form.get('chosenStore').setValue(ev);
+        }
+    }
+
     // -----------------------------------------------------------------------------------------------------
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
+    private _createConditions(): FormGroup {
+        return this.formBuilder.group({
+            conditionBase: null,
+            conditionQty: null,
+            conditionValue: null,
+            benefitType: null,
+            benefitCatalogueId: null,
+            benefitBonusQty: null,
+            multiplication: false,
+        });
+    }
+
     private _setFormStatus(status: string): void {
-        // console.log('TEST FORM', status, this._addressValid(), this.form);
+        console.log(`Test Form ${status}`, this.form);
 
         if (!status) {
             return;
+        }
+
+        if (status === 'VALID') {
+            this.store.dispatch(FormActions.setFormStatusValid());
+        }
+
+        if (status === 'INVALID') {
+            this.store.dispatch(FormActions.setFormStatusInvalid());
         }
     }
 
@@ -281,6 +399,8 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     }
 
     private _initForm(): void {
+        this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
+
         this.form = this.formBuilder.group({
             promoId: null,
             promoName: [
@@ -340,7 +460,19 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     }),
                 ],
             ],
-            imgSuggestion: null,
+            imgSuggestion: [
+                null,
+                [
+                    RxwebValidators.fileSize({
+                        maxSize: Math.floor(5 * 1000 * 1000),
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'file_size_lte',
+                            { size: numeral(5 * 1000 * 1000).format('0[.]0 b', Math.floor) }
+                        ),
+                    }),
+                ],
+            ],
             allowCombineWithVoucher: false,
             firstBuy: false,
             base: null,
@@ -353,23 +485,9 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 ],
             ],
             calculationMechanism: null,
-            lat: [
-                '',
-                [
-                    RxwebValidators.latitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                ],
-            ],
-            lng: [
-                '',
-                [
-                    RxwebValidators.longitude({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                ],
-            ],
-            notes: '',
+            conditions: this.formBuilder.array([this._createConditions()]),
+            segmentationBase: null,
+            chosenStore: [''],
         });
 
         if (this.pageType === 'edit') {
@@ -488,67 +606,93 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         }
 
         const body = this.form.getRawValue();
-        const urban = body.urban as Urban;
+        const {
+            base,
+            conditions,
+            chosenSku,
+            firstBuy,
+            imgSuggestion,
+            maxRedemption,
+            platform,
+            promoId,
+            promoBudget,
+            promoName,
+            allowCombineWithVoucher,
+        } = body;
+        const newChosenSku =
+            chosenSku && chosenSku.length > 0 ? chosenSku.map((sku) => sku.id) : [];
 
         if (this.pageType === 'new') {
-            const payload = {
-                urbanId: urban.id,
-                warehouseValueId: body.whValue ? body.whValue : null,
-                warehouseTemperatureId: body.temperature ? body.temperature : null,
-                code: body.whId,
-                name: body.whName,
-                leadTime: body.leadTime,
-                longitude: body.lng,
-                latitude: body.lat,
-                noteAddress: body.notes,
-                address: body.address,
-                invoiceGroup: body.invoices,
-                status: 'active',
+            const payload: CreateFlexiComboDto = {
+                base,
+                conditions: null,
+                dataBase: {
+                    catalogueId: newChosenSku,
+                },
+                dataTarget: {
+                    storeId: [],
+                },
+                endDate: null,
+                externalId: promoId,
+                firstBuy,
+                image: imgSuggestion || null,
+                maxRedemptionPerUser: maxRedemption,
+                name: promoName,
+                platform,
+                promoBudget,
+                startDate: null,
+                status: EStatus.ACTIVE,
+                supplierId: null,
+                target: 'store',
+                type: 'flexi',
+                voucherCombine: allowCombineWithVoucher,
             };
+
+            console.log('new', body, payload);
 
             // this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 
-            const payload = {
-                urbanId: urban.id,
-                warehouseValueId: body.whValue ? body.whValue : null,
-                warehouseTemperatureId: body.temperature ? body.temperature : null,
-                code: body.whId,
-                name: body.whName,
-                leadTime: body.leadTime,
-                longitude: body.lng,
-                latitude: body.lat,
-                noteAddress: body.notes,
-                address: body.address,
-                invoiceGroup: body.invoices,
-                // deletedInvoiceGroup: this._deletedInvoiceGroups,
-                status: 'active',
-            };
+            // const payload = {
+            //     urbanId: urban.id,
+            //     warehouseValueId: body.whValue ? body.whValue : null,
+            //     warehouseTemperatureId: body.temperature ? body.temperature : null,
+            //     code: body.whId,
+            //     name: body.whName,
+            //     leadTime: body.leadTime,
+            //     longitude: body.lng,
+            //     latitude: body.lat,
+            //     noteAddress: body.notes,
+            //     address: body.address,
+            //     invoiceGroup: body.invoices,
+            //     // deletedInvoiceGroup: this._deletedInvoiceGroups,
+            //     status: 'active',
+            // };
 
-            if (!body.longitude) {
-                delete payload.longitude;
-            }
+            // if (!body.longitude) {
+            //     delete payload.longitude;
+            // }
 
-            if (!body.latitude) {
-                delete payload.latitude;
-            }
+            // if (!body.latitude) {
+            //     delete payload.latitude;
+            // }
 
-            if (!body.address) {
-                delete payload.address;
-            }
+            // if (!body.address) {
+            //     delete payload.address;
+            // }
 
-            if (!body.notes) {
-                delete payload.noteAddress;
-            }
+            // if (!body.notes) {
+            //     delete payload.noteAddress;
+            // }
 
-            if (id && Object.keys(payload).length > 0) {
-                // this.store.dispatch(
-                //     WarehouseActions.updateWarehouseRequest({
-                //         payload: { id, body: payload }
-                //     })
-                // );
-            }
+            // if (id && Object.keys(payload).length > 0) {
+            //     // this.store.dispatch(
+            //     //     WarehouseActions.updateWarehouseRequest({
+            //     //         payload: { id, body: payload }
+            //     //     })
+            //     // );
+            // }
         }
     }
 }

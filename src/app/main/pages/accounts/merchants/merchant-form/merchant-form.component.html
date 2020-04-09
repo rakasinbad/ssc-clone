@@ -140,7 +140,7 @@
                                         [href]="stores?.imageUrl"
                                         target="_blank"
                                         *ngIf="stores?.imageUrl"
-                                        style="position: relative;top: -0.78em"
+                                        style="position: relative; top: -0.78em;"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
@@ -198,11 +198,7 @@
                                 *ID
                             </label>
 
-                            <div
-                                fxLayout="column"
-                                fxLayoutAlign="start stretch"
-                                fxFlex="50"
-                            >
+                            <div fxLayout="column" fxLayoutAlign="start stretch" fxFlex="50">
                                 <div fxLayout="row" fxLayoutAlign="start start" class="mt-8">
                                     <!-- RADIO GROUP -->
                                     <mat-radio-group [formControl]="storeIdType" class="pt-8">
@@ -1012,7 +1008,7 @@
                                         [href]="stores?.owner?.idImageUrl"
                                         target="_blank"
                                         *ngIf="stores?.owner?.idImageUrl"
-                                        style="position: relative;top: -0.78em"
+                                        style="position: relative; top: -0.78em;"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
@@ -1093,7 +1089,7 @@
                                         [href]="stores?.owner?.taxImageUrl"
                                         target="_blank"
                                         *ngIf="stores?.owner?.taxImageUrl"
-                                        style="position: relative;top: -0.78em"
+                                        style="position: relative; top: -0.78em;"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
@@ -1259,11 +1255,11 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree" 
-                                fxLayout="row" 
+                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreType()"
-                                [innerHTML]="(selectedStoreType$ | async).lastSaved | safe:'html'"
+                                [innerHTML]="(selectedStoreType$ | async).lastSaved | safe: 'html'"
                             ></a>
 
                             <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -1317,11 +1313,11 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree" 
-                                fxLayout="row" 
+                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreGroup()"
-                                [innerHTML]="(selectedStoreGroup$ | async).lastSaved | safe:'html'"
+                                [innerHTML]="(selectedStoreGroup$ | async).lastSaved | safe: 'html'"
                             ></a>
 
                             <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -1389,11 +1385,13 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree" 
-                                fxLayout="row" 
+                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreChannel()"
-                                [innerHTML]="(selectedStoreChannel$ | async).lastSaved | safe:'html'"
+                                [innerHTML]="
+                                    (selectedStoreChannel$ | async).lastSaved | safe: 'html'
+                                "
                             ></a>
 
                             <!-- <mat-form-field appearance="outline" fxFlex="50">
@@ -1466,11 +1464,13 @@
                             </label>
 
                             <a
-                                class="sinbad-red-fg py-12 selected-selection-tree" 
-                                fxLayout="row" 
+                                class="sinbad-red-fg py-12 selected-selection-tree"
+                                fxLayout="row"
                                 fxLayoutAlign="start center"
                                 (click)="onSelectStoreCluster()"
-                                [innerHTML]="(selectedStoreCluster$ | async).lastSaved | safe:'html'"
+                                [innerHTML]="
+                                    (selectedStoreCluster$ | async).lastSaved | safe: 'html'
+                                "
                             ></a>
                         </div>
 
@@ -1605,7 +1605,7 @@
                                         fxLayout="row"
                                         fxLayoutAlign="start center"
                                     >
-                                        <div style="margin-left: 50px; margin-top: 10px">
+                                        <div style="margin-left: 50px; margin-top: 10px;">
                                             <mat-slide-toggle
                                                 [labelPosition]="'before'"
                                                 formControlName="allowCreditLimit"
@@ -1829,7 +1829,7 @@
                                             mat-icon-button
                                             color="accent"
                                             aria-label="Reset"
-                                            style="position: relative;top: -0.78em"
+                                            style="position: relative; top: -0.78em;"
                                             (click)="onResetCreditLimitGroup(i)"
                                             *ngIf="
                                                 formCreditLimits.controls[i].get('creditLimitGroup')

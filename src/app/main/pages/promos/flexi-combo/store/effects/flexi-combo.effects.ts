@@ -12,6 +12,10 @@ import * as fromFlexiCombos from '../reducers';
 type AnyAction = TypedAction<any> | ({ payload: any } & TypedAction<any>);
 @Injectable()
 export class FlexiComboEffects {
+    // -----------------------------------------------------------------------------------------------------
+    // @ CRUD methods [CREATE - FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
