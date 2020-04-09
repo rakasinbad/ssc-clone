@@ -1,7 +1,7 @@
 <!-- CONTENT CARD (INFORMASI PRODUK) -->
 <div [ngClass]="catalogueContent">
     <div class="p-16 pb-28">
-        <div class="font-weight-600 font-size-24 line-height-20">Trigger</div>
+        <div class="font-weight-600 font-size-24 line-height-20">Customer Segmentation Settings</div>
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
@@ -28,8 +28,8 @@
                     Segmentation<br/>Base
                 </label>
 
-                <mat-radio-group [selected]="none" formControlName="segmentationBase" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
-                    <mat-radio-button #none> (None) </mat-radio-button>
+                <mat-radio-group formControlName="segmentationBase" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                    <mat-radio-button checked> (None) </mat-radio-button>
                     <mat-radio-button value="direct-store"> Direct Store </mat-radio-button>
                     <mat-radio-button value="segmentation"> Segmentation </mat-radio-button>
                 </mat-radio-group>
