@@ -125,7 +125,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
-                                *Max Redemption per
+                                *Max Redemption per User
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -279,20 +279,27 @@
                                 <mat-form-field
                                     class="sinbad-file-field"
                                     appearance="outline"
-                                    fxFlex="44"
+                                    fxFlex="43.5"
                                     [class.mat-sinbad-field-error]="hasError('imgSuggestion')"
                                 >
                                     <input
-                                        #photoPicker
+                                        #imgSuggestionPicker
                                         type="file"
                                         class="custom-file"
                                         accept=".jpg, .jpeg, .png"
                                         formControlName="imgSuggestion"
+                                        (click)="imgSuggestionPicker.value = null"
+                                        (change)="onFileBrowse($event, 'imgSuggestion')"
                                         autocomplete="off"
                                     />
                                     <input
                                         matInput
-                                        name="photos"
+                                        [formControl]="tmp.imgSuggestion"
+                                        [value]="
+                                            tmp.imgSuggestion.value && tmp.imgSuggestion.value.name
+                                                ? tmp.imgSuggestion.value.name
+                                                : null
+                                        "
                                         placeholder="No file choose"
                                         autocomplete="off"
                                     />
@@ -306,10 +313,10 @@
                                 </mat-form-field>
 
                                 <button
+                                    type="button"
                                     mat-flat-button
                                     color="accent"
-                                    type="button"
-                                    (click)="photoPicker.click()"
+                                    (click)="imgSuggestionPicker.click()"
                                     fxFlexAlign="center"
                                 >
                                     Upload Your File
@@ -329,6 +336,43 @@
                                 </ng-container> -->
                             </div>
                         </div>
+
+                        <div
+                            class="custom-field mt-8"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            fxLayoutGap="16px"
+                        >
+                            <label fxFlexAlign="center" fxFlex="10"> </label>
+
+                            <div fxFlexAlign="center" fxFlex="50">
+                                <mat-checkbox formControlName="allowCombineWithVoucher">
+                                    Allow Combine With Voucher
+
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="If you choose to allow combine with&#10;voucher, users are allowed to use&#10;promo and voucher for the same purchase."
+                                        matTooltipClass="tooltip-br"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-checkbox>
+
+                                <mat-checkbox formControlName="firstBuy">
+                                    First Buy
+
+                                    <mat-icon
+                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                        color="accent"
+                                        matTooltip="If you activate first buy, this promo&#10;will only be activated when the&#10;customer buy for the first time only."
+                                        matTooltipClass="tooltip-br"
+                                    >
+                                        help
+                                    </mat-icon>
+                                </mat-checkbox>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </mat-card>
@@ -346,25 +390,53 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                Base
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('base')"
+                            >
+                                *Base
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50">
-                                <mat-radio-group formControlName="base">
-                                    <mat-radio-button value="1">
-                                        SKU
-                                    </mat-radio-button>
+                            <mat-form-field appearance="outline" fxFlex="50" class="form-info">
+                                <input matInput style="display: none;" />
 
-                                    <mat-radio-button value="2">
-                                        Brand
-                                    </mat-radio-button>
+                                <ng-container *ngIf="triggerBase; else noTriggerBase">
+                                    <mat-radio-group formControlName="base">
+                                        <mat-radio-button
+                                            *ngFor="let row of triggerBase"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
 
-                                    <mat-radio-button value="3">
-                                        Faktur
-                                    </mat-radio-button>
-                                </mat-radio-group>
-                            </div>
+                                <ng-template #noTriggerBase>
+                                    -
+                                </ng-template>
+
+                                <mat-hint class="mat-error" *ngIf="hasError('base', true)">
+                                    {{ getErrorMessage('base') }}
+                                </mat-hint>
+                            </mat-form-field>
+
+                            <!-- <div fxFlexAlign="center" fxFlex="50">
+                                <ng-container *ngIf="triggerBase; else noTriggerBase">
+                                    <mat-radio-group formControlName="base">
+                                        <mat-radio-button
+                                            *ngFor="let row of triggerBase"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
+
+                                <ng-template #noTriggerBase>
+                                    -
+                                </ng-template>
+                            </div> -->
                         </div>
 
                         <div
@@ -373,28 +445,24 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                *Chosen SKU (0 Selected)
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('chosenSku')"
+                            >
+                                *Chosen SKU<br />({{ form.get('chosenSku').value?.length || 0 }}
+                                Selected)
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select
-                                        formControlName="chosenSku"
-                                        placeholder="Choose SKU"
-                                    >
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
-                                </ng-container>
-
-                                <!-- <ng-template #noWarehouseValues>
-                                    <mat-select placeholder="Value not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                            </mat-form-field>
+                            <select-catalogues
+                                [required]="true"
+                                (selected)="onSkuSelected($event)"
+                                fxFlex="50"
+                            >
+                                <div error>
+                                    {{ getErrorMessage('chosenSku') }}
+                                </div>
+                            </select-catalogues>
                         </div>
                     </div>
                 </div>
@@ -418,376 +486,285 @@
                             </label>
 
                             <div fxFlexAlign="center" fxFlex="50">
-                                <mat-radio-group formControlName="calculationMechanism">
-                                    <mat-radio-button value="1">
-                                        Non Cumulative
-                                    </mat-radio-button>
+                                <ng-container
+                                    *ngIf="calculationMechanism; else noCalculationMechanism"
+                                >
+                                    <mat-radio-group formControlName="calculationMechanism">
+                                        <mat-radio-button
+                                            *ngFor="let row of calculationMechanism"
+                                            [value]="row?.id"
+                                            [disabled]="row?.id === 'cumulative'"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
 
-                                    <mat-radio-button value="2">
-                                        Cumulative
-                                    </mat-radio-button>
-                                </mat-radio-group>
+                                <ng-template #noCalculationMechanism>
+                                    -
+                                </ng-template>
 
                                 <a href="javascript:;">What is this?</a>
                             </div>
                         </div>
 
-                        <!-- START DYNAMIC BOX-GROUP -->
-                        <div class="box-group" fxLayout="column" fxLayoutGap="16px">
-                            <span class="box-title">Tier 1</span>
+                        <ng-container formArrayName="conditions">
+                            <!-- START DYNAMIC BOX-GROUP -->
+                            <div
+                                class="box-group"
+                                fxLayout="column"
+                                fxLayoutGap="16px"
+                                *ngFor="
+                                    let condition of conditionsCtrl;
+                                    index as conditionIdx;
+                                    first as isFirst
+                                "
+                                [formGroupName]="conditionIdx"
+                            >
+                                <span class="box-title">{{ 'Tier ' + (conditionIdx + 1) }}</span>
 
-                            <div fxLayout="row" fxLayoutAlign="start stretch">
-                                <!-- START FIELD-WRAPPER -->
-                                <div
-                                    class="field-wrapper p-16"
-                                    fxLayout="column"
-                                    fxLayoutAlign="start stretch"
-                                    fxFlex="1 1 auto"
-                                    fusePerfectScrollbar
-                                >
-                                    <span class="field-title">
-                                        Condition
+                                <div fxLayout="row" fxLayoutAlign="start stretch">
+                                    <!-- START FIELD-WRAPPER -->
+                                    <div
+                                        class="field-wrapper p-16"
+                                        fxLayout="column"
+                                        fxLayoutAlign="start stretch"
+                                        fxFlex="1 1 auto"
+                                        fusePerfectScrollbar
+                                    >
+                                        <span class="field-title">
+                                            Condition
 
-                                        <mat-icon
-                                            class="active-icon s-14 ml-8 cursor-pointer"
-                                            color="accent"
-                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
-                                            matTooltipClass="tooltip-br"
+                                            <mat-icon
+                                                class="active-icon s-14 ml-8 cursor-pointer"
+                                                color="accent"
+                                                matTooltip="Define the condition need to be&#10;fulfilled by your customer so that&#10;they will be eligible for the promo&#10;program."
+                                                matTooltipClass="tooltip-br"
+                                            >
+                                                help
+                                            </mat-icon>
+                                        </span>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
                                         >
-                                            help
-                                        </mat-icon>
-                                    </span>
+                                            <label fxFlexAlign="center" fxFlex="12">
+                                                Base
+                                            </label>
 
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Base
-                                        </label>
+                                            <div fxFlexAlign="center" fxFlex="50">
+                                                <ng-container
+                                                    *ngIf="conditionBase; else noConditionBase"
+                                                >
+                                                    <mat-radio-group
+                                                        formControlName="conditionBase"
+                                                    >
+                                                        <mat-radio-button
+                                                            *ngFor="let row of conditionBase"
+                                                            [value]="row?.id"
+                                                        >
+                                                            {{ row?.label }}
+                                                        </mat-radio-button>
+                                                    </mat-radio-group>
+                                                </ng-container>
 
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-radio-group>
-                                                <mat-radio-button>Qty</mat-radio-button>
-                                                <mat-radio-button>Order Value</mat-radio-button>
-                                            </mat-radio-group>
+                                                <ng-template #noConditionBase>
+                                                    -
+                                                </ng-template>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Qty >=
-                                        </label>
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
+                                        >
+                                            <label fxFlexAlign="center" fxFlex="12">
+                                                Qty >=
+                                            </label>
 
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <input matInput name="promoBudget" />
+                                            <mat-form-field appearance="outline" fxFlex="50">
+                                                <input matInput formControlName="conditionQty" />
 
-                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                                <!-- <mat-error *ngIf="hasError('promoBudget', true)">
                                             {{ getErrorMessage('promoBudget') }}
                                         </mat-error> -->
-                                        </mat-form-field>
-                                    </div>
-
-                                    <span class="field-title">
-                                        Benefit
-
-                                        <mat-icon
-                                            class="active-icon s-14 ml-8 cursor-pointer"
-                                            color="accent"
-                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
-                                            matTooltipClass="tooltip-br"
-                                        >
-                                            help
-                                        </mat-icon>
-                                    </span>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Benefit Type
-                                        </label>
-
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-radio-group>
-                                                <mat-radio-button>Qty</mat-radio-button>
-                                                <mat-radio-button>Rp</mat-radio-button>
-                                                <mat-radio-button>%</mat-radio-button>
-                                            </mat-radio-group>
+                                            </mat-form-field>
                                         </div>
-                                    </div>
 
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            *Bonus SKU
-                                        </label>
+                                        <span class="field-title">
+                                            Benefit
 
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <ng-container>
-                                                <mat-select placeholder="Choose Value">
-                                                    <mat-option>
-                                                        <!-- {{ row?.name || '-' }} -->
-                                                    </mat-option>
-                                                </mat-select>
-                                            </ng-container>
+                                            <mat-icon
+                                                class="active-icon s-14 ml-8 cursor-pointer"
+                                                color="accent"
+                                                matTooltip="Define the benefit of your promo&#10;program that will be granted to your&#10;customers here."
+                                                matTooltipClass="tooltip-br"
+                                            >
+                                                help
+                                            </mat-icon>
+                                        </span>
 
-                                            <!-- <ng-template #noWarehouseValues>
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
+                                        >
+                                            <label fxFlexAlign="center" fxFlex="12">
+                                                Benefit Type
+                                            </label>
+
+                                            <div fxFlexAlign="center" fxFlex="50">
+                                                <ng-container
+                                                    *ngIf="benefitType; else noBenefitType"
+                                                >
+                                                    <mat-radio-group formControlName="benefitType">
+                                                        <mat-radio-button
+                                                            *ngFor="let row of benefitType"
+                                                            [value]="row?.id"
+                                                        >
+                                                            {{ row?.label }}
+                                                        </mat-radio-button>
+                                                    </mat-radio-group>
+                                                </ng-container>
+
+                                                <ng-template #noBenefitType>
+                                                    -
+                                                </ng-template>
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
+                                        >
+                                            <label fxFlexAlign="center" fxFlex="12">
+                                                *Bonus SKU
+                                            </label>
+
+                                            <mat-form-field appearance="outline" fxFlex="50">
+                                                <ng-container>
+                                                    <mat-select
+                                                        placeholder="Choose Value"
+                                                        formControlName="benefitCatalogueId"
+                                                    >
+                                                        <mat-option>
+                                                            <!-- {{ row?.name || '-' }} -->
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </ng-container>
+
+                                                <!-- <ng-template #noWarehouseValues>
                                     <mat-select placeholder="Value not found" disabled>
                                         <mat-option>None</mat-option>
                                     </mat-select>
                                 </ng-template> -->
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12"></label>
-
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-checkbox>Apply Same SKU</mat-checkbox>
+                                            </mat-form-field>
                                         </div>
-                                    </div>
 
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label
-                                            fxFlexAlign="center"
-                                            fxFlex="12"
-                                            [class.sinbad-red-fg]="hasError('promoBudget')"
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
                                         >
-                                            Bonus Qty
-                                        </label>
+                                            <label fxFlexAlign="center" fxFlex="12"></label>
 
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <input matInput name="promoBudget" />
+                                            <div fxFlexAlign="center" fxFlex="50">
+                                                <mat-checkbox>Apply Same SKU</mat-checkbox>
+                                            </div>
+                                        </div>
 
-                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
+                                        >
+                                            <label
+                                                fxFlexAlign="center"
+                                                fxFlex="12"
+                                                [class.sinbad-red-fg]="hasError('promoBudget')"
+                                            >
+                                                Bonus Qty
+                                            </label>
+
+                                            <mat-form-field appearance="outline" fxFlex="50">
+                                                <input matInput formControlName="benefitBonusQty" />
+
+                                                <!-- <mat-error *ngIf="hasError('promoBudget', true)">
                                     {{ getErrorMessage('promoBudget') }}
                                 </mat-error> -->
-                                        </mat-form-field>
+                                            </mat-form-field>
+                                        </div>
+
+                                        <div
+                                            class="custom-field"
+                                            fxLayout="row"
+                                            fxLayoutAlign="start stretch"
+                                            fxLayoutGap="16px"
+                                        >
+                                            <label fxFlexAlign="center" fxFlex="12"></label>
+
+                                            <div fxFlexAlign="center" fxFlex="50">
+                                                <mat-checkbox formControlName="multiplication">
+                                                    Multiplication Only
+
+                                                    <mat-icon
+                                                        class="active-icon s-14 ml-8 cursor-pointer"
+                                                        color="accent"
+                                                        matTooltip="Once activated, the benefits that will be awarded&#10;to the customer will be following the multiplication&#10;of the inputted value in the quantity above as&#10;If the multiplication rule is activated, you won't be&#10;able to add more tier."
+                                                        matTooltipClass="tooltip-br"
+                                                    >
+                                                        help
+                                                    </mat-icon>
+                                                </mat-checkbox>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <!-- ./ FIELD-WRAPPER -->
+
+                                    <!-- START CARD-INSTRUCTION -->
+                                    <card-instruction fxFlex="0 2 auto" *ngIf="isFirst">
+                                        <p class="title">Sample Case</p>
+
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                            Ut dignissim interdum accumsan. Sed pretium, felis sit
+                                            amet finibus ullamcorper, elit ligula vehicula diam, eu
+                                            posuere quam nibh ut elit. Nunc suscipit nisi id felis
+                                            facilisis malesuada. Pellentesque suscipit venenatis
+                                            neque, vel aliquet tortor dictum vitae. Mauris eu
+                                            imperdiet nisl, pharetra condimentum lorem. Sed faucibus
+                                            purus tortor, vel sagittis tortor maximus sed. Maecenas
+                                            lorem arcu, porttitor non tellus ut, placerat
+                                            sollicitudin nibh. Sed vel felis vitae augue dictum
+                                            egestas elementum non nulla. Donec ut nunc neque.
+                                        </p>
+                                    </card-instruction>
+                                    <!-- ./ CARD-INSTRUCTION -->
                                 </div>
-                                <!-- ./ FIELD-WRAPPER -->
-
-                                <!-- START CARD-INSTRUCTION -->
-                                <card-instruction fxFlex="0 2 auto">
-                                    <p class="title">Sample Case</p>
-
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                                        dignissim interdum accumsan. Sed pretium, felis sit amet
-                                        finibus ullamcorper, elit ligula vehicula diam, eu posuere
-                                        quam nibh ut elit. Nunc suscipit nisi id felis facilisis
-                                        malesuada. Pellentesque suscipit venenatis neque, vel
-                                        aliquet tortor dictum vitae. Mauris eu imperdiet nisl,
-                                        pharetra condimentum lorem. Sed faucibus purus tortor, vel
-                                        sagittis tortor maximus sed. Maecenas lorem arcu, porttitor
-                                        non tellus ut, placerat sollicitudin nibh. Sed vel felis
-                                        vitae augue dictum egestas elementum non nulla. Donec ut
-                                        nunc neque.
-                                    </p>
-                                </card-instruction>
-                                <!-- ./ CARD-INSTRUCTION -->
                             </div>
-                        </div>
-                        <!-- ./ DYNAMIC BOX-GROUP -->
-
-                        <!-- START DYNAMIC BOX-GROUP -->
-                        <div class="box-group" fxLayout="column" fxLayoutGap="16px">
-                            <span class="box-title">Tier 2</span>
-
-                            <div fxLayout="row" fxLayoutAlign="start stretch">
-                                <!-- START FIELD-WRAPPER -->
-                                <div
-                                    class="field-wrapper p-16"
-                                    fxLayout="column"
-                                    fxLayoutAlign="start stretch"
-                                    fxFlex="1 1 auto"
-                                    fusePerfectScrollbar
-                                >
-                                    <span class="field-title">
-                                        Condition
-
-                                        <mat-icon
-                                            class="active-icon s-14 ml-8 cursor-pointer"
-                                            color="accent"
-                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
-                                            matTooltipClass="tooltip-br"
-                                        >
-                                            help
-                                        </mat-icon>
-                                    </span>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Base
-                                        </label>
-
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-radio-group>
-                                                <mat-radio-button>Qty</mat-radio-button>
-                                                <mat-radio-button>Order Value</mat-radio-button>
-                                            </mat-radio-group>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Qty >=
-                                        </label>
-
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <input matInput name="promoBudget" />
-
-                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
-                                            {{ getErrorMessage('promoBudget') }}
-                                        </mat-error> -->
-                                        </mat-form-field>
-                                    </div>
-
-                                    <span class="field-title">
-                                        Benefit
-
-                                        <mat-icon
-                                            class="active-icon s-14 ml-8 cursor-pointer"
-                                            color="accent"
-                                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
-                                            matTooltipClass="tooltip-br"
-                                        >
-                                            help
-                                        </mat-icon>
-                                    </span>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            Benefit Type
-                                        </label>
-
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-radio-group>
-                                                <mat-radio-button>Qty</mat-radio-button>
-                                                <mat-radio-button>Rp</mat-radio-button>
-                                                <mat-radio-button>%</mat-radio-button>
-                                            </mat-radio-group>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12">
-                                            *Bonus SKU
-                                        </label>
-
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <ng-container>
-                                                <mat-select placeholder="Choose Value">
-                                                    <mat-option>
-                                                        <!-- {{ row?.name || '-' }} -->
-                                                    </mat-option>
-                                                </mat-select>
-                                            </ng-container>
-
-                                            <!-- <ng-template #noWarehouseValues>
-                                    <mat-select placeholder="Value not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                                        </mat-form-field>
-                                    </div>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label fxFlexAlign="center" fxFlex="12"></label>
-
-                                        <div fxFlexAlign="center" fxFlex="50">
-                                            <mat-checkbox>Apply Same SKU</mat-checkbox>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="custom-field"
-                                        fxLayout="row"
-                                        fxLayoutAlign="start stretch"
-                                        fxLayoutGap="16px"
-                                    >
-                                        <label
-                                            fxFlexAlign="center"
-                                            fxFlex="12"
-                                            [class.sinbad-red-fg]="hasError('promoBudget')"
-                                        >
-                                            Bonus Qty
-                                        </label>
-
-                                        <mat-form-field appearance="outline" fxFlex="50">
-                                            <input matInput name="promoBudget" />
-
-                                            <!-- <mat-error *ngIf="hasError('promoBudget', true)">
-                                    {{ getErrorMessage('promoBudget') }}
-                                </mat-error> -->
-                                        </mat-form-field>
-                                    </div>
-                                </div>
-                                <!-- ./ FIELD-WRAPPER -->
-                            </div>
-                        </div>
-                        <!-- ./ DYNAMIC BOX-GROUP -->
+                            <!-- ./ DYNAMIC BOX-GROUP -->
+                        </ng-container>
                     </div>
 
                     <div>
-                        <button type="button" mat-button color="accent">
+                        <button type="button" mat-button color="accent" (click)="addCondition()">
                             Add Tier
                         </button>
 
                         <mat-icon
                             class="active-icon s-14 ml-8 cursor-pointer"
                             color="accent"
-                            matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                            matTooltip="If the multiplication is activated, you&#10;cannot add another tier."
                             matTooltipClass="tooltip-br"
                         >
                             help
@@ -809,49 +786,93 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                Segmentation Base
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="10"
+                                [class.sinbad-red-fg]="hasError('segmentationBase')"
+                            >
+                                *Segmentation Base
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50">
-                                <mat-radio-group>
-                                    <mat-radio-button>
-                                        Direct Store
-                                    </mat-radio-button>
+                            <mat-form-field appearance="outline" fxFlex="50" class="form-info">
+                                <input matInput style="display: none;" />
 
-                                    <mat-radio-button>
-                                        Segmentation
-                                    </mat-radio-button>
-                                </mat-radio-group>
-                            </div>
-                        </div>
-
-                        <div
-                            class="custom-field"
-                            fxLayout="row"
-                            fxLayoutAlign="start stretch"
-                            fxLayoutGap="16px"
-                        >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                Store (0 Selected)
-                            </label>
-
-                            <mat-form-field appearance="outline" fxFlex="50">
-                                <ng-container>
-                                    <mat-select placeholder="Choose Value">
-                                        <mat-option>
-                                            <!-- {{ row?.name || '-' }} -->
-                                        </mat-option>
-                                    </mat-select>
+                                <ng-container *ngIf="segmentBase; else noSegmentBase">
+                                    <mat-radio-group
+                                        formControlName="segmentationBase"
+                                        (change)="onChangeSegmentBase($event)"
+                                    >
+                                        <mat-radio-button
+                                            *ngFor="let row of segmentBase"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
                                 </ng-container>
 
-                                <!-- <ng-template #noWarehouseValues>
-                                    <mat-select placeholder="Value not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
+                                <ng-template #noSegmentBase>
+                                    -
+                                </ng-template>
+
+                                <mat-hint
+                                    class="mat-error"
+                                    *ngIf="hasError('segmentationBase', true)"
+                                >
+                                    {{ getErrorMessage('segmentationBase') }}
+                                </mat-hint>
                             </mat-form-field>
+
+                            <!-- <div fxFlexAlign="center" fxFlex="50">
+                                <ng-container *ngIf="segmentBase; else noSegmentBase">
+                                    <mat-radio-group formControlName="segmentationBase">
+                                        <mat-radio-button>None</mat-radio-button>
+                                        <mat-radio-button
+                                            *ngFor="let row of segmentBase"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
+
+                                <ng-template #noSegmentBase>
+                                    -
+                                </ng-template>
+                            </div> -->
                         </div>
+
+                        <ng-container *ngIf="form.get('segmentationBase').value === 'store'">
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenStore')"
+                                >
+                                    Store<br />({{ form.get('chosenStore').value?.length || 0 }}
+                                    Selected)
+                                </label>
+
+                                <select-supplier-stores
+                                    placeholder="Choose Store"
+                                    [required]="true"
+                                    (selected)="onStoreSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenStore') }}
+                                    </div>
+                                </select-supplier-stores>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="form.get('segmentationBase').value === 'segment'">
+                        </ng-container>
                     </div>
                 </div>
             </mat-card>

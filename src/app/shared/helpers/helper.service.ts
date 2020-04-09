@@ -10,9 +10,14 @@ import * as LogRocket from 'logrocket';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
 
+import { BenefitType } from '../models/benefit-type.model';
+import { CalculationMechanism } from '../models/calculation-mechanism.model';
+import { ConditionBase } from '../models/condition-base.model';
 import { ErrorHandler, TNullable } from '../models/global.model';
 import { PlatformSinbad } from '../models/platform.model';
 import { IQueryParams } from '../models/query.model';
+import { SegmentationBase } from '../models/segmentation-base.model';
+import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
 import { NoticeService } from './notice.service';
 
@@ -27,7 +32,44 @@ interface TTemplateFiles {
 })
 export class HelperService {
     static debugPrefix: string = '';
-    
+
+    private static readonly _benefitType: { id: BenefitType; label: string }[] = [
+        {
+            id: BenefitType.QTY,
+            label: 'Qty',
+        },
+        {
+            id: BenefitType.AMOUNT,
+            label: 'Rp',
+        },
+        {
+            id: BenefitType.PERCENT,
+            label: '%',
+        },
+    ];
+
+    private static readonly _calculationMechanism: { id: CalculationMechanism; label: string }[] = [
+        {
+            id: CalculationMechanism.NON_CUMULATIVE,
+            label: 'Non Cumulative',
+        },
+        {
+            id: CalculationMechanism.CUMULATIVE,
+            label: 'Cumulative',
+        },
+    ];
+
+    private static readonly _conditionBase: { id: ConditionBase; label: string }[] = [
+        {
+            id: ConditionBase.QTY,
+            label: 'Qty',
+        },
+        {
+            id: ConditionBase.ORDER_VALUE,
+            label: 'Order Value',
+        },
+    ];
+
     private static _orderStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -101,6 +143,17 @@ export class HelperService {
         },
     ];
 
+    private static readonly _segmentationBase: { id: SegmentationBase; label: string }[] = [
+        {
+            id: SegmentationBase.STORE,
+            label: 'Direct Store',
+        },
+        {
+            id: SegmentationBase.SEGMENTATION,
+            label: 'Segmentation',
+        },
+    ];
+
     private static _catalogueStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
@@ -140,6 +193,21 @@ export class HelperService {
         {
             id: 'banned',
             label: 'Banned',
+        },
+    ];
+
+    private static readonly _triggerBase: { id: TriggerBase; label: string }[] = [
+        {
+            id: TriggerBase.SKU,
+            label: 'SKU',
+        },
+        {
+            id: TriggerBase.BRAND,
+            label: 'Brand',
+        },
+        {
+            id: TriggerBase.INVOICE,
+            label: 'Faktur',
         },
     ];
 
@@ -524,6 +592,22 @@ export class HelperService {
         ];
     }
 
+    benefitType(): { id: BenefitType; label: string }[] {
+        return HelperService._benefitType;
+    }
+
+    calculationMechanism(): { id: CalculationMechanism; label: string }[] {
+        return HelperService._calculationMechanism;
+    }
+
+    catalogueStatus(): { id: string; label: string }[] {
+        return HelperService._catalogueStatuses;
+    }
+
+    conditionBase(): { id: ConditionBase; label: string }[] {
+        return HelperService._conditionBase;
+    }
+
     orderStatus(): { id: string; label: string }[] {
         return HelperService._orderStatuses;
     }
@@ -536,12 +620,16 @@ export class HelperService {
         return HelperService._platformSinbad;
     }
 
-    catalogueStatus(): { id: string; label: string }[] {
-        return HelperService._catalogueStatuses;
+    segmentationBase(): { id: SegmentationBase; label: string }[] {
+        return HelperService._segmentationBase;
     }
 
     storeStatus(): { id: string; label: string }[] {
         return HelperService._storeStatuses;
+    }
+
+    triggerBase(): { id: TriggerBase; label: string }[] {
+        return HelperService._triggerBase;
     }
 
     stockType(): { id: boolean; label: string }[] {
