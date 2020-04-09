@@ -6,19 +6,39 @@
         fxLayoutGap="16px"
     >
         <div class="content-card">
-            <period-target-promo-general-information></period-target-promo-general-information>
+            <period-target-promo-general-information
+                [formMode]="'add'"
+                (formStatusChange)="generalInformationStatus$.next($event)"
+                (formValueChange)="generalInformationValue$.next($event)"
+            ></period-target-promo-general-information>
         </div>
         <div class="content-card">
-            <period-target-promo-trigger-information></period-target-promo-trigger-information>
+            <period-target-promo-trigger-information
+                [formMode]="'add'"
+                (formStatusChange)="triggerInformationStatus$.next($event)"
+                (formValueChange)="triggerInformationValue$.next($event)"
+            ></period-target-promo-trigger-information>
         </div>
         <div class="content-card">
-            <period-target-promo-trigger-condition-benefit-settings></period-target-promo-trigger-condition-benefit-settings>
+            <period-target-promo-trigger-condition-benefit-settings
+                [formMode]="'add'"
+                (formStatusChange)="conditionBenefitStatus$.next($event)"
+                (formValueChange)="conditionBenefitValue$.next($event)"
+            ></period-target-promo-trigger-condition-benefit-settings>
         </div>
         <div class="content-card">
-            <period-target-promo-reward-information></period-target-promo-reward-information>
+            <period-target-promo-reward-information
+                [formMode]="'add'"
+                (formStatusChange)="rewardStatus$.next($event)"
+                (formValueChange)="rewardValue$.next($event)"
+            ></period-target-promo-reward-information>
         </div>
         <div class="content-card">
-            <period-target-promo-customer-segmentation-settings></period-target-promo-customer-segmentation-settings>
+            <period-target-promo-customer-segmentation-settings
+                [formMode]="'add'"
+                (formStatusChange)="customerSegmentationStatus$.next($event)"
+                (formValueChange)="customerSegmentationValue$.next($event)"
+            ></period-target-promo-customer-segmentation-settings>
         </div>
     </div>
 </div>
