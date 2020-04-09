@@ -4,4 +4,5 @@ export interface ApplyDialog {
     title: string;
     template: TemplateRef<any>;
     isApplyEnabled: boolean;
+    showApplyButton?: boolean;
 }

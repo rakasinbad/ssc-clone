@@ -19,7 +19,12 @@ export class ApplyDialogFactoryService<T = undefined> {
             ApplyDialogComponent,
             {
                 ...options,
-                data: dialogData
+                data: {
+                    ...dialogData,
+                    showApplyButton: !dialogData.showApplyButton
+                                    && dialogData.showApplyButton !== false ? true
+                                    : dialogData.showApplyButton,
+                }
             }
         );
 
