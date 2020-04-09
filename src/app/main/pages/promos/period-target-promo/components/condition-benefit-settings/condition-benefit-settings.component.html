@@ -142,7 +142,7 @@
                         </div>
                         <!-- / BASE (CONDITION) -->
                         <!-- BASE = QTY -->
-                        <ng-container [fxHide]="control.get('benefit.base').value !== 'qty'">
+                        <div [fxHide]="control.get('benefit.base').value !== 'qty'">
                             <!-- BONUS SKU -->
                             <div
                                 [ngClass]="formClass"
@@ -153,7 +153,7 @@
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
-                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.qty.bonusSku'))"
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.qty.bonusSku'), { ignoreDirty: true })"
                                 >
                                     <span
                                         class="sinbad-red-fg"
@@ -228,9 +228,8 @@
                             >
                                 <label
                                     fxFlexAlign="center"
-                                    [fxFlex]="labelLength"
-                                    class="pr-0"
                                     [fxFlex]="labelLength * 2 - 1"
+                                    class="pr-0"
                                 ></label>
 
                                 <mat-checkbox [fxFlex]="formFieldLength * 2 - 1" [formControl]="control.get('benefit.qty.multiplicationOnly')">
@@ -238,17 +237,17 @@
                                 </mat-checkbox>
                             </div>
                             <!-- / MULTIPLICATION ONLY -->
-                        </ng-container>
+                        </div>
                         <!-- / BASE = QTY -->
                         <!-- BASE = CASH (Rp) -->
-                        <ng-container [fxHide]="control.get('benefit.base').value !== 'cash'">
+                        <div [fxHide]="control.get('benefit.base').value !== 'cash'">
 
-                        </ng-container>
+                        </div>
                         <!-- / BASE = CASH (Rp) -->
                         <!-- BASE = PERCENT (%) -->
-                        <ng-container [fxHide]="control.get('benefit.base').value !== 'percent'">
+                        <div [fxHide]="control.get('benefit.base').value !== 'percent'">
 
-                        </ng-container>
+                        </div>
                         <!-- / BASE = PERCENT (%) -->
                     </div>
                     <!-- / FORM -->
