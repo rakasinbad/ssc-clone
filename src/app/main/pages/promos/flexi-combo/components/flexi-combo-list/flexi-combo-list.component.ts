@@ -15,7 +15,7 @@ import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { Store as NgRxStore } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { environment } from 'environments/environment';
@@ -23,6 +23,8 @@ import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { FlexiCombo } from '../../models';
+import { FlexiComboActions } from '../../store/actions';
 import * as fromFlexiCombos from '../../store/reducers';
 import { FlexiComboSelectors } from '../../store/selectors';
 
@@ -43,8 +45,6 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
 
     activeTab: string = 'all';
 
-    search: FormControl;
-
     displayedColumns = [
         'checkbox',
         'promo-seller-id',
@@ -56,9 +56,10 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         'actions',
     ];
 
-    selection: SelectionModel<any>;
+    search: FormControl = new FormControl('');
+    selection: SelectionModel<FlexiCombo>;
 
-    dataSource$: Observable<any[]>;
+    dataSource$: Observable<FlexiCombo[]>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
 
@@ -78,7 +79,7 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         private route: ActivatedRoute,
         private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
-        private store: NgRxStore<fromFlexiCombos.FeatureState>
+        private store: Store<fromFlexiCombos.FeatureState>
     ) {}
 
     onChangePage($event: PageEvent): void {}
@@ -90,18 +91,18 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         this._initPage();
     }
 
-    ngOnDestroy(): void {
-        // Called once, before the instance is destroyed.
-        // Add 'implements OnDestroy' to the class.
-
-        this._initPage(LifecyclePlatform.OnDestroy);
-    }
-
     ngAfterViewInit(): void {
         // Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
         // Add 'implements AfterViewInit' to the class.
 
         this._initPage(LifecyclePlatform.AfterViewInit);
+    }
+
+    ngOnDestroy(): void {
+        // Called once, before the instance is destroyed.
+        // Add 'implements OnDestroy' to the class.
+
+        this._initPage(LifecyclePlatform.OnDestroy);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -134,13 +135,14 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
 
             default:
                 this.paginator.pageSize = this.defaultPageSize;
-                this.selection = new SelectionModel<any>(true, []);
 
-                this._initTable();
+                this.selection = new SelectionModel<any>(true, []);
 
                 this.dataSource$ = this.store.select(FlexiComboSelectors.selectAll);
                 this.totalDataSource$ = this.store.select(FlexiComboSelectors.getTotalItem);
                 this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+
+                this._initTable();
                 break;
         }
     }
@@ -170,13 +172,11 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
                 ];
             }
 
-            // this.FlexiComboStore.dispatch(FlexiComboListActions.resetFlexiComboList());
-
-            // this.FlexiComboStore.dispatch(
-            //     FlexiComboListActions.fetchFlexiComboListRequest({
-            //         payload: data,
-            //     })
-            // );
+            this.store.dispatch(
+                FlexiComboActions.fetchFlexiCombosRequest({
+                    payload: data,
+                })
+            );
         }
     }
 

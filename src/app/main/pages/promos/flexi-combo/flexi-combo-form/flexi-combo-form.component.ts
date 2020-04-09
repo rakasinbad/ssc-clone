@@ -14,19 +14,27 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
+import {
+    Catalogue,
+    StoreSegmentationChannel,
+    StoreSegmentationCluster,
+    StoreSegmentationGroup,
+} from 'app/main/pages/catalogues/models';
+import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
+import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { IBreadcrumbs, LifecyclePlatform, EStatus } from 'app/shared/models/global.model';
-import { Urban } from 'app/shared/models/location.model';
+import { EStatus, IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
+import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
+import { SupplierStore } from 'app/shared/models/supplier.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
-import * as fromFlexiCombo from '../store/reducers';
-import { Catalogue } from 'app/main/pages/catalogues/models';
 import { CreateFlexiComboDto } from '../models';
-import { SupplierStore } from 'app/shared/models/supplier.model';
+import { FlexiComboActions } from '../store/actions';
+import * as fromFlexiCombo from '../store/reducers';
 
 type TmpKey = 'imgSuggestion';
 
@@ -49,6 +57,11 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     conditionBase = this._$helperService.conditionBase();
     benefitType = this._$helperService.benefitType();
     segmentBase = this._$helperService.segmentationBase();
+
+    minCheckInDate: Date;
+    maxCheckInDate: Date;
+    minCheckOutDate: Date;
+    maxCheckOutDate: Date;
 
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
@@ -156,9 +169,24 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.conditions.push(this._createConditions());
     }
 
-    getErrorMessage(field: string): string {
-        if (field) {
-            const { errors } = this.form.get(field);
+    getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
+        if (!fieldName) {
+            return;
+        }
+
+        if (parentName && typeof index === 'number') {
+            const formParent = this.form.get(parentName) as FormArray;
+            const { errors } = formParent.at(index).get(fieldName);
+
+            if (errors) {
+                const type = Object.keys(errors)[0];
+
+                if (type) {
+                    return errors[type].message;
+                }
+            }
+        } else {
+            const { errors } = this.form.get(fieldName);
 
             if (errors) {
                 const type = Object.keys(errors)[0];
@@ -197,7 +225,25 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     }
 
     onChangeSegmentBase(ev: MatRadioChange): void {
-        console.log(ev);
+        if (!ev.value) {
+            return;
+        }
+
+        if (ev.value === SegmentationBase.STORE) {
+            this.form.get('chosenStore').setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.choice({
+                    minLength: 1,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+            ]);
+            this.form.get('chosenStore').updateValueAndValidity({ onlySelf: true });
+        } else if (ev.value === SegmentationBase.SEGMENTATION) {
+            this.form.get('chosenStore').clearValidators();
+            this.form.get('chosenStore').updateValueAndValidity({ onlySelf: true });
+        }
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -262,6 +308,50 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
+        this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenStoreChannel').setValue(null);
+        } else {
+            this.form.get('chosenStoreChannel').setValue(ev);
+        }
+    }
+
+    onStoreClusterSelected(ev: StoreSegmentationCluster[]): void {
+        this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenStoreCluster').setValue(null);
+        } else {
+            this.form.get('chosenStoreCluster').setValue(ev);
+        }
+    }
+
+    onStoreGroupSelected(ev: StoreSegmentationGroup[]): void {
+        this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenStoreGroup').setValue(null);
+        } else {
+            this.form.get('chosenStoreGroup').setValue(ev);
+        }
+    }
+
+    onStoreTypeSelected(ev: StoreSegmentationType[]): void {
+        this.form.get('chosenStoreType').markAsDirty({ onlySelf: true });
+        this.form.get('chosenStoreType').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenStoreType').setValue(null);
+        } else {
+            this.form.get('chosenStoreType').setValue(ev);
+        }
+    }
+
     onStoreSelected(ev: SupplierStore[]): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
@@ -270,6 +360,17 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             this.form.get('chosenStore').setValue(null);
         } else {
             this.form.get('chosenStore').setValue(ev);
+        }
+    }
+
+    onWarehouseSelected(ev: Warehouse[]): void {
+        this.form.get('chosenWarehouse').markAsDirty({ onlySelf: true });
+        this.form.get('chosenWarehouse').markAsTouched({ onlySelf: true });
+
+        if (ev.length === 0) {
+            this.form.get('chosenWarehouse').setValue(null);
+        } else {
+            this.form.get('chosenWarehouse').setValue(ev);
         }
     }
 
@@ -486,8 +587,20 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             ],
             calculationMechanism: null,
             conditions: this.formBuilder.array([this._createConditions()]),
-            segmentationBase: null,
+            segmentationBase: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             chosenStore: [''],
+            chosenWarehouse: [''],
+            chosenStoreType: [''],
+            chosenStoreGroup: [''],
+            chosenStoreChannel: [''],
+            chosenStoreCluster: [],
         });
 
         if (this.pageType === 'edit') {
@@ -648,9 +761,10 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 voucherCombine: allowCombineWithVoucher,
             };
 
-            console.log('new', body, payload);
+            console.log('[NEW] OnSubmit 1', body);
+            console.log('[NEW] OnSubmit 2', payload);
 
-            // this.store.dispatch(WarehouseActions.createWarehouseRequest({ payload }));
+            this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
             const { id } = this.route.snapshot.params;
 

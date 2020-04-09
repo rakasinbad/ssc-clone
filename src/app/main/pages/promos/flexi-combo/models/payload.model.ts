@@ -42,4 +42,46 @@ export class CreateFlexiComboDto {
     target: string;
     type: string;
     voucherCombine: boolean;
+
+    constructor(data: CreateFlexiComboDto) {
+        const {
+            base,
+            conditions,
+            dataBase,
+            dataTarget,
+            endDate,
+            externalId,
+            firstBuy,
+            image,
+            maxRedemptionPerUser,
+            name,
+            platform,
+            promoBudget,
+            startDate,
+            status,
+            supplierId,
+            target,
+            type,
+            voucherCombine,
+        } = data;
+
+        this.base = base;
+        this.conditions = conditions;
+        this.dataBase = dataBase;
+        this.dataTarget = dataTarget;
+        this.endDate = endDate;
+        this.externalId = externalId;
+        this.firstBuy = firstBuy;
+        this.image = image;
+        this.maxRedemptionPerUser = maxRedemptionPerUser;
+        this.name = name;
+        this.platform = platform;
+        this.promoBudget = promoBudget;
+        this.startDate = startDate;
+        this.status = status;
+        this.supplierId = supplierId;
+        this.target = target;
+        this.type = type;
+        this.voucherCombine = voucherCombine;
+    }
 }

@@ -649,24 +649,22 @@
                                                 *Bonus SKU
                                             </label>
 
-                                            <mat-form-field appearance="outline" fxFlex="50">
-                                                <ng-container>
-                                                    <mat-select
-                                                        placeholder="Choose Value"
-                                                        formControlName="benefitCatalogueId"
-                                                    >
-                                                        <mat-option>
-                                                            <!-- {{ row?.name || '-' }} -->
-                                                        </mat-option>
-                                                    </mat-select>
-                                                </ng-container>
-
-                                                <!-- <ng-template #noWarehouseValues>
-                                    <mat-select placeholder="Value not found" disabled>
-                                        <mat-option>None</mat-option>
-                                    </mat-select>
-                                </ng-template> -->
-                                            </mat-form-field>
+                                            <select-catalogues
+                                                mode="single"
+                                                [required]="true"
+                                                (selected)="onSkuSelected($event)"
+                                                fxFlex="50"
+                                            >
+                                                <div error>
+                                                    {{
+                                                        getErrorMessage(
+                                                            'benefitCatalogueId',
+                                                            'conditions',
+                                                            conditionIdx
+                                                        )
+                                                    }}
+                                                </div>
+                                            </select-catalogues>
                                         </div>
 
                                         <div
@@ -871,7 +869,159 @@
                             </div>
                         </ng-container>
 
-                        <ng-container *ngIf="form.get('segmentationBase').value === 'segment'">
+                        <ng-container *ngIf="form.get('segmentationBase').value === 'segmentation'">
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenWarehouse')"
+                                >
+                                    Warehouse<br />({{
+                                        form.get('chosenWarehouse').value?.length || 0
+                                    }}
+                                    Selected)
+                                </label>
+
+                                <select-warehouses
+                                    placeholder="Choose Warehouse"
+                                    [required]="false"
+                                    (selected)="onWarehouseSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenWarehouse') }}
+                                    </div>
+                                </select-warehouses>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenStoreType')"
+                                >
+                                    Store Type<br />({{
+                                        form.get('chosenStoreType').value?.length || 0
+                                    }}
+                                    Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    placeholder="Choose Store Type"
+                                    title="Select Store Type"
+                                    segmentationType="type"
+                                    [required]="false"
+                                    (selected)="onStoreTypeSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenStoreType') }}
+                                    </div>
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenStoreGroup')"
+                                >
+                                    Store Group<br />({{
+                                        form.get('chosenStoreGroup').value?.length || 0
+                                    }}
+                                    Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    placeholder="Choose Store Group"
+                                    title="Select Store Group"
+                                    segmentationType="group"
+                                    [required]="false"
+                                    (selected)="onStoreGroupSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenStoreGroup') }}
+                                    </div>
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenStoreChannel')"
+                                >
+                                    Store Channel<br />({{
+                                        form.get('chosenStoreChannel').value?.length || 0
+                                    }}
+                                    Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    placeholder="Choose Store Channel"
+                                    title="Select Store Channel"
+                                    segmentationType="channel"
+                                    [required]="false"
+                                    (selected)="onStoreChannelSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenStoreChannel') }}
+                                    </div>
+                                </select-store-segmentation>
+                            </div>
+
+                            <div
+                                class="custom-field"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                fxLayoutGap="16px"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    fxFlex="10"
+                                    [class.sinbad-red-fg]="hasError('chosenStoreCluster')"
+                                >
+                                    Store Cluster<br />({{
+                                        form.get('chosenStoreCluster').value?.length || 0
+                                    }}
+                                    Selected)
+                                </label>
+
+                                <select-store-segmentation
+                                    placeholder="Choose Store Cluster"
+                                    title="Select Store Cluster"
+                                    segmentationType="cluster"
+                                    [required]="false"
+                                    (selected)="onStoreClusterSelected($event)"
+                                    fxFlex="50"
+                                >
+                                    <div error>
+                                        {{ getErrorMessage('chosenStoreCluster') }}
+                                    </div>
+                                </select-store-segmentation>
+                            </div>
                         </ng-container>
                     </div>
                 </div>

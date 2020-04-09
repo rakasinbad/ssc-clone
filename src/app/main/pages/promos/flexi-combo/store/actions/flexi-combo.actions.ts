@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
 
-import { CreateFlexiComboDto } from '../../models';
+import { CreateFlexiComboDto, FlexiCombo } from '../../models';
 
 // -----------------------------------------------------------------------------------------------------
 // Fetch Flexi Combos
@@ -20,7 +20,7 @@ export const fetchFlexiCombosFailure = createAction(
 
 export const fetchFlexiCombosSuccess = createAction(
     '[Flexi Combo] Fetch Flexi Combos Success',
-    props<{ payload: { data: Array<any>; total: number } }>()
+    props<{ payload: { data: FlexiCombo[]; total: number } }>()
 );
 
 // -----------------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ export const updateFlexiComboSuccess = createAction('[Flexi Combo] Update Flexi 
 export const clearState = createAction('[Flexi Combo] Reset Flexi Combo Core State');
 
 export type FailureActions =
-    | 'fetchFlexiComboFailure'
+    | 'fetchFlexiCombosFailure'
     | 'fetchFlexiComboFailure'
     | 'createFlexiComboFailure'
     | 'updateFlexiComboFailure';

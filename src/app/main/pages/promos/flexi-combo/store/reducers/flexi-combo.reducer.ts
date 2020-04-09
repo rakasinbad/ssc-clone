@@ -1,12 +1,13 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 
+import { FlexiCombo } from '../../models';
 import { FlexiComboActions } from '../actions';
 
 // Keyname for reducer
 export const featureKey = 'flexiCombos';
 
-export interface State extends EntityState<any> {
+export interface State extends EntityState<FlexiCombo> {
     isLoading: boolean;
     isRefresh: boolean;
     selectedId: string;
@@ -14,7 +15,7 @@ export interface State extends EntityState<any> {
 }
 
 // Adapter for flexiCombos state
-export const adapter = createEntityAdapter<any>({
+export const adapter = createEntityAdapter<FlexiCombo>({
     selectId: (row) => row.id,
 });
 
