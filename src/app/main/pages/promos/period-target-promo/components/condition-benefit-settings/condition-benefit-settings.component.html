@@ -47,7 +47,7 @@
             </div>
             <!-- / CALCULATION MECHANISM -->
             <!-- CONDITION & BENEFITS -->
-            <ng-container *ngFor="let control of form.get('conditionBenefit').controls; index as $index">
+            <ng-container *ngFor="let control of $any(form.get('conditionBenefit').controls); index as $index">
                 <!-- TITLE -->
                 <p class="font-weight-600 font-size-20 line-height-20 mb-16">Condition & Benefit {{ $index + 1 }}</p>
                 <!-- / TITLE -->
