@@ -40,6 +40,7 @@
                 [ngClass]="formClass"
                 fxLayout="row"
                 fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'sku'"
             >
                 <label
                     fxFlexAlign="center"
@@ -62,6 +63,62 @@
                 </span> -->
             </div>
             <!-- / CHOSEN SKU -->
+            <!-- CHOSEN BRAND -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'brand'"
+            >
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
+                >
+                    <span
+                        class="sinbad-red-fg"
+                    >* </span>Chosen Brand<br/>({{ form.get('chosenBrand').value?.length || '0' }} Selected)
+                </label>
+
+                <select-brands [required]="true" [fxFlex]="formFieldLength" (selected)="onBrandSelected($event)">
+                    <div error>
+                        {{ getFormError(form.get('chosenBrand')) }}
+                    </div>
+                </select-brands>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('chosenBrand').value || '-' }}
+                </span> -->
+            </div>
+            <!-- / CHOSEN BRAND -->
+            <!-- CHOSEN FAKTUR -->
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+                [fxHide]="form.get('base').value !== 'faktur'"
+            >
+                <label
+                    fxFlexAlign="center"
+                    [fxFlex]="labelLength"
+                    class="pr-0"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
+                >
+                    <span
+                        class="sinbad-red-fg"
+                    >* </span>Chosen Faktur<br/>({{ form.get('chosenFaktur').value?.length || '0' }} Selected)
+                </label>
+
+                <select-faktur [required]="true" [fxFlex]="formFieldLength" (selected)="onFakturSelected($event)">
+                    <div error>
+                        {{ getFormError(form.get('chosenFaktur')) }}
+                    </div>
+                </select-faktur>
+                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                    {{ form.get('chosenFaktur').value || '-' }}
+                </span> -->
+            </div>
+            <!-- / CHOSEN FAKTUR -->
         </form>
     </div>
 </div>

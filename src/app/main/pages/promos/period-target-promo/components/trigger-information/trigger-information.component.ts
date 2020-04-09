@@ -18,9 +18,8 @@ import { PeriodTargetPromoActions } from '../../store/actions';
 import { MatDialog } from '@angular/material';
 import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
-import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
-import * as moment from 'moment';
 import { Catalogue } from 'app/main/pages/catalogues/models';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -326,7 +325,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     private initForm(): void {
         this.form = this.fb.group({
             id: [''],
-            base: [''],
+            base: ['sku'],
             chosenSku: ['', [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(
@@ -335,6 +334,22 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     )
                 })
             ]],
+            chosenBrand: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenFaktur: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]]
         });
     }
 
@@ -375,6 +390,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             map(value => ({
                 ...value,
                 chosenSku: value.chosenSku.length === 0 ? [] : value.chosenSku,
+                chosenBrand: value.chosenBrand.length === 0 ? [] : value.chosenBrand,
+                chosenFaktur: value.chosenFaktur.length === 0 ? [] : value.chosenFaktur,
             })),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
@@ -476,6 +493,28 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             this.form.get('chosenSku').setValue('');
         } else {
             this.form.get('chosenSku').setValue(event);
+        }
+    }
+
+    onBrandSelected(event: Array<Brand>): void {
+        this.form.get('chosenBrand').markAsDirty({ onlySelf: true });
+        this.form.get('chosenBrand').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenBrand').setValue('');
+        } else {
+            this.form.get('chosenBrand').setValue(event);
+        }
+    }
+
+    onFakturSelected(event: Array<InvoiceGroup>): void {
+        this.form.get('chosenFaktur').markAsDirty({ onlySelf: true });
+        this.form.get('chosenFaktur').markAsTouched({ onlySelf: true });
+        
+        if (event.length === 0) {
+            this.form.get('chosenFaktur').setValue('');
+        } else {
+            this.form.get('chosenFaktur').setValue(event);
         }
     }
 
