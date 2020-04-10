@@ -196,7 +196,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerUser,
+            //     maxRedemptionPerStore,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,

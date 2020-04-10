@@ -61,13 +61,20 @@ export const reducer = createReducer(
     /**
      * FETCH SUCCESS STATE.
      */
-    on(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess, (state, { payload }) =>
-        adapterPeriodTargetPromo.upsertMany(payload.data, {
+    on(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess, (state, { payload }) => {
+        if (Array.isArray(payload.data)) {
+            return adapterPeriodTargetPromo.upsertMany(payload.data, {
+                ...state,
+                total: payload.total,
+                isLoading: false,
+            });
+        }
+
+        return adapterPeriodTargetPromo.upsertOne(payload.data, {
             ...state,
-            total: payload.total,
             isLoading: false,
-        })
-    ),
+        });
+    }),
     /**
      * SELECTION STATE.
      */

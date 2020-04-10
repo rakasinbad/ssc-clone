@@ -189,7 +189,7 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerUser,
+            //     maxRedemptionPerStore,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,

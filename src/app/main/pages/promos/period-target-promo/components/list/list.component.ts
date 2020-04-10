@@ -8,7 +8,8 @@ import {
     AfterViewInit,
     OnDestroy,
     Input,
-    SimpleChanges
+    SimpleChanges,
+    OnChanges
 } from '@angular/core';
 import { MatPaginator, MatSort, PageEvent } from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -38,9 +39,9 @@ type PromoStatus = 'all' | 'active' | 'inactive';
     // },
     animations: fuseAnimations,
     encapsulation: ViewEncapsulation.None,
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.Default
 })
-export class PeriodTargetPromoListComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
     readonly defaultPageSize = environment.pageSize;
     readonly defaultPageOpts = environment.pageSizeTable;
 
@@ -128,9 +129,14 @@ export class PeriodTargetPromoListComponent implements OnInit, AfterViewInit, On
     //     this.router.navigate(['/pages/logistics/sku-assignments/' + item.id + '/edit']);
     // }
 
-    ngOnChange(changes: SimpleChanges): void {
+    ngOnChanges(changes: SimpleChanges): void {
         if (changes['searchValue']) {
             this.search.setValue(changes['searchValue'].currentValue);
+            setTimeout(() => this._initTable());
+        }
+
+        if (changes['selectedStatus']) {
+            this.selectedStatus = changes['selectedStatus'].currentValue;
             setTimeout(() => this._initTable());
         }
     }
@@ -184,6 +190,10 @@ export class PeriodTargetPromoListComponent implements OnInit, AfterViewInit, On
 
             data['paginate'] = true;
             data['keyword'] = this.search.value;
+
+            if (this.selectedStatus !== 'all') {
+                data['status'] = this.selectedStatus;
+            }
 
             this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.resetPeriodTargetPromo());
 

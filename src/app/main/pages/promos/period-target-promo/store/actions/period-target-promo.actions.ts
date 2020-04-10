@@ -32,7 +32,7 @@ export const fetchPeriodTargetPromoFailure = createAction(
 
 export const fetchPeriodTargetPromoSuccess = createAction(
     '[Promo/Period Target Promo API] Fetch PeriodTargetPromo Success',
-    props<{ payload: { data: Array<PeriodTargetPromo>; total: number } }>()
+    props<{ payload: { data: PeriodTargetPromo | Array<PeriodTargetPromo>; total?: number } }>()
 );
 
 /**

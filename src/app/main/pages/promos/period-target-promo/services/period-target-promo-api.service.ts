@@ -33,7 +33,7 @@ export class PeriodTargetPromoApiService {
      * @private
      * @memberof PeriodTargetPromoApiService
      */
-    private readonly _PeriodTargetPromoEndpoint = '/sku-assignment';
+    private readonly _PeriodTargetPromoEndpoint = '/target-promo';
 
     /**
      * Creates an instance of PeriodTargetPromoApiService.
@@ -48,85 +48,102 @@ export class PeriodTargetPromoApiService {
         this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
     }
 
-    find(params: IQueryParams): Observable<Array<PeriodTargetPromo>> {
-        const data: Array<PeriodTargetPromo> = [
-            new PeriodTargetPromo({
-                id: '1',
-                promoSellerId: 'D0001',
-                promoName: 'Text',
-                base: 'SKU',
-                startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                status: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null
-            }),
-            new PeriodTargetPromo({
-                id: '2',
-                promoSellerId: 'D0002',
-                promoName: 'Text',
-                base: 'SKU',
-                startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                status: 'inactive',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null
-            }),
-            new PeriodTargetPromo({
-                id: '3',
-                promoSellerId: 'D0003',
-                promoName: 'Text',
-                base: 'Brand',
-                startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                status: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null
-            }),
-            new PeriodTargetPromo({
-                id: '4',
-                promoSellerId: 'D0004',
-                promoName: 'Text',
-                base: 'Brand',
-                startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                status: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null
-            }),
-            new PeriodTargetPromo({
-                id: '5',
-                promoSellerId: 'D0005',
-                promoName: 'Text',
-                base: 'Faktur',
-                startDate: new Date().toISOString(),
-                endDate: new Date().toISOString(),
-                status: 'active',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-                deletedAt: null
-            }),
-        ];
+    // find(params: IQueryParams): Observable<Array<PeriodTargetPromo>> {
+    //     const data: Array<PeriodTargetPromo> = [
+    //         new PeriodTargetPromo({
+    //             id: '1',
+    //             promoSellerId: 'D0001',
+    //             promoName: 'Text',
+    //             base: 'SKU',
+    //             startDate: new Date().toISOString(),
+    //             endDate: new Date().toISOString(),
+    //             status: 'active',
+    //             createdAt: new Date().toISOString(),
+    //             updatedAt: new Date().toISOString(),
+    //             deletedAt: null
+    //         }),
+    //         new PeriodTargetPromo({
+    //             id: '2',
+    //             promoSellerId: 'D0002',
+    //             promoName: 'Text',
+    //             base: 'SKU',
+    //             startDate: new Date().toISOString(),
+    //             endDate: new Date().toISOString(),
+    //             status: 'inactive',
+    //             createdAt: new Date().toISOString(),
+    //             updatedAt: new Date().toISOString(),
+    //             deletedAt: null
+    //         }),
+    //         new PeriodTargetPromo({
+    //             id: '3',
+    //             promoSellerId: 'D0003',
+    //             promoName: 'Text',
+    //             base: 'Brand',
+    //             startDate: new Date().toISOString(),
+    //             endDate: new Date().toISOString(),
+    //             status: 'active',
+    //             createdAt: new Date().toISOString(),
+    //             updatedAt: new Date().toISOString(),
+    //             deletedAt: null
+    //         }),
+    //         new PeriodTargetPromo({
+    //             id: '4',
+    //             promoSellerId: 'D0004',
+    //             promoName: 'Text',
+    //             base: 'Brand',
+    //             startDate: new Date().toISOString(),
+    //             endDate: new Date().toISOString(),
+    //             status: 'active',
+    //             createdAt: new Date().toISOString(),
+    //             updatedAt: new Date().toISOString(),
+    //             deletedAt: null
+    //         }),
+    //         new PeriodTargetPromo({
+    //             id: '5',
+    //             promoSellerId: 'D0005',
+    //             promoName: 'Text',
+    //             base: 'Faktur',
+    //             startDate: new Date().toISOString(),
+    //             endDate: new Date().toISOString(),
+    //             status: 'active',
+    //             createdAt: new Date().toISOString(),
+    //             updatedAt: new Date().toISOString(),
+    //             deletedAt: null
+    //         }),
+    //     ];
 
-        return of(data);
-    }
-
-    // find<T>(params: IQueryParams): Observable<T> {
-    //     const newArgs = [];
-
-    //     if (!isNaN(params['supplierId'])) {
-    //         newArgs.push({ key: 'supplierId', value: params['supplierId'] });
-    //     }
-
-    //     this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
-    //     const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
-
-    //     return this.http.get<T>(this._url, { params: newParams });
+    //     return of(data);
     // }
+
+    find<T>(params: IQueryParams | string): Observable<T> {
+        if (typeof(params) === 'string') {
+            this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
+            return this.http.get<T>(`${this._url}/${params}`);
+        }
+
+        const newArgs = [];
+
+        if (!params['supplierId'] && !params['noSupplierId']) {
+            throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_SUPPLIERID');
+        }
+        
+        if (params['supplierId'] && !params['noSupplierId']) {
+            newArgs.push({ key: 'supplierId', value: params['supplierId'] });
+        }
+
+        if (params['keyword']) {
+            newArgs.push({ key: 'keyword', value: params['keyword'] });
+        }
+
+        if (params['status']) {
+            newArgs.push({ key: 'status', value: params['status'] });
+        }
+
+        this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
+        const newParams = this._$helper.handleParams(this._url, params, ...newArgs);
+
+        return this.http.get<T>(this._url, { params: newParams });
+    }
 
     addPeriodTargetPromo<T, R>(payload: T): Observable<R> {
         this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);

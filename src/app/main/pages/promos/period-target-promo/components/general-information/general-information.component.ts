@@ -195,7 +195,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerUser,
+            //     maxRedemptionPerStore,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,
@@ -367,7 +367,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                     )
                 })
             ]],
-            maxRedemptionPerUser: ['', [
+            maxRedemptionPerStore: ['', [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(
                         'default',

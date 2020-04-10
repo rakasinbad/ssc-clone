@@ -58,14 +58,14 @@ export class PeriodTargetPromoEffects {
             // Mengambil data dari store-nya auth.
             withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
             // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
-            switchMap(([queryParams, authState]: [IQueryParams, TNullable<Auth>]) => {
+            switchMap(([queryParams, authState]: [IQueryParams | string, TNullable<Auth>]) => {
                 // Jika tidak ada data supplier-nya user dari state.
                 if (!authState) {
                     return this.helper$.decodeUserToken().pipe(
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
                             this.processPeriodTargetPromoRequest
                         ),
                         catchError(err => this.sendErrorToState(err, 'fetchPeriodTargetPromoFailure'))
@@ -75,7 +75,7 @@ export class PeriodTargetPromoEffects {
                         map(this.checkUserSupplier),
                         retry(3),
                         switchMap(userData => of([userData, queryParams])),
-                        switchMap<[User, IQueryParams], Observable<AnyAction>>(
+                        switchMap<[User, IQueryParams | string], Observable<AnyAction>>(
                             this.processPeriodTargetPromoRequest
                         ),
                         catchError(err => this.sendErrorToState(err, 'fetchPeriodTargetPromoFailure'))
@@ -97,41 +97,48 @@ export class PeriodTargetPromoEffects {
         return userData;
     }
 
-    processPeriodTargetPromoRequest = ([userData, queryParams]: [User, IQueryParams]): Observable<AnyAction> => {
+    processPeriodTargetPromoRequest = ([userData, queryParams]: [User, IQueryParams | string]): Observable<AnyAction> => {
+        let newQuery: IQueryParams = {};
+
+        if (typeof(queryParams) === 'string') {
+            newQuery['id'] = queryParams;
+        } else {
+            // Membentuk parameter query yang baru.
+            newQuery = {
+                ...queryParams
+            };
+        }
+
         // Hanya mengambil ID supplier saja.
         const { supplierId } = userData.userSupplier;
-        // Membentuk parameter query yang baru.
-        const newQuery: IQueryParams = {
-            ...queryParams
-        };
 
         // Memasukkan ID supplier ke dalam parameter.
         newQuery['supplierId'] = supplierId;
 
-        return this.PeriodTargetPromoApi$.find(newQuery).pipe(
+        return this.PeriodTargetPromoApi$.find<IPaginatedResponse<PeriodTargetPromo>>(newQuery).pipe(
             catchOffline(),
             switchMap(response => {
-                return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
-                    payload: {
-                        data: response.map(p => new PeriodTargetPromo(p)),
-                        total: response.length,
-                    }
-                }));
-                // if (newQuery.paginate) {
-                //     return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
-                //         payload: {
-                //             data: (response as IPaginatedResponse<PeriodTargetPromo>).data.map(p => new PeriodTargetPromo(p)),
-                //             total: response.total,
-                //         }
-                //     }));
-                // } else {
-                //     return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
-                //         payload: {
-                //             data: (response as unknown as Array<PeriodTargetPromo>).map(p => new PeriodTargetPromo(p)),
-                //             total: (response as unknown as Array<PeriodTargetPromo>).length,
-                //         }
-                //     }));
-                // }
+                if (typeof(queryParams) === 'string') {
+                    return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
+                        payload: {
+                            data: new PeriodTargetPromo(response as unknown as PeriodTargetPromo)
+                        }
+                    }));
+                } else if (newQuery.paginate) {
+                    return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
+                        payload: {
+                            data: (response as IPaginatedResponse<PeriodTargetPromo>).data.map(p => new PeriodTargetPromo(p)),
+                            total: response.total,
+                        }
+                    }));
+                } else {
+                    return of(PeriodTargetPromoActions.fetchPeriodTargetPromoSuccess({
+                        payload: {
+                            data: (response as unknown as Array<PeriodTargetPromo>).map(p => new PeriodTargetPromo(p)),
+                            total: (response as unknown as Array<PeriodTargetPromo>).length,
+                        }
+                    }));
+                }
             }),
             catchError(err => this.sendErrorToState(err, 'fetchPeriodTargetPromoFailure'))
         );

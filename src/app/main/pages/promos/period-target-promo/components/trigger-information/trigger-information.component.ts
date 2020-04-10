@@ -185,7 +185,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerUser,
+            //     maxRedemptionPerStore,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,

@@ -191,7 +191,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerUser,
+            //     maxRedemptionPerStore,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,

@@ -33,7 +33,7 @@
             Promo Seller ID
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word;">{{ row?.promoSellerId || '-' }}</p>
+            <p style="word-break: break-word;">{{ row?.externalId || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -43,7 +43,7 @@
             Promo Name
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word;">{{ row?.promoName || '-' }}</p>
+            <p style="word-break: break-word;">{{ row?.name || '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -53,7 +53,7 @@
             Base
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <p style="word-break: break-word;">{{ row?.base || '-' }}</p>
+            <p style="word-break: break-word;">{{ row?.base === 'sku' ? 'SKU' : (row?.base | titlecase)|| '-' }}</p>
         </mat-cell>
     </ng-container>
 
@@ -129,10 +129,10 @@
                             type="button"
                             mat-menu-item
                             class="sinbad-mat-menu-item"
-                            aria-label="Edit"
+                            aria-label="Detail"
                         >
-                            <mat-icon>edit</mat-icon>
-                            <span>Edit</span>
+                            <mat-icon>info</mat-icon>
+                            <span>Detail</span>
                         </button>
 
                         <!-- <button

@@ -151,27 +151,27 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerUser'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerStore'))"
                 >
                     <span
                         class="sinbad-red-fg"
-                    >* </span>Max Redemption <br/> per User
+                    >* </span>Max Redemption <br/> per Store
                 </label>
         
                 <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
                     <input
                         matInput
-                        name="maxRedemptionPerUser"
-                        formControlName="maxRedemptionPerUser"
+                        name="maxRedemptionPerStore"
+                        formControlName="maxRedemptionPerStore"
                     />
                     <mat-error
-                        *ngIf="hasError(form.get('maxRedemptionPerUser'))"
+                        *ngIf="hasError(form.get('maxRedemptionPerStore'))"
                     >
-                        {{ getFormError(form.get('maxRedemptionPerUser')) }}
+                        {{ getFormError(form.get('maxRedemptionPerStore')) }}
                     </mat-error>
                 </mat-form-field>
                 <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('maxRedemptionPerUser').value || '-' }}
+                    {{ form.get('maxRedemptionPerStore').value || '-' }}
                 </span>
             </div>
             <!-- / MAX REDEMPTION PER USER -->
