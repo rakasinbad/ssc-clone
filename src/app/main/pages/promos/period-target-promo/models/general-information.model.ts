@@ -3,7 +3,7 @@ interface IPeriodTargetPromoGeneralInformation {
     sellerId: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxRedemptionPerBuyer: string;
     budget: string;
     activeStartDate: string;
     activeEndDate: string;
@@ -17,7 +17,7 @@ export class PeriodTargetPromoGeneralInformation implements IPeriodTargetPromoGe
     sellerId: string;
     name: string;
     platform: string;
-    maxRedemptionPerStore: string;
+    maxRedemptionPerBuyer: string;
     budget: string;
     activeStartDate: string;
     activeEndDate: string;
@@ -31,7 +31,7 @@ export class PeriodTargetPromoGeneralInformation implements IPeriodTargetPromoGe
             sellerId,
             name,
             platform,
-            maxRedemptionPerStore,
+            maxRedemptionPerBuyer,
             budget,
             activeStartDate,
             activeEndDate,
@@ -44,7 +44,7 @@ export class PeriodTargetPromoGeneralInformation implements IPeriodTargetPromoGe
         this.sellerId = sellerId;
         this.name = name;
         this.platform = platform;
-        this.maxRedemptionPerStore = maxRedemptionPerStore;
+        this.maxRedemptionPerBuyer = maxRedemptionPerBuyer;
         this.budget = budget;
         this.activeStartDate = activeStartDate;
         this.activeEndDate = activeEndDate;

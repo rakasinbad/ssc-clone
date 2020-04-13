@@ -120,6 +120,7 @@
                         name="platform"
                         formControlName="platform"
                     >
+                        <mat-option value="all">All</mat-option>
                         <mat-option
                             *ngFor="let platform of (platforms$ | async)"
                             [value]="platform.id"
@@ -151,27 +152,27 @@
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0"
-                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerStore'))"
+                    [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerBuyer'))"
                 >
                     <span
                         class="sinbad-red-fg"
-                    >* </span>Max Redemption <br/> per Store
+                    >* </span>Max Redemption <br/> per Buyer
                 </label>
         
                 <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
                     <input
                         matInput
-                        name="maxRedemptionPerStore"
-                        formControlName="maxRedemptionPerStore"
+                        name="maxRedemptionPerBuyer"
+                        formControlName="maxRedemptionPerBuyer"
                     />
                     <mat-error
-                        *ngIf="hasError(form.get('maxRedemptionPerStore'))"
+                        *ngIf="hasError(form.get('maxRedemptionPerBuyer'))"
                     >
-                        {{ getFormError(form.get('maxRedemptionPerStore')) }}
+                        {{ getFormError(form.get('maxRedemptionPerBuyer')) }}
                     </mat-error>
                 </mat-form-field>
                 <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('maxRedemptionPerStore').value || '-' }}
+                    {{ form.get('maxRedemptionPerBuyer').value || '-' }}
                 </span>
             </div>
             <!-- / MAX REDEMPTION PER USER -->

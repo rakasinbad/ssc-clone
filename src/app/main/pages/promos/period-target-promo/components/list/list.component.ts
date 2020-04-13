@@ -131,13 +131,17 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['searchValue']) {
-            this.search.setValue(changes['searchValue'].currentValue);
-            setTimeout(() => this._initTable());
+            if (!changes['searchValue'].isFirstChange()) {
+                this.search.setValue(changes['searchValue'].currentValue);
+                setTimeout(() => this._initTable());
+            }
         }
 
         if (changes['selectedStatus']) {
-            this.selectedStatus = changes['selectedStatus'].currentValue;
-            setTimeout(() => this._initTable());
+            if (!changes['selectedStatus'].isFirstChange()) {
+                this.selectedStatus = changes['selectedStatus'].currentValue;
+                setTimeout(() => this._initTable());
+            }
         }
     }
 

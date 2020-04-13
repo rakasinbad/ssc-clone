@@ -10,6 +10,7 @@ export const FEATURE_KEY = 'periodTargetPromo';
 // Store's PeriodTargetPromo
 export interface PeriodTargetPromoState extends EntityState<PeriodTargetPromo> {
     isLoading: boolean;
+    needRefresh: boolean;
     limit: number;
     skip: number;
     total: number;
@@ -23,6 +24,7 @@ export const adapterPeriodTargetPromo: EntityAdapter<PeriodTargetPromo> = create
 // Initial value for PeriodTargetPromo State.
 const initialPeriodTargetPromoState: PeriodTargetPromoState = adapterPeriodTargetPromo.getInitialState<Omit<PeriodTargetPromoState, 'ids' | 'entities'>>({
     isLoading: false,
+    needRefresh: false,
     total: 0,
     limit: environment.pageSize,
     skip: 0,
@@ -89,5 +91,6 @@ export const reducer = createReducer(
     /**
      * RESET STATE.
      */
+    on(PeriodTargetPromoActions.setRefreshStatus, (state, { payload }) => ({ ...state, needRefresh: payload })),
     on(PeriodTargetPromoActions.resetPeriodTargetPromo, () => initialPeriodTargetPromoState)
 );

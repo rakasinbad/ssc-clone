@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestro
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
 import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
-
+// 
 import { FeatureState as PeriodTargetPromoCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormControl, FormArray } from '@angular/forms';
@@ -29,7 +29,7 @@ import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-d
 
 // Untuk keperluan penanda mode form apakah sedang add, view, atau edit.
 type IFormMode = 'add' | 'view' | 'edit';
-// 
+
 @Component({
     selector: 'period-target-promo-trigger-condition-benefit-settings',
     templateUrl: './condition-benefit-settings.component.html',
@@ -191,7 +191,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             //     sellerId,
             //     name,
             //     platform,
-            //     maxRedemptionPerStore,
+            //     maxRedemptionPerBuyer,
             //     budget,
             //     activeStartDate,
             //     activeEndDate,

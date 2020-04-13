@@ -261,7 +261,7 @@
                     class="pr-0"
                     [class.mat-error]="!isViewMode() && hasError(form.get('condition.qty'))"
                 >
-                    Qty >=
+                    {{ form.get('condition.base').value === 'qty' ? 'Qty' : 'Order Value' }} >=
                 </label>
         
                 <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">

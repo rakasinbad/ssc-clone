@@ -32,3 +32,5 @@ export const getSelectedPeriodTargetPromo = createSelector(
 );
 
 export const getLoadingState = createSelector(getPeriodTargetPromoState, state => state.isLoading);
+
+export const getRefreshStatus = createSelector(getPeriodTargetPromoState, state => state.needRefresh);

@@ -122,3 +122,8 @@ export const deselectPeriodTargetPromo = createAction('[Promo/Period Target Prom
  * RESET
  */
 export const resetPeriodTargetPromo = createAction('[Promo/Period Target Promo Page] Reset PeriodTargetPromo State');
+
+export const setRefreshStatus = createAction(
+    '[Promo/Period Target Promo Page] Set Refresh Statuse',
+    props<{ payload: boolean }>()
+);
