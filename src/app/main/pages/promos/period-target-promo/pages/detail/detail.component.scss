@@ -1,7 +1,16 @@
+@import 'src/@sinbad/scss/helper';
+
 period-target-promo-detail {
     .mat-tab-header-px-12 {
         .mat-tab-header {
             margin: 0 12px !important;
+        }
+    }
+
+    .mat-datetimepicker-toggle {
+        /* Set color icon in datepicker */
+        .mat-icon {
+            color: sinbad-color('red', '50');
         }
     }
 
