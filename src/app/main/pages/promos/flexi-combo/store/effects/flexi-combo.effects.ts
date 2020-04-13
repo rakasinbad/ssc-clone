@@ -110,6 +110,60 @@ export class FlexiComboEffects {
         { dispatch: false }
     );
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ FETCH methods [FLEXI COMBO]
+    // -----------------------------------------------------------------------------------------------------
+
+    fetchFlexiComboRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(FlexiComboActions.fetchFlexiComboRequest),
+            map((action) => action.payload),
+            withLatestFrom(this.store.select(AuthSelectors.getUserState)),
+            switchMap(([id, authState]: [string, TNullable<Auth>]) => {
+                if (!authState) {
+                    return this._$helper.decodeUserToken().pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, id])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._fetchFlexiComboRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchFlexiComboFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this._checkUserSupplier),
+                        retry(3),
+                        switchMap((userData) => of([userData, id])),
+                        switchMap<[User, string], Observable<AnyAction>>(
+                            this._fetchFlexiComboRequest$
+                        ),
+                        catchError((err) => this._sendErrorToState$(err, 'fetchFlexiComboFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    fetchFlexiComboFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.fetchFlexiComboFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this.router.navigateByUrl('/pages/promos/flexi-combo').finally(() => {
+                        this._$notice.open(message, 'error', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     constructor(
         private actions$: Actions,
         private matDialog: MatDialog,
@@ -184,6 +238,30 @@ export class FlexiComboEffects {
                 });
             }),
             catchError((err) => this._sendErrorToState$(err, 'fetchFlexiCombosFailure'))
+        );
+    };
+
+    _fetchFlexiComboRequest$ = ([userData, flexiComboId]: [User, string]): Observable<
+        AnyAction
+    > => {
+        const newParams: IQueryParams = {
+            paginate: false,
+        };
+
+        const { supplierId } = userData.userSupplier;
+
+        if (supplierId) {
+            newParams['supplierId'] = supplierId;
+        }
+
+        return this._$flexiComboApi.findById<FlexiCombo>(flexiComboId, newParams).pipe(
+            catchOffline(),
+            map((resp) =>
+                FlexiComboActions.fetchFlexiComboSuccess({
+                    payload: new FlexiCombo(resp),
+                })
+            ),
+            catchError((err) => this._sendErrorToState$(err, 'fetchFlexiComboFailure'))
         );
     };
 

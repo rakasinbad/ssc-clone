@@ -169,6 +169,10 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.conditions.push(this._createConditions());
     }
 
+    deleteCondition(idx: number): void {
+        this.conditions.removeAt(idx);
+    }
+
     getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
         if (!fieldName) {
             return;

@@ -23,15 +23,14 @@
                     [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
                 >
                     <div class="h2">
-                        <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                            {{ (warehouse$ | async)?.name }}
+                        <ng-container *ngIf="!(isLoading$ | async)">
+                            {{ (flexiCombo$ | async)?.name }}
                         </ng-container>
 
                         <ngx-skeleton-loader
                             [theme]="{ width: '100px', height: '25px', 'margin-bottom': '-5px' }"
                             *ngIf="isLoading$ | async"
-                        ></ngx-skeleton-loader> -->
-                        New Discount Rule
+                        ></ngx-skeleton-loader>
                     </div>
                     <div class="subtitle secondary-text">
                         <span>Promo Rules Detail</span>
@@ -40,7 +39,7 @@
             </div>
             <!-- / APP TITLE -->
 
-            <!-- <button
+            <button
                 mat-raised-button
                 type="button"
                 class="accent-fg"
@@ -48,12 +47,12 @@
                 *ngIf="!(isLoading$ | async)"
             >
                 <span>Edit</span>
-            </button> -->
+            </button>
 
-            <!-- <ngx-skeleton-loader
+            <ngx-skeleton-loader
                 [theme]="{ width: '75px', height: '35px', 'margin-bottom': '-5px' }"
                 *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
+            ></ngx-skeleton-loader>
         </div>
         <!-- / HEADER -->
 

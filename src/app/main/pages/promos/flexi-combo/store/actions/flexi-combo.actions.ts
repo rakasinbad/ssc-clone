@@ -39,7 +39,7 @@ export const fetchFlexiComboFailure = createAction(
 
 export const fetchFlexiComboSuccess = createAction(
     '[Flexi Combo] Fetch Flexi Combo Success',
-    props<{ payload: any }>()
+    props<{ payload: FlexiCombo }>()
 );
 
 // -----------------------------------------------------------------------------------------------------

@@ -126,8 +126,8 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
                 break;
 
             case LifecyclePlatform.OnDestroy:
-                // Reset core state warehouses
-                // this.store.dispatch(WarehouseActions.clearState());
+                // Reset core state flexiCombos
+                this.store.dispatch(FlexiComboActions.clearState());
 
                 this._unSubs$.next();
                 this._unSubs$.complete();

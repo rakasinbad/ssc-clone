@@ -521,7 +521,25 @@
                                 "
                                 [formGroupName]="conditionIdx"
                             >
-                                <span class="box-title">{{ 'Tier ' + (conditionIdx + 1) }}</span>
+                                <span
+                                    class="field-head-wrapper"
+                                    fxLayout="row"
+                                    fxLayoutAlign="space-between stretch"
+                                >
+                                    <span class="box-title" fxFlexAlign="center">
+                                        {{ 'Tier ' + (conditionIdx + 1) }}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        mat-icon-button
+                                        *ngIf="!isFirst"
+                                        class="sinbad-black-40-fg"
+                                        (click)="deleteCondition(conditionIdx)"
+                                    >
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </span>
 
                                 <div fxLayout="row" fxLayoutAlign="start stretch">
                                     <!-- START FIELD-WRAPPER -->
@@ -530,7 +548,6 @@
                                         fxLayout="column"
                                         fxLayoutAlign="start stretch"
                                         fxFlex="1 1 auto"
-                                        fusePerfectScrollbar
                                     >
                                         <span class="field-title">
                                             Condition

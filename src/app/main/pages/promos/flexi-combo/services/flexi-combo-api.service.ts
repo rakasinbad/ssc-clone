@@ -70,4 +70,28 @@ export class FlexiComboApiService {
 
         return this.http.get<T>(this._url, { params: newParams });
     }
+
+    /**
+     *
+     *
+     * @template T
+     * @param {string} id
+     * @param {IQueryParams} [params]
+     * @returns {Observable<T>}
+     * @memberof FlexiComboApiService
+     */
+    findById<T>(id: string, params?: IQueryParams): Observable<T> {
+        const newArg = [];
+
+        if (params['supplierId']) {
+            newArg.push({
+                key: 'supplierId',
+                value: params['supplierId'],
+            });
+        }
+
+        const newParams = this._$helper.handleParams(this._url, null, ...newArg);
+
+        return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
+    }
 }
