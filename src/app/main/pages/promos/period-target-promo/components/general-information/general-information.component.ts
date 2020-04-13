@@ -172,37 +172,43 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
 
                 return;
             } else {
-                // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                // if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                //     this.store.dispatch(
-                //         CatalogueActions.spliceCatalogue({
-                //             payload: catalogue.id
-                //         })
-                //     );
+                // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                if (periodTargetPromo.supplierId !== userSupplier.supplierId) {
+                    this.store.dispatch(
+                        PeriodTargetPromoActions.resetPeriodTargetPromo()
+                    );
 
-                //     this.notice$.open('Produk tidak ditemukan.', 'error', {
-                //         verticalPosition: 'bottom',
-                //         horizontalPosition: 'right'
-                //     });
+                    this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                //     setTimeout(() => this.router.navigate(['pages', 'catalogues', 'list']), 1000);
+                    setTimeout(() => this.router.navigate(['pages', 'promos', 'period-target-promo']), 1000);
 
-                //     return;
-                // }
+                    return;
+                }
             }
 
-            // this.form.patchValue({
-            //     sellerId,
-            //     name,
-            //     platform,
-            //     maxRedemptionPerBuyer,
-            //     budget,
-            //     activeStartDate,
-            //     activeEndDate,
-            //     imageSuggestion,
-            //     isAllowCombineWithVoucher,
-            //     isFirstBuy,
-            // });
+            this.form.patchValue({
+                sellerId: periodTargetPromo.externalId,
+                name: periodTargetPromo.name,
+                platform: String(periodTargetPromo.platform).toLowerCase(),
+                maxRedemptionPerBuyer: periodTargetPromo.maxRedemptionPerBuyer,
+                budget: periodTargetPromo.promoBudget,
+                activeStartDate: periodTargetPromo.startDate,
+                activeEndDate: periodTargetPromo.endDate,
+                imageSuggestion: periodTargetPromo.imageUrl,
+                isAllowCombineWithVoucher: periodTargetPromo.voucherCombine,
+                isFirstBuy: periodTargetPromo.firstBuy,
+            });
+
+            if (this.formMode === 'view') {
+                this.form.get('isAllowCombineWithVoucher').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('isFirstBuy').disable({ onlySelf: true, emitEvent: false });
+            } else {
+                this.form.get('isAllowCombineWithVoucher').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('isFirstBuy').enable({ onlySelf: true, emitEvent: false });
+            }
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
             this.form.markAsDirty({ onlySelf: false });
@@ -368,11 +374,9 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                 })
             ]],
             maxRedemptionPerBuyer: ['', [
-                RxwebValidators.required({
-                    message: this.errorMessage$.getErrorMessageNonState(
-                        'default',
-                        'required'
-                    )
+                RxwebValidators.numeric({
+                    allowDecimal: false,
+                    message: 'This field must be numeric.'
                 })
             ]],
             budget: [''],

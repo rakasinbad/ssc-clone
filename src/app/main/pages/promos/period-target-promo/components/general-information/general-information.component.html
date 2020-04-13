@@ -59,7 +59,7 @@
                         SKU is available.
                     </mat-hint> -->
                 </mat-form-field>
-                <span fxFlex="80" class="grey-fg" *ngIf="isViewMode()">
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     {{ form.get('sellerId').value || '-' }}
                 </span>
             </div>
@@ -93,7 +93,7 @@
                         {{ getFormError(form.get('name')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     {{ form.get('name').value || '-' }}
                 </span>
             </div>
@@ -134,11 +134,8 @@
                         {{ getFormError(form.get('platform')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && form.get('platform').value">
-                    {{ form.get('platform').value || '-' }}
-                </span>
-                <span fxFlexAlign="center" fxFlex="80" *ngIf="isViewMode() && !form.get('platform').value">
-                    -
+                <span class="grey-fg" fxFlexAlign="center" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('platform').value | titlecase) || '-' }}
                 </span>
             </div>
             <!-- / PLATFORM -->
@@ -154,14 +151,13 @@
                     class="pr-0"
                     [class.mat-error]="!isViewMode() && hasError(form.get('maxRedemptionPerBuyer'))"
                 >
-                    <span
-                        class="sinbad-red-fg"
-                    >* </span>Max Redemption <br/> per Buyer
+                    Max Redemption <br/> per Buyer
                 </label>
         
                 <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
                     <input
                         matInput
+                        type="number"
                         name="maxRedemptionPerBuyer"
                         formControlName="maxRedemptionPerBuyer"
                     />
@@ -171,7 +167,7 @@
                         {{ getFormError(form.get('maxRedemptionPerBuyer')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     {{ form.get('maxRedemptionPerBuyer').value || '-' }}
                 </span>
             </div>
@@ -203,8 +199,8 @@
                         {{ getFormError(form.get('budget')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('budget').value || '-' }}
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('budget').value| price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
                 </span>
             </div>
             <!-- / PROMO BUDGET -->
@@ -253,8 +249,8 @@
                         {{ getFormError(form.get('activeStartDate')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('activeStartDate').value || '-' }}
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('activeStartDate').value | date:'dd/MM/yyyy') || '-' }}
                 </span>
             </div>
             <!-- / ACTIVE START DATE -->
@@ -303,8 +299,8 @@
                         {{ getFormError(form.get('activeEndDate')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('activeEndDate').value || '-' }}
+                <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('activeEndDate').value | date:'dd/MM/yyyy') || '-' }}
                 </span>
             </div>
             <!-- / ACTIVE END DATE -->
@@ -315,7 +311,7 @@
                 fxLayoutAlign="start stretch"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                     [fxFlex]="labelLength"
                     class="pr-0"
                     [class.mat-error]="!isViewMode() && hasError(form.get('imageSuggestion'))"
@@ -361,9 +357,14 @@
                         <!-- / ERROR MESSAGE HINT -->
                     </mat-form-field>
 
-                    <span class="grey-fg" fxFlex *ngIf="isViewMode()">
-                        {{ form.get('imageSuggestion').value || '-' }}
+                    <span class="grey-fg" fxFlexAlign="center" fxFlex *ngIf="isViewMode() && !form.get('imageSuggestion').value; else hasImage;">
+                        -
                     </span>
+                    <ng-template #hasImage>
+                        <div *ngIf="isViewMode() && form.get('imageSuggestion').value" class="img-container">
+                            <img class="fit-image" [src]="form.get('imageSuggestion').value"/>
+                        </div>
+                    </ng-template>
                     <!-- FORM FIELD -->
                     <!-- UPLOAD BUTTON -->
                     <button

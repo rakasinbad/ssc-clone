@@ -30,6 +30,19 @@ catalogue-sku-information {
     //         }
     //     }
     // }
+    .img-container {
+        width: 160px; /*any size*/
+        height: 120px; /*any size*/
+        // border: 2px dashed sinbad-color('red', '50');
+        // border-radius: 4px;
+
+        .fit-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /*magic*/
+        }
+    }
+    
     .custom-field-right {
         label {
             text-align: left !important;
