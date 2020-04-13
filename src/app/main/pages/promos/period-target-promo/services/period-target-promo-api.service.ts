@@ -115,10 +115,10 @@ export class PeriodTargetPromoApiService {
     //     return of(data);
     // }
 
-    find<T>(params: IQueryParams | string): Observable<T> {
-        if (typeof(params) === 'string') {
+    find<T>(params: IQueryParams): Observable<T> {
+        if (params['id']) {
             this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
-            return this.http.get<T>(`${this._url}/${params}`);
+            return this.http.get<T>(`${this._url}/${params['id']}`);
         }
 
         const newArgs = [];
