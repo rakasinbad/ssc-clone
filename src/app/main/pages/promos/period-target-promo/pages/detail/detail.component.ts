@@ -455,6 +455,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         this.navigationSub$.next();
         this.navigationSub$.complete();
 
+        this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.deselectPeriodTargetPromo());
         this.PeriodTargetPromoStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
     }
 
