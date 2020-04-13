@@ -194,7 +194,8 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                 name: periodTargetPromo.name,
                 platform: String(periodTargetPromo.platform).toLowerCase(),
                 maxRedemptionPerBuyer: periodTargetPromo.maxRedemptionPerBuyer,
-                budget: periodTargetPromo.promoBudget,
+                budget: String(periodTargetPromo.promoBudget).replace('.', ','),
+                budgetView: periodTargetPromo.promoBudget,
                 activeStartDate: periodTargetPromo.startDate,
                 activeEndDate: periodTargetPromo.endDate,
                 imageSuggestion: periodTargetPromo.imageUrl,
@@ -380,6 +381,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                 })
             ]],
             budget: [''],
+            budgetView: [''],
             activeStartDate: [{ value: '', disabled: true }, [
                 RxwebValidators.required({
                     message: this.errorMessage$.getErrorMessageNonState(

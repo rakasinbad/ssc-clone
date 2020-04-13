@@ -192,6 +192,9 @@
                         matInput
                         name="budget"
                         formControlName="budget"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
                     />
                     <mat-error
                         *ngIf="hasError(form.get('budget'))"
@@ -200,7 +203,7 @@
                     </mat-error>
                 </mat-form-field>
                 <span class="grey-fg" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    {{ (form.get('budget').value| price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
+                    {{ (form.get('budgetView').value| price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
                 </span>
             </div>
             <!-- / PROMO BUDGET -->
