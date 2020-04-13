@@ -14,6 +14,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 // Component
 import { PeriodTargetPromoListComponent } from './components/list/list.component';
 import { PeriodTargetPromoFormComponent } from './pages/form/form.component';
+import { PeriodTargetPromoDetailComponent } from './pages/detail/detail.component';
 import { PeriodTargetPromoGeneralInformationComponent } from './components/general-information/general-information.component';
 import { PeriodTargetPromoTriggerInformationComponent } from './components/trigger-information/trigger-information.component';
 import { PeriodTargetPromoCustomerSegmentationSettingsComponent } from './components/customer-segmentation-settings/customer-segmentation-settings.component';
@@ -24,6 +25,7 @@ import { PeriodTargetPromoTriggerConditionBenefitSettingsComponent } from './com
     declarations: [
         PeriodTargetPromoComponent,
         PeriodTargetPromoListComponent,
+        PeriodTargetPromoDetailComponent,
         PeriodTargetPromoFormComponent,
         PeriodTargetPromoGeneralInformationComponent,
         PeriodTargetPromoTriggerInformationComponent,
