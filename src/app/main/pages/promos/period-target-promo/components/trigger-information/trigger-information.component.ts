@@ -20,6 +20,7 @@ import { Brand } from 'app/shared/models/brand.model';
 import { FormStatus } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { Selection } from 'app/shared/components/multiple-selection/models';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -42,6 +43,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
+    chosen$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
@@ -162,37 +165,73 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
 
                 return;
             } else {
-                // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                // if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                //     this.store.dispatch(
-                //         CatalogueActions.spliceCatalogue({
-                //             payload: catalogue.id
-                //         })
-                //     );
+                // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                if (periodTargetPromo.supplierId !== userSupplier.supplierId) {
+                    this.store.dispatch(
+                        PeriodTargetPromoActions.resetPeriodTargetPromo()
+                    );
 
-                //     this.notice$.open('Produk tidak ditemukan.', 'error', {
-                //         verticalPosition: 'bottom',
-                //         horizontalPosition: 'right'
-                //     });
+                    this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                //     setTimeout(() => this.router.navigate(['pages', 'catalogues', 'list']), 1000);
+                    setTimeout(() => this.router.navigate(['pages', 'promos', 'period-target-promo']), 1000);
 
-                //     return;
-                // }
+                    return;
+                }
             }
 
-            // this.form.patchValue({
-            //     sellerId,
-            //     name,
-            //     platform,
-            //     maxRedemptionPerBuyer,
-            //     budget,
-            //     activeStartDate,
-            //     activeEndDate,
-            //     imageSuggestion,
-            //     isAllowCombineWithVoucher,
-            //     isFirstBuy,
-            // });
+            let chosenBase: string;
+
+            switch (periodTargetPromo.base) {
+                case 'sku':
+                    this.chosen$.next(
+                        periodTargetPromo.promoCatalogues.map(data => ({
+                            id: data.catalogue.id,
+                            label: data.catalogue.name,
+                            group: 'catalogues'
+                        }))
+                    );
+
+                    chosenBase = periodTargetPromo.base;
+                    break;
+                case 'brand':
+                    this.chosen$.next(
+                        periodTargetPromo.promoBrands.map(data => ({
+                            id: data.brand.id,
+                            label: data.brand.name,
+                            group: 'brand'
+                        }))
+                    );
+
+                    chosenBase = periodTargetPromo.base;
+                    break;
+                case 'invoiceGroup':
+                    this.chosen$.next(
+                        periodTargetPromo.promoInvoiceGroups.map(data => ({
+                            id: data.invoiceGroup.id,
+                            label: data.invoiceGroup.name,
+                            group: 'faktur'
+                        }))
+                    );
+
+                    chosenBase = 'faktur';
+                    break;
+            }
+
+            this.form.patchValue({
+                base: chosenBase,
+                chosenSku: periodTargetPromo.promoCatalogues,
+                chosenBrand: periodTargetPromo.promoBrands,
+                chosenFaktur: periodTargetPromo.promoInvoiceGroups,
+            });
+
+            if (this.formMode === 'view') {
+                this.form.get('base').disable({ onlySelf: true, emitEvent: false });
+            } else {
+                this.form.get('base').enable({ onlySelf: true, emitEvent: false });
+            }
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
             this.form.markAsDirty({ onlySelf: false });

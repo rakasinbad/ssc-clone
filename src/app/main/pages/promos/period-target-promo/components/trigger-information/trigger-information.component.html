@@ -53,14 +53,23 @@
                     >* </span>Chosen SKU<br/>({{ form.get('chosenSku').value?.length || '0' }} Selected)
                 </label>
 
-                <select-catalogues [required]="true" [fxFlex]="formFieldLength" (selected)="onCatalogueSelected($event)">
+                <select-catalogues
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosen$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onCatalogueSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('chosenSku')) }}
                     </div>
                 </select-catalogues>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('chosenSku').value || '-' }}
-                </span> -->
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="grey-fg" *ngFor="let sku of form.get('chosenSku').value">
+                        {{ (sku?.catalogue?.name | uppercase) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN SKU -->
             <!-- CHOSEN BRAND -->
@@ -81,14 +90,23 @@
                     >* </span>Chosen Brand<br/>({{ form.get('chosenBrand').value?.length || '0' }} Selected)
                 </label>
 
-                <select-brands [required]="true" [fxFlex]="formFieldLength" (selected)="onBrandSelected($event)">
+                <select-brands
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosen$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onBrandSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('chosenBrand')) }}
                     </div>
                 </select-brands>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('chosenBrand').value || '-' }}
-                </span> -->
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="grey-fg" *ngFor="let brand of form.get('chosenBrand').value">
+                        {{ (brand?.brand?.name) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN BRAND -->
             <!-- CHOSEN FAKTUR -->
@@ -109,14 +127,23 @@
                     >* </span>Chosen Faktur<br/>({{ form.get('chosenFaktur').value?.length || '0' }} Selected)
                 </label>
 
-                <select-faktur [required]="true" [fxFlex]="formFieldLength" (selected)="onFakturSelected($event)">
+                <select-faktur
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosen$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onFakturSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('chosenFaktur')) }}
                     </div>
                 </select-faktur>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('chosenFaktur').value || '-' }}
-                </span> -->
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="grey-fg" *ngFor="let faktur of form.get('chosenFaktur').value">
+                        {{ (faktur?.invoieGroup?.name) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN FAKTUR -->
         </form>
