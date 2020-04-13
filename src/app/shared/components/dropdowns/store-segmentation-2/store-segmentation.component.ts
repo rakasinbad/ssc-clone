@@ -57,9 +57,9 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     // tslint:disable-next-line: no-inferrable-types
     removing: boolean = false;
     tempEntity: Array<Selection> = [];
-    initialSelection: Array<Selection> = [];
-    entityFormView: FormControl;
-    entityFormValue: FormControl;
+    @Input() initialSelection: Array<Selection> = [];
+    entityFormView: FormControl = new FormControl();
+    entityFormValue: FormControl = new FormControl();
 
     // Untuk menandai apakah pilihannya required atau tidak.
     // tslint:disable-next-line: no-inferrable-types
@@ -349,12 +349,13 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
                     this.entityFormView.setValue('');
                     this.entityFormValue.setValue([]);
                 } else {
-                    const firstselection = selection[0].label;
-                    const remainLength = selection.length - 1;
-                    const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+                    // const firstselection = selection[0].label;
+                    // const remainLength = selection.length - 1;
+                    // const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
 
                     this.entityFormValue.setValue(selection);
-                    this.entityFormView.setValue(viewValue);
+                    this.updateFormView();
+                    // this.entityFormView.setValue(viewValue);
                 }
 
                 this.onSelectedEntity(this.entityFormValue.value);
@@ -407,12 +408,32 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     // }
 
     private initForm(): void {
-        this.entityFormView = new FormControl('');
-        this.entityFormValue = new FormControl('');
+        // this.entityFormView = new FormControl('');
+        // this.entityFormValue = new FormControl('');
+        this.entityFormValue.valueChanges.pipe(
+            tap(value => HelperService.debug('entityFormValue value changed', value)),
+            takeUntil(this.subs$)
+        ).subscribe();
         
         if (this.required) {
             this.entityFormView.setValidators(Validators.required);
         }
+    }
+
+    private updateFormView(): void {
+        setTimeout(() => {
+            const formValue: Array<Selection> = this.entityFormValue.value;
+            
+            if (formValue.length === 0) {
+                this.entityFormView.setValue('');
+            } else {
+                const firstselection = formValue[0].label;
+                const remainLength = formValue.length - 1;
+                const viewValue = (firstselection + String(remainLength > 0 ? ` (+${remainLength} ${remainLength === 1 ? 'other' : 'others'})` : ''));
+        
+                this.entityFormView.setValue(viewValue);
+            }
+        });
     }
 
     ngOnInit(): void {
@@ -468,6 +489,11 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             if (changes['required'].currentValue === true) {
                 this.entityFormView.setValidators(Validators.required);
             }
+        }
+
+        if (changes['initialSelection']) {
+            this.entityFormValue.setValue(changes['initialSelection'].currentValue);
+            this.updateFormView();
         }
     }
 
