@@ -81,8 +81,8 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
 
     constructor(
         // private route: ActivatedRoute,
-        // private router: Router,
         // private readonly sanitizer: DomSanitizer,
+        private router: Router,
         private ngxPermissionsService: NgxPermissionsService,
         private PeriodTargetPromoStore: NgRxStore<PeriodTargetPromoCoreState>
     ) {}
@@ -163,6 +163,16 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
     ngOnDestroy(): void {
         this.subs$.next();
         this.subs$.complete();
+    }
+
+    openDetailPage(promoId: string): void {
+        // this.PeriodTargetPromoStore.dispatch(
+        //     PeriodTargetPromoActions.fetchPeriodTargetPromoRequest({
+        //         payload: promoId
+        //     })
+        // );
+
+        this.router.navigate([`/pages/promos/period-target-promo/view/${promoId}`]);
     }
 
     handleCheckbox(): void {
