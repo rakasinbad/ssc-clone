@@ -333,10 +333,10 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
     // }
 
     private initForm(): void {
-        this.minActiveStartDate = null;
-        this.minActiveEndDate = null;
-        this.maxActiveEndDate = new Date();
-        this.maxActiveStartDate = this.maxActiveEndDate;
+        this.minActiveStartDate = new Date();
+        this.minActiveEndDate = new Date();
+        this.maxActiveEndDate = null;
+        this.maxActiveStartDate = null;
 
         this.tmpImageSuggestion = new FormControl({ value: '', disabled: true });
         this.tmpCouponImage = new FormControl({ value: '', disabled: true });
