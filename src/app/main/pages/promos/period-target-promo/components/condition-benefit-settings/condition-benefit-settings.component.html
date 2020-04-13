@@ -5,62 +5,41 @@
     </div>
 
     <div class="p-16 pt-0 pb-40 line-height-1.75">
-        <form
-            class="w-100-p"
-            [formGroup]="form"
-            fxLayout="column"
-            fxFlex
-            [fxLayoutGap]="isViewMode() ? '32px' : '5px'"
-            novalidate
-        >
+        <form class="w-100-p" [formGroup]="form" fxLayout="column" fxFlex [fxLayoutGap]="isViewMode() ? '32px' : '5px'" novalidate>
             <!-- *HIDDEN* ID -->
-            <input hidden name="id" formControlName="id" />
+            <input
+                hidden
+                name="id"
+                formControlName="id"
+            />
             <!-- / *HIDDEN* ID -->
             <!-- CALCULATION MECHANISM -->
-            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+            <div
+                [ngClass]="formClass"
+                fxLayout="row"
+                fxLayoutAlign="start stretch"
+            >
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
                     class="pr-0"
                     [class.mat-error]="!isViewMode() && hasError(form.get('calculationMechanism'))"
                 >
-                    Calculation<br />Mechanism
+                    Calculation<br/>Mechanism
                 </label>
 
-                <div
-                    [fxFlex]="formFieldLength"
-                    fxLayout="row"
-                    fxLayoutAlign="start center"
-                    fxLayoutGap="16px"
-                >
-                    <mat-radio-group
-                        formControlName="calculationMechanism"
-                        fxLayout="row"
-                        fxLayoutAlign="start center"
-                        fxLayoutGap="16px"
-                    >
-                        <mat-radio-button value="non-cummulative">
-                            Non Cummulative
-                        </mat-radio-button>
-                        <mat-radio-button value="cummulative" disabled>
-                            Cummulative
-                        </mat-radio-button>
+                <div [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                    <mat-radio-group formControlName="calculationMechanism" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
+                        <mat-radio-button value="non-cummulative"> Non Cummulative </mat-radio-button>
+                        <mat-radio-button value="cummulative" disabled> Cummulative </mat-radio-button>
                     </mat-radio-group>
 
-                    <a
-                        class="sinbad-blue-fg text-underline mt-4"
-                        fxFlexAlign="start"
-                        style="cursor: pointer;"
-                        (click)="openHint()"
-                        >What is this?</a
-                    >
+                    <a class="sinbad-blue-fg text-underline mt-4" fxFlexAlign="start" style="cursor: pointer;" (click)="openHint()">What is this?</a>
                     <!-- "WHAT IS THIS?" HINT -->
                     <ng-template #whatIsThisHint>
                         <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
-                            This setting is only changeable if only when you have more than one
-                            condition & benefit configuration. When you have more than one condition
-                            & benefit configuration, the default setting of the calculation
-                            mechanism will be set to non-cumulative.
+                            This setting is only changeable if only when you have more than one condition & benefit configuration.
+                            When you have more than one condition & benefit configuration, the default setting of the calculation mechanism will be set to non-cumulative.
                         </p>
                     </ng-template>
                     <!-- / "WHAT IS THIS?" HINT -->
@@ -68,81 +47,70 @@
             </div>
             <!-- / CALCULATION MECHANISM -->
             <!-- CONDITION & BENEFITS -->
-            <ng-container
-                *ngFor="let control of $any(form.get('conditionBenefit')).controls; index as $index"
-            >
+            <ng-container *ngFor="let control of $any(form.get('conditionBenefit')).controls; index as $index">
                 <!-- TITLE -->
-                <p class="font-weight-600 font-size-20 line-height-20 mb-16">
-                    Condition & Benefit {{ $index + 1 }}
-                </p>
+                <div class="w-50-p" fxLayout="row" fxLayoutAlign="space-between center">
+                    <p class="font-weight-600 font-size-20 line-height-20 mb-16">Condition & Benefit {{ $index + 1 }}</p>
+                    <button mat-icon-button (click)="removeConditionBenefitForm($index)" *ngIf="$index > 0">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
                 <!-- / TITLE -->
                 <!-- WRAPPER BOX -->
                 <div fxLayout="row" fxLayoutAlign="start start" fxFlex>
                     <!-- FORM -->
-                    <div
-                        class="p-16 dark-box"
-                        [fxFlex]="labelLength + formFieldLength"
-                        fxLayout="column"
-                    >
+                    <div class="p-16 dark-box" [fxFlex]="labelLength + formFieldLength" fxLayout="column">
                         <!-- CONDITION -->
-                        <span
-                            class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20"
-                        >
+                        <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                             Condition
                         </span>
                         <!-- / CONDITION -->
                         <!-- BASE (CONDITION) -->
-                        <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            [ngClass]="formClass"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
                             <label
                                 fxFlexAlign="center"
                                 [fxFlex]="labelLength * 2 - 1"
                                 class="pr-0"
-                                [class.mat-error]="
-                                    !isViewMode() && hasError(control.get('condition.base'))
-                                "
+                                [class.mat-error]="!isViewMode() && hasError(control.get('condition.base'))"
                             >
                                 Base
                             </label>
 
-                            <mat-radio-group
-                                [formControl]="control.get('condition.base')"
-                                [fxFlex]="formFieldLength * 2 - 1"
-                                fxLayout="row"
-                                fxLayoutAlign="start center"
-                                fxLayoutGap="16px"
-                            >
+                            <mat-radio-group [formControl]="control.get('condition.base')" [fxFlex]="formFieldLength * 2 - 1" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
                                 <mat-radio-button value="qty"> Qty </mat-radio-button>
-                                <mat-radio-button value="order-value">
-                                    Order Value
-                                </mat-radio-button>
+                                <mat-radio-button value="order-value"> Order Value </mat-radio-button>
                             </mat-radio-group>
                         </div>
                         <!-- / BASE (CONDITION) -->
                         <!-- QTY (BASE) -->
-                        <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            [ngClass]="formClass"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
                             <label
                                 fxFlexAlign="center"
                                 [fxFlex]="labelLength * 2 - 1"
                                 class="pr-0"
-                                [class.mat-error]="
-                                    !isViewMode() && hasError(control.get('condition.qty'))
-                                "
+                                [class.mat-error]="!isViewMode() && hasError(control.get('condition.qty'))"
                             >
-                                Qty >=
+                                {{ control.get('condition.base').value === 'qty' ? 'Qty' : 'Order Value' }} >=
                             </label>
-
-                            <mat-form-field
-                                appearance="outline"
-                                [fxFlex]="formFieldLength * 2 - 1"
-                                *ngIf="!isViewMode()"
-                            >
+                    
+                            <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
                                 <input
                                     matInput
                                     name="qty"
                                     type="number"
                                     [formControl]="control.get('condition.qty')"
                                 />
-                                <mat-error *ngIf="hasError(control.get('condition.qty'))">
+                                <mat-error
+                                    *ngIf="hasError(control.get('condition.qty'))"
+                                >
                                     {{ getFormError(control.get('condition.qty')) }}
                                 </mat-error>
                             </mat-form-field>
@@ -152,32 +120,26 @@
                         </div>
                         <!-- / QTY (BASE) -->
                         <!-- BENEFIT -->
-                        <span
-                            class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20"
-                        >
+                        <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                             Benefit
                         </span>
                         <!-- / BENEFIT -->
                         <!-- BASE (CONDITION) -->
-                        <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                        <div
+                            [ngClass]="formClass"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                        >
                             <label
                                 fxFlexAlign="center"
                                 [fxFlex]="labelLength * 2 - 1"
                                 class="pr-0"
-                                [class.mat-error]="
-                                    !isViewMode() && hasError(control.get('benefit.base'))
-                                "
+                                [class.mat-error]="!isViewMode() && hasError(control.get('benefit.base'))"
                             >
                                 Benefit Type
                             </label>
 
-                            <mat-radio-group
-                                [formControl]="control.get('benefit.base')"
-                                [fxFlex]="formFieldLength * 2 - 1"
-                                fxLayout="row"
-                                fxLayoutAlign="start center"
-                                fxLayoutGap="16px"
-                            >
+                            <mat-radio-group [formControl]="control.get('benefit.base')" [fxFlex]="formFieldLength * 2 - 1" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
                                 <mat-radio-button value="qty"> Qty </mat-radio-button>
                                 <mat-radio-button value="cash"> Rp </mat-radio-button>
                                 <mat-radio-button value="percent"> % </mat-radio-button>
@@ -187,32 +149,23 @@
                         <!-- BASE = QTY -->
                         <div [fxHide]="control.get('benefit.base').value !== 'qty'">
                             <!-- BONUS SKU -->
-                            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                            >
                                 <label
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
-                                    [class.mat-error]="
-                                        !isViewMode() &&
-                                        hasError(control.get('benefit.qty.bonusSku'), {
-                                            ignoreDirty: true
-                                        })
-                                    "
+                                    [class.mat-error]="!isViewMode() && !!(hasError(control.get('benefit.qty.bonusSku'), { ignoreDirty: true }))"
                                 >
-                                    <span class="sinbad-red-fg">* </span>Bonus SKU
+                                    <span
+                                        class="sinbad-red-fg"
+                                    >* </span>Bonus SKU
                                 </label>
-
-                                <select-catalogues
-                                    mode="single"
-                                    [required]="true"
-                                    [fxFlex]="formFieldLength * 2 - 1"
-                                    (selected)="
-                                        onCatalogueSelected(
-                                            $event,
-                                            control.get('benefit.qty.bonusSku')
-                                        )
-                                    "
-                                >
+    
+                                <select-catalogues mode="single" [required]="true" [fxFlex]="formFieldLength * 2 - 1" (selected)="onCatalogueSelected($event, control.get('benefit.qty.bonusSku'))">
                                     <div error>
                                         {{ getFormError(control.get('benefit.qty.bonusSku')) }}
                                     </div>
@@ -223,40 +176,39 @@
                             </div>
                             <!-- / BONUS SKU -->
                             <!-- APPLY SAME SKU -->
-                            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                class="mt-8"
+                            >
                                 <label
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
                                 ></label>
 
-                                <mat-checkbox
-                                    [fxFlex]="formFieldLength * 2 - 1"
-                                    [formControl]="control.get('benefit.qty.applySameSku')"
-                                >
+                                <mat-checkbox [formControl]="control.get('benefit.qty.applySameSku')">
                                     Apply Same SKU
                                 </mat-checkbox>
                             </div>
                             <!-- / APPLY SAME SKU -->
                             <!-- BONUS QTY -->
-                            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                            >
                                 <label
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
-                                    [class.mat-error]="
-                                        !isViewMode() &&
-                                        hasError(control.get('benefit.qty.bonusQty'))
-                                    "
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.qty.bonusQty'))"
                                 >
                                     Qty >=
                                 </label>
-
-                                <mat-form-field
-                                    appearance="outline"
-                                    [fxFlex]="formFieldLength * 2 - 1"
-                                    *ngIf="!isViewMode()"
-                                >
+                        
+                                <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
                                     <input
                                         matInput
                                         name="qty"
@@ -275,29 +227,144 @@
                             </div>
                             <!-- / BONUS QTY -->
                             <!-- MULTIPLICATION ONLY -->
-                            <div [ngClass]="formClass" fxLayout="row" fxLayoutAlign="start stretch">
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                                class="mt-8"
+                            >
                                 <label
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0"
                                 ></label>
 
-                                <mat-checkbox
-                                    [fxFlex]="formFieldLength * 2 - 1"
-                                    [formControl]="control.get('benefit.qty.multiplicationOnly')"
-                                >
+                                <mat-checkbox [formControl]="control.get('benefit.qty.multiplicationOnly')">
                                     Multiplication Only
                                 </mat-checkbox>
                             </div>
                             <!-- / MULTIPLICATION ONLY -->
                         </div>
                         <!-- / BASE = QTY -->
-                        <!-- BASE = CASH (Rp) -->
-                        <div [fxHide]="control.get('benefit.base').value !== 'cash'"></div>
-                        <!-- / BASE = CASH (Rp) -->
                         <!-- BASE = PERCENT (%) -->
-                        <div [fxHide]="control.get('benefit.base').value !== 'percent'"></div>
+                        <div [fxHide]="control.get('benefit.base').value !== 'percent'">
+                            <!-- PERCENT DISCOUNT -->
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    [fxFlex]="labelLength * 2 - 1"
+                                    class="pr-0"
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.percent.percentDiscount'))"
+                                >
+                                    <span
+                                        class="sinbad-red-fg"
+                                    >* </span>% Discount
+                                </label>
+                        
+                                <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
+                                    <input
+                                        matInput
+                                        name="percentDiscount"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        [formControl]="control.get('benefit.percent.percentDiscount')"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError(control.get('benefit.percent.percentDiscount'))"
+                                    >
+                                        {{ getFormError(control.get('benefit.percent.percentDiscount')) }}
+                                    </mat-error>
+                                </mat-form-field>
+                                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                                    {{ control.get('benefit.percent.percentDiscount').value || '-' }}
+                                </span>
+                            </div>
+                            <!-- / PERCENT DISCOUNT -->
+                            <!-- MAX REBATE -->
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    [fxFlex]="labelLength * 2 - 1"
+                                    class="pr-0"
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.percent.maxRebate'))"
+                                >
+                                    <span
+                                        class="sinbad-red-fg"
+                                    >* </span>Max Rebate
+                                </label>
+                        
+                                <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
+                                    <input
+                                        matInput
+                                        name="maxRebate"
+                                        mask="separator.2"
+                                        thousandSeparator="."
+                                        prefix="Rp"
+                                        [formControl]="control.get('benefit.percent.maxRebate')"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError(control.get('benefit.percent.maxRebate'))"
+                                    >
+                                        {{ getFormError(control.get('benefit.percent.maxRebate')) }}
+                                    </mat-error>
+                                </mat-form-field>
+                                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                                    {{ control.get('benefit.percent.maxRebate').value || '-' }}
+                                </span>
+                            </div>
+                            <!-- / MAX REBATE -->
+                        </div>
                         <!-- / BASE = PERCENT (%) -->
+                        <!-- BASE = CASH (Rp) -->
+                        <div [fxHide]="control.get('benefit.base').value !== 'cash'">
+                            <!-- REBATE -->
+                            <div
+                                [ngClass]="formClass"
+                                fxLayout="row"
+                                fxLayoutAlign="start stretch"
+                            >
+                                <label
+                                    fxFlexAlign="center"
+                                    [fxFlex]="labelLength * 2 - 1"
+                                    class="pr-0"
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.percent.maxRebate'))"
+                                >
+                                    <span
+                                        class="sinbad-red-fg"
+                                    >* </span>Max Rebate
+                                </label>
+                        
+                                <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
+                                    <input
+                                        matInput
+                                        name="maxRebate"
+                                        mask="separator.2"
+                                        thousandSeparator="."
+                                        prefix="Rp"
+                                        [formControl]="control.get('benefit.percent.maxRebate')"
+                                    />
+                                    <mat-error
+                                        *ngIf="hasError(control.get('benefit.percent.maxRebate'))"
+                                    >
+                                        {{ getFormError(control.get('benefit.percent.maxRebate')) }}
+                                    </mat-error>
+                                </mat-form-field>
+                                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                                    {{ control.get('benefit.percent.maxRebate').value || '-' }}
+                                </span>
+                            </div>
+                            <!-- / REBATE -->
+                        </div>
+                        <!-- / BASE = CASH (Rp) -->
                     </div>
                     <!-- / FORM -->
                     <!-- CARD INSTRUCTION -->
@@ -305,16 +372,16 @@
                         <p class="title">Sample Case</p>
 
                         <p class="instruction">
-                            Toko Maju Jaya ordered 5 pcs of SKU A.<br />
+                            Toko Maju Jaya ordered 5 pcs of SKU A.<br/>
                             There are 2 condition and benefits available:
-                            <br /><br />
-                            Buy 5 SKU A, get 1 SKU A for free<br />
+                            <br/><br/>
+                            Buy 5 SKU A, get 1 SKU A for free<br/>
                             Buy 10 SKU A, get 3 SKU A for free
-                            <br /><br />
-                            If you choose non-cumulative:<br />
+                            <br/><br/>
+                            If you choose non-cumulative:<br/>
                             Toko Maju Jaya will get 3 SKU A bonus for free.
-                            <br /><br />
-                            If you choose cumulative:<br />
+                            <br/><br/>
+                            If you choose cumulative:<br/>
                             Toko Maju Jaya will get 4 SKU A bonus for free.
                         </p>
                     </card-instruction>
@@ -323,6 +390,11 @@
                 <!-- / WRAPPER BOX -->
             </ng-container>
             <!-- / CONDITION & BENEFITS -->
+            <!-- "ADD TIER" BUTTON -->
+            <p class="sinbad-red-fg mb-0 w-60" style="cursor: pointer;" (click)="addConditionBenefitForm()">
+                Add Tier
+            </p>
+            <!-- / "ADD TIER" BUTTON -->
         </form>
     </div>
 </div>
