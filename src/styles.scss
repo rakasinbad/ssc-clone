@@ -592,6 +592,12 @@ mat-header-row {
 }
 
 .sinbad-mat-tab-group {
+    &.has-border {
+        .mat-tab-header {
+            border-bottom: 1px solid rgba(0,0,0,0.12) !important;
+        }
+    }
+
     .mat-tab-header {
         border-bottom: 0px solid rgba(0,0,0,0) !important;
     }
