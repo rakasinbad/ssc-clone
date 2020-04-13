@@ -1,5 +1,8 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
+import { Catalogue } from 'app/main/pages/catalogues/models';
+import { Brand } from 'app/shared/models/brand.model';
+import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 
 type PromoStatus = 'active' | 'inactive';
 
@@ -76,9 +79,9 @@ export class PeriodTargetPromo implements IPeriodTargetPromo {
     promoGroups?: Array<any>;
     promoClusters?: Array<any>;
     promoChannels?: Array<any>;
-    promoCatalogues?: Array<any>;
-    promoBrands?: Array<any>;
-    promoInvoiceGroups?: Array<any>;
+    promoCatalogues?: Array<{ catalogue: Catalogue }>;
+    promoBrands?: Array<{ brand: Brand }>;
+    promoInvoiceGroups?: Array<{ invoiceGroup: InvoiceGroup }>;
 
     constructor(data: IPeriodTargetPromo) {
         // Menggunakan destructing assignment object untuk menghemat jumlah parameter yang bisa diterima.
