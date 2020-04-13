@@ -34,7 +34,13 @@
                         <mat-radio-button value="cummulative" disabled> Cummulative </mat-radio-button>
                     </mat-radio-group>
 
-                    <a class="sinbad-blue-fg text-underline mt-4" fxFlexAlign="start" style="cursor: pointer;" (click)="openHint()">What is this?</a>
+                    <a
+                        class="sinbad-blue-fg text-underline"
+                        [ngClass]="{ 'mt-12': isViewMode(), 'mt-4': !isViewMode() }"
+                        fxFlexAlign="start"
+                        style="cursor: pointer;"
+                        (click)="openHint()"
+                    > What is this? </a>
                     <!-- "WHAT IS THIS?" HINT -->
                     <ng-template #whatIsThisHint>
                         <p class="text-semibold font-size-14 sinbad-black-fg line-height-20 px-16">
@@ -50,7 +56,9 @@
             <ng-container *ngFor="let control of $any(form.get('conditionBenefit')).controls; index as $index">
                 <!-- TITLE -->
                 <div class="w-50-p" fxLayout="row" fxLayoutAlign="space-between center">
-                    <p class="font-weight-600 font-size-20 line-height-20 mb-16">Condition & Benefit {{ $index + 1 }}</p>
+                    <p class="font-weight-600 font-size-20 line-height-20 mb-16">
+                        Tier {{ $index + 1 }}
+                    </p>
                     <button mat-icon-button (click)="removeConditionBenefitForm($index)" *ngIf="$index > 0">
                         <mat-icon>delete</mat-icon>
                     </button>
