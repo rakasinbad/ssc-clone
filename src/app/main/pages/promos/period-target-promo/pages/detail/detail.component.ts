@@ -298,48 +298,48 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
     }
 
     ngAfterViewInit(): void {
-        // // Memeriksa status refresh untuk keperluan memuat ulang data yang telah di-edit.
-        // this.PeriodTargetPromoStore.select(
-        //     PeriodTargetPromoSelectors.getRefreshStatus
-        // ).pipe(
-        //     withLatestFrom(this.selectedPromo$),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([needRefresh, catalogue]) => {
-        //     if (needRefresh) {
-        //         this.formMode = 'view';
+        // Memeriksa status refresh untuk keperluan memuat ulang data yang telah di-edit.
+        this.PeriodTargetPromoStore.select(
+            PeriodTargetPromoSelectors.getRefreshStatus
+        ).pipe(
+            withLatestFrom(this.selectedPromo$),
+            takeUntil(this.subs$)
+        ).subscribe(([needRefresh, catalogue]) => {
+            if (needRefresh) {
+                this.formMode = 'view';
 
-        //         this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //         this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
-        //         this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
-        //         this.PeriodTargetPromoStore.dispatch(CatalogueActions.setRefreshStatus({ status: false }));
+                this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
+                this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+                this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.setRefreshStatus({ payload: false }));
 
-        //         this.PeriodTargetPromoStore.dispatch(
-        //             CatalogueActions.fetchCatalogueRequest({
-        //                 payload: catalogue.id
-        //             })
-        //         );
+                this.PeriodTargetPromoStore.dispatch(
+                    PeriodTargetPromoActions.fetchPeriodTargetPromoRequest({
+                        payload: catalogue.id
+                    })
+                );
 
-        //         // Scrolled to top.
-        //         this.scrollTop(this.catalogueDetailRef);
-        //     }
-        // });
+                // Scrolled to top.
+                this.scrollTop(this.promoDetailRef);
+            }
+        });
 
-        // // Memeriksa kejadian ketika adanya penekanan pada tombol "cancel".
-        // this.PeriodTargetPromoStore.select(
-        //     FormSelectors.getIsClickCancelButton
-        // ).pipe(
-        //     takeUntil(this.subs$)
-        // ).subscribe(isClick => {
-        //     if (isClick) {
-        //         this.formMode = 'view';
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "cancel".
+        this.PeriodTargetPromoStore.select(
+            FormSelectors.getIsClickCancelButton
+        ).pipe(
+            takeUntil(this.subs$)
+        ).subscribe(isClick => {
+            if (isClick) {
+                this.formMode = 'view';
                 
-        //         this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //         this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
-        //         this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
-        //     }
-        // });
+                this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
+                this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+            }
+        });
 
-        // // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
+        // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
         // this.PeriodTargetPromoStore.select(
         //     FormSelectors.getIsClickSaveButton
         // ).pipe(
