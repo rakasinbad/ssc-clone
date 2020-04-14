@@ -86,6 +86,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
     districtHighlight: string;
     urbanHighlight: string;
 
+    // tslint:disable-next-line: no-inferrable-types
+    isEditMode: boolean = false;
     isDistrictTyping: boolean;
     isUrbanTyping: boolean;
 
@@ -208,6 +210,8 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
 
             this.pageType = 'new';
         } else {
+            this.isEditMode = true;
+
             // Set breadcrumbs
             this.store.dispatch(
                 UiActions.createBreadcrumb({
@@ -426,7 +430,10 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                 const storeSetting = storeSettings[0];
                 this.storeIdNextNumber =
                     storeSetting.supplierPrefix + storeSetting.storeIterationNumber;
-                this.storeIdType.setValue('auto');
+
+                if (!this.isEditMode) {
+                    this.storeIdType.setValue('auto');
+                }
             });
 
         this.storeIdType.valueChanges
