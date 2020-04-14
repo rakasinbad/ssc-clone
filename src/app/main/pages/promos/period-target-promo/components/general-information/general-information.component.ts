@@ -91,7 +91,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
     // Untuk styling form field di mode form yang berbeda.
     formClass: {
         'custom-field': boolean;
-        'view-field': boolean;
+        'view-field label-no-padding': boolean;
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
@@ -112,7 +112,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
         // Penetapan class pada form field berdasarkan mode form-nya.
         this.formClass = {
             'custom-field': !this.isViewMode(),
-            'view-field': this.isViewMode()
+            'view-field label-no-padding': this.isViewMode()
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
@@ -196,8 +196,8 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                 maxRedemptionPerBuyer: periodTargetPromo.maxRedemptionPerBuyer,
                 budget: String(periodTargetPromo.promoBudget).replace('.', ','),
                 budgetView: periodTargetPromo.promoBudget,
-                activeStartDate: periodTargetPromo.startDate,
-                activeEndDate: periodTargetPromo.endDate,
+                activeStartDate: moment(periodTargetPromo.startDate).toDate(),
+                activeEndDate: moment(periodTargetPromo.endDate).toDate(),
                 imageSuggestion: periodTargetPromo.imageUrl,
                 isAllowCombineWithVoucher: periodTargetPromo.voucherCombine,
                 isFirstBuy: periodTargetPromo.firstBuy,
