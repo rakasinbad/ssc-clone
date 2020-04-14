@@ -60,7 +60,7 @@
                     <p class="font-weight-600 font-size-20 line-height-20 mb-16">
                         Tier {{ $index + 1 }}
                     </p>
-                    <button mat-icon-button (click)="removeConditionBenefitForm($index)" *ngIf="$index > 0">
+                    <button mat-icon-button (click)="removeConditionBenefitForm($index)" *ngIf="$index > 0 && !isViewMode()">
                         <mat-icon>delete</mat-icon>
                     </button>
                 </div>
@@ -100,6 +100,7 @@
                             [ngClass]="formClass"
                             fxLayout="row"
                             fxLayoutAlign="start stretch"
+                            *ngIf="control.get('condition.base').value === 'qty'"
                         >
                             <label
                                 fxFlexAlign="center"
@@ -107,7 +108,7 @@
                                 class="pr-0 form-label"
                                 [class.mat-error]="!isViewMode() && hasError(control.get('condition.qty'))"
                             >
-                                {{ control.get('condition.base').value === 'qty' ? 'Qty' : 'Order Value' }} >=
+                                Qty >=
                             </label>
                     
                             <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
@@ -123,11 +124,49 @@
                                     {{ getFormError(control.get('condition.qty')) }}
                                 </mat-error>
                             </mat-form-field>
+
                             <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
                                 {{ control.get('condition.qty').value || '-' }}
                             </span>
                         </div>
                         <!-- / QTY (BASE) -->
+                        <!-- ORDER VALUE (BASE) -->
+                        <div
+                            [ngClass]="formClass"
+                            fxLayout="row"
+                            fxLayoutAlign="start stretch"
+                            *ngIf="control.get('condition.base').value === 'order-value'"
+                        >
+                            <label
+                                fxFlexAlign="center"
+                                [fxFlex]="labelLength * 2 - 1"
+                                class="pr-0 form-label"
+                                [class.mat-error]="!isViewMode() && hasError(control.get('condition.value'))"
+                            >
+                                Qty >=
+                            </label>
+                    
+                            <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
+                                <input
+                                    matInput
+                                    name="value"
+                                    mask="separator.2"
+                                    thousandSeparator="."
+                                    prefix="Rp"
+                                    [formControl]="control.get('condition.value')"
+                                />
+                                <mat-error
+                                    *ngIf="hasError(control.get('condition.value'))"
+                                >
+                                    {{ getFormError(control.get('condition.value')) }}
+                                </mat-error>
+                            </mat-form-field>
+
+                            <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                                {{ (control.get('condition.valueView').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
+                            </span>
+                        </div>
+                        <!-- / ORDER VALUE (BASE) -->
                         <!-- BENEFIT -->
                         <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                             Benefit
@@ -174,13 +213,20 @@
                                     >* </span>Bonus SKU
                                 </label>
     
-                                <select-catalogues mode="single" [required]="true" [fxFlex]="formFieldLength * 2 - 1" (selected)="onCatalogueSelected($event, control.get('benefit.qty.bonusSku'))" *ngIf="!isViewMode()">
+                                <select-catalogues
+                                    mode="single"
+                                    [initialSelection]="chosenSku$ | async"
+                                    [required]="true"
+                                    [fxFlex]="formFieldLength * 2 - 1"
+                                    (selected)="onCatalogueSelected($event, control.get('benefit.qty.bonusSku'))"
+                                    *ngIf="!isViewMode()"
+                                >
                                     <div error>
                                         {{ getFormError(control.get('benefit.qty.bonusSku')) }}
                                     </div>
                                 </select-catalogues>
                                 <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                                    {{ control.get('benefit.qty.bonusSku').value || '-' }}
+                                    {{ control.get('benefit.qty.bonusSku').value.label || '-' }}
                                 </span>
                             </div>
                             <!-- / BONUS SKU -->
@@ -327,7 +373,7 @@
                                     </mat-error>
                                 </mat-form-field>
                                 <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                                    {{ control.get('benefit.percent.maxRebate').value || '-' }}
+                                    {{ (control.get('benefit.percent.maxRebate').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
                                 </span>
                             </div>
                             <!-- / MAX REBATE -->
@@ -345,30 +391,30 @@
                                     fxFlexAlign="center"
                                     [fxFlex]="labelLength * 2 - 1"
                                     class="pr-0 form-label"
-                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.percent.maxRebate'))"
+                                    [class.mat-error]="!isViewMode() && hasError(control.get('benefit.cash.rebate'))"
                                 >
                                     <span
                                         class="sinbad-red-fg"
-                                    >* </span>Max Rebate
+                                    >* </span>Rebate
                                 </label>
                         
                                 <mat-form-field appearance="outline" [fxFlex]="formFieldLength * 2 - 1" *ngIf="!isViewMode()">
                                     <input
                                         matInput
-                                        name="maxRebate"
+                                        name="rebate"
                                         mask="separator.2"
                                         thousandSeparator="."
                                         prefix="Rp"
-                                        [formControl]="control.get('benefit.percent.maxRebate')"
+                                        [formControl]="control.get('benefit.cash.rebate')"
                                     />
                                     <mat-error
-                                        *ngIf="hasError(control.get('benefit.percent.maxRebate'))"
+                                        *ngIf="hasError(control.get('benefit.cash.rebate'))"
                                     >
-                                        {{ getFormError(control.get('benefit.percent.maxRebate')) }}
+                                        {{ getFormError(control.get('benefit.cash.rebate')) }}
                                     </mat-error>
                                 </mat-form-field>
                                 <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
-                                    {{ control.get('benefit.percent.maxRebate').value || '-' }}
+                                    {{ (control.get('benefit.cash.rebate').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
                                 </span>
                             </div>
                             <!-- / REBATE -->
