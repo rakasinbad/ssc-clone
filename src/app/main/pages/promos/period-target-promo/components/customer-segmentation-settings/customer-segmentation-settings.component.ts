@@ -24,6 +24,7 @@ import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegme
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { SupplierStore } from 'app/shared/models/supplier.model';
+import { Selection } from 'app/shared/components/multiple-selection/models';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -46,6 +47,15 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk keperluan nilai awal pada multiple selection.
+    chosen$: Array<BehaviorSubject<Array<Selection>>> = [
+        new BehaviorSubject<Array<Selection>>([]), // untuk store
+        new BehaviorSubject<Array<Selection>>([]), // untuk warehouse
+        new BehaviorSubject<Array<Selection>>([]), // untuk store segmentation type
+        new BehaviorSubject<Array<Selection>>([]), // untuk store segmentation group
+        new BehaviorSubject<Array<Selection>>([]), // untuk store segmentation channel
+        new BehaviorSubject<Array<Selection>>([]), // untuk store segmentation cluster
+    ];
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
@@ -85,7 +95,7 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
     // Untuk styling form field di mode form yang berbeda.
     formClass: {
         'custom-field': boolean;
-        'view-field': boolean;
+        'view-field label-no-padding': boolean;
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
@@ -106,7 +116,7 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
         // Penetapan class pada form field berdasarkan mode form-nya.
         this.formClass = {
             'custom-field': !this.isViewMode(),
-            'view-field': this.isViewMode()
+            'view-field label-no-padding': this.isViewMode()
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
@@ -166,37 +176,78 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
 
                 return;
             } else {
-                // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                // if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                //     this.store.dispatch(
-                //         CatalogueActions.spliceCatalogue({
-                //             payload: catalogue.id
-                //         })
-                //     );
+                // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                if (periodTargetPromo.supplierId !== userSupplier.supplierId) {
+                    this.store.dispatch(
+                        PeriodTargetPromoActions.resetPeriodTargetPromo()
+                    );
 
-                //     this.notice$.open('Produk tidak ditemukan.', 'error', {
-                //         verticalPosition: 'bottom',
-                //         horizontalPosition: 'right'
-                //     });
+                    this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                //     setTimeout(() => this.router.navigate(['pages', 'catalogues', 'list']), 1000);
+                    setTimeout(() => this.router.navigate(['pages', 'promos', 'period-target-promo']), 1000);
 
-                //     return;
-                // }
+                    return;
+                }
             }
 
-            // this.form.patchValue({
-            //     sellerId,
-            //     name,
-            //     platform,
-            //     maxRedemptionPerBuyer,
-            //     budget,
-            //     activeStartDate,
-            //     activeEndDate,
-            //     imageSuggestion,
-            //     isAllowCombineWithVoucher,
-            //     isFirstBuy,
-            // });
+            this.form.patchValue({
+                segmentationBase: periodTargetPromo.target === 'store' ? 'direct-store' : periodTargetPromo.target,
+                chosenStore: periodTargetPromo.promoStores,
+                chosenWarehouse: periodTargetPromo.promoWarehouses,
+                chosenStoreType: periodTargetPromo.promoTypes,
+                chosenStoreGroup: periodTargetPromo.promoGroups,
+                chosenStoreChannel: periodTargetPromo.promoChannels,
+                chosenStoreCluster: periodTargetPromo.promoClusters,
+            });
+
+            if (periodTargetPromo.target === 'store') {
+                // STORE
+                this.chosen$[0].next(periodTargetPromo.promoStores.map(data => ({
+                    id: data.store.id,
+                    label: data.store.name,
+                    group: 'stores',
+                })));
+            } else if (periodTargetPromo.target === 'segmentation') {
+                // WAREHOUSE
+                this.chosen$[1].next(periodTargetPromo.promoWarehouses.map(data => ({
+                    id: data.warehouse.id,
+                    label: data.warehouse.name,
+                    group: 'warehouses',
+                })));
+                // STORE SEGMENTATION TYPE
+                this.chosen$[2].next(periodTargetPromo.promoTypes.map(data => ({
+                    id: data.type.id,
+                    label: data.type.name,
+                    group: 'store-segmentation-types',
+                })));
+                // STORE SEGMENTATION GROUP
+                this.chosen$[3].next(periodTargetPromo.promoGroups.map(data => ({
+                    id: data.group.id,
+                    label: data.group.name,
+                    group: 'store-segmentation-groups',
+                })));
+                // STORE SEGMENTATION CHANNEL
+                this.chosen$[4].next(periodTargetPromo.promoChannels.map(data => ({
+                    id: data.channel.id,
+                    label: data.channel.name,
+                    group: 'store-segmentation-channels',
+                })));
+                // STORE SEGMENTATION CLUSTER
+                this.chosen$[5].next(periodTargetPromo.promoClusters.map(data => ({
+                    id: data.cluster.id,
+                    label: data.cluster.name,
+                    group: 'store-segmentation-clusters',
+                })));
+            }
+
+            if (this.formMode === 'view') {
+                this.form.get('segmentationBase').disable({ onlySelf: true, emitEvent: false });
+            } else {
+                this.form.get('segmentationBase').enable({ onlySelf: true, emitEvent: false });
+            }
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
             this.form.markAsDirty({ onlySelf: false });
@@ -592,6 +643,11 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
 
         this.trigger$.next('');
         this.trigger$.complete();
+
+        this.chosen$.forEach(chosen => {
+            chosen.next([]);
+            chosen.complete();
+        });
 
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();

@@ -22,7 +22,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('segmentationBase'))"
                 >
                     <span
@@ -46,20 +46,30 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenStore'))"
                 >
                     Chosen Store<br/>({{ form.get('chosenStore').value?.length || '0' }} Selected)
                 </label>
 
-                <select-supplier-stores placeholder="Choose Store" [required]="false" [fxFlex]="formFieldLength" (selected)="onStoreSelected($event)">
+                <select-supplier-stores
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosen$[0] | async"
+                    placeholder="Choose Store"
+                    [required]="false"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onStoreSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('chosenStore')) }}
                     </div>
                 </select-supplier-stores>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('chosenStore').value || '-' }}
-                </span> -->
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let data of form.get('chosenStore').value">
+                        {{ (data?.store?.name | uppercase) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN STORE -->
             <!-- CHOSEN SEGMENTATION -->
@@ -77,13 +87,15 @@
                     <label
                         fxFlexAlign="center"
                         [fxFlex]="labelLength"
-                        class="pr-0"
+                        class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenWarehouse'))"
                     >
                         Warehouse<br/>({{ form.get('chosenWarehouse').value?.length || '0' }} Selected)
                     </label>
 
                     <select-warehouses
+                        *ngIf="!isViewMode()"
+                        [initialSelection]="chosen$[1] | async"
                         placeholder="Choose Warehouse"
                         [required]="false"
                         [fxFlex]="formFieldLength"
@@ -93,9 +105,12 @@
                             {{ getFormError(form.get('chosenWarehouse')) }}
                         </div>
                     </select-warehouses>
-                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                        {{ form.get('chosenStore').value || '-' }}
-                    </span> -->
+                    
+                    <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                        <span class="form-value" *ngFor="let data of form.get('chosenWarehouse').value">
+                            {{ (data?.warehouse?.name | uppercase) || '-' }}
+                        </span>
+                    </div>
                 </div>
                 <!-- / WAREHOUSE -->
                 <!-- STORE TYPE -->
@@ -107,7 +122,7 @@
                     <label
                         fxFlexAlign="center"
                         [fxFlex]="labelLength"
-                        class="pr-0"
+                        class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreType'))"
                     >
                         Store Type<br/>({{ form.get('chosenStoreType').value?.length || '0' }} Selected)
@@ -116,6 +131,8 @@
                     <select-store-segmentation
                         placeholder="Choose Store Type"
                         title="Select Store Type"
+                        *ngIf="!isViewMode()"
+                        [initialSelection]="chosen$[2] | async"
                         segmentationType="type"
                         [required]="false"
                         [fxFlex]="formFieldLength"
@@ -125,9 +142,12 @@
                             {{ getFormError(form.get('chosenStoreType')) }}
                         </div>
                     </select-store-segmentation>
-                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                        {{ form.get('chosenStore').value || '-' }}
-                    </span> -->
+                    
+                    <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                        <span class="form-value" *ngFor="let data of form.get('chosenStoreType').value">
+                            {{ (data?.types?.name | uppercase) || '-' }}
+                        </span>
+                    </div>
                 </div>
                 <!-- / STORE TYPE -->
                 <!-- STORE GROUP -->
@@ -139,7 +159,7 @@
                     <label
                         fxFlexAlign="center"
                         [fxFlex]="labelLength"
-                        class="pr-0"
+                        class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreGroup'))"
                     >
                         Store Group<br/>({{ form.get('chosenStoreGroup').value?.length || '0' }} Selected)
@@ -148,6 +168,8 @@
                     <select-store-segmentation
                         placeholder="Choose Store Group"
                         title="Select Store Group"
+                        *ngIf="!isViewMode()"
+                        [initialSelection]="chosen$[3] | async"
                         segmentationType="group"
                         [required]="false"
                         [fxFlex]="formFieldLength"
@@ -157,9 +179,12 @@
                             {{ getFormError(form.get('chosenStoreGroup')) }}
                         </div>
                     </select-store-segmentation>
-                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                        {{ form.get('chosenStore').value || '-' }}
-                    </span> -->
+                    
+                    <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                        <span class="form-value" *ngFor="let data of form.get('chosenStoreGroup').value">
+                            {{ (data?.groups?.name | uppercase) || '-' }}
+                        </span>
+                    </div>
                 </div>
                 <!-- / STORE GROUP -->
                 <!-- STORE CHANNEL -->
@@ -171,7 +196,7 @@
                     <label
                         fxFlexAlign="center"
                         [fxFlex]="labelLength"
-                        class="pr-0"
+                        class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreChannel'))"
                     >
                         Store Channel<br/>({{ form.get('chosenStoreChannel').value?.length || '0' }} Selected)
@@ -180,6 +205,8 @@
                     <select-store-segmentation
                         placeholder="Choose Store Channel"
                         title="Select Store Channel"
+                        *ngIf="!isViewMode()"
+                        [initialSelection]="chosen$[4] | async"
                         segmentationType="channel"
                         [required]="false"
                         [fxFlex]="formFieldLength"
@@ -189,9 +216,12 @@
                             {{ getFormError(form.get('chosenStoreChannel')) }}
                         </div>
                     </select-store-segmentation>
-                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                        {{ form.get('chosenStore').value || '-' }}
-                    </span> -->
+                    
+                    <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                        <span class="form-value" *ngFor="let data of form.get('chosenStoreChannel').value">
+                            {{ (data?.channels?.name | uppercase) || '-' }}
+                        </span>
+                    </div>
                 </div>
                 <!-- / STORE CHANNEL -->
                 <!-- STORE CLUSTER -->
@@ -203,7 +233,7 @@
                     <label
                         fxFlexAlign="center"
                         [fxFlex]="labelLength"
-                        class="pr-0"
+                        class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreCluster'))"
                     >
                         Store Cluster<br/>({{ form.get('chosenStoreCluster').value?.length || '0' }} Selected)
@@ -212,6 +242,8 @@
                     <select-store-segmentation
                         placeholder="Choose Store Cluster"
                         title="Select Store Cluster"
+                        *ngIf="!isViewMode()"
+                        [initialSelection]="chosen$[5] | async"
                         segmentationType="cluster"
                         [required]="false"
                         [fxFlex]="formFieldLength"
@@ -221,9 +253,12 @@
                             {{ getFormError(form.get('chosenStoreCluster')) }}
                         </div>
                     </select-store-segmentation>
-                    <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                        {{ form.get('chosenStore').value || '-' }}
-                    </span> -->
+                    
+                    <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                        <span class="form-value" *ngFor="let data of form.get('chosenStoreCluster').value">
+                            {{ (data?.clusters?.name | uppercase) || '-' }}
+                        </span>
+                    </div>
                 </div>
                 <!-- / STORE CLUSTER -->
             </div>
