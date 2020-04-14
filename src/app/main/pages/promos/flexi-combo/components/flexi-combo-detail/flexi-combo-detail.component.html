@@ -69,7 +69,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Trigger">
+                    <mat-tab label="Trigger" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-flexi-combo-detail-trigger></app-flexi-combo-detail-trigger>
@@ -77,7 +77,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Condition & Benefit">
+                    <mat-tab label="Condition & Benefit" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-flexi-combo-detail-cnb></app-flexi-combo-detail-cnb>
@@ -85,7 +85,7 @@
                         </ng-template>
                     </mat-tab>
 
-                    <mat-tab label="Customer Segmentation">
+                    <mat-tab label="Customer Segmentation" [disabled]="isLoading$ | async">
                         <ng-template matTabContent>
                             <div class="tab-content p-16" fusePerfectScrollbar>
                                 <app-flexi-combo-detail-customer></app-flexi-combo-detail-customer>

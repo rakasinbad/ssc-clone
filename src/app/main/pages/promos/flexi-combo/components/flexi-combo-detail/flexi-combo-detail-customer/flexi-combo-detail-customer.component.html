@@ -16,46 +16,125 @@
         </div>
 
         <div class="info" fxFlexAlign="center" fxFlex="100">
-            <mat-radio-group>
-                <mat-radio-button value="1">
-                    Direct Store
-                </mat-radio-button>
-
-                <mat-radio-button value="2">
-                    Segmentation
-                </mat-radio-button>
-            </mat-radio-group>
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.code || '-' }}
+            <ng-container *ngIf="segmentBase; else noSegmentBase">
+                <mat-radio-group [value]="(flexiCombo$ | async)?.target">
+                    <mat-radio-button *ngFor="let row of segmentBase" [value]="row?.id">
+                        {{ row?.label }}
+                    </mat-radio-button>
+                </mat-radio-group>
             </ng-container>
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
+            <ng-template #noSegmentBase>
+                -
+            </ng-template>
         </div>
     </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Store (0 Selected)
-        </div>
+    <ng-container [ngSwitch]="(flexiCombo$ | async)?.target">
+        <!-- Segmentation Base Direct Store -->
+        <ng-container *ngSwitchCase="eSegmentBase.STORE">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store<br />
+                    ({{ (flexiCombo$ | async)?.promoStores?.length }} Selected)
+                </div>
 
-        <div class="info" fxFlex="100">
-            DC Cibinbong
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
-            </ng-container>
+                <div class="info" fxFlex="90">
+                    {{ getStores((flexiCombo$ | async)?.promoStores) || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Segmentation Base Direct Store -->
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
+        <!-- Segmentation Base Segmentation -->
+        <ng-container *ngSwitchCase="eSegmentBase.SEGMENTATION">
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Warehouse<br />
+                    ({{ (flexiCombo$ | async)?.promoWarehouses?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getWarehouses((flexiCombo$ | async)?.promoWarehouses) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Type<br />
+                    ({{ (flexiCombo$ | async)?.promoTypes?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreTypes((flexiCombo$ | async)?.promoTypes) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Group<br />
+                    ({{ (flexiCombo$ | async)?.promoGroups?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreGroups((flexiCombo$ | async)?.promoGroups) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Channel<br />
+                    ({{ (flexiCombo$ | async)?.promoChannels?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreChannels((flexiCombo$ | async)?.promoChannels) || '-' }}
+                </div>
+            </div>
+
+            <div
+                class="custom-field info-field"
+                fxLayout="row"
+                fxLayoutAlign="start center"
+                fxLayoutGap="15px"
+            >
+                <div class="label" fxFlexAlign="start" fxFlex="10">
+                    Store Cluster<br />
+                    ({{ (flexiCombo$ | async)?.promoClusters?.length }} Selected)
+                </div>
+
+                <div class="info" fxFlex="90">
+                    {{ getStoreClusters((flexiCombo$ | async)?.promoClusters) || '-' }}
+                </div>
+            </div>
+        </ng-container>
+        <!-- ./ Segmentation Base Segmentation -->
+
+        <ng-container *ngSwitchDefault>-</ng-container>
+    </ng-container>
 </div>

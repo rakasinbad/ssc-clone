@@ -96,11 +96,82 @@ interface ICatalogue extends ITimestamp {
     violationTypeId: string;
 }
 
+interface IStore extends ITimestamp {
+    readonly id: NonNullable<string>;
+    address: string;
+    externalId: string;
+    imageUrl: string;
+    largeArea: string;
+    latitude: number;
+    longitude: number;
+    name: string;
+    noteAddress: string;
+    numberOfEmployee: string;
+    parentId: string;
+    phoneNo: string;
+    reason: string;
+    status: EStatus;
+    storeCode: string;
+    taxImageUrl: string;
+    taxNo: string;
+    urbanId: string;
+    vehicleAccessibilityId: string;
+}
+
+interface IStoreSegment extends ITimestamp {
+    readonly id: NonNullable<string>;
+    description: string;
+    externalId: string;
+    hasChild: boolean;
+    name: string;
+    parentId: string;
+    sequence: number;
+    status: EStatus;
+    supplierId: string;
+}
+
+interface IWarehouse extends ITimestamp {
+    readonly id: NonNullable<string>;
+    address: string;
+    code: string;
+    externalId: string;
+    latitude: number;
+    leadTime: number;
+    longitude: number;
+    name: string;
+    noteAddress: string;
+    status: EStatus;
+    supplierId: string;
+    urbanId: string;
+    warehouseTemperatureId: string;
+    warehouseValueId: string;
+}
+
 export interface IPromoBrand extends ITimestamp {
     readonly id: NonNullable<string>;
     brandId: string;
     promoId: string;
     brand: IBrand;
+}
+
+export interface IPromoCatalogue extends ITimestamp {
+    readonly id: NonNullable<string>;
+    catalogue: ICatalogue;
+    promoId: string;
+}
+
+export interface IPromoChannel extends ITimestamp {
+    readonly id: NonNullable<string>;
+    channel: IStoreSegment;
+    channelId: string;
+    promoId: string;
+}
+
+export interface IPromoCluster extends ITimestamp {
+    readonly id: NonNullable<string>;
+    cluster: IStoreSegment;
+    clusterId: string;
+    promoId: string;
 }
 
 export interface IPromoCondition extends ITimestamp {
@@ -118,10 +189,32 @@ export interface IPromoCondition extends ITimestamp {
     promoId: string;
 }
 
-export interface IPromoCatalogue extends ITimestamp {
+export interface IPromoGroup extends ITimestamp {
     readonly id: NonNullable<string>;
-    catalogue: ICatalogue;
+    group: IStoreSegment;
+    groupId: string;
     promoId: string;
+}
+
+export interface IPromoStore extends ITimestamp {
+    readonly id: NonNullable<string>;
+    promoId: string;
+    store: IStore;
+    storeId: string;
+}
+
+export interface IPromoType extends ITimestamp {
+    readonly id: NonNullable<string>;
+    promoId: string;
+    type: IStoreSegment;
+    typeId: string;
+}
+
+export interface IPromoWarehouse extends ITimestamp {
+    readonly id: NonNullable<string>;
+    promoId: string;
+    warehouse: IWarehouse;
+    warehouseId: string;
 }
 
 export class FlexiCombo implements ITimestamp {
@@ -143,8 +236,14 @@ export class FlexiCombo implements ITimestamp {
     promoBrands?: IPromoBrand[];
     promoBudget: number;
     promoCatalogues?: IPromoCatalogue[];
+    promoChannels?: IPromoChannel[];
+    promoClusters?: IPromoCluster[];
     promoConditions?: IPromoCondition[];
+    promoGroups?: IPromoGroup[];
     promoInvoiceGroups?: any[];
+    promoStores?: IPromoStore[];
+    promoTypes?: IPromoType[];
+    promoWarehouses?: IPromoWarehouse[];
     startDate: string;
     status: EStatus;
     supplierId: string;
@@ -175,8 +274,14 @@ export class FlexiCombo implements ITimestamp {
             promoBrands,
             promoBudget,
             promoCatalogues,
+            promoChannels,
+            promoClusters,
             promoConditions,
+            promoGroups,
             promoInvoiceGroups,
+            promoStores,
+            promoTypes,
+            promoWarehouses,
             startDate,
             status,
             supplierId,
@@ -230,10 +335,38 @@ export class FlexiCombo implements ITimestamp {
                     : [];
         }
 
+        /* Handle promoChannels */
+        if (typeof promoChannels !== 'undefined') {
+            this.promoChannels =
+                promoChannels &&
+                promoChannels.length > 0 &&
+                target === SegmentationBase.SEGMENTATION
+                    ? promoChannels
+                    : [];
+        }
+
+        /* Handle promoClusters */
+        if (typeof promoClusters !== 'undefined') {
+            this.promoClusters =
+                promoClusters &&
+                promoClusters.length > 0 &&
+                target === SegmentationBase.SEGMENTATION
+                    ? promoClusters
+                    : [];
+        }
+
         /* Handle promoConditions */
         if (typeof promoConditions !== 'undefined') {
             this.promoConditions =
                 promoConditions && promoConditions.length > 0 ? promoConditions : [];
+        }
+
+        /* Handle promoGroups */
+        if (typeof promoGroups !== 'undefined') {
+            this.promoGroups =
+                promoGroups && promoGroups.length > 0 && target === SegmentationBase.SEGMENTATION
+                    ? promoGroups
+                    : [];
         }
 
         /* Handle promoInvoiceGroups */
@@ -241,6 +374,32 @@ export class FlexiCombo implements ITimestamp {
             this.promoInvoiceGroups =
                 promoInvoiceGroups && promoInvoiceGroups.length > 0 && base === TriggerBase.INVOICE
                     ? promoInvoiceGroups
+                    : [];
+        }
+
+        /* Handle promoStores */
+        if (typeof promoStores !== 'undefined') {
+            this.promoStores =
+                promoStores && promoStores.length > 0 && target === SegmentationBase.STORE
+                    ? promoStores
+                    : [];
+        }
+
+        /* Handle promoTypes */
+        if (typeof promoTypes !== 'undefined') {
+            this.promoTypes =
+                promoTypes && promoTypes.length > 0 && target === SegmentationBase.SEGMENTATION
+                    ? promoTypes
+                    : [];
+        }
+
+        /* Handle promoWarehouses */
+        if (typeof promoWarehouses !== 'undefined') {
+            this.promoWarehouses =
+                promoWarehouses &&
+                promoWarehouses.length > 0 &&
+                target === SegmentationBase.SEGMENTATION
+                    ? promoWarehouses
                     : [];
         }
     }

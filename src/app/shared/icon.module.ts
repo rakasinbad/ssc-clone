@@ -11,7 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
  */
 @NgModule({
     declarations: [],
-    imports: [CommonModule]
+    imports: [CommonModule],
 })
 export class IconModule {
     /**
@@ -101,6 +101,12 @@ export class IconModule {
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/cross-red.svg')
         );
 
+        // Dashboard Logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-dashboard-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/dashboard.svg')
+        );
+
         // Finance logo - packed box
         this.matIconRegistry.addSvgIcon(
             'sinbad-finance-logo',
@@ -139,6 +145,12 @@ export class IconModule {
         this.matIconRegistry.addSvgIcon(
             'sinbad-pending',
             this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/pending.svg')
+        );
+
+        // Promo Logo - packed box
+        this.matIconRegistry.addSvgIcon(
+            'sinbad-promo-logo',
+            this.domSanitizer.bypassSecurityTrustResourceUrl('./assets/icons/sinbad/local_play.svg')
         );
 
         // Sales Force logo - packed box
