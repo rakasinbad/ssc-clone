@@ -2012,12 +2012,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     phoneNumber: [
                         '',
                         [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            }),
+                            // RxwebValidators.required({
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'required'
+                            //     )
+                            // }),
                             RxwebValidators.pattern({
                                 expression: {
                                     mobilePhone: /^08[0-9]{8,12}$/
@@ -2052,12 +2052,12 @@ export class MerchantFormComponent implements OnInit, AfterViewInit, OnDestroy {
                     npwpId: [
                         '',
                         [
-                            RxwebValidators.required({
-                                message: this._$errorMessage.getErrorMessageNonState(
-                                    'default',
-                                    'required'
-                                )
-                            }),
+                            // RxwebValidators.required({
+                            //     message: this._$errorMessage.getErrorMessageNonState(
+                            //         'default',
+                            //         'required'
+                            //     )
+                            // }),
                             RxwebValidators.minLength({
                                 value: 15,
                                 message: this._$errorMessage.getErrorMessageNonState(
