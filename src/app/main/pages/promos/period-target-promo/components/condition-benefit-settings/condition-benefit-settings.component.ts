@@ -22,6 +22,7 @@ import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
+import { Selection } from 'app/shared/components/multiple-selection/models';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -44,6 +45,8 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     private subs$: Subject<void> = new Subject<void>();
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
+    chosenSku$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(null);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
@@ -86,7 +89,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     // Untuk styling form field di mode form yang berbeda.
     formClass: {
         'custom-field': boolean;
-        'view-field': boolean;
+        'view-field label-no-padding': boolean;
     };
 
     // @ViewChild('imageSuggestionPicker', { static: false, read: ElementRef }) imageSuggestionPicker: ElementRef<HTMLInputElement>;
@@ -108,7 +111,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         // Penetapan class pada form field berdasarkan mode form-nya.
         this.formClass = {
             'custom-field': !this.isViewMode(),
-            'view-field': this.isViewMode()
+            'view-field label-no-padding': this.isViewMode()
         };
         // Penetapan class pada konten katalog berdasarkan mode form-nya.
         this.catalogueContent = {
@@ -136,6 +139,94 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
             this.updateFormView();
         });
+    }
+
+    private patchConditionBenefitForm(source: PeriodTargetPromo, index: number): void {
+        if (!this.form.get(['conditionBenefit', index])) {
+            this.addConditionBenefitForm();
+        }
+
+        let benefitType: string = source.promoConditions[index].benefitType;
+        let patchValue: any = {
+            condition: {
+                base: source.promoConditions[index].conditionBase === 'value' ? 'order-value' : source.promoConditions[index].conditionBase,
+                qty: source.promoConditions[index].conditionQty,
+                value: String(source.promoConditions[index].conditionValue).replace('.', ','),
+                valueView: source.promoConditions[index].conditionValue,
+            },
+        };
+
+        switch (benefitType) {
+            case 'qty':
+                const catalogue = source.promoConditions[index].catalogue;
+
+                this.chosenSku$.next({
+                    id: catalogue.id,
+                    label: catalogue.name,
+                    group: 'catalogues'
+                });
+
+                benefitType = 'qty';
+                patchValue = {
+                    ...patchValue,
+                    benefit: {
+                        ...patchValue.benefit,
+                        base: benefitType,
+                        qty: {
+                            bonusSku: {
+                                id: catalogue.id,
+                                label: catalogue.name,
+                                group: 'catalogues'
+                            },
+                            // applySameSku: 
+                            bonusQty: source.promoConditions[index].benefitBonusQty,
+                            multiplicationOnly: !!source.promoConditions[index].multiplication,
+                        }
+                    }
+                };
+                break;
+            case 'amount':
+                benefitType = 'cash';
+                patchValue = {
+                    ...patchValue,
+                    benefit: {
+                        ...patchValue.benefit,
+                        base: benefitType,
+                        cash: {
+                            rebate: source.promoConditions[index].benefitRebate,
+                        }
+                    }
+                };
+                break;
+            case 'percent':
+                benefitType = 'percent';
+                patchValue = {
+                    ...patchValue,
+                    benefit: {
+                        ...patchValue.benefit,
+                        base: benefitType,
+                        percent: {
+                            percentDiscount: source.promoConditions[index].benefitDiscount,
+                            maxRebate: source.promoConditions[index].benefitMaxRebate,
+                        }
+                    }
+                };
+                break;
+        }
+
+        this.form.get(['conditionBenefit', index]).patchValue(patchValue);
+
+        if (this.isViewMode()) {
+            this.form.get(['conditionBenefit', index, 'condition', 'base']).disable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'base']).disable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'applySameSku']).disable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'multiplicationOnly']).disable({ onlySelf: true, emitEvent: false });
+        } else {
+            this.form.get(['conditionBenefit', index, 'condition', 'base']).enable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'base']).enable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'applySameSku']).enable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'multiplicationOnly']).enable({ onlySelf: true, emitEvent: false });
+        }
     }
 
     private prepareEdit(): void {
@@ -168,37 +259,37 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
                 return;
             } else {
-                // Harus keluar dari halaman form jika katalog yang diproses bukan milik supplier tersebut.
-                // if ((catalogue.brand as any).supplierId !== userSupplier.supplierId) {
-                //     this.store.dispatch(
-                //         CatalogueActions.spliceCatalogue({
-                //             payload: catalogue.id
-                //         })
-                //     );
+                // Harus keluar dari halaman form jika promo yang diproses bukan milik supplier tersebut.
+                if (periodTargetPromo.supplierId !== userSupplier.supplierId) {
+                    this.store.dispatch(
+                        PeriodTargetPromoActions.resetPeriodTargetPromo()
+                    );
 
-                //     this.notice$.open('Produk tidak ditemukan.', 'error', {
-                //         verticalPosition: 'bottom',
-                //         horizontalPosition: 'right'
-                //     });
+                    this.notice$.open('Promo tidak ditemukan.', 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right'
+                    });
 
-                //     setTimeout(() => this.router.navigate(['pages', 'catalogues', 'list']), 1000);
+                    setTimeout(() => this.router.navigate(['pages', 'promos', 'period-target-promo']), 1000);
 
-                //     return;
-                // }
+                    return;
+                }
             }
 
-            // this.form.patchValue({
-            //     sellerId,
-            //     name,
-            //     platform,
-            //     maxRedemptionPerBuyer,
-            //     budget,
-            //     activeStartDate,
-            //     activeEndDate,
-            //     imageSuggestion,
-            //     isAllowCombineWithVoucher,
-            //     isFirstBuy,
-            // });
+            this.form.patchValue({
+                id: periodTargetPromo.id,
+                calculationMechanism: periodTargetPromo.isComulative ? 'cummulative' : 'non-cummulative',
+            });
+
+            if (this.isViewMode()) {
+                this.form.get('calculationMechanism').disable({ onlySelf: true, emitEvent: false });
+            } else {
+                this.form.get('calculationMechanism').enable({ onlySelf: true, emitEvent: false });
+            }
+
+            for (const [idx, _] of periodTargetPromo.promoConditions.entries()) {
+                this.patchConditionBenefitForm(periodTargetPromo, idx);
+            }
 
             /** Melakukan trigger pada form agar mengeluarkan pesan error jika belum ada yang terisi pada nilai wajibnya. */
             this.form.markAsDirty({ onlySelf: false });
@@ -333,6 +424,8 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                 condition: this.fb.group({
                     base: ['qty'],
                     qty: [],
+                    value: [],
+                    valueView: [],
                 }),
                 benefit: this.fb.group({
                     base: ['qty'],
@@ -596,6 +689,9 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
         this.trigger$.next('');
         this.trigger$.complete();
+
+        this.chosenSku$.next(null);
+        this.chosenSku$.complete();
 
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();

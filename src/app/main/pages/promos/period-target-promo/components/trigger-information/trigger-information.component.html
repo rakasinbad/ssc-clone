@@ -22,7 +22,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
                     Base
@@ -45,7 +45,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
                 >
                     <span
@@ -66,7 +66,7 @@
                 </select-catalogues>
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    <span class="grey-fg" *ngFor="let sku of form.get('chosenSku').value">
+                    <span class="form-value" *ngFor="let sku of form.get('chosenSku').value">
                         {{ (sku?.catalogue?.name | uppercase) || '-' }}
                     </span>
                 </div>
@@ -82,7 +82,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
                 >
                     <span
@@ -103,7 +103,7 @@
                 </select-brands>
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    <span class="grey-fg" *ngFor="let brand of form.get('chosenBrand').value">
+                    <span class="form-value" *ngFor="let brand of form.get('chosenBrand').value">
                         {{ (brand?.brand?.name) || '-' }}
                     </span>
                 </div>
@@ -119,7 +119,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
                 >
                     <span
@@ -140,7 +140,7 @@
                 </select-faktur>
 
                 <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
-                    <span class="grey-fg" *ngFor="let faktur of form.get('chosenFaktur').value">
+                    <span class="form-value" *ngFor="let faktur of form.get('chosenFaktur').value">
                         {{ (faktur?.invoieGroup?.name) || '-' }}
                     </span>
                 </div>

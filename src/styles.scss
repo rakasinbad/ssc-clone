@@ -3,6 +3,8 @@
 
 @import '@sinbad/scss/core';
 
+@import 'src/@sinbad/scss/helper';
+
 @import 'app/app.theme';
 
 // Import app.theme.scss
@@ -613,6 +615,30 @@ mat-header-row {
 }
 
 .view-field {
+    .form-label {
+        font-weight: normal !important;
+        font-size: 14px !important;
+        color: sinbad-color('black', '80') !important;
+    }
+
+    span.form-value {
+        font-weight: normal !important;
+        font-size: 14px !important;
+        color: rgba(37, 40, 43, 0.5);
+    }
+    
+    &.label-no-padding {
+        label {
+            font-weight: 600;
+            position: relative;
+            padding-right: 0 !important;
+            // top: -0.78em;
+            // text-align: right;
+            // padding-right: 2em;
+            // padding-right: 10px;
+        }
+    }
+
     label {
         font-weight: 600;
         position: relative;

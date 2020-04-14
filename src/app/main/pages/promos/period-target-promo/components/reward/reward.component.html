@@ -24,7 +24,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('rewardValidDate.activeStartDate'))"
                 >
                     <span
@@ -60,8 +60,9 @@
                         {{ getFormError(form.get('rewardValidDate.activeStartDate')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('rewardValidDate.activeStartDate').value || '-' }}
+
+                <span class="form-value" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('rewardValidDate.activeStartDate').value | date:'dd/MM/yyyy HH:mm') || '-' }}
                 </span>
             </div>
             <!-- / ACTIVE START DATE -->
@@ -75,7 +76,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('rewardValidDate.activeEndDate'))"
                 >
                     <span
@@ -111,8 +112,9 @@
                         {{ getFormError(form.get('rewardValidDate.activeEndDate')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('rewardValidDate.activeEndDate').value || '-' }}
+
+                <span class="form-value" fxFlexAlign="center" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    {{ (form.get('rewardValidDate.activeEndDate').value | date:'dd/MM/yyyy HH:mm') || '-' }}
                 </span>
             </div>
             <!-- / ACTIVE END DATE -->
@@ -127,7 +129,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('trigger.base'))"
                 >
                     Base
@@ -151,7 +153,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('trigger.chosenSku'))"
                 >
                     <span
@@ -159,14 +161,23 @@
                     >* </span>Chosen SKU<br/>({{ form.get('trigger.chosenSku').value?.length || '0' }} Selected)
                 </label>
 
-                <select-catalogues [required]="true" [fxFlex]="formFieldLength" (selected)="onCatalogueSelected($event)">
+                <select-catalogues
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosenSku$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onCatalogueSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('trigger.chosenSku')) }}
                     </div>
                 </select-catalogues>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('trigger.chosenSku').value || '-' }}
-                </span> -->
+
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let sku of form.get('trigger.chosenSku').value">
+                        {{ (sku?.catalogue?.name | uppercase) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN SKU -->
             <!-- CHOSEN BRAND -->
@@ -179,7 +190,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('trigger.chosenBrand'))"
                 >
                     <span
@@ -187,14 +198,23 @@
                     >* </span>Chosen Brand<br/>({{ form.get('trigger.chosenBrand').value?.length || '0' }} Selected)
                 </label>
 
-                <select-brands [required]="true" [fxFlex]="formFieldLength" (selected)="onBrandSelected($event)">
+                <select-brands
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosenBrand$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onBrandSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('trigger.chosenBrand')) }}
                     </div>
                 </select-brands>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('trigger.chosenBrand').value || '-' }}
-                </span> -->
+                
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let data of form.get('trigger.chosenBrand').value">
+                        {{ (data?.brand?.name | uppercase) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN BRAND -->
             <!-- CHOSEN FAKTUR -->
@@ -207,7 +227,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('trigger.chosenFaktur'))"
                 >
                     <span
@@ -215,14 +235,23 @@
                     >* </span>Chosen Faktur<br/>({{ form.get('trigger.chosenFaktur').value?.length || '0' }} Selected)
                 </label>
 
-                <select-faktur [required]="true" [fxFlex]="formFieldLength" (selected)="onFakturSelected($event)">
+                <select-faktur
+                    *ngIf="!isViewMode()"
+                    [initialSelection]="chosenFaktur$ | async"
+                    [required]="true"
+                    [fxFlex]="formFieldLength"
+                    (selected)="onFakturSelected($event)"
+                >
                     <div error>
                         {{ getFormError(form.get('trigger.chosenFaktur')) }}
                     </div>
                 </select-faktur>
-                <!-- <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
-                    {{ form.get('trigger.chosenFaktur').value || '-' }}
-                </span> -->
+                
+                <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
+                    <span class="form-value" *ngFor="let data of form.get('trigger.chosenFaktur').value">
+                        {{ (data?.invoiceGroup?.name | uppercase) || '-' }}
+                    </span>
+                </div>
             </div>
             <!-- / CHOSEN FAKTUR -->
             <p class="font-weight-600 font-size-20 mb-28">Condition</p>
@@ -236,7 +265,7 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('condition.base'))"
                 >
                     Base
@@ -258,13 +287,13 @@
                 <label
                     fxFlexAlign="center"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('condition.qty'))"
                 >
                     {{ form.get('condition.base').value === 'qty' ? 'Qty' : 'Order Value' }} >=
                 </label>
-        
-                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode()">
+                <!-- CONDITION (BASE) = QTY -->
+                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode() && form.get('condition.base').value === 'qty'">
                     <input
                         matInput
                         name="qty"
@@ -277,9 +306,32 @@
                         {{ getFormError(form.get('condition.qty')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode() && form.get('condition.base').value === 'qty'">
                     {{ form.get('condition.qty').value || '-' }}
                 </span>
+                <!-- / CONDITION (BASE) = QTY -->
+                <!-- CONDITION (BASE) = ORDER VALUE -->
+                <mat-form-field appearance="outline" [fxFlex]="formFieldLength" *ngIf="!isViewMode() && form.get('condition.base').value === 'order-value'">
+                    <input
+                        matInput
+                        name="value"
+                        [formControl]="form.get('condition.value')"
+                        mask="separator.2"
+                        thousandSeparator="."
+                        prefix="Rp"
+                    />
+                    <mat-error
+                        *ngIf="hasError(form.get('condition.value'))"
+                    >
+                        {{ getFormError(form.get('condition.value')) }}
+                    </mat-error>
+                </mat-form-field>
+
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode() && form.get('condition.base').value === 'order-value'">
+                    {{ (form.get('condition.valueView').value | price: 'full':'IDR':'narrow':'1.0-2') || '-' }}
+                </span>
+                <!-- / CONDITION (BASE) = ORDER VALUE -->
             </div>
             <!-- / QTY (BASE) -->
             <p class="font-weight-600 font-size-20">Miscellaneous</p>
@@ -293,7 +345,7 @@
                 <label
                     fxFlexAlign="start"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('miscellaneous.description'))"
                     [class.mt-20]="!isViewMode()"
                 >
@@ -313,7 +365,7 @@
                         {{ getFormError(form.get('miscellaneous.description')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="grey-fg" fxFlex="80" *ngIf="isViewMode()">
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     {{ form.get('miscellaneous.description').value || '-' }}
                 </span>
             </div>
@@ -326,9 +378,9 @@
                 formGroupName="miscellaneous"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                     [fxFlex]="labelLength"
-                    class="pr-0"
+                    class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('miscellaneous.couponImage'))"
                 >
                     Coupon Image
@@ -372,9 +424,14 @@
                         <!-- / ERROR MESSAGE HINT -->
                     </mat-form-field>
 
-                    <span class="grey-fg" fxFlex *ngIf="isViewMode()">
-                        {{ form.get('miscellaneous.couponImage').value || '-' }}
+                    <span class="form-value" fxFlexAlign="center" fxFlex *ngIf="isViewMode() && !form.get('miscellaneous.couponImage').value; else hasImage;">
+                        -
                     </span>
+                    <ng-template #hasImage>
+                        <div *ngIf="isViewMode() && form.get('miscellaneous.couponImage').value" class="img-container">
+                            <img class="fit-image" [src]="form.get('miscellaneous.couponImage').value"/>
+                        </div>
+                    </ng-template>
                     <!-- FORM FIELD -->
                     <!-- UPLOAD BUTTON -->
                     <button
