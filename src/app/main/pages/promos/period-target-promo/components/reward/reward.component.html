@@ -307,7 +307,7 @@
                     </mat-error>
                 </mat-form-field>
 
-                <span class="form-value" fxFlex="80" *ngIf="isViewMode() && form.get('condition.base').value === 'qty'">
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode() && form.get('condition.base').value === 'qty'">
                     {{ form.get('condition.qty').value || '-' }}
                 </span>
                 <!-- / CONDITION (BASE) = QTY -->
@@ -365,7 +365,7 @@
                         {{ getFormError(form.get('miscellaneous.description')) }}
                     </mat-error>
                 </mat-form-field>
-                <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
+                <span class="form-value" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                     {{ form.get('miscellaneous.description').value || '-' }}
                 </span>
             </div>
