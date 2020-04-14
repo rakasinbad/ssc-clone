@@ -1,8 +1,11 @@
 import { Timestamp } from 'app/shared/models/timestamp.model';
 import { TNullable } from 'app/shared/models/global.model';
-import { Catalogue } from 'app/main/pages/catalogues/models';
+import { Catalogue, StoreSegmentationGroup, StoreSegmentationChannel, StoreSegmentationCluster } from 'app/main/pages/catalogues/models';
 import { Brand } from 'app/shared/models/brand.model';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
+import { Store } from 'app/shared/models/store.model';
+import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
+import { StoreSegmentationType } from 'app/shared/components/selection-tree/store-segmentation/models';
 
 type PromoStatus = 'active' | 'inactive';
 
@@ -73,12 +76,12 @@ export class PeriodTargetPromo implements IPeriodTargetPromo {
     // TODO: Under development because need more in-depth structure.
     promoConditions?: Array<any>;
     storeTargetCoupons?: Array<any>;
-    promoStores?: Array<any>;
-    promoWarehouses?: Array<any>;
-    promoTypes?: Array<any>;
-    promoGroups?: Array<any>;
-    promoClusters?: Array<any>;
-    promoChannels?: Array<any>;
+    promoStores?: Array<{ store: Store }>;
+    promoWarehouses?: Array<{ warehouse: Warehouse }>;
+    promoTypes?: Array<{ type: StoreSegmentationType }>;
+    promoGroups?: Array<{ group: StoreSegmentationGroup }>;
+    promoClusters?: Array<{ cluster: StoreSegmentationCluster }>;
+    promoChannels?: Array<{ channel: StoreSegmentationChannel }>;
     promoCatalogues?: Array<{ catalogue: Catalogue }>;
     promoBrands?: Array<{ brand: Brand }>;
     promoInvoiceGroups?: Array<{ invoiceGroup: InvoiceGroup }>;
