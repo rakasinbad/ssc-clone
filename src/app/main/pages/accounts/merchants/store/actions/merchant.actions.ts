@@ -1,6 +1,6 @@
 import { Update } from '@ngrx/entity';
 import { createAction, props } from '@ngrx/store';
-import { IErrorHandler, IQueryParams, SupplierStore, TStatus, User } from 'app/shared/models';
+import { IErrorHandler, IQueryParams, SupplierStore, TStatus, User, Supplier } from 'app/shared/models';
 
 import { Store as Merchant, UserStore } from '../../models';
 
@@ -528,6 +528,12 @@ export const resetGoPage = createAction('[Accounts Page] Reset Go Page State');
 // -----------------------------------------------------------------------------------------------------
 // Helper Actions
 // -----------------------------------------------------------------------------------------------------
+
+export const selectSupplierStore = createAction('[Stores Page] Select Supplier Store',
+    props<{ payload: SupplierStore }>()
+);
+
+export const deselectSupplierStore = createAction('[Stores Page] Deselect Supplier Store');
 
 export const setEditLocation = createAction('[Edit Location] Set Edit Location');
 

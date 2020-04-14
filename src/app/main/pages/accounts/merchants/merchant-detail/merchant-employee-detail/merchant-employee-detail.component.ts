@@ -16,12 +16,12 @@ import { Store } from '@ngrx/store';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { NoticeService } from 'app/shared/helpers';
-import { IQueryParams, LifecyclePlatform, Role } from 'app/shared/models';
+import { IQueryParams, LifecyclePlatform, Role, SupplierStore } from 'app/shared/models';
 import { UiActions } from 'app/shared/store/actions';
 import { UiSelectors } from 'app/shared/store/selectors';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
-import { merge, Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 import { locale as english } from '../../i18n/en';
@@ -54,6 +54,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
     selectedRowIndex$: Observable<string>;
     totalDataSource$: Observable<number>;
     isLoading$: Observable<boolean>;
+    selectedSupplierStore$: BehaviorSubject<SupplierStore> = new BehaviorSubject<SupplierStore>(null);
 
     @ViewChild(MatPaginator, { static: true })
     paginator: MatPaginator;
@@ -234,6 +235,12 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
                 break;
 
             default:
+                this.store.select(
+                    StoreSelectors.getSelectedSupplierStore
+                ).pipe(
+                    takeUntil(this._unSubs$)
+                ).subscribe(value => this.selectedSupplierStore$.next(value));
+                
                 this.paginator.pageSize = this.defaultPageSize;
                 this.sort.sort({
                     id: 'id',
@@ -253,7 +260,7 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
                 this.selectedRowIndex$ = this.store.select(UiSelectors.getSelectedRowIndex);
                 this.isLoading$ = this.store.select(StoreSelectors.getIsLoading);
 
-                this._initTable();
+                setTimeout(() => this._initTable());
 
                 this.store
                     .select(StoreSelectors.getIsRefresh)
@@ -285,11 +292,11 @@ export class MerchantEmployeeDetailComponent implements OnInit, AfterViewInit, O
             data['sortBy'] = this.sort.active;
         }
 
-        const { id } = this.route.parent.snapshot.params;
+        const { storeId } = this.selectedSupplierStore$.value;
 
         this.store.dispatch(
             StoreActions.fetchStoreEmployeesRequest({
-                payload: { params: data, storeId: id }
+                payload: { params: data, storeId }
             })
         );
     }

@@ -39,6 +39,7 @@ export interface State {
     source: TSource;
     stores: StoreState;
     store?: Merchant;
+    selectedSupplierStore: SupplierStore;
     employees: StoreEmployeeState;
     settings: StoreSettingState;
     employee?: User;
@@ -70,6 +71,7 @@ const adapterStore = createEntityAdapter<SupplierStore>({
 const initialStoreState = adapterStore.getInitialState({
     isEditLocation: false,
     selectedStoreId: null,
+    selectedSupplierStore: null,
     total: 0
 });
 
@@ -98,6 +100,7 @@ export const initialState: State = {
     stores: initialStoreState,
     employees: initialStoreEmployeeState,
     settings: initialStoreSettingState,
+    selectedSupplierStore: null,
     // brandStore: undefined,
     // brandStores: initialBrandStoreState,
     // employee: undefined,
@@ -408,6 +411,14 @@ const brandStoreReducer = createReducer(
         employees: initialState.employees,
         // employees: { ...state.employees, selectedEmployeeId: null },
         errors: adapterError.removeOne('fetchStoreEmployeeFailure', state.errors)
+    })),
+    on(StoreActions.selectSupplierStore, (state, { payload }) => ({
+        ...state,
+        selectedSupplierStore: payload,
+    })),
+    on(StoreActions.deselectSupplierStore, (state) => ({
+        ...state,
+        selectedSupplierStore: null,
     })),
     on(StoreActions.resetGoPage, state => ({
         ...state,
