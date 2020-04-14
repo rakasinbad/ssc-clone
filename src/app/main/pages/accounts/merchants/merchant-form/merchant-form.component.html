@@ -205,7 +205,7 @@
                                         <mat-radio-button value="manual">Manually</mat-radio-button>
                                         <mat-radio-button
                                             value="auto"
-                                            [disabled]="!storeIdNextNumber"
+                                            [disabled]="!storeIdNextNumber || isEditMode"
                                         >
                                             Auto Generate
                                             <span class="grey-fg">
