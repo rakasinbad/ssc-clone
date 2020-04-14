@@ -102,7 +102,21 @@
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
             <p class="text-word-break-break-word">
-                {{ row?.base || '-' }}
+                <ng-container [ngSwitch]="row?.base">
+                    <ng-container *ngSwitchCase="eTriggerBase.SKU">
+                        Sku
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="eTriggerBase.BRAND">
+                        Brand
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
+                        Invoice Group
+                    </ng-container>
+
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
             </p>
         </mat-cell>
     </ng-container>

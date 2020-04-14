@@ -15,6 +15,7 @@
             name="flexiComboForm"
             class="merchant w-100-p"
             [formGroup]="form"
+            autocomplete="off"
             fxLayout="column"
             fxFlex
             novalidate
@@ -41,7 +42,12 @@
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoId" formControlName="promoId" />
+                                <input
+                                    matInput
+                                    name="promoId"
+                                    formControlName="promoId"
+                                    autocapitalize="characters"
+                                />
 
                                 <mat-error *ngIf="hasError('promoId', true)">
                                     {{ getErrorMessage('promoId') }}
@@ -60,11 +66,17 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('promoName')"
                             >
-                                *Promo Name
+                                <span class="sinbad-red-fg">*</span>
+                                Promo Name
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
-                                <input matInput name="promoName" formControlName="promoName" />
+                                <input
+                                    matInput
+                                    name="promoName"
+                                    formControlName="promoName"
+                                    autocapitalize="words"
+                                />
 
                                 <mat-error *ngIf="hasError('promoName', true)">
                                     {{ getErrorMessage('promoName') }}
@@ -83,7 +95,8 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('platform')"
                             >
-                                *Platform
+                                <span class="sinbad-red-fg">*</span>
+                                Platform
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
@@ -125,13 +138,14 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('maxRedemption')"
                             >
-                                *Max Redemption per User
+                                Max Redemption<br />per Buyer
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input
                                     matInput
                                     name="maxRedemption"
+                                    mask="0*"
                                     formControlName="maxRedemption"
                                 />
 
@@ -183,14 +197,18 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('startDate')"
                             >
-                                *Active From
+                                <span class="sinbad-red-fg">*</span>
+                                Active From
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input
                                     matInput
                                     [matDatetimepicker]="startDatePicker"
-                                    autocomplete="false"
+                                    [max]="maxStartDate"
+                                    [min]="minStartDate"
+                                    (dateChange)="onChangeStartDate($event)"
+                                    autocomplete="off"
                                     name="startDate"
                                     formControlName="startDate"
                                 />
@@ -223,14 +241,18 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('endDate')"
                             >
-                                *To
+                                <span class="sinbad-red-fg">*</span>
+                                To
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50">
                                 <input
                                     matInput
                                     [matDatetimepicker]="endDatePicker"
-                                    autocomplete="false"
+                                    [max]="maxEndDate"
+                                    [min]="minEndDate"
+                                    (dateChange)="onChangeEndDate($event)"
+                                    autocomplete="off"
                                     name="endDate"
                                     formControlName="endDate"
                                 />
@@ -268,7 +290,7 @@
                                 <mat-icon
                                     class="active-icon s-14 ml-8 cursor-pointer"
                                     color="accent"
-                                    matTooltip="Limited: Admin can set and manage stock level in Sinbad Seller Center&#10;Unlimited: Admin can not set and manage&#10;stock level in Sinbad Seller Center"
+                                    matTooltip="Image Suggestion"
                                     matTooltipClass="tooltip-br"
                                 >
                                     help
@@ -395,7 +417,8 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('base')"
                             >
-                                *Base
+                                <span class="sinbad-red-fg">*</span>
+                                Base
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50" class="form-info">
@@ -450,8 +473,9 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('chosenSku')"
                             >
-                                *Chosen SKU<br />({{ form.get('chosenSku').value?.length || 0 }}
-                                Selected)
+                                <span class="sinbad-red-fg">*</span>
+                                Chosen SKU<br />
+                                ({{ form.get('chosenSku').value?.length || 0 }} Selected)
                             </label>
 
                             <select-catalogues
@@ -562,17 +586,19 @@
                                             </mat-icon>
                                         </span>
 
+                                        <!-- START FIELD TIER CONDITION BASE -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="12">
+                                            <label fxFlexAlign="center" fxFlex="16" fxFill>
+                                                <span class="sinbad-red-fg">*</span>
                                                 Base
                                             </label>
 
-                                            <div fxFlexAlign="center" fxFlex="50">
+                                            <div fxFlexAlign="center" fxFlex="50" fxFill>
                                                 <ng-container
                                                     *ngIf="conditionBase; else noConditionBase"
                                                 >
@@ -591,27 +617,100 @@
                                                 <ng-template #noConditionBase>
                                                     -
                                                 </ng-template>
+
+                                                <mat-hint
+                                                    class="mat-error"
+                                                    *ngIf="
+                                                        hasError(
+                                                            [
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'conditionBase'
+                                                            ],
+                                                            true
+                                                        )
+                                                    "
+                                                >
+                                                    {{
+                                                        getErrorMessage(
+                                                            'conditionBase',
+                                                            'conditions',
+                                                            conditionIdx
+                                                        )
+                                                    }}
+                                                </mat-hint>
                                             </div>
                                         </div>
+                                        <!-- ./ FIELD TIER CONDITION BASE -->
 
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label fxFlexAlign="center" fxFlex="12">
-                                                Qty >=
-                                            </label>
+                                        <!-- SWITCH CASE LAYOUT CONDITION VALUE -->
+                                        <ng-container [ngSwitch]="getConditionBase(conditionIdx)">
+                                            <ng-container *ngSwitchCase="eConditionBase.QTY">
+                                                <!-- START FIELD TIER CONDITION VALUE (QTY) -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label fxFlexAlign="center" fxFlex="16">
+                                                        <span class="sinbad-red-fg">*</span>
+                                                        Qty >=
+                                                    </label>
 
-                                            <mat-form-field appearance="outline" fxFlex="50">
-                                                <input matInput formControlName="conditionQty" />
+                                                    <mat-form-field
+                                                        appearance="outline"
+                                                        fxFlex="60"
+                                                    >
+                                                        <input
+                                                            matInput
+                                                            [attr.name]="
+                                                                'conditionQty' + conditionIdx
+                                                            "
+                                                            mask="0*"
+                                                            formControlName="conditionQty"
+                                                        />
 
-                                                <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
                                             {{ getErrorMessage('promoBudget') }}
                                         </mat-error> -->
-                                            </mat-form-field>
-                                        </div>
+                                                    </mat-form-field>
+                                                </div>
+                                                <!-- ./ FIELD TIER CONDITION VALUE (QTY) -->
+                                            </ng-container>
+                                            <ng-container
+                                                *ngSwitchCase="eConditionBase.ORDER_VALUE"
+                                            >
+                                                <!-- START FIELD TIER CONDITION VALUE (ORDER VALUE) -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label fxFlexAlign="center" fxFlex="16">
+                                                        <span class="sinbad-red-fg">*</span>
+                                                        Order Value >=
+                                                    </label>
+
+                                                    <mat-form-field
+                                                        appearance="outline"
+                                                        fxFlex="60"
+                                                    >
+                                                        <input
+                                                            matInput
+                                                            formControlName="conditionValue"
+                                                        />
+
+                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                            {{ getErrorMessage('promoBudget') }}
+                                        </mat-error> -->
+                                                    </mat-form-field>
+                                                </div>
+                                                <!-- ./ FIELD TIER CONDITION VALUE (ORDER VALUE) -->
+                                            </ng-container>
+                                        </ng-container>
+                                        <!-- ./ SWITCH CASE LAYOUT CONDITION VALUE -->
 
                                         <span class="field-title">
                                             Benefit
@@ -626,17 +725,18 @@
                                             </mat-icon>
                                         </span>
 
+                                        <!-- START FIELD TIER BENEFIT TYPE -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="12">
+                                            <label fxFlexAlign="center" fxFlex="16" fxFill>
                                                 Benefit Type
                                             </label>
 
-                                            <div fxFlexAlign="center" fxFlex="50">
+                                            <div fxFlexAlign="center" fxFlex="60" fxFill>
                                                 <ng-container
                                                     *ngIf="benefitType; else noBenefitType"
                                                 >
@@ -653,24 +753,59 @@
                                                 <ng-template #noBenefitType>
                                                     -
                                                 </ng-template>
+
+                                                <mat-hint
+                                                    class="mat-error"
+                                                    *ngIf="
+                                                        hasError(
+                                                            [
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitType'
+                                                            ],
+                                                            true
+                                                        )
+                                                    "
+                                                >
+                                                    {{
+                                                        getErrorMessage(
+                                                            'benefitType',
+                                                            'conditions',
+                                                            conditionIdx
+                                                        )
+                                                    }}
+                                                </mat-hint>
                                             </div>
                                         </div>
+                                        <!-- ./ FIELD TIER BENEFIT TYPE -->
 
+                                        <!-- START FIELD TIER BONUS SKU -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="12">
-                                                *Bonus SKU
+                                            <label
+                                                fxFlexAlign="center"
+                                                fxFlex="16"
+                                                [class.sinbad-red-fg]="
+                                                    hasError([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'benefitBonusQty'
+                                                    ])
+                                                "
+                                            >
+                                                <span class="sinbad-red-fg">*</span>
+                                                Bonus SKU
                                             </label>
 
                                             <select-catalogues
                                                 mode="single"
                                                 [required]="true"
                                                 (selected)="onSkuSelected($event)"
-                                                fxFlex="50"
+                                                fxFlex="60"
                                             >
                                                 <div error>
                                                     {{
@@ -683,20 +818,24 @@
                                                 </div>
                                             </select-catalogues>
                                         </div>
+                                        <!-- ./ FIELD TIER BONUS SKU -->
 
+                                        <!-- START FIELD TIER APPLY SAME SKU -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="12"></label>
+                                            <label fxFlexAlign="center" fxFlex="16"></label>
 
-                                            <div fxFlexAlign="center" fxFlex="50">
+                                            <div fxFlexAlign="center" fxFlex="60">
                                                 <mat-checkbox>Apply Same SKU</mat-checkbox>
                                             </div>
                                         </div>
+                                        <!-- ./ FIELD TIER APPLY SAME SKU -->
 
+                                        <!-- START FIELD TIER BONUS QTY -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
@@ -705,13 +844,13 @@
                                         >
                                             <label
                                                 fxFlexAlign="center"
-                                                fxFlex="12"
+                                                fxFlex="16"
                                                 [class.sinbad-red-fg]="hasError('promoBudget')"
                                             >
                                                 Bonus Qty
                                             </label>
 
-                                            <mat-form-field appearance="outline" fxFlex="50">
+                                            <mat-form-field appearance="outline" fxFlex="60">
                                                 <input matInput formControlName="benefitBonusQty" />
 
                                                 <!-- <mat-error *ngIf="hasError('promoBudget', true)">
@@ -719,16 +858,18 @@
                                 </mat-error> -->
                                             </mat-form-field>
                                         </div>
+                                        <!-- ./ FIELD TIER BONUS QTY -->
 
+                                        <!-- START FIELD TIER MULTIPLICATION -->
                                         <div
                                             class="custom-field"
                                             fxLayout="row"
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="12"></label>
+                                            <label fxFlexAlign="center" fxFlex="16"></label>
 
-                                            <div fxFlexAlign="center" fxFlex="50">
+                                            <div fxFlexAlign="center" fxFlex="60">
                                                 <mat-checkbox formControlName="multiplication">
                                                     Multiplication Only
 
@@ -743,6 +884,7 @@
                                                 </mat-checkbox>
                                             </div>
                                         </div>
+                                        <!-- ./ FIELD TIER MULTIPLICATION -->
                                     </div>
                                     <!-- ./ FIELD-WRAPPER -->
 
@@ -806,7 +948,8 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('segmentationBase')"
                             >
-                                *Segmentation Base
+                                <span class="sinbad-red-fg">*</span>
+                                Segmentation Base
                             </label>
 
                             <mat-form-field appearance="outline" fxFlex="50" class="form-info">

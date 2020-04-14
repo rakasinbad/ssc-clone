@@ -12,6 +12,7 @@ import { MatDialog, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
+import { MatDatetimepickerInputEvent } from '@mat-datetimepicker/core';
 import { Store } from '@ngrx/store';
 import { NumericValueType, RxwebValidators } from '@rxweb/reactive-form-validators';
 import {
@@ -23,16 +24,19 @@ import {
 import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/warehouse-coverage.model';
 import { StoreSegmentationType } from 'app/shared/components/dropdowns/store-segmentation-2/models';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
+import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { EStatus, IBreadcrumbs, LifecyclePlatform } from 'app/shared/models/global.model';
 import { SegmentationBase } from 'app/shared/models/segmentation-base.model';
 import { SupplierStore } from 'app/shared/models/supplier.model';
+import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
 
-import { CreateFlexiComboDto } from '../models';
+import { ConditionDto, CreateFlexiComboDto } from '../models';
 import { FlexiComboActions } from '../store/actions';
 import * as fromFlexiCombo from '../store/reducers';
 
@@ -55,13 +59,14 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     triggerBase = this._$helperService.triggerBase();
     calculationMechanism = this._$helperService.calculationMechanism();
     conditionBase = this._$helperService.conditionBase();
+    eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
     segmentBase = this._$helperService.segmentationBase();
 
-    minCheckInDate: Date;
-    maxCheckInDate: Date;
-    minCheckOutDate: Date;
-    maxCheckOutDate: Date;
+    minStartDate: Date = new Date();
+    maxStartDate: Date = null;
+    minEndDate: Date = new Date();
+    maxEndDate: Date = null;
 
     isEdit$: Observable<boolean>;
     isLoading$: Observable<boolean>;
@@ -166,11 +171,16 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     }
 
     addCondition(): void {
+        console.log('ADD TIER', this.conditions.getRawValue());
         this.conditions.push(this._createConditions());
     }
 
     deleteCondition(idx: number): void {
         this.conditions.removeAt(idx);
+    }
+
+    getConditionBase(idx: number): string {
+        return this.form.get(['conditions', idx, 'conditionBase']).value;
     }
 
     getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
@@ -248,6 +258,32 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             this.form.get('chosenStore').clearValidators();
             this.form.get('chosenStore').updateValueAndValidity({ onlySelf: true });
         }
+    }
+
+    onChangeEndDate(ev: MatDatetimepickerInputEvent<any>): void {
+        const endDate = ev.value;
+        const startDate = this.form.get('startDate').value;
+
+        if (startDate) {
+            if (endDate.isBefore(startDate)) {
+                this.form.get('startDate').reset();
+            }
+        }
+
+        this.maxStartDate = endDate.toDate();
+    }
+
+    onChangeStartDate(ev: MatDatetimepickerInputEvent<any>): void {
+        const startDate = ev.value;
+        const endDate = this.form.get('endDate').value;
+
+        if (endDate) {
+            if (startDate.isAfter(endDate)) {
+                this.form.get('endDate').reset();
+            }
+        }
+
+        this.minEndDate = startDate.toDate();
     }
 
     onFileBrowse(ev: Event, type: string): void {
@@ -382,15 +418,43 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     // @ Private methods
     // -----------------------------------------------------------------------------------------------------
 
-    private _createConditions(): FormGroup {
+    private _createConditions(condition?: ConditionDto): FormGroup {
         return this.formBuilder.group({
-            conditionBase: null,
-            conditionQty: null,
+            conditionBase: [
+                (condition && condition.conditionBase) || ConditionBase.QTY,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
+            conditionQty: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                ],
+            ],
             conditionValue: null,
-            benefitType: null,
+            benefitType: [
+                (condition && condition.benefitType) || BenefitType.QTY,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             benefitCatalogueId: null,
             benefitBonusQty: null,
+            benefitRebate: null,
+            benefitDiscount: null,
+            benefitMaxRebate: null,
             multiplication: false,
+            applySameSku: false,
         });
     }
 
@@ -531,9 +595,6 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             maxRedemption: [
                 null,
                 [
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
                     RxwebValidators.digit({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
                     }),
@@ -550,7 +611,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 ],
             ],
             startDate: [
-                null,
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -558,7 +619,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 ],
             ],
             endDate: [
-                null,
+                { value: null, disabled: true },
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -580,7 +641,14 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             ],
             allowCombineWithVoucher: false,
             firstBuy: false,
-            base: null,
+            base: [
+                TriggerBase.SKU,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             chosenSku: [
                 '',
                 [

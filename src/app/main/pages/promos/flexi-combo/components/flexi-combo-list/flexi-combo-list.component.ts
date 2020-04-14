@@ -18,6 +18,7 @@ import { fuseAnimations } from '@fuse/animations';
 import { Store } from '@ngrx/store';
 import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
+import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { environment } from 'environments/environment';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { merge, Observable, Subject } from 'rxjs';
@@ -58,6 +59,7 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
 
     search: FormControl = new FormControl('');
     selection: SelectionModel<FlexiCombo>;
+    eTriggerBase = TriggerBase;
 
     dataSource$: Observable<FlexiCombo[]>;
     totalDataSource$: Observable<number>;

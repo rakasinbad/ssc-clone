@@ -72,7 +72,9 @@
                         </span>
                     </ng-container>
                     <ng-container *ngSwitchCase="eTriggerBase.INVOICE">
-                        <span></span>
+                        <span>
+                            {{ getInvoiceGroups((flexiCombo$ | async)?.promoInvoiceGroups) || '-' }}
+                        </span>
                     </ng-container>
                     <ng-container *ngSwitchDefault>-</ng-container>
                 </ng-container>

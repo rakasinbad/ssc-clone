@@ -96,6 +96,16 @@ interface ICatalogue extends ITimestamp {
     violationTypeId: string;
 }
 
+interface IInvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    code: string;
+    externalId: string;
+    minimumOrder: string;
+    name: string;
+    status: EStatus;
+    supplierId: string;
+}
+
 interface IStore extends ITimestamp {
     readonly id: NonNullable<string>;
     address: string;
@@ -196,6 +206,13 @@ export interface IPromoGroup extends ITimestamp {
     promoId: string;
 }
 
+export interface IPromoInvoiceGroup extends ITimestamp {
+    readonly id: NonNullable<string>;
+    invoiceGroup: IInvoiceGroup;
+    invoiceGroupId: string;
+    promoId: string;
+}
+
 export interface IPromoStore extends ITimestamp {
     readonly id: NonNullable<string>;
     promoId: string;
@@ -240,7 +257,7 @@ export class FlexiCombo implements ITimestamp {
     promoClusters?: IPromoCluster[];
     promoConditions?: IPromoCondition[];
     promoGroups?: IPromoGroup[];
-    promoInvoiceGroups?: any[];
+    promoInvoiceGroups?: IPromoInvoiceGroup[];
     promoStores?: IPromoStore[];
     promoTypes?: IPromoType[];
     promoWarehouses?: IPromoWarehouse[];

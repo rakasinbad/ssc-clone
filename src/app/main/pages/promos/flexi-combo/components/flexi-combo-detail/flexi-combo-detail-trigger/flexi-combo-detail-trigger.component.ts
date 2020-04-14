@@ -4,7 +4,7 @@ import { HelperService } from 'app/shared/helpers';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { Observable } from 'rxjs';
 
-import { FlexiCombo, IPromoBrand, IPromoCatalogue } from '../../../models';
+import { FlexiCombo, IPromoBrand, IPromoCatalogue, IPromoInvoiceGroup } from '../../../models';
 import * as fromFlexiCombos from '../../../store/reducers';
 import { FlexiComboSelectors } from '../../../store/selectors';
 
@@ -48,6 +48,16 @@ export class FlexiComboDetailTriggerComponent implements OnInit {
             const brand = value.map((v) => v.brand.name);
 
             return brand.length > 0 ? brand.join(', ') : '-';
+        }
+
+        return '-';
+    }
+
+    getInvoiceGroups(value: IPromoInvoiceGroup[]): string {
+        if (value && value.length > 0) {
+            const invoice = value.map((v) => v.invoiceGroup.name);
+
+            return invoice.length > 0 ? invoice.join(', ') : '-';
         }
 
         return '-';
