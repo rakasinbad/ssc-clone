@@ -598,7 +598,18 @@
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="16" fxFill>
+                                            <label
+                                                fxFlexAlign="center"
+                                                fxFlex="16"
+                                                [class.sinbad-red-fg]="
+                                                    hasError([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'conditionBase'
+                                                    ])
+                                                "
+                                                fxFill
+                                            >
                                                 <span class="sinbad-red-fg">*</span>
                                                 Base
                                             </label>
@@ -658,7 +669,17 @@
                                                     fxLayoutAlign="start stretch"
                                                     fxLayoutGap="16px"
                                                 >
-                                                    <label fxFlexAlign="center" fxFlex="16">
+                                                    <label
+                                                        fxFlexAlign="center"
+                                                        fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'conditionQty'
+                                                            ])
+                                                        "
+                                                    >
                                                         <span class="sinbad-red-fg">*</span>
                                                         Qty >=
                                                     </label>
@@ -676,9 +697,26 @@
                                                             formControlName="conditionQty"
                                                         />
 
-                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
-                                            {{ getErrorMessage('promoBudget') }}
-                                        </mat-error> -->
+                                                        <mat-error
+                                                            *ngIf="
+                                                                hasError(
+                                                                    [
+                                                                        'conditions',
+                                                                        conditionIdx,
+                                                                        'conditionQty'
+                                                                    ],
+                                                                    true
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                getErrorMessage(
+                                                                    'conditionQty',
+                                                                    'conditions',
+                                                                    conditionIdx
+                                                                )
+                                                            }}
+                                                        </mat-error>
                                                     </mat-form-field>
                                                 </div>
                                                 <!-- ./ FIELD TIER CONDITION VALUE (QTY) -->
@@ -693,7 +731,17 @@
                                                     fxLayoutAlign="start stretch"
                                                     fxLayoutGap="16px"
                                                 >
-                                                    <label fxFlexAlign="center" fxFlex="16">
+                                                    <label
+                                                        fxFlexAlign="center"
+                                                        fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'conditionValue'
+                                                            ])
+                                                        "
+                                                    >
                                                         <span class="sinbad-red-fg">*</span>
                                                         Order Value >=
                                                     </label>
@@ -704,12 +752,36 @@
                                                     >
                                                         <input
                                                             matInput
+                                                            [attr.name]="
+                                                                'conditionValue' + conditionIdx
+                                                            "
                                                             formControlName="conditionValue"
+                                                            mask="separator.2"
+                                                            thousandSeparator="."
+                                                            prefix="Rp"
+                                                            placeholder="Rp"
                                                         />
 
-                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
-                                            {{ getErrorMessage('promoBudget') }}
-                                        </mat-error> -->
+                                                        <mat-error
+                                                            *ngIf="
+                                                                hasError(
+                                                                    [
+                                                                        'conditions',
+                                                                        conditionIdx,
+                                                                        'conditionValue'
+                                                                    ],
+                                                                    true
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                getErrorMessage(
+                                                                    'conditionValue',
+                                                                    'conditions',
+                                                                    conditionIdx
+                                                                )
+                                                            }}
+                                                        </mat-error>
                                                     </mat-form-field>
                                                 </div>
                                                 <!-- ./ FIELD TIER CONDITION VALUE (ORDER VALUE) -->
@@ -889,12 +961,19 @@
                                                     >
                                                         <input
                                                             matInput
+                                                            [attr.name]="
+                                                                'benefitBonusQty' + conditionIdx
+                                                            "
                                                             formControlName="benefitBonusQty"
+                                                            mask="0*"
+                                                            autocomplete="off"
                                                         />
 
-                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
-                                    {{ getErrorMessage('promoBudget') }}
-                                </mat-error> -->
+                                                        <mat-error
+                                                            *ngIf="hasError('promoBudget', true)"
+                                                        >
+                                                            {{ getErrorMessage('promoBudget') }}
+                                                        </mat-error>
                                                     </mat-form-field>
                                                 </div>
                                                 <!-- ./ FIELD TIER BONUS QTY -->

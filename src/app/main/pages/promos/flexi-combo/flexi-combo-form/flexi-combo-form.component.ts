@@ -172,7 +172,33 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     }
 
     addCondition(): void {
-        console.log('ADD TIER', this.conditions.getRawValue());
+        const conditions = this.conditions.getRawValue();
+
+        if (conditions && conditions.length > 0) {
+            if (conditions.length - 1 >= 0) {
+                // Disable prev Tier
+                this.conditionsCtrl[conditions.length - 1].disable({
+                    onlySelf: true,
+                });
+
+                const prevCondition = conditions[conditions.length - 1] as ConditionDto;
+
+                this.conditions.push(this._createConditions(new ConditionDto(prevCondition)));
+
+                // Disable conditionBase control (Current Tier)
+                this.conditionsCtrl[conditions.length]
+                    .get('conditionBase')
+                    .disable({ onlySelf: true });
+
+                // Disable benefitType control (Current Tier)
+                this.conditionsCtrl[conditions.length]
+                    .get('benefitType')
+                    .disable({ onlySelf: true });
+            }
+
+            return;
+        }
+
         this.conditions.push(this._createConditions());
     }
 
@@ -623,7 +649,16 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     }),
                 ],
             ],
-            conditionValue: null,
+            conditionValue: [
+                null,
+                [
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ],
+            ],
             benefitType: [
                 (condition && condition.benefitType) || BenefitType.QTY,
                 [
@@ -640,7 +675,14 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     }),
                 ],
             ],
-            benefitBonusQty: null,
+            benefitBonusQty: [
+                null,
+                [
+                    RxwebValidators.digit({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'numeric'),
+                    }),
+                ],
+            ],
             benefitRebate: null,
             benefitDiscount: null,
             benefitMaxRebate: null,
