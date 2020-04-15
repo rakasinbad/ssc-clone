@@ -7,7 +7,7 @@ import { FeatureState as PeriodTargetPromoCoreFeatureState } from '../../store/r
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormControl, FormArray } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap, filter } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { PeriodTargetPromoSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -23,6 +23,7 @@ import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { ApplyDialogService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog.service';
 import { ApplyDialogFactoryService } from 'app/shared/components/dialogs/apply-dialog/services/apply-dialog-factory.service';
 import { Selection } from 'app/shared/components/multiple-selection/models';
+import { PeriodTargetPromoTriggerInformationService } from '../trigger-information/services';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -53,6 +54,13 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
     formModeValue: IFormMode = 'add';
+    // Untuk menandakan apakah trigger SKU memiliki SKU lebih dari 1.
+    // tslint:disable-next-line: no-inferrable-types
+    hasMultipleSKUs: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types
+    isSelectCatalogueDisabled: boolean = false;
+    // Untuk menyimpan SKU yang terpilih di trigger information.
+    triggerSKUs: Array<Catalogue> = [];
 
     // tslint:disable-next-line: no-inferrable-types
     labelLength: number = 10;
@@ -105,6 +113,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         private store: NgRxStore<PeriodTargetPromoCoreFeatureState>,
         private promo$: PeriodTargetPromoApiService,
         private errorMessage$: ErrorMessageService,
+        private triggerInformation$: PeriodTargetPromoTriggerInformationService,
     ) { }
 
     private updateFormView(): void {
@@ -506,6 +515,41 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     }
 
     private initFormCheck(): void {
+        this.triggerInformation$.getValue().pipe(
+            tap(value => HelperService.debug('triggerInformation$ CHANGED:', value)),
+            filter(value => !!value),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            this.triggerSKUs = value.chosenSku;
+
+            if (value.chosenSku.length > 1) {
+                this.hasMultipleSKUs = true;
+            } else {
+                this.hasMultipleSKUs = false;
+            }
+
+            this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'applySameSku']).reset();
+        });
+
+        (this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'applySameSku']).valueChanges as Observable<boolean>).pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON APPLY SAME SKU CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value) {
+                this.chosenSku$.next({
+                    id: this.triggerSKUs[0].id,
+                    label: this.triggerSKUs[0].name,
+                    group: 'catalogues',
+                });
+
+                this.isSelectCatalogueDisabled = true;
+            } else {
+                this.isSelectCatalogueDisabled = false;
+            }
+        });
+
         (this.form.statusChanges as Observable<FormStatus>).pipe(
             distinctUntilChanged(),
             debounceTime(300),

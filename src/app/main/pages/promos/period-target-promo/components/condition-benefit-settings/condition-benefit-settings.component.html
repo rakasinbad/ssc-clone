@@ -224,6 +224,7 @@
         
                                     <select-catalogues
                                         mode="single"
+                                        [disabled]="isSelectCatalogueDisabled"
                                         [initialSelection]="chosenSku$ | async"
                                         [required]="true"
                                         [fxFlex]="formFieldLength * 2 - 1"
@@ -245,7 +246,7 @@
                                     fxLayout="row"
                                     fxLayoutAlign="start stretch"
                                     class="mt-8"
-                                    *ngIf="$index === 0"
+                                    *ngIf="$index === 0 && hasMultipleSKUs === false"
                                 >
                                     <label
                                         fxFlexAlign="center"
