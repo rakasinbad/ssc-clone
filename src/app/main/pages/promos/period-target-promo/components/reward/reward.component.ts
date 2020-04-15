@@ -425,7 +425,14 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
                 ]],
             }),
             trigger: this.fb.group({
-                base: ['sku'],
+                base: ['sku', [
+                    RxwebValidators.required({
+                        message: this.errorMessage$.getErrorMessageNonState(
+                            'default',
+                            'required'
+                        )
+                    })
+                ]],
                 chosenSku: ['', [
                     RxwebValidators.required({
                         message: this.errorMessage$.getErrorMessageNonState(
@@ -453,8 +460,18 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             }),
             condition: this.fb.group({
                 base: ['qty'],
-                qty: [''],
-                value: [''],
+                qty: ['', [
+                    RxwebValidators.greaterThanEqualTo({
+                        value: 1,
+                        message: 'This field must be greater than or equal to 1.'
+                    })
+                ]],
+                value: ['', [
+                    RxwebValidators.greaterThanEqualTo({
+                        value: 1,
+                        message: 'This field must be greater than or equal to 1.'
+                    })
+                ]],
                 valueView: [''],
             }),
             miscellaneous: this.fb.group({
@@ -629,7 +646,7 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             }
         }
 
-        this.minActiveEndDate = activeStartDate.toDate();
+        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {
