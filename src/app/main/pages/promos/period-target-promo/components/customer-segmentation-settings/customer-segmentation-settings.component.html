@@ -49,7 +49,7 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenStore'))"
                 >
-                    Chosen Store<br/>({{ form.get('chosenStore').value?.length || '0' }} Selected)
+                    Chosen Store<br/>({{ form.get('chosenStore').value?.length || 'All' }} Selected)
                 </label>
 
                 <select-supplier-stores
@@ -90,7 +90,7 @@
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenWarehouse'))"
                     >
-                        Warehouse<br/>({{ form.get('chosenWarehouse').value?.length || '0' }} Selected)
+                        Warehouse<br/>({{ form.get('chosenWarehouse').value?.length || 'All' }} Selected)
                     </label>
 
                     <select-warehouses
@@ -125,7 +125,7 @@
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreType'))"
                     >
-                        Store Type<br/>({{ form.get('chosenStoreType').value?.length || '0' }} Selected)
+                        Store Type<br/>({{ form.get('chosenStoreType').value?.length || 'All' }} Selected)
                     </label>
 
                     <select-store-segmentation
@@ -162,7 +162,7 @@
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreGroup'))"
                     >
-                        Store Group<br/>({{ form.get('chosenStoreGroup').value?.length || '0' }} Selected)
+                        Store Group<br/>({{ form.get('chosenStoreGroup').value?.length || 'All' }} Selected)
                     </label>
 
                     <select-store-segmentation
@@ -199,7 +199,7 @@
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreChannel'))"
                     >
-                        Store Channel<br/>({{ form.get('chosenStoreChannel').value?.length || '0' }} Selected)
+                        Store Channel<br/>({{ form.get('chosenStoreChannel').value?.length || 'All' }} Selected)
                     </label>
 
                     <select-store-segmentation
@@ -236,7 +236,7 @@
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreCluster'))"
                     >
-                        Store Cluster<br/>({{ form.get('chosenStoreCluster').value?.length || '0' }} Selected)
+                        Store Cluster<br/>({{ form.get('chosenStoreCluster').value?.length || 'All' }} Selected)
                     </label>
 
                     <select-store-segmentation
