@@ -1,20 +1,8 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    OnDestroy,
-    OnInit,
-    ViewEncapsulation,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseNavigationService } from '@fuse/components/navigation/navigation.service';
-import { FuseTranslationLoaderService } from '@fuse/services/translation-loader.service';
-import { Store as NgRxStore } from '@ngrx/store';
 import { ICardHeaderConfiguration } from 'app/shared/components/card-header/models';
-import { UiActions } from 'app/shared/store/actions';
-import { Observable, Subject } from 'rxjs';
-
-import { FeatureState as FlexiComboCoreState } from './store/reducers';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-flexi-combo',
@@ -24,7 +12,7 @@ import { FeatureState as FlexiComboCoreState } from './store/reducers';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FlexiComboComponent implements OnInit, OnDestroy {
+export class FlexiComboComponent implements OnInit {
     // Untuk menentukan konfigurasi card header.
     cardHeaderConfig: ICardHeaderConfiguration = {
         title: {
@@ -76,39 +64,9 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
         },
     };
 
-    // Untuk menangkap status loading dari state.
-    isLoading$: Observable<boolean>;
+    private unSubs$: Subject<void> = new Subject<void>();
 
-    // Untuk keperluan unsubscribe.
-    private subs$: Subject<void> = new Subject<void>();
-
-    constructor(
-        private FlexiComboStore: NgRxStore<FlexiComboCoreState>,
-        private fuseNavigation$: FuseNavigationService,
-        private fuseTranslationLoader$: FuseTranslationLoaderService,
-        private router: Router
-    ) {
-        //Memuat terjemahan.
-        // this.fuseTranslationLoader$.loadTranslations(indonesian, english);
-        //Memuat breadcrumb.
-        this.FlexiComboStore.dispatch(
-            UiActions.createBreadcrumb({
-                payload: [
-                    {
-                        title: 'Home',
-                    },
-                    {
-                        title: 'Promo',
-                    },
-                    {
-                        title: 'Flexi Combo',
-                        active: true,
-                        keepCase: true,
-                    },
-                ],
-            })
-        );
-    }
+    constructor(private router: Router) {}
 
     ngOnInit(): void {
         // this.buttonViewByActive$ = this.SkuAssignmentsStore.select(
@@ -118,14 +76,5 @@ export class FlexiComboComponent implements OnInit, OnDestroy {
 
     onClickAdd(): void {
         this.router.navigateByUrl('/pages/promos/flexi-combo/new');
-    }
-
-    ngOnDestroy(): void {
-        this.subs$.next();
-        this.subs$.complete();
-
-        // this.SkuAssignmentsStore.dispatch(UiActions.hideCustomToolbar());
-        // this.SkuAssignmentsStore.dispatch(UiActions.createBreadcrumb({ payload: null }));
-        this.fuseNavigation$.unregister('customNavigation');
     }
 }

@@ -69,7 +69,7 @@
                         value="__select-all__"
                         [checkboxPosition]="'before'"
                         [selected]="mergedSelectedOptions.length === totalAvailableOptions"
-                        *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 0 && enableSelectAll"
+                        *ngIf="!isAvailableOptionsLoading && totalAvailableOptions > 1 && enableSelectAll"
                     >
                         (Select All)
                     </mat-list-option>

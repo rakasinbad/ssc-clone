@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, Input, ViewChild, AfterViewInit, OnDestroy, EventEmitter, Output, TemplateRef, ChangeDetectorRef, SimpleChanges, OnChanges } from '@angular/core';
 import { Store as NgRxStore } from '@ngrx/store';
 import { fuseAnimations } from '@fuse/animations';
 import { environment } from 'environments/environment';
@@ -23,6 +23,7 @@ import { SelectionList } from 'app/shared/components/multiple-selection/models';
 import { DeleteConfirmationComponent } from 'app/shared/modals';
 import { MultipleSelectionService } from 'app/shared/components/multiple-selection/services/multiple-selection.service';
 import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/models/warehouse-catalogue.model';
+import { RxwebValidators } from '@rxweb/reactive-form-validators';
 
 @Component({
     selector: 'select-warehouse-catalogues',
@@ -32,7 +33,7 @@ import { WarehouseCatalogue } from 'app/main/pages/logistics/sku-assignments/mod
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.Default
 })
-export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WarehouseCataloguesDropdownComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
 
     // Form
     entityForm: FormControl = new FormControl('');
@@ -64,6 +65,12 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewIn
 
     // Untuk mengambil warehouse berdasarkan ID catalogue-nya.
     @Input() catalogueId: string | number;
+
+    // Untuk menandai apakah pilihannya required atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() required: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() placeholder: string = 'Search Warehouse';
 
     // Untuk mengirim data berupa lokasi yang telah terpilih.
     @Output() selected: EventEmitter<TNullable<Array<Entity>>> = new EventEmitter<TNullable<Array<Entity>>>();
@@ -406,6 +413,10 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewIn
     private initForm(): void {
         this.entityFormView = new FormControl('');
         this.entityFormValue = new FormControl('');
+
+        if (this.required) {
+            this.entityFormView.setValidators(RxwebValidators.required());
+        }
     }
 
     ngOnInit(): void {
@@ -452,6 +463,16 @@ export class WarehouseCataloguesDropdownComponent implements OnInit, AfterViewIn
 
         //     this.requestEntity(queryParams);
         // });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (!changes['required'].isFirstChange()) {
+            this.entityFormView.clearValidators();
+
+            if (changes['required'].currentValue === true) {
+                this.entityFormView.setValidators(RxwebValidators.required());
+            }
+        }
     }
 
     ngOnDestroy(): void {

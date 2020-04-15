@@ -1,114 +1,83 @@
 import { createAction, props } from '@ngrx/store';
-import { FlexiCombo } from '../../models';
+import { ErrorHandler } from 'app/shared/models/global.model';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
-import { FlexiComboCreationPayload } from '../../models/flexi-combo.model';
 
-export type requestActionNames =
-    | 'fetchFlexiComboRequest'
-    | 'addFlexiComboRequest'
-    | 'updateFlexiComboRequest'
-    | 'removeFlexiComboRequest';
+import { CreateFlexiComboDto, FlexiCombo } from '../../models';
 
-export type failureActionNames =
-    | 'fetchFlexiComboFailure'
-    | 'addFlexiComboFailure'
-    | 'updateFlexiComboFailure'
-    | 'removeFlexiComboFailure';
+// -----------------------------------------------------------------------------------------------------
+// Fetch Flexi Combos
+// -----------------------------------------------------------------------------------------------------
 
-/**
- * FETCH DATA
- */
-
-export const fetchFlexiComboRequest = createAction(
-    '[Flexi Combo API] Fetch FlexiCombo Request',
+export const fetchFlexiCombosRequest = createAction(
+    '[Flexi Combo] Fetch Flexi Combos Request',
     props<{ payload: IQueryParams }>()
 );
 
-export const fetchFlexiComboFailure = createAction(
-    '[Flexi Combo API] Fetch FlexiCombo Failure',
-    props<{ payload: IErrorHandler }>()
+export const fetchFlexiCombosFailure = createAction(
+    '[Flexi Combo] Fetch Flexi Combos Failure',
+    props<{ payload: ErrorHandler }>()
 );
 
-export const fetchFlexiComboSuccess = createAction(
-    '[Flexi Combo API] Fetch FlexiCombo Success',
-    props<{ payload: { data: Array<FlexiCombo>; total: number } }>()
+export const fetchFlexiCombosSuccess = createAction(
+    '[Flexi Combo] Fetch Flexi Combos Success',
+    props<{ payload: { data: FlexiCombo[]; total: number } }>()
 );
 
-/**
- * CONFIRMATION
- */
+// -----------------------------------------------------------------------------------------------------
+// Fetch Flexi Combo
+// -----------------------------------------------------------------------------------------------------
 
-export const confirmAddFlexiCombo = createAction(
-    '[FlexiCombo Page] Confirm Add FlexiCombo',
-    props<{ payload: FlexiCombo }>()
-);
-
-export const confirmUpdateFlexiCombo = createAction(
-    '[FlexiCombo Page] Confirm Update FlexiCombo',
-    props<{ payload: FlexiCombo }>()
-);
-
-export const confirmRemoveFlexiCombo = createAction(
-    '[FlexiCombo Page] Confirm Remove FlexiCombo',
-    props<{ payload: Array<string> }>()
-);
-
-/**
- * CREATE (ADD)
- */
-export const addFlexiComboRequest = createAction(
-    '[Flexi Combo API] Add FlexiCombo Request',
-    props<{ payload: FlexiComboCreationPayload }>()
-);
-
-export const addFlexiComboSuccess = createAction(
-    '[Flexi Combo API] Add FlexiCombo Success',
-    props<{ payload: TNullable<FlexiCombo> }>()
-);
-
-export const addFlexiComboFailure = createAction(
-    '[Flexi Combo API] Add FlexiCombo Failure',
-    props<{ payload: IErrorHandler }>()
-);
-
-/**
- * UPDATE
- */
-export const updateFlexiComboRequest = createAction(
-    '[Flexi Combo API] Update FlexiCombo Request',
-    props<{ payload: { id: string; data: FlexiCombo } }>()
-);
-
-export const updateFlexiComboSuccess = createAction(
-    '[Flexi Combo API] Update FlexiCombo Success',
-    props<{ payload: { id: string; data: FlexiCombo } }>()
-);
-
-export const updateFlexiComboFailure = createAction(
-    '[Flexi Combo API] Update FlexiCombo Failure',
-    props<{ payload: IErrorHandler }>()
-);
-
-/**
- * REMOVE (DELETE)
- */
-export const removeFlexiComboRequest = createAction(
-    '[Flexi Combo API] Remove FlexiCombo Request',
+export const fetchFlexiComboRequest = createAction(
+    '[Flexi Combo] Fetch Flexi Combo Request',
     props<{ payload: string }>()
 );
 
-export const removeFlexiComboSuccess = createAction(
-    '[Flexi Combo API] Remove FlexiCombo Success',
-    props<{ payload: { id: string; data: FlexiCombo } }>()
+export const fetchFlexiComboFailure = createAction(
+    '[Flexi Combo] Fetch Flexi Combo Failure',
+    props<{ payload: ErrorHandler }>()
 );
 
-export const removeFlexiComboFailure = createAction(
-    '[Flexi Combo API] Remove FlexiCombo Failure',
-    props<{ payload: IErrorHandler }>()
+export const fetchFlexiComboSuccess = createAction(
+    '[Flexi Combo] Fetch Flexi Combo Success',
+    props<{ payload: FlexiCombo }>()
 );
 
-/**
- * RESET
- */
-export const resetFlexiCombo = createAction('[FlexiCombo Page] Reset FlexiCombo State');
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - CREATE] Flexi Combo
+// -----------------------------------------------------------------------------------------------------
+
+export const createFlexiComboRequest = createAction(
+    '[Flexi Combo] Create Flexi Combo Request',
+    props<{ payload: CreateFlexiComboDto }>()
+);
+
+export const createFlexiComboFailure = createAction(
+    '[Flexi Combo] Create Flexi Combo Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const createFlexiComboSuccess = createAction('[Flexi Combo] Create Flexi Combo Success');
+
+// -----------------------------------------------------------------------------------------------------
+// [CRUD - UPDATE] Flexi Combo
+// -----------------------------------------------------------------------------------------------------
+
+export const updateFlexiComboRequest = createAction(
+    '[Flexi Combo] Update Flexi Combo Request',
+    props<{ payload: { body: any; id: string } }>()
+);
+
+export const updateFlexiComboFailure = createAction(
+    '[Flexi Combo] Update Flexi Combo Failure',
+    props<{ payload: ErrorHandler }>()
+);
+
+export const updateFlexiComboSuccess = createAction('[Flexi Combo] Update Flexi Combo Success');
+
+export const clearState = createAction('[Flexi Combo] Reset Flexi Combo Core State');
+
+export type FailureActions =
+    | 'fetchFlexiCombosFailure'
+    | 'fetchFlexiComboFailure'
+    | 'createFlexiComboFailure'
+    | 'updateFlexiComboFailure';

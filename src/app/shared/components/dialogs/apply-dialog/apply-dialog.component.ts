@@ -18,6 +18,7 @@ export class ApplyDialogComponent<T> {
                 title: string,
                 template: TemplateRef<any>,
                 isApplyEnabled: boolean,
+                showApplyButton: boolean,
                 context: T,
             },
     ) {}

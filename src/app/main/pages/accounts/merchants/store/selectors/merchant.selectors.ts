@@ -35,6 +35,11 @@ export const getSelectedStore = createSelector(
     (entities, id) => entities[id]
 );
 
+export const getSelectedSupplierStore = createSelector(
+    getAccountStoreState,
+    state => state.selectedSupplierStore
+);
+
 // -----------------------------------------------------------------------------------------------------
 // Store State
 // -----------------------------------------------------------------------------------------------------

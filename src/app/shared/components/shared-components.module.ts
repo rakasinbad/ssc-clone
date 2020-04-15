@@ -18,6 +18,12 @@ import { SegmentedStoreTypesDropdownModule } from './dropdowns/store-segmentatio
 import { StoreGroupsDropdownModule } from './dropdowns/store-segmentation/store-groups/store-groups.module';
 import { StoreChannelsDropdownModule } from './dropdowns/store-segmentation/store-channels/store-channels.module';
 import { StoreClustersDropdownModule } from './dropdowns/store-segmentation/store-clusters/store-clusters.module';
+import { CatalogueDropdownModule } from './dropdowns/catalogues/catalogues.module';
+import { StoresDropdownModule } from './dropdowns/stores/stores.module';
+import { StoreSegmentationDropdownModule } from './dropdowns/store-segmentation-2/store-segmentation.module';
+import { BrandsDropdownModule } from './dropdowns/brands/brands.module';
+import { FakturDropdownModule } from './dropdowns/faktur/faktur.module';
+
 // Selection Tree
 import { SelectionTreeModule } from './selection-tree/selection-tree/selection-tree.module';
 import { StoreSegmentationTreeModule } from './selection-tree/store-segmentation/store-segmentation.module';
@@ -47,6 +53,11 @@ import { CardInstructionModule } from './card-instruction/card-instruction.modul
         SelectionTreeModule,
         StoreSegmentationTreeModule,
         CardInstructionModule,
+        CatalogueDropdownModule,
+        StoresDropdownModule,
+        StoreSegmentationDropdownModule,
+        BrandsDropdownModule,
+        FakturDropdownModule,
     ],
     exports: [
         CardHeaderModule,
@@ -69,6 +80,11 @@ import { CardInstructionModule } from './card-instruction/card-instruction.modul
         SelectionTreeModule,
         StoreSegmentationTreeModule,
         CardInstructionModule,
+        CatalogueDropdownModule,
+        StoresDropdownModule,
+        StoreSegmentationDropdownModule,
+        BrandsDropdownModule,
+        FakturDropdownModule,
     ],
 })
 export class SharedComponentsModule { }

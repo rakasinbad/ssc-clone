@@ -290,7 +290,7 @@
                     class="merchant"
                     [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
                     matRipple
-                    (click)="goStoreInfoPage(row?.id)"
+                    (click)="goStoreInfoPage(row?.id, row)"
                 >
                 </mat-row>
                 <mat-footer-row

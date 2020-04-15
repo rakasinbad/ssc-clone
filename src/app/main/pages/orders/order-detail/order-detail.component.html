@@ -1,4 +1,8 @@
-<div id="order-detail" class="page-layout carded fullwidth inner-scroll line-height-1.75" fusePerfectScrollbar>
+<div
+    id="order-detail"
+    class="page-layout carded fullwidth inner-scroll line-height-1.75"
+    fusePerfectScrollbar
+>
     <!-- TOP BACKGROUND -->
     <div class="top-bg accent with-navigation"></div>
     <!-- / TOP BACKGROUND -->
@@ -8,12 +12,20 @@
         <!-- CONTENT HEADER -->
         <div class="header sinbad accent" fxLayout="row" fxLayoutAlign="space-between center">
             <div fxLayout="row" fxLayoutAlign="start center">
-                <button type="button" mat-icon-button class="mr-0 mr-sm-16" [routerLink]="['/pages/orders']">
+                <button
+                    type="button"
+                    mat-icon-button
+                    class="mr-0 mr-sm-16"
+                    [routerLink]="['/pages/orders']"
+                >
                     <mat-icon>arrow_back</mat-icon>
                 </button>
 
-                <div fxLayout="column" fxLayoutAlign="start start"
-                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">
+                <div
+                    fxLayout="column"
+                    fxLayoutAlign="start start"
+                    [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }"
+                >
                     <div class="h2">
                         Order Detail
                     </div>
@@ -56,16 +68,22 @@
                 </div>
 
                 <!-- SMALL BREADCRUMBS -->
-                <div fxLayout="row" fxLayoutAlign="start center"
-                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb">
+                <div
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    *ngIf="smallBreadcrumbs$ | async as smallBreadcrumbs; else noSmallBreadcrumb"
+                >
                     <!-- <span class="secondary-text">Quotations</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Quotations Send</span>
                 <mat-icon class="secondary-text s-16">arrow_right</mat-icon>
                 <span class="secondary-text">Sales Order</span> -->
                     <ng-container *ngFor="let smallBreadcrumb of smallBreadcrumbs; last as isLast">
-                        <span [class.secondary-text]="!smallBreadcrumb?.active" [class.active]="smallBreadcrumb?.active"
-                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl">
+                        <span
+                            [class.secondary-text]="!smallBreadcrumb?.active"
+                            [class.active]="smallBreadcrumb?.active"
+                            *ngIf="!smallBreadcrumb?.url; else breadWithUrl"
+                        >
                             {{
                                 smallBreadcrumb?.translate
                                     ? (smallBreadcrumb?.translate | translate | titlecase)
@@ -435,11 +453,17 @@
                         </header>
 
                         <div class="content">
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'checkout'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'checkout'"
+                            >
                                 <div class="header">Quotation</div>
                             </div>
 
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'confirm'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'confirm'"
+                            >
                                 <div class="header">New Order</div>
                                 <!-- <div class="header">Verifikasi</div> -->
 
@@ -551,7 +575,10 @@
                                     </ul> -->
                             </div>
 
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'packing'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'packing'"
+                            >
                                 <div class="header">Packed</div>
 
                                 <!-- FIX <div
@@ -605,7 +632,10 @@
                                 <div class="header">Siap Dikirim</div>
                             </div> -->
 
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'shipping'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'shipping'"
+                            >
                                 <div class="header">Shipped</div>
 
                                 <!-- FIX <div
@@ -742,16 +772,24 @@
                                 </div> -->
                             </div>
 
-                            <div class="status secondary-text"
-                                [class.active]="(order$ | async)?.status === 'delivered'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'delivered'"
+                            >
                                 <div class="header">Delivered</div>
                             </div>
 
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'done'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'done'"
+                            >
                                 <div class="header">Done</div>
                             </div>
 
-                            <div class="status secondary-text" [class.active]="(order$ | async)?.status === 'cancel'">
+                            <div
+                                class="status secondary-text"
+                                [class.active]="(order$ | async)?.status === 'cancel'"
+                            >
                                 <div class="header">Cancel</div>
                             </div>
                         </div>
@@ -807,8 +845,12 @@
                         <div class="content">
                             <div class="status secondary-text">
                                 <div class="detail" fxLayout="row" fxFlex="70">
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'checkout'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'checkout'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -826,8 +868,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'confirm'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'confirm'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -845,8 +891,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'packing'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'packing'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -864,8 +914,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'shipping'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'shipping'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -883,8 +937,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'delivered'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'delivered'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -902,8 +960,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'done'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'done'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -921,8 +983,12 @@
                                         </div>
                                     </div>
 
-                                    <div class="step" [class.active]="(order$ | async)?.status === 'cancel'"
-                                        fxLayout="column" fxFlex>
+                                    <div
+                                        class="step"
+                                        [class.active]="(order$ | async)?.status === 'cancel'"
+                                        fxLayout="column"
+                                        fxFlex
+                                    >
                                         <div class="indicator" fxLayout="column">
                                             <div class="circle"></div>
                                         </div>
@@ -1238,8 +1304,10 @@
                         <mat-cell *matCellDef="let row">
                             <p style="word-break: break-word;">
                                 {{
-                                    +row?.nettPrice > 0 && calculateUnit(+row?.nettPrice, +row?.qty) > 0
-                                        ? (calculateUnit(+row?.nettPrice, +row?.qty) | price: 'full':'IDR':'narrow':'1.2-2')
+                                    +row?.nettPrice > 0 &&
+                                    calculateUnit(+row?.nettPrice, +row?.qty) > 0
+                                        ? (calculateUnit(+row?.nettPrice, +row?.qty)
+                                          | price: 'full':'IDR':'narrow':'1.2-2')
                                         : +row?.nettPrice
                                 }}
                             </p>
@@ -1317,10 +1385,15 @@
                         </mat-cell>
                     </ng-container> -->
 
-                    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+                    <mat-header-row
+                        *matHeaderRowDef="displayedColumns; sticky: true"
+                    ></mat-header-row>
 
-                    <mat-row *matRowDef="let row; columns: displayedColumns" class="order-line"
-                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }">
+                    <mat-row
+                        *matRowDef="let row; columns: displayedColumns"
+                        class="order-line"
+                        [ngClass]="{ 'highlight-row': (selectedRowIndex$ | async) === row?.id }"
+                    >
                     </mat-row>
                 </mat-table>
             </div>
@@ -1364,11 +1437,10 @@
                                     <td class="info-title">Untaxed Original:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelDetails
-                                                      ?.totalGrossPrice
+                                            +(order$ | async)?.parcelGrossPrice > 0
+                                                ? (+(order$ | async)?.parcelGrossPrice
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                : +(order$ | async)?.parcelGrossPrice
                                         }}
                                     </td>
                                 </tr>
@@ -1377,10 +1449,10 @@
                                     <td class="info-title">Tax Original:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.parcelDetails?.tax > 0
-                                                ? (+(order$ | async)?.parcelDetails?.tax
+                                            +(order$ | async)?.parcelTaxes > 0
+                                                ? (+(order$ | async)?.parcelTaxes
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelDetails?.tax
+                                                : +(order$ | async)?.parcelTaxes
                                         }}
                                     </td>
                                 </tr>
@@ -1390,12 +1462,10 @@
                                         <td class="info-title">Total Original:</td>
                                         <td>
                                             {{
-                                                +(order$ | async)?.parcelDetails?.totalNettPrice > 0
-                                                    ? (+(order$ | async)?.parcelDetails
-                                                          ?.totalNettPrice
+                                                +(order$ | async)?.parcelNettPrice > 0
+                                                    ? (+(order$ | async)?.parcelNettPrice
                                                       | price: 'full':'IDR':'narrow':'1.2-2')
-                                                    : +(order$ | async)?.parcelDetails
-                                                          ?.totalNettPrice
+                                                    : +(order$ | async)?.parcelNettPrice
                                             }}
                                         </td>
                                     </tr>
@@ -1529,11 +1599,10 @@
                                     <td class="info-title">Untaxed:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.parcelDetails?.totalGrossPrice > 0
-                                                ? (+(order$ | async)?.parcelDetails
-                                                      ?.totalGrossPrice
+                                            +(order$ | async)?.parcelGrossPrice > 0
+                                                ? (+(order$ | async)?.parcelGrossPrice
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelDetails?.totalGrossPrice
+                                                : +(order$ | async)?.parcelGrossPrice
                                         }}
                                     </td>
                                 </tr>
@@ -1542,10 +1611,10 @@
                                     <td class="info-title">Tax:</td>
                                     <td>
                                         {{
-                                            +(order$ | async)?.parcelDetails?.tax > 0
-                                                ? (+(order$ | async)?.parcelDetails?.tax
+                                            +(order$ | async)?.parcelTaxes > 0
+                                                ? (+(order$ | async)?.parcelTaxes
                                                   | price: 'full':'IDR':'narrow':'1.2-2')
-                                                : +(order$ | async)?.parcelDetails?.tax
+                                                : +(order$ | async)?.parcelTaxes
                                         }}
                                     </td>
                                 </tr>
@@ -1555,12 +1624,10 @@
                                         <td class="info-title">Total:</td>
                                         <td>
                                             {{
-                                                +(order$ | async)?.parcelDetails?.totalNettPrice > 0
-                                                    ? (+(order$ | async)?.parcelDetails
-                                                          ?.totalNettPrice
+                                                +(order$ | async)?.parcelNettPrice > 0
+                                                    ? (+(order$ | async)?.parcelNettPrice
                                                       | price: 'full':'IDR':'narrow':'1.2-2')
-                                                    : +(order$ | async)?.parcelDetails
-                                                          ?.totalNettPrice
+                                                    : +(order$ | async)?.parcelNettPrice
                                             }}
                                         </td>
                                     </tr>

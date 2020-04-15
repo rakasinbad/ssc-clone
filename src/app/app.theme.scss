@@ -167,7 +167,10 @@ $typography: mat-typography-config(
 
 // Plugin https://github.com/coachcare/npm-datepicker#installation
 // @import '~@coachcare/datepicker/theming';
-// @import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
+
+// Plugin https://github.com/kuhnroyal/mat-datetimepicker#installation
+@import '~@mat-datetimepicker/core/datetimepicker/datetimepicker-theme.scss';
+
 // Plugin https://github.com/SaturnTeam/saturn-datepicker
 @import '~saturn-datepicker/theming';
 
@@ -395,6 +398,13 @@ $sinbad-light-theme: mat-light-theme(
     $sinbad-light-theme-warn-palette
 );
 
+// Create the Material theme object
+$sinbad-mat-datetime-light-theme: mat-light-theme(
+    mat-palette($sinbad, 600, 400, 700),
+    $sinbad-light-theme-accent-palette,
+    $sinbad-light-theme-warn-palette
+);
+
 // Add ".theme-sinbad-light" class to the body to activate this theme.
 // Class name must start with "theme-" !!!
 body.theme-sinbad-light {
@@ -406,6 +416,9 @@ body.theme-sinbad-light {
 
     // Apply the theme to the user components
     @include components-theme($sinbad-light-theme);
+
+    // Custom mat-datetimepicker
+    @include mat-datetimepicker-theme($sinbad-mat-datetime-light-theme);
 
     // Generate Fuse color classes for primary, accent and warn colors
     $palettes: (

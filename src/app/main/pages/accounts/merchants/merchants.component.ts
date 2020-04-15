@@ -227,11 +227,12 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
         return localStorage.getItem('filter.store') || '';
     }
 
-    goStoreInfoPage(storeId: string): void {
+    goStoreInfoPage(storeId: string, supplierStore: SupplierStore): void {
         if (!storeId) {
             return;
         }
 
+        this.store.dispatch(StoreActions.selectSupplierStore({ payload: supplierStore }));
         this.store.dispatch(StoreActions.goPage({ payload: 'info' }));
         this.router.navigate(['/pages/account/stores', storeId, 'detail']);
     }
@@ -412,6 +413,8 @@ export class MerchantsComponent implements OnInit, AfterViewInit, OnDestroy {
                 });
 
                 localStorage.removeItem('filter.store');
+
+                this.store.dispatch(StoreActions.deselectSupplierStore());
 
                 // .pipe(
                 //     filter(source => source.length > 0),

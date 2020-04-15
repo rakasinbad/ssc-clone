@@ -3,6 +3,8 @@
 
 @import '@sinbad/scss/core';
 
+@import 'src/@sinbad/scss/helper';
+
 @import 'app/app.theme';
 
 // Import app.theme.scss
@@ -589,4 +591,81 @@ mat-header-row {
     height: 40px !important;
     min-height: 40px !important;
     max-height: 40px !important;
+}
+
+.sinbad-mat-tab-group {
+    &.has-border {
+        .mat-tab-header {
+            border-bottom: 1px solid rgba(0,0,0,0.12) !important;
+        }
+    }
+
+    .mat-tab-header {
+        border-bottom: 0px solid rgba(0,0,0,0) !important;
+    }
+
+    .mat-tab-label {
+        color: sinbad-color('black', '50');
+
+        &.mat-tab-label-active {
+            color: sinbad-color('red', '50');
+            opacity: 1;
+        }
+    }
+}
+
+.view-field {
+    .form-label {
+        font-weight: normal !important;
+        font-size: 14px !important;
+        color: sinbad-color('black', '80') !important;
+    }
+
+    span.form-value {
+        font-weight: normal !important;
+        font-size: 14px !important;
+        color: rgba(37, 40, 43, 0.5);
+    }
+    
+    &.label-no-padding {
+        label {
+            font-weight: 600;
+            position: relative;
+            padding-right: 0 !important;
+            // top: -0.78em;
+            // text-align: right;
+            // padding-right: 2em;
+            // padding-right: 10px;
+        }
+    }
+
+    label {
+        font-weight: 600;
+        position: relative;
+        // top: -0.78em;
+        // text-align: right;
+        padding-right: 2em;
+        // padding-right: 10px;
+    }
+
+    .mat-form-field-prefix {
+        top: -0.2em;
+    }
+
+    .mat-form-field-infix {
+        padding: 0.5em 0 !important;
+        top: -0.25em;
+    }
+
+    &.sinbad-textarea {
+        label {
+            top: -3em;
+        }
+    }
+
+    &.sinbad-button {
+        label {
+            top: 0;
+        }
+    }
 }

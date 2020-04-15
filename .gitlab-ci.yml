@@ -17,7 +17,7 @@ start_runner_development:
         - rm -rf ~/.aws/
         - sleep 30
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-alpha-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
           when: always
     tags:
         - docker
@@ -35,7 +35,25 @@ start_runner_staging:
         - rm -rf ~/.aws/
         - sleep 30
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-beta-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
+          when: always
+    tags:
+        - docker
+
+start_runner_demo:
+    stage: start_instance
+    image: mikesir87/aws-cli:latest
+    script:
+        - echo "Starting the instance"
+        - mkdir ~/.aws/
+        - touch ~/.aws/credentials
+        - printf "[default]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$access_key_ID" "$secret_access_key" >> ~/.aws/credentials
+        - printf "[default]\nregion = %s\noutput = %s\n" "$region" "json" >> ~/.aws/config
+        - aws ec2 start-instances --instance-ids i-0b5d8441ab6417b2f
+        - rm -rf ~/.aws/
+        - sleep 30
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always
     tags:
         - docker
@@ -53,7 +71,7 @@ start_runner_production:
         - rm -rf ~/.aws/
         - sleep 30
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)$/'
           when: always
     tags:
         - docker
@@ -76,7 +94,7 @@ build_development:
         - dist/supplier-center/
         expire_in: 1 week
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-alpha-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -99,7 +117,30 @@ build_staging:
         - dist/supplier-center/
         expire_in: 1 week
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-beta-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
+          when: always
+    tags:
+        - sinbad-aws-docker-runner
+
+build_demo:
+    stage: build
+    image: node:12-alpine
+    before_script:
+        - apk update
+        - apk add git
+        - npm install
+    script:
+        - echo "Commit tag -> $CI_COMMIT_TAG"
+        - echo "Commit short hash -> $CI_COMMIT_SHORT_SHA"
+        - sed -i "s@appVersion:\s''@appVersion:'$CI_COMMIT_TAG'@" src/environments/environment.demo.ts
+        - sed -i "s@appHash:\s''@appHash:'$CI_COMMIT_SHORT_SHA'@" src/environments/environment.demo.ts
+        - npm run build-demo
+    artifacts:
+        paths:
+        - dist/supplier-center/
+        expire_in: 1 week
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -122,7 +163,7 @@ build_production:
         - dist/supplier-center/
         expire_in: 1 week
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -144,7 +185,7 @@ deploy_development:
         - ssh -i ~/.ssh/id_rsa deploy@10.0.50.30 -o StrictHostKeyChecking=no -t "rsync -avz /var/www/seller-dev.sinbad.web.id/ /var/www/seller-center-bak"
         - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.50.30:/var/www/seller-dev.sinbad.web.id
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-alpha-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -172,7 +213,35 @@ deploy_staging:
         - ssh -i ~/.ssh/id_rsa deploy@10.0.30.30 -o StrictHostKeyChecking=no -t "rsync -avz /var/www/seller-stg.sinbad.web.id/ /var/www/seller-center-bak"
         - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.30.30:/var/www/seller-stg.sinbad.web.id
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-beta-\d+$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
+          when: always
+    tags:
+        - sinbad-aws-docker-runner
+
+deploy_demo:
+    stage: deploy
+    image: node:12-alpine
+    artifacts:
+        paths:
+            - dist/supplier-center/
+    before_script:
+        - mkdir -p ~/.ssh
+        - echo "$deploy_private_key_demo" | tr -d '\r' > ~/.ssh/id_rsa
+        - echo "$deploy_public_key_demo" | tr -d '\r' > ~/.ssh/id_rsa.pub
+        - chmod 600 ~/.ssh/id_rsa
+        - chmod 600 ~/.ssh/id_rsa.pub
+        - apk update
+        - apk add openssh-client rsync
+        - npm install -g logrocket-cli
+    script:
+        - logrocket release ${CI_COMMIT_TAG}_${CI_COMMIT_SHORT_SHA} --apikey=$LOGROCKET_API_KEY
+        - logrocket upload dist/supplier-center/ --release=${CI_COMMIT_TAG}_${CI_COMMIT_SHORT_SHA} --apikey=$LOGROCKET_API_KEY
+        - rm dist/supplier-center/*.map
+        - ls -laah ${CI_PROJECT_DIR}/dist/supplier-center/
+        - ssh -i ~/.ssh/id_rsa deploy@10.0.30.220 -o StrictHostKeyChecking=no -t "rsync -avz /usr/share/nginx/html/ /usr/share/nginx/html-backup"
+        - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.30.220:/usr/share/nginx/html
+    rules:
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-demo-\d+$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -200,7 +269,7 @@ deploy_production:
         - ssh -i ~/.ssh/id_rsa deploy@10.0.10.20 -o StrictHostKeyChecking=no -t "rsync -avz /var/www/seller.sinbad.web.id/ /var/www/seller-center-bak"
         - rsync -avz --delete --force --omit-dir-times -e "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no" ${CI_PROJECT_DIR}/dist/supplier-center/ deploy@10.0.10.20:/var/www/seller.sinbad.web.id
     rules:
-        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)$/'
           when: always
     tags:
         - sinbad-aws-docker-runner
@@ -217,7 +286,7 @@ deploy_production:
 #        - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
 #        - rm -rf ~/.aws/
 #    rules:
-#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-alpha-\d+$/'
+#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-alpha-\d+$/'
 #    tags:
 #        - docker
 
@@ -233,7 +302,7 @@ deploy_production:
 #        - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
 #        - rm -rf ~/.aws/
 #    rules:
-#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)-beta-\d+$/'
+#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)-beta-\d+$/'
 #    tags:
 #        - docker
 
@@ -249,7 +318,7 @@ deploy_production:
 #        - aws ec2 stop-instances --instance-ids i-0b5d8441ab6417b2f
 #        - rm -rf ~/.aws/
 #    rules:
-#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d.\d.\d)$/'
+#        - if: '$CI_COMMIT_REF_NAME =~ /^(\d+.\d+.\d+)$/'
 #          when: always
 #    tags:
 #        - docker

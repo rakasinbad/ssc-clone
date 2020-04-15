@@ -141,7 +141,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
-                            {{ safeValue(row?.store?.name) }}
+                            {{ safeValue(row?.order?.store?.name) }}
                         </p>
                     </mat-cell>
                 </ng-container>
@@ -154,11 +154,9 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                row?.parcelDetails?.totalNettPrice > 0 ||
-                                row?.parcelDetails?.totalNettPrice == 0
-                                    ? (row?.parcelDetails?.totalNettPrice
-                                      | price: 'full':'IDR':'narrow':'1.2-2')
-                                    : safeValue(row?.parcelDetails?.totalNettPrice)
+                                row?.parcelNettPrice > 0 || row?.parcelNettPrice == 0
+                                    ? (row?.parcelNettPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : safeValue(row?.parcelNettPrice)
                             }}
                         </p>
                     </mat-cell>
@@ -184,10 +182,9 @@
                     <mat-cell *matCellDef="let row">
                         <p style="word-break: break-word;">
                             {{
-                                row?.parcelDetails?.totalQty > 0 ||
-                                row?.parcelDetails?.totalQty == 0
-                                    ? (row?.parcelDetails?.totalQty | number)
-                                    : safeValue(row?.parcelDetails?.totalQty)
+                                row?.parcelQty > 0 || row?.parcelQty == 0
+                                    ? (row?.parcelQty | number)
+                                    : safeValue(row?.parcelQty)
                             }}
                         </p>
                     </mat-cell>
@@ -261,11 +258,9 @@
                     <mat-cell *matCellDef="let row">
                         <p class="price" style="word-break: break-word;">
                             {{
-                                row?.parcelDetails?.totalNettPrice > 0 ||
-                                row?.parcelDetails?.totalNettPrice == 0
-                                    ? (row?.parcelDetails?.totalNettPrice
-                                      | price: 'full':'IDR':'narrow':'1.2-2')
-                                    : safeValue(row?.parcelDetails?.totalNettPrice)
+                                row?.parcelNettPrice > 0 || row?.parcelNettPrice == 0
+                                    ? (row?.parcelNettPrice | price: 'full':'IDR':'narrow':'1.2-2')
+                                    : safeValue(row?.parcelNettPrice)
                             }}
                         </p>
                     </mat-cell>

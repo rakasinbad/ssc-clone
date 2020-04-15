@@ -4,209 +4,253 @@
     </span>
 </div>
 
-<div class="box-info horizontal" fxLayout="column" fxLayoutGap="16px">
-    <span class="box-title">Tier 1</span>
-
+<ng-container *ngIf="(flexiCombo$ | async)?.promoConditions as conditions; else noConditions">
     <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
+        class="box-info horizontal"
+        [class.mb-16]="!isLast"
+        fxLayout="column"
+        fxLayoutGap="16px"
+        *ngFor="let condition of conditions; index as idx; last as isLast"
     >
-        <div class="label group-label" fxFlexAlign="center" fxFlex="10">
-            Condition
+        <span class="box-title"> Tier {{ idx + 1 }} </span>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">
+                Condition
+            </div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100"></div>
         </div>
 
-        <div class="info" fxFlexAlign="center" fxFlex="100"></div>
-    </div>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                Base
+            </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Base
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="conditionBase; else noConditionBase">
+                    <mat-radio-group [value]="condition?.conditionBase">
+                        <mat-radio-button *ngFor="let row of conditionBase" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noConditionBase>
+                    -
+                </ng-template>
+            </div>
         </div>
 
-        <div class="info" fxFlexAlign="center" fxFlex="100">
-            <mat-radio-group>
-                <mat-radio-button value="1">
-                    Qty
-                </mat-radio-button>
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                <ng-container [ngSwitch]="condition?.conditionBase">
+                    <ng-container *ngSwitchCase="eConditionBase.QTY">
+                        Qty >=
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                        Order Value >=
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </div>
 
-                <mat-radio-button value="2">
-                    Order Value
-                </mat-radio-button>
-            </mat-radio-group>
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.code || '-' }}
+            <div class="info" fxFlex="100">
+                <ng-container [ngSwitch]="condition?.conditionBase">
+                    <ng-container *ngSwitchCase="eConditionBase.QTY">
+                        {{ condition?.conditionQty }}
+                    </ng-container>
+                    <ng-container *ngSwitchCase="eConditionBase.ORDER_VALUE">
+                        {{ condition?.conditionValue }}
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>-</ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label group-label" fxFlexAlign="center" fxFlex="10">
+                Benefit
+            </div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100"></div>
+        </div>
+
+        <div
+            class="custom-field info-field"
+            fxLayout="row"
+            fxLayoutAlign="start center"
+            fxLayoutGap="15px"
+        >
+            <div class="label" fxFlexAlign="center" fxFlex="10">
+                Benefit Type
+            </div>
+
+            <div class="info" fxFlexAlign="center" fxFlex="100">
+                <ng-container *ngIf="benefitType; else noBenefitType">
+                    <mat-radio-group [value]="condition?.benefitType">
+                        <mat-radio-button *ngFor="let row of benefitType" [value]="row?.id">
+                            {{ row?.label }}
+                        </mat-radio-button>
+                    </mat-radio-group>
+                </ng-container>
+
+                <ng-template #noBenefitType>
+                    -
+                </ng-template>
+            </div>
+        </div>
+
+        <ng-container [ngSwitch]="condition?.benefitType">
+            <!-- Benefit Type Qty -->
+            <ng-container *ngSwitchCase="eBenefitType.QTY">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                        Bonus SKU
+                    </div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitCatalogueId }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+                    <div class="info" fxFlex="100">
+                        <mat-checkbox
+                            [checked]="
+                                isApplySameSku(
+                                    (flexiCombo$ | async)?.promoCatalogues,
+                                    condition?.benefitCatalogueId
+                                )
+                            "
+                        >
+                            Apply Some SKU
+                        </mat-checkbox>
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                        Bonus Qty
+                    </div>
+
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitBonusQty || '-' }}
+                    </div>
+                </div>
+
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10"></div>
+
+                    <div class="info" fxFlex="100">
+                        <mat-checkbox [checked]="condition?.multiplication">
+                            Multiplication Only
+                        </mat-checkbox>
+                    </div>
+                </div>
             </ng-container>
+            <!-- ./ Benefit Type Qty -->
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
+            <!-- Benefit Type Amount -->
+            <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                        Rebate
+                    </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Qty >=
-        </div>
-
-        <div class="info" fxFlex="100">
-            10
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitRebate || '-' }}
+                    </div>
+                </div>
             </ng-container>
+            <!-- ./ Benefit Type Amount -->
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
+            <!-- Benefit Type Percent -->
+            <ng-container *ngSwitchCase="eBenefitType.PERCENT">
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                        % Discount
+                    </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label group-label" fxFlexAlign="center" fxFlex="10">
-            Benefit
-        </div>
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitDiscount || '-' }}
+                    </div>
+                </div>
 
-        <div class="info" fxFlexAlign="center" fxFlex="100"></div>
-    </div>
+                <div
+                    class="custom-field info-field"
+                    fxLayout="row"
+                    fxLayoutAlign="start center"
+                    fxLayoutGap="15px"
+                >
+                    <div class="label" fxFlexAlign="center" fxFlex="10">
+                        Max Rebate
+                    </div>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Benefit Type
-        </div>
-
-        <div class="info" fxFlexAlign="center" fxFlex="100">
-            <mat-radio-group>
-                <mat-radio-button value="1">
-                    Qty
-                </mat-radio-button>
-
-                <mat-radio-button value="2">
-                    Rp
-                </mat-radio-button>
-
-                <mat-radio-button value="3">
-                    %
-                </mat-radio-button>
-            </mat-radio-group>
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.code || '-' }}
+                    <div class="info" fxFlex="100">
+                        {{ condition?.benefitMaxRebate || '-' }}
+                    </div>
+                </div>
             </ng-container>
+            <!-- ./ Benefit Type Percent -->
 
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
+            <ng-container *ngSwitchDefault>-</ng-container>
+        </ng-container>
     </div>
+</ng-container>
 
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Bonus SKU
-        </div>
-
-        <div class="info" fxFlex="100">
-            Ovaltine 3in1 10gr
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
-
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
-
-        <div class="info" fxFlex="100">
-            <mat-checkbox>Apply Some SKU</mat-checkbox>
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
-
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10">
-            Bonus Qty
-        </div>
-
-        <div class="info" fxFlex="100">
-            1
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
-
-    <div
-        class="custom-field info-field"
-        fxLayout="row"
-        fxLayoutAlign="start center"
-        fxLayoutGap="15px"
-    >
-        <div class="label" fxFlexAlign="center" fxFlex="10"></div>
-
-        <div class="info" fxFlex="100">
-            <mat-checkbox>Multiplication Only</mat-checkbox>
-            <!-- <ng-container *ngIf="!(isLoading$ | async)">
-                {{ (warehouse$ | async)?.name || '-' }}
-            </ng-container>
-
-            <ngx-skeleton-loader
-                [theme]="{ width: '100px', 'margin-bottom': '-5px' }"
-                *ngIf="isLoading$ | async"
-            ></ngx-skeleton-loader> -->
-        </div>
-    </div>
-</div>
+<ng-template #noConditions>
+    Not found Condition & Benefit Settings.
+</ng-template>

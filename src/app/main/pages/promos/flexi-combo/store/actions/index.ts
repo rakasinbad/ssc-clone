@@ -1,7 +1,5 @@
 import * as FlexiComboActions from './flexi-combo.actions';
-import * as FlexiComboListActions from './flexi-combo-list.actions';
 
-type failureActionNames = FlexiComboActions.failureActionNames;
-type requestActionNames = FlexiComboActions.requestActionNames;
+type FlexiComboFailureActions = FlexiComboActions.FailureActions;
 
-export { failureActionNames, requestActionNames, FlexiComboActions, FlexiComboListActions };
+export { FlexiComboFailureActions, FlexiComboActions };

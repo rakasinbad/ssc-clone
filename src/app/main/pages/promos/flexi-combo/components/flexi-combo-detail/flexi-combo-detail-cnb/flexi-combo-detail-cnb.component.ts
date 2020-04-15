@@ -1,4 +1,13 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { HelperService } from 'app/shared/helpers';
+import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { ConditionBase } from 'app/shared/models/condition-base.model';
+import { Observable } from 'rxjs';
+
+import { FlexiCombo, IPromoCondition, IPromoCatalogue } from '../../../models';
+import * as fromFlexiCombos from '../../../store/reducers';
+import { FlexiComboSelectors } from '../../../store/selectors';
 
 @Component({
     selector: 'app-flexi-combo-detail-cnb',
@@ -8,7 +17,50 @@ import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlexiComboDetailCnbComponent implements OnInit {
-    constructor() {}
+    flexiCombo$: Observable<FlexiCombo>;
+    isLoading$: Observable<boolean>;
 
-    ngOnInit() {}
+    conditionBase = this._$helperService.conditionBase();
+    eConditionBase = ConditionBase;
+    benefitType = this._$helperService.benefitType();
+    eBenefitType = BenefitType;
+
+    constructor(
+        private store: Store<fromFlexiCombos.FeatureState>,
+        private _$helperService: HelperService
+    ) {}
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
+
+    ngOnInit(): void {
+        // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
+        // Add 'implements OnInit' to the class.
+
+        this.flexiCombo$ = this.store.select(FlexiComboSelectors.getSelectedItem);
+        this.isLoading$ = this.store.select(FlexiComboSelectors.getIsLoading);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    getConditions(value: IPromoCondition[]): IPromoCondition[] {
+        if (value && value.length > 0) {
+            return value;
+        }
+
+        return [];
+    }
+
+    isApplySameSku(sources: IPromoCatalogue[], benefitSku: string): boolean {
+        if (!sources || !sources.length || sources.length > 1 || !benefitSku) {
+            return false;
+        }
+
+        const idx = sources.findIndex((source) => source.id === benefitSku);
+
+        return idx !== -1;
+    }
 }

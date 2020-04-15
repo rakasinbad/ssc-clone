@@ -1,12 +1,12 @@
 import { FuseNavigation } from '@fuse/types';
 
-export const navigation: Array<FuseNavigation> = [
+export const navigation: FuseNavigation[] = [
     {
         id: 'dashboard',
         title: 'Dashboard',
         translate: 'NAV.DASHBOARD.TITLE',
         type: 'item',
-        icon: 'dashboard',
+        icon: 'custom-sinbad-dashboard-logo',
         url: '/pages/dashboard',
     },
     {
@@ -211,13 +211,19 @@ export const navigation: Array<FuseNavigation> = [
         id: 'promo',
         title: 'Promo',
         type: 'collapsable',
-        icon: 'local_play',
+        icon: 'custom-sinbad-promo-logo',
         children: [
             {
                 id: 'flexi-combo',
                 title: 'Flexi Combo',
                 type: 'item',
                 url: '/pages/promos/flexi-combo',
+            },
+            {
+                id: 'period-target-promo',
+                title: 'Period Target Promo',
+                type: 'item',
+                url: '/pages/promos/period-target-promo',
             },
         ],
     },

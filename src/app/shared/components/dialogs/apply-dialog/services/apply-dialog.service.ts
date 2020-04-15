@@ -43,4 +43,16 @@ export class ApplyDialogService<T = undefined> {
             this.dialogRef.componentInstance.data.isApplyEnabled = false;
         });
     }
+
+    showApplyButton(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.showApplyButton = true;
+        });
+    }
+
+    hideApplyButton(): void {
+        setTimeout(() => {
+            this.dialogRef.componentInstance.data.showApplyButton = false;
+        });
+    }
 }

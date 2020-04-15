@@ -1,0 +1,85 @@
+<!-- ENTITY (STORE SEGMENTATION TYPE) -->
+<!-- <div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
+        <input
+            #triggerEntity
+            matInput
+            autocomplete="new-password"
+            placeholder="Search Store Type"
+            [formControl]="entityForm"
+            [matAutocomplete]="entityAutoComplete"
+        />
+        <mat-autocomplete
+            #entityAutoComplete
+            [displayWith]="displayEntity"
+            (opened)="listenEntityAutoComplete()"
+            (optionSelected)="onSelectedEntity($event)"
+        > -->
+            <!-- NONE OPTION -->
+            <!-- <mat-option *ngIf="!(isEntityLoading$ | async)">(None)</mat-option> -->
+            <!-- / NONE OPTION -->
+
+            <!-- ENTITY (STORE SEGMENTATION TYPE) OPTIONS -->
+            <!-- <mat-option
+                *ngFor="let entity of (availableEntities$ | async)"
+                [value]="entity"
+            >
+                {{ entity?.name || '-' }}
+            </mat-option> -->
+            <!-- / ENTITY (STORE SEGMENTATION TYPE) OPTIONS -->
+
+            <!-- LOADING OPTION -->
+            <!-- <mat-option
+                [disabled]="true"
+                style="text-align: center; font-style: italic; max-height: 30px;"
+                *ngIf="!(totalEntities$ | async) && ((totalEntities$ | async) > (availableEntities$ | async)?.length)"
+            >
+                Loading ...
+            </mat-option> -->
+            <!-- / LOADING OPTION -->
+        <!-- </mat-autocomplete>
+        <mat-error *ngIf="hasError(entityForm)">
+            {{ getFormError(entityForm) }}
+        </mat-error>
+    </mat-form-field>
+</div> -->
+<div class="custom-field" fxLayout="row">
+    <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex (click)="openEntitySelection()">
+        <input
+            matInput
+            autocomplete="new-password"
+            [placeholder]="placeholder"
+            [formControl]="entityFormView"
+            [value]="entityFormView.value"
+        />
+        <mat-error>
+            <ng-content select="[error]"></ng-content>
+        </mat-error>
+    </mat-form-field>
+</div>
+<ng-template #selectStoreType>
+    <sinbad-multiple-selection
+        [disableClearAll]="true"
+        [enableSelectAll]="true"
+        [availableOptions]="(availableEntities$ | async)"
+        [totalAvailableOptions]="(totalEntities$ | async)"
+        [initialSelectedOptions]="initialSelection"
+        [totalInitialSelectedOptions]="initialSelection.length"
+        [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+        (availableReachedBottom)="onEntityReachedBottom($event)"
+        (selectionListChanged)="onSelectionChanged($event)"
+        (clearAll)="onClearAll()"
+        (search)="onEntitySearch($event)"
+    ></sinbad-multiple-selection>
+</ng-template>
+<!-- <select-advanced
+    [isMultipleSelections]="false"
+    [placeholder]="'Search Store Type'"
+    [availableOptions]="(availableEntities$ | async)"
+    [totalAvailableOptions]="(totalEntities$ | async)"
+    [isAvailableOptionsLoading]="(isEntityLoading$ | async)"
+    (availableReachedBottom)="onEntityReachedBottom($event)"
+    (selected)="onSelectedEntity($event)"
+    (search)="onEntitySearch($event)"
+></select-advanced> -->
+<!-- / ENTITY (STORE SEGMENTATION TYPE) -->

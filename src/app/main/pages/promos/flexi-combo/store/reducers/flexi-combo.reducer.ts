@@ -1,89 +1,66 @@
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { EntityState, createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { environment } from 'environments/environment';
-import { FlexiCombo } from '../../models/flexi-combo.model';
+
+import { FlexiCombo } from '../../models';
 import { FlexiComboActions } from '../actions';
 
-// Set reducer's feature key
-export const FEATURE_KEY = 'flexiCombo';
+// Keyname for reducer
+export const featureKey = 'flexiCombos';
 
-// Store's FlexiCombo
-interface FlexiComboInternalState extends EntityState<FlexiCombo> {
+export interface State extends EntityState<FlexiCombo> {
     isLoading: boolean;
-    limit: number;
-    skip: number;
+    isRefresh: boolean;
+    selectedId: string;
     total: number;
 }
 
-export const adapterFlexiCombo: EntityAdapter<FlexiCombo> = createEntityAdapter<FlexiCombo>({
-    selectId: flexiCombo => flexiCombo.id as string
+// Adapter for flexiCombos state
+export const adapter = createEntityAdapter<FlexiCombo>({
+    selectId: (row) => row.id,
 });
 
-// Initial value for FlexiCombo State.
-const initialFlexiComboState: FlexiComboInternalState = adapterFlexiCombo.getInitialState<
-    Omit<FlexiComboInternalState, 'ids' | 'entities'>
->({
+// Initialize state
+export const initialState: State = adapter.getInitialState<Omit<State, 'ids' | 'entities'>>({
     isLoading: false,
+    isRefresh: undefined,
+    selectedId: null,
     total: 0,
-    limit: environment.pageSize,
-    skip: 0
 });
-
-export interface FlexiComboState {
-    flexiCombo: FlexiComboInternalState;
-}
-
-const intialState: FlexiComboState = {
-    flexiCombo: initialFlexiComboState
-};
 
 // Create the reducer.
 export const reducer = createReducer(
-    intialState,
-    /**
-     * REQUEST STATES.
-     */
+    initialState,
     on(
         FlexiComboActions.fetchFlexiComboRequest,
-        FlexiComboActions.addFlexiComboRequest,
+        FlexiComboActions.fetchFlexiCombosRequest,
+        FlexiComboActions.createFlexiComboRequest,
         FlexiComboActions.updateFlexiComboRequest,
-        FlexiComboActions.removeFlexiComboRequest,
-        state => ({
+        (state) => ({
             ...state,
-            flexiCombo: {
-                ...state.flexiCombo,
-                isLoading: true
-            }
+            isLoading: true,
         })
     ),
-    /**
-     * FAILURE STATES.
-     */
     on(
         FlexiComboActions.fetchFlexiComboFailure,
-        FlexiComboActions.addFlexiComboFailure,
+        FlexiComboActions.fetchFlexiCombosFailure,
+        FlexiComboActions.createFlexiComboFailure,
         FlexiComboActions.updateFlexiComboFailure,
-        FlexiComboActions.removeFlexiComboFailure,
-        state => ({
+
+        (state) => ({
             ...state,
-            skuAssignment: {
-                ...state.flexiCombo,
-                isLoading: false
-            }
+            isLoading: false,
         })
     ),
-    /**
-     * FETCH SUCCESS STATE.
-     */
-    on(FlexiComboActions.fetchFlexiComboSuccess, (state, { payload }) => ({
+    on(FlexiComboActions.fetchFlexiComboRequest, (state, { payload }) => ({
         ...state,
-        skuAssignment: adapterFlexiCombo.upsertMany(payload.data, {
-            ...state.flexiCombo,
-            total: payload.total
-        })
+        isLoading: true,
+        selectedId: payload,
     })),
-    /**
-     * RESET STATE.
-     */
-    on(FlexiComboActions.resetFlexiCombo, () => intialState)
+    on(FlexiComboActions.fetchFlexiComboSuccess, (state, { payload }) =>
+        adapter.addOne(payload, { ...state, isLoading: false })
+    ),
+    on(FlexiComboActions.fetchFlexiCombosSuccess, (state, { payload }) =>
+        adapter.addAll(payload.data, { ...state, isLoading: false, total: payload.total })
+    ),
+    on(FlexiComboActions.clearState, () => initialState)
 );

@@ -1,19 +1,25 @@
 import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ElementRef, Inject, Injectable } from '@angular/core';
-import { MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
+import { MatSnackBarConfig } from '@angular/material';
 import { StorageMap } from '@ngx-pwa/local-storage';
 import { Auth } from 'app/main/pages/core/auth/models';
 import { environment } from 'environments/environment';
 import * as jwt_decode from 'jwt-decode';
-import { Observable, of, throwError, forkJoin } from 'rxjs';
-import { catchError, map, take } from 'rxjs/operators';
 import * as LogRocket from 'logrocket';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, take } from 'rxjs/operators';
 
+import { BenefitType } from '../models/benefit-type.model';
+import { CalculationMechanism } from '../models/calculation-mechanism.model';
+import { ConditionBase } from '../models/condition-base.model';
+import { ErrorHandler, TNullable } from '../models/global.model';
+import { PlatformSinbad } from '../models/platform.model';
 import { IQueryParams } from '../models/query.model';
-import { NoticeService } from './notice.service';
-import { TNullable, ErrorHandler } from '../models/global.model';
+import { SegmentationBase } from '../models/segmentation-base.model';
+import { TriggerBase } from '../models/trigger-base.model';
 import { User } from '../models/user.model';
+import { NoticeService } from './notice.service';
 
 interface TTemplateFiles {
     catalogueStock: string;
@@ -22,122 +28,202 @@ interface TTemplateFiles {
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class HelperService {
+    static debugPrefix: string = '';
+
+    private static readonly _benefitType: { id: BenefitType; label: string }[] = [
+        {
+            id: BenefitType.QTY,
+            label: 'Qty',
+        },
+        {
+            id: BenefitType.AMOUNT,
+            label: 'Rp',
+        },
+        {
+            id: BenefitType.PERCENT,
+            label: '%',
+        },
+    ];
+
+    private static readonly _calculationMechanism: { id: CalculationMechanism; label: string }[] = [
+        {
+            id: CalculationMechanism.NON_CUMULATIVE,
+            label: 'Non Cumulative',
+        },
+        {
+            id: CalculationMechanism.CUMULATIVE,
+            label: 'Cumulative',
+        },
+    ];
+
+    private static readonly _conditionBase: { id: ConditionBase; label: string }[] = [
+        {
+            id: ConditionBase.QTY,
+            label: 'Qty',
+        },
+        {
+            id: ConditionBase.ORDER_VALUE,
+            label: 'Order Value',
+        },
+    ];
+
     private static _orderStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'All'
+            label: 'All',
         },
         {
             id: 'checkout',
-            label: 'Quotation'
+            label: 'Quotation',
         },
         {
             id: 'confirm',
-            label: 'New Order'
+            label: 'New Order',
         },
         {
             id: 'packing',
-            label: 'Packed'
+            label: 'Packed',
         },
         {
             id: 'shipping',
-            label: 'Shipped'
+            label: 'Shipped',
         },
         {
             id: 'delivered',
-            label: 'Delivered'
+            label: 'Delivered',
         },
         {
             id: 'done',
-            label: 'Done'
+            label: 'Done',
         },
         {
             id: 'cancel',
-            label: 'Canceled'
-        }
+            label: 'Canceled',
+        },
     ];
 
     private static _paymentStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'All'
+            label: 'All',
         },
         {
             id: 'waiting_for_payment',
-            label: 'Waiting for Payment'
+            label: 'Waiting for Payment',
         },
         {
             id: 'payment_failed',
-            label: 'Payment Failed'
+            label: 'Payment Failed',
         },
         {
             id: 'paid',
-            label: 'Paid'
+            label: 'Paid',
         },
         {
             id: 'overdue',
-            label: 'Overdue'
-        }
+            label: 'Overdue',
+        },
+    ];
+
+    private static readonly _platformSinbad: { id: PlatformSinbad; label: string }[] = [
+        {
+            id: PlatformSinbad.ALL,
+            label: 'All',
+        },
+        {
+            id: PlatformSinbad.AGENT_APP,
+            label: 'Sinbad White',
+        },
+        {
+            id: PlatformSinbad.SINBAD_APP,
+            label: 'Sinbad Red',
+        },
+    ];
+
+    private static readonly _segmentationBase: { id: SegmentationBase; label: string }[] = [
+        {
+            id: SegmentationBase.STORE,
+            label: 'Direct Store',
+        },
+        {
+            id: SegmentationBase.SEGMENTATION,
+            label: 'Segmentation',
+        },
     ];
 
     private static _catalogueStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'All'
+            label: 'All',
         },
         {
             id: 'active',
-            label: 'Live (Active)'
+            label: 'Live (Active)',
         },
         {
             id: 'empty',
-            label: 'Empty'
+            label: 'Empty',
         },
         {
             id: 'banned',
-            label: 'Banned'
+            label: 'Banned',
         },
         {
             id: 'inactive',
-            label: 'Inactive'
-        }
+            label: 'Inactive',
+        },
     ];
 
     private static _storeStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'Semua'
+            label: 'Semua',
         },
         {
             id: 'active',
-            label: 'Active'
+            label: 'Active',
         },
         {
             id: 'inactive',
-            label: 'Inactive'
+            label: 'Inactive',
         },
         {
             id: 'banned',
-            label: 'Banned'
-        }
+            label: 'Banned',
+        },
+    ];
+
+    private static readonly _triggerBase: { id: TriggerBase; label: string }[] = [
+        {
+            id: TriggerBase.SKU,
+            label: 'SKU',
+        },
+        {
+            id: TriggerBase.BRAND,
+            label: 'Brand',
+        },
+        {
+            id: TriggerBase.INVOICE,
+            label: 'Faktur',
+        },
     ];
 
     private static _globalStatuses: Array<{ id: string; label: string }> = [
         {
             id: 'all',
-            label: 'All'
+            label: 'All',
         },
         {
             id: 'active',
-            label: 'Active'
+            label: 'Active',
         },
         {
             id: 'inactive',
-            label: 'Inactive'
-        }
+            label: 'Inactive',
+        },
     ];
 
     private static _host = environment.host;
@@ -147,30 +233,30 @@ export class HelperService {
     private _attendanceTypes: Array<{ value: string; text: string }> = [
         {
             value: 'absent',
-            text: 'Tidak Hadir'
+            text: 'Tidak Hadir',
         },
         {
             value: 'present',
-            text: 'Hadir'
+            text: 'Hadir',
         },
         {
             value: 'leave',
-            text: 'Cuti'
-        }
+            text: 'Cuti',
+        },
     ];
     private _locationTypes: Array<{ value: string; text: string }> = [
         {
             value: 'inside',
-            text: 'Kerja di Toko'
+            text: 'Kerja di Toko',
         },
         {
             value: 'outside',
-            text: 'Kerja di Luar Toko'
+            text: 'Kerja di Luar Toko',
         },
         {
             value: 'others',
-            text: 'Lainnya'
-        }
+            text: 'Lainnya',
+        },
     ];
 
     constructor(
@@ -182,12 +268,16 @@ export class HelperService {
         this._currentHost = this.doc.location.hostname;
     }
 
+    static setDebugPrefix(prefix: string): void {
+        HelperService.debugPrefix = prefix;
+    }
+
     static debug(label: string, data: any = {}): void {
         if (!environment.production) {
             // tslint:disable-next-line:no-console
-            console.groupCollapsed(label, data);
+            console.groupCollapsed(HelperService.debugPrefix + label, data);
             // tslint:disable-next-line:no-console
-            console.trace(label, data);
+            console.trace(HelperService.debugPrefix + label, data);
             // tslint:disable-next-line:no-console
             console.groupEnd();
         }
@@ -262,17 +352,31 @@ export class HelperService {
         const noticeSetting: MatSnackBarConfig = {
             horizontalPosition: 'right',
             verticalPosition: 'bottom',
-            duration: 10000
+            duration: 10000,
         };
 
-        const message = typeof error.error === 'string' ? 'Unknown error' : !error.error ? 'Unknown error' : !error.error.message ? 'Unknown error' : error.error.message;
-        const uuid = typeof error.error === 'string' ? '-' : !error.error ? '-' : !error.error.errors ? '-' : error.error.errors.uuid;
+        const message =
+            typeof error.error === 'string'
+                ? 'Unknown error'
+                : !error.error
+                ? 'Unknown error'
+                : !error.error.message
+                ? 'Unknown error'
+                : error.error.message;
+        const uuid =
+            typeof error.error === 'string'
+                ? '-'
+                : !error.error
+                ? '-'
+                : !error.error.errors
+                ? '-'
+                : error.error.errors.uuid;
 
         if (environment.logRocketId) {
-            this.storage.get<string>('session', { type: 'string' })
-                .pipe(
-                    take(1)
-                ).subscribe(sessionId => {
+            this.storage
+                .get<string>('session', { type: 'string' })
+                .pipe(take(1))
+                .subscribe((sessionId) => {
                     if (!errId.startsWith('ERR_UNRECOGNIZED')) {
                         this._$notice.open(
                             `An error occured.<br/><br/>Error code: ${errId},<br/>Reason: ${message},<br/>Request code: ${uuid}`,
@@ -286,17 +390,17 @@ export class HelperService {
                             noticeSetting
                         );
                     }
-        
+
                     LogRocket.captureMessage(message, {
                         tags: {
                             environment: environment.environment.toUpperCase(),
                             version: environment.appVersion,
-                            commitHash: environment.appHash
+                            commitHash: environment.appHash,
                         },
                         extra: {
                             sessionId,
-                            requestId: uuid
-                        }
+                            requestId: uuid,
+                        },
                     });
                 });
         } else {
@@ -404,7 +508,7 @@ export class HelperService {
         // console.log('ARGS 1', args);
 
         if (args && args.length > 0) {
-            args.forEach(arg => {
+            args.forEach((arg) => {
                 if (arg.key && arg.value) {
                     newParams = newParams.append(arg.key, arg.value);
                 } else if ((arg.key && arg.key === 'dateLte') || arg.key === 'dateGte') {
@@ -449,11 +553,11 @@ export class HelperService {
                 // headers: new HttpHeaders({
                 //     Accept: '*/*'
                 // }),
-                observe: 'response'
+                observe: 'response',
             })
             .pipe(
-                map(res => res && res.ok && res.status === 200),
-                catchError(err => of(false))
+                map((res) => res && res.ok && res.status === 200),
+                catchError((err) => of(false))
             );
     }
 
@@ -461,7 +565,7 @@ export class HelperService {
         return [
             { id: 'pcs', label: 'per Piece' },
             { id: 'master_box', label: 'Master Box' },
-            { id: 'custom', label: 'Custom' }
+            { id: 'custom', label: 'Custom' },
         ];
     }
 
@@ -471,21 +575,37 @@ export class HelperService {
         return [
             {
                 id: '1',
-                label: '1 Orang'
+                label: '1 Orang',
             },
             {
                 id: '2-10',
-                label: '2-10 Orang'
+                label: '2-10 Orang',
             },
             {
                 id: '11-20',
-                label: '11-20 Orang'
+                label: '11-20 Orang',
             },
             {
                 id: '>50',
-                label: '> 50 Orang'
-            }
+                label: '> 50 Orang',
+            },
         ];
+    }
+
+    benefitType(): { id: BenefitType; label: string }[] {
+        return HelperService._benefitType;
+    }
+
+    calculationMechanism(): { id: CalculationMechanism; label: string }[] {
+        return HelperService._calculationMechanism;
+    }
+
+    catalogueStatus(): { id: string; label: string }[] {
+        return HelperService._catalogueStatuses;
+    }
+
+    conditionBase(): { id: ConditionBase; label: string }[] {
+        return HelperService._conditionBase;
     }
 
     orderStatus(): { id: string; label: string }[] {
@@ -496,24 +616,32 @@ export class HelperService {
         return HelperService._paymentStatuses;
     }
 
-    catalogueStatus(): { id: string; label: string }[] {
-        return HelperService._catalogueStatuses;
+    platformSinbad(): { id: PlatformSinbad; label: string }[] {
+        return HelperService._platformSinbad;
+    }
+
+    segmentationBase(): { id: SegmentationBase; label: string }[] {
+        return HelperService._segmentationBase;
     }
 
     storeStatus(): { id: string; label: string }[] {
         return HelperService._storeStatuses;
     }
 
+    triggerBase(): { id: TriggerBase; label: string }[] {
+        return HelperService._triggerBase;
+    }
+
     stockType(): { id: boolean; label: string }[] {
         return [
             {
                 id: true,
-                label: 'Unlimited'
+                label: 'Unlimited',
             },
             {
                 id: false,
-                label: 'Limited'
-            }
+                label: 'Limited',
+            },
         ];
     }
 
@@ -521,20 +649,20 @@ export class HelperService {
         return [
             {
                 id: 'province',
-                label: 'Provinsi'
+                label: 'Provinsi',
             },
             {
                 id: 'city',
-                label: 'Kota/Kabupaten'
+                label: 'Kota/Kabupaten',
             },
             {
                 id: 'district',
-                label: 'Kecamatan'
+                label: 'Kecamatan',
             },
             {
                 id: 'urban',
-                label: 'Kelurahan'
-            }
+                label: 'Kelurahan',
+            },
         ];
     }
 
@@ -542,17 +670,17 @@ export class HelperService {
         return [
             {
                 id: 'all',
-                label: 'Select All'
+                label: 'Select All',
             },
             {
                 id: 'manually',
-                label: 'Select Manually'
-            }
+                label: 'Select Manually',
+            },
         ];
     }
 
     attendanceType(value: string): string {
-        const attendanceType = this._attendanceTypes.filter(attType => attType.value === value);
+        const attendanceType = this._attendanceTypes.filter((attType) => attType.value === value);
 
         if (attendanceType.length === 0) {
             return '-';
@@ -566,7 +694,7 @@ export class HelperService {
     }
 
     locationType(value: string): string {
-        const locationType = this._locationTypes.filter(locType => locType.value === value);
+        const locationType = this._locationTypes.filter((locType) => locType.value === value);
 
         if (locationType.length === 0) {
             return '-';
@@ -590,7 +718,7 @@ export class HelperService {
                 if (!userAuth) {
                     throw new ErrorHandler({
                         id: 'ERR_NO_TOKEN',
-                        errors: `Token found: ${userAuth.token}`
+                        errors: `Token found: ${userAuth.token}`,
                     });
                 } else {
                     try {
@@ -617,7 +745,7 @@ export class HelperService {
                         throwError(
                             new ErrorHandler({
                                 id: 'ERR_USER_INVALID_TOKEN',
-                                errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`
+                                errors: `Local Storage's auth found: ${userAuth} | Error: ${e}`,
                             })
                         );
                     }
@@ -630,7 +758,7 @@ export class HelperService {
         this._$notice.open(text, 'info', {
             verticalPosition: 'bottom',
             horizontalPosition: 'right',
-            duration: 7000
+            duration: 7000,
         });
     }
 

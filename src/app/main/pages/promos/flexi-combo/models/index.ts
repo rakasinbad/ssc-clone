@@ -1,4 +1,3 @@
-import { FlexiCombo } from './flexi-combo.model';
-import { FlexiComboList } from './flexi-combo-list.model';
-
-export { FlexiCombo, FlexiComboList };
+export * from './flexi-combo-detail.model';
+export * from './flexi-combo.model';
+export * from './payload.model';
