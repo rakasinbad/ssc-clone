@@ -416,12 +416,13 @@
                                 fxFlexAlign="center"
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('base')"
+                                fxFill
                             >
                                 <span class="sinbad-red-fg">*</span>
                                 Base
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50" class="form-info">
+                            <!-- <mat-form-field appearance="outline" fxFlex="50" class="form-info">
                                 <input matInput style="display: none;" />
 
                                 <ng-container *ngIf="triggerBase; else noTriggerBase">
@@ -442,9 +443,9 @@
                                 <mat-hint class="mat-error" *ngIf="hasError('base', true)">
                                     {{ getErrorMessage('base') }}
                                 </mat-hint>
-                            </mat-form-field>
+                            </mat-form-field> -->
 
-                            <!-- <div fxFlexAlign="center" fxFlex="50">
+                            <div fxFlexAlign="center" fxFlex="50" fxFill>
                                 <ng-container *ngIf="triggerBase; else noTriggerBase">
                                     <mat-radio-group formControlName="base">
                                         <mat-radio-button
@@ -459,7 +460,11 @@
                                 <ng-template #noTriggerBase>
                                     -
                                 </ng-template>
-                            </div> -->
+
+                                <mat-hint class="mat-error" *ngIf="hasError('base', true)">
+                                    {{ getErrorMessage('base') }}
+                                </mat-hint>
+                            </div>
                         </div>
 
                         <div
@@ -779,112 +784,159 @@
                                         </div>
                                         <!-- ./ FIELD TIER BENEFIT TYPE -->
 
-                                        <!-- START FIELD TIER BONUS SKU -->
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label
-                                                fxFlexAlign="center"
-                                                fxFlex="16"
-                                                [class.sinbad-red-fg]="
-                                                    hasError([
-                                                        'conditions',
-                                                        conditionIdx,
-                                                        'benefitBonusQty'
-                                                    ])
-                                                "
-                                            >
-                                                <span class="sinbad-red-fg">*</span>
-                                                Bonus SKU
-                                            </label>
+                                        <!-- SWITCH CASE LAYOUT BENEFIT TYPE -->
+                                        <ng-container [ngSwitch]="getBenefitType(conditionIdx)">
+                                            <ng-container *ngSwitchCase="eBenefitType.QTY">
+                                                <!-- START FIELD TIER BONUS SKU -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label
+                                                        fxFlexAlign="center"
+                                                        fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitCatalogueId'
+                                                            ])
+                                                        "
+                                                    >
+                                                        <span class="sinbad-red-fg">*</span>
+                                                        Bonus SKU
+                                                    </label>
 
-                                            <select-catalogues
-                                                mode="single"
-                                                [required]="true"
-                                                (selected)="onSkuSelected($event)"
-                                                fxFlex="60"
-                                            >
-                                                <div error>
-                                                    {{
-                                                        getErrorMessage(
-                                                            'benefitCatalogueId',
-                                                            'conditions',
-                                                            conditionIdx
-                                                        )
-                                                    }}
+                                                    <select-catalogues
+                                                        mode="single"
+                                                        [disabled]="
+                                                            isDisabledBonusSku(conditionIdx)
+                                                        "
+                                                        [initialSelection]="
+                                                            getApplyBonusSku(conditionIdx)
+                                                        "
+                                                        [required]="true"
+                                                        (selected)="
+                                                            onBenefitSkuSelected($event, [
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitCatalogueId'
+                                                            ])
+                                                        "
+                                                        fxFlex="60"
+                                                    >
+                                                        <div error>
+                                                            {{
+                                                                getErrorMessage(
+                                                                    'benefitCatalogueId',
+                                                                    'conditions',
+                                                                    conditionIdx
+                                                                )
+                                                            }}
+                                                        </div>
+                                                    </select-catalogues>
                                                 </div>
-                                            </select-catalogues>
-                                        </div>
-                                        <!-- ./ FIELD TIER BONUS SKU -->
+                                                <!-- ./ FIELD TIER BONUS SKU -->
 
-                                        <!-- START FIELD TIER APPLY SAME SKU -->
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label fxFlexAlign="center" fxFlex="16"></label>
+                                                <!-- START FIELD TIER APPLY SAME SKU -->
+                                                <div
+                                                    class="custom-field mt-12"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                    *ngIf="isFirst && canApplySameSku()"
+                                                >
+                                                    <label fxFlexAlign="center" fxFlex="16"></label>
 
-                                            <div fxFlexAlign="center" fxFlex="60">
-                                                <mat-checkbox>Apply Same SKU</mat-checkbox>
-                                            </div>
-                                        </div>
-                                        <!-- ./ FIELD TIER APPLY SAME SKU -->
+                                                    <div fxFlexAlign="center" fxFlex="60">
+                                                        <mat-checkbox
+                                                            formControlName="applySameSku"
+                                                            (change)="
+                                                                onChangeApplySameSku(
+                                                                    $event,
+                                                                    conditionIdx
+                                                                )
+                                                            "
+                                                        >
+                                                            Apply Same SKU
+                                                        </mat-checkbox>
+                                                    </div>
+                                                </div>
+                                                <!-- ./ FIELD TIER APPLY SAME SKU -->
 
-                                        <!-- START FIELD TIER BONUS QTY -->
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label
-                                                fxFlexAlign="center"
-                                                fxFlex="16"
-                                                [class.sinbad-red-fg]="hasError('promoBudget')"
-                                            >
-                                                Bonus Qty
-                                            </label>
+                                                <!-- START FIELD TIER BONUS QTY -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label
+                                                        fxFlexAlign="center"
+                                                        fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError('promoBudget')
+                                                        "
+                                                    >
+                                                        Bonus Qty
+                                                    </label>
 
-                                            <mat-form-field appearance="outline" fxFlex="60">
-                                                <input matInput formControlName="benefitBonusQty" />
+                                                    <mat-form-field
+                                                        appearance="outline"
+                                                        fxFlex="60"
+                                                    >
+                                                        <input
+                                                            matInput
+                                                            formControlName="benefitBonusQty"
+                                                        />
 
-                                                <!-- <mat-error *ngIf="hasError('promoBudget', true)">
+                                                        <!-- <mat-error *ngIf="hasError('promoBudget', true)">
                                     {{ getErrorMessage('promoBudget') }}
                                 </mat-error> -->
-                                            </mat-form-field>
-                                        </div>
-                                        <!-- ./ FIELD TIER BONUS QTY -->
+                                                    </mat-form-field>
+                                                </div>
+                                                <!-- ./ FIELD TIER BONUS QTY -->
 
-                                        <!-- START FIELD TIER MULTIPLICATION -->
-                                        <div
-                                            class="custom-field"
-                                            fxLayout="row"
-                                            fxLayoutAlign="start stretch"
-                                            fxLayoutGap="16px"
-                                        >
-                                            <label fxFlexAlign="center" fxFlex="16"></label>
+                                                <!-- START FIELD TIER MULTIPLICATION -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label fxFlexAlign="center" fxFlex="16"></label>
 
-                                            <div fxFlexAlign="center" fxFlex="60">
-                                                <mat-checkbox formControlName="multiplication">
-                                                    Multiplication Only
+                                                    <div fxFlexAlign="center" fxFlex="60">
+                                                        <mat-checkbox
+                                                            formControlName="multiplication"
+                                                        >
+                                                            Multiplication Only
 
-                                                    <mat-icon
-                                                        class="active-icon s-14 ml-8 cursor-pointer"
-                                                        color="accent"
-                                                        matTooltip="Once activated, the benefits that will be awarded&#10;to the customer will be following the multiplication&#10;of the inputted value in the quantity above as&#10;If the multiplication rule is activated, you won't be&#10;able to add more tier."
-                                                        matTooltipClass="tooltip-br"
-                                                    >
-                                                        help
-                                                    </mat-icon>
-                                                </mat-checkbox>
-                                            </div>
-                                        </div>
-                                        <!-- ./ FIELD TIER MULTIPLICATION -->
+                                                            <mat-icon
+                                                                class="active-icon s-14 ml-8 cursor-pointer"
+                                                                color="accent"
+                                                                matTooltip="Once activated, the benefits that will be awarded&#10;to the customer will be following the multiplication&#10;of the inputted value in the quantity above as&#10;If the multiplication rule is activated, you won't be&#10;able to add more tier."
+                                                                matTooltipClass="tooltip-br"
+                                                            >
+                                                                help
+                                                            </mat-icon>
+                                                        </mat-checkbox>
+                                                    </div>
+                                                </div>
+                                                <!-- ./ FIELD TIER MULTIPLICATION -->
+                                            </ng-container>
+
+                                            <ng-container
+                                                *ngSwitchCase="eBenefitType.AMOUNT"
+                                            ></ng-container>
+
+                                            <ng-container
+                                                *ngSwitchCase="eBenefitType.PERCENT"
+                                            ></ng-container>
+                                        </ng-container>
+                                        <!-- ./ SWITCH CASE LAYOUT BENEFIT TYPE -->
                                     </div>
                                     <!-- ./ FIELD-WRAPPER -->
 
@@ -914,9 +966,22 @@
                     </div>
 
                     <div>
-                        <button type="button" mat-button color="accent" (click)="addCondition()">
-                            Add Tier
-                        </button>
+                        <ng-container *ngIf="canAddTier()">
+                            <button
+                                type="button"
+                                mat-button
+                                color="accent"
+                                (click)="addCondition()"
+                            >
+                                Add Tier
+                            </button>
+                        </ng-container>
+
+                        <ng-container *ngIf="!canAddTier()">
+                            <button type="button" mat-button color="accent" disabled>
+                                Add Tier
+                            </button>
+                        </ng-container>
 
                         <mat-icon
                             class="active-icon s-14 ml-8 cursor-pointer"
@@ -947,14 +1012,54 @@
                                 fxFlexAlign="center"
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('segmentationBase')"
+                                fxFill
                             >
                                 <span class="sinbad-red-fg">*</span>
                                 Segmentation Base
                             </label>
 
-                            <mat-form-field appearance="outline" fxFlex="50" class="form-info">
+                            <!-- <mat-form-field
+                                appearance="outline"
+                                fxFlex="50"
+                                class="form-info"
+                                [class.mat-form-field-invalid]="hasError('segmentationBase', true)"
+                            >
                                 <input matInput style="display: none;" />
 
+                                <ng-container *ngIf="segmentBase; else noSegmentBase">
+                                    <mat-radio-group
+                                        formControlName="segmentationBase"
+                                        (change)="onChangeSegmentBase($event)"
+                                    >
+                                        <mat-radio-button>None</mat-radio-button>
+                                        <mat-radio-button
+                                            *ngFor="let row of segmentBase"
+                                            [value]="row?.id"
+                                        >
+                                            {{ row?.label }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </ng-container>
+
+                                <ng-template #noSegmentBase>
+                                    <div fxFlexAlign="center" fxFlex="50">
+                                        -
+                                    </div>
+                                </ng-template>
+
+                                <mat-hint
+                                    class="mat-error"
+                                    *ngIf="hasError('segmentationBase', true)"
+                                >
+                                    {{ getErrorMessage('segmentationBase') }}
+                                </mat-hint>
+
+                                <mat-error *ngIf="hasError('segmentationBase', true)">
+                                    {{ getErrorMessage('segmentationBase') }}
+                                </mat-error>
+                            </mat-form-field> -->
+
+                            <div fxFlexAlign="center" fxFlex="50" fxFill>
                                 <ng-container *ngIf="segmentBase; else noSegmentBase">
                                     <mat-radio-group
                                         formControlName="segmentationBase"
@@ -970,7 +1075,9 @@
                                 </ng-container>
 
                                 <ng-template #noSegmentBase>
-                                    -
+                                    <div fxFlexAlign="center" fxFlex="50">
+                                        -
+                                    </div>
                                 </ng-template>
 
                                 <mat-hint
@@ -979,28 +1086,10 @@
                                 >
                                     {{ getErrorMessage('segmentationBase') }}
                                 </mat-hint>
-                            </mat-form-field>
-
-                            <!-- <div fxFlexAlign="center" fxFlex="50">
-                                <ng-container *ngIf="segmentBase; else noSegmentBase">
-                                    <mat-radio-group formControlName="segmentationBase">
-                                        <mat-radio-button>None</mat-radio-button>
-                                        <mat-radio-button
-                                            *ngFor="let row of segmentBase"
-                                            [value]="row?.id"
-                                        >
-                                            {{ row?.label }}
-                                        </mat-radio-button>
-                                    </mat-radio-group>
-                                </ng-container>
-
-                                <ng-template #noSegmentBase>
-                                    -
-                                </ng-template>
-                            </div> -->
+                            </div>
                         </div>
 
-                        <ng-container *ngIf="form.get('segmentationBase').value === 'store'">
+                        <ng-container *ngIf="getSegmentationBase() === 'store'">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -1029,7 +1118,7 @@
                             </div>
                         </ng-container>
 
-                        <ng-container *ngIf="form.get('segmentationBase').value === 'segmentation'">
+                        <ng-container *ngIf="getSegmentationBase() === 'segmentation'">
                             <div
                                 class="custom-field"
                                 fxLayout="row"

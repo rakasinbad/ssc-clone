@@ -8,7 +8,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { MatDialog, MatRadioChange } from '@angular/material';
+import { MatCheckboxChange, MatDialog, MatRadioChange } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -61,6 +61,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     conditionBase = this._$helperService.conditionBase();
     eConditionBase = ConditionBase;
     benefitType = this._$helperService.benefitType();
+    eBenefitType = BenefitType;
     segmentBase = this._$helperService.segmentationBase();
 
     minStartDate: Date = new Date();
@@ -179,9 +180,36 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.conditions.removeAt(idx);
     }
 
+    getApplyBonusSku(idx: number): Catalogue {
+        return this.form.get(['conditions', idx, 'benefitCatalogueId']).value || null;
+    }
+
+    getBenefitType(idx: number): BenefitType {
+        return this.form.get(['conditions', idx, 'benefitType']).value;
+    }
+
+    /**
+     *
+     * Get condition base value (Tier)
+     * @param {number} idx
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
     getConditionBase(idx: number): string {
         return this.form.get(['conditions', idx, 'conditionBase']).value;
     }
+
+    /**
+     *
+     * Get segmentation base value
+     * @returns {string}
+     * @memberof FlexiComboFormComponent
+     */
+    getSegmentationBase(): string {
+        return this.form.get('segmentationBase').value;
+    }
+
+    /* Start Handle Error Form */
 
     getErrorMessage(fieldName: string, parentName?: string, index?: number): string {
         if (!fieldName) {
@@ -192,6 +220,9 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             const formParent = this.form.get(parentName) as FormArray;
             const { errors } = formParent.at(index).get(fieldName);
 
+            // if (fieldName === 'benefitCatalogueId') {
+            //     console.log(formParent, errors);
+            // }
             if (errors) {
                 const type = Object.keys(errors)[0];
 
@@ -238,7 +269,98 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         return !value ? false : value.length <= minLength;
     }
 
+    /* End Handle Error Form */
+
+    canAddTier(): boolean {
+        const conditions = this.conditions.getRawValue();
+
+        if (conditions.length > 0) {
+            const newConditions = conditions.filter(
+                (condition) => condition.multiplication === true
+            );
+
+            if (newConditions.length > 0) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return true;
+    }
+
+    canApplySameSku(): boolean {
+        const triggerBase = this.form.get('base').value;
+
+        if (triggerBase === TriggerBase.SKU) {
+            const chosenSku = this.form.get('chosenSku').value;
+
+            if (chosenSku && chosenSku.length === 1) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    isDisabledBonusSku(idx: number): boolean {
+        return this.form.get(['conditions', idx, 'benefitCatalogueId']).disabled;
+    }
+
+    /**
+     *
+     * Handle selected event for Bonus SKU Field (Benefit Type - SKU)
+     * @param {Catalogue} ev
+     * @param {string} fieldName
+     * @memberof FlexiComboFormComponent
+     */
+    onBenefitSkuSelected(ev: Catalogue, fieldName: string): void {
+        this.form.get(fieldName).markAsDirty({ onlySelf: true });
+        this.form.get(fieldName).markAsTouched({ onlySelf: true });
+
+        if (!ev) {
+            this.form.get(fieldName).setValue(null);
+        } else {
+            this.form.get(fieldName).setValue(ev);
+        }
+    }
+
+    /**
+     *
+     * Handle change event for Apply Same SKU Field (Benefit Type - SKU)
+     * @param {MatCheckboxChange} ev
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    onChangeApplySameSku(ev: MatCheckboxChange, idx: number): void {
+        const bonusSkuCtrl = this.form.get(['conditions', idx, 'benefitCatalogueId']);
+
+        if (ev.checked === true && this.canApplySameSku()) {
+            const chosenSku = this.form.get('chosenSku').value;
+
+            bonusSkuCtrl.patchValue(chosenSku[0], { onlySelf: true });
+            bonusSkuCtrl.disable({ onlySelf: true });
+        } else if (!ev.checked && this.canApplySameSku()) {
+            bonusSkuCtrl.reset();
+            bonusSkuCtrl.enable({ onlySelf: true });
+        }
+
+        this.cdRef.detectChanges();
+    }
+
+    /**
+     *
+     * Handle change event for Segmentation Base Field
+     * @param {MatRadioChange} ev
+     * @returns {void}
+     * @memberof FlexiComboFormComponent
+     */
     onChangeSegmentBase(ev: MatRadioChange): void {
+        this.form.get('segmentationBase').markAsDirty({ onlySelf: true });
+        this.form.get('segmentationBase').markAsTouched({ onlySelf: true });
+
         if (!ev.value) {
             return;
         }
@@ -253,6 +375,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
                 }),
             ]);
+
             this.form.get('chosenStore').updateValueAndValidity({ onlySelf: true });
         } else if (ev.value === SegmentationBase.SEGMENTATION) {
             this.form.get('chosenStore').clearValidators();
@@ -260,6 +383,12 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     *
+     * Handle change event for Active To Field
+     * @param {MatDatetimepickerInputEvent<any>} ev
+     * @memberof FlexiComboFormComponent
+     */
     onChangeEndDate(ev: MatDatetimepickerInputEvent<any>): void {
         const endDate = ev.value;
         const startDate = this.form.get('startDate').value;
@@ -273,6 +402,12 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.maxStartDate = endDate.toDate();
     }
 
+    /**
+     *
+     * Handle change event for Active From Field
+     * @param {MatDatetimepickerInputEvent<any>} ev
+     * @memberof FlexiComboFormComponent
+     */
     onChangeStartDate(ev: MatDatetimepickerInputEvent<any>): void {
         const startDate = ev.value;
         const endDate = this.form.get('endDate').value;
@@ -286,6 +421,13 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.minEndDate = startDate.toDate();
     }
 
+    /**
+     *
+     * Handle File Browse (Image / File)
+     * @param {Event} ev
+     * @param {string} type
+     * @memberof FlexiComboFormComponent
+     */
     onFileBrowse(ev: Event, type: string): void {
         const inputEl = ev.target as HTMLInputElement;
 
@@ -337,77 +479,119 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     *
+     * Handle selected event for Base Field (SKU)
+     * @param {Catalogue[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onSkuSelected(ev: Catalogue[]): void {
         this.form.get('chosenSku').markAsDirty({ onlySelf: true });
         this.form.get('chosenSku').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenSku').setValue(null);
         } else {
             this.form.get('chosenSku').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popup hybrid selected for Store Channel Field (Segmentation Base - Segmentation)
+     * @param {StoreSegmentationChannel[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onStoreChannelSelected(ev: StoreSegmentationChannel[]): void {
         this.form.get('chosenStoreChannel').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreChannel').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenStoreChannel').setValue(null);
         } else {
             this.form.get('chosenStoreChannel').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popup hybrid selected for Store Cluster Field (Segmentation Base - Segmentation)
+     * @param {StoreSegmentationCluster[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onStoreClusterSelected(ev: StoreSegmentationCluster[]): void {
         this.form.get('chosenStoreCluster').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreCluster').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenStoreCluster').setValue(null);
         } else {
             this.form.get('chosenStoreCluster').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popoup hybrid selected for Store Group Field (Segmentation Base - Segmentation)
+     * @param {StoreSegmentationGroup[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onStoreGroupSelected(ev: StoreSegmentationGroup[]): void {
         this.form.get('chosenStoreGroup').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreGroup').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenStoreGroup').setValue(null);
         } else {
             this.form.get('chosenStoreGroup').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popup hybrid selected for Store Type Field (Segmentation Base - Segmentation)
+     * @param {StoreSegmentationType[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onStoreTypeSelected(ev: StoreSegmentationType[]): void {
         this.form.get('chosenStoreType').markAsDirty({ onlySelf: true });
         this.form.get('chosenStoreType').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenStoreType').setValue(null);
         } else {
             this.form.get('chosenStoreType').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popup hybrid selected for Store Field (Segmentation Base - Direct Store)
+     * @param {SupplierStore[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onStoreSelected(ev: SupplierStore[]): void {
         this.form.get('chosenStore').markAsDirty({ onlySelf: true });
         this.form.get('chosenStore').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenStore').setValue(null);
         } else {
             this.form.get('chosenStore').setValue(ev);
         }
     }
 
+    /**
+     *
+     * Handle popup hybrid selected Warehouse Field (Segmentation Base - Segmentation)
+     * @param {Warehouse[]} ev
+     * @memberof FlexiComboFormComponent
+     */
     onWarehouseSelected(ev: Warehouse[]): void {
         this.form.get('chosenWarehouse').markAsDirty({ onlySelf: true });
         this.form.get('chosenWarehouse').markAsTouched({ onlySelf: true });
 
-        if (ev.length === 0) {
+        if (!ev.length) {
             this.form.get('chosenWarehouse').setValue(null);
         } else {
             this.form.get('chosenWarehouse').setValue(ev);
@@ -448,7 +632,14 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     }),
                 ],
             ],
-            benefitCatalogueId: null,
+            benefitCatalogueId: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                ],
+            ],
             benefitBonusQty: null,
             benefitRebate: null,
             benefitDiscount: null,
@@ -650,7 +841,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 ],
             ],
             chosenSku: [
-                '',
+                null,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
@@ -660,7 +851,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             calculationMechanism: null,
             conditions: this.formBuilder.array([this._createConditions()]),
             segmentationBase: [
-                null,
+                SegmentationBase.SEGMENTATION,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),

@@ -83,6 +83,12 @@ app-flexi-combo-form {
                     color: sinbad-color('black', '100');
                     margin-bottom: 18px;
                 }
+
+                .custom-field {
+                    .mat-form-field {
+                        max-width: 400px !important;
+                    }
+                }
             }
 
             card-instruction {
@@ -98,6 +104,10 @@ app-flexi-combo-form {
             // }
         }
     }
+}
+
+.event-none {
+    pointer-events: none !important;
 }
 
 /* Custom popup hybrid */
