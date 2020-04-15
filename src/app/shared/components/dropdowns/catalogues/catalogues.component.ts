@@ -217,6 +217,12 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                 this.helper$.showErrorNotification(new ErrorHandler(err));
             },
             complete: () => {
+                if (this.mode === 'single') {
+                    if (this.initialSelection) {
+                        this.entityForm.setValue((this.initialSelection as unknown as Selection).id);
+                    }
+                }
+                
                 this.toggleLoading(false);
                 HelperService.debug('FIND ENTITY COMPLETED');
             }
@@ -486,13 +492,19 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
-            this.entityFormView.clearValidators();
-            this.entityForm.clearValidators();
-
-            if (changes['required'].currentValue === true) {
-                this.entityFormView.setValidators(RxwebValidators.required());
-                this.entityForm.setValidators(RxwebValidators.required());
+        if (changes['required']) {
+            if (changes['required'].isFirstChange()) {
+                this.entityFormView.clearValidators();
+                this.entityFormValue.clearValidators();
+                this.entityForm.clearValidators();
+    
+                if (changes['required'].currentValue === true) {
+                    if (this.mode === 'multi') {
+                        this.entityFormView.setValidators(RxwebValidators.required());
+                    } else {
+                        this.entityForm.setValidators(RxwebValidators.required());
+                    }
+                }
             }
         }
 
@@ -534,7 +546,7 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
             debounceTime(100),
             tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
             takeUntil(this.subs$)
-        ).subscribe((value: Selection) => {
+        ).subscribe(value => {
             if (value) {
                 const rawEntities = this.rawAvailableEntities$.value;
                 this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));

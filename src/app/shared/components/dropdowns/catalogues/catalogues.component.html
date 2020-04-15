@@ -43,6 +43,9 @@
         </mat-error>
     </mat-form-field>
 </div> -->
+<ng-template #errorMessage>
+    <ng-content select="[error]"></ng-content>
+</ng-template>
 <div class="custom-field" fxLayout="row" *ngIf="mode === 'single'; else multiMode">
     <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
         <mat-select [placeholder]="placeholder" [formControl]="entityForm">
@@ -51,8 +54,8 @@
                 {{ option?.label || '-' }}
             </mat-option>
         </mat-select>
-        <mat-error>
-            <ng-content select="[error]"></ng-content>
+        <mat-error *ngIf="mode === 'single'">
+            <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
         </mat-error>
     </mat-form-field>
 </div>
@@ -66,8 +69,8 @@
                 [formControl]="entityFormView"
                 [value]="entityFormView.value"
             />
-            <mat-error>
-                <ng-content select="[error]"></ng-content>
+            <mat-error *ngIf="mode === 'multi'">
+                <ng-container *ngTemplateOutlet="errorMessage"></ng-container>
             </mat-error>
         </mat-form-field>
     </div>
