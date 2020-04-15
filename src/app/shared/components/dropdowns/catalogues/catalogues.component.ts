@@ -65,6 +65,9 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     // Untuk menandai apakah pilihannya required atau tidak.
     // tslint:disable-next-line: no-inferrable-types
     @Input() required: boolean = false;
+    // Untuk menandai apakah form ini di-nonaktifkan atau tidak.
+    // tslint:disable-next-line: no-inferrable-types
+    @Input() disabled: boolean = false;
     // tslint:disable-next-line: no-inferrable-types
     @Input() placeholder: string = 'Choose SKU';
     // tslint:disable-next-line: no-inferrable-types no-input-rename
@@ -504,6 +507,22 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
                     } else {
                         this.entityForm.setValidators(RxwebValidators.required());
                     }
+                }
+            }
+        }
+
+        if (changes['disabled']) {
+            if (changes['disabled'].currentValue === true) {
+                if (this.mode === 'multi') {
+                    this.entityFormView.disable();
+                } else if (this.mode === 'single') {
+                    this.entityForm.disable();
+                }
+            } else {
+                if (this.mode === 'multi') {
+                    this.entityFormView.enable();
+                } else if (this.mode === 'single') {
+                    this.entityForm.enable();
                 }
             }
         }
