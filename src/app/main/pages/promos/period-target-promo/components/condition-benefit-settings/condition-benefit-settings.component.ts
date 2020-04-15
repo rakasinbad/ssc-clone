@@ -440,7 +440,22 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                             })
                         ]],
                         applySameSku: [false],
-                        bonusQty: [],
+                        bonusQty: ['1', [
+                            RxwebValidators.required({
+                                message: this.errorMessage$.getErrorMessageNonState(
+                                    'default',
+                                    'required'
+                                )
+                            }),
+                            RxwebValidators.numeric({
+                                allowDecimal: false,
+                                message: 'This field must be numeric.'
+                            }),
+                            RxwebValidators.greaterThanEqualTo({
+                                value: 1,
+                                message: 'This field must be greater than or equal to 1.'
+                            })
+                        ]],
                         multiplicationOnly: [false],
                     }),
                     // PERCENT (%) BASED
