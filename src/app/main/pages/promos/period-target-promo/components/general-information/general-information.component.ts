@@ -64,6 +64,9 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
     // tslint:disable-next-line: no-inferrable-types
     formFieldLength: number = 40;
 
+    // Untuk menyimpan platform-nya Sinbad yang tersedia.
+    sinbadPlatforms: Array<{ id: string; label: string }> = [];
+
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<PeriodTargetPromo> = new EventEmitter<PeriodTargetPromo>();
 
@@ -106,7 +109,11 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
         private store: NgRxStore<PeriodTargetPromoCoreFeatureState>,
         private promo$: PeriodTargetPromoApiService,
         private errorMessage$: ErrorMessageService,
-    ) { }
+        private helper$: HelperService,
+    ) {
+        // Untuk menyimpan platform-nya Sinbad yang tersedia.
+        this.sinbadPlatforms = this.helper$.platformSinbad();
+    }
 
     private updateFormView(): void {
         // Penetapan class pada form field berdasarkan mode form-nya.
@@ -541,7 +548,7 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
             }
         }
 
-        this.minActiveEndDate = activeStartDate.toDate();
+        this.minActiveEndDate = activeStartDate.add(1, 'minute').toDate();
     }
 
     onChangeActiveEndDate(ev: MatDatetimepickerInputEvent<any>): void {

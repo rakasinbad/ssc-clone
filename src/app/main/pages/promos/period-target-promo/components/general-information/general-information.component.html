@@ -120,12 +120,11 @@
                         name="platform"
                         formControlName="platform"
                     >
-                        <mat-option value="all">All</mat-option>
                         <mat-option
-                            *ngFor="let platform of (platforms$ | async)"
+                            *ngFor="let platform of sinbadPlatforms"
                             [value]="platform.id"
                         >
-                            {{ platform.name }}
+                            {{ platform.label }}
                         </mat-option>
                     </mat-select>
                     <mat-error
