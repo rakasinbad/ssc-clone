@@ -25,7 +25,9 @@
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('base'))"
                 >
-                    Base
+                    <span
+                        class="sinbad-red-fg"
+                    >* </span>Base
                 </label>
 
                 <mat-radio-group formControlName="base" [fxFlex]="formFieldLength" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">

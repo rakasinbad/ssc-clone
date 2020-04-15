@@ -21,6 +21,7 @@ import { FormStatus } from 'app/shared/models/global.model';
 import { Catalogue } from 'app/main/pages/catalogues/models';
 import { InvoiceGroup } from 'app/shared/models/invoice-group.model';
 import { Selection } from 'app/shared/components/multiple-selection/models';
+import { PeriodTargetPromoTriggerInformationService } from './services';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -99,6 +100,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
         private store: NgRxStore<PeriodTargetPromoCoreFeatureState>,
         private promo$: PeriodTargetPromoApiService,
         private errorMessage$: ErrorMessageService,
+        private triggerInformation$: PeriodTargetPromoTriggerInformationService,
     ) { }
 
     private updateFormView(): void {
@@ -456,6 +458,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.formValueChange.emit(value);
+            this.triggerInformation$.setValue(value);
         });
     }
 
@@ -545,8 +548,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     }
 
     onCatalogueSelected(event: Array<Catalogue>): void {
-        this.form.get('chosenSku').markAsDirty({ onlySelf: true });
-        this.form.get('chosenSku').markAsTouched({ onlySelf: true });
+        this.form.get('chosenSku').markAsDirty();
+        this.form.get('chosenSku').markAsTouched();
         
         if (event.length === 0) {
             this.form.get('chosenSku').setValue('');
@@ -556,8 +559,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     }
 
     onBrandSelected(event: Array<Brand>): void {
-        this.form.get('chosenBrand').markAsDirty({ onlySelf: true });
-        this.form.get('chosenBrand').markAsTouched({ onlySelf: true });
+        this.form.get('chosenBrand').markAsDirty();
+        this.form.get('chosenBrand').markAsTouched();
         
         if (event.length === 0) {
             this.form.get('chosenBrand').setValue('');
@@ -567,8 +570,8 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     }
 
     onFakturSelected(event: Array<InvoiceGroup>): void {
-        this.form.get('chosenFaktur').markAsDirty({ onlySelf: true });
-        this.form.get('chosenFaktur').markAsTouched({ onlySelf: true });
+        this.form.get('chosenFaktur').markAsDirty();
+        this.form.get('chosenFaktur').markAsTouched();
         
         if (event.length === 0) {
             this.form.get('chosenFaktur').setValue('');
