@@ -54,8 +54,8 @@
             </div>
             <!-- / CALCULATION MECHANISM -->
             <!-- CONDITION & BENEFITS -->
-            <ng-container *ngFor="let control of $any(form.get('conditionBenefit')).controls; index as $index">
-                <ng-container *ngIf="$index === 0 || ($index > 0 && form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value === false)">
+            <ng-container *ngFor="let control of $any(form.get('conditionBenefit')).controls; index as $index; last as $last;">
+                <ng-container *ngIf="$index === 0 || ($index > 0 && !form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value)">
                     <!-- TITLE -->
                     <div
                         class="w-50-p"
@@ -65,7 +65,7 @@
                         <p class="font-weight-600 font-size-20 line-height-20 mb-16">
                             Tier {{ $index + 1 }}
                         </p>
-                        <button mat-icon-button (click)="removeConditionBenefitForm($index)" *ngIf="$index > 0 && !isViewMode()">
+                        <button mat-icon-button (click)="removeConditionBenefitForm($index, control)" *ngIf="$index > 0 && !isViewMode() && $last">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </div>
@@ -77,7 +77,7 @@
                         fxFlex
                     >
                         <!-- FORM -->
-                        <div class="p-16" [class.dark-box]="!isViewMode()" [fxFlex]="labelLength + formFieldLength" fxLayout="column" fxLayoutGap="28px">
+                        <div class="p-16" [class.dark-box]="!isViewMode()" [fxFlex]="labelLength + formFieldLength" fxLayout="column" fxLayoutGap="5px">
                             <!-- CONDITION -->
                             <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                                 Condition
@@ -99,8 +99,14 @@
                                 </label>
     
                                 <mat-radio-group [formControl]="control.get('condition.base')" [fxFlex]="formFieldLength * 2 - 1" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
-                                    <mat-radio-button value="qty"> Qty </mat-radio-button>
-                                    <mat-radio-button value="order-value"> Order Value </mat-radio-button>
+                                    <mat-radio-button
+                                        value="qty"
+                                        [disabled]="$index > 0 && form.get(['conditionBenefit', 0, 'condition', 'base']).value !== 'qty'"
+                                    > Qty </mat-radio-button>
+                                    <mat-radio-button
+                                        value="order-value"
+                                        [disabled]="$index > 0 && form.get(['conditionBenefit', 0, 'condition', 'base']).value !== 'order-value'"
+                                    > Order Value </mat-radio-button>
                                 </mat-radio-group>
                             </div>
                             <!-- / BASE (CONDITION) -->
@@ -181,7 +187,7 @@
                                 Benefit
                             </span>
                             <!-- / BENEFIT -->
-                            <!-- BASE (CONDITION) -->
+                            <!-- BENEFIT (TYPE) -->
                             <div
                                 [ngClass]="formClass"
                                 fxLayout="row"
@@ -197,14 +203,23 @@
                                 </label>
     
                                 <mat-radio-group [formControl]="control.get('benefit.base')" [fxFlex]="formFieldLength * 2 - 1" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
-                                    <mat-radio-button value="qty"> Qty </mat-radio-button>
-                                    <mat-radio-button value="cash"> Rp </mat-radio-button>
-                                    <mat-radio-button value="percent"> % </mat-radio-button>
+                                    <mat-radio-button
+                                        value="qty"
+                                        [disabled]="$index > 0 && form.get(['conditionBenefit', 0, 'benefit', 'base']).value !== 'qty'"
+                                    > Qty </mat-radio-button>
+                                    <mat-radio-button
+                                        value="cash"
+                                        [disabled]="$index > 0 && form.get(['conditionBenefit', 0, 'benefit', 'base']).value !== 'cash'"
+                                    > Rp </mat-radio-button>
+                                    <mat-radio-button
+                                        value="percent"
+                                        [disabled]="$index > 0 && form.get(['conditionBenefit', 0, 'benefit', 'base']).value !== 'percent'"
+                                    > % </mat-radio-button>
                                 </mat-radio-group>
                             </div>
-                            <!-- / BASE (CONDITION) -->
+                            <!-- / BENEFIT (TYPE) -->
                             <!-- BASE = QTY -->
-                            <div fxLayoutGap="28px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'qty'">
+                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'qty'">
                                 <!-- BONUS SKU -->
                                 <div
                                     [ngClass]="formClass"
@@ -212,7 +227,7 @@
                                     fxLayoutAlign="start stretch"
                                 >
                                     <label
-                                        fxFlexAlign="center"
+                                        [fxFlexAlign]="!hasMultipleSKUs ? 'center' : 'start'"
                                         [fxFlex]="labelLength * 2 - 1"
                                         class="pr-0 form-label"
                                         [class.mat-error]="!isViewMode() && !!(hasError(control.get('benefit.qty.bonusSku'), { ignoreDirty: true }))"
@@ -224,7 +239,7 @@
         
                                     <select-catalogues
                                         mode="single"
-                                        [disabled]="isSelectCatalogueDisabled"
+                                        [disabled]="isSelectCatalogueDisabled || control.disabled"
                                         [initialSelection]="chosenSku$ | async"
                                         [required]="true"
                                         [fxFlex]="formFieldLength * 2 - 1"
@@ -235,6 +250,7 @@
                                             {{ getFormError(control.get('benefit.qty.bonusSku')) }}
                                         </div>
                                     </select-catalogues>
+
                                     <span class="form-value" fxFlex="80" *ngIf="isViewMode()">
                                         {{ control.get('benefit.qty.bonusSku').value.label || '-' }}
                                     </span>
@@ -246,7 +262,7 @@
                                     fxLayout="row"
                                     fxLayoutAlign="start stretch"
                                     class="mt-8"
-                                    *ngIf="$index === 0 && hasMultipleSKUs === false"
+                                    *ngIf="$index === 0 && isTriggeredBySKU && triggerSKUs.length === 1"
                                 >
                                     <label
                                         fxFlexAlign="center"
@@ -314,7 +330,7 @@
                             </div>
                             <!-- / BASE = QTY -->
                             <!-- BASE = PERCENT (%) -->
-                            <div fxLayoutGap="28px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'percent'">
+                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'percent'">
                                 <!-- PERCENT DISCOUNT -->
                                 <div
                                     [ngClass]="formClass"
@@ -392,7 +408,7 @@
                             </div>
                             <!-- / BASE = PERCENT (%) -->
                             <!-- BASE = CASH (Rp) -->
-                            <div fxLayoutGap="28px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'cash'">
+                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'cash'">
                                 <!-- REBATE -->
                                 <div
                                     [ngClass]="formClass"
@@ -419,6 +435,7 @@
                                             prefix="Rp"
                                             [formControl]="control.get('benefit.cash.rebate')"
                                         />
+
                                         <mat-error
                                             *ngIf="hasError(control.get('benefit.cash.rebate'))"
                                         >
@@ -464,8 +481,8 @@
                 style="cursor: pointer;"
                 (click)="addConditionBenefitForm()"
                 *ngIf="!isViewMode()
-                        && form.get(['conditionBenefit', 0, 'benefit', 'base']).value === 'qty'
-                        && form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value === false"
+                        && (!form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).value
+                            || form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']).disabled)"
             >
                 Add Tier
             </p>
