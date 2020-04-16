@@ -132,8 +132,7 @@
                 <ng-container matColumnDef="price">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Price</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <a class="fuse-black-fg clickable" matTooltip="Click to edit price"
-                            (click)="$event.stopPropagation(); editCatalogue('price', row)">
+                        <a class="fuse-black-fg">
                             <p *ngIf="!!(row?.discountedRetailBuyingPrice) || row?.discountedRetailBuyingPrice === 0; else noDiscount;"
                                 class="text-truncate">
                                 {{ row?.discountedRetailBuyingPrice | price: 'full':'IDR':'narrow':'1.0-2' }}
@@ -151,8 +150,7 @@
                 <ng-container matColumnDef="stock">
                     <mat-header-cell *matHeaderCellDef mat-sort-header>Stock</mat-header-cell>
                     <mat-cell *matCellDef="let row">
-                        <a class="fuse-black-fg clickable" matTooltip="Click to edit stock"
-                            (click)="$event.stopPropagation(); editCatalogue('stock', row)">
+                        <a class="fuse-black-fg">
                             <p class="text-truncate">{{ row?.stock | number }}</p>
                         </a>
                     </mat-cell>
@@ -235,9 +233,9 @@
                             <mat-menu #moreMenu="matMenu">
                                 <ng-template [ngxPermissionsOnly]="['CATALOGUE.UPDATE']">
                                     <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="edit"
-                                        (click)="editProduct(row.id)">
-                                        <mat-icon>edit</mat-icon>
-                                        <span>Edit</span>
+                                        (click)="viewProduct(row.id)">
+                                        <mat-icon>info</mat-icon>
+                                        <span>Detail</span>
                                     </button>
 
                                     <button mat-menu-item type="button" class="sinbad-mat-menu-item"

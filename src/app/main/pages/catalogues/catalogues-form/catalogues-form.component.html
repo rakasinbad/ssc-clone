@@ -490,6 +490,62 @@
                         </span>
                     </div>
                     <!-- / UOM -->
+                    <!-- TAG PRODUK -->
+                    <div
+                        [ngClass]="formClass"
+                        fxLayout="row"
+                        fxLayoutAlign="space-between stretch"
+                        formGroupName="productSale"
+                    >
+                        <label
+                            fxFlexAlign="center"
+                            fxFlex="18"
+                            class="pr-0"
+                            [class.mat-error]="!isViewMode() && hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
+                        >
+                            <span
+                                class="red-500-fg"
+                            >* </span>Product Tag
+                        </label>
+                
+                        <div fxFlex="80" fxFlexAlign="center" fxLayout="column" fxLayoutAlign="start stretch">
+                            <div fxLayout="row">
+                                <mat-form-field
+                                    fxFlex
+                                    appearance="outline"
+                                    [class.mat-form-field-invalid]="hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
+                                    *ngIf="!isViewMode()"
+                                >
+                                    <mat-chip-list #chipList aria-label="Tags">
+                                        <mat-chip *ngFor="let tag of (productTagsControls?.controls); index as $index;"
+                                                    selectable="true"
+                                                    removable="true"
+                                                    (removed)="onRemoveTag($index)">
+                                            {{ tag.value }}
+                                            <mat-icon matChipRemove>cancel</mat-icon>
+                                        </mat-chip>
+                                        <input
+                                            [matChipInputFor]="chipList"
+                                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                            [matChipInputAddOnBlur]="true"
+                                            (matChipInputTokenEnd)="onAddTag($event)"
+                                        />
+                                    </mat-chip-list>
+                                    <mat-hint
+                                        class="mat-error pb-4"
+                                        *ngIf="!isViewMode() && hasError(form.get('productSale.tags'), { ignoreTouched: true, ignoreDirty: true })"
+                                    >
+                                        {{ getFormError(form.get('productSale.tags')) }}
+                                    </mat-hint>
+                                </mat-form-field>
+                                <mat-chip-list #chipList aria-label="Tags" *ngIf="isViewMode()">
+                                    <mat-chip selectable="false" *ngFor="let tag of (productTagsControls?.controls); index as $index;">
+                                        {{ tag.value }}
+                                    </mat-chip>
+                                </mat-chip-list>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -584,7 +640,7 @@
                     </div>
                     <!-- / HARGA RETAIL -->
                     <!-- TAG PRODUK -->
-                    <div
+                    <!-- <div
                         [ngClass]="formClass"
                         fxLayout="row"
                         fxLayoutAlign="space-between stretch"
@@ -638,7 +694,7 @@
                                 </mat-chip-list>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- / TAG PRODUK -->
                     <!-- VARIASI PRODUK (NO VARIANT) -->
                     <!-- <div

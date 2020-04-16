@@ -5,7 +5,7 @@ import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
 
 import { fromCatalogue } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
-import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
@@ -15,11 +15,12 @@ import { CataloguesService } from '../../services';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CatalogueUnit, CatalogueCategory, SimpleCatalogueCategory, CatalogueInformation } from '../../models';
 import { CatalogueActions, BrandActions } from '../../store/actions';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatChipInputEvent } from '@angular/material';
 import { CataloguesSelectCategoryComponent } from '../../catalogues-select-category/catalogues-select-category.component';
 import { Brand } from 'app/shared/models/brand.model';
 import { SafeHtml } from '@angular/platform-browser';
 import { FormStatus } from 'app/shared/models/global.model';
+import { ENTER, COMMA } from '@angular/cdk/keycodes';
 // import { UserSupplier } from 'app/shared/models/supplier.model';
 // import { TNullable } from 'app/shared/models/global.model';
 // import { UiActions, FormActions } from 'app/shared/store/actions';
@@ -54,6 +55,10 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
     form: FormGroup;
     // Untuk meneriman input untuk mengubah mode form dari luar komponen ini.
     formModeValue: IFormMode = 'add';
+
+    // Untuk keperluan product tags.
+    productTagsControls: FormArray;
+    readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
     @Output() formStatusChange: EventEmitter<FormStatus> = new EventEmitter<FormStatus>();
     @Output() formValueChange: EventEmitter<CatalogueInformation> = new EventEmitter<CatalogueInformation>();
@@ -229,6 +234,15 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                     };
                 }
             };
+
+            /** Mengambil data keyword katalog. */
+            const keywords = catalogue.catalogueKeywordCatalogues.map(
+                keyword => keyword.catalogueKeyword.tag
+            );
+            (this.form.get('productInfo.tags') as FormArray).clear();
+            for (const keyword of keywords) {
+                (this.form.get('productInfo.tags') as FormArray).push(this.fb.control(keyword));
+            }
 
             /** Penetapan nilai pada form. */
             setTimeout(() => {
@@ -538,6 +552,24 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
         return this.formMode === 'view';
     }
 
+    onAddTag(event: MatChipInputEvent): void {
+        const input = event.input;
+        const value = event.value;
+        const formArray = this.form.get('productInfo.tags') as FormArray;
+
+        if ((value || '').trim()) {
+            formArray.push(this.fb.control(value));
+        }
+
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    onRemoveTag(index: number): void {
+        this.productTagsControls.removeAt(index);
+    }
+
     ngOnInit(): void {
         /** Menyiapkan form. */
         this.form = this.fb.group({
@@ -617,9 +649,29 @@ export class CatalogueSkuInformationComponent implements OnInit, AfterViewInit, 
                         })
                     ]
                 ],
-                uomName: ['']
+                uomName: [''],
+                tags: this.fb.array(
+                    [],
+                    [
+                        // RxwebValidators.required({
+                        //     conditionalExpression: controls => (controls.tags as Array<string>).length > 0 ? true : null,
+                        //     message: this.errorMessageSvc.getErrorMessageNonState('product_tag', 'min_1_tag')
+                        // })
+                        RxwebValidators.choice({
+                            minLength: 1,
+                            conditionalExpression: controls =>
+                                (controls.tags as Array<string>).length > 0 ? true : null,
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'product_tag',
+                                'min_1_tag'
+                            )
+                        })
+                    ]
+                ),
             }),
         });
+
+        this.productTagsControls = this.form.get('productInfo.tags') as FormArray;
 
         this.checkRoute();
         this.initFormCheck();

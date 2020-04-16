@@ -29,13 +29,13 @@
         </ng-template> -->
     </mat-tab>
 
-    <mat-tab label="Active">
+    <mat-tab label="Active" [disabled]="isLoading$ | async">
         <!-- <ng-template matTabContent>
             <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar></div>
         </ng-template> -->
     </mat-tab>
 
-    <mat-tab label="Inactive">
+    <mat-tab label="Inactive" [disabled]="isLoading$ | async">
         <!-- <ng-template matTabContent>
             <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar></div>
         </ng-template> -->
