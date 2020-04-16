@@ -9,6 +9,7 @@ export interface ICatalogueInformation {
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     unitOfMeasureId: number;
+    tags: Array<string>;
 }
 
 export class CatalogueInformation implements ICatalogueInformation {
@@ -22,6 +23,7 @@ export class CatalogueInformation implements ICatalogueInformation {
     firstCatalogueCategoryId: number;
     lastCatalogueCategoryId: number;
     unitOfMeasureId: number;
+    tags: Array<string>;
 
     constructor(data: ICatalogueInformation) {
         const {
@@ -35,6 +37,7 @@ export class CatalogueInformation implements ICatalogueInformation {
             firstCatalogueCategoryId,
             lastCatalogueCategoryId,
             unitOfMeasureId,
+            tags = [],
         } = data;
 
         this.id = id;
@@ -47,5 +50,6 @@ export class CatalogueInformation implements ICatalogueInformation {
         this.firstCatalogueCategoryId = firstCatalogueCategoryId;
         this.lastCatalogueCategoryId = lastCatalogueCategoryId;
         this.unitOfMeasureId = unitOfMeasureId;
+        this.tags = tags;
     }
 }

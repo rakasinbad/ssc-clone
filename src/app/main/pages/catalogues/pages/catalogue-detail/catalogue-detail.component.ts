@@ -158,6 +158,7 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
+                    tags: catalogueKeywords,
                 } = ($event as CatalogueInformation);
 
                 this.formValue = {
@@ -170,7 +171,8 @@ export class CatalogueDetailComponent implements OnInit, AfterViewInit, OnDestro
                     firstCatalogueCategoryId,
                     lastCatalogueCategoryId,
                     unitOfMeasureId,
-                };
+                    catalogueKeywords,
+                } as unknown as CatalogueInformation;
 
                 break;
             }
