@@ -78,6 +78,18 @@ app-flexi-combo-form {
                 height: 410px;
                 border-radius: 4px;
 
+                &.benefit-qty-full {
+                    height: 435px;
+                }
+
+                &.benefit-qty-empty {
+                    height: 370px;
+                }
+
+                &.benefit-amount {
+                    height: 300px;
+                }
+
                 .field-title {
                     font-weight: 600;
                     color: sinbad-color('black', '100');

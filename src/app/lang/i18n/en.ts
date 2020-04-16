@@ -5,7 +5,7 @@ export const globalEnLang = {
         INACTIVE: 'Inactive',
         PRINT: 'Print',
         EDIT: 'Edit',
-        REMOVE: 'Remove'
+        REMOVE: 'Remove',
     },
     BREADCRUMBS: {
         ACCOUNTS: 'Accounts',
@@ -37,7 +37,7 @@ export const globalEnLang = {
         SET_BANK: 'Set Bank',
         STORES: 'Stores',
         STORE: 'Store List',
-        SUPPLIER_INVENTORY: 'Supplier Inventory'
+        SUPPLIER_INVENTORY: 'Supplier Inventory',
     },
     FORM: {
         ACCOUNT: 'Account',
@@ -61,7 +61,7 @@ export const globalEnLang = {
         PRODUCT_TAG: 'Product Tag',
         ROLE: 'Role',
         STATUS: 'Status',
-        USERNAME: 'Username'
+        USERNAME: 'Username',
     },
     GLOBAL_STATUS: {
         ALL: 'All',
@@ -73,7 +73,7 @@ export const globalEnLang = {
         PACKING: 'Packing',
         RECEIVED: 'Received',
         SHIPPED: 'Shipped',
-        TO_BE_SHIPPED: 'To be shipped'
+        TO_BE_SHIPPED: 'To be shipped',
     },
     ERROR: {
         ALPHA_PATTERN: '{{ fieldName }} field may only contain letters.',
@@ -89,6 +89,7 @@ export const globalEnLang = {
         FORMAT: '{{ fieldName }} field only with the following extensions are allowed: {{ ext }}.',
         IS_UNIQUE: '{{ fieldName }} field has already been taken.',
         IS_UNIQUE_EMAIL: '{{ fieldName }} field already registered.',
+        LT_NUMBER: '{{ fieldName }} field must be less than {{ maxValue }}.',
         MAX: '{{ fieldName }} field may not be greater than {{ maxValue }}.',
         MAX_LENGTH: '{{ fieldName }} field may not be greater than {{ maxValue }} characters.',
         MIN: '{{ fieldName }} field must be at least {{ minValue }}.',
@@ -100,6 +101,7 @@ export const globalEnLang = {
         MOBILE_PHONE_PATTERN: '{{ fieldName }} field must contain a valid (prefix: {{ prefix }}).',
         NOT_FOUND: '{{ fieldName }} field not found.',
         NUMERIC: '{{ fieldName }} field must be a number.',
+        // tslint:disable-next-line: quotemark
         PASS_UNMEET_SPEC: "{{ fieldName }} does not meet the password's minimum specification.",
         PATTERN: '{{ fieldName }} field format is invalid.',
         REQUIRED: '{{ fieldName }} field is required.',
@@ -107,6 +109,6 @@ export const globalEnLang = {
         TYPE_EMAIL: '{{ fieldName }} field must contain a valid email address.',
         TYPE_PHONE: '{{ fieldName }} field must a valid mobile phone number.',
         TYPE_PHONE_PREFIX:
-            '{{ fieldName }} field must a valid mobile phone number (prefix: {{ prefix }}).'
-    }
+            '{{ fieldName }} field must a valid mobile phone number (prefix: {{ prefix }}).',
+    },
 };

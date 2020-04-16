@@ -510,11 +510,17 @@
                             fxLayoutAlign="start stretch"
                             fxLayoutGap="16px"
                         >
-                            <label fxFlexAlign="center" fxFlex="10">
-                                Calculation Mechanism
+                            <label
+                                fxFlexAlign="center"
+                                fxFlex="11"
+                                [class.sinbad-red-fg]="hasError('calculationMechanism')"
+                                fxFill
+                            >
+                                <span class="sinbad-red-fg">*</span>
+                                Calculation<br />Mechanism
                             </label>
 
-                            <div fxFlexAlign="center" fxFlex="50">
+                            <div fxFlexAlign="center" fxFlex="50" fxFill>
                                 <ng-container
                                     *ngIf="calculationMechanism; else noCalculationMechanism"
                                 >
@@ -534,6 +540,13 @@
                                 </ng-template>
 
                                 <a href="javascript:;">What is this?</a>
+
+                                <mat-hint
+                                    class="mat-error"
+                                    *ngIf="hasError('calculationMechanism', true)"
+                                >
+                                    {{ getErrorMessage('calculationMechanism') }}
+                                </mat-hint>
                             </div>
                         </div>
 
@@ -546,7 +559,8 @@
                                 *ngFor="
                                     let condition of conditionsCtrl;
                                     index as conditionIdx;
-                                    first as isFirst
+                                    first as isFirst;
+                                    last as isLast
                                 "
                                 [formGroupName]="conditionIdx"
                             >
@@ -562,7 +576,7 @@
                                     <button
                                         type="button"
                                         mat-icon-button
-                                        *ngIf="!isFirst"
+                                        *ngIf="isLast"
                                         class="sinbad-black-40-fg"
                                         (click)="deleteCondition(conditionIdx)"
                                     >
@@ -577,6 +591,18 @@
                                         fxLayout="column"
                                         fxLayoutAlign="start stretch"
                                         fxFlex="1 1 auto"
+                                        [class.benefit-qty-full]="
+                                            isFirst &&
+                                            canApplySameSku() &&
+                                            isBenefitType(eBenefitType.QTY, conditionIdx)
+                                        "
+                                        [class.benefit-qty-empty]="
+                                            !isFirst &&
+                                            isBenefitType(eBenefitType.QTY, conditionIdx)
+                                        "
+                                        [class.benefit-amount]="
+                                            isBenefitType(eBenefitType.AMOUNT, conditionIdx)
+                                        "
                                     >
                                         <span class="field-title">
                                             Condition
@@ -620,6 +646,12 @@
                                                 >
                                                     <mat-radio-group
                                                         formControlName="conditionBase"
+                                                        (change)="
+                                                            onChangeConditionBase(
+                                                                $event,
+                                                                conditionIdx
+                                                            )
+                                                        "
                                                     >
                                                         <mat-radio-button
                                                             *ngFor="let row of conditionBase"
@@ -756,6 +788,9 @@
                                                                 'conditionValue' + conditionIdx
                                                             "
                                                             formControlName="conditionValue"
+                                                            (change)="
+                                                                onChangeOrderValue(conditionIdx)
+                                                            "
                                                             mask="separator.2"
                                                             thousandSeparator="."
                                                             prefix="Rp"
@@ -809,7 +844,19 @@
                                             fxLayoutAlign="start stretch"
                                             fxLayoutGap="16px"
                                         >
-                                            <label fxFlexAlign="center" fxFlex="16" fxFill>
+                                            <label
+                                                fxFlexAlign="center"
+                                                fxFlex="16"
+                                                [class.sinbad-red-fg]="
+                                                    hasError([
+                                                        'conditions',
+                                                        conditionIdx,
+                                                        'benefitType'
+                                                    ])
+                                                "
+                                                fxFill
+                                            >
+                                                <span class="sinbad-red-fg">*</span>
                                                 Benefit Type
                                             </label>
 
@@ -817,7 +864,15 @@
                                                 <ng-container
                                                     *ngIf="benefitType; else noBenefitType"
                                                 >
-                                                    <mat-radio-group formControlName="benefitType">
+                                                    <mat-radio-group
+                                                        formControlName="benefitType"
+                                                        (change)="
+                                                            onChangeBenefitType(
+                                                                $event,
+                                                                conditionIdx
+                                                            )
+                                                        "
+                                                    >
                                                         <mat-radio-button
                                                             *ngFor="let row of benefitType"
                                                             [value]="row?.id"
@@ -949,9 +1004,14 @@
                                                         fxFlexAlign="center"
                                                         fxFlex="16"
                                                         [class.sinbad-red-fg]="
-                                                            hasError('promoBudget')
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitBonusQty'
+                                                            ])
                                                         "
                                                     >
+                                                        <span class="sinbad-red-fg">*</span>
                                                         Bonus Qty
                                                     </label>
 
@@ -970,9 +1030,24 @@
                                                         />
 
                                                         <mat-error
-                                                            *ngIf="hasError('promoBudget', true)"
+                                                            *ngIf="
+                                                                hasError(
+                                                                    [
+                                                                        'conditions',
+                                                                        conditionIdx,
+                                                                        'benefitBonusQty'
+                                                                    ],
+                                                                    true
+                                                                )
+                                                            "
                                                         >
-                                                            {{ getErrorMessage('promoBudget') }}
+                                                            {{
+                                                                getErrorMessage(
+                                                                    'benefitBonusQty',
+                                                                    'conditions',
+                                                                    conditionIdx
+                                                                )
+                                                            }}
                                                         </mat-error>
                                                     </mat-form-field>
                                                 </div>
@@ -980,10 +1055,11 @@
 
                                                 <!-- START FIELD TIER MULTIPLICATION -->
                                                 <div
-                                                    class="custom-field"
+                                                    class="custom-field mt-12"
                                                     fxLayout="row"
                                                     fxLayoutAlign="start stretch"
                                                     fxLayoutGap="16px"
+                                                    *ngIf="isFirst"
                                                 >
                                                     <label fxFlexAlign="center" fxFlex="16"></label>
 
@@ -1007,9 +1083,70 @@
                                                 <!-- ./ FIELD TIER MULTIPLICATION -->
                                             </ng-container>
 
-                                            <ng-container
-                                                *ngSwitchCase="eBenefitType.AMOUNT"
-                                            ></ng-container>
+                                            <ng-container *ngSwitchCase="eBenefitType.AMOUNT">
+                                                <!-- START FIELD TIER BENEFIT REBATE -->
+                                                <div
+                                                    class="custom-field"
+                                                    fxLayout="row"
+                                                    fxLayoutAlign="start stretch"
+                                                    fxLayoutGap="16px"
+                                                >
+                                                    <label
+                                                        fxFlexAlign="center"
+                                                        fxFlex="16"
+                                                        [class.sinbad-red-fg]="
+                                                            hasError([
+                                                                'conditions',
+                                                                conditionIdx,
+                                                                'benefitRebate'
+                                                            ])
+                                                        "
+                                                    >
+                                                        <span class="sinbad-red-fg">*</span>
+                                                        Rebate
+                                                    </label>
+
+                                                    <mat-form-field
+                                                        appearance="outline"
+                                                        fxFlex="60"
+                                                    >
+                                                        <input
+                                                            matInput
+                                                            [attr.name]="
+                                                                'benefitRebate' + conditionIdx
+                                                            "
+                                                            formControlName="benefitRebate"
+                                                            mask="separator.2"
+                                                            thousandSeparator="."
+                                                            prefix="Rp"
+                                                            placeholder="Rp"
+                                                            autocomplete="off"
+                                                        />
+
+                                                        <mat-error
+                                                            *ngIf="
+                                                                hasError(
+                                                                    [
+                                                                        'conditions',
+                                                                        conditionIdx,
+                                                                        'benefitRebate'
+                                                                    ],
+                                                                    true
+                                                                )
+                                                            "
+                                                        >
+                                                            {{
+                                                                getErrorMessage(
+                                                                    'benefitRebate',
+                                                                    'conditions',
+                                                                    conditionIdx
+                                                                )
+                                                            }}
+                                                        </mat-error>
+                                                    </mat-form-field>
+                                                </div>
+                                                <!-- ./ FIELD TIER BENEFIT REBATE -->
+                                            </ng-container>
 
                                             <ng-container
                                                 *ngSwitchCase="eBenefitType.PERCENT"
