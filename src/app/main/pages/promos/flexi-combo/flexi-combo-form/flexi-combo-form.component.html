@@ -576,7 +576,7 @@
                                     <button
                                         type="button"
                                         mat-icon-button
-                                        *ngIf="isLast"
+                                        *ngIf="isLast && !isFirst"
                                         class="sinbad-black-40-fg"
                                         (click)="deleteCondition(conditionIdx)"
                                     >
