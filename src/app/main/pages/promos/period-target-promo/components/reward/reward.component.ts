@@ -515,6 +515,26 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
         ).subscribe(value => {
             this.formValueChange.emit(value);
         });
+
+        this.form.get('trigger.base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'sku') {
+                this.form.get('trigger.chosenSku').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'brand') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'faktur') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').enable({ onlySelf: true, emitEvent: false });
+            }
+        });
     }
 
     // onEditCategory(): void {
