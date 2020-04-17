@@ -19,6 +19,8 @@ import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { PeriodTargetPromoActions } from '../../store/actions';
 import { HelperService } from 'app/shared/helpers';
+import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
+import * as moment from 'moment';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -279,6 +281,35 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         element.nativeElement.scrollTop = 0;
     }
 
+    private processGeneralInformationForm(): void {
+        const formValue = this.formValue as Partial<GeneralInformation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            externalId: formValue.sellerId,
+            name: formValue.name,
+            platform: formValue.platform,
+            maxRedemptionPerStore: +formValue.maxRedemptionPerBuyer,
+            promoBudget: +formValue.budget,
+            startDate: (formValue.activeStartDate as unknown as moment.Moment).toISOString(),
+            endDate: (formValue.activeEndDate as unknown as moment.Moment).toISOString(),
+            voucherCombine: !!formValue.isAllowCombineWithVoucher,
+            firstBuy: !!formValue.isFirstBuy,
+        };
+
+        if (formValue.imageSuggestion.startsWith('data:image')) {
+            payload.image = formValue.imageSuggestion;
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                }
+            })
+        );
+    }
+
     ngOnInit(): void {
         this.selectedPromo$ = this.PeriodTargetPromoStore.select(
             PeriodTargetPromoSelectors.getSelectedPeriodTargetPromo
@@ -340,112 +371,105 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         });
 
         // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
-        // this.PeriodTargetPromoStore.select(
-        //     FormSelectors.getIsClickSaveButton
-        // ).pipe(
-        //     withLatestFrom(this.selectedPromo$),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([isClick, catalogue]) => {
-        //     if (isClick) {
-        //         switch (this.section) {
-        //             case 'sku-information': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as CatalogueInformation,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+        this.PeriodTargetPromoStore.select(
+            FormSelectors.getIsClickSaveButton
+        ).pipe(
+            withLatestFrom(this.selectedPromo$),
+            takeUntil(this.subs$)
+        ).subscribe(([isClick, catalogue]) => {
+            if (isClick) {
+                this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
 
-        //                 break;
-        //             }
-        //             case 'media-settings': {
-        //                 const formPhotos = this.formValue as CatalogueMediaForm;
-        //                 const oldPhotos = formPhotos.oldPhotos;
-        //                 const formCatalogue: CatalogueMedia = {
-        //                     deletedImages: [],
-        //                     uploadedImages: [],
-        //                 };
+                switch (this.section) {
+                    case 'general-information': {
+                        this.processGeneralInformationForm();
+                        break;
+                    }
+                    // case 'media-settings': {
+                    //     const formPhotos = this.formValue as CatalogueMediaForm;
+                    //     const oldPhotos = formPhotos.oldPhotos;
+                    //     const formCatalogue: CatalogueMedia = {
+                    //         deletedImages: [],
+                    //         uploadedImages: [],
+                    //     };
 
-        //                 /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
-        //                 const filterPhoto = (photo, idx) => {
-        //                     const isDeleted = photo === null && oldPhotos[idx].value !== null;
-        //                     const isNewUpload = photo !== null && oldPhotos[idx].value === null;
-        //                     const isReplaced = photo !== null && oldPhotos[idx].value !== null && photo !== oldPhotos[idx].value;
+                    //     /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
+                    //     const filterPhoto = (photo, idx) => {
+                    //         const isDeleted = photo === null && oldPhotos[idx].value !== null;
+                    //         const isNewUpload = photo !== null && oldPhotos[idx].value === null;
+                    //         const isReplaced = photo !== null && oldPhotos[idx].value !== null && photo !== oldPhotos[idx].value;
 
-        //                     if (isDeleted) {
-        //                         formCatalogue.deletedImages.push(oldPhotos[idx].id);
-        //                     }
+                    //         if (isDeleted) {
+                    //             formCatalogue.deletedImages.push(oldPhotos[idx].id);
+                    //         }
 
-        //                     if (isNewUpload) {
-        //                         formCatalogue.uploadedImages.push({ base64: photo });
-        //                     }
+                    //         if (isNewUpload) {
+                    //             formCatalogue.uploadedImages.push({ base64: photo });
+                    //         }
 
-        //                     if (isReplaced) {
-        //                         formCatalogue.deletedImages.push(oldPhotos[idx].id);
-        //                         formCatalogue.uploadedImages.push({ base64: photo });
-        //                     }
-        //                 };
+                    //         if (isReplaced) {
+                    //             formCatalogue.deletedImages.push(oldPhotos[idx].id);
+                    //             formCatalogue.uploadedImages.push({ base64: photo });
+                    //         }
+                    //     };
 
-        //                 // Mulai mem-filter foto.
-        //                 formPhotos.photos.forEach(filterPhoto);
+                    //     // Mulai mem-filter foto.
+                    //     formPhotos.photos.forEach(filterPhoto);
 
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: formCatalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
+                    //         payload: {
+                    //             id: catalogue.id,
+                    //             data: formCatalogue,
+                    //             source: 'form',
+                    //             section: this.section
+                    //         }
+                    //     }));
 
-        //                 break;
-        //             }
-        //             case 'weight-and-dimension': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as CatalogueWeightDimension,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+                    //     break;
+                    // }
+                    // case 'weight-and-dimension': {
+                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
+                    //         payload: {
+                    //             id: catalogue.id,
+                    //             data: this.formValue as CatalogueWeightDimension,
+                    //             source: 'form',
+                    //             section: this.section
+                    //         }
+                    //     }));
 
-        //                 break;
-        //             }
-        //             case 'price-settings': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as Catalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+                    //     break;
+                    // }
+                    // case 'price-settings': {
+                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
+                    //         payload: {
+                    //             id: catalogue.id,
+                    //             data: this.formValue as Catalogue,
+                    //             source: 'form',
+                    //             section: this.section
+                    //         }
+                    //     }));
 
-        //                 break;
-        //             }
-        //             case 'amount-settings': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as Catalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+                    //     break;
+                    // }
+                    // case 'amount-settings': {
+                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
+                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
+                    //         payload: {
+                    //             id: catalogue.id,
+                    //             data: this.formValue as Catalogue,
+                    //             source: 'form',
+                    //             section: this.section
+                    //         }
+                    //     }));
 
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // });
+                    //     break;
+                    // }
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {

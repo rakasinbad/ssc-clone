@@ -78,7 +78,7 @@ export const addPeriodTargetPromoFailure = createAction(
  */
 export const updatePeriodTargetPromoRequest = createAction(
     '[Promo/Period Target Promo API] Update PeriodTargetPromo Request',
-    props<{ payload: { id: string; data: PeriodTargetPromo } }>()
+    props<{ payload: { id: string; data: Partial<PeriodTargetPromoPayload> } }>()
 );
 
 export const updatePeriodTargetPromoSuccess = createAction(

@@ -197,10 +197,11 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
             }
 
             this.form.patchValue({
+                id: periodTargetPromo.id,
                 sellerId: periodTargetPromo.externalId,
                 name: periodTargetPromo.name,
                 platform: String(periodTargetPromo.platform).toLowerCase(),
-                maxRedemptionPerBuyer: periodTargetPromo.maxRedemptionPerBuyer,
+                maxRedemptionPerBuyer: periodTargetPromo['maxRedemptionPerStore'],
                 budget: String(periodTargetPromo.promoBudget).replace('.', ','),
                 budgetView: periodTargetPromo.promoBudget,
                 activeStartDate: moment(periodTargetPromo.startDate).toDate(),
