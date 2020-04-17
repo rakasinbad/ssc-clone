@@ -11,7 +11,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatPaginator, MatSort, PageEvent } from '@angular/material';
+import { MatPaginator, MatSort, PageEvent, MatTabChangeEvent } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
@@ -74,6 +74,8 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
     @ViewChild(MatSort, { static: true })
     sort: MatSort;
 
+    private type = 0;
+
     private _unSubs$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -84,7 +86,9 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         private store: Store<fromFlexiCombos.FeatureState>
     ) {}
 
-    onChangePage($event: PageEvent): void {}
+    // -----------------------------------------------------------------------------------------------------
+    // @ Lifecycle hooks
+    // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
         // Called after the constructor, initializing input properties, and the first call to ngOnChanges.
@@ -105,6 +109,16 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
         // Add 'implements OnDestroy' to the class.
 
         this._initPage(LifecyclePlatform.OnDestroy);
+    }
+
+    // -----------------------------------------------------------------------------------------------------
+    // @ Public methods
+    // -----------------------------------------------------------------------------------------------------
+
+    onSelectedTab(ev: MatTabChangeEvent): void {
+        this.type = ev.index;
+
+        this._onRefreshTable();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -172,6 +186,30 @@ export class FlexiComboListComponent implements OnInit, AfterViewInit, OnDestroy
                         keyword: query,
                     },
                 ];
+            }
+
+            if (typeof this.type === 'number' && this.type !== 0) {
+                let status = null;
+
+                if (this.type === 1) {
+                    status = 'active';
+                } else if (this.type === 2) {
+                    status = 'inactive';
+                }
+
+                if (data['search'] && data['search'].length > 0) {
+                    data['search'].push({
+                        fieldName: 'status',
+                        keyword: status,
+                    });
+                } else {
+                    data['search'] = [
+                        {
+                            fieldName: 'status',
+                            keyword: status,
+                        },
+                    ];
+                }
             }
 
             this.store.dispatch(

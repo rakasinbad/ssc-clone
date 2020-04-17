@@ -39,7 +39,7 @@ export const reducer = createReducer(
      */
     on(
         PeriodTargetPromoActions.fetchPeriodTargetPromoRequest,
-        // PeriodTargetPromoActions.addPeriodTargetPromoRequest,
+        PeriodTargetPromoActions.addPeriodTargetPromoRequest,
         PeriodTargetPromoActions.updatePeriodTargetPromoRequest,
         PeriodTargetPromoActions.removePeriodTargetPromoRequest,
         state => ({
@@ -52,7 +52,8 @@ export const reducer = createReducer(
      */
     on(
         PeriodTargetPromoActions.fetchPeriodTargetPromoFailure,
-        // PeriodTargetPromoActions.addPeriodTargetPromoFailure,
+        PeriodTargetPromoActions.addPeriodTargetPromoSuccess,
+        PeriodTargetPromoActions.addPeriodTargetPromoFailure,
         PeriodTargetPromoActions.updatePeriodTargetPromoFailure,
         PeriodTargetPromoActions.removePeriodTargetPromoFailure,
         state => ({
@@ -77,6 +78,13 @@ export const reducer = createReducer(
             isLoading: false,
         });
     }),
+    /**
+     * ADD SUCCESS STATE.
+     */
+    on(PeriodTargetPromoActions.addPeriodTargetPromoSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+    })),
     /**
      * SELECTION STATE.
      */

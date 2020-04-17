@@ -272,6 +272,19 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
         return (form.errors || form.status === 'INVALID') && (form.dirty || form.touched);
     }
 
+    onOpenedChangeEntity(isOpened: boolean): void {
+        if (!isOpened) {
+            const value = this.entityForm.value;
+
+            if (value) {
+                const rawEntities = this.rawAvailableEntities$.value;
+                this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+            } else {
+                this.selectedEntity$.next(null);
+            }
+        }
+    }
+
     onSelectedEntity(event: Array<Selection>): void {
         // Mengirim nilai tersebut melalui subject.
         if (event) {
@@ -560,19 +573,19 @@ export class CataloguesDropdownComponent implements OnInit, OnChanges, AfterView
     }
 
     ngAfterViewInit(): void {
-        this.entityForm.valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(100),
-            tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
-            takeUntil(this.subs$)
-        ).subscribe(value => {
-            if (value) {
-                const rawEntities = this.rawAvailableEntities$.value;
-                this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
-            } else {
-                this.selectedEntity$.next(null);
-            }
-        });
+        // this.entityForm.valueChanges.pipe(
+        //     distinctUntilChanged(),
+        //     debounceTime(100),
+        //     tap(x => HelperService.debug('MAT SELECT CHANGED', x)),
+        //     takeUntil(this.subs$)
+        // ).subscribe(value => {
+        //     if (value) {
+        //         const rawEntities = this.rawAvailableEntities$.value;
+        //         this.selectedEntity$.next(rawEntities.filter(raw => String(raw.id) === String(value)));
+        //     } else {
+        //         this.selectedEntity$.next(null);
+        //     }
+        // });
     }
 
 }

@@ -614,6 +614,10 @@ mat-header-row {
     }
 }
 
+.no-top {
+    top: 0 !important;
+}
+
 .view-field {
     .form-label {
         font-weight: normal !important;

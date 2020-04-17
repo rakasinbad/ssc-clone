@@ -17,6 +17,7 @@ interface IPeriodTargetPromoReward {
     condition: {
         base: string;
         qty: string;
+        value: string;
     };
     miscellaneous: {
         description: string;
@@ -39,6 +40,7 @@ export class PeriodTargetPromoReward implements IPeriodTargetPromoReward {
     condition: {
         base: string;
         qty: string;
+        value: string;
     };
     miscellaneous: {
         description: string;

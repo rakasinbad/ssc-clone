@@ -1,13 +1,13 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output, ViewChild, ElementRef, TemplateRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, of, combineLatest, BehaviorSubject, throwError } from 'rxjs';
 // 
 import { FeatureState as PeriodTargetPromoCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
 import { FormGroup, FormBuilder, AsyncValidatorFn, AbstractControl, ValidationErrors, FormControl, FormArray } from '@angular/forms';
-import { RxwebValidators } from '@rxweb/reactive-form-validators';
-import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap, filter } from 'rxjs/operators';
+import { RxwebValidators, RxFormBuilder, RxFormArray, NumericValueType } from '@rxweb/reactive-form-validators';
+import { distinctUntilChanged, debounceTime, withLatestFrom, take, switchMap, map, takeUntil, tap, filter, mergeMap, retry, first } from 'rxjs/operators';
 import { AuthSelectors } from 'app/main/pages/core/auth/store/selectors';
 import { PeriodTargetPromoSelectors } from '../../store/selectors';
 import { IQueryParams } from 'app/shared/models/query.model';
@@ -44,6 +44,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
     // Untuk keperluan subscription.
     private subs$: Subject<void> = new Subject<void>();
+    private formSubs$: Array<Subject<void>> = [];
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
@@ -57,6 +58,8 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     // Untuk menandakan apakah trigger SKU memiliki SKU lebih dari 1.
     // tslint:disable-next-line: no-inferrable-types
     hasMultipleSKUs: boolean = false;
+    // tslint:disable-next-line: no-inferrable-types
+    isTriggeredBySKU: boolean = true;
     // tslint:disable-next-line: no-inferrable-types
     isSelectCatalogueDisabled: boolean = false;
     // Untuk menyimpan SKU yang terpilih di trigger information.
@@ -307,133 +310,62 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         });
     }
 
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-        
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
+    checkRebate(index: number): AsyncValidatorFn {
+        const check = () => {
+            if (this.form.get(['conditionBenefit', index, 'condition', 'value']).disabled) {
+                return null;
+            }
 
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
+            const conditionValue = +this.form.get(['conditionBenefit', index, 'condition', 'value']).value;
+            const cashRebate = +this.form.get(['conditionBenefit', index, 'benefit', 'cash', 'rebate']).value;
 
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
+            if (cashRebate < conditionValue) {
+                return null;
+            }
 
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
+            return {
+                lessThan: {
+                    message: `This field must less than ${conditionValue}`
+                }
+            };
+        };
 
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
+        return (): Observable<ValidationErrors | null> => {
+            return of(check()).pipe(first());
+        };
+    }
 
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
     addConditionBenefitForm(): void {
+        const subject: Subject<void> = new Subject<void>();
+
         (this.form.get('conditionBenefit') as FormArray).push(
             this.fb.group({
+                subject: [subject],
                 condition: this.fb.group({
                     base: ['qty'],
-                    qty: [],
-                    value: [],
+                    qty: ['', [
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                        }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                        }),
+                        RxwebValidators.minNumber({
+                            value: 1,
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
+                    ]],
+                    value: ['', [
+                        RxwebValidators.numeric({
+                            allowDecimal: true,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                        }),
+                    ]],
                     valueView: [],
                 }),
                 benefit: this.fb.group({
@@ -451,19 +383,19 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                         applySameSku: [false],
                         bonusQty: ['1', [
                             RxwebValidators.required({
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                            }),
+                            RxwebValidators.digit({
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                            }),
+                            RxwebValidators.minNumber({
+                                value: 1,
                                 message: this.errorMessage$.getErrorMessageNonState(
                                     'default',
-                                    'required'
-                                )
+                                    'min_number',
+                                    { minValue: 1 }
+                                ),
                             }),
-                            RxwebValidators.numeric({
-                                allowDecimal: false,
-                                message: 'This field must be numeric.'
-                            }),
-                            RxwebValidators.greaterThanEqualTo({
-                                value: 1,
-                                message: 'This field must be greater than or equal to 1.'
-                            })
                         ]],
                         multiplicationOnly: [false],
                     }),
@@ -475,6 +407,11 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                                     'default',
                                     'required'
                                 )
+                            }),
+                            RxwebValidators.numeric({
+                                allowDecimal: true,
+                                acceptValue: NumericValueType.PositiveNumber,
+                                message: 'This field must be numeric.'
                             }),
                             RxwebValidators.range({
                                 minimumNumber: 0,
@@ -493,15 +430,256 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                     }),
                     // CASH BASED
                     cash: this.fb.group({
-                        rebate: [''],
+                        rebate: ['', [
+                            RxwebValidators.numeric({
+                                acceptValue: NumericValueType.PositiveNumber,
+                                allowDecimal: true,
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                            }),
+                        ]],
                     }),
                 })
             })
         );
+
+        const lastIdx = (this.form.get('conditionBenefit') as FormArray).controls.length - 1;
+        const lastControl = (this.form.get(['conditionBenefit', lastIdx]) as FormGroup);
+
+        if ((this.form.get('conditionBenefit') as FormArray).length > 1) {
+            const multiplication = this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']);
+
+            multiplication.disable({ onlySelf: true, emitEvent: false });
+            multiplication.reset();
+        }
+
+        lastControl.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(value => HelperService.debug('CONDITION BENEFITS VALUE CHANGED', { index: lastIdx, value, control: lastControl })),
+            takeUntil(subject),
+        ).subscribe({
+            next: value => {
+                if (lastControl.enabled && value.condition) {
+                    if (value.condition.base === 'qty') {
+                        lastControl.get('condition.qty').enable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+                    } else if (value.condition.base === 'order-value') {
+                        lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.value').enable({ onlySelf: true, emitEvent: false });
+                    }
+
+                    switch (value.benefit.base) {
+                        case 'qty':
+                            lastControl.get('benefit.qty').enable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                            break;
+                        case 'percent':
+                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.percent').enable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                            break;
+                        case 'cash':
+                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.cash').enable({ onlySelf: true, emitEvent: false });
+                            break;
+                    }
+                }
+
+            },
+            complete: () => HelperService.debug('CONDITION BENEFITS VALUE CHANGES COMPLETED', { index: lastIdx, control: lastControl })
+        });
+
+        const controls = (this.form.get('conditionBenefit') as FormArray).controls;
+        for (const [idx, control] of controls.entries()) {
+            if (idx !== (controls.length - 1)) {
+                setTimeout(() => control.disable({ onlySelf: false, emitEvent: false }), 150);
+            }
+        }
+
+        setTimeout(() => {
+            if (lastIdx > 0) {
+                const previousControl = (this.form.get(['conditionBenefit', lastIdx - 1]) as FormGroup);
+                const previousConditionBase = previousControl.get('condition.base').value;
+                const previousConditionQty = +previousControl.get('condition.qty').value;
+                const previousConditionValue = +previousControl.get('condition.value').value;
+
+                lastControl.get('condition.base').setValue(previousConditionBase);
+
+                if (previousConditionBase === 'qty') {
+                    lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+
+                    // Condition Qty.
+                    lastControl.get('condition.qty').setValue(previousConditionQty + 1);
+                    lastControl.get('condition.qty').setValidators([
+                        RxwebValidators.numeric({
+                            allowDecimal: false,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                        RxwebValidators.greaterThan({
+                            value: previousConditionQty,
+                            message: `This field must greater than ${previousConditionQty}`
+                        })
+                    ]);
+                } else if (previousConditionBase === 'order-value') {
+                    lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
+
+                    // Condition Order Value
+                    lastControl.get('condition.value').setValue(previousConditionValue + 1);
+                    lastControl.get('condition.value').setValidators([
+                        RxwebValidators.numeric({
+                            allowDecimal: true,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                        RxwebValidators.greaterThan({
+                            value: previousConditionValue,
+                            message: `This field must greater than ${previousConditionValue}`
+                        })
+                    ]);
+                }
+
+                const previousBenefitBase = previousControl.get('benefit.base').value;
+                lastControl.get('benefit.base').setValue(previousBenefitBase);
+
+                if (previousBenefitBase === 'qty') {
+                    lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                    const previousBonusQty = +previousControl.get('benefit.qty.bonusQty').value;
+
+                    // BONUS QTY
+                    lastControl.get('benefit.qty.bonusQty').setValue(previousBonusQty + 1);
+                    lastControl.get('benefit.qty.bonusQty').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.numeric({
+                            allowDecimal: false,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                        RxwebValidators.greaterThan({
+                            value: previousBonusQty,
+                            message: `This field must greater than ${previousBonusQty}`
+                        })
+                    ]);
+                } else if (previousBenefitBase === 'percent') {
+                    lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                    const previousBonusPercentDiscount = +previousControl.get('benefit.percent.percentDiscount').value;
+                    const previousBonusMaxRebate = +previousControl.get('benefit.percent.maxRebate').value;
+
+                    // BONUS % DISCOUNT
+                    lastControl.get('benefit.percent.percentDiscount').setValue(previousBonusPercentDiscount - 1);
+                    lastControl.get('benefit.percent.percentDiscount').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.numeric({
+                            allowDecimal: true,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                        RxwebValidators.range({
+                            minimumNumber: 0,
+                            maximumNumber: 100,
+                            message: 'Only accept with range 0 and 100.'
+                        }),
+                        RxwebValidators.lessThan({
+                            value: previousBonusPercentDiscount,
+                            message: `This field must less than ${previousBonusPercentDiscount}`
+                        })
+                    ]);
+
+                    // BONUS MAX REBATE
+                    lastControl.get('benefit.percent.maxRebate').setValue(previousBonusMaxRebate - 1);
+                    lastControl.get('benefit.percent.maxRebate').setValidators([
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'required'
+                            )
+                        }),
+                        RxwebValidators.numeric({
+                            allowDecimal: true,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                        RxwebValidators.lessThan({
+                            value: previousBonusMaxRebate,
+                            message: `This field must less than ${previousBonusMaxRebate}`
+                        })
+                    ]);
+                } else if (previousBenefitBase === 'cash') {
+                    lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
+                    const previousBonusRebate = +previousControl.get('benefit.cash.rebate').value;
+
+                    // BONUS CASH REBATE
+                    lastControl.get('benefit.cash.rebate').setValue(previousBonusRebate - 1);
+                    lastControl.get('benefit.cash.rebate').setAsyncValidators([
+                        this.checkRebate(lastIdx)
+                    ]);
+                    lastControl.get('benefit.cash.rebate').setValidators([
+                        RxwebValidators.numeric({
+                            allowDecimal: true,
+                            acceptValue: NumericValueType.PositiveNumber,
+                            message: 'This field must be numeric.'
+                        }),
+                    ]);
+                }
+            } else {
+                lastControl.get('benefit.cash.rebate').setAsyncValidators([
+                    this.checkRebate(lastIdx)
+                ]);
+
+                lastControl.get('benefit.cash.rebate').setValidators([
+                    RxwebValidators.numeric({
+                        allowDecimal: true,
+                        acceptValue: NumericValueType.PositiveNumber,
+                        message: 'This field must be a positive number.'
+                    }),
+                ]);
+
+                lastControl.updateValueAndValidity();
+            }
+        }, 100);
     }
 
-    removeConditionBenefitForm(index: number): void {
+    removeConditionBenefitForm(index: number, control: AbstractControl): void {
+        if (control) {
+            const subject: Subject<void> = control.get('subject').value as Subject<void>;
+            subject.next();
+            subject.complete();
+        }
+
         (this.form.get('conditionBenefit') as FormArray).removeAt(index);
+
+        if ((this.form.get('conditionBenefit') as FormArray).length === 1) {
+            const multiplication = this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']);
+
+            multiplication.enable({ onlySelf: true, emitEvent: false });
+            multiplication.reset(false);
+        }
+
+        const controls = (this.form.get('conditionBenefit') as FormArray).controls;
+        for (const [idx, kontrol] of controls.entries()) {
+            if (idx === (controls.length - 1)) {
+                kontrol.enable({ onlySelf: true, emitEvent: false });
+                kontrol.markAsDirty();
+                kontrol.markAllAsTouched();
+            }
+        }
+
+        this.form.get('conditionBenefit').updateValueAndValidity();
     }
 
     private initForm(): void {
@@ -521,6 +699,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.triggerSKUs = value.chosenSku;
+            this.isTriggeredBySKU = value.base === 'sku';
 
             if (value.chosenSku.length > 1) {
                 this.hasMultipleSKUs = true;
@@ -534,15 +713,17 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         (this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'applySameSku']).valueChanges as Observable<boolean>).pipe(
             distinctUntilChanged(),
             debounceTime(300),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON APPLY SAME SKU CHANGED:', value)),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS APPLY SAME SKU CHANGED:', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             if (value) {
-                this.chosenSku$.next({
-                    id: this.triggerSKUs[0].id,
-                    label: this.triggerSKUs[0].name,
-                    group: 'catalogues',
-                });
+                if (this.triggerSKUs[0]) {
+                    this.chosenSku$.next({
+                        id: this.triggerSKUs[0].id,
+                        label: this.triggerSKUs[0].name,
+                        group: 'catalogues',
+                    });
+                }
 
                 this.isSelectCatalogueDisabled = true;
             } else {
@@ -553,7 +734,16 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         (this.form.statusChanges as Observable<FormStatus>).pipe(
             distinctUntilChanged(),
             debounceTime(300),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM STATUS CHANGED:', value)),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM STATUS CHANGED:', value)),
+            // filter(value => {
+            //     if (value === 'PENDING') {
+            //         this.form.updateValueAndValidity();
+            //         return false;
+            //     }
+
+            //     return true;
+            // }),
+            // retry(1),
             takeUntil(this.subs$)
         ).subscribe(status => {
             this.formStatusChange.emit(status);
@@ -562,19 +752,32 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         this.form.valueChanges.pipe(
             distinctUntilChanged(),
             debounceTime(200),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
-            // tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
-            // map(value => ({
-            //     ...value,
-            //     chosenSku: value.chosenSku.length === 0 ? [] : value.chosenSku,
-            //     chosenBrand: value.chosenBrand.length === 0 ? [] : value.chosenBrand,
-            //     chosenFaktur: value.chosenFaktur.length === 0 ? [] : value.chosenFaktur,
-            // })),
-            // tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO TRIGGER INFORMATON FORM VALUE CHANGED', value)),
+            tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
+            map(() => {
+                const rawValue = this.form.getRawValue();
+
+                return {
+                    ...rawValue,
+                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
+                };
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.formValueChange.emit(value);
         });
+    }
+
+    private destroyTierSubs(): void {
+        const controls = (this.form.get('conditionBenefit') as FormArray).controls;
+
+        for (const control of controls) {
+            const subject: Subject<void> = control.get('subject').value as Subject<void>;
+            if (!subject.closed) {
+                subject.next();
+                subject.complete();
+            }
+        }
     }
 
     // onEditCategory(): void {
@@ -752,6 +955,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         this.chosenSku$.next(null);
         this.chosenSku$.complete();
 
+        this.destroyTierSubs();
         // this.catalogueCategories$.next([]);
         // this.catalogueCategories$.complete();
 

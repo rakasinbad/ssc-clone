@@ -406,8 +406,8 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
                 })
             ]],
             imageSuggestion: [''],
-            isAllowCombineWithVoucher: [''],
-            isFirstBuy: [''],
+            isAllowCombineWithVoucher: [false],
+            isFirstBuy: [false],
         });
     }
 
@@ -424,28 +424,12 @@ export class PeriodTargetPromoGeneralInformationComponent implements OnInit, Aft
         this.form.valueChanges.pipe(
             distinctUntilChanged(),
             debounceTime(200),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
-            // tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
-            // map(value => {
-            //     let formValue = {
-            //         ...value.productInfo,
-            //         detail: value.productInfo.information,
-            //         unitOfMeasureId: value.productInfo.uom,
-            //     };
-    
-            //     if (formValue.category.length > 0) {
-            //         formValue = {
-            //             ...formValue,
-            //             firstCatalogueCategoryId: value.productInfo.category[0].id,
-            //             lastCatalogueCategoryId: value.productInfo.category.length === 1
-            //                                     ? value.productInfo.category[0].id
-            //                                     : value.productInfo.category[value.productInfo.category.length - 1].id,
-            //         };
-            //     }
-
-            //     return formValue;
-            // }),
-            // tap(value => HelperService.debug('[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED', value)),
+            // tap(value => HelperService.debug('PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
+            tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO GENERAL INFORMATION FORM VALUE CHANGED', value)),
+            map(() => {
+                return this.form.getRawValue();
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] CATALOGUE SKU INFORMATION FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.formValueChange.emit(value);

@@ -94,4 +94,8 @@ export class FlexiComboApiService {
 
         return this.http.get<T>(`${this._url}/${id}`, { params: newParams });
     }
+
+    create<T>(body: T): Observable<any> {
+        return this.http.post<any>(this._url, body);
+    }
 }

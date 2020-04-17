@@ -5,7 +5,7 @@ import { Warehouse } from 'app/main/pages/logistics/warehouse-coverages/models/w
 
 interface IPeriodTargetPromoCustomerSegmentationSettings {
     id?: string;
-    base: string;
+    segmentationBase: string;
     chosenStore?: Array<SupplierStore>;
     chosenWarehouse?: Array<Warehouse>;
     chosenStoreType?: Array<StoreSegmentationType>;
@@ -16,7 +16,7 @@ interface IPeriodTargetPromoCustomerSegmentationSettings {
 
 export class PeriodTargetPromoCustomerSegmentationSettings implements IPeriodTargetPromoCustomerSegmentationSettings {
     id?: string;
-    base: string;
+    segmentationBase: string;
     chosenStore?: Array<SupplierStore>;
     chosenWarehouse?: Array<Warehouse>;
     chosenStoreType?: Array<StoreSegmentationType>;
@@ -27,7 +27,7 @@ export class PeriodTargetPromoCustomerSegmentationSettings implements IPeriodTar
     constructor(data: IPeriodTargetPromoCustomerSegmentationSettings) {
         const {
             id,
-            base,
+            segmentationBase,
             chosenStore = [],
             chosenWarehouse = [],
             chosenStoreType = [],
@@ -37,7 +37,7 @@ export class PeriodTargetPromoCustomerSegmentationSettings implements IPeriodTar
         } = data;
 
         this.id = id;
-        this.base = base;
+        this.segmentationBase = segmentationBase;
         this.chosenStore = chosenStore;
         this.chosenWarehouse = chosenWarehouse;
         this.chosenStoreType = chosenStoreType;

@@ -3,7 +3,7 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class ErrorMessageService {
     constructor(private translate: TranslateService) {}
@@ -59,7 +59,7 @@ export class ErrorMessageService {
             case 'confirm_password':
                 return this.translate.instant('ERROR.CONFIRM', {
                     fieldName: labelName,
-                    fieldNameCompare: labelConfirmPassword
+                    fieldNameCompare: labelConfirmPassword,
                 });
 
             case 'file_size':
@@ -68,13 +68,62 @@ export class ErrorMessageService {
 
                 return this.translate.instant(`ERROR.${String(type).toUpperCase()}`, {
                     fieldName: labelName,
-                    size
+                    size,
                 });
             }
 
-            case 'min_number':
+            case 'range_gt_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_GT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'range_lt_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_LT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'between_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'gt_number': {
+                const { minValue = 0 } = args;
+                return this.translate.instant('ERROR.GT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                });
+            }
+
+            case 'lt_number': {
+                const { maxValue = 0 } = args;
+                return this.translate.instant('ERROR.LT_NUMBER', {
+                    fieldName: labelName,
+                    maxValue,
+                });
+            }
+
+            case 'max_number': {
+                const { maxValue = 0 } = args;
+                return this.translate.instant('ERROR.MAX', { fieldName: labelName, maxValue });
+            }
+
+            case 'min_number': {
                 const { minValue = 0 } = args;
                 return this.translate.instant('ERROR.MIN', { fieldName: labelName, minValue });
+            }
 
             case 'min_1_photo':
                 return this.translate.instant('ERROR.MIN_1_PHOTO', { fieldName: labelName });
@@ -90,7 +139,7 @@ export class ErrorMessageService {
 
                 return this.translate.instant('ERROR.DIFFERENT', {
                     fieldName: labelName,
-                    fieldComparedName
+                    fieldComparedName,
                 });
 
             case 'email_pattern':
@@ -99,7 +148,7 @@ export class ErrorMessageService {
             case 'max_length':
                 return this.translate.instant('ERROR.MAX_LENGTH', {
                     fieldName: labelName,
-                    maxValue: args
+                    maxValue: args,
                 });
 
             case 'mobile_phone_length_pattern':
@@ -108,18 +157,21 @@ export class ErrorMessageService {
                 return this.translate.instant('ERROR.MOBILE_PHONE_LENGTH_PATTERN', {
                     fieldName: labelName,
                     prefix,
-                    length
+                    length,
                 });
 
             case 'mobile_phone_pattern':
                 return this.translate.instant('ERROR.MOBILE_PHONE_PATTERN', {
                     fieldName: labelName,
-                    prefix: args
+                    prefix: args,
                 });
 
             case 'mismatch_extension':
                 const extensions: Array<string> = args.extensions || [];
-                return this.translate.instant('ERROR.MISMATCH_EXTENSION', { fieldName: labelName, extensions: extensions.join(', ')});
+                return this.translate.instant('ERROR.MISMATCH_EXTENSION', {
+                    fieldName: labelName,
+                    extensions: extensions.join(', '),
+                });
 
             case 'numeric':
                 return this.translate.instant('ERROR.NUMERIC', { fieldName: labelName });

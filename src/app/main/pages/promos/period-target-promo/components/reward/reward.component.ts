@@ -482,6 +482,44 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
     }
 
     private initFormCheck(): void {
+        this.form.get('trigger.base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'sku') {
+                this.form.get('trigger.chosenSku').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'brand') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'faktur') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('trigger.chosenFaktur').enable({ onlySelf: true, emitEvent: false });
+            }
+
+            this.form.updateValueAndValidity();
+        });
+
+        this.form.get('condition.base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'qty') {
+                this.form.get('condition.qty').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+            } else if (value === 'order-value') {
+                this.form.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('condition.value').enable({ onlySelf: true, emitEvent: false });
+            }
+
+            this.form.updateValueAndValidity();
+        });
+        
         (this.form.statusChanges as Observable<FormStatus>).pipe(
             distinctUntilChanged(),
             debounceTime(300),
@@ -495,17 +533,19 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             distinctUntilChanged(),
             debounceTime(200),
             tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO REWARD INFORMATON FORM VALUE CHANGED', value)),
-            map(value => {
+            map(() => {
+                const rawValue = this.form.getRawValue();
+
                 const newValue = {
-                    ...value
+                    ...rawValue,
                 };
 
                 newValue.trigger = {
                     ...newValue.trigger,
-                    base: value.trigger.base,
-                    chosenSku: value.trigger.chosenSku.length === 0 ? [] : value.trigger.chosenSku,
-                    chosenBrand: value.trigger.chosenBrand.length === 0 ? [] : value.trigger.chosenBrand,
-                    chosenFaktur: value.trigger.chosenFaktur.length === 0 ? [] : value.trigger.chosenFaktur,
+                    base: newValue.trigger.base,
+                    chosenSku: newValue.trigger.chosenSku.length === 0 ? [] : newValue.trigger.chosenSku,
+                    chosenBrand: newValue.trigger.chosenBrand.length === 0 ? [] : newValue.trigger.chosenBrand,
+                    chosenFaktur: newValue.trigger.chosenFaktur.length === 0 ? [] : newValue.trigger.chosenFaktur,
                 };
 
                 return newValue;
