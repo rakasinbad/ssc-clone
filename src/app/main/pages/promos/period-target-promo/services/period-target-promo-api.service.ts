@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 
 import { PeriodTargetPromo } from '../models';
 import { fromPeriodTargetPromo } from '../store/reducers';
+import { EntityPayload } from 'app/shared/models/entity-payload.model';
 
 /**
  *
@@ -148,5 +149,23 @@ export class PeriodTargetPromoApiService {
     addPeriodTargetPromo<T, R>(payload: T): Observable<R> {
         this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
         return this.http.post<R>(this._url, payload);
+    }
+
+    updatePeriodTargetPromo<T = EntityPayload<any>, R = undefined>(payload: T): Observable<R> {
+        if (!payload['id'] || !payload['data']) {
+            throw new Error('ERR_PERIOD_TARGET_PROMO_REQUIRED_ENTITY_PAYLOAD');
+        }
+
+        this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
+        return this.http.patch<R>(`${this._url}/${payload['id']}`, payload['data']);
+    }
+
+    removePeriodTargetPromo<T = string, R = undefined>(payload: T): Observable<R> {
+        if (typeof payload !== 'string') {
+            throw new Error('ERR_DELETE_PERIOD_TARGET_PROMO_ONLY_REQUIRED_ID');
+        }
+
+        this._url = this._$helper.handleApiRouter(this._PeriodTargetPromoEndpoint);
+        return this.http.delete<R>(`${this._url}/${payload}`);
     }
 }

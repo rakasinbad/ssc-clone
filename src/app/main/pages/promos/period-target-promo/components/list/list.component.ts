@@ -19,15 +19,16 @@ import { environment } from 'environments/environment';
 import { PeriodTargetPromoActions } from '../../store/actions';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject, merge } from 'rxjs';
-import { DomSanitizer } from '@angular/platform-browser';
+// import { DomSanitizer } from '@angular/platform-browser';
 import { NgxPermissionsService } from 'ngx-permissions';
 import { takeUntil, flatMap } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FeatureState as PeriodTargetPromoCoreState } from '../../store/reducers';
 import { IQueryParams } from 'app/shared/models/query.model';
-import { LifecyclePlatform } from 'app/shared/models/global.model';
+// import { LifecyclePlatform } from 'app/shared/models/global.model';
 import { PeriodTargetPromo } from '../../models';
 import { PeriodTargetPromoSelectors } from '../../store/selectors';
+import { HelperService } from 'app/shared/helpers';
 
 type PromoStatus = 'all' | 'active' | 'inactive';
 @Component({
@@ -158,6 +159,17 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
             .subscribe(() => {
                 this._initTable();
             });
+
+        this.PeriodTargetPromoStore
+            .select(PeriodTargetPromoSelectors.getRefreshStatus)
+            .pipe(takeUntil(this.subs$))
+            .subscribe(needRefresh => {
+                if (needRefresh) {
+                    this._initTable();
+                }
+
+                this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.setRefreshStatus({ payload: false }));
+            });
     }
 
     ngOnDestroy(): void {
@@ -190,9 +202,33 @@ export class PeriodTargetPromoListComponent implements OnInit, OnChanges, AfterV
         const numSelected = this.selection.selected.length;
         const numRows = this.paginator.length;
 
-        console.log('IS ALL SELECTED', numSelected, numRows);
+        HelperService.debug('IS ALL SELECTED', { numSelected, numRows });
 
         return numSelected === numRows;
+    }
+
+    onDelete(item: PeriodTargetPromo): void {
+        if (!item) {
+            return;
+        }
+
+        this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.confirmRemovePeriodTargetPromo({ payload: item }));
+    }
+
+    setActive(item: PeriodTargetPromo): void {
+        if (!item) {
+            return;
+        }
+
+        this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.confirmSetActivePeriodTargetPromo({ payload: item }));
+    }
+
+    setInactive(item: PeriodTargetPromo): void {
+        if (!item) {
+            return;
+        }
+
+        this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.confirmSetInactivePeriodTargetPromo({ payload: item }));
     }
 
     private _initTable(): void {
