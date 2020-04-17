@@ -19,6 +19,8 @@ import { UiActions, FormActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
 import { PeriodTargetPromoActions } from '../../store/actions';
 import { HelperService } from 'app/shared/helpers';
+import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
+import * as moment from 'moment';
 
 type IFormMode = 'add' | 'view' | 'edit';
 
@@ -279,6 +281,221 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         element.nativeElement.scrollTop = 0;
     }
 
+    private processGeneralInformationForm(): void {
+        const formValue = this.formValue as Partial<GeneralInformation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            externalId: formValue.sellerId,
+            name: formValue.name,
+            platform: formValue.platform,
+            maxRedemptionPerStore: +formValue.maxRedemptionPerBuyer,
+            promoBudget: +formValue.budget,
+            startDate: (formValue.activeStartDate as unknown as moment.Moment).toISOString(),
+            endDate: (formValue.activeEndDate as unknown as moment.Moment).toISOString(),
+            voucherCombine: !!formValue.isAllowCombineWithVoucher,
+            firstBuy: !!formValue.isFirstBuy,
+        };
+
+        if (formValue.imageSuggestion.startsWith('data:image')) {
+            payload.image = formValue.imageSuggestion;
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
+    private processTriggerInformationForm(): void {
+        const formValue = this.formValue as Partial<TriggerInformation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            base: formValue.base === 'sku' ? 'sku'
+                    : formValue.base === 'brand' ? 'brand'
+                    : formValue.base === 'faktur' ? 'invoiceGroup'
+                    : 'unknown',
+            dataBase: {},
+        };
+
+        // Klasifikasi "dataBase" untuk Trigger Information.
+        if (payload.base === 'sku') {
+            payload.dataBase = {
+                catalogueId: formValue.chosenSku.map(sku => sku.id),
+            };
+        } else if (payload.base === 'brand') {
+            payload.dataBase = {
+                brandId: formValue.chosenBrand.map(brand => brand.id),
+            };
+        } else if (payload.base === 'invoiceGroup') {
+            payload.dataBase = {
+                invoiceGroupId: formValue.chosenFaktur.map(faktur => faktur.id),
+            };
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
+    private processConditionBenefitForm(): void {
+        const formValue = this.formValue as Partial<ConditionBenefit>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            // CONDITION & BENEFIT SETTINGS
+            conditions: [],
+        };
+
+        const isMultiplication = !!formValue.conditionBenefit[0].benefit.qty.multiplicationOnly;
+
+        // Klasifikasi "conditions" untuk Condition & Benefit Settings
+        for (const [index, { condition, benefit }] of formValue.conditionBenefit.entries()) {
+            if ((isMultiplication && index === 0) || !isMultiplication) {
+                // Condition Payload Master.
+                const conditionPayload = {
+                    conditionBase: condition.base === 'qty' ? 'qty'
+                                    : condition.base === 'order-value' ? 'value'
+                                    : 'unknown',
+                    benefitType: benefit.base === 'qty' ? 'qty'
+                                    : benefit.base === 'cash' ? 'amount'
+                                    : benefit.base === 'percent' ? 'percent'
+                                    : 'unknown',
+                    multiplication: isMultiplication,
+                };
+
+                // Payload untuk Condition.
+                if (conditionPayload.conditionBase === 'qty') {
+                    conditionPayload['conditionQty'] = +condition.qty;
+                } else if (conditionPayload.conditionBase === 'value') {
+                    conditionPayload['conditionValue'] = +condition.value;
+                }
+
+                // Payload untuk Benefit.
+                if (conditionPayload.benefitType === 'qty') {
+                    conditionPayload['benefitCatalogueId'] = +benefit.qty.bonusSku.id;
+                    conditionPayload['benefitBonusQty'] = +benefit.qty.bonusQty;
+                } else if (conditionPayload.benefitType === 'amount') {
+                    conditionPayload['benefitRebate'] = +benefit.cash.rebate;
+                } else if (conditionPayload.benefitType === 'percent') {
+                    conditionPayload['benefitDiscount'] = +benefit.percent.percentDiscount;
+                    conditionPayload['benefitMaxRebate'] = +benefit.percent.maxRebate;
+                }
+
+                payload.conditions.push(conditionPayload);
+            }
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
+    private processCustomerSegmentationForm(): void {
+        const formValue = this.formValue as Partial<CustomerSegmentation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            target: formValue.segmentationBase === 'direct-store' ? 'store'
+                    : formValue.segmentationBase === 'segmentation' ? 'segmentation'
+                    : 'unknown',
+            dataTarget: {},
+        };
+
+        // Klasifikasi "dataTarget" untuk Customer Segmentation Settings.
+        if (payload.target === 'store') {
+            payload.dataTarget = {
+                storeId: formValue.chosenStore.map(supplierStore => supplierStore.storeId)
+            };
+        } else if (payload.target === 'segmentation') {
+            payload.dataTarget = {
+                warehouseId: formValue.chosenWarehouse.length === 0 ? 'all'
+                            : formValue.chosenWarehouse.map(warehouse => warehouse.id),
+                typeId: formValue.chosenStoreType.length === 0 ? 'all'
+                            : formValue.chosenStoreType.map(storeType => storeType.id),
+                groupId: formValue.chosenStoreGroup.length === 0 ? 'all'
+                            : formValue.chosenStoreGroup.map(storeGroup => storeGroup.id),
+                clusterId: formValue.chosenStoreCluster.length === 0 ? 'all'
+                            : formValue.chosenStoreCluster.map(storeCluster => storeCluster.id),
+                channelId: formValue.chosenStoreChannel.length === 0 ? 'all'
+                            : formValue.chosenStoreChannel.map(storeChannel => storeChannel.id),
+            };
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
+    private processRewardForm(): void {
+        const formValue = this.formValue as Partial<PromoReward>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            reward: {
+                startDate: (formValue.rewardValidDate.activeStartDate as unknown as moment.Moment).toISOString(),
+                endDate: (formValue.rewardValidDate.activeEndDate as unknown as moment.Moment).toISOString(),
+                triggerBase: formValue.trigger.base === 'sku' ? 'sku'
+                            : formValue.trigger.base === 'brand' ? 'brand'
+                            : formValue.trigger.base === 'faktur' ? 'invoiceGroup'
+                            : 'unknown',
+                conditionBase: formValue.condition.base === 'qty' ? 'qty'
+                            : formValue.condition.base === 'order-value' ? 'value'
+                            : 'unknown',
+                termCondition: formValue.miscellaneous.description,
+            },
+        };
+
+        if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
+            payload.reward.image = formValue.miscellaneous.couponImage;
+        }
+
+        // Klasifikasi "reward -> conditionBase" untuk Reward Information.
+        if (payload.reward.conditionBase === 'qty') {
+            payload.reward['conditionQty'] = formValue.condition.qty;
+        } else if (payload.reward.conditionBase === 'value') {
+            payload.reward['conditionValue'] = formValue.condition.value;
+        }
+
+        // Klasifikasi "reward -> triggerBase" untuk Trigger Information.
+        if (payload.reward.triggerBase === 'sku') {
+            payload.reward['catalogueId'] = formValue.trigger.chosenSku.map(sku => sku.id);
+        } else if (payload.reward.triggerBase === 'brand') {
+            payload.reward['brandId'] = formValue.trigger.chosenBrand.map(brand => brand.id);
+        } else if (payload.reward.triggerBase === 'invoiceGroup') {
+            payload.reward['invoiceGroupId'] = formValue.trigger.chosenFaktur.map(faktur => faktur.id);
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
     ngOnInit(): void {
         this.selectedPromo$ = this.PeriodTargetPromoStore.select(
             PeriodTargetPromoSelectors.getSelectedPeriodTargetPromo
@@ -340,112 +557,39 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         });
 
         // Memeriksa kejadian ketika adanya penekanan pada tombol "save".
-        // this.PeriodTargetPromoStore.select(
-        //     FormSelectors.getIsClickSaveButton
-        // ).pipe(
-        //     withLatestFrom(this.selectedPromo$),
-        //     takeUntil(this.subs$)
-        // ).subscribe(([isClick, catalogue]) => {
-        //     if (isClick) {
-        //         switch (this.section) {
-        //             case 'sku-information': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as CatalogueInformation,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
+        this.PeriodTargetPromoStore.select(
+            FormSelectors.getIsClickSaveButton
+        ).pipe(
+            withLatestFrom(this.selectedPromo$),
+            takeUntil(this.subs$)
+        ).subscribe(([isClick, _]) => {
+            if (isClick) {
+                this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
 
-        //                 break;
-        //             }
-        //             case 'media-settings': {
-        //                 const formPhotos = this.formValue as CatalogueMediaForm;
-        //                 const oldPhotos = formPhotos.oldPhotos;
-        //                 const formCatalogue: CatalogueMedia = {
-        //                     deletedImages: [],
-        //                     uploadedImages: [],
-        //                 };
-
-        //                 /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
-        //                 const filterPhoto = (photo, idx) => {
-        //                     const isDeleted = photo === null && oldPhotos[idx].value !== null;
-        //                     const isNewUpload = photo !== null && oldPhotos[idx].value === null;
-        //                     const isReplaced = photo !== null && oldPhotos[idx].value !== null && photo !== oldPhotos[idx].value;
-
-        //                     if (isDeleted) {
-        //                         formCatalogue.deletedImages.push(oldPhotos[idx].id);
-        //                     }
-
-        //                     if (isNewUpload) {
-        //                         formCatalogue.uploadedImages.push({ base64: photo });
-        //                     }
-
-        //                     if (isReplaced) {
-        //                         formCatalogue.deletedImages.push(oldPhotos[idx].id);
-        //                         formCatalogue.uploadedImages.push({ base64: photo });
-        //                     }
-        //                 };
-
-        //                 // Mulai mem-filter foto.
-        //                 formPhotos.photos.forEach(filterPhoto);
-
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: formCatalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
-
-        //                 break;
-        //             }
-        //             case 'weight-and-dimension': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as CatalogueWeightDimension,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
-
-        //                 break;
-        //             }
-        //             case 'price-settings': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as Catalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
-
-        //                 break;
-        //             }
-        //             case 'amount-settings': {
-        //                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-        //                 this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-        //                     payload: {
-        //                         id: catalogue.id,
-        //                         data: this.formValue as Catalogue,
-        //                         source: 'form',
-        //                         section: this.section
-        //                     }
-        //                 }));
-
-        //                 break;
-        //             }
-        //         }
-        //     }
-        // });
+                switch (this.section) {
+                    case 'general-information': {
+                        this.processGeneralInformationForm();
+                        break;
+                    }
+                    case 'trigger': {
+                        this.processTriggerInformationForm();
+                        break;
+                    }
+                    case 'condition-benefit': {
+                        this.processConditionBenefitForm();
+                        break;
+                    }
+                    case 'customer-segmentation': {
+                        this.processCustomerSegmentationForm();
+                        break;
+                    }
+                    case 'reward': {
+                        this.processRewardForm();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     ngOnDestroy(): void {

@@ -147,31 +147,25 @@
                             <span>Edit</span>
                         </button> -->
 
-                        <!--<button
-                            mat-menu-item
-                            type="button"
-                            class="sinbad-mat-menu-item"
-                            [attr.aria-label]="
-                                row?.status === 'active' ? 'Inactive' : 'Active'
-                            "
-                            (click)="onChangeStatus(row)"
-                        >
-                            <mat-icon>
-                                {{
-                                    row?.status === 'active'
-                                        ? 'archive'
-                                        : 'check_circle_outline'
-                                }}
-                            </mat-icon>
-                            <span>
-                                {{
-                                    (row?.status === 'active'
-                                        ? 'ACTION.INACTIVE'
-                                        : 'ACTION.ACTIVE'
-                                    ) | translate
-                                }}
-                            </span>
-                        </button> -->
+                        <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                            aria-label="archive" (click)="setInactive(row)"
+                            *ngIf="row?.status === 'active'">
+                            <mat-icon>archive</mat-icon>
+                            <span>Set to Inactive</span>
+                        </button>
+
+                        <button mat-menu-item type="button" class="sinbad-mat-menu-item"
+                            aria-label="archive" (click)="setActive(row)"
+                            *ngIf="row?.status === 'inactive'">
+                            <mat-icon>unarchive</mat-icon>
+                            <span>Set to Active</span>
+                        </button>
+
+                        <button mat-menu-item type="button" class="sinbad-mat-menu-item" aria-label="remove"
+                            (click)="onDelete(row)">
+                            <mat-icon>delete</mat-icon>
+                            <span>Remove</span>
+                        </button>
                     </ng-template>
                 </mat-menu>
             </div>

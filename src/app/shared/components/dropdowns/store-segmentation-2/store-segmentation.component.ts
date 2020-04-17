@@ -199,13 +199,26 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
             catchError(err => { throw err; }),
         ).subscribe({
             next: (response) => {
+                // tslint:disable-next-line: no-inferrable-types
+                let groupName: string = '';
+
+                if (this.segmentationType === 'type') {
+                    groupName = 'store-segmentation-types';
+                } else if (this.segmentationType === 'group') {
+                    groupName = 'store-segmentation-groups';
+                } else if (this.segmentationType === 'channel') {
+                    groupName = 'store-segmentation-channels';
+                } else if (this.segmentationType === 'cluster') {
+                    groupName = 'store-segmentation-clusters';
+                }
+
                 if (Array.isArray(response)) {
                     this.rawAvailableEntities$.next(response);
-                    this.availableEntities$.next((response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-types' })));
+                    this.availableEntities$.next((response as Array<Entity>).map(d => ({ id: d.id, label: d.name, group: groupName })));
                     this.totalEntities$.next((response as Array<Entity>).length);
                 } else {
                     this.rawAvailableEntities$.next(response.data);
-                    this.availableEntities$.next(response.data.map(d => ({ id: d.id, label: d.name, group: 'store-segmentation-types' })));
+                    this.availableEntities$.next(response.data.map(d => ({ id: d.id, label: d.name, group: groupName })));
                     this.totalEntities$.next(response.total);
                 }
 
@@ -483,11 +496,13 @@ export class StoreSegmentationDropdownComponent implements OnInit, OnChanges, Af
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
-            this.entityFormView.clearValidators();
-
-            if (changes['required'].currentValue === true) {
-                this.entityFormView.setValidators(Validators.required);
+        if (changes['required']) {
+            if (!changes['required'].isFirstChange()) {
+                this.entityFormView.clearValidators();
+    
+                if (changes['required'].currentValue === true) {
+                    this.entityFormView.setValidators(Validators.required);
+                }
             }
         }
 

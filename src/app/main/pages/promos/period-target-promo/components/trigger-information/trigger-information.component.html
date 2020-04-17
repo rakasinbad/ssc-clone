@@ -45,7 +45,7 @@
                 [fxHide]="form.get('base').value !== 'sku'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
@@ -57,7 +57,7 @@
 
                 <select-catalogues
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenSku$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onCatalogueSelected($event)"
@@ -82,7 +82,7 @@
                 [fxHide]="form.get('base').value !== 'brand'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
@@ -94,7 +94,7 @@
 
                 <select-brands
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenBrand$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onBrandSelected($event)"
@@ -119,7 +119,7 @@
                 [fxHide]="form.get('base').value !== 'faktur'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
@@ -131,7 +131,7 @@
 
                 <select-faktur
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenFaktur$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onFakturSelected($event)"

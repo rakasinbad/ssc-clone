@@ -3,6 +3,7 @@ import { PeriodTargetPromo } from '../../models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
 import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
+import { EntityPayload } from 'app/shared/models/entity-payload.model';
 // import { PeriodTargetPromoCreationPayload } from '../../models/period-target-promo.model';
 
 export type requestActionNames =
@@ -50,9 +51,19 @@ export const confirmUpdatePeriodTargetPromo = createAction(
     props<{ payload: PeriodTargetPromo }>()
 );
 
+export const confirmSetActivePeriodTargetPromo = createAction(
+    '[PeriodTargetPromo Page] Confirm Set to Active PeriodTargetPromo',
+    props<{ payload: PeriodTargetPromo }>()
+);
+
+export const confirmSetInactivePeriodTargetPromo = createAction(
+    '[PeriodTargetPromo Page] Confirm Set to Inactive PeriodTargetPromo',
+    props<{ payload: PeriodTargetPromo }>()
+);
+
 export const confirmRemovePeriodTargetPromo = createAction(
     '[PeriodTargetPromo Page] Confirm Remove PeriodTargetPromo',
-    props<{ payload: Array<string> }>()
+    props<{ payload: PeriodTargetPromo | Array<PeriodTargetPromo> }>()
 );
 
 /**
@@ -72,13 +83,13 @@ export const addPeriodTargetPromoFailure = createAction(
     '[Promo/Period Target Promo API] Add PeriodTargetPromo Failure',
     props<{ payload: IErrorHandler }>()
 );
-
+// 
 /**
  * UPDATE
  */
 export const updatePeriodTargetPromoRequest = createAction(
     '[Promo/Period Target Promo API] Update PeriodTargetPromo Request',
-    props<{ payload: { id: string; data: PeriodTargetPromo } }>()
+    props<{ payload: EntityPayload<Partial<PeriodTargetPromo>> }>()
 );
 
 export const updatePeriodTargetPromoSuccess = createAction(

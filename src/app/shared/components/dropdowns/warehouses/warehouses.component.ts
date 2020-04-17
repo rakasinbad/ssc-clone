@@ -193,13 +193,13 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 if (Array.isArray(response)) {
                     this.rawAvailableEntities$.next(response);
                     this.availableEntities$.next((response as Array<Entity>).map(d =>
-                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                        ({ id: d.id, label: d.name, group: 'warehouses' }))
                     );
                     this.totalEntities$.next((response as Array<Entity>).length);
                 } else {
                     this.rawAvailableEntities$.next(response.data.map(d => d));
                     this.availableEntities$.next(response.data.map(d =>
-                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                        ({ id: d.id, label: d.name, group: 'warehouses' }))
                     );
                     this.totalEntities$.next(response.total);
                 }
@@ -484,17 +484,19 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (!changes['required'].isFirstChange()) {
-            this.entityFormView.clearValidators();
-
-            if (changes['required'].currentValue === true) {
-                this.entityFormView.setValidators(RxwebValidators.required());
+        if (changes['required']) {
+            if (!changes['required'].isFirstChange()) {
+                this.entityFormView.clearValidators();
+    
+                if (changes['required'].currentValue === true) {
+                    this.entityFormView.setValidators(RxwebValidators.required());
+                }
             }
-        }
-
-        if (changes['initialSelection']) {
-            this.entityFormValue.setValue(changes['initialSelection'].currentValue);
-            this.updateFormView();
+    
+            if (changes['initialSelection']) {
+                this.entityFormValue.setValue(changes['initialSelection'].currentValue);
+                this.updateFormView();
+            }
         }
     }
 

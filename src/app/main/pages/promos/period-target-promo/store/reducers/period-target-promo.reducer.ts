@@ -86,6 +86,20 @@ export const reducer = createReducer(
         isLoading: false,
     })),
     /**
+     * REMOVE SUCCESS STATE.
+     */
+    on(PeriodTargetPromoActions.removePeriodTargetPromoSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+    })),
+    /**
+     * UPDATE SUCCESS STATE.
+     */
+    on(PeriodTargetPromoActions.updatePeriodTargetPromoSuccess, (state, { payload }) => ({
+        ...state,
+        isLoading: false,
+    })),
+    /**
      * SELECTION STATE.
      */
     on(PeriodTargetPromoActions.selectPeriodTargetPromo, (state, { payload }) => ({

@@ -45,7 +45,9 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
     // Untuk keperluan memicu adanya perubahan view.
     private trigger$: BehaviorSubject<string> = new BehaviorSubject<string>('');
     // Untuk keperluan mengirim nilai yang terpilih ke component multiple selection.
-    chosen$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    chosenSku$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    chosenBrand$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
+    chosenFaktur$: BehaviorSubject<Array<Selection>> = new BehaviorSubject<Array<Selection>>([]);
     // Untuk menyimpan daftar platform.
     platforms$: Observable<Array<Brand>>;
     // Untuk form.
@@ -188,7 +190,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
 
             switch (periodTargetPromo.base) {
                 case 'sku':
-                    this.chosen$.next(
+                    this.chosenSku$.next(
                         periodTargetPromo.promoCatalogues.map(data => ({
                             id: data.catalogue.id,
                             label: data.catalogue.name,
@@ -199,7 +201,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     chosenBase = periodTargetPromo.base;
                     break;
                 case 'brand':
-                    this.chosen$.next(
+                    this.chosenBrand$.next(
                         periodTargetPromo.promoBrands.map(data => ({
                             id: data.brand.id,
                             label: data.brand.name,
@@ -210,7 +212,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
                     chosenBase = periodTargetPromo.base;
                     break;
                 case 'invoiceGroup':
-                    this.chosen$.next(
+                    this.chosenFaktur$.next(
                         periodTargetPromo.promoInvoiceGroups.map(data => ({
                             id: data.invoiceGroup.id,
                             label: data.invoiceGroup.name,
@@ -223,10 +225,11 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             }
 
             this.form.patchValue({
+                id: periodTargetPromo.id,
                 base: chosenBase,
-                chosenSku: periodTargetPromo.promoCatalogues,
-                chosenBrand: periodTargetPromo.promoBrands,
-                chosenFaktur: periodTargetPromo.promoInvoiceGroups,
+                chosenSku: periodTargetPromo.promoCatalogues.length === 0 ? '' : periodTargetPromo.promoCatalogues,
+                chosenBrand: periodTargetPromo.promoBrands.length === 0 ? '' : periodTargetPromo.promoBrands,
+                chosenFaktur: periodTargetPromo.promoInvoiceGroups.length === 0 ? '' : periodTargetPromo.promoInvoiceGroups,
             });
 
             if (this.formMode === 'view') {
@@ -399,18 +402,20 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             takeUntil(this.subs$)
         ).subscribe(value => {
             if (value === 'sku') {
-                this.form.get('chosenSku').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenSku').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
             } else if (value === 'brand') {
-                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenBrand').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenBrand').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenFaktur').disable({ onlySelf: true, emitEvent: true });
             } else if (value === 'faktur') {
-                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenFaktur').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenSku').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenBrand').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenFaktur').enable({ onlySelf: true, emitEvent: true });
             }
+
+            this.form.updateValueAndValidity();
         });
     }
 
@@ -419,7 +424,7 @@ export class PeriodTargetPromoTriggerInformationComponent implements OnInit, Aft
             distinctUntilChanged(),
             debounceTime(300),
             tap(value => HelperService.debug('PERIOD TARGET PROMO TRIGGER INFORMATON FORM STATUS CHANGED:', value)),
-            takeUntil(this.subs$)
+            takeUntil(this.subs$),
         ).subscribe(status => {
             this.formStatusChange.emit(status);
         });

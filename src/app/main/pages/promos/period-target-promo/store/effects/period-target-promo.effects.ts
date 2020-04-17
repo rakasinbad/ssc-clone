@@ -35,6 +35,7 @@ import { TNullable, ErrorHandler, IPaginatedResponse } from 'app/shared/models/g
 import { User } from 'app/shared/models/user.model';
 import { AnyAction } from 'app/shared/models/actions.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
+import { EntityPayload } from 'app/shared/models/entity-payload.model';
 
 @Injectable()
 export class PeriodTargetPromoEffects {
@@ -117,6 +118,70 @@ export class PeriodTargetPromoEffects {
         )
     );
 
+    updatePeriodTargetPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan Period Target Promo.
+            ofType(PeriodTargetPromoActions.updatePeriodTargetPromoRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [EntityPayload<Partial<PeriodTargetPromo>>, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, EntityPayload<Partial<PeriodTargetPromo>>], Observable<AnyAction>>(this.updatePeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'updatePeriodTargetPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, EntityPayload<Partial<PeriodTargetPromo>>], Observable<AnyAction>>(this.updatePeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'updatePeriodTargetPromoFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    removePeriodTargetPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan Period Target Promo.
+            ofType(PeriodTargetPromoActions.removePeriodTargetPromoRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([periodTargetPromoId, authState]: [string, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, periodTargetPromoId])),
+                        switchMap<[User, string], Observable<AnyAction>>(this.removePeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'removePeriodTargetPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, periodTargetPromoId])),
+                        switchMap<[User, string], Observable<AnyAction>>(this.removePeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'removePeriodTargetPromoFailure'))
+                    );
+                }
+            })
+        )
+    );
+
     addPeriodTargetPromoSuccess$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action penambahan Period Target Promo.
@@ -138,6 +203,106 @@ export class PeriodTargetPromoEffects {
         )
     , { dispatch: false });
 
+    confirmRemoveCatalogue$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(PeriodTargetPromoActions.confirmRemovePeriodTargetPromo),
+            map(action => action.payload),
+            exhaustMap(params => {
+                if (!Array.isArray(params)) {
+                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                        data: {
+                            title: 'Delete',
+                            message: `Are you sure want to delete Period Target Promo <strong>${params.name}</strong>?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    });
+
+                    return dialogRef.afterClosed();
+                }
+            }),
+            map(response => {
+                if (response) {
+                    this.PeriodTargetPromoStore.dispatch(
+                        PeriodTargetPromoActions.removePeriodTargetPromoRequest({ payload: response })
+                    );
+                } else {
+                    this.PeriodTargetPromoStore.dispatch(UiActions.resetHighlightRow());
+                }
+            })
+        ), { dispatch: false }
+    );
+
+    confirmSetCatalogueToActive$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PeriodTargetPromoActions.confirmSetActivePeriodTargetPromo),
+                map(action => action.payload),
+                exhaustMap(params => {
+                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                        data: {
+                            title: 'Set Product to Active',
+                            message: `Are you sure want to set Period Target Promo <strong>${params.name}</strong> to <strong>Active</strong>?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    });
+
+                    return dialogRef.afterClosed();
+                }),
+                map(response => {
+                    if (response) {
+                        this.PeriodTargetPromoStore.dispatch(
+                            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({ payload: {
+                                id: response,
+                                data: {
+                                    status: 'active'
+                                }
+                            }})
+                        );
+                    } else {
+                        this.PeriodTargetPromoStore.dispatch(UiActions.resetHighlightRow());
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
+    confirmSetCatalogueToInactive$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(PeriodTargetPromoActions.confirmSetInactivePeriodTargetPromo),
+                map(action => action.payload),
+                exhaustMap(params => {
+                    const dialogRef = this.matDialog.open(DeleteConfirmationComponent, {
+                        data: {
+                            title: 'Set Product to Inactive',
+                            message: `Are you sure want to set Period Target Promo <strong>${params.name}</strong> to <strong>Inactive</strong>?`,
+                            id: params.id
+                        },
+                        disableClose: true
+                    });
+
+                    return dialogRef.afterClosed();
+                }),
+                map(response => {
+                    if (response) {
+                        this.PeriodTargetPromoStore.dispatch(
+                            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({ payload: {
+                                id: response,
+                                data: {
+                                    status: 'inactive'
+                                }
+                            }})
+                        );
+                    } else {
+                        this.PeriodTargetPromoStore.dispatch(UiActions.resetHighlightRow());
+                    }
+                })
+            ),
+        { dispatch: false }
+    );
+
     fetchFailureAction$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action fetch export logs failure.
@@ -148,8 +313,29 @@ export class PeriodTargetPromoEffects {
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
             tap(this.showErrorNotification),
-        )
-    , { dispatch: false });
+        ) , { dispatch: false });
+
+    updateFailureAction$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action fetch export logs failure.
+            ofType(PeriodTargetPromoActions.updatePeriodTargetPromoFailure),
+            // Hanya mengambil payload-nya saja.
+            map(action => action.payload),
+            // Memunculkan notif bahwa request export gagal.
+            tap(err => this.showErrorNotification(err)),
+        ), { dispatch: false });
+
+    setRefreshStatusToActive$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(
+                PeriodTargetPromoActions.updatePeriodTargetPromoSuccess
+            ),
+            map(action => action.payload),
+            tap(() => {
+                this.PeriodTargetPromoStore.dispatch(PeriodTargetPromoActions.setRefreshStatus({ payload: true }));
+            })
+        ), { dispatch: false }
+    );
 
     checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.
@@ -210,6 +396,48 @@ export class PeriodTargetPromoEffects {
         );
     }
 
+    updatePeriodTargetPromoRequest = ([_, payload]: [User, EntityPayload<Partial<PeriodTargetPromo>>]): Observable<AnyAction> => {
+        return this.PeriodTargetPromoApi$
+            .updatePeriodTargetPromo<EntityPayload<Partial<PeriodTargetPromo>>, PeriodTargetPromo>(payload)
+            .pipe(
+                catchOffline(),
+                switchMap(response => {
+                    return of(PeriodTargetPromoActions.updatePeriodTargetPromoSuccess({
+                        payload: {
+                            id: response.id,
+                            data: response
+                        }
+                    }));
+                }),
+                catchError(err => {
+                    if (payload.source === 'detail-edit') {
+                        this.PeriodTargetPromoStore.dispatch(UiActions.showFooterAction());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.enableSaveButton());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
+                    }
+
+                    return this.sendErrorToState(err, 'updatePeriodTargetPromoFailure');
+                })
+            );
+    }
+
+    removePeriodTargetPromoRequest = ([_, payload]: [User, string]): Observable<AnyAction> => {
+        return this.PeriodTargetPromoApi$
+            .removePeriodTargetPromo<string, any>(payload)
+            .pipe(
+                catchOffline(),
+                switchMap(response => {
+                    return of(PeriodTargetPromoActions.removePeriodTargetPromoSuccess({
+                        payload: response
+                    }));
+                }),
+                catchError(err => {
+                    return this.sendErrorToState(err, 'removePeriodTargetPromoFailure');
+                })
+            );
+    }
+
     addPeriodTargetPromoRequest = ([_, payload]: [User, PeriodTargetPromoPayload]): Observable<AnyAction> => {
         return this.PeriodTargetPromoApi$
             .addPeriodTargetPromo<PeriodTargetPromoPayload, PeriodTargetPromo>(payload)
@@ -267,7 +495,7 @@ export class PeriodTargetPromoEffects {
         };
 
         if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-            this.notice$.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
+            this.notice$.open(`An error occured. Reason: ${error.errors}`, 'error', noticeSetting);
         } else {
             this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
         }
