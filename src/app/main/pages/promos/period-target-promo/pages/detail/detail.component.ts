@@ -348,6 +348,64 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         );
     }
 
+    private processConditionBenefitForm(): void {
+        const formValue = this.formValue as Partial<ConditionBenefit>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            // CONDITION & BENEFIT SETTINGS
+            conditions: [],
+        };
+
+        const isMultiplication = !!formValue.conditionBenefit[0].benefit.qty.multiplicationOnly;
+
+        // Klasifikasi "conditions" untuk Condition & Benefit Settings
+        for (const [index, { condition, benefit }] of formValue.conditionBenefit.entries()) {
+            if ((isMultiplication && index === 0) || !isMultiplication) {
+                // Condition Payload Master.
+                const conditionPayload = {
+                    conditionBase: condition.base === 'qty' ? 'qty'
+                                    : condition.base === 'order-value' ? 'value'
+                                    : 'unknown',
+                    benefitType: benefit.base === 'qty' ? 'qty'
+                                    : benefit.base === 'cash' ? 'amount'
+                                    : benefit.base === 'percent' ? 'percent'
+                                    : 'unknown',
+                    multiplication: isMultiplication,
+                };
+
+                // Payload untuk Condition.
+                if (conditionPayload.conditionBase === 'qty') {
+                    conditionPayload['conditionQty'] = +condition.qty;
+                } else if (conditionPayload.conditionBase === 'value') {
+                    conditionPayload['conditionValue'] = +condition.value;
+                }
+
+                // Payload untuk Benefit.
+                if (conditionPayload.benefitType === 'qty') {
+                    conditionPayload['benefitCatalogueId'] = +benefit.qty.bonusSku.id;
+                    conditionPayload['benefitBonusQty'] = +benefit.qty.bonusQty;
+                } else if (conditionPayload.benefitType === 'amount') {
+                    conditionPayload['benefitRebate'] = +benefit.cash.rebate;
+                } else if (conditionPayload.benefitType === 'percent') {
+                    conditionPayload['benefitDiscount'] = +benefit.percent.percentDiscount;
+                    conditionPayload['benefitMaxRebate'] = +benefit.percent.maxRebate;
+                }
+
+                payload.conditions.push(conditionPayload);
+            }
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                    source: 'detail-edit',
+                }
+            })
+        );
+    }
+
     private processCustomerSegmentationForm(): void {
         const formValue = this.formValue as Partial<CustomerSegmentation>;
 
@@ -518,7 +576,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                         break;
                     }
                     case 'condition-benefit': {
-                        // this.processConditionBenefitForm();
+                        this.processConditionBenefitForm();
                         break;
                     }
                     case 'customer-segmentation': {

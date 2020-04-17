@@ -234,11 +234,13 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'applySameSku']).disable({ onlySelf: true, emitEvent: false });
             this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'multiplicationOnly']).disable({ onlySelf: true, emitEvent: false });
         } else {
-            this.form.get(['conditionBenefit', index, 'condition', 'base']).enable({ onlySelf: true, emitEvent: false });
-            this.form.get(['conditionBenefit', index, 'benefit', 'base']).enable({ onlySelf: true, emitEvent: false });
-            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'applySameSku']).enable({ onlySelf: true, emitEvent: false });
-            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'multiplicationOnly']).enable({ onlySelf: true, emitEvent: false });
+            this.form.get(['conditionBenefit', index, 'condition', 'base']).enable({ onlySelf: true, emitEvent: true });
+            this.form.get(['conditionBenefit', index, 'benefit', 'base']).enable({ onlySelf: true, emitEvent: true });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'applySameSku']).enable({ onlySelf: true, emitEvent: true });
+            this.form.get(['conditionBenefit', index, 'benefit', 'qty', 'multiplicationOnly']).enable({ onlySelf: true, emitEvent: true });
         }
+
+        this.form.updateValueAndValidity();
     }
 
     private prepareEdit(): void {
@@ -445,10 +447,10 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         const lastIdx = (this.form.get('conditionBenefit') as FormArray).controls.length - 1;
         const lastControl = (this.form.get(['conditionBenefit', lastIdx]) as FormGroup);
 
-        if ((this.form.get('conditionBenefit') as FormArray).length > 1) {
+        if ((this.form.get('conditionBenefit') as FormArray).length > 1 && !this.isViewMode()) {
             const multiplication = this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']);
 
-            multiplication.disable({ onlySelf: true, emitEvent: false });
+            multiplication.disable({ onlySelf: true, emitEvent: true });
             multiplication.reset();
         }
 
@@ -461,28 +463,28 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             next: value => {
                 if (lastControl.enabled && value.condition) {
                     if (value.condition.base === 'qty') {
-                        lastControl.get('condition.qty').enable({ onlySelf: true, emitEvent: false });
-                        lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.qty').enable({ onlySelf: true, emitEvent: true });
+                        lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: true });
                     } else if (value.condition.base === 'order-value') {
-                        lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
-                        lastControl.get('condition.value').enable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: true });
+                        lastControl.get('condition.value').enable({ onlySelf: true, emitEvent: true });
                     }
 
                     switch (value.benefit.base) {
                         case 'qty':
-                            lastControl.get('benefit.qty').enable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.qty').enable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: true });
                             break;
                         case 'percent':
-                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.percent').enable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.percent').enable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: true });
                             break;
                         case 'cash':
-                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
-                            lastControl.get('benefit.cash').enable({ onlySelf: true, emitEvent: false });
+                            lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: true });
+                            lastControl.get('benefit.cash').enable({ onlySelf: true, emitEvent: true });
                             break;
                     }
                 }
@@ -663,7 +665,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
         (this.form.get('conditionBenefit') as FormArray).removeAt(index);
 
-        if ((this.form.get('conditionBenefit') as FormArray).length === 1) {
+        if ((this.form.get('conditionBenefit') as FormArray).length === 1 && !this.isViewMode()) {
             const multiplication = this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']);
 
             multiplication.enable({ onlySelf: true, emitEvent: false });
@@ -673,7 +675,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         const controls = (this.form.get('conditionBenefit') as FormArray).controls;
         for (const [idx, kontrol] of controls.entries()) {
             if (idx === (controls.length - 1)) {
-                kontrol.enable({ onlySelf: true, emitEvent: false });
+                kontrol.enable({ onlySelf: true, emitEvent: true });
                 kontrol.markAsDirty();
                 kontrol.markAllAsTouched();
             }
@@ -693,6 +695,42 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
     }
 
     private initFormCheck(): void {
+        (this.form.statusChanges as Observable<FormStatus>).pipe(
+            distinctUntilChanged(),
+            debounceTime(300),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM STATUS CHANGED:', value)),
+            // filter(value => {
+            //     if (value === 'PENDING') {
+            //         this.form.updateValueAndValidity();
+            //         return false;
+            //     }
+
+            //     return true;
+            // }),
+            // retry(1),
+            takeUntil(this.subs$)
+        ).subscribe(status => {
+            this.formStatusChange.emit(status);
+        });
+
+        this.form.valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(200),
+            tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
+            map(() => {
+                const rawValue = this.form.getRawValue();
+
+                return {
+                    ...rawValue,
+                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
+                };
+            }),
+            tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            this.formValueChange.emit(value);
+        });
+
         this.triggerInformation$.getValue().pipe(
             tap(value => HelperService.debug('triggerInformation$ CHANGED:', value)),
             filter(value => !!value),
@@ -729,42 +767,6 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             } else {
                 this.isSelectCatalogueDisabled = false;
             }
-        });
-
-        (this.form.statusChanges as Observable<FormStatus>).pipe(
-            distinctUntilChanged(),
-            debounceTime(300),
-            tap(value => HelperService.debug('PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM STATUS CHANGED:', value)),
-            // filter(value => {
-            //     if (value === 'PENDING') {
-            //         this.form.updateValueAndValidity();
-            //         return false;
-            //     }
-
-            //     return true;
-            // }),
-            // retry(1),
-            takeUntil(this.subs$)
-        ).subscribe(status => {
-            this.formStatusChange.emit(status);
-        });
-
-        this.form.valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(200),
-            tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
-            map(() => {
-                const rawValue = this.form.getRawValue();
-
-                return {
-                    ...rawValue,
-                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
-                };
-            }),
-            tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
-            takeUntil(this.subs$)
-        ).subscribe(value => {
-            this.formValueChange.emit(value);
         });
     }
 
