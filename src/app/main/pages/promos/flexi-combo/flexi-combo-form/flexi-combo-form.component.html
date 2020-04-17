@@ -38,6 +38,7 @@
                                 fxFlex="10"
                                 [class.sinbad-red-fg]="hasError('promoId')"
                             >
+                                <span class="sinbad-red-fg">*</span>
                                 Promo Seller ID
                             </label>
 
@@ -47,6 +48,7 @@
                                     name="promoId"
                                     formControlName="promoId"
                                     autocapitalize="characters"
+                                    autocomplete="off"
                                 />
 
                                 <mat-error *ngIf="hasError('promoId', true)">

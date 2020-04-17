@@ -27,6 +27,10 @@ app-flexi-combo-list {
 
         &.sinbad-table-no-record {
             background: #ffffff !important;
+
+            .mat-header-row {
+                pointer-events: none;
+            }
         }
 
         .mat-header-row,
