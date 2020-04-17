@@ -57,7 +57,7 @@
 
                 <select-catalogues
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenSku$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onCatalogueSelected($event)"
@@ -94,7 +94,7 @@
 
                 <select-brands
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenBrand$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onBrandSelected($event)"
@@ -131,7 +131,7 @@
 
                 <select-faktur
                     *ngIf="!isViewMode()"
-                    [initialSelection]="chosen$ | async"
+                    [initialSelection]="chosenFaktur$ | async"
                     [required]="true"
                     [fxFlex]="formFieldLength"
                     (selected)="onFakturSelected($event)"
