@@ -41,4 +41,9 @@
             ></period-target-promo-customer-segmentation-settings>
         </div>
     </div>
+    <!-- LOADING SPINNER -->
+    <div class="loader" *ngIf="isLoading$ | async">
+        <mat-spinner color="accent"></mat-spinner>
+    </div>
+    <!-- / LOADING SPINNER -->
 </div>

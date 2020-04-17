@@ -388,12 +388,54 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
                     )
                 })
             ]],
-            chosenStore: [[]],
-            chosenWarehouse: [[]],
-            chosenStoreType: [[]],
-            chosenStoreGroup: [[]],
-            chosenStoreChannel: [[]],
-            chosenStoreCluster: [[]],
+            chosenStore: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenWarehouse: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenStoreType: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenStoreGroup: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenStoreChannel: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
+            chosenStoreCluster: ['', [
+                RxwebValidators.required({
+                    message: this.errorMessage$.getErrorMessageNonState(
+                        'default',
+                        'required'
+                    )
+                })
+            ]],
         });
     }
 
@@ -431,32 +473,60 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
 
             //     return formValue;
             // }),
-            map(value => {
-                if (value.segmentationBase === 'direct-store') {
+            map(() => {
+                const rawValue = this.form.getRawValue();
+
+                if (rawValue.segmentationBase === 'direct-store') {
                     return ({
-                        id: value.id,
-                        segmentationBase: value.segmentationBase,
-                        chosenStore: value.chosenStore.length === 0 ? [] : value.chosenStore,
+                        id: rawValue.id,
+                        segmentationBase: rawValue.segmentationBase,
+                        chosenStore: rawValue.chosenStore.length === 0 ? [] : rawValue.chosenStore,
                     });
-                } else if (value.segmentationBase === 'segmentation') {
+                } else if (rawValue.segmentationBase === 'segmentation') {
                     return ({
-                        id: value.id,
-                        segmentationBase: value.segmentationBase,
-                        chosenWarehouse: value.chosenWarehouse.length === 0 ? [] : value.chosenWarehouse,
-                        chosenStoreType: value.chosenStoreType.length === 0 ? [] : value.chosenStoreType,
-                        chosenStoreGroup: value.chosenStoreGroup.length === 0 ? [] : value.chosenStoreGroup,
-                        chosenStoreChannel: value.chosenStoreChannel.length === 0 ? [] : value.chosenStoreChannel,
-                        chosenStoreCluster: value.chosenStoreCluster.length === 0 ? [] : value.chosenStoreCluster,
+                        id: rawValue.id,
+                        segmentationBase: rawValue.segmentationBase,
+                        chosenWarehouse: rawValue.chosenWarehouse.length === 0 ? [] : rawValue.chosenWarehouse,
+                        chosenStoreType: rawValue.chosenStoreType.length === 0 ? [] : rawValue.chosenStoreType,
+                        chosenStoreGroup: rawValue.chosenStoreGroup.length === 0 ? [] : rawValue.chosenStoreGroup,
+                        chosenStoreChannel: rawValue.chosenStoreChannel.length === 0 ? [] : rawValue.chosenStoreChannel,
+                        chosenStoreCluster: rawValue.chosenStoreCluster.length === 0 ? [] : rawValue.chosenStoreCluster,
                     });
                 }
 
-                return value;
+                return rawValue;
             }),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             this.formValueChange.emit(value);
         });
+
+        this.form.get('segmentationBase').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(200),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'direct-store') {
+                this.form.get('chosenStore').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenWarehouse').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreType').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreGroup').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreChannel').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreCluster').disable({ onlySelf: true, emitEvent: false });
+            }
+            else if (value === 'segmentation') {
+                this.form.get('chosenStore').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenWarehouse').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreType').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreGroup').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreChannel').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStoreCluster').enable({ onlySelf: true, emitEvent: false });
+            }
+        });
+
+        this.form.markAllAsTouched();
     }
 
     // onEditCategory(): void {

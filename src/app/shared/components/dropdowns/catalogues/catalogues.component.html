@@ -48,7 +48,7 @@
 </ng-template>
 <div class="custom-field" fxLayout="row" *ngIf="mode === 'single'; else multiMode">
     <mat-form-field fxFlexAlign="center" appearance="outline" fxFlex>
-        <mat-select [placeholder]="placeholder" [formControl]="entityForm">
+        <mat-select [placeholder]="placeholder" [formControl]="entityForm" (openedChange)="onOpenedChangeEntity($event)">
             <mat-option>(None)</mat-option>
             <mat-option *ngFor="let option of (availableEntities$ | async)" [value]="option.id">
                 {{ option?.label || '-' }}
