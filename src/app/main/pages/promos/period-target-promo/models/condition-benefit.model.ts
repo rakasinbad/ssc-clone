@@ -6,6 +6,7 @@ interface ConditionBenefit {
     condition: {
         base: string;
         qty: string;
+        value: string;
     };
     benefit: {
         base: string;
