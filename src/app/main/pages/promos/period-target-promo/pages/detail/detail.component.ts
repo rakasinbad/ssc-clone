@@ -305,6 +305,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                 payload: {
                     id: formValue.id,
                     data: payload,
+                    source: 'detail-edit',
                 }
             })
         );
@@ -341,6 +342,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                 payload: {
                     id: formValue.id,
                     data: payload,
+                    source: 'detail-edit',
                 }
             })
         );
@@ -381,6 +383,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                 payload: {
                     id: formValue.id,
                     data: payload,
+                    source: 'detail-edit',
                 }
             })
         );
@@ -429,6 +432,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                 payload: {
                     id: formValue.id,
                     data: payload,
+                    source: 'detail-edit',
                 }
             })
         );
@@ -513,6 +517,10 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                         this.processTriggerInformationForm();
                         break;
                     }
+                    case 'condition-benefit': {
+                        // this.processConditionBenefitForm();
+                        break;
+                    }
                     case 'customer-segmentation': {
                         this.processCustomerSegmentationForm();
                         break;
@@ -521,88 +529,6 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                         this.processRewardForm();
                         break;
                     }
-                    // case 'media-settings': {
-                    //     const formPhotos = this.formValue as CatalogueMediaForm;
-                    //     const oldPhotos = formPhotos.oldPhotos;
-                    //     const formCatalogue: CatalogueMedia = {
-                    //         deletedImages: [],
-                    //         uploadedImages: [],
-                    //     };
-
-                    //     /** Fungsi untuk mem-filter foto untuk keperluan update gambar. */
-                    //     const filterPhoto = (photo, idx) => {
-                    //         const isDeleted = photo === null && oldPhotos[idx].value !== null;
-                    //         const isNewUpload = photo !== null && oldPhotos[idx].value === null;
-                    //         const isReplaced = photo !== null && oldPhotos[idx].value !== null && photo !== oldPhotos[idx].value;
-
-                    //         if (isDeleted) {
-                    //             formCatalogue.deletedImages.push(oldPhotos[idx].id);
-                    //         }
-
-                    //         if (isNewUpload) {
-                    //             formCatalogue.uploadedImages.push({ base64: photo });
-                    //         }
-
-                    //         if (isReplaced) {
-                    //             formCatalogue.deletedImages.push(oldPhotos[idx].id);
-                    //             formCatalogue.uploadedImages.push({ base64: photo });
-                    //         }
-                    //     };
-
-                    //     // Mulai mem-filter foto.
-                    //     formPhotos.photos.forEach(filterPhoto);
-
-                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-                    //         payload: {
-                    //             id: catalogue.id,
-                    //             data: formCatalogue,
-                    //             source: 'form',
-                    //             section: this.section
-                    //         }
-                    //     }));
-
-                    //     break;
-                    // }
-                    // case 'weight-and-dimension': {
-                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-                    //         payload: {
-                    //             id: catalogue.id,
-                    //             data: this.formValue as CatalogueWeightDimension,
-                    //             source: 'form',
-                    //             section: this.section
-                    //         }
-                    //     }));
-
-                    //     break;
-                    // }
-                    // case 'price-settings': {
-                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-                    //         payload: {
-                    //             id: catalogue.id,
-                    //             data: this.formValue as Catalogue,
-                    //             source: 'form',
-                    //             section: this.section
-                    //         }
-                    //     }));
-
-                    //     break;
-                    // }
-                    // case 'amount-settings': {
-                    //     this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
-                    //     this.PeriodTargetPromoStore.dispatch(CatalogueActions.patchCatalogueRequest({
-                    //         payload: {
-                    //             id: catalogue.id,
-                    //             data: this.formValue as Catalogue,
-                    //             source: 'form',
-                    //             section: this.section
-                    //         }
-                    //     }));
-
-                    //     break;
-                    // }
                 }
             }
         });

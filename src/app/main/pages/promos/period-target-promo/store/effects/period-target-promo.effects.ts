@@ -315,6 +315,18 @@ export class PeriodTargetPromoEffects {
             tap(this.showErrorNotification),
         ) , { dispatch: false });
 
+    updateFailureAction$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action fetch export logs failure.
+            ofType(...[
+                PeriodTargetPromoActions.updatePeriodTargetPromoFailure,
+            ]),
+            // Hanya mengambil payload-nya saja.
+            map(action => action.payload),
+            // Memunculkan notif bahwa request export gagal.
+            tap(this.showErrorNotification),
+        ) , { dispatch: false });
+
     setRefreshStatusToActive$ = createEffect(() =>
         this.actions$.pipe(
             ofType(
@@ -400,7 +412,14 @@ export class PeriodTargetPromoEffects {
                     }));
                 }),
                 catchError(err => {
-                    return this.sendErrorToState(err, 'addPeriodTargetPromoFailure');
+                    if (payload.source === 'detail-edit') {
+                        this.PeriodTargetPromoStore.dispatch(UiActions.showFooterAction());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.enableSaveButton());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+                        this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
+                    }
+
+                    return this.sendErrorToState(err, 'updatePeriodTargetPromoFailure');
                 })
             );
     }
