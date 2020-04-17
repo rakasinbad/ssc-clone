@@ -44,7 +44,7 @@
                 [fxHide]="form.get('segmentationBase').value !== 'direct-store'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenStore'))"
@@ -75,6 +75,7 @@
             <!-- CHOSEN SEGMENTATION -->
             <div
                 fxLayout="column"
+                fxLayoutGap="20px"
                 fxLayoutAlign="start stretch"
                 [fxHide]="form.get('segmentationBase').value !== 'segmentation'"
             >
@@ -85,7 +86,7 @@
                     fxLayoutAlign="start stretch"
                 >
                     <label
-                        fxFlexAlign="center"
+                        [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                         [fxFlex]="labelLength"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenWarehouse'))"
@@ -120,7 +121,7 @@
                     fxLayoutAlign="start stretch"
                 >
                     <label
-                        fxFlexAlign="center"
+                        [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                         [fxFlex]="labelLength"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreType'))"
@@ -145,7 +146,7 @@
                     
                     <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                         <span class="form-value" *ngFor="let data of form.get('chosenStoreType').value">
-                            {{ (data?.types?.name | uppercase) || '-' }}
+                            {{ (data?.type?.name | uppercase) || '-' }}
                         </span>
                     </div>
                 </div>
@@ -157,7 +158,7 @@
                     fxLayoutAlign="start stretch"
                 >
                     <label
-                        fxFlexAlign="center"
+                        [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                         [fxFlex]="labelLength"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreGroup'))"
@@ -182,7 +183,7 @@
                     
                     <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                         <span class="form-value" *ngFor="let data of form.get('chosenStoreGroup').value">
-                            {{ (data?.groups?.name | uppercase) || '-' }}
+                            {{ (data?.group?.name | uppercase) || '-' }}
                         </span>
                     </div>
                 </div>
@@ -194,7 +195,7 @@
                     fxLayoutAlign="start stretch"
                 >
                     <label
-                        fxFlexAlign="center"
+                        [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                         [fxFlex]="labelLength"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreChannel'))"
@@ -219,7 +220,7 @@
                     
                     <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                         <span class="form-value" *ngFor="let data of form.get('chosenStoreChannel').value">
-                            {{ (data?.channels?.name | uppercase) || '-' }}
+                            {{ (data?.channel?.name | uppercase) || '-' }}
                         </span>
                     </div>
                 </div>
@@ -231,7 +232,7 @@
                     fxLayoutAlign="start stretch"
                 >
                     <label
-                        fxFlexAlign="center"
+                        [fxFlexAlign]="!isViewMode() ? 'center' : 'start'"
                         [fxFlex]="labelLength"
                         class="pr-0 form-label"
                         [class.mat-error]="!isViewMode() && hasError(form.get('chosenStoreCluster'))"
@@ -256,7 +257,7 @@
                     
                     <div fxLayout="column" [fxFlex]="formFieldLength" *ngIf="isViewMode()">
                         <span class="form-value" *ngFor="let data of form.get('chosenStoreCluster').value">
-                            {{ (data?.clusters?.name | uppercase) || '-' }}
+                            {{ (data?.cluster?.name | uppercase) || '-' }}
                         </span>
                     </div>
                 </div>

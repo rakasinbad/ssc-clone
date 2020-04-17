@@ -45,7 +45,7 @@
                 [fxHide]="form.get('base').value !== 'sku'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenSku'))"
@@ -82,7 +82,7 @@
                 [fxHide]="form.get('base').value !== 'brand'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenBrand'))"
@@ -119,7 +119,7 @@
                 [fxHide]="form.get('base').value !== 'faktur'"
             >
                 <label
-                    fxFlexAlign="center"
+                    [fxFlexAlign]="isViewMode() ? 'start' : 'center'"
                     [fxFlex]="labelLength"
                     class="pr-0 form-label"
                     [class.mat-error]="!isViewMode() && hasError(form.get('chosenFaktur'))"
