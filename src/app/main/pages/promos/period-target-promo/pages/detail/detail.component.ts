@@ -359,21 +359,69 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         // Klasifikasi "dataTarget" untuk Customer Segmentation Settings.
         if (payload.target === 'store') {
             payload.dataTarget = {
-                storeId: payload.chosenStore.map(supplierStore => supplierStore.storeId)
+                storeId: formValue.chosenStore.map(supplierStore => supplierStore.storeId)
             };
         } else if (payload.target === 'segmentation') {
             payload.dataTarget = {
-                warehouseId: payload.chosenWarehouse.length === 0 ? 'all'
-                            : payload.chosenWarehouse.map(warehouse => warehouse.id),
-                typeId: payload.chosenStoreType.length === 0 ? 'all'
-                            : payload.chosenStoreType.map(storeType => storeType.id),
-                groupId: payload.chosenStoreGroup.length === 0 ? 'all'
-                            : payload.chosenStoreGroup.map(storeGroup => storeGroup.id),
-                clusterId: payload.chosenStoreCluster.length === 0 ? 'all'
-                            : payload.chosenStoreCluster.map(storeCluster => storeCluster.id),
-                channelId: payload.chosenStoreChannel.length === 0 ? 'all'
-                            : payload.chosenStoreChannel.map(storeChannel => storeChannel.id),
+                warehouseId: formValue.chosenWarehouse.length === 0 ? 'all'
+                            : formValue.chosenWarehouse.map(warehouse => warehouse.id),
+                typeId: formValue.chosenStoreType.length === 0 ? 'all'
+                            : formValue.chosenStoreType.map(storeType => storeType.id),
+                groupId: formValue.chosenStoreGroup.length === 0 ? 'all'
+                            : formValue.chosenStoreGroup.map(storeGroup => storeGroup.id),
+                clusterId: formValue.chosenStoreCluster.length === 0 ? 'all'
+                            : formValue.chosenStoreCluster.map(storeCluster => storeCluster.id),
+                channelId: formValue.chosenStoreChannel.length === 0 ? 'all'
+                            : formValue.chosenStoreChannel.map(storeChannel => storeChannel.id),
             };
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                }
+            })
+        );
+    }
+
+    private processRewardForm(): void {
+        const formValue = this.formValue as Partial<PromoReward>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            reward: {
+                startDate: (formValue.rewardValidDate.activeStartDate as unknown as moment.Moment).toISOString(),
+                endDate: (formValue.rewardValidDate.activeEndDate as unknown as moment.Moment).toISOString(),
+                triggerBase: formValue.trigger.base === 'sku' ? 'sku'
+                            : formValue.trigger.base === 'brand' ? 'brand'
+                            : formValue.trigger.base === 'faktur' ? 'invoiceGroup'
+                            : 'unknown',
+                conditionBase: formValue.condition.base === 'qty' ? 'qty'
+                            : formValue.condition.base === 'order-value' ? 'value'
+                            : 'unknown',
+                termCondition: formValue.miscellaneous.description,
+            },
+        };
+
+        if (formValue.miscellaneous.couponImage.startsWith('data:image')) {
+            payload.reward.image = formValue.miscellaneous.couponImage;
+        }
+
+        // Klasifikasi "reward -> conditionBase" untuk Reward Information.
+        if (payload.reward.conditionBase === 'qty') {
+            payload.reward['conditionQty'] = formValue.condition.qty;
+        } else if (payload.reward.conditionBase === 'value') {
+            payload.reward['conditionValue'] = formValue.condition.value;
+        }
+
+        // Klasifikasi "reward -> triggerBase" untuk Trigger Information.
+        if (payload.reward.triggerBase === 'sku') {
+            payload.reward['catalogueId'] = formValue.trigger.chosenSku.map(sku => sku.id);
+        } else if (payload.reward.triggerBase === 'brand') {
+            payload.reward['brandId'] = formValue.trigger.chosenBrand.map(brand => brand.id);
+        } else if (payload.reward.triggerBase === 'invoiceGroup') {
+            payload.reward['invoiceGroupId'] = formValue.trigger.chosenFaktur.map(faktur => faktur.id);
         }
 
         this.PeriodTargetPromoStore.dispatch(
@@ -467,6 +515,10 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
                     }
                     case 'customer-segmentation': {
                         this.processCustomerSegmentationForm();
+                        break;
+                    }
+                    case 'reward': {
+                        this.processRewardForm();
                         break;
                     }
                     // case 'media-settings': {

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef, AfterViewInit, Input, OnChanges, SimpleChanges, EventEmitter, Output, ViewChild, ElementRef } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
 import { Store as NgRxStore } from '@ngrx/store';
-import { Subject, Observable, of, combineLatest, BehaviorSubject } from 'rxjs';
+import { Subject, Observable, of, combineLatest, BehaviorSubject, merge } from 'rxjs';
 
 import { FeatureState as PeriodTargetPromoCoreFeatureState } from '../../store/reducers';
 import { ErrorMessageService, HelperService, NoticeService } from 'app/shared/helpers';
@@ -235,22 +235,24 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
                 }
     
                 this.form.patchValue({
+                    id: periodTargetPromo.id,
                     rewardValidDate: {
                         activeStartDate: moment(periodTargetPromo.storeTargetCoupons[0].startDate).toDate(),
                         activeEndDate: moment(periodTargetPromo.storeTargetCoupons[0].endDate).toDate(),
                     },
                     trigger: {
                         base: chosenBase,
-                        chosenSku: periodTargetPromo.promoCatalogues,
-                        chosenBrand: periodTargetPromo.promoBrands,
-                        chosenFaktur: periodTargetPromo.promoInvoiceGroups,
+                        chosenSku: chosenBase !== 'sku' || periodTargetPromo.promoCatalogues.length === 0 ? '' : periodTargetPromo.promoCatalogues,
+                        chosenBrand: chosenBase !== 'brand' || periodTargetPromo.promoBrands.length === 0 ? '' : periodTargetPromo.promoBrands,
+                        chosenFaktur: chosenBase !== 'faktur' || periodTargetPromo.promoInvoiceGroups.length === 0 ? '' : periodTargetPromo.promoInvoiceGroups,
                     },
                     condition: {
                         base: periodTargetPromo.storeTargetCoupons[0].conditionBase === 'value'
                             ? 'order-value'
                             : periodTargetPromo.storeTargetCoupons[0].conditionBase,
                         qty: periodTargetPromo.storeTargetCoupons[0].conditionQty,
-                        value: String(periodTargetPromo.storeTargetCoupons[0].conditionValue).replace('.', ','),
+                        value: isNaN(+periodTargetPromo.storeTargetCoupons[0].conditionValue) ? '0'
+                                : String(periodTargetPromo.storeTargetCoupons[0].conditionValue).replace('.', ','),
                         valueView: periodTargetPromo.storeTargetCoupons[0].conditionValue,
                     },
                     miscellaneous: {
@@ -274,127 +276,6 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
             this.form.markAsPristine();
         });
     }
-
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-        
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
-
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
-
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
-
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
-
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
-
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
 
     private initForm(): void {
         this.minActiveStartDate = new Date();
@@ -482,44 +363,6 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
     }
 
     private initFormCheck(): void {
-        this.form.get('trigger.base').valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(100),
-            takeUntil(this.subs$)
-        ).subscribe(value => {
-            if (value === 'sku') {
-                this.form.get('trigger.chosenSku').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
-            } else if (value === 'brand') {
-                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenBrand').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenFaktur').disable({ onlySelf: true, emitEvent: false });
-            } else if (value === 'faktur') {
-                this.form.get('trigger.chosenSku').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenBrand').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('trigger.chosenFaktur').enable({ onlySelf: true, emitEvent: false });
-            }
-
-            this.form.updateValueAndValidity();
-        });
-
-        this.form.get('condition.base').valueChanges.pipe(
-            distinctUntilChanged(),
-            debounceTime(100),
-            takeUntil(this.subs$)
-        ).subscribe(value => {
-            if (value === 'qty') {
-                this.form.get('condition.qty').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('condition.value').disable({ onlySelf: true, emitEvent: false });
-            } else if (value === 'order-value') {
-                this.form.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('condition.value').enable({ onlySelf: true, emitEvent: false });
-            }
-
-            this.form.updateValueAndValidity();
-        });
-        
         (this.form.statusChanges as Observable<FormStatus>).pipe(
             distinctUntilChanged(),
             debounceTime(300),
@@ -555,58 +398,47 @@ export class PeriodTargetPromoRewardInformationComponent implements OnInit, Afte
         ).subscribe(value => {
             this.formValueChange.emit(value);
         });
+
+        this.form.get('trigger.base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO REWARD INFORMATION TRIGGER BASE VALUE CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'sku') {
+                this.form.get('trigger.chosenSku').enable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: false, emitEvent: true });
+            } else if (value === 'brand') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenBrand').enable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenFaktur').disable({ onlySelf: false, emitEvent: true });
+            } else if (value === 'faktur') {
+                this.form.get('trigger.chosenSku').disable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenBrand').disable({ onlySelf: false, emitEvent: true });
+                this.form.get('trigger.chosenFaktur').enable({ onlySelf: false, emitEvent: true });
+            }
+
+            this.form.updateValueAndValidity();
+        });
+
+        this.form.get('condition.base').valueChanges.pipe(
+            distinctUntilChanged(),
+            debounceTime(100),
+            tap(value => HelperService.debug('PERIOD TARGET PROMO REWARD INFORMATION CONDITION BASE VALUE CHANGED:', value)),
+            takeUntil(this.subs$)
+        ).subscribe(value => {
+            if (value === 'qty') {
+                this.form.get('condition.qty').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('condition.value').disable({ onlySelf: true, emitEvent: true });
+            } else if (value === 'order-value') {
+                this.form.get('condition.qty').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('condition.value').enable({ onlySelf: true, emitEvent: true });
+            }
+
+            this.form.updateValueAndValidity();
+        });
     }
-
-    // onEditCategory(): void {
-    //     this.dialog.open(CataloguesSelectCategoryComponent, { width: '1366px' });
-    // }
-
-    // checkExternalId(): AsyncValidatorFn {
-    //     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    //         return control.valueChanges.pipe(
-    //             distinctUntilChanged(),
-    //             debounceTime(500),
-    //             withLatestFrom(
-    //                 this.store.select(AuthSelectors.getUserSupplier),
-    //                 this.store.select(CatalogueSelectors.getSelectedCatalogueEntity)
-    //             ),
-    //             take(1),
-    //             switchMap(([value, userSupplier, catalogue]) => {
-    //                 if (!value) {
-    //                     return of({
-    //                         required: true
-    //                     });
-    //                 }
-
-    //                 const params: IQueryParams = {
-    //                     limit: 1,
-    //                     paginate: true
-    //                 };
-
-    //                 params['externalId'] = value;
-    //                 params['supplierId'] = userSupplier.supplierId;
-
-    //                 return this.catalogue$.findAll(params).pipe(
-    //                     map(response => {
-    //                         if (response.total > 0) {
-    //                             if (!this.isAddMode()) {
-    //                                 if (response.data[0].id === catalogue.id) {
-    //                                     return null;
-    //                                 }
-    //                             }
-
-    //                             return {
-    //                                 skuSupplierExist: true
-    //                             };
-    //                         }
-
-    //                         return null;
-    //                     })
-    //                 );
-    //             })
-    //         );
-    //     };
-    // }
 
     getFormError(form: any): string {
         return this.errorMessage$.getFormError(form);
