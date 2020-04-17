@@ -230,7 +230,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
             case 'customer-segmentation': {
                 const {
                     id,
-                    base,
+                    segmentationBase,
                     chosenStore = [],
                     chosenWarehouse = [],
                     chosenStoreType = [],
@@ -241,7 +241,7 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
 
                 this.formValue = {
                     id,
-                    base,
+                    segmentationBase,
                     chosenStore,
                     chosenWarehouse,
                     chosenStoreType,

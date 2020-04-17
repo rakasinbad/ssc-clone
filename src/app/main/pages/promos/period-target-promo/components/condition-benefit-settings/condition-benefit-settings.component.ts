@@ -312,22 +312,22 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
     checkRebate(index: number): AsyncValidatorFn {
         const check = () => {
-            if (index === 0) {
-                const conditionValue = +this.form.get(['conditionBenefit', index, 'condition', 'value']).value;
-                const cashRebate = +this.form.get(['conditionBenefit', index, 'benefit', 'cash', 'rebate']).value;
-
-                if (cashRebate < conditionValue) {
-                    return null;
-                }
-
-                return {
-                    lessThan: {
-                        message: `This field must less than ${conditionValue}`
-                    }
-                };
+            if (this.form.get(['conditionBenefit', index, 'condition', 'value']).disabled) {
+                return null;
             }
 
-            return null;
+            const conditionValue = +this.form.get(['conditionBenefit', index, 'condition', 'value']).value;
+            const cashRebate = +this.form.get(['conditionBenefit', index, 'benefit', 'cash', 'rebate']).value;
+
+            if (cashRebate < conditionValue) {
+                return null;
+            }
+
+            return {
+                lessThan: {
+                    message: `This field must less than ${conditionValue}`
+                }
+            };
         };
 
         return (): Observable<ValidationErrors | null> => {
@@ -335,126 +335,6 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         };
     }
 
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-        
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
-
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
-
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
-
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
-
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
-
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
     addConditionBenefitForm(): void {
         const subject: Subject<void> = new Subject<void>();
 
@@ -464,16 +344,26 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                 condition: this.fb.group({
                     base: ['qty'],
                     qty: ['', [
-                        RxwebValidators.greaterThanEqualTo({
+                        RxwebValidators.required({
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                        }),
+                        RxwebValidators.digit({
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                        }),
+                        RxwebValidators.minNumber({
                             value: 1,
-                            message: 'This field must be greater than or equal to 1.'
-                        })
+                            message: this.errorMessage$.getErrorMessageNonState(
+                                'default',
+                                'min_number',
+                                { minValue: 1 }
+                            ),
+                        }),
                     ]],
                     value: ['', [
                         RxwebValidators.numeric({
                             allowDecimal: true,
                             acceptValue: NumericValueType.PositiveNumber,
-                            message: 'This field must be numeric.'
+                            message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
                         }),
                     ]],
                     valueView: [],
@@ -493,20 +383,19 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                         applySameSku: [false],
                         bonusQty: ['1', [
                             RxwebValidators.required({
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'required'),
+                            }),
+                            RxwebValidators.digit({
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'numeric'),
+                            }),
+                            RxwebValidators.minNumber({
+                                value: 1,
                                 message: this.errorMessage$.getErrorMessageNonState(
                                     'default',
-                                    'required'
-                                )
+                                    'min_number',
+                                    { minValue: 1 }
+                                ),
                             }),
-                            RxwebValidators.numeric({
-                                allowDecimal: false,
-                                acceptValue: NumericValueType.PositiveNumber,
-                                message: 'This field must be numeric.'
-                            }),
-                            RxwebValidators.greaterThanEqualTo({
-                                value: 1,
-                                message: 'This field must be greater than or equal to 1.'
-                            })
                         ]],
                         multiplicationOnly: [false],
                     }),
@@ -541,7 +430,13 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                     }),
                     // CASH BASED
                     cash: this.fb.group({
-                        rebate: [''],
+                        rebate: ['', [
+                            RxwebValidators.numeric({
+                                acceptValue: NumericValueType.PositiveNumber,
+                                allowDecimal: true,
+                                message: this.errorMessage$.getErrorMessageNonState('default', 'pattern'),
+                            }),
+                        ]],
                     }),
                 })
             })
@@ -565,18 +460,13 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         ).subscribe({
             next: value => {
                 if (lastControl.enabled && value.condition) {
-                    // if (value.condition.base === 'order-value') {
-                    //     // if (lastControl.get('benefit.cash.rebate').validator)
-                    //     lastControl.get('benefit.cash.rebate').setValidators(
-                    //         RxwebValidators.lessThanEqualTo({
-                    //             value: +value.condition.value,
-                    //             message: `This field must be less than or equal to ${value.condition.value}`
-                    //         })
-                    //     );
-                    // } else if (value.condition.base === 'qty') {
-                    //     // TODO: Menyesuaikan validator ketika condition base === qty
-                    //     lastControl.get('benefit.cash.rebate').clearValidators();
-                    // }
+                    if (value.condition.base === 'qty') {
+                        lastControl.get('condition.qty').enable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+                    } else if (value.condition.base === 'order-value') {
+                        lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
+                        lastControl.get('condition.value').enable({ onlySelf: true, emitEvent: false });
+                    }
 
                     switch (value.benefit.base) {
                         case 'qty':
@@ -610,9 +500,6 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
 
         setTimeout(() => {
             if (lastIdx > 0) {
-                // lastControl.get('condition.base').disable({ onlySelf: true, emitEvent: false });
-                // lastControl.get('benefit.base').disable({ onlySelf: true, emitEvent: false });
-                
                 const previousControl = (this.form.get(['conditionBenefit', lastIdx - 1]) as FormGroup);
                 const previousConditionBase = previousControl.get('condition.base').value;
                 const previousConditionQty = +previousControl.get('condition.qty').value;
@@ -621,31 +508,35 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                 lastControl.get('condition.base').setValue(previousConditionBase);
 
                 if (previousConditionBase === 'qty') {
+                    lastControl.get('condition.value').disable({ onlySelf: true, emitEvent: false });
+
                     // Condition Qty.
-                    lastControl.get('condition.qty').setValue(previousConditionQty - 1);
+                    lastControl.get('condition.qty').setValue(previousConditionQty + 1);
                     lastControl.get('condition.qty').setValidators([
                         RxwebValidators.numeric({
                             allowDecimal: false,
                             acceptValue: NumericValueType.PositiveNumber,
                             message: 'This field must be numeric.'
                         }),
-                        RxwebValidators.lessThan({
+                        RxwebValidators.greaterThan({
                             value: previousConditionQty,
-                            message: `This field must less than ${previousConditionQty}`
+                            message: `This field must greater than ${previousConditionQty}`
                         })
                     ]);
                 } else if (previousConditionBase === 'order-value') {
+                    lastControl.get('condition.qty').disable({ onlySelf: true, emitEvent: false });
+
                     // Condition Order Value
-                    lastControl.get('condition.value').setValue(previousConditionValue - 1);
+                    lastControl.get('condition.value').setValue(previousConditionValue + 1);
                     lastControl.get('condition.value').setValidators([
                         RxwebValidators.numeric({
                             allowDecimal: true,
                             acceptValue: NumericValueType.PositiveNumber,
                             message: 'This field must be numeric.'
                         }),
-                        RxwebValidators.lessThan({
+                        RxwebValidators.greaterThan({
                             value: previousConditionValue,
-                            message: `This field must less than ${previousConditionValue}`
+                            message: `This field must greater than ${previousConditionValue}`
                         })
                     ]);
                 }
@@ -654,10 +545,12 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                 lastControl.get('benefit.base').setValue(previousBenefitBase);
 
                 if (previousBenefitBase === 'qty') {
+                    lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
                     const previousBonusQty = +previousControl.get('benefit.qty.bonusQty').value;
 
                     // BONUS QTY
-                    lastControl.get('benefit.qty.bonusQty').setValue(previousBonusQty - 1);
+                    lastControl.get('benefit.qty.bonusQty').setValue(previousBonusQty + 1);
                     lastControl.get('benefit.qty.bonusQty').setValidators([
                         RxwebValidators.required({
                             message: this.errorMessage$.getErrorMessageNonState(
@@ -670,12 +563,14 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                             acceptValue: NumericValueType.PositiveNumber,
                             message: 'This field must be numeric.'
                         }),
-                        RxwebValidators.lessThan({
+                        RxwebValidators.greaterThan({
                             value: previousBonusQty,
-                            message: `This field must less than ${previousBonusQty}`
+                            message: `This field must greater than ${previousBonusQty}`
                         })
                     ]);
                 } else if (previousBenefitBase === 'percent') {
+                    lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.cash').disable({ onlySelf: true, emitEvent: false });
                     const previousBonusPercentDiscount = +previousControl.get('benefit.percent.percentDiscount').value;
                     const previousBonusMaxRebate = +previousControl.get('benefit.percent.maxRebate').value;
 
@@ -724,34 +619,27 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                         })
                     ]);
                 } else if (previousBenefitBase === 'cash') {
+                    lastControl.get('benefit.qty').disable({ onlySelf: true, emitEvent: false });
+                    lastControl.get('benefit.percent').disable({ onlySelf: true, emitEvent: false });
                     const previousBonusRebate = +previousControl.get('benefit.cash.rebate').value;
-                    const minimumNumber = previousBonusRebate < +lastControl.get('condition.value').value ? previousBonusRebate : +lastControl.get('condition.value').value;
-                    const maximumNumber = previousBonusRebate > +lastControl.get('condition.value').value ? previousBonusRebate : +lastControl.get('condition.value').value;
 
                     // BONUS CASH REBATE
                     lastControl.get('benefit.cash.rebate').setValue(previousBonusRebate - 1);
+                    lastControl.get('benefit.cash.rebate').setAsyncValidators([
+                        this.checkRebate(lastIdx)
+                    ]);
                     lastControl.get('benefit.cash.rebate').setValidators([
                         RxwebValidators.numeric({
                             allowDecimal: true,
                             acceptValue: NumericValueType.PositiveNumber,
                             message: 'This field must be numeric.'
                         }),
-                        RxwebValidators.range({
-                            minimumNumber, maximumNumber,
-                            conditionalExpression: x => {
-                                HelperService.debug('TEST', x);
-                                return true;
-                            },
-                            message: `This field must in range between ${minimumNumber} and ${maximumNumber}`
-                        })
                     ]);
                 }
             } else {
                 lastControl.get('benefit.cash.rebate').setAsyncValidators([
                     this.checkRebate(lastIdx)
                 ]);
-                // const previousControl = (this.form.get(['conditionBenefit', lastIdx]) as FormGroup);
-                // const previousConditionValue = +previousControl.get('condition.value').value;
 
                 lastControl.get('benefit.cash.rebate').setValidators([
                     RxwebValidators.numeric({
@@ -759,10 +647,6 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
                         acceptValue: NumericValueType.PositiveNumber,
                         message: 'This field must be a positive number.'
                     }),
-                    // RxwebValidators.lessThan({
-                    //     value: previousConditionValue,
-                    //     message: `This field must less than ${previousConditionValue}`
-                    // })
                 ]);
 
                 lastControl.updateValueAndValidity();
@@ -783,7 +667,7 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
             const multiplication = this.form.get(['conditionBenefit', 0, 'benefit', 'qty', 'multiplicationOnly']);
 
             multiplication.enable({ onlySelf: true, emitEvent: false });
-            multiplication.reset();
+            multiplication.reset(false);
         }
 
         const controls = (this.form.get('conditionBenefit') as FormArray).controls;
@@ -868,12 +752,15 @@ export class PeriodTargetPromoTriggerConditionBenefitSettingsComponent implement
         this.form.valueChanges.pipe(
             distinctUntilChanged(),
             debounceTime(200),
-            // tap(value => HelperService.debug('PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
             tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
-            map(value => ({
-                ...value,
-                conditionBenefit: value.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
-            })),
+            map(() => {
+                const rawValue = this.form.getRawValue();
+
+                return {
+                    ...rawValue,
+                    conditionBenefit: rawValue.conditionBenefit.map(data => ({ condition: data.condition, benefit: data.benefit }))
+                };
+            }),
             tap(value => HelperService.debug('[AFTER MAP] PERIOD TARGET PROMO CONDITON & BENEFIT SETTINGS FORM VALUE CHANGED', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
