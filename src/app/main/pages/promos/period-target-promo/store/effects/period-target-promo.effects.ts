@@ -318,14 +318,12 @@ export class PeriodTargetPromoEffects {
     updateFailureAction$ = createEffect(() =>
         this.actions$.pipe(
             // Hanya untuk action fetch export logs failure.
-            ofType(...[
-                PeriodTargetPromoActions.updatePeriodTargetPromoFailure,
-            ]),
+            ofType(PeriodTargetPromoActions.updatePeriodTargetPromoFailure),
             // Hanya mengambil payload-nya saja.
             map(action => action.payload),
             // Memunculkan notif bahwa request export gagal.
-            tap(this.showErrorNotification),
-        ) , { dispatch: false });
+            tap(err => this.showErrorNotification(err)),
+        ), { dispatch: false });
 
     setRefreshStatusToActive$ = createEffect(() =>
         this.actions$.pipe(
@@ -497,7 +495,7 @@ export class PeriodTargetPromoEffects {
         };
 
         if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
-            this.notice$.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
+            this.notice$.open(`An error occured. Reason: ${error.errors}`, 'error', noticeSetting);
         } else {
             this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
         }
