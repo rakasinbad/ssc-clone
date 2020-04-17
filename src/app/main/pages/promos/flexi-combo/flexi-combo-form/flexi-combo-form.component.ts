@@ -46,6 +46,7 @@ import { SupplierStore } from 'app/shared/models/supplier.model';
 import { TriggerBase } from 'app/shared/models/trigger-base.model';
 import { FormActions, UiActions } from 'app/shared/store/actions';
 import { FormSelectors } from 'app/shared/store/selectors';
+import * as moment from 'moment';
 import * as numeral from 'numeral';
 import { Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
@@ -88,6 +89,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     isLoadingDistrict$: Observable<boolean>;
 
+    private strictISOString = false;
     private _breadCrumbs: IBreadcrumbs[] = [
         {
             title: 'Home',
@@ -303,9 +305,6 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             const formParent = this.form.get(parentName) as FormArray;
             const { errors } = formParent.at(index).get(fieldName);
 
-            // if (fieldName === 'benefitCatalogueId') {
-            //     console.log(formParent, errors);
-            // }
             if (errors) {
                 const type = Object.keys(errors)[0];
 
@@ -318,10 +317,6 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
             if (errors) {
                 const type = Object.keys(errors)[0];
-
-                if (fieldName === 'benefitRebate') {
-                    console.log(errors, type);
-                }
 
                 if (type) {
                     return errors[type].message;
@@ -476,8 +471,6 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.form.get(fieldName).markAsDirty({ onlySelf: true });
         this.form.get(fieldName).markAsTouched({ onlySelf: true });
 
-        console.log('Benefit SKU', this.form.get(fieldName), ev);
-
         if (!ev) {
             this.form.get(fieldName).setValue(null);
         } else {
@@ -551,6 +544,9 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
         // Handle validation for Discount Field (Benefit Type - Percent) (FormControl = benefitDiscount)
         this._benefitDiscountValidationByBenefitType(benefitTypeVal, idx);
+
+        // Handle validation for Max Rebate Field (Benefit Type - Percent) (FormControl = benefitMaxRebate)
+        this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
     }
 
     /**
@@ -582,9 +578,22 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
      * @memberof FlexiComboFormComponent
      */
     onChangeOrderValue(idx: number): void {
+        const prevIdx = idx > 0 ? idx - 1 : 0;
+
         if (idx > 0) {
             // Revalidate Rebate Field
-            this._benefitRebateValidationNewTier(idx, idx - 1);
+            this._benefitRebateValidationNewTier(idx, prevIdx);
+
+            // Revalidate Max Rebate Field
+            this._benefitMaxRebateValidationNewTier(idx, prevIdx);
+        } else {
+            const benefitTypeVal = this.conditionsCtrl[idx].get('benefitType').value;
+
+            // Revalidate Rebate Field
+            this._benefitRebateValidationByBenefitType(benefitTypeVal, idx);
+
+            // Revalidate Max Rebate Field
+            this._benefitMaxRebateValidationByBenefitType(benefitTypeVal, idx);
         }
 
         return;
@@ -913,6 +922,9 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         // Handle validation for Discount Field (New Tier) (FormControl = benefitDiscount)
         this._benefitDiscountValidationNewTier(idx, prevIdx);
 
+        // Handle validation for Max Rebate Field (New Tier) (FormControl = benefitMaxRebate)
+        this._benefitMaxRebateValidationNewTier(idx, prevIdx);
+
         //   switch (conditionBase.value) {
         //       case ConditionBase.QTY:
         //           // Handle validation for Qty Field (New Tier) (FormControl = conditionQty)
@@ -980,7 +992,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             conditionQtyCtrl.clearValidators();
         }
 
-        conditionQtyCtrl.updateValueAndValidity({ onlySelf: true });
+        conditionQtyCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1045,7 +1057,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             conditionValueCtrl.clearValidators();
         }
 
-        conditionValueCtrl.updateValueAndValidity({ onlySelf: true });
+        conditionValueCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1081,7 +1093,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitBonusQtyCtrl.clearValidators();
         }
 
-        benefitBonusQtyCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitBonusQtyCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1106,9 +1118,17 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitBonusSkuCtrl.clearValidators();
         }
 
-        benefitBonusSkuCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitBonusSkuCtrl.updateValueAndValidity();
     }
 
+    /**
+     *
+     * Handle validation for Discount Field (New Tier) (FormControl - benefitDiscount) Tier
+     * @private
+     * @param {number} idx
+     * @param {number} prevIdx
+     * @memberof FlexiComboFormComponent
+     */
     private _benefitDiscountValidationNewTier(idx: number, prevIdx: number): void {
         const conditionBaseCtrl = this.conditionsCtrl[idx].get('conditionBase');
         const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
@@ -1130,7 +1150,39 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitDiscountCtrl.clearValidators();
         }
 
-        benefitDiscountCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitDiscountCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Max Rebate Field (New Tier) (FormControl - benefitMaxRebate) Tier
+     * @private
+     * @param {number} idx
+     * @param {number} prevIdx
+     * @memberof FlexiComboFormComponent
+     */
+    private _benefitMaxRebateValidationNewTier(idx: number, prevIdx: number): void {
+        const conditionBaseCtrl = this.conditionsCtrl[idx].get('conditionBase');
+        const benefitTypeCtrl = this.conditionsCtrl[idx].get('benefitType');
+        const benefitMaxRebateCtrl = this.conditionsCtrl[idx].get('benefitMaxRebate');
+
+        if (benefitTypeCtrl.value === BenefitType.PERCENT) {
+            benefitMaxRebateCtrl.setValidators([
+                RxwebValidators.required({
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                }),
+                RxwebValidators.numeric({
+                    acceptValue: NumericValueType.PositiveNumber,
+                    allowDecimal: true,
+                    message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                }),
+                this._customValidationMaxRebateLimit(idx, conditionBaseCtrl.value),
+            ]);
+        } else {
+            benefitMaxRebateCtrl.clearValidators();
+        }
+
+        benefitMaxRebateCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1183,7 +1235,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         //     ]);
         // }
 
-        benefitRebateCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitRebateCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1214,63 +1266,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitDiscountCtrl.clearValidators();
         }
 
-        benefitDiscountCtrl.updateValueAndValidity({ onlySelf: true });
-    }
-
-    /**
-     *
-     * Handle validation for Rebate Field by Benefit Type (FormControl = benefitRebateCtrl) Tier
-     * @private
-     * @param {BenefitType} benefitType
-     * @param {number} idx
-     * @memberof FlexiComboFormComponent
-     */
-    private _benefitRebateValidationByBenefitType(benefitType: BenefitType, idx: number): void {
-        const benefitRebateCtrl = this.conditionsCtrl[idx].get('benefitRebate');
-
-        if (benefitType === BenefitType.AMOUNT) {
-            const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
-
-            if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
-                const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
-
-                benefitRebateCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                    RxwebValidators.lessThan({
-                        fieldName: 'conditionValue',
-                        message: this._$errorMessage.getErrorMessageNonState(
-                            'default',
-                            'lt_number',
-                            {
-                                maxValue: conditionValue,
-                            }
-                        ),
-                    }),
-                ]);
-            } else {
-                benefitRebateCtrl.setValidators([
-                    RxwebValidators.required({
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
-                    }),
-                    RxwebValidators.numeric({
-                        acceptValue: NumericValueType.PositiveNumber,
-                        allowDecimal: true,
-                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
-                    }),
-                ]);
-            }
-        } else {
-            benefitRebateCtrl.clearValidators();
-        }
-
-        benefitRebateCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitDiscountCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1376,7 +1372,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             // ]);
         }
 
-        qtyValueCtrl.updateValueAndValidity({ onlySelf: true });
+        qtyValueCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1405,7 +1401,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             orderValueCtrl.clearValidators();
         }
 
-        orderValueCtrl.updateValueAndValidity({ onlySelf: true });
+        orderValueCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1429,7 +1425,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitBonusSkuCtrl.clearValidators();
         }
 
-        benefitBonusSkuCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitBonusSkuCtrl.updateValueAndValidity();
     }
 
     /**
@@ -1479,7 +1475,119 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
             benefitBonusQtyCtrl.clearValidators();
         }
 
-        benefitBonusQtyCtrl.updateValueAndValidity({ onlySelf: true });
+        benefitBonusQtyCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Max Rebate Field by Benefit Type (FormControl = benefitMaxRebate) Tier
+     * @private
+     * @param {BenefitType} benefitType
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _benefitMaxRebateValidationByBenefitType(benefitType: BenefitType, idx: number): void {
+        const benefitMaxRebateCtrl = this.conditionsCtrl[idx].get('benefitMaxRebate');
+
+        if (benefitType === BenefitType.PERCENT) {
+            const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
+
+            if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
+                const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
+
+                benefitMaxRebateCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.lessThan({
+                        fieldName: 'conditionValue',
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'lt_number',
+                            {
+                                maxValue: conditionValue,
+                            }
+                        ),
+                    }),
+                ]);
+            } else {
+                benefitMaxRebateCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ]);
+            }
+        } else {
+            benefitMaxRebateCtrl.clearValidators();
+        }
+
+        benefitMaxRebateCtrl.updateValueAndValidity();
+    }
+
+    /**
+     *
+     * Handle validation for Rebate Field by Benefit Type (FormControl = benefitRebateCtrl) Tier
+     * @private
+     * @param {BenefitType} benefitType
+     * @param {number} idx
+     * @memberof FlexiComboFormComponent
+     */
+    private _benefitRebateValidationByBenefitType(benefitType: BenefitType, idx: number): void {
+        const benefitRebateCtrl = this.conditionsCtrl[idx].get('benefitRebate');
+
+        if (benefitType === BenefitType.AMOUNT) {
+            const conditionBaseVal = this.conditionsCtrl[idx].get('conditionBase').value;
+
+            if (conditionBaseVal === ConditionBase.ORDER_VALUE) {
+                const conditionValue = this.conditionsCtrl[idx].get('conditionValue').value;
+
+                benefitRebateCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                    RxwebValidators.lessThan({
+                        fieldName: 'conditionValue',
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'lt_number',
+                            {
+                                maxValue: conditionValue,
+                            }
+                        ),
+                    }),
+                ]);
+            } else {
+                benefitRebateCtrl.setValidators([
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.numeric({
+                        acceptValue: NumericValueType.PositiveNumber,
+                        allowDecimal: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
+                    }),
+                ]);
+            }
+        } else {
+            benefitRebateCtrl.clearValidators();
+        }
+
+        benefitRebateCtrl.updateValueAndValidity();
     }
 
     private _createConditions(condition?: ConditionDto): FormGroup {
@@ -1574,7 +1682,7 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
     }
 
     private _setFormStatus(status: string): void {
-        console.log(`Test Form ${status}`, this.form);
+        // console.log(`Test Form ${status}`, this.form);
 
         if (!status) {
             return;
@@ -1657,10 +1765,6 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 //         console.log(`Condition Changes`, changes);
                 //     });
 
-                // this.conditions.valueChanges.subscribe((changes) => {
-                //     console.log(`Condition Changes`, changes);
-                // });
-
                 // Handle valid or invalid form status for footer action (SHOULD BE NEEDED)
                 this.form.statusChanges
                     .pipe(distinctUntilChanged(), debounceTime(1000), takeUntil(this._unSubs$))
@@ -1700,12 +1804,30 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
         this.tmp['imgSuggestion'] = new FormControl({ value: '', disabled: true });
 
         this.form = this.formBuilder.group({
-            promoId: null,
+            promoId: [
+                null,
+                [
+                    RxwebValidators.required({
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.alphaNumeric({
+                        allowWhiteSpace: false,
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'alpha_num_pattern'
+                        ),
+                    }),
+                ],
+            ],
             promoName: [
                 null,
                 [
                     RxwebValidators.required({
                         message: this._$errorMessage.getErrorMessageNonState('default', 'required'),
+                    }),
+                    RxwebValidators.alpha({
+                        allowWhiteSpace: true,
+                        message: this._$errorMessage.getErrorMessageNonState('default', 'pattern'),
                     }),
                 ],
             ],
@@ -1805,12 +1927,12 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     }),
                 ],
             ],
-            chosenStore: [''],
-            chosenWarehouse: [''],
-            chosenStoreType: [''],
-            chosenStoreGroup: [''],
-            chosenStoreChannel: [''],
-            chosenStoreCluster: [],
+            chosenStore: null,
+            chosenWarehouse: null,
+            chosenStoreType: null,
+            chosenStoreGroup: null,
+            chosenStoreChannel: null,
+            chosenStoreCluster: null,
         });
 
         if (this.pageType === 'edit') {
@@ -1930,32 +2052,140 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
 
         const body = this.form.getRawValue();
         const {
+            allowCombineWithVoucher,
             base,
-            conditions,
+            chosenBrand,
+            chosenInvoice,
             chosenSku,
+            chosenStore,
+            chosenStoreChannel,
+            chosenStoreCluster,
+            chosenStoreGroup,
+            chosenStoreType,
+            chosenWarehouse,
+            conditions,
+            endDate,
             firstBuy,
             imgSuggestion,
             maxRedemption,
             platform,
-            promoId,
             promoBudget,
+            promoId,
             promoName,
-            allowCombineWithVoucher,
+            segmentationBase,
+            startDate,
         } = body;
+
         const newChosenSku =
-            chosenSku && chosenSku.length > 0 ? chosenSku.map((sku) => sku.id) : [];
+            chosenSku && chosenSku.length > 0 && base === TriggerBase.SKU
+                ? chosenSku.map((sku: Catalogue) => sku.id)
+                : [];
+        const newChosenBrand =
+            chosenBrand && chosenBrand.length > 0 && base === TriggerBase.BRAND
+                ? chosenBrand.map((brand: Brand) => brand.id)
+                : [];
+        const newChosenFaktur =
+            chosenInvoice && chosenInvoice.length > 0 && base === TriggerBase.INVOICE
+                ? chosenInvoice.map((invoice: InvoiceGroup) => invoice.id)
+                : [];
+        const newChosenStore =
+            chosenStore && chosenStore.length > 0 && segmentationBase === SegmentationBase.STORE
+                ? chosenStore.map((store: SupplierStore) => store.store.id)
+                : [];
+        const newChosenWarehouse =
+            chosenWarehouse &&
+            chosenWarehouse.length > 0 &&
+            segmentationBase === SegmentationBase.SEGMENTATION
+                ? chosenWarehouse.map((warehouse: Warehouse) => warehouse.id)
+                : [];
+        const newChosenStoreType =
+            chosenStoreType &&
+            chosenStoreType.length > 0 &&
+            segmentationBase === SegmentationBase.SEGMENTATION
+                ? chosenStoreType.map((storeType: StoreSegmentationType) => storeType.id)
+                : [];
+        const newChosenStoreGroup =
+            chosenStoreGroup &&
+            chosenStoreGroup.length > 0 &&
+            segmentationBase === SegmentationBase.SEGMENTATION
+                ? chosenStoreGroup.map((storeGroup: StoreSegmentationGroup) => storeGroup.id)
+                : [];
+        const newChosenStoreChannel =
+            chosenStoreChannel &&
+            chosenStoreChannel.length > 0 &&
+            segmentationBase === SegmentationBase.SEGMENTATION
+                ? chosenStoreChannel.map(
+                      (storeChannel: StoreSegmentationChannel) => storeChannel.id
+                  )
+                : [];
+        const newChosenStoreCluster =
+            chosenStoreCluster &&
+            chosenStoreCluster.length > 0 &&
+            segmentationBase === SegmentationBase.SEGMENTATION
+                ? chosenStoreCluster.map(
+                      (storeCluster: StoreSegmentationCluster) => storeCluster.id
+                  )
+                : [];
+
+        const newConditions =
+            conditions && conditions.length > 0
+                ? conditions.map((condition) => {
+                      const {
+                          conditionBase,
+                          conditionQty,
+                          benefitType,
+                          benefitCatalogueId,
+                          benefitBonusQty,
+                          multiplication,
+                          benefitRebate,
+                          benefitDiscount,
+                          benefitMaxRebate,
+                      } = condition;
+
+                      const sameObj = {
+                          conditionBase,
+                          conditionQty,
+                          benefitType,
+                          multiplication,
+                      };
+
+                      if (benefitType === BenefitType.QTY) {
+                          return {
+                              ...sameObj,
+                              benefitCatalogueId: benefitCatalogueId.id,
+                              benefitBonusQty,
+                          };
+                      } else if (benefitType === BenefitType.AMOUNT) {
+                          return {
+                              ...sameObj,
+                              benefitRebate,
+                          };
+                      } else if (benefitType === BenefitType.PERCENT) {
+                          return {
+                              ...sameObj,
+                              benefitDiscount,
+                              benefitMaxRebate,
+                          };
+                      }
+
+                      return condition;
+                  })
+                : [];
+
+        const newStartDate =
+            startDate && moment.isMoment(startDate)
+                ? startDate.toISOString(this.strictISOString)
+                : null;
+        const newEndDate =
+            endDate && moment.isMoment(endDate) ? endDate.toISOString(this.strictISOString) : null;
 
         if (this.pageType === 'new') {
             const payload: CreateFlexiComboDto = {
                 base,
-                conditions: null,
-                dataBase: {
-                    catalogueId: newChosenSku,
-                },
-                dataTarget: {
-                    storeId: [],
-                },
-                endDate: null,
+                conditions: newConditions,
+                dataBase: {},
+                dataTarget: {},
+                endDate: newEndDate,
                 externalId: promoId,
                 firstBuy,
                 image: imgSuggestion || null,
@@ -1963,16 +2193,34 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                 name: promoName,
                 platform,
                 promoBudget,
-                startDate: null,
+                startDate: newStartDate,
                 status: EStatus.ACTIVE,
                 supplierId: null,
-                target: 'store',
+                target: segmentationBase,
                 type: 'flexi',
                 voucherCombine: allowCombineWithVoucher,
             };
 
-            console.log('[NEW] OnSubmit 1', body);
-            console.log('[NEW] OnSubmit 2', payload);
+            if (base === TriggerBase.SKU) {
+                payload.dataBase.catalogueId = newChosenSku;
+            } else if (base === TriggerBase.BRAND) {
+                payload.dataBase.brandId = newChosenBrand;
+            } else if (base === TriggerBase.INVOICE) {
+                payload.dataBase.invoiceGroupId = newChosenFaktur;
+            }
+
+            if (segmentationBase === SegmentationBase.STORE) {
+                payload.dataTarget.storeId = newChosenStore;
+            } else if (segmentationBase === SegmentationBase.SEGMENTATION) {
+                payload.dataTarget.warehouseId = newChosenWarehouse;
+                payload.dataTarget.typeId = newChosenStoreType;
+                payload.dataTarget.groupId = newChosenStoreGroup;
+                payload.dataTarget.channelId = newChosenStoreChannel;
+                payload.dataTarget.clusterId = newChosenStoreCluster;
+            }
+
+            // console.log('[NEW] OnSubmit 1', body);
+            // console.log('[NEW] OnSubmit 2', payload);
 
             this.store.dispatch(FlexiComboActions.createFlexiComboRequest({ payload }));
         } else if (this.pageType === 'edit') {
@@ -2102,6 +2350,69 @@ export class FlexiComboFormComponent implements OnInit, OnDestroy {
                     },
                     minValue: minLimit,
                     maxValue: maxLimit,
+                };
+            }
+
+            return null;
+        };
+    }
+
+    private _customValidationMaxRebateLimit(
+        idx: number,
+        conditionBase: ConditionBase
+    ): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            if (idx < 1) {
+                return null;
+            }
+
+            const maxRebateVal = +control.value;
+            const prevIdx = idx - 1;
+            const prevBenefitMaxRebateCtrl = this.conditionsCtrl[prevIdx].get('benefitMaxRebate');
+            const prevBenefitMaxRebateVal = +prevBenefitMaxRebateCtrl.value;
+
+            let limitNumber = prevBenefitMaxRebateVal;
+
+            if (conditionBase === ConditionBase.ORDER_VALUE) {
+                const conditionValueCtrl = this.conditionsCtrl[idx].get('conditionValue');
+                const conditionValueVal = +conditionValueCtrl.value;
+
+                // limitNumber = conditionValueVal;
+
+                if (conditionValueVal < prevBenefitMaxRebateVal) {
+                    limitNumber = conditionValueVal;
+                }
+
+                if (maxRebateVal >= limitNumber) {
+                    return {
+                        lte: {
+                            message: this._$errorMessage.getErrorMessageNonState(
+                                'default',
+                                'lt_number',
+                                {
+                                    maxValue: limitNumber,
+                                }
+                            ),
+                        },
+                        maxVal: limitNumber,
+                    };
+                }
+
+                return null;
+            }
+
+            if (maxRebateVal <= limitNumber) {
+                return {
+                    lte: {
+                        message: this._$errorMessage.getErrorMessageNonState(
+                            'default',
+                            'gt_number',
+                            {
+                                minValue: limitNumber,
+                            }
+                        ),
+                    },
+                    minValue: limitNumber,
                 };
             }
 

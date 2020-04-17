@@ -13,7 +13,9 @@ interface IFlexiComboCondition {
 }
 
 interface IFlexiComboDataBase {
+    brandId?: string[];
     catalogueId?: string[];
+    invoiceGroupId?: string[];
 }
 
 interface IFlexiComboDataTarget {

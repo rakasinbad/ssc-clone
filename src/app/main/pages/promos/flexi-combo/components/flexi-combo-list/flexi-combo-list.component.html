@@ -22,7 +22,11 @@
     </div>
 </div> -->
 
-<mat-tab-group color="accent" class="sinbad-mat-tab-group">
+<mat-tab-group
+    color="accent"
+    class="sinbad-mat-tab-group"
+    (selectedTabChange)="onSelectedTab($event)"
+>
     <mat-tab label="All">
         <!-- <ng-template matTabContent>
             <div class="tab-content p-16" fxLayout="column" fusePerfectScrollbar></div>
@@ -44,6 +48,7 @@
 
 <mat-table
     class="flexi-combo-list-table sinbad-table"
+    [class.sinbad-table-no-record]="!(isLoading$ | async) && (totalDataSource$ | async) === 0"
     #table
     [dataSource]="dataSource$ | async"
     matSort

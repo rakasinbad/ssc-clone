@@ -58,6 +58,39 @@ export class FlexiComboEffects {
         )
     );
 
+    createFlexiComboFailure$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.createFlexiComboFailure),
+                map((action) => action.payload),
+                tap((resp) => {
+                    const message = this._handleErrMessage(resp);
+
+                    this._$notice.open(message, 'error', {
+                        verticalPosition: 'bottom',
+                        horizontalPosition: 'right',
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
+    createFlexiComboSuccess$ = createEffect(
+        () =>
+            this.actions$.pipe(
+                ofType(FlexiComboActions.createFlexiComboSuccess),
+                tap(() => {
+                    this.router.navigate(['/pages/promos/flexi-combo']).finally(() => {
+                        this._$notice.open('Successfully created flexi promo', 'success', {
+                            verticalPosition: 'bottom',
+                            horizontalPosition: 'right',
+                        });
+                    });
+                })
+            ),
+        { dispatch: false }
+    );
+
     // -----------------------------------------------------------------------------------------------------
     // @ FETCH methods [FLEXI COMBOS]
     // -----------------------------------------------------------------------------------------------------
@@ -197,17 +230,17 @@ export class FlexiComboEffects {
             newPayload.supplierId = supplierId;
         }
 
-        console.log('[REQ] Create 1', payload);
+        // console.log('[REQ] Create 1', payload);
         console.log('[REQ] Create 2', newPayload);
 
-        return of({ type: 'SUCCESS' });
+        // return of({ type: 'SUCCESS' });
 
-        // return this._$storeTypeCrudApi.create<PayloadStoreType>(newPayload).pipe(
-        //     map((resp) => {
-        //         return StoreTypeActions.createStoreTypeSuccess();
-        //     }),
-        //     catchError((err) => this._sendErrorToState$(err, 'createStoreTypeFailure'))
-        // );
+        return this._$flexiComboApi.create<CreateFlexiComboDto>(newPayload).pipe(
+            map((resp) => {
+                return FlexiComboActions.createFlexiComboSuccess();
+            }),
+            catchError((err) => this._sendErrorToState$(err, 'createFlexiComboFailure'))
+        );
     };
 
     _fetchFlexiCombosRequest$ = ([userData, params]: [User, IQueryParams]): Observable<
