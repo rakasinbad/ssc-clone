@@ -77,7 +77,7 @@
                         fxFlex
                     >
                         <!-- FORM -->
-                        <div class="p-16" [class.dark-box]="!isViewMode()" [fxFlex]="labelLength + formFieldLength" fxLayout="column" fxLayoutGap="5px">
+                        <div class="p-16" [class.dark-box]="!isViewMode()" [fxFlex]="labelLength + formFieldLength" fxLayout="column" [fxLayoutGap]="!isViewMode() ? '5px' : '10px'">
                             <!-- CONDITION -->
                             <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
                                 Condition
@@ -183,7 +183,7 @@
                             </div>
                             <!-- / ORDER VALUE (BASE) -->
                             <!-- BENEFIT -->
-                            <span class="font-size-14 text-semibold font-weight-600 line-height-20 mb-20">
+                            <span class="font-size-14 text-semibold font-weight-600 line-height-20 my-20">
                                 Benefit
                             </span>
                             <!-- / BENEFIT -->
@@ -219,7 +219,7 @@
                             </div>
                             <!-- / BENEFIT (TYPE) -->
                             <!-- BASE = QTY -->
-                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'qty'">
+                            <div [fxLayoutGap]="!isViewMode() ? '5px' : '10px'" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'qty'">
                                 <!-- BONUS SKU -->
                                 <div
                                     [ngClass]="formClass"
@@ -330,7 +330,7 @@
                             </div>
                             <!-- / BASE = QTY -->
                             <!-- BASE = PERCENT (%) -->
-                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'percent'">
+                            <div [fxLayoutGap]="!isViewMode() ? '5px' : '10px'" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'percent'">
                                 <!-- PERCENT DISCOUNT -->
                                 <div
                                     [ngClass]="formClass"
@@ -408,7 +408,7 @@
                             </div>
                             <!-- / BASE = PERCENT (%) -->
                             <!-- BASE = CASH (Rp) -->
-                            <div fxLayoutGap="5px" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'cash'">
+                            <div [fxLayoutGap]="!isViewMode() ? '5px' : '10px'" fxLayout="column" [fxHide]="control.get('benefit.base').value !== 'cash'">
                                 <!-- REBATE -->
                                 <div
                                     [ngClass]="formClass"
