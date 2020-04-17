@@ -20,7 +20,7 @@ import { of, Observable, throwError } from 'rxjs';
 import { PeriodTargetPromoApiService } from '../../services/period-target-promo-api.service';
 import { catchOffline } from '@ngx-pwa/offline';
 import {
-    PeriodTargetPromo,
+    PeriodTargetPromo, PeriodTargetPromoPayload,
     // PeriodTargetPromoCreationPayload
 } from '../../models/period-target-promo.model';
 import { Auth } from 'app/main/pages/core/auth/models';
@@ -85,6 +85,72 @@ export class PeriodTargetPromoEffects {
         )
     );
 
+    addPeriodTargetPromoRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan Period Target Promo.
+            ofType(PeriodTargetPromoActions.addPeriodTargetPromoRequest),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            // Mengambil data dari store-nya auth.
+            withLatestFrom(this.authStore.select(AuthSelectors.getUserState)),
+            // Mengubah jenis Observable yang menjadi nilai baliknya. (Harus berbentuk Action-nya NgRx)
+            switchMap(([queryParams, authState]: [PeriodTargetPromoPayload, TNullable<Auth>]) => {
+                // Jika tidak ada data supplier-nya user dari state.
+                if (!authState) {
+                    return this.helper$.decodeUserToken().pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, PeriodTargetPromoPayload], Observable<AnyAction>>(this.addPeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'addPeriodTargetPromoFailure'))
+                    );
+                } else {
+                    return of(authState.user).pipe(
+                        map(this.checkUserSupplier),
+                        retry(3),
+                        switchMap(userData => of([userData, queryParams])),
+                        switchMap<[User, PeriodTargetPromoPayload], Observable<AnyAction>>(this.addPeriodTargetPromoRequest),
+                        catchError(err => this.sendErrorToState(err, 'addPeriodTargetPromoFailure'))
+                    );
+                }
+            })
+        )
+    );
+
+    addPeriodTargetPromoSuccess$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action penambahan Period Target Promo.
+            ofType(PeriodTargetPromoActions.addPeriodTargetPromoSuccess),
+            // Hanya mengambil payload-nya saja dari action.
+            map(action => action.payload),
+            tap(payload => {
+                const noticeSetting: MatSnackBarConfig = {
+                    horizontalPosition: 'right',
+                    verticalPosition: 'bottom',
+                    duration: 5000,
+                };
+                this.notice$.open(`Add Period Target Promo success.`, 'success', noticeSetting);
+                
+                if (!payload) {
+                    this.router.navigate(['/pages/promos/period-target-promo']);
+                }
+            })
+        )
+    , { dispatch: false });
+
+    fetchFailureAction$ = createEffect(() =>
+        this.actions$.pipe(
+            // Hanya untuk action fetch export logs failure.
+            ofType(...[
+                PeriodTargetPromoActions.addPeriodTargetPromoFailure,
+            ]),
+            // Hanya mengambil payload-nya saja.
+            map(action => action.payload),
+            // Memunculkan notif bahwa request export gagal.
+            tap(this.showErrorNotification),
+        )
+    , { dispatch: false });
+
     checkUserSupplier = (userData: User): User | Observable<never> => {
         // Jika user tidak ada data supplier.
         if (!userData.userSupplier) {
@@ -144,6 +210,27 @@ export class PeriodTargetPromoEffects {
         );
     }
 
+    addPeriodTargetPromoRequest = ([_, payload]: [User, PeriodTargetPromoPayload]): Observable<AnyAction> => {
+        return this.PeriodTargetPromoApi$
+            .addPeriodTargetPromo<PeriodTargetPromoPayload, PeriodTargetPromo>(payload)
+            .pipe(
+                catchOffline(),
+                switchMap(response => {
+                    return of(PeriodTargetPromoActions.addPeriodTargetPromoSuccess({
+                        payload: response
+                    }));
+                }),
+                catchError(err => {
+                    this.PeriodTargetPromoStore.dispatch(UiActions.showFooterAction());
+                    this.PeriodTargetPromoStore.dispatch(FormActions.enableSaveButton());
+                    this.PeriodTargetPromoStore.dispatch(FormActions.resetClickSaveButton());
+                    this.PeriodTargetPromoStore.dispatch(FormActions.resetClickCancelButton());
+
+                    return this.sendErrorToState(err, 'addPeriodTargetPromoFailure');
+                })
+            );
+    }
+
     sendErrorToState = (err: (ErrorHandler | HttpErrorResponse | object), dispatchTo: PeriodTargetPromoFailureActionNames): Observable<AnyAction> => {
         // Memunculkan error di console.
         // console.error(err);
@@ -170,5 +257,24 @@ export class PeriodTargetPromoEffects {
                 errors: JSON.parse(JSON.stringify(err, Object.getOwnPropertyNames(err)))
             }
         }));
+    }
+
+    showErrorNotification = (error: any) => {
+        const noticeSetting: MatSnackBarConfig = {
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom',
+            duration: 5000,
+        };
+
+        if (!error.id.startsWith('ERR_UNRECOGNIZED')) {
+            this.notice$.open(`Failed to request export logs. Reason: ${error.errors}`, 'error', noticeSetting);
+        } else {
+            this.notice$.open(`Something wrong with our web while processing your request. Please contact Sinbad Team.`, 'error', noticeSetting);
+        }
+
+        // Me-reset state tombol save.
+        this.PeriodTargetPromoStore.dispatch(
+            FormActions.resetClickSaveButton()
+        );
     }
 }

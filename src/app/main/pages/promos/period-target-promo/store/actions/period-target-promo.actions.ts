@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { PeriodTargetPromo } from '../../models';
 import { IQueryParams } from 'app/shared/models/query.model';
 import { IErrorHandler, TNullable } from 'app/shared/models/global.model';
+import { PeriodTargetPromoPayload } from '../../models/period-target-promo.model';
 // import { PeriodTargetPromoCreationPayload } from '../../models/period-target-promo.model';
 
 export type requestActionNames =
@@ -57,20 +58,20 @@ export const confirmRemovePeriodTargetPromo = createAction(
 /**
  * CREATE (ADD)
  */
-// export const addPeriodTargetPromoRequest = createAction(
-//     '[Promo/Period Target Promo API] Add PeriodTargetPromo Request',
-//     props<{ payload: PeriodTargetPromoCreationPayload }>()
-// );
+export const addPeriodTargetPromoRequest = createAction(
+    '[Promo/Period Target Promo API] Add PeriodTargetPromo Request',
+    props<{ payload: PeriodTargetPromoPayload }>()
+);
 
-// export const addPeriodTargetPromoSuccess = createAction(
-//     '[Promo/Period Target Promo API] Add PeriodTargetPromo Success',
-//     props<{ payload: TNullable<PeriodTargetPromo> }>()
-// );
+export const addPeriodTargetPromoSuccess = createAction(
+    '[Promo/Period Target Promo API] Add PeriodTargetPromo Success',
+    props<{ payload: TNullable<PeriodTargetPromo> }>()
+);
 
-// export const addPeriodTargetPromoFailure = createAction(
-//     '[Promo/Period Target Promo API] Add PeriodTargetPromo Failure',
-//     props<{ payload: IErrorHandler }>()
-// );
+export const addPeriodTargetPromoFailure = createAction(
+    '[Promo/Period Target Promo API] Add PeriodTargetPromo Failure',
+    props<{ payload: IErrorHandler }>()
+);
 
 /**
  * UPDATE
