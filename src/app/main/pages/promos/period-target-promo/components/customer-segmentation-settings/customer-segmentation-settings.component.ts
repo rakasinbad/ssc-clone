@@ -194,13 +194,14 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             }
 
             this.form.patchValue({
+                id: periodTargetPromo.id,
                 segmentationBase: periodTargetPromo.target === 'store' ? 'direct-store' : periodTargetPromo.target,
-                chosenStore: periodTargetPromo.promoStores,
-                chosenWarehouse: periodTargetPromo.promoWarehouses,
-                chosenStoreType: periodTargetPromo.promoTypes,
-                chosenStoreGroup: periodTargetPromo.promoGroups,
-                chosenStoreChannel: periodTargetPromo.promoChannels,
-                chosenStoreCluster: periodTargetPromo.promoClusters,
+                chosenStore: periodTargetPromo.promoStores.length === 0 ? '' : periodTargetPromo.promoStores,
+                chosenWarehouse: periodTargetPromo.promoWarehouses.length === 0 ? '' : periodTargetPromo.promoWarehouses,
+                chosenStoreType: periodTargetPromo.promoTypes.length === 0 ? '' : periodTargetPromo.promoTypes,
+                chosenStoreGroup: periodTargetPromo.promoGroups.length === 0 ? '' : periodTargetPromo.promoGroups,
+                chosenStoreChannel: periodTargetPromo.promoChannels.length === 0 ? '' : periodTargetPromo.promoChannels,
+                chosenStoreCluster: periodTargetPromo.promoClusters.length === 0 ? '' : periodTargetPromo.promoClusters,
             });
 
             if (periodTargetPromo.target === 'store') {
@@ -255,127 +256,6 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             this.form.markAsPristine();
         });
     }
-
-    // private onSubmit(): void {
-    //     // Menyembunyikan form toolbar agar tidak di-submit lagi.
-    //     this.store.dispatch(UiActions.hideFooterAction());
-    //     // Mendapatkan seluruh nilai dari form.
-    //     const formValues = this.form.getRawValue();
-        
-    //     // Membuat sebuah Object dengan tipe Partial<Catalogue> untuk keperluan strict-typing.
-    //     const catalogueData: Partial<CatalogueInformation> = {
-    //         /**
-    //          * INFORMASI PRODUK
-    //          */
-    //         externalId: formValues.productInfo.externalId,
-    //         name:
-    //             String(formValues.productInfo.name)
-    //                 .charAt(0)
-    //                 .toUpperCase() + String(formValues.productInfo.name).slice(1),
-    //         description: formValues.productInfo.description,
-    //         information: formValues.productInfo.information,
-    //         detail: formValues.productInfo.information,
-    //         brandId: formValues.productInfo.brandId,
-    //         firstCatalogueCategoryId: formValues.productInfo.category[0].id,
-    //         lastCatalogueCategoryId:
-    //             formValues.productInfo.category.length === 1
-    //                 ? formValues.productInfo.category[0].id
-    //                 : formValues.productInfo.category[formValues.productInfo.category.length - 1].id,
-    //         unitOfMeasureId: formValues.productInfo.uom,
-    //     };
-
-    //     if (this.formMode === 'edit') {
-    //         this.store.dispatch(
-    //             CatalogueActions.patchCatalogueRequest({
-    //                 payload: { id: formValues.productInfo.id, data: catalogueData, source: 'form' }
-    //             })
-    //         );
-    //     }
-    // }
-
-    // private initCatalogueCategoryState(): void {
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueCategories
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(categories => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (categories.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueCategoriesRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         }
-
-    //         this.catalogueCategories$.next(categories);
-    //     });
-    // }
-
-    // private initCatalogueUnitState(): void {
-    //     // Mendapatkan unit katalog dari state.
-    //     this.store.select(
-    //         CatalogueSelectors.getCatalogueUnits
-    //     ).pipe(
-    //         takeUntil(this.subs$)
-    //     ).subscribe(units => {
-    //         // Melakukan request ke back-end jika belum ada unit katalog di state.
-    //         if (units.length === 0) {
-    //             this.store.dispatch(
-    //                 CatalogueActions.fetchCatalogueUnitRequest({
-    //                     payload: {
-    //                         paginate: false,
-    //                         sort: 'asc',
-    //                         sortBy: 'id'
-    //                     }
-    //                 })
-    //             );
-    //         } else {
-    //             // Mengambil nilai ID UOM dari form.
-    //             const uom = this.form.get('productInfo.uom').value;
-    //             // Mengambil data UOM berdasarkan ID UOM yang terpilih.
-    //             const selectedUnit = units.filter(unit => unit.id === uom);
-    //             if (selectedUnit.length > 0) {
-    //                 this.form.patchValue({
-    //                     productInfo: {
-    //                         uomName: selectedUnit[0].unit
-    //                     }
-    //                 });
-    //             }
-
-    //             this.cdRef.markForCheck();
-    //         }
-
-    //         this.catalogueUnits$.next(units);
-    //     });
-    // }
-
-    // private initCatalogueBrand(): void {
-    //     this.brands$ = this.store.select(
-    //         BrandSelectors.getAllBrands
-    //     ).pipe(
-    //         withLatestFrom(this.store.select(AuthSelectors.getUserSupplier)),
-    //         map(([brands, userSupplier]) => {
-    //             if (userSupplier && brands.length === 0) {
-    //                 const query: IQueryParams = { paginate: false };
-    //                 query['supplierId'] = userSupplier.supplierId;
-
-    //                 this.store.dispatch(
-    //                     BrandActions.fetchBrandsRequest({
-    //                         payload: query
-    //                     })
-    //                 );
-    //             }
-
-    //             return brands;
-    //         }),
-    //         takeUntil(this.subs$)
-    //     );
-    // }
 
     private initForm(): void {
         this.form = this.fb.group({
@@ -454,25 +334,6 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
             debounceTime(200),
             // tap(value => HelperService.debug('PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
             tap(value => HelperService.debug('[BEFORE MAP] PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS FORM VALUE CHANGED', value)),
-            // map(value => {
-            //     let formValue = {
-            //         ...value.productInfo,
-            //         detail: value.productInfo.information,
-            //         unitOfMeasureId: value.productInfo.uom,
-            //     };
-    
-            //     if (formValue.category.length > 0) {
-            //         formValue = {
-            //             ...formValue,
-            //             firstCatalogueCategoryId: value.productInfo.category[0].id,
-            //             lastCatalogueCategoryId: value.productInfo.category.length === 1
-            //                                     ? value.productInfo.category[0].id
-            //                                     : value.productInfo.category[value.productInfo.category.length - 1].id,
-            //         };
-            //     }
-
-            //     return formValue;
-            // }),
             map(() => {
                 const rawValue = this.form.getRawValue();
 
@@ -504,29 +365,29 @@ export class PeriodTargetPromoCustomerSegmentationSettingsComponent implements O
 
         this.form.get('segmentationBase').valueChanges.pipe(
             distinctUntilChanged(),
-            debounceTime(200),
+            debounceTime(100),
             tap(value => HelperService.debug('PERIOD TARGET PROMO CUSTOMER SEGMENTATION SETTINGS SEGMENTATION BASE VALUE CHANGED:', value)),
             takeUntil(this.subs$)
         ).subscribe(value => {
             if (value === 'direct-store') {
-                this.form.get('chosenStore').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenWarehouse').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreType').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreGroup').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreChannel').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreCluster').disable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStore').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenWarehouse').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreType').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreGroup').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreChannel').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreCluster').disable({ onlySelf: true, emitEvent: true });
             }
             else if (value === 'segmentation') {
-                this.form.get('chosenStore').disable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenWarehouse').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreType').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreGroup').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreChannel').enable({ onlySelf: true, emitEvent: false });
-                this.form.get('chosenStoreCluster').enable({ onlySelf: true, emitEvent: false });
+                this.form.get('chosenStore').disable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenWarehouse').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreType').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreGroup').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreChannel').enable({ onlySelf: true, emitEvent: true });
+                this.form.get('chosenStoreCluster').enable({ onlySelf: true, emitEvent: true });
             }
-        });
 
-        this.form.markAllAsTouched();
+            this.form.updateValueAndValidity();
+        });
     }
 
     // onEditCategory(): void {

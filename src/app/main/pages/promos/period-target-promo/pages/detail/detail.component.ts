@@ -310,6 +310,82 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         );
     }
 
+    private processTriggerInformationForm(): void {
+        const formValue = this.formValue as Partial<TriggerInformation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            base: formValue.base === 'sku' ? 'sku'
+                    : formValue.base === 'brand' ? 'brand'
+                    : formValue.base === 'faktur' ? 'invoiceGroup'
+                    : 'unknown',
+            dataBase: {},
+        };
+
+        // Klasifikasi "dataBase" untuk Trigger Information.
+        if (payload.base === 'sku') {
+            payload.dataBase = {
+                catalogueId: formValue.chosenSku.map(sku => sku.id),
+            };
+        } else if (payload.base === 'brand') {
+            payload.dataBase = {
+                brandId: formValue.chosenBrand.map(brand => brand.id),
+            };
+        } else if (payload.base === 'invoiceGroup') {
+            payload.dataBase = {
+                invoiceGroupId: formValue.chosenFaktur.map(faktur => faktur.id),
+            };
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                }
+            })
+        );
+    }
+
+    private processCustomerSegmentationForm(): void {
+        const formValue = this.formValue as Partial<CustomerSegmentation>;
+
+        const payload: Partial<PeriodTargetPromoPayload> = {
+            target: formValue.segmentationBase === 'direct-store' ? 'store'
+                    : formValue.segmentationBase === 'segmentation' ? 'segmentation'
+                    : 'unknown',
+            dataTarget: {},
+        };
+
+        // Klasifikasi "dataTarget" untuk Customer Segmentation Settings.
+        if (payload.target === 'store') {
+            payload.dataTarget = {
+                storeId: payload.chosenStore.map(supplierStore => supplierStore.storeId)
+            };
+        } else if (payload.target === 'segmentation') {
+            payload.dataTarget = {
+                warehouseId: payload.chosenWarehouse.length === 0 ? 'all'
+                            : payload.chosenWarehouse.map(warehouse => warehouse.id),
+                typeId: payload.chosenStoreType.length === 0 ? 'all'
+                            : payload.chosenStoreType.map(storeType => storeType.id),
+                groupId: payload.chosenStoreGroup.length === 0 ? 'all'
+                            : payload.chosenStoreGroup.map(storeGroup => storeGroup.id),
+                clusterId: payload.chosenStoreCluster.length === 0 ? 'all'
+                            : payload.chosenStoreCluster.map(storeCluster => storeCluster.id),
+                channelId: payload.chosenStoreChannel.length === 0 ? 'all'
+                            : payload.chosenStoreChannel.map(storeChannel => storeChannel.id),
+            };
+        }
+
+        this.PeriodTargetPromoStore.dispatch(
+            PeriodTargetPromoActions.updatePeriodTargetPromoRequest({
+                payload: {
+                    id: formValue.id,
+                    data: payload,
+                }
+            })
+        );
+    }
+
     ngOnInit(): void {
         this.selectedPromo$ = this.PeriodTargetPromoStore.select(
             PeriodTargetPromoSelectors.getSelectedPeriodTargetPromo
@@ -376,13 +452,21 @@ export class PeriodTargetPromoDetailComponent implements OnInit, AfterViewInit, 
         ).pipe(
             withLatestFrom(this.selectedPromo$),
             takeUntil(this.subs$)
-        ).subscribe(([isClick, catalogue]) => {
+        ).subscribe(([isClick, _]) => {
             if (isClick) {
                 this.PeriodTargetPromoStore.dispatch(UiActions.hideFooterAction());
 
                 switch (this.section) {
                     case 'general-information': {
                         this.processGeneralInformationForm();
+                        break;
+                    }
+                    case 'trigger': {
+                        this.processTriggerInformationForm();
+                        break;
+                    }
+                    case 'customer-segmentation': {
+                        this.processCustomerSegmentationForm();
                         break;
                     }
                     // case 'media-settings': {
