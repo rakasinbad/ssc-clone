@@ -78,6 +78,9 @@ export const globalIdLang = {
     ERROR: {
         ALPHA_PATTERN: '{{ fieldName }} field may only contain letters.',
         ALPHA_NUM_PATTERN: '{{ fieldName }} field may only contain letters and numbers.',
+        BETWEEN_GT_NUMBER: '{{ fieldName }} field must be > {{ minValue }} and <= {{ maxValue }}.',
+        BETWEEN_LT_NUMBER: '{{ fieldName }} field must be >= {{ minValue }} and < {{ maxValue }}.',
+        BETWEEN_NUMBER: '{{ fieldName }} field must be between {{ minValue }} and {{ maxValue }}.',
         CONFIRM: '{{ fieldName }} field does not match the {{ fieldNameCompare }} field.',
         CONFIRM_UNKNOWN: '{{ fieldName }} field does not match the other fields.',
         DEFAULT: '{{ fieldName }} field is required or selected.',
@@ -87,6 +90,7 @@ export const globalIdLang = {
         FILE_SIZE: '{{ fieldName }} field must be {{ size }}',
         FILE_SIZE_LTE: '{{ fieldName }} field must be less than or equal {{ size }}',
         FORMAT: '{{ fieldName }} field only with the following extensions are allowed: {{ ext }}.',
+        GT_NUMBER: '{{ fieldName }} field must be greater than {{ minValue }}.',
         IS_UNIQUE: '{{ fieldName }} field has already been taken.',
         IS_UNIQUE_EMAIL: '{{ fieldName }} field already registered.',
         LT_NUMBER: '{{ fieldName }} field must be less than {{ maxValue }}.',

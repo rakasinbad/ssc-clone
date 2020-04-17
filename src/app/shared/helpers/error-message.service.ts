@@ -72,6 +72,41 @@ export class ErrorMessageService {
                 });
             }
 
+            case 'range_gt_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_GT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'range_lt_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_LT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'between_number': {
+                const { minValue = 0, maxValue = 0 } = args;
+                return this.translate.instant('ERROR.BETWEEN_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                    maxValue,
+                });
+            }
+
+            case 'gt_number': {
+                const { minValue = 0 } = args;
+                return this.translate.instant('ERROR.GT_NUMBER', {
+                    fieldName: labelName,
+                    minValue,
+                });
+            }
+
             case 'lt_number': {
                 const { maxValue = 0 } = args;
                 return this.translate.instant('ERROR.LT_NUMBER', {
