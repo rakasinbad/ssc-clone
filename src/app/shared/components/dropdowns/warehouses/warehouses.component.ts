@@ -193,13 +193,13 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
                 if (Array.isArray(response)) {
                     this.rawAvailableEntities$.next(response);
                     this.availableEntities$.next((response as Array<Entity>).map(d =>
-                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                        ({ id: d.id, label: d.name, group: 'warehouses' }))
                     );
                     this.totalEntities$.next((response as Array<Entity>).length);
                 } else {
                     this.rawAvailableEntities$.next(response.data.map(d => d));
                     this.availableEntities$.next(response.data.map(d =>
-                        ({ id: d.id, label: d.name, group: 'warehouse' }))
+                        ({ id: d.id, label: d.name, group: 'warehouses' }))
                     );
                     this.totalEntities$.next(response.total);
                 }
