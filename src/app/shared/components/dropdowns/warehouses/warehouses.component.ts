@@ -487,16 +487,16 @@ export class WarehouseDropdownComponent implements OnInit, OnChanges, AfterViewI
         if (changes['required']) {
             if (!changes['required'].isFirstChange()) {
                 this.entityFormView.clearValidators();
-    
+
                 if (changes['required'].currentValue === true) {
                     this.entityFormView.setValidators(RxwebValidators.required());
                 }
             }
-    
-            if (changes['initialSelection']) {
-                this.entityFormValue.setValue(changes['initialSelection'].currentValue);
-                this.updateFormView();
-            }
+        }
+
+        if (changes['initialSelection']) {
+            this.entityFormValue.setValue(changes['initialSelection'].currentValue);
+            this.updateFormView();
         }
     }
 
