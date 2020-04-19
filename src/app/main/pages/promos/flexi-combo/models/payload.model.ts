@@ -1,7 +1,8 @@
+import { Selection } from 'app/shared/components/multiple-selection/models';
+import { BenefitType } from 'app/shared/models/benefit-type.model';
+import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { EStatus } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
-import { ConditionBase } from 'app/shared/models/condition-base.model';
-import { BenefitType } from 'app/shared/models/benefit-type.model';
 
 interface IFlexiComboCondition {
     benefitBonusQty: string;
@@ -98,8 +99,9 @@ export class ConditionDto {
     benefitMaxRebate: number;
     benefitRebate: number;
     benefitType: BenefitType;
+    catalogue?: Selection;
     conditionBase: ConditionBase;
-    conditionQty: number;
+    conditionQty: string;
     conditionValue: number;
     multiplication: boolean;
 
@@ -112,6 +114,7 @@ export class ConditionDto {
             benefitMaxRebate,
             benefitRebate,
             benefitType,
+            catalogue,
             conditionBase,
             conditionQty,
             conditionValue,
@@ -125,6 +128,7 @@ export class ConditionDto {
         this.benefitMaxRebate = benefitMaxRebate;
         this.benefitRebate = benefitRebate;
         this.benefitType = benefitType;
+        this.catalogue = catalogue;
         this.conditionBase = conditionBase;
         this.conditionQty = conditionQty;
         this.conditionValue = conditionValue;

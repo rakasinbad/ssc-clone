@@ -1,3 +1,4 @@
+import { BenefitType } from 'app/shared/models/benefit-type.model';
 import { ConditionBase } from 'app/shared/models/condition-base.model';
 import { EStatus, TNullable } from 'app/shared/models/global.model';
 import { PlatformSinbad } from 'app/shared/models/platform.model';
@@ -186,12 +187,13 @@ export interface IPromoCluster extends ITimestamp {
 
 export interface IPromoCondition extends ITimestamp {
     readonly id: NonNullable<string>;
-    benefitBonusQty: string;
+    benefitBonusQty: number;
     benefitCatalogueId: string;
-    benefitDiscount: string;
-    benefitMaxRebate: string;
-    benefitRebate: string;
-    benefitType: string;
+    benefitDiscount: number;
+    benefitMaxRebate: number;
+    benefitRebate: number;
+    benefitType: BenefitType;
+    catalogue?: ICatalogue;
     conditionBase: ConditionBase;
     conditionQty: string;
     conditionValue: number;

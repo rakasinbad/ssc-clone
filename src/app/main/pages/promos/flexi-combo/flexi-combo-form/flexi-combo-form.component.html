@@ -16,6 +16,7 @@
             class="merchant w-100-p"
             [formGroup]="form"
             autocomplete="off"
+            [class.event-none]="pageType === 'edit' && (isLoading$ | async)"
             fxLayout="column"
             fxFlex
             novalidate
@@ -346,18 +347,20 @@
                                     Upload Your File
                                 </button>
 
-                                <!-- <ng-container
-                                    *ngIf="pageType === 'edit' && (stores$ | async) as stores"
+                                <ng-container
+                                    *ngIf="
+                                        pageType === 'edit' && flexiCombo && flexiCombo?.imageUrl
+                                    "
                                 >
                                     <a
-                                        [href]="stores?.imageUrl"
+                                        [href]="flexiCombo?.imageUrl"
                                         target="_blank"
-                                        *ngIf="stores?.imageUrl"
+                                        *ngIf="flexiCombo?.imageUrl"
                                         style="position: relative; top: -0.78em;"
                                     >
                                         <mat-icon>remove_red_eye</mat-icon>
                                     </a>
-                                </ng-container> -->
+                                </ng-container>
                             </div>
                         </div>
 
@@ -491,6 +494,7 @@
                                     </label>
 
                                     <select-catalogues
+                                        [initialSelection]="getChosenSku()"
                                         [required]="true"
                                         (selected)="onSkuSelected($event)"
                                         fxFlex="50"
@@ -520,6 +524,7 @@
                                     </label>
 
                                     <select-brands
+                                        [initialSelection]="getChosenBrand()"
                                         [required]="true"
                                         (selected)="onBrandSelected($event)"
                                         fxFlex="50"
@@ -550,6 +555,7 @@
                                     </label>
 
                                     <select-faktur
+                                        [initialSelection]="getChosenFaktur()"
                                         [required]="true"
                                         (selected)="onInvoiceSelected($event)"
                                         fxFlex="50"
@@ -1504,7 +1510,7 @@
                             </div>
                         </div>
 
-                        <ng-container *ngIf="getSegmentationBase() === 'store'">
+                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.STORE">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -1521,6 +1527,7 @@
                                 </label>
 
                                 <select-supplier-stores
+                                    [initialSelection]="getChosenStore()"
                                     placeholder="Choose Store"
                                     [required]="true"
                                     (selected)="onStoreSelected($event)"
@@ -1533,7 +1540,7 @@
                             </div>
                         </ng-container>
 
-                        <ng-container *ngIf="getSegmentationBase() === 'segmentation'">
+                        <ng-container *ngIf="getSegmentationBase() === eSegmentBase.SEGMENTATION">
                             <div
                                 class="custom-field"
                                 fxLayout="row"
@@ -1552,6 +1559,7 @@
                                 </label>
 
                                 <select-warehouses
+                                    [initialSelection]="getChosenWarehouse()"
                                     placeholder="Choose Warehouse"
                                     [required]="false"
                                     (selected)="onWarehouseSelected($event)"
@@ -1581,6 +1589,7 @@
                                 </label>
 
                                 <select-store-segmentation
+                                    [initialSelection]="getChosenStoreType()"
                                     placeholder="Choose Store Type"
                                     title="Select Store Type"
                                     segmentationType="type"
@@ -1612,6 +1621,7 @@
                                 </label>
 
                                 <select-store-segmentation
+                                    [initialSelection]="getChosenStoreGroup()"
                                     placeholder="Choose Store Group"
                                     title="Select Store Group"
                                     segmentationType="group"
@@ -1643,6 +1653,7 @@
                                 </label>
 
                                 <select-store-segmentation
+                                    [initialSelection]="getChosenStoreChannel()"
                                     placeholder="Choose Store Channel"
                                     title="Select Store Channel"
                                     segmentationType="channel"
@@ -1674,6 +1685,7 @@
                                 </label>
 
                                 <select-store-segmentation
+                                    [initialSelection]="getChosenStoreCluster()"
                                     placeholder="Choose Store Cluster"
                                     title="Select Store Cluster"
                                     segmentationType="cluster"
